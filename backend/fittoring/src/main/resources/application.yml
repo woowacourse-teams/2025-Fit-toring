@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://db:3306/fittoring
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
