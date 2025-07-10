@@ -1,9 +1,9 @@
 ---
-name: Refactor Template
-about: 기능 리팩터링
-title: "[REFACTOR] "
-labels: refactor
-assignees: jye326
+name: Docs Template
+about: 문서 작성
+title: "[DOCS] "
+labels: docs
+assignees: ''
 
 ---
 
