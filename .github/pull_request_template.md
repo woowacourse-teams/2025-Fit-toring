@@ -15,6 +15,7 @@ closed #이슈넘버
 - [ ] merge할 branch를 확인했나요?
 - [ ] Assignee를 지정했나요?
 - [ ] Label을 지정했나요?
+- [ ] 닫을 이슈 번호를 지정했나요?
 
 
 ## (Optional) Additional Description
