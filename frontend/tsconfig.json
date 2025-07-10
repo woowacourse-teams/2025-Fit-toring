@@ -4,7 +4,9 @@
     "module": "esnext",
     "strict": true,
     "skipLibCheck": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "jsx": "react",
+    "esModuleInterop": true
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist"]
