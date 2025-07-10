@@ -5,9 +5,9 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "esModuleInterop": true
   },
-  "include": ["./**/*.ts"],
+  "include": ["./**/*.tsx", "./**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
