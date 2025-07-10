@@ -1,6 +1,6 @@
 ---
 name: Refactor Template
-about: Describe this issue template's purpose here.
+about: 리팩터링
 title: "[REFACTOR] "
 labels: refactor
 assignees: ''
