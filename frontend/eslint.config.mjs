@@ -1,3 +1,5 @@
+import storybook from 'eslint-plugin-storybook';
+
 import { defineConfig, globalIgnores } from 'eslint/config';
 import { fixupConfigRules } from '@eslint/compat';
 import reactRefresh from 'eslint-plugin-react-refresh';
