@@ -8,7 +8,8 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "styled": "stylelint './src/**/*.tsx' --fix"
   },
   "keywords": [],
   "author": "",
@@ -40,8 +41,12 @@
     "globals": "^16.3.0",
     "html-webpack-plugin": "^5.6.3",
     "jsdom": "^26.1.0",
+    "postcss-styled-syntax": "^0.7.1",
     "prettier": "^3.6.2",
     "storybook": "^9.0.16",
+    "stylelint": "^16.21.1",
+    "stylelint-config-standard": "^38.0.0",
+    "stylelint-order": "^6.0.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.36.0",
     "vitest": "^3.2.4",
