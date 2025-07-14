@@ -55,6 +55,7 @@ export default defineConfig([
 
       eqeqeq: ['error', 'always'],
       'prefer-arrow-callback': 'warn',
+      '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
 ]);
