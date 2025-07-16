@@ -1,10 +1,11 @@
-import { ThemeProvider, Global } from '@emotion/react';
-import { resetCss } from './reset';
-import { THEME } from './theme';
 import React from 'react';
 
-import App from './App';
+import { ThemeProvider, Global } from '@emotion/react';
 import { createRoot } from 'react-dom/client';
+
+import App from './App';
+import { resetCss } from './common/styles/reset';
+import { THEME } from './common/styles/theme';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
