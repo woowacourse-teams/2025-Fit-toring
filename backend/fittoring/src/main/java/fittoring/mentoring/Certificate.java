@@ -1,4 +1,4 @@
-package com.fittoring.fittoring;
+package fittoring.mentoring;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,16 +12,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "offering")
+@Table(name = "certificate")
 @Entity
-public class Offering {
+public class Certificate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String content;
+    private String title;
 
     @ManyToOne
     @JoinColumn(nullable = false)

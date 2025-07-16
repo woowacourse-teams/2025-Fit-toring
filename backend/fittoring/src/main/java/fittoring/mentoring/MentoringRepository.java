@@ -1,8 +1,9 @@
-package com.fittoring.fittoring;
+package fittoring.mentoring;
 
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ImageRepository extends ListCrudRepository<Image, Long> {
+public interface MentoringRepository extends ListCrudRepository<Mentoring, Long> {
+
 }
