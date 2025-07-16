@@ -6,7 +6,9 @@
     "skipLibCheck": true,
     "moduleResolution": "node",
     "jsx": "react-jsx",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "jsxImportSource": "@emotion/react",
+    "typeRoots": ["./src/common/types"]
   },
   "include": ["./**/*.tsx", "./**/*.ts"],
   "exclude": ["node_modules", "dist"]

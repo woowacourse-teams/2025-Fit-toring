@@ -1,14 +1,18 @@
-import { createRoot } from 'react-dom/client';
-import App from './App';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import React from 'react';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-  },
-]);
+import { ThemeProvider, Global } from '@emotion/react';
+import { createRoot } from 'react-dom/client';
+
+import App from './App';
+import { fonts } from './common/styles/fonts';
+import { resetCss } from './common/styles/reset';
+import { THEME } from './common/styles/theme';
 
 createRoot(document.getElementById('root')!).render(
-  <RouterProvider router={router} />,
+  <React.StrictMode>
+    <ThemeProvider theme={THEME}>
+      <Global styles={[resetCss, fonts]} />
+      <App />
+    </ThemeProvider>
+  </React.StrictMode>,
 );
