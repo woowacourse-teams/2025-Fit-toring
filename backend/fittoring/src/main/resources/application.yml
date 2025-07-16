@@ -3,6 +3,9 @@ spring:
     url: jdbc:mysql://db:3306/fittoring
     username: root
     password: 1234
+  sql:
+    init:
+      mode: always
   jpa:
     show-sql: true
     properties:
