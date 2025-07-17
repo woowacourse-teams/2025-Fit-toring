@@ -69,6 +69,12 @@ export const resetCss = css`
     line-height: 1;
   }
 
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
   ol,
   ul {
     list-style: none;
