@@ -10,8 +10,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "reservation")
 @Entity
@@ -35,4 +37,24 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
+
+    public Reservation(String menteeName, String menteePhone, String context, Mentoring mentoring) {
+        this(null, menteeName, menteePhone, context, LocalDateTime.now(), mentoring);
+    }
+
+    public String getMenteeName() {
+        return menteeName;
+    }
+
+    public String getMenteePhone() {
+        return menteePhone;
+    }
+
+    public String getMentorName() {
+        return mentoring.getMentorName();
+    }
+
+    public String getMentorPhone() {
+        return mentoring.getMentorPhone();
+    }
 }

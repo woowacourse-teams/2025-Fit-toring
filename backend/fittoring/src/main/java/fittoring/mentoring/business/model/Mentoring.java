@@ -33,4 +33,12 @@ public class Mentoring {
 
     @Column(nullable = false)
     private String introduction;
+
+    public String getMentorName() {
+        return mentorName;
+    }
+
+    public String getMentorPhone() {
+        return mentorPhone;
+    }
 }
