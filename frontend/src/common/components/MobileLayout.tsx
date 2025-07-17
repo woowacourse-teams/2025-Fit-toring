@@ -21,7 +21,12 @@ const StyledContainer = styled.main`
 `;
 
 const StyledContents = styled.section`
-  min-width: 39rem;
+  width: 48rem;
 
   border: solid black 0.1rem; // Todo: 삭제해야함
+
+  @media screen and (width <= 480px) {
+    width: 100%;
+    border: none;
+  }
 `;
