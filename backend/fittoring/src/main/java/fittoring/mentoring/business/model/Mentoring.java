@@ -7,8 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "mentoring")
 @Entity
@@ -33,6 +35,21 @@ public class Mentoring {
 
     @Column(nullable = false)
     private String introduction;
+
+    public Mentoring(
+            String mentorName,
+            String mentorPhone,
+            int price,
+            Integer career,
+            String content,
+            String introduction
+    ) {
+        this(null, mentorName, mentorPhone, price, career, content, introduction);
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     public String getMentorName() {
         return mentorName;
