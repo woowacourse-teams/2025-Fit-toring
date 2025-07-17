@@ -28,7 +28,6 @@ function Button({
   customStyle = {},
   children,
 }: PropsWithChildren<ComponentProps<'button'> & ButtonProps>) {
-  console.log('Button rendered with variant:', variant, 'and size:', size);
   return (
     <StyledContainer
       customStyle={customStyle}
