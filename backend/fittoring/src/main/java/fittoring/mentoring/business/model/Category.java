@@ -1,4 +1,4 @@
-package com.fittoring.fittoring;
+package fittoring.mentoring.business.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,27 +10,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "mentoring")
+@Table(name = "category")
 @Entity
-public class Mentoring {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String mentorName;
-
     @Column(nullable = false, unique = true)
-    private String mentorPhone;
-
-    @Column(nullable = false)
-    private int price;
-
-    private Integer career;
-
-    private String content;
-
-    @Column(nullable = false)
-    private String introduction;
+    private String title;
 }

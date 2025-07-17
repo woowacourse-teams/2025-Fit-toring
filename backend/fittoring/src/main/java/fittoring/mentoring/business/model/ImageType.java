@@ -1,4 +1,4 @@
-package com.fittoring.fittoring;
+package fittoring.mentoring.business.model;
 
 public enum ImageType {
 
