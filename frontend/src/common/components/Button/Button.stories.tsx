@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@emotion/react';
 import { fn } from 'storybook/test';
 
-import { THEME } from '../styles/theme';
+import { THEME } from '../../styles/theme';
 
 import Button from './Button';
 

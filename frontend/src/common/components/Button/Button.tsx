@@ -3,7 +3,7 @@ import type { ComponentProps, CSSProperties, PropsWithChildren } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import type { myTheme } from '../types/theme';
+import type { myTheme } from '../../types/theme';
 import type { SerializedStyles } from '@emotion/react';
 
 type Variant = 'primary' | 'secondary' | 'disabled';
@@ -28,6 +28,7 @@ function Button({
   customStyle = {},
   children,
 }: PropsWithChildren<ComponentProps<'button'> & ButtonProps>) {
+  console.log('Button rendered with variant:', variant, 'and size:', size);
   return (
     <StyledContainer
       customStyle={customStyle}
