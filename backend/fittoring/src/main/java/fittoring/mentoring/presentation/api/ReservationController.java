@@ -4,6 +4,7 @@ import fittoring.mentoring.business.service.ReservationService;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class ReservationController {
     @PostMapping("/mentorings/{mentoringId}/reservation")
     public ResponseEntity<ReservationCreateResponse> createReservation(
             @PathVariable("mentoringId") Long mentoringId,
-            @RequestBody ReservationCreateRequest requestBody
+            @Valid @RequestBody ReservationCreateRequest requestBody
     ) {
         ReservationCreateDto reservationCreateDto = new ReservationCreateDto(
                 mentoringId,
