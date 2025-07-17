@@ -1,7 +1,9 @@
-package fittoring.mentoring;
+package fittoring.mentoring.business.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,27 +12,21 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "mentoring")
+@Table(name = "image")
 @Entity
-public class Mentoring {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String url;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String mentorName;
-
-    @Column(nullable = false, unique = true)
-    private String mentorPhone;
-
-    @Column(nullable = false)
-    private int price;
-
-    private Integer career;
-
-    private String content;
+    private ImageType relationType;
 
     @Column(nullable = false)
-    private String introduction;
+    private Long relationId;
 }

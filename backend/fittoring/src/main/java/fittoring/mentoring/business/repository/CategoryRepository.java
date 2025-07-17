@@ -1,5 +1,6 @@
-package fittoring.mentoring;
+package fittoring.mentoring.business.repository;
 
+import fittoring.mentoring.business.model.Category;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
