@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import MobileLayout from './common/components/MobileLayout';
+import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import Home from './domain/mentoring/pages/Home';
 
 const router = createBrowserRouter([{ path: '/', element: <Home /> }]);
