@@ -1,11 +1,25 @@
-import MobileLayout from '../../../common/components/MobileLayout';
+import styled from '@emotion/styled';
 
-function Home(props) {
+import Footer from '../../../common/components/Footer';
+
+function Home() {
   return (
-    <MobileLayout>
-      <div>진짜 홈페이지</div>
-    </MobileLayout>
+    <StyledContainer>
+      <StyledSection>section</StyledSection>
+      <Footer>문의: fitoring7@gmail.com</Footer>
+    </StyledContainer>
   );
 }
 
 export default Home;
+
+const StyledContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+`;
+
+const StyledSection = styled.div`
+  flex-grow: 1;
+`;
