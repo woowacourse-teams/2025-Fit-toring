@@ -8,6 +8,7 @@ import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -16,6 +17,7 @@ public class ReservationService {
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
 
+    @Transactional
     public ReservationCreateResponse createReservation(ReservationCreateDto dto) {
         Mentoring mentoring = mentoringRepository.findById(dto.mentoringId())
                 // TODO: custom exception 필요
