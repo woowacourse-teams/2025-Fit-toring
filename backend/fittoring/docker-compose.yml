@@ -12,13 +12,12 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: springboot-container
-    depends_on:
-      - db
+  db-test:
+    image: mysql:8.0
+    container_name: mysql-test-container
+    environment:
+      MYSQL_DATABASE: fittoring-test
+      MYSQL_ROOT_PASSWORD: 1234
     ports:
       - "8080:8080"
     environment:
