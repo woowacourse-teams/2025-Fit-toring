@@ -38,6 +38,9 @@ export const THEME = {
     REGULAR: '#E2E8F0',
     BLACK: '#111111',
   },
+  BORDER: {
+    GRAY300: '#CAD5E2',
+  },
 
   BG: {
     LIGHT: '#F8FAFC',
