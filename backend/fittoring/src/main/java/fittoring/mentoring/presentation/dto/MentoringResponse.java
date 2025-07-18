@@ -25,6 +25,7 @@ public record MentoringResponse(
                 mentoring.getIntroduction()
         );
     }
+
     public static MentoringResponse from(Mentoring mentoring, List<String> categoriesByMentoring, Image image) {
         return new MentoringResponse(
                 mentoring.getId(),

@@ -1,6 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.model.CategoryMentoring;
+import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
@@ -44,14 +45,14 @@ public class MentoringService {
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-                && categoryTitle2 == null
-                && categoryTitle3 == null;
+               && categoryTitle2 == null
+               && categoryTitle3 == null;
     }
 
     private List<MentoringResponse> getMentoringResponses(List<Mentoring> mentorings) {
         List<MentoringResponse> mentoringResponses = new ArrayList<>();
         for (Mentoring mentoring : mentorings) {
-            List<String> categoryTitles = getCategoryTitlesByMentoring(mentoring);
+            List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
 
             imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING, mentoring.getId())
                     .ifPresentOrElse(
@@ -74,9 +75,8 @@ public class MentoringService {
         }
     }
 
-    private List<String> getCategoryTitlesByMentoring(Mentoring mentoring) {
-        List<CategoryMentoring> categoriesByMentoring = categoryMentoringRepository.findAllByMentoringId(
-                mentoring.getId());
+    private List<String> getCategoryTitlesByMentoringId(Long id) {
+        List<CategoryMentoring> categoriesByMentoring = categoryMentoringRepository.findAllByMentoringId(id);
         return getCategoryTitlesByMentoring(categoriesByMentoring);
     }
 
@@ -86,5 +86,18 @@ public class MentoringService {
             categoryTitles.add(categoryMentoring.getCategoryTitle());
         }
         return categoryTitles;
+    }
+
+    public MentoringResponse getMentoring(final Long id) {
+        Mentoring mentoring = mentoringRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 멘토링을 찾을 수 없습니다. ID : " + id));
+        List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
+        Image image = imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING, mentoring.getId())
+                .orElse(null);
+
+        if (image == null) {
+            return MentoringResponse.from(mentoring, categoryTitles);
+        }
+        return MentoringResponse.from(mentoring, categoryTitles, image);
     }
 }
