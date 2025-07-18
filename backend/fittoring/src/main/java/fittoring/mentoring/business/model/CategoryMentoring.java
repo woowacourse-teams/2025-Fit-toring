@@ -26,4 +26,13 @@ public class CategoryMentoring {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Category category;
+
+    public String getCategoryTitle() {
+       return category.getTitle();
+    }
+
+    public CategoryMentoring(Mentoring mentoring, Category category) {
+        this.mentoring = mentoring;
+        this.category = category;
+    }
 }

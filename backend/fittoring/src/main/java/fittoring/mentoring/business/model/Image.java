@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,10 +17,12 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Image {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @Column(columnDefinition = "TEXT", nullable = false)
     private String url;
 
@@ -29,4 +32,10 @@ public class Image {
 
     @Column(nullable = false)
     private Long relationId;
+
+    public Image(String url, ImageType imageType, Long relationId) {
+        this.url = url;
+        this.imageType = imageType;
+        this.relationId = relationId;
+    }
 }
