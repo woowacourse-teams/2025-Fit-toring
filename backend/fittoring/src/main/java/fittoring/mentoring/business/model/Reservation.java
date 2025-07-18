@@ -30,7 +30,7 @@ public class Reservation {
     @Column(nullable = false)
     private String menteeName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String menteePhone;
 
     private String context;
