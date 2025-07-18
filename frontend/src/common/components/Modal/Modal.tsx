@@ -2,6 +2,8 @@ import type { PropsWithChildren } from 'react';
 
 import styled from '@emotion/styled';
 
+import useEscapeKeyDown from '../../hooks/useEscapeKeyDown';
+
 interface ModalProps {
   opened: boolean;
   onCloseClick: () => void;
@@ -17,6 +19,8 @@ function Modal({
       onCloseClick();
     }
   };
+
+  useEscapeKeyDown(onCloseClick, opened);
 
   return (
     opened && (
