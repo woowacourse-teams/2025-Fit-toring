@@ -9,7 +9,6 @@ import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -31,7 +31,7 @@ class MentoringServiceTest {
     private MentoringService mentoringService;
 
     @Autowired
-    private EntityManager em;
+    private TestEntityManager em;
 
     @DisplayName("멘토링 조회")
     @Nested
@@ -239,5 +239,55 @@ class MentoringServiceTest {
                     categoryTitle3)
             ).isEmpty();
         }
+    }
+
+    @DisplayName("멘토링 id로 멘토링을 조회한다.")
+    @Test
+    void getMentoring() {
+        //given
+        Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+        em.persist(mentoring1);
+
+        Category category1 = new Category("카테고리1");
+        em.persist(category1);
+
+        CategoryMentoring categoryMentoring1 = new CategoryMentoring(mentoring1, category1);
+        em.persist(categoryMentoring1);
+
+        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+        em.persist(image1);
+
+        //when
+        MentoringResponse response = mentoringService.getMentoring(mentoring1.getId());
+
+        //then
+        MentoringResponse expectedResponse = MentoringResponse.from(mentoring1, List.of(category1.getTitle()), image1);
+
+        assertThat(response).isEqualTo(expectedResponse);
+    }
+
+    @DisplayName("존재하지 않는 멘토링 id로 멘토링을 조회하는 경우 예외가 발생한다.")
+    @Test
+    void nonIdGetMentoring() {
+        //given
+        Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+        em.persist(mentoring1);
+
+        Category category1 = new Category("카테고리1");
+        em.persist(category1);
+
+        CategoryMentoring categoryMentoring1 = new CategoryMentoring(mentoring1, category1);
+        em.persist(categoryMentoring1);
+
+        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+        em.persist(image1);
+
+        Long invalidId = 100L;
+
+        //when
+        //then
+        assertThatThrownBy(() -> mentoringService.getMentoring(invalidId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("해당하는 멘토링을 찾을 수 없습니다. ID : ");
     }
 }
