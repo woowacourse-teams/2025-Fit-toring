@@ -5,7 +5,6 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.util.DbCleaner;
-import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -28,7 +28,7 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Autowired
-    private EntityManager entityManager;
+    private TestEntityManager entityManager;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -56,7 +56,6 @@ class ReservationServiceTest {
                 "한 줄 소개"
         );
         entityManager.persist(mentoring);
-        entityManager.flush();
         ReservationCreateDto dto = new ReservationCreateDto(
                 mentoring.getId(),
                 menteeName,
