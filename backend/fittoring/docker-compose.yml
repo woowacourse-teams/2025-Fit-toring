@@ -12,6 +12,15 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
+  db-test:
+    image: mysql:8.0
+    container_name: mysql-test-container
+    environment:
+      MYSQL_DATABASE: fittoring-test
+      MYSQL_ROOT_PASSWORD: 1234
+    ports:
+      - "13307:3306"
+
   app:
     build:
       context: .
