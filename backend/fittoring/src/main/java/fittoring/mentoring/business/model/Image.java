@@ -25,7 +25,7 @@ public class Image {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ImageType relationType;
+    private ImageType imageType;
 
     @Column(nullable = false)
     private Long relationId;
