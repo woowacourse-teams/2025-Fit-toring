@@ -1,5 +1,6 @@
 package fittoring.mentoring.presentation.api;
 
+import fittoring.mentoring.business.service.MentoringReservationService;
 import fittoring.mentoring.business.service.ReservationService;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ReservationController {
 
+    private final MentoringReservationService mentoringReservationService;
     private final ReservationService reservationService;
 
     @PostMapping("/mentorings/{mentoringId}/reservation")
@@ -32,7 +34,7 @@ public class ReservationController {
                 requestBody.menteePhone(),
                 requestBody.content()
         );
-        ReservationCreateResponse responseBody = reservationService.createReservation(reservationCreateDto);
+        ReservationCreateResponse responseBody = mentoringReservationService.reserveMentoring(reservationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseBody);
     }
