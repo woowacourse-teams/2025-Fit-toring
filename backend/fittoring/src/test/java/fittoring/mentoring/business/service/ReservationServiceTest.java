@@ -6,6 +6,7 @@ import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -74,5 +75,24 @@ class ReservationServiceTest {
                     softAssertions.assertThat(reservationResponse.mentorPhone()).isEqualTo(mentorPhone);
                 }
         );
+    }
+
+    @DisplayName("존재하지 않는 멘토링이라면 예외가 발생한다.")
+    @Test
+    void createReservationFail() {
+        // given
+        long mentoringId = 1L;
+        ReservationCreateDto dto = new ReservationCreateDto(
+                mentoringId,
+                "mentee",
+                "010-1234-5678",
+                "운동을 배우고 싶어요."
+        );
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> reservationService.createReservation(dto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 멘토링 ID 입니다:" + mentoringId);
     }
 }
