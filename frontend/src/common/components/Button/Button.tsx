@@ -1,4 +1,4 @@
-import type { ComponentProps, CSSProperties, PropsWithChildren } from 'react';
+import type { ComponentProps, PropsWithChildren } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -18,14 +18,14 @@ interface StyleVariant {
 interface ButtonProps {
   variant?: Variant;
   size?: Size;
-  customStyle?: CSSProperties;
+  customStyle?: SerializedStyles;
 }
 
 function Button({
   onClick,
   variant = 'primary',
   size = 'fit',
-  customStyle = {},
+  customStyle,
   children,
 }: PropsWithChildren<ComponentProps<'button'> & ButtonProps>) {
   return (
@@ -52,7 +52,7 @@ const StyledContainer = styled.button<ButtonProps>`
   font-size: 1.6rem;
 
   ${({ variant, theme }) => variant && styleVariant[variant](theme)};
-  ${({ customStyle }) => ({ ...customStyle })};
+  ${({ customStyle }) => customStyle};
 `;
 
 const styleVariant: StyleVariant = {
