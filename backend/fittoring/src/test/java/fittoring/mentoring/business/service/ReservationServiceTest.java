@@ -4,8 +4,10 @@ import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
+import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({ReservationService.class, JpaConfiguration.class})
+@Import({DbCleaner.class, ReservationService.class, JpaConfiguration.class})
 @DataJpaTest
 class ReservationServiceTest {
 
@@ -26,6 +28,14 @@ class ReservationServiceTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private DbCleaner dbCleaner;
+
+    @BeforeEach
+    void setUp() {
+        dbCleaner.clean();
+    }
 
     @DisplayName("예약 생성이 성공하면 예약 정보를 반환한다.")
     @Test
