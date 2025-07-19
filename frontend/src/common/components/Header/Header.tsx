@@ -13,7 +13,7 @@ const StyledContainer = styled.header`
   width: 48rem;
   height: 5.7rem;
   border-bottom: 1px solid ${({ theme }) => theme.LINE.REGULAR};
-  background: ${({ theme }) => theme.BG.LIGHT + 'CC'};
+  background: rgb(${({ theme }) => theme.BG.LIGHT} / 80%);
   box-shadow:
     0 1px 3px 0 rgb(0 0 0 / 10%),
     0 1px 2px -1px rgb(0 0 0 / 10%);
