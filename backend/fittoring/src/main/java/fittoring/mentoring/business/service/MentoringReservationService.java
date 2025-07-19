@@ -14,9 +14,10 @@ public class MentoringReservationService {
     private final ReservationService reservationService;
     private final SmsRestClientService smsRestClientService;
 
-    public ReservationCreateResponse reserveMentoring(ReservationCreateDto dto) throws NoSuchAlgorithmException, InvalidKeyException {
+    public ReservationCreateResponse reserveMentoring(ReservationCreateDto dto)
+            throws NoSuchAlgorithmException, InvalidKeyException {
         ReservationCreateResponse response = reservationService.createReservation(dto);
-        smsRestClientService.sendSms(dto.menteePhone(), dto.content());
+        smsRestClientService.sendSms(response.mentorPhone(), dto.content());
         return response;
     }
 }
