@@ -6,19 +6,19 @@ import Header from '../../../common/components/Header/Header';
 function DetailHeader() {
   return (
     <Header>
-      <StyledHeaderInner>
+      <StyledHeaderWrapper>
         <StyledBackButton>
-          <StyledImg src={backButton}></StyledImg>
+          <StyledImg src={backButton} alt="뒤로가기 버튼"></StyledImg>
         </StyledBackButton>
-        <Title>예약 신청</Title>
-      </StyledHeaderInner>
+        <StyledTitle>상세 정보</StyledTitle>
+      </StyledHeaderWrapper>
     </Header>
   );
 }
 
 export default DetailHeader;
 
-const StyledHeaderInner = styled.div`
+const StyledHeaderWrapper = styled.div`
   display: flex;
   position: relative;
   height: 100%;
@@ -40,7 +40,7 @@ const StyledImg = styled.img`
   height: 5.7rem;
 `;
 
-const Title = styled.h3`
+const StyledTitle = styled.h3`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
   color: ${({ theme }) => theme.FONT.B01};
 `;
