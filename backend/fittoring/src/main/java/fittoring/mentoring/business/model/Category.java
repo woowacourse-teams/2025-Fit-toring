@@ -23,4 +23,8 @@ public class Category {
     @Getter
     @Column(nullable = false, unique = true)
     private String title;
+
+    public Category(String title) {
+        this.title = title;
+    }
 }
