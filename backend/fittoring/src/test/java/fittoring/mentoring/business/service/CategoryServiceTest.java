@@ -39,17 +39,17 @@ class CategoryServiceTest {
     @Test
     void getAllCategories() {
         // given
-        testEntityManager.persist(new Category("체형교정"));
-        testEntityManager.persist(new Category("근육증가"));
-        testEntityManager.persist(new Category("다이어트"));
+        Category category1 = testEntityManager.persist(new Category("체형교정"));
+        Category category2 = testEntityManager.persist(new Category("근육증가"));
+        Category category3 = testEntityManager.persist(new Category("다이어트"));
 
         // when
         // then
         Assertions.assertThat(categoryService.getAllCategories())
             .containsExactlyInAnyOrder(
-                new CategoryGetResponse(1L, "체형교정"),
-                new CategoryGetResponse(2L, "근육증가"),
-                new CategoryGetResponse(3L, "다이어트")
+                new CategoryGetResponse(category1.getId(), category1.getTitle()),
+                new CategoryGetResponse(category2.getId(), category2.getTitle()),
+                new CategoryGetResponse(category3.getId(), category3.getTitle())
             );
     }
 }
