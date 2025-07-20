@@ -1,7 +1,6 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.MentoringReservationService;
-import fittoring.mentoring.business.service.ReservationService;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
@@ -21,18 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationController {
 
     private final MentoringReservationService mentoringReservationService;
-    private final ReservationService reservationService;
 
     @PostMapping("/mentorings/{mentoringId}/reservation")
     public ResponseEntity<ReservationCreateResponse> createReservation(
             @PathVariable("mentoringId") Long mentoringId,
             @Valid @RequestBody ReservationCreateRequest requestBody
     ) throws NoSuchAlgorithmException, InvalidKeyException {
-        ReservationCreateDto reservationCreateDto = new ReservationCreateDto(
+        ReservationCreateDto reservationCreateDto = ReservationCreateDto.of(
                 mentoringId,
-                requestBody.menteeName(),
-                requestBody.menteePhone(),
-                requestBody.content()
+                requestBody
         );
         ReservationCreateResponse responseBody = mentoringReservationService.reserveMentoring(reservationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
