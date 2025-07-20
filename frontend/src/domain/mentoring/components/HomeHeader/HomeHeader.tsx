@@ -12,6 +12,7 @@ function HomeHeader() {
           <StyledLogoLink to="/">
             <StyledImg src={logo} alt="홈으로 돌아가기" />
           </StyledLogoLink>
+          <StyledTitle>핏토링</StyledTitle>
         </StyledHeaderWrapper>
       </Header>
     </StyledContainer>
@@ -29,6 +30,7 @@ const StyledHeaderWrapper = styled.div`
   height: 100%;
   padding: 1.4rem 1.1rem;
   align-items: center;
+  gap: 1.05rem;
 `;
 
 const StyledLogoLink = styled(Link)`
@@ -47,4 +49,9 @@ const StyledLogoLink = styled(Link)`
 const StyledImg = styled.img`
   width: 3.5rem;
   aspect-ratio: 1 / 1;
+`;
+
+const StyledTitle = styled.h3`
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
+  color: ${({ theme }) => theme.SYSTEM.MAIN800};
 `;
