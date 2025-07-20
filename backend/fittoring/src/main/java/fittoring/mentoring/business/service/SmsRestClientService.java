@@ -14,14 +14,14 @@ import org.springframework.web.client.RestClient;
 @Service
 public class SmsRestClientService {
 
-    public static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
-    public static final String SEND_MESSAGE_ENDPOINT = "/messages/v4/send-many/detail";
+    private static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
+    private static final String SEND_MESSAGE_ENDPOINT = "/messages/v4/send-many/detail";
 
     private final RestClient smsRestClient;
     private final SmsAuthHeaderGenerator authHeaderGenerator;
 
     @Value("${SMS_FROM_PHONE}")
-    public String fromPhone;
+    private String fromPhone;
 
     public void sendSms(String to, String text) throws NoSuchAlgorithmException, InvalidKeyException {
         String body = smsRestClient.post()
