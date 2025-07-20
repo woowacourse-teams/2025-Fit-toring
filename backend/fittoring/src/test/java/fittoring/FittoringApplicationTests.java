@@ -14,5 +14,4 @@ class FittoringApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
