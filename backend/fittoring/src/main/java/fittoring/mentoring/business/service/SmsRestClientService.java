@@ -35,6 +35,5 @@ public class SmsRestClientService {
                 ))))
                 .retrieve()
                 .body(String.class);
-        System.out.println("client: " + body);
     }
 }
