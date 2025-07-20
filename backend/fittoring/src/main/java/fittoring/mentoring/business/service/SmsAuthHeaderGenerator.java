@@ -58,7 +58,7 @@ public class SmsAuthHeaderGenerator {
             byte[] rawHmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             return convertHex(rawHmac);
         } catch (NoSuchAlgorithmException | InvalidKeyException exception) {
-            throw new IllegalArgumentException("HMAC 서명 생성 실패", exception);
+            throw new IllegalArgumentException("HMAC 서명 생성을 실패했습니다.", exception);
         }
     }
 
