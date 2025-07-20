@@ -4,14 +4,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@RequiredArgsConstructor
 class SmsAuthHeaderGeneratorTest {
 
-    private final SmsAuthHeaderGenerator generator;
+    private final SmsAuthHeaderGenerator generator = new SmsAuthHeaderGenerator();
 
     @DisplayName("시그니처를 올바르게 생성한다.")
     @Test
@@ -29,4 +28,25 @@ class SmsAuthHeaderGeneratorTest {
         assertThat(signature).isEqualTo(expected);
     }
 
+    @DisplayName("헤더를 올바르게 생성한다.")
+    @Test
+    void createAuthHeader() throws NoSuchAlgorithmException, InvalidKeyException {
+        // given
+        generator.authenticationMethod = "HMAC-SHA256";
+        generator.authenticationMethodForHash = "HmacSHA256";
+        generator.apiKey = "TEST_API_KEY";
+        generator.apiSecret = "TEST_SECRET_KEY";
+
+        // when
+        String header = generator.createAuthorization();
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+                    softAssertions.assertThat(header).startsWith("HMAC-SHA256 apiKey=");
+                    softAssertions.assertThat(header).contains("date=");
+                    softAssertions.assertThat(header).contains("salt=");
+                    softAssertions.assertThat(header).contains("signature=");
+                }
+        );
+    }
 }
