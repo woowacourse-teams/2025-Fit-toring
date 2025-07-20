@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:file:.env
+    import: optional:file:.env[.properties]
   datasource:
     url: jdbc:mysql://${TEST_DATABASE_HOST}:${TEST_DATABASE_PORT}/${TEST_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${TEST_DATABASE_USER}
