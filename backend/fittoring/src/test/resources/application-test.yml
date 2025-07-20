@@ -16,3 +16,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+sms:
+  base-url: http://localhost:8089
+  timeout:
+    connect: 1
+    read: 1
