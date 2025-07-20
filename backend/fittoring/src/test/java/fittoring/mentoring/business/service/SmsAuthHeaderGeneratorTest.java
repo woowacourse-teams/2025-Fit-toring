@@ -21,15 +21,13 @@ class SmsAuthHeaderGeneratorTest {
     @Test
     void createSignature() throws NoSuchAlgorithmException, InvalidKeyException {
         // given
-        String algorithm = "HmacSHA256";
-        String secretKey = "TEST_SECRET";
         String data = "2025-07-21T12:00:00Z123e4567-e89b-12d3-a456-426614174000";
 
         // when
-        String signature = generator.createSignature(algorithm, secretKey, data);
+        String signature = generator.createSignature(data);
 
         // then
-        String expected = "8ada524b84ab824b9e1e26bec8394d63bfc99a204dfebe9e0444425dc809c875";
+        String expected = "f0194e794feb4fa884330b6a5802b69cdefe42d739fa9d6058a008daff0424bf";
         assertThat(signature).isEqualTo(expected);
     }
 

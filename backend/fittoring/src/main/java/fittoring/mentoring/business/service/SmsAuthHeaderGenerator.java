@@ -35,7 +35,7 @@ public class SmsAuthHeaderGenerator {
         String now = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
         String salt = UUID.randomUUID().toString();
         String data = now + salt;
-        String signature = createSignature(authenticationMethodForHash, apiSecret, data);
+        String signature = createSignature(data);
 
         return String.format(
                 "%s apiKey=%s, date=%s, salt=%s, signature=%s",
@@ -47,13 +47,13 @@ public class SmsAuthHeaderGenerator {
         );
     }
 
-    public String createSignature(String authenticationMethod, String apiSecretKey, String data)
+    String createSignature(String data)
             throws NoSuchAlgorithmException, InvalidKeyException {
         SecretKeySpec secretKey = new SecretKeySpec(
-                apiSecretKey.getBytes(StandardCharsets.UTF_8),
-                authenticationMethod
+                apiSecret.getBytes(StandardCharsets.UTF_8),
+                authenticationMethodForHash
         );
-        Mac mac = Mac.getInstance(authenticationMethod);
+        Mac mac = Mac.getInstance(authenticationMethodForHash);
         mac.init(secretKey);
         byte[] rawHmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
         return convertHex(rawHmac);
