@@ -1,8 +1,6 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.service.dto.SmsSendClientDto;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ public class SmsRestClientService {
     private final RestClient smsRestClient;
     private final SmsAuthHeaderGenerator authHeaderGenerator;
 
-    @Value("${SMS_FROM_PHONE}")
+    @Value("${COOL_SMS_FROM_PHONE}")
     private String fromPhone;
 
     public void sendSms(String to, String text) {
