@@ -1,7 +1,9 @@
-package fittoring.mentoring.business.service;
+package fittoring.integration.mentoring;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import fittoring.mentoring.business.service.SmsAuthHeaderGenerator;
+import fittoring.mentoring.business.service.SmsRestClientService;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
@@ -22,8 +25,8 @@ import org.springframework.web.client.RestClientException;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@SpringBootTest
-class SmsRestClientServiceIntegrationTest {
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+class SmsRestClientIntegrationTest {
 
     private static MockWebServer mockWebServer;
 
