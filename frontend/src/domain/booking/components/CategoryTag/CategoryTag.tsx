@@ -15,6 +15,7 @@ function CategoryTag({ tagName }: CategoryTagItemProps) {
 export default CategoryTag;
 
 const StyledContainer = styled.div`
+  width: fit-content;
   border-radius: 0.675rem;
   border: ${({ theme }) => theme.SYSTEM.MAIN300} 0.1rem solid;
   padding: 0.4rem 0.8rem;
