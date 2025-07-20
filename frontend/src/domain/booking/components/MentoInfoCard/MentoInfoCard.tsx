@@ -58,6 +58,7 @@ const StyledMentoProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
+  align-items: center;
 `;
 
 const StyledMetoNameText = styled.span`
