@@ -61,8 +61,8 @@ public class SmsAuthHeaderGenerator {
 
     private String convertHex(byte[] rawHmac) {
         StringBuilder sb = new StringBuilder(rawHmac.length * 2);
-        for (byte b : rawHmac) {
-            sb.append(String.format("%02x", b));
+        for (byte byteData : rawHmac) {
+            sb.append(String.format("%02x", byteData));
         }
         return sb.toString();
     }
