@@ -20,11 +20,13 @@ import org.springframework.web.client.RestClient;
 @Service
 public class SmsRestClientService {
 
-    public static final String FROM_PHONE = "010-4736-7769";
     public static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
     public static final String SEND_MESSAGE_ENDPOINT = "/messages/v4/send-many/detail";
 
     private final RestClient smsRestClient;
+
+    @Value("${SMS_FROM_PHONE}")
+    public String fromPhone;
 
     @Value("${COOL_SMS_HMAC_HEADER}")
     private String authenticationMethod;
@@ -44,7 +46,7 @@ public class SmsRestClientService {
                 .header("Authorization", createAuthorization())
                 .body(Map.of("messages", List.of(new SmsSendClientDto(
                         to,
-                        FROM_PHONE,
+                        fromPhone,
                         text,
                         RESERVATION_SUBJECT
                 ))))
