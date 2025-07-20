@@ -6,17 +6,23 @@ import Header from '../../../../common/components/Header/Header';
 
 function HomeHeader() {
   return (
-    <Header>
-      <StyledHeaderWrapper>
-        <StyledLogoLink to="/">
-          <StyledImg src={logo} alt="홈으로 돌아가기" />
-        </StyledLogoLink>
-      </StyledHeaderWrapper>
-    </Header>
+    <StyledContainer>
+      <Header>
+        <StyledHeaderWrapper>
+          <StyledLogoLink to="/">
+            <StyledImg src={logo} alt="홈으로 돌아가기" />
+          </StyledLogoLink>
+        </StyledHeaderWrapper>
+      </Header>
+    </StyledContainer>
   );
 }
 
 export default HomeHeader;
+
+const StyledContainer = styled.div`
+  margin-bottom: 5.7rem;
+`;
 
 const StyledHeaderWrapper = styled.div`
   display: flex;
