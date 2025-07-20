@@ -10,7 +10,12 @@ import org.junit.jupiter.api.Test;
 
 class SmsAuthHeaderGeneratorTest {
 
-    private final SmsAuthHeaderGenerator generator = new SmsAuthHeaderGenerator();
+    private final SmsAuthHeaderGenerator generator = new SmsAuthHeaderGenerator(
+            "HMAC-SHA256",
+            "HmacSHA256",
+            "TEST_API_KEY",
+            "TEST_SECRET_KEY"
+    );
 
     @DisplayName("시그니처를 올바르게 생성한다.")
     @Test
@@ -32,11 +37,6 @@ class SmsAuthHeaderGeneratorTest {
     @Test
     void createAuthHeader() throws NoSuchAlgorithmException, InvalidKeyException {
         // given
-        generator.authenticationMethod = "HMAC-SHA256";
-        generator.authenticationMethodForHash = "HmacSHA256";
-        generator.apiKey = "TEST_API_KEY";
-        generator.apiSecret = "TEST_SECRET_KEY";
-
         // when
         String header = generator.createAuthorization();
 

@@ -14,17 +14,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class SmsAuthHeaderGenerator {
 
-    @Value("${COOL_SMS_HMAC_HEADER}")
-    protected String authenticationMethod;
+    private final String authenticationMethod;
+    private final String authenticationMethodForHash;
+    private final String apiKey;
+    private final String apiSecret;
 
-    @Value("${COOL_SMS_HMAC_HASH}")
-    protected String authenticationMethodForHash;
-
-    @Value("${COOL_SMS_API_KEY}")
-    protected String apiKey;
-
-    @Value("${COOL_SMS_SECRET_KEY}")
-    protected String apiSecret;
+    public SmsAuthHeaderGenerator(
+            @Value("${COOL_SMS_HMAC_HEADER}") String authenticationMethod,
+            @Value("${COOL_SMS_HMAC_HASH}") String authenticationMethodForHash,
+            @Value("${COOL_SMS_API_KEY}") String apiKey,
+            @Value("${COOL_SMS_SECRET_KEY}") String apiSecret
+    ) {
+        this.authenticationMethod = authenticationMethod;
+        this.authenticationMethodForHash = authenticationMethodForHash;
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
+    }
 
     public String createAuthorization() throws NoSuchAlgorithmException, InvalidKeyException {
         String now = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
