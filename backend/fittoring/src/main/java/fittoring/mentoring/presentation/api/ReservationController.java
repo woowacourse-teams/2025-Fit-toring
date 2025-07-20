@@ -5,8 +5,6 @@ import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import jakarta.validation.Valid;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +23,7 @@ public class ReservationController {
     public ResponseEntity<ReservationCreateResponse> createReservation(
             @PathVariable("mentoringId") Long mentoringId,
             @Valid @RequestBody ReservationCreateRequest requestBody
-    ) throws NoSuchAlgorithmException, InvalidKeyException {
+    ) {
         ReservationCreateDto reservationCreateDto = ReservationCreateDto.of(
                 mentoringId,
                 requestBody

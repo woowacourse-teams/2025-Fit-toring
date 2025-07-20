@@ -3,8 +3,6 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.business.service.dto.SmsReservationMessageDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +13,7 @@ public class MentoringReservationService {
     private final ReservationService reservationService;
     private final SmsRestClientService smsRestClientService;
 
-    public ReservationCreateResponse reserveMentoring(ReservationCreateDto dto)
-            throws NoSuchAlgorithmException, InvalidKeyException {
+    public ReservationCreateResponse reserveMentoring(ReservationCreateDto dto) {
         ReservationCreateResponse response = reservationService.createReservation(dto);
         String smsMessage = reservationService.createSmsReservationMessage(new SmsReservationMessageDto(
                 dto.menteeName(),

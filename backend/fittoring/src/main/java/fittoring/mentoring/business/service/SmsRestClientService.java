@@ -23,8 +23,8 @@ public class SmsRestClientService {
     @Value("${SMS_FROM_PHONE}")
     private String fromPhone;
 
-    public void sendSms(String to, String text) throws NoSuchAlgorithmException, InvalidKeyException {
-        String body = smsRestClient.post()
+    public void sendSms(String to, String text) {
+        smsRestClient.post()
                 .uri(SEND_MESSAGE_ENDPOINT)
                 .header("Authorization", authHeaderGenerator.createAuthorization())
                 .body(Map.of("messages", List.of(new SmsSendClientDto(

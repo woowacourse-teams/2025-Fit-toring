@@ -31,7 +31,7 @@ public class SmsAuthHeaderGenerator {
         this.apiSecret = apiSecret;
     }
 
-    public String createAuthorization() throws NoSuchAlgorithmException, InvalidKeyException {
+    public String createAuthorization() {
         String now = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
         String salt = UUID.randomUUID().toString();
         String data = now + salt;
@@ -47,16 +47,19 @@ public class SmsAuthHeaderGenerator {
         );
     }
 
-    String createSignature(String data)
-            throws NoSuchAlgorithmException, InvalidKeyException {
-        SecretKeySpec secretKey = new SecretKeySpec(
-                apiSecret.getBytes(StandardCharsets.UTF_8),
-                authenticationMethodForHash
-        );
-        Mac mac = Mac.getInstance(authenticationMethodForHash);
-        mac.init(secretKey);
-        byte[] rawHmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-        return convertHex(rawHmac);
+    String createSignature(String data) {
+        try {
+            SecretKeySpec secretKey = new SecretKeySpec(
+                    apiSecret.getBytes(StandardCharsets.UTF_8),
+                    authenticationMethodForHash
+            );
+            Mac mac = Mac.getInstance(authenticationMethodForHash);
+            mac.init(secretKey);
+            byte[] rawHmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            return convertHex(rawHmac);
+        } catch (NoSuchAlgorithmException | InvalidKeyException exception) {
+            throw new IllegalArgumentException("HMAC 서명 생성 실패", exception);
+        }
     }
 
     private String convertHex(byte[] rawHmac) {
