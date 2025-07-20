@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 
 import logo from '../../../../common/assets/imgs/logo.svg';
 import Header from '../../../../common/components/Header/Header';
+import { PAGE_URL } from '../../constants/url';
 
 function HomeHeader() {
   return (
     <StyledContainer>
       <Header>
         <StyledHeaderWrapper>
-          <StyledLogoLink to="/">
+          <StyledLogoLink to={PAGE_URL.HOME}>
             <StyledImg src={logo} alt="홈으로 돌아가기" />
           </StyledLogoLink>
           <StyledTitle>핏토링</StyledTitle>
