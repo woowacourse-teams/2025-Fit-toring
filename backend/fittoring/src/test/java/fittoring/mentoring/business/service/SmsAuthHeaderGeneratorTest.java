@@ -2,8 +2,6 @@ package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,7 @@ class SmsAuthHeaderGeneratorTest {
 
     @DisplayName("시그니처를 올바르게 생성한다.")
     @Test
-    void createSignature() throws NoSuchAlgorithmException, InvalidKeyException {
+    void createSignature() {
         // given
         String data = "2025-07-21T12:00:00Z123e4567-e89b-12d3-a456-426614174000";
 
@@ -33,7 +31,7 @@ class SmsAuthHeaderGeneratorTest {
 
     @DisplayName("헤더를 올바르게 생성한다.")
     @Test
-    void createAuthHeader() throws NoSuchAlgorithmException, InvalidKeyException {
+    void createAuthHeader() {
         // given
         // when
         String header = generator.createAuthorization();
