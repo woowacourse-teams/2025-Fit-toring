@@ -11,6 +11,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -75,22 +76,22 @@ public class MentoringService {
         }
     }
 
-    private List<String> getCategoryTitlesByMentoringId(Long id) {
-        List<CategoryMentoring> categoriesByMentoring = categoryMentoringRepository.findAllByMentoringId(id);
-        return getCategoryTitlesByMentoring(categoriesByMentoring);
+    private List<String> getCategoryTitlesByMentoringId(Long mentoringId) {
+        List<CategoryMentoring> categoryMappingsByMentoring = categoryMentoringRepository.findAllByMentoringId(
+                mentoringId);
+        return getCategoryTitlesByMentoring(categoryMappingsByMentoring);
     }
 
-    private List<String> getCategoryTitlesByMentoring(List<CategoryMentoring> categoriesByMentoring) {
-        List<String> categoryTitles = new ArrayList<>();
-        for (CategoryMentoring categoryMentoring : categoriesByMentoring) {
-            categoryTitles.add(categoryMentoring.getCategoryTitle());
-        }
-        return categoryTitles;
+    private List<String> getCategoryTitlesByMentoring(List<CategoryMentoring> categoryMappingsByMentoring) {
+        return categoryMappingsByMentoring.stream()
+                .map(CategoryMentoring::getCategoryTitle)
+                .collect(Collectors.toList());
     }
 
     public MentoringResponse getMentoring(final Long id) {
         Mentoring mentoring = mentoringRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 멘토링을 찾을 수 없습니다. ID : " + id));
+
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
         Image image = imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING, mentoring.getId())
                 .orElse(null);
