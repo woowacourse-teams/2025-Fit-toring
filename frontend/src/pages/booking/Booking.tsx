@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 
-import MentoInfoCard from '../components/MentorInfoCard/MentorInfoCard';
+import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 
-function MentoringBooking() {
+function Booking() {
   return (
     <StyledContainer>
       <MentoInfoCard />
@@ -10,7 +10,7 @@ function MentoringBooking() {
   );
 }
 
-export default MentoringBooking;
+export default Booking;
 
 const StyledContainer = styled.div`
   padding: 1.4rem;
