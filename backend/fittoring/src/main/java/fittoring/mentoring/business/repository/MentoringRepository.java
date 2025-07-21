@@ -20,7 +20,7 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
                       COALESCE(:title3, '__NULL__')
                   )
              GROUP BY m.id
-             HAVING COUNT (DISTINCT cm.category.title) =
+             HAVING COUNT (DISTINCT cm.category.title) >=
                 (CASE WHEN :title1 IS NOT NULL THEN 1 ELSE 0 END +
                  CASE WHEN :title2 IS NOT NULL THEN 1 ELSE 0 END +
                  CASE WHEN :title3 IS NOT NULL THEN 1 ELSE 0 END)
