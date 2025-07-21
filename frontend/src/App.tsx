@@ -1,10 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
-import MentoringBooking from './domain/booking/pages/MentoringBooking';
-import { PAGE_URL } from './domain/common/constants/url';
-import Detail from './domain/mentoring/pages/Detail';
-import Home from './domain/mentoring/pages/Home';
+import MentoringBooking from './pages/booking/pages/MentoringBooking';
+import { PAGE_URL } from './pages/common/constants/url';
+import Detail from './pages/mentoring/pages/Detail';
+import Home from './pages/mentoring/pages/Home';
 
 const router = createBrowserRouter([
   { path: PAGE_URL.HOME, element: <Home /> },
