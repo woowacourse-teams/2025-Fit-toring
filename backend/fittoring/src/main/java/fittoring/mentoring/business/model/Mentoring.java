@@ -7,10 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "mentoring")
 @Entity
@@ -36,13 +38,14 @@ public class Mentoring {
     @Column(nullable = false)
     private String introduction;
 
-    public Mentoring(String mentorName, String mentorPhone, int price, Integer career, String content,
-                     String introduction) {
-        this.mentorName = mentorName;
-        this.mentorPhone = mentorPhone;
-        this.price = price;
-        this.career = career;
-        this.content = content;
-        this.introduction = introduction;
+    public Mentoring(
+            String mentorName,
+            String mentorPhone,
+            int price,
+            Integer career,
+            String content,
+            String introduction
+    ) {
+        this(null, mentorName, mentorPhone, price, career, content, introduction);
     }
 }

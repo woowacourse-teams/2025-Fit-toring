@@ -9,7 +9,8 @@
     "test:watch": "vitest --watch",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "styled": "stylelint './src/**/*.tsx' --fix"
+    "styled": "stylelint './src/**/*.tsx' --fix",
+    "chromatic": "npx chromatic"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^8.36.0",
     "@typescript-eslint/parser": "^8.36.0",
     "babel-loader": "^10.0.0",
+    "chromatic": "^13.1.2",
     "eslint": "^9.30.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.32.0",
