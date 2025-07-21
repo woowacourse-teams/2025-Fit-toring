@@ -47,7 +47,7 @@ public class SmsAuthHeaderGenerator {
         );
     }
 
-    String createSignature(String data) {
+    private String createSignature(String data) {
         try {
             SecretKeySpec secretKey = new SecretKeySpec(
                     apiSecret.getBytes(StandardCharsets.UTF_8),
