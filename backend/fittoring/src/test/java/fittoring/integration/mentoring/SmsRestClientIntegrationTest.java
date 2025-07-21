@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +37,9 @@ class SmsRestClientIntegrationTest {
     @Autowired
     private RestClient.Builder builder;
 
+    @Value("${sms.timeout.read}")
+    private int readTimeout;
+
     @BeforeAll
     static void setUpServer() throws IOException {
         mockWebServer = new MockWebServer();
@@ -50,6 +54,8 @@ class SmsRestClientIntegrationTest {
     @DisplayName("SMS API 타임아웃")
     @Nested
     class TimeoutTest {
+
+        public static final int TEST_TIMEOUT_OVER_ = 10;
 
         @DisplayName("ConnectTimeout 예외가 발생한다.")
         @Test
@@ -74,9 +80,10 @@ class SmsRestClientIntegrationTest {
         @Test
         void throwReadTimeout() {
             // given
+            int overReadTimeout = readTimeout + 10;
             mockWebServer.enqueue(new MockResponse()
                     .setBody("{\"result\":\"ok\"}")
-                    .setBodyDelay(10, TimeUnit.MILLISECONDS));
+                    .setBodyDelay(overReadTimeout, TimeUnit.MILLISECONDS));
 
             // when
             // then
