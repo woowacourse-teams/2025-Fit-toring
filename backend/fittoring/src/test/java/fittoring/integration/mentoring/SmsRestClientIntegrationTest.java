@@ -72,8 +72,8 @@ class SmsRestClientIntegrationTest {
             // then
             assertThatThrownBy(() -> service.sendSms(
                     "010-0000-0000",
-                    "subject",
-                    "connect timeout test"
+                    "connect timeout test",
+                    "subject"
             ))
                     .isInstanceOf(ResourceAccessException.class);
         }
@@ -91,8 +91,8 @@ class SmsRestClientIntegrationTest {
             // then
             assertThatThrownBy(() -> smsRestClientService.sendSms(
                     "010-0000-0000",
-                    "subject",
-                    "read timeout test"
+                    "read timeout test",
+                    "subject"
             ))
                     .isInstanceOf(RestClientException.class);
         }

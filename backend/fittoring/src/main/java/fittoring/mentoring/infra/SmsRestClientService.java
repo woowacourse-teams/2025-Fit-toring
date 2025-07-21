@@ -20,7 +20,7 @@ public class SmsRestClientService {
     @Value("${COOL_SMS_FROM_PHONE}")
     private String fromPhone;
 
-    public void sendSms(String to, String subject, String text) {
+    public void sendSms(String to, String text, String subject) {
         smsRestClient.post()
                 .uri(SEND_MESSAGE_ENDPOINT)
                 .header("Authorization", authHeaderGenerator.createAuthorization())
