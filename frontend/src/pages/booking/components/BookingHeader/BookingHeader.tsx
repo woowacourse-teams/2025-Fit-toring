@@ -1,13 +1,20 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backButton.svg';
 import Header from '../../../../common/components/Header/Header';
 
 function BookingHeader() {
+  const navigate = useNavigate();
+
+  const handleBackButtonClick = () => {
+    navigate(-1);
+  };
+
   return (
     <Header>
       <StyledWrapper>
-        <StyledBackButton>
+        <StyledBackButton onClick={handleBackButtonClick}>
           <StyledBackIconImg src={backIcon} alt="뒤로가기 아이콘" />
         </StyledBackButton>
         <StyledPageName>예약 신청</StyledPageName>
