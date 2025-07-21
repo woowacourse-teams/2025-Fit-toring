@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
-import { PAGE_URL } from './domain/mentoring/constants/url';
+import { PAGE_URL } from './domain/common/constants/url';
 import Home from './domain/mentoring/pages/Home';
 
 const router = createBrowserRouter([

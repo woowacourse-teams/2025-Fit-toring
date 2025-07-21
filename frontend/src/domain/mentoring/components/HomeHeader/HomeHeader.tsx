@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import logo from '../../../../common/assets/imgs/logo.svg';
 import Header from '../../../../common/components/Header/Header';
-import { PAGE_URL } from '../../constants/url';
+import { PAGE_URL } from '../../../common/constants/url';
 
 function HomeHeader() {
   return (
