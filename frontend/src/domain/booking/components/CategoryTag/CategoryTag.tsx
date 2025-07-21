@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
 
-interface CategoryTagItemProps {
+interface CategoryTagProps {
   tagName: string;
 }
 
-function CategoryTag({ tagName }: CategoryTagItemProps) {
+function CategoryTag({ tagName }: CategoryTagProps) {
   return (
     <StyledContainer>
       <StyledTagName>{tagName}</StyledTagName>
