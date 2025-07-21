@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@emotion/react';
 
+import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
 import { THEME } from '../../../../common/styles/theme';
 
 import DetailHeader from './DetailHeader';
@@ -7,7 +8,7 @@ import DetailHeader from './DetailHeader';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
-  title: 'DetailHeader',
+  title: 'Detail/DetailHeader',
   component: DetailHeader,
 
   tags: ['autodocs'],
@@ -15,7 +16,9 @@ const meta = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={THEME}>
-        <Story />
+        <MobileLayout>
+          <Story />
+        </MobileLayout>
       </ThemeProvider>
     ),
   ],
