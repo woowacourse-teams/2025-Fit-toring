@@ -8,8 +8,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "category_mentoring")
 @Entity
@@ -21,18 +23,18 @@ public class CategoryMentoring {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Mentoring mentoring;
+    private Category category;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Category category;
+    private Mentoring mentoring;
 
     public String getCategoryTitle() {
-       return category.getTitle();
+        return category.getTitle();
     }
 
-    public CategoryMentoring(Mentoring mentoring, Category category) {
-        this.mentoring = mentoring;
-        this.category = category;
+    public CategoryMentoring(final Category category, final Mentoring mentoring) {
+        this(null, category, mentoring);
     }
 }
+
