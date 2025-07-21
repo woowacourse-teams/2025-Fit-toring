@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.service;
+package fittoring.mentoring.infra;
 
 import fittoring.mentoring.business.service.dto.SmsReservationMessageDto;
 import org.springframework.stereotype.Component;

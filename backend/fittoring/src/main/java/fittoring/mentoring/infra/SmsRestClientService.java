@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.service;
+package fittoring.mentoring.infra;
 
 import fittoring.mentoring.business.service.dto.SmsSendClientDto;
 import java.util.List;
@@ -12,7 +12,6 @@ import org.springframework.web.client.RestClient;
 @Service
 public class SmsRestClientService {
 
-    private static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
     private static final String SEND_MESSAGE_ENDPOINT = "/messages/v4/send-many/detail";
 
     private final RestClient smsRestClient;
@@ -21,7 +20,7 @@ public class SmsRestClientService {
     @Value("${COOL_SMS_FROM_PHONE}")
     private String fromPhone;
 
-    public void sendSms(String to, String text) {
+    public void sendSms(String to, String subject, String text) {
         smsRestClient.post()
                 .uri(SEND_MESSAGE_ENDPOINT)
                 .header("Authorization", authHeaderGenerator.createAuthorization())
@@ -29,7 +28,7 @@ public class SmsRestClientService {
                         to,
                         fromPhone,
                         text,
-                        RESERVATION_SUBJECT
+                        subject
                 ))))
                 .retrieve()
                 .body(String.class);

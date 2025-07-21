@@ -2,8 +2,8 @@ package fittoring.integration.mentoring;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import fittoring.mentoring.business.service.SmsAuthHeaderGenerator;
-import fittoring.mentoring.business.service.SmsRestClientService;
+import fittoring.mentoring.infra.SmsAuthHeaderGenerator;
+import fittoring.mentoring.infra.SmsRestClientService;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;
@@ -70,7 +70,11 @@ class SmsRestClientIntegrationTest {
 
             // when
             // then
-            assertThatThrownBy(() -> service.sendSms("010-0000-0000", "connect timeout test"))
+            assertThatThrownBy(() -> service.sendSms(
+                    "010-0000-0000",
+                    "subject",
+                    "connect timeout test"
+            ))
                     .isInstanceOf(ResourceAccessException.class);
         }
 
@@ -85,7 +89,11 @@ class SmsRestClientIntegrationTest {
 
             // when
             // then
-            assertThatThrownBy(() -> smsRestClientService.sendSms("010-0000-0000", "read timeout test"))
+            assertThatThrownBy(() -> smsRestClientService.sendSms(
+                    "010-0000-0000",
+                    "subject",
+                    "read timeout test"
+            ))
                     .isInstanceOf(RestClientException.class);
         }
     }

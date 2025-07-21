@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.service;
+package fittoring.mentoring.infra;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;

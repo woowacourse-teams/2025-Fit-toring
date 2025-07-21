@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.service;
+package fittoring.mentoring.infra;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
