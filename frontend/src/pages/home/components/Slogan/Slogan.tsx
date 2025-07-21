@@ -23,7 +23,7 @@ const StyledContainer = styled.section`
   background: linear-gradient(
     180deg,
     ${({ theme }) => theme.SYSTEM.MAIN50} 0%,
-    #fff 100%
+    ${({ theme }) => theme.BG.WHITE} 100%
   );
 `;
 
