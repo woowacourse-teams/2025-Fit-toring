@@ -1,12 +1,12 @@
 import styled from '@emotion/styled';
 
-import Button from '../../../common/components/Button/Button';
 import Footer from '../../../common/components/Footer/Footer';
+import HomeHeader from '../components/HomeHeader/HomeHeader';
 
 function Home() {
   return (
     <StyledContainer>
-      <Button></Button>
+      <HomeHeader />
       <StyledSection>section</StyledSection>
       <Footer>문의: fitoring7@gmail.com</Footer>
     </StyledContainer>
