@@ -3,7 +3,12 @@ import styled from '@emotion/styled';
 function Slogan() {
   return (
     <StyledContainer>
-      <StyledWrapper></StyledWrapper>
+      <StyledWrapper>
+        <StyledTitle>
+          내가 알고 싶은 운동 & 식단, <StyledStrong>핏토링</StyledStrong>에서
+          물어봐요!
+        </StyledTitle>
+      </StyledWrapper>
     </StyledContainer>
   );
 }
@@ -34,4 +39,16 @@ const StyledWrapper = styled.div`
   justify-content: center;
   align-items: center;
   gap: 1.5rem;
+`;
+
+const StyledTitle = styled.h1`
+  width: 23.2rem;
+
+  text-align: center;
+
+  ${({ theme }) => theme.TYPOGRAPHY.H2_R}
+`;
+
+const StyledStrong = styled.strong`
+  color: ${({ theme }) => theme.SYSTEM.MAIN700};
 `;
