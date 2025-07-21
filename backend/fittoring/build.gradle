@@ -32,6 +32,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    /* -- web mock server --*/
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
 }
 
 tasks.named('test') {
