@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 public class MentoringReservationService {
 
     private final ReservationService reservationService;
-    private final SmsMessageFormatter smsMessageFormatter;
     private final SmsRestClientService smsRestClientService;
+    private final SmsMessageFormatter smsMessageFormatter;
 
     public ReservationCreateResponse reserveMentoring(ReservationCreateDto dto) {
         ReservationCreateResponse response = reservationService.createReservation(dto);
