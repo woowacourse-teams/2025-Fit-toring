@@ -31,10 +31,10 @@ class SmsRestClientIntegrationTest {
     private static MockWebServer mockWebServer;
 
     @Autowired
-    SmsRestClientService smsRestClientService;
+    private SmsRestClientService smsRestClientService;
 
     @Autowired
-    RestClient.Builder builder;
+    private RestClient.Builder builder;
 
     @BeforeAll
     static void setUpServer() throws IOException {
