@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@emotion/react';
 
-import { THEME } from '../../../../common/styles/theme';
+import { THEME } from '../../styles/theme';
 
 import CategoryTag from './CategoryTag';
 

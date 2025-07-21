@@ -3,9 +3,9 @@ import styled from '@emotion/styled';
 import locationIcon from '../../../../common/assets/images/locationIcon.svg';
 import startIcon from '../../../../common/assets/images/starIcon.svg';
 import timeIcon from '../../../../common/assets/images/timeIcon.svg';
-import CategoryTags from '../CategoryTags/CategoryTags';
+import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
+import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import ProfileImg from '../ProfileImg/ProfileImg';
-import TextWithIcon from '../TextWithIcon/TextWithIcon';
 
 const DUMMY = {
   id: 1,
