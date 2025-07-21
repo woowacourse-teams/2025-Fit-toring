@@ -69,8 +69,8 @@ public class MentoringService {
         validateExistCategoryTitle(categoryTitle3);
     }
 
-    private void validateExistCategoryTitle(String categoryTitle1) {
-        if (categoryTitle1 != null && !categoryRepository.existsByTitle(categoryTitle1)) {
+    private void validateExistCategoryTitle(String categoryTitle) {
+        if (categoryTitle != null && !categoryRepository.existsByTitle(categoryTitle)) {
             throw new IllegalArgumentException("존재하지 않는 카테고리가 포함되어 있습니다.");
         }
     }
