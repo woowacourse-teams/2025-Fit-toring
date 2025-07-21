@@ -1,7 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.model.Category;
-import fittoring.mentoring.presentation.dto.CategoryGetResponse;
+import fittoring.mentoring.presentation.dto.CategoryResponse;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,9 +47,9 @@ class CategoryServiceTest {
         // then
         Assertions.assertThat(categoryService.getAllCategories())
             .containsExactlyInAnyOrder(
-                new CategoryGetResponse(category1.getId(), category1.getTitle()),
-                new CategoryGetResponse(category2.getId(), category2.getTitle()),
-                new CategoryGetResponse(category3.getId(), category3.getTitle())
+                new CategoryResponse(category1.getId(), category1.getTitle()),
+                new CategoryResponse(category2.getId(), category2.getTitle()),
+                new CategoryResponse(category3.getId(), category3.getTitle())
             );
     }
 }
