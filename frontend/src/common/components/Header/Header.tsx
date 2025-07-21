@@ -15,7 +15,7 @@ const StyledContainer = styled.header`
   height: 5.7rem;
   border-bottom: 1px solid ${({ theme }) => theme.LINE.REGULAR};
 
-  background: rgb(from ${({ theme }) => theme.BG.WHITE} r g b / 80%);
+  background: ${({ theme }) => theme.BG.WHITE};
   box-shadow:
     0 1px 3px 0 rgb(0 0 0 / 10%),
     0 1px 2px -1px rgb(0 0 0 / 10%);
