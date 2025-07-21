@@ -8,8 +8,8 @@ import Home from './pages/home/Home';
 
 const router = createBrowserRouter([
   { path: PAGE_URL.HOME, element: <Home /> },
-  { path: '/detail', element: <Detail /> }, // TODO: API 연결 시 /detail/{id} 와 같이 변경 필요
-  { path: '/booking', element: <Booking /> },
+  { path: PAGE_URL.DETAIL, element: <Detail /> }, // TODO: API 연결 시 /detail/{id} 와 같이 변경 필요
+  { path: PAGE_URL.BOOKING, element: <Booking /> },
 ]);
 
 function App() {
