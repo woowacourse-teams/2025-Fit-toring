@@ -2,7 +2,7 @@ import { ThemeProvider } from '@emotion/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { THEME } from '../../../../common/styles/theme';
-import { PAGE_URL } from '../../../common/constants/url';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 import HomeHeader from './HomeHeader';
 

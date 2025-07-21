@@ -1,8 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
+import { PAGE_URL } from './common/constants/url';
 import Booking from './pages/booking/Booking';
-import { PAGE_URL } from './pages/common/constants/url';
 import Detail from './pages/detail/Detail';
 import Home from './pages/home/Home';
 
