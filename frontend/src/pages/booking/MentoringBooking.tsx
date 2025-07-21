@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-import MentoInfoCard from '../components/MentorInfoCard/MentorInfoCard';
+import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 
 function MentoringBooking() {
   return (

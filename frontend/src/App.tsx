@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
-import MentoringBooking from './pages/booking/pages/MentoringBooking';
+import MentoringBooking from './pages/booking/MentoringBooking';
 import { PAGE_URL } from './pages/common/constants/url';
 import Detail from './pages/detail/Detail';
 import Home from './pages/home/Home';
