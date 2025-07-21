@@ -55,8 +55,6 @@ class SmsRestClientIntegrationTest {
     @Nested
     class TimeoutTest {
 
-        public static final int TEST_TIMEOUT_OVER_ = 10;
-
         @DisplayName("ConnectTimeout 예외가 발생한다.")
         @Test
         void throwConnectTimeout() {
