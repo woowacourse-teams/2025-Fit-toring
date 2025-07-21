@@ -1,4 +1,4 @@
-import DetailHeader from '../components/detail/DetailHeader';
+import DetailHeader from './components/DetailHeader/DetailHeader';
 
 function Detail() {
   return <DetailHeader />;
