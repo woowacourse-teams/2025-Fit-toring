@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend
+        working-directory: backend/fittoring
 
     steps:
     - name: Checkout code
@@ -24,13 +24,13 @@ jobs:
         fi
 
     - name: Start MySQL containers with Docker Compose
-      run: docker compose -f ./fittoring/docker-compose.yml up -d db-test
+      run: docker compose -f ./docker-compose.yml up -d db-test
 
-    - name: Wait for MySQL
+    - name: Wait for Test MySQL
       run: |
-        echo "Waiting for MySQL..."
+        echo "Waiting for Test MySQL..."
         for i in {30..0}; do
-          nc -z localhost 13306 && nc -z localhost 13307 && echo "MySQL is up!" && break
+          nc -z localhost 13307 && echo "Test MySQL is up!" && break
           echo "Still waiting for MySQL..."
           sleep 2
         done
@@ -61,16 +61,16 @@ jobs:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('./**/*.gradle*', './**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
 
     - name: Grant execute permission for gradlew
-      run: chmod +x ./fittoring/gradlew
+      run: chmod +x ./gradlew
 
     - name: Build & Run tests
-      run: ./fittoring/gradlew clean build
+      run: ./gradlew clean build
 
     - name: Stop Docker containers
       if: always()
-      run: docker compose -f ./fittoring/docker-compose.yml down
+      run: docker compose -f ./docker-compose.yml down
