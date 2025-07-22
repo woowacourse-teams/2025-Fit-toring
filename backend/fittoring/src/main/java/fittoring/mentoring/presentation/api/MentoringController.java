@@ -23,7 +23,7 @@ public class MentoringController {
             @RequestParam(required = false) String categoryTitle3
     ) {
         return ResponseEntity.ok()
-                .body(mentoringService.getAllMentoring(categoryTitle1, categoryTitle2, categoryTitle3));
+                .body(mentoringService.findMentorings(categoryTitle1, categoryTitle2, categoryTitle3));
     }
 
     @GetMapping("/mentorings/{mentoringId}")

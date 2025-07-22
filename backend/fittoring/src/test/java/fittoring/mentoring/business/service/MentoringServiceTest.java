@@ -75,7 +75,7 @@ class MentoringServiceTest {
             );
 
             // when
-            List<MentoringResponse> actual = mentoringService.getAllMentoring(
+            List<MentoringResponse> actual = mentoringService.findMentorings(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -140,7 +140,7 @@ class MentoringServiceTest {
             );
 
             // when
-            List<MentoringResponse> actual = mentoringService.getAllMentoring(
+            List<MentoringResponse> actual = mentoringService.findMentorings(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -180,7 +180,7 @@ class MentoringServiceTest {
 
             // when
             // then
-            assertThatThrownBy(() -> mentoringService.getAllMentoring(
+            assertThatThrownBy(() -> mentoringService.findMentorings(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -220,7 +220,7 @@ class MentoringServiceTest {
             String categoryTitle3 = category3.getTitle();
 
             // when
-            List<MentoringResponse> actual = mentoringService.getAllMentoring(
+            List<MentoringResponse> actual = mentoringService.findMentorings(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3

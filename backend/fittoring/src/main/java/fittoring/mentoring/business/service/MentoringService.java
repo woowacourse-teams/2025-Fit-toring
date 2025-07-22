@@ -24,7 +24,7 @@ public class MentoringService {
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final ImageRepository imageRepository;
 
-    public List<MentoringResponse> getAllMentoring(
+    public List<MentoringResponse> findMentorings(
             String categoryTitle1,
             String categoryTitle2,
             String categoryTitle3
