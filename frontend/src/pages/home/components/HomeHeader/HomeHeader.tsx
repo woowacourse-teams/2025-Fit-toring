@@ -7,24 +7,18 @@ import { PAGE_URL } from '../../../../common/constants/url';
 
 function HomeHeader() {
   return (
-    <StyledContainer>
-      <Header>
-        <StyledHeaderWrapper>
-          <StyledLogoLink to={PAGE_URL.HOME}>
-            <StyledImg src={logo} alt="홈으로 돌아가기" />
-          </StyledLogoLink>
-          <StyledTitle>핏토링</StyledTitle>
-        </StyledHeaderWrapper>
-      </Header>
-    </StyledContainer>
+    <Header>
+      <StyledHeaderWrapper>
+        <StyledLogoLink to={PAGE_URL.HOME}>
+          <StyledImg src={logo} alt="홈으로 돌아가기" />
+        </StyledLogoLink>
+        <StyledTitle>핏토링</StyledTitle>
+      </StyledHeaderWrapper>
+    </Header>
   );
 }
 
 export default HomeHeader;
-
-const StyledContainer = styled.div`
-  margin-bottom: 5.7rem;
-`;
 
 const StyledHeaderWrapper = styled.div`
   display: flex;
