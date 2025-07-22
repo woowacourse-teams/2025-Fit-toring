@@ -30,7 +30,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const DefaultModal: Story = {
   args: {
     opened: true,
     onCloseClick: fn(),
