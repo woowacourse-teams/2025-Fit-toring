@@ -6,8 +6,8 @@ import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 function Booking() {
   return (
     <StyledContainer>
-      <BookingForm />
       <MentoInfoCard />
+      <BookingForm />
     </StyledContainer>
   );
 }
