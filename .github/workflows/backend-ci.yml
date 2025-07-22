@@ -1,0 +1,77 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [ develop-be ]
+  workflow_dispatch: 
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Compose
+      run: |
+        docker compose version || sudo apt-get update && sudo apt-get install -y docker-compose-plugin
+
+    - name: Start MySQL containers with Docker Compose
+      run: docker compose -f ../docker-compose.yml up -d
+
+    - name: Wait for MySQL
+      run: |
+        echo "Waiting for MySQL..."
+        for i in {30..0}; do
+          nc -z localhost 13306 && nc -z localhost 13307 && echo "MySQL is up!" && break
+          echo "Still waiting for MySQL..."
+          sleep 2
+        done
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Create .env file
+      run: |
+        echo "PROD_DATABASE_HOST=localhost" >> .env
+        echo "PROD_DATABASE_PORT=13306" >> .env
+        echo "PROD_DATABASE_NAME=fittoring" >> .env
+        echo "PROD_DATABASE_USER=root" >> .env
+        echo "PROD_DATABASE_PASSWORD=1234" >> .env
+        echo "TEST_DATABASE_HOST=localhost" >> .env
+        echo "TEST_DATABASE_PORT=13307" >> .env
+        echo "TEST_DATABASE_NAME=fittoring-test" >> .env
+        echo "TEST_DATABASE_USER=root" >> .env
+        echo "TEST_DATABASE_PASSWORD=1234" >> .env
+        echo "COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}" >> .env
+        echo "COOL_SMS_HMAC_HEADER=${{ secrets.COOL_SMS_HMAC_HEADER }}" >> .env
+        echo "COOL_SMS_HMAC_HASH=${{ secrets.COOL_SMS_HMAC_HASH }}" >> .env
+        echo "COOL_SMS_API_KEY=${{ secrets.SMS_API_KEY }}" >> .env
+        echo "COOL_SMS_SECRET_KEY=${{ secrets.SMS_SECRET_KEY }}" >> .env
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build & Run tests
+      run: ./gradlew clean build
+
+    - name: Stop Docker containers
+      if: always()
+      run: docker compose -f ../docker-compose.yml down
