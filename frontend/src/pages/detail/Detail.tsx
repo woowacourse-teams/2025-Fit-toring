@@ -7,15 +7,13 @@ import Summary from './components/Summary/Summary';
 
 function Detail() {
   return (
-    <>
-      <StyledContainer>
-        <DetailHeader />
-        <Profile />
-        <Summary />
-        <StyledH4>멘토 소개</StyledH4>
-        <Introduction />
-      </StyledContainer>
-    </>
+    <StyledContainer>
+      <DetailHeader />
+      <Profile />
+      <Summary />
+      <StyledH4>멘토 소개</StyledH4>
+      <Introduction />
+    </StyledContainer>
   );
 }
 
