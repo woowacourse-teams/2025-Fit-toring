@@ -5,13 +5,13 @@ import styled from '@emotion/styled';
 function Summary() {
   return (
     <StyledContainer>
-      <StyledBoldText>
+      <StyledSelfIntroduction>
         5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.
-      </StyledBoldText>
-      <StyledSummary>
+      </StyledSelfIntroduction>
+      <StyledCertifications>
         <p>경력: 전문 트레이너 5년 </p>
         <p>자격증: 생활스포츠지도사, 운동처방사</p>
-      </StyledSummary>
+      </StyledCertifications>
       <StyledHr />
     </StyledContainer>
   );
@@ -28,12 +28,12 @@ const StyledContainer = styled.section`
   align-items: center;
   gap: 1.5rem;
 `;
-const StyledBoldText = styled.p`
+const StyledSelfIntroduction = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_B}
   color: ${({ theme }) => theme.FONT.B02}
 `;
 
-const StyledSummary = styled.p`
+const StyledCertifications = styled.p`
   display: flex;
   flex-direction: column;
   align-items: center;
