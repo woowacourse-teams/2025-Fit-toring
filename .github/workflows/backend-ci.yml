@@ -6,7 +6,7 @@ on:
   workflow_dispatch: 
 
 jobs:
-  test:
+  backend-ci:
     runs-on: ubuntu-latest
     defaults:
       run:
