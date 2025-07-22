@@ -21,6 +21,9 @@ function MentorCardItem() {
           <CategoryTags tagNames={['근력 증진', '다이어트', '체형 교정']} />
         </StyledInfoWrapper>
       </StyledWrapper>
+      <StyledSelfIntroduction>
+        5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.
+      </StyledSelfIntroduction>
       <MentorDetailInfoButton />
     </StyledContainer>
   );
@@ -76,4 +79,17 @@ const StyledTitle = styled.h3`
 const StyledPersonalHistory = styled.p`
   color: ${({ theme }) => theme.FONT.B03};
   font-size: 1.2rem;
+`;
+
+const StyledSelfIntroduction = styled.p`
+  display: -webkit-box;
+  overflow: hidden;
+
+  color: ${({ theme }) => theme.FONT.B03};
+  font-size: 1.2rem;
+
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 `;
