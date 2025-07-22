@@ -17,7 +17,7 @@ function BookingHeader() {
         <StyledBackButton onClick={handleBackButtonClick}>
           <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
         </StyledBackButton>
-        <StyledPageName>예약 신청</StyledPageName>
+        <StyledTitle>예약 신청</StyledTitle>
       </StyledWrapper>
     </Header>
   );
@@ -40,7 +40,7 @@ const StyledBackButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledPageName = styled.h1`
+const StyledTitle = styled.h1`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 
   flex-grow: 1;
