@@ -1,6 +1,10 @@
 import styled from '@emotion/styled';
 
+import locationIcon from '../../../../common/assets/images/locationIcon.svg';
 import profileImg from '../../../../common/assets/images/profileImg.svg';
+import starIcon from '../../../../common/assets/images/starIcon.svg';
+import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
+import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
 import MentorDetailInfoButton from './MentorDetailInfoButton';
 
@@ -9,6 +13,13 @@ function MentorCardItem() {
     <StyledContainer>
       <StyledWrapper>
         <StyledProfileImg src={profileImg} alt="트레이너 이미지" />
+        <StyledInfoWrapper>
+          <StyledTitle>김트레이너</StyledTitle>
+          <TextWithIcon text="4.9 (127)" iconSrc={starIcon} iconName="별점" />
+          <TextWithIcon text="강남구" iconSrc={locationIcon} iconName="위치" />
+          <StyledPersonalHistory>경력: 전문 트레이너 5년</StyledPersonalHistory>
+          <CategoryTags tagNames={['근력 증진', '다이어트', '체형 교정']} />
+        </StyledInfoWrapper>
       </StyledWrapper>
       <MentorDetailInfoButton />
     </StyledContainer>
@@ -50,4 +61,19 @@ const StyledProfileImg = styled.img`
   border-radius: 50%;
 
   border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+`;
+
+const StyledInfoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;
+
+const StyledTitle = styled.h3`
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
+`;
+
+const StyledPersonalHistory = styled.p`
+  color: ${({ theme }) => theme.FONT.B03};
+  font-size: 1.2rem;
 `;
