@@ -1,0 +1,109 @@
+import { useState } from 'react';
+
+import styled from '@emotion/styled';
+
+import Input from '../../../../common/components/Input/Input';
+import FormField from '../FormField/FormField';
+
+function BookingForm() {
+  const [menteeName, setMenteeName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [detailContent, setDetailContent] = useState('');
+
+  const handleMenteeNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMenteeName(e.target.value);
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneNumber(e.target.value);
+  };
+
+  const handleDetailContentChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    setDetailContent(e.target.value);
+  };
+
+  return (
+    <StyledContainer>
+      <StyledInfoText>
+        아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
+      </StyledInfoText>
+      <StyledFieldWrapper>
+        <FormField label="상담자명 *" htmlFor="name" errorMessage={''}>
+          <Input
+            placeholder="홍길동"
+            id="name"
+            value={menteeName}
+            onChange={handleMenteeNameChange}
+            errored={false}
+          />
+        </FormField>
+        <FormField label="전화번호 *" htmlFor="phone" errorMessage={''}>
+          <Input
+            placeholder="010-1234-4986"
+            id="phone"
+            value={phoneNumber}
+            onChange={handlePhoneNumberChange}
+            errored={false}
+          />
+        </FormField>
+        <FormField
+          label="상담 내용(선택사항)"
+          htmlFor="details"
+          errorMessage={''}
+        >
+          <StyledTextarea
+            id="details"
+            placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
+더 정확한 조언을 받을 수 있습니다."
+            onChange={handleDetailContentChange}
+            errored={false}
+            value={detailContent}
+          />
+        </FormField>
+      </StyledFieldWrapper>
+    </StyledContainer>
+  );
+}
+
+export default BookingForm;
+
+const StyledContainer = styled.form`
+  padding: 2.2rem;
+  border-radius: 1.3rem;
+  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+  width: 100%;
+  height: 100%;
+  background-color: white;
+`;
+
+const StyledInfoText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  color: ${({ theme }) => theme.FONT.BLACK};
+  margin-top: 1.7rem;
+`;
+
+const StyledFieldWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 3.3rem;
+  gap: 2.1rem;
+`;
+
+const StyledTextarea = styled.textarea<{ errored: boolean }>`
+  width: 100%;
+  height: 5.8rem;
+  padding: 0.7rem 1.1rem;
+  border: ${({ theme, errored }) =>
+      errored ? theme.FONT.ERROR : theme.BORDER.GRAY300}
+    0.1rem solid;
+  border-radius: 0.7rem;
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  resize: none;
+
+  :focus {
+    outline: none;
+  }
+`;
