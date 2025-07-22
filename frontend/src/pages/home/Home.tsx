@@ -12,9 +12,9 @@ function Home() {
       <HomeHeader />
       <Slogan />
       <StyledSection>
-        <ul>
+        <StyledUl>
           <MentorCardItem />
-        </ul>
+        </StyledUl>
       </StyledSection>
       <Footer>문의: fitoring7@gmail.com</Footer>
     </StyledContainer>
@@ -32,4 +32,10 @@ const StyledContainer = styled.div`
 
 const StyledSection = styled.div`
   flex-grow: 1;
+`;
+
+const StyledUl = styled.ul`
+  display: flex;
+  justify-content: center;
+  padding: 1rem 1.4rem;
 `;
