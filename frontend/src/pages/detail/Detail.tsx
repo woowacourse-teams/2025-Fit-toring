@@ -11,7 +11,6 @@ function Detail() {
       <DetailHeader />
       <Profile />
       <Summary />
-      <StyledH4>멘토 소개</StyledH4>
       <Introduction />
     </StyledContainer>
   );
@@ -24,13 +23,4 @@ const StyledContainer = styled.div`
   padding: 0 4.1rem;
   flex-direction: column;
   align-items: center;
-`;
-
-const StyledH4 = styled.h4`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.7rem;
-
-  ${({ theme }) => theme.TYPOGRAPHY.H4_R}
-  color: ${({ theme }) => theme.FONT.B01};
 `;
