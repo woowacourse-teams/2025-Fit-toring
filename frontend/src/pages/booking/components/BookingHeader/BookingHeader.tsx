@@ -34,8 +34,9 @@ const StyledWrapper = styled.div`
 const StyledBackButton = styled.button`
   position: absolute;
   margin-left: 1rem;
+  padding: 0;
   border: none;
-  padding: 0px;
+
   background-color: transparent;
   cursor: pointer;
 `;
@@ -44,6 +45,7 @@ const StyledTitle = styled.h1`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 
   flex-grow: 1;
+
   text-align: center;
 `;
 
