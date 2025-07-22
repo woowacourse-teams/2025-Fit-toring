@@ -32,9 +32,6 @@ class SmsRestClientIntegrationTest {
     private static MockWebServer mockWebServer;
 
     @Autowired
-    private SmsRestClientService smsRestClientService;
-
-    @Autowired
     private RestClient.Builder builder;
 
     @Value("${sms.timeout.read}")
