@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import locationIcon from '../../../../common/assets/images/locationIcon.svg';
 import profileImg from '../../../../common/assets/images/profileImg.svg';
 import starIcon from '../../../../common/assets/images/starIcon.svg';
+import timeIcon from '../../../../common/assets/images/timeIcon.svg';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
@@ -24,6 +25,10 @@ function MentorCardItem() {
       <StyledSelfIntroduction>
         5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.
       </StyledSelfIntroduction>
+      <StyledPriceWrapper>
+        <TextWithIcon text="15분" iconSrc={timeIcon} iconName="시간" />
+        <StyledPrice>4,500원</StyledPrice>
+      </StyledPriceWrapper>
       <MentorDetailInfoButton />
     </StyledContainer>
   );
@@ -92,4 +97,15 @@ const StyledSelfIntroduction = styled.p`
   word-break: break-all;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+`;
+
+const StyledPriceWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const StyledPrice = styled.span`
+  color: ${({ theme }) => theme.SYSTEM.MAIN800};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
