@@ -3,6 +3,7 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 
 import Input from '../../../../common/components/Input/Input';
+import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import FormField from '../FormField/FormField';
 
 function BookingForm() {
@@ -63,6 +64,7 @@ function BookingForm() {
           />
         </FormField>
       </StyledFieldWrapper>
+      <BookingSummarySection />
     </StyledContainer>
   );
 }
@@ -88,6 +90,7 @@ const StyledFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 3.3rem;
+  margin-bottom: 3.2rem;
   gap: 2.1rem;
 `;
 
