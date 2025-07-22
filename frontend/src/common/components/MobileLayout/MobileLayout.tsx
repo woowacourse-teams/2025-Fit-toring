@@ -17,7 +17,8 @@ const StyledContainer = styled.main`
   justify-content: center;
 
   width: 100%;
-  height: 100%;
+  height: fit-content;
+  min-height: 100%;
 `;
 
 const StyledContents = styled.section`
