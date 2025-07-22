@@ -15,7 +15,7 @@ function BookingHeader() {
     <Header>
       <StyledWrapper>
         <StyledBackButton onClick={handleBackButtonClick}>
-          <StyledBackIconImg src={backIcon} alt="뒤로가기 아이콘" />
+          <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
         </StyledBackButton>
         <StyledPageName>예약 신청</StyledPageName>
       </StyledWrapper>
@@ -47,6 +47,6 @@ const StyledPageName = styled.h1`
   text-align: center;
 `;
 
-const StyledBackIconImg = styled.img`
+const StyledBackIcon = styled.img`
   width: 3.4rem;
 `;
