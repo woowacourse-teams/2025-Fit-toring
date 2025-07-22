@@ -15,5 +15,8 @@ function Booking() {
 export default Booking;
 
 const StyledContainer = styled.div`
-  padding: 1.4rem;
+  display: flex;
+  padding: 2.8rem 1.4rem;
+  flex-direction: column;
+  gap: 2.8rem;
 `;
