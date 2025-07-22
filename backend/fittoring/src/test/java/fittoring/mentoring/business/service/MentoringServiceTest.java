@@ -3,6 +3,9 @@ package fittoring.mentoring.business.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.InvalidCategoryException;
+import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
@@ -195,8 +198,8 @@ class MentoringServiceTest {
                     categoryTitle2,
                     categoryTitle3
             ))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("존재하지 않는 카테고리가 포함되어 있습니다.");
+                    .isInstanceOf(InvalidCategoryException.class)
+                    .hasMessage(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
         }
 
         @DisplayName("필터 조건에 해당하는 멘토링이 존재하지 않는 경우, 빈 리스트를 반환한다.")
@@ -292,7 +295,7 @@ class MentoringServiceTest {
         //then
         assertThatThrownBy(() ->
                 mentoringService.getMentoring(invalidId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith("해당하는 멘토링을 찾을 수 없습니다. ID : ");
+                .isInstanceOf(MentoringNotFoundException.class)
+                .hasMessageStartingWith(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
     }
 }

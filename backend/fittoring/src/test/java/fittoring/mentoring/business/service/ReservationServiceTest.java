@@ -1,6 +1,8 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.config.JpaConfiguration;
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
@@ -91,7 +93,7 @@ class ReservationServiceTest {
         // when
         // then
         Assertions.assertThatThrownBy(() -> reservationService.createReservation(dto))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 멘토링 ID 입니다:" + mentoringId);
+                .isInstanceOf(MentoringNotFoundException.class)
+                .hasMessage(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
     }
 }

@@ -1,5 +1,8 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.InvalidCategoryException;
+import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
@@ -72,7 +75,7 @@ public class MentoringService {
 
     private void validateExistCategoryTitle(String categoryTitle) {
         if (categoryTitle != null && !categoryRepository.existsByTitle(categoryTitle)) {
-            throw new IllegalArgumentException("존재하지 않는 카테고리가 포함되어 있습니다.");
+            throw new InvalidCategoryException(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
         }
     }
 
@@ -90,7 +93,7 @@ public class MentoringService {
 
     public MentoringResponse getMentoring(final Long id) {
         Mentoring mentoring = mentoringRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 멘토링을 찾을 수 없습니다. ID : " + id));
+                .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
 
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
         Image image = imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING, mentoring.getId())
