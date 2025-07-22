@@ -9,7 +9,7 @@ import FormField from '../FormField/FormField';
 function BookingForm() {
   const [menteeName, setMenteeName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [detailContent, setDetailContent] = useState('');
+  const [counselContent, setCounselContent] = useState('');
 
   const handleMenteeNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMenteeName(e.target.value);
@@ -19,10 +19,10 @@ function BookingForm() {
     setPhoneNumber(e.target.value);
   };
 
-  const handleDetailContentChange = (
+  const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setDetailContent(e.target.value);
+    setCounselContent(e.target.value);
   };
 
   return (
@@ -58,9 +58,9 @@ function BookingForm() {
             id="details"
             placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
 더 정확한 조언을 받을 수 있습니다."
-            onChange={handleDetailContentChange}
+            onChange={handleCounselContentChange}
             errored={false}
-            value={detailContent}
+            value={counselContent}
           />
         </FormField>
       </StyledFieldWrapper>
