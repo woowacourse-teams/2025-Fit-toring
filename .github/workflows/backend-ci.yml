@@ -24,7 +24,7 @@ jobs:
         fi
 
     - name: Start MySQL containers with Docker Compose
-      run: docker compose -f ./docker-compose.yml up -d
+      run: docker compose -f ./fittoring/docker-compose.yml up -d
 
     - name: Wait for MySQL
       run: |
@@ -77,4 +77,4 @@ jobs:
 
     - name: Stop Docker containers
       if: always()
-      run: docker compose -f ./docker-compose.yml down
+      run: docker compose -f ./fittoring/docker-compose.yml down
