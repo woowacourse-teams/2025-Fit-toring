@@ -9,9 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "image")
 @Entity
@@ -34,8 +36,6 @@ public class Image {
     private Long relationId;
 
     public Image(String url, ImageType imageType, Long relationId) {
-        this.url = url;
-        this.imageType = imageType;
-        this.relationId = relationId;
+        this(null, url, imageType, relationId);
     }
 }
