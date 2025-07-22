@@ -18,7 +18,10 @@ jobs:
 
     - name: Set up Docker Compose
       run: |
-        docker compose version || sudo apt-get update && sudo apt-get install -y docker-compose-plugin
+        if ! docker compose version; then
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+        fi
 
     - name: Start MySQL containers with Docker Compose
       run: docker compose -f ../docker-compose.yml up -d
