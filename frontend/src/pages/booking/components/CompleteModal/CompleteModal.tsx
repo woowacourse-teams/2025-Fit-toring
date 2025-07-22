@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import bookedIcon from '../../../../common/assets/images/bookedIcon.svg';
 import Button from '../../../../common/components/Button/Button';
 import Modal from '../../../../common/components/Modal/Modal';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 interface CompleteModalProps {
   opened: boolean;
@@ -16,7 +17,7 @@ function CompleteModal({ opened, onCloseClick }: CompleteModalProps) {
 
   const handleButtonClick = () => {
     onCloseClick();
-    navigate('/');
+    navigate(PAGE_URL.HOME);
   };
 
   return (
