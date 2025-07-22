@@ -31,7 +31,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: '헤더입니다.',
+        story: ' 예약 신청페이지 헤더입니다.',
       },
     },
   },
