@@ -3,16 +3,14 @@ import styled from '@emotion/styled';
 function Slogan() {
   return (
     <StyledContainer>
-      <StyledWrapper>
-        <StyledTitle>
-          내가 알고 싶은 운동 & 식단, <StyledStrong>핏토링</StyledStrong>에서
-          물어봐요!
-        </StyledTitle>
-        <StyledDescription>
-          전문 트레이너와 운동 애호가들로부터 15분 단위로 합리적인 비용의 1회성
-          멘토링을 받아보세요
-        </StyledDescription>
-      </StyledWrapper>
+      <StyledTitle>
+        내가 알고 싶은 운동 & 식단, <StyledStrong>핏토링</StyledStrong>에서
+        물어봐요!
+      </StyledTitle>
+      <StyledDescription>
+        전문 트레이너와 운동 애호가들로부터 15분 단위로 합리적인 비용의 1회성
+        멘토링을 받아보세요
+      </StyledDescription>
     </StyledContainer>
   );
 }
@@ -21,12 +19,14 @@ export default Slogan;
 
 const StyledContainer = styled.section`
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+
   width: 100%;
   height: auto;
   padding: 3rem 1.4rem;
-  justify-content: center;
-  align-items: center;
-
   border-bottom: 1px solid ${({ theme }) => theme.LINE.REGULAR};
 
   background: linear-gradient(
@@ -34,15 +34,6 @@ const StyledContainer = styled.section`
     ${({ theme }) => theme.SYSTEM.MAIN50} 0%,
     ${({ theme }) => theme.BG.WHITE} 100%
   );
-`;
-
-const StyledWrapper = styled.div`
-  display: flex;
-  height: auto;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1.5rem;
 `;
 
 const StyledTitle = styled.h1`
