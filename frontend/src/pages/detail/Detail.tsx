@@ -20,7 +20,7 @@ export default Detail;
 
 const StyledContainer = styled.div`
   display: flex;
-  padding: 0 4.1rem;
+  padding: 0 4.1rem 2rem;
   flex-direction: column;
   align-items: center;
 `;
