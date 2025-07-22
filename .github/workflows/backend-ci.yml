@@ -43,6 +43,7 @@ jobs:
 
     - name: Create .env file
       run: |
+        echo "ACTIVE_PROFILE=test" >> .env
         echo "PROD_DATABASE_HOST=localhost" >> .env
         echo "PROD_DATABASE_PORT=13306" >> .env
         echo "PROD_DATABASE_NAME=fittoring" >> .env
