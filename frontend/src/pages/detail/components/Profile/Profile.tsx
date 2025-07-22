@@ -9,7 +9,10 @@ import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIco
 function Profile() {
   return (
     <StyledContainer>
-      <StyledProfileImg src={profileImg}></StyledProfileImg>
+      <StyledProfileImg
+        src={profileImg}
+        alt="트레이너 이미지"
+      ></StyledProfileImg>
       <StyledInfoWrapper>
         <StyledTitle>김트레이너</StyledTitle>
         <TextWithIcon
