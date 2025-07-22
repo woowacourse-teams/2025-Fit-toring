@@ -15,7 +15,7 @@ interface CompleteModalProps {
 function CompleteModal({ opened, onCloseClick }: CompleteModalProps) {
   const navigate = useNavigate();
 
-  const handleButtonClick = () => {
+  const handleGoHome = () => {
     onCloseClick();
     navigate(PAGE_URL.HOME);
   };
@@ -44,7 +44,7 @@ function CompleteModal({ opened, onCloseClick }: CompleteModalProps) {
           </p>
         </StyledCompleteGuide>
         <Button
-          onClick={handleButtonClick}
+          onClick={handleGoHome}
           size="full"
           customStyle={css`
             padding: 0.8rem;
