@@ -9,7 +9,9 @@ import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
+import fittoring.util.DbCleaner;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import(MentoringService.class)
+@Import({DbCleaner.class, MentoringService.class})
 @DataJpaTest
 class MentoringServiceTest {
 
@@ -32,6 +34,14 @@ class MentoringServiceTest {
 
     @Autowired
     private TestEntityManager em;
+
+    @Autowired
+    private DbCleaner dbCleaner;
+
+    @BeforeEach
+    void setUp() {
+        dbCleaner.clean();
+    }
 
     @DisplayName("멘토링 조회")
     @Nested
