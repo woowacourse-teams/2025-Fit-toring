@@ -10,7 +10,7 @@ function Introduction() {
 
 export default Introduction;
 
-const StyledContainer = styled.div`
+const StyledContainer = styled.p`
   width: 100%;
 
   white-space: pre-line;
