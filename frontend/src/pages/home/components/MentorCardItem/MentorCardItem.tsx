@@ -1,16 +1,53 @@
-import MentorDetailInfoButton from './MentorDetailInfoButton';
+import styled from '@emotion/styled';
 
-// 멘토 카드 아이템 컴포넌트
-// - 멘토 정보를 보여줘야 한다.
-//   - 멘토 정보 객체와 협력해야 한다.
-// 상세 정보 보기를 클릭 시 다음 페이지로 넘어갈 수 있어야 한다.
+import profileImg from '../../../../common/assets/images/profileImg.svg';
+
+import MentorDetailInfoButton from './MentorDetailInfoButton';
 
 function MentorCardItem() {
   return (
-    <li>
+    <StyledContainer>
+      <StyledWrapper>
+        <StyledProfileImg src={profileImg} alt="트레이너 이미지" />
+      </StyledWrapper>
       <MentorDetailInfoButton />
-    </li>
+    </StyledContainer>
   );
 }
 
 export default MentorCardItem;
+
+const StyledContainer = styled.li`
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 25.6rem;
+  padding: 2.2rem 2.4rem;
+  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+  border-radius: 12.75px;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 10%),
+    0 4px 6px -4px rgb(0 0 0 / 10%);
+
+  :hover {
+    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+  }
+
+  justify-content: space-between;
+`;
+
+const StyledWrapper = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+const StyledProfileImg = styled.img`
+  width: 5.6rem;
+  height: 5.6rem;
+  border-radius: 50%;
+
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+`;
