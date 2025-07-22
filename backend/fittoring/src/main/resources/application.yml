@@ -1,0 +1,23 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:mysql://${PROD_DATABASE_HOST}:${PROD_DATABASE_PORT}/${PROD_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${PROD_DATABASE_USER}
+    password: ${PROD_DATABASE_PASSWORD}
+  sql:
+    init:
+      mode: always
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+sms:
+  base-url: https://api.solapi.com
+  timeout:
+    connect: 1_200
+    read: 5_000

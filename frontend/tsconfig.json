@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "jsxImportSource": "@emotion/react",
+    "typeRoots": ["./src/common/types"]
+  },
+  "include": ["./**/*.tsx", "./**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
