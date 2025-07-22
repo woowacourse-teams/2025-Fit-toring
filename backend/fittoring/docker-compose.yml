@@ -11,6 +11,12 @@ services:
       - "13306:3306"
     volumes:
       - db-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+      timeout: 2s
 
   db-test:
     image: mysql:8.0
@@ -20,19 +26,42 @@ services:
       MYSQL_ROOT_PASSWORD: 1234
     ports:
       - "13307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+      timeout: 2s
 
   app:
     build:
-      context: .
+      context: ./
       dockerfile: Dockerfile
-    container_name: springboot-container
+    container_name: fittoring-app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      db-test:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-    restart: always
+      SPRING_PROFILES_ACTIVE: default
+      PROD_DATABASE_HOST: db
+      PROD_DATABASE_PORT: 3306
+      PROD_DATABASE_NAME: fittoring
+      PROD_DATABASE_USER: root
+      PROD_DATABASE_PASSWORD: 1234
+      TEST_DATABASE_HOST: db-test
+      TEST_DATABASE_PORT: 3306
+      TEST_DATABASE_NAME: fittoring-test
+      TEST_DATABASE_USER: root
+      TEST_DATABASE_PASSWORD: 1234
+      COOL_SMS_FROM_PHONE: ${COOL_SMS_FROM_PHONE}
+      COOL_SMS_HMAC_HEADER: ${COOL_SMS_HMAC_HEADER}
+      COOL_SMS_HMAC_HASH: ${COOL_SMS_HMAC_HASH}
+      COOL_SMS_API_KEY: ${COOL_SMS_API_KEY}
+      COOL_SMS_SECRET_KEY: ${COOL_SMS_SECRET_KEY}
 
 volumes:
   db-data:
