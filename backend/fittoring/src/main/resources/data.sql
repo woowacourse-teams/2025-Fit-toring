@@ -38,7 +38,6 @@ VALUES (1, '체형 분석 및 1:1 맞춤 운동'),
        (4, '매일 10분 홈트 챌린지'),
        (5, '웨이트 고강도 코칭');
 
-
-INSERT INTO image (url, relation_type, relation_id)
+INSERT INTO image (url, image_type, relation_id)
 VALUES ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
        , 'MENTORING', 1);
