@@ -1,5 +1,7 @@
 package fittoring.mentoring.infra;
 
+import fittoring.mentoring.infra.exception.InfraErrorMessage;
+import fittoring.mentoring.infra.exception.SmsException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -58,7 +60,7 @@ public class SmsAuthHeaderGenerator {
             byte[] rawHmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             return convertHex(rawHmac);
         } catch (NoSuchAlgorithmException | InvalidKeyException exception) {
-            throw new IllegalArgumentException("HMAC 서명 생성을 실패했습니다.", exception);
+            throw new SmsException(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
         }
     }
 
