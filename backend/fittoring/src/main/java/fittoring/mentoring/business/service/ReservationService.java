@@ -1,11 +1,12 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
-import fittoring.mentoring.business.service.dto.SmsReservationMessageDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,7 @@ public class ReservationService {
     @Transactional
     public ReservationCreateResponse createReservation(ReservationCreateDto dto) {
         Mentoring mentoring = mentoringRepository.findById(dto.mentoringId())
-                // TODO: custom exception 필요
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멘토링 ID 입니다:" + dto.mentoringId()));
+                .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
         Reservation savedReservation = reservationRepository.save(new Reservation(
                 dto.menteeName(),
                 dto.menteePhone(),
