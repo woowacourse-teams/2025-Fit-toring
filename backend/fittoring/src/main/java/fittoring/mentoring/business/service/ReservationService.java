@@ -5,6 +5,7 @@ import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
+import fittoring.mentoring.business.service.dto.SmsReservationMessageDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

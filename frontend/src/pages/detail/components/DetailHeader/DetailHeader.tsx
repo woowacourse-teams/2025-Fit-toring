@@ -1,13 +1,13 @@
 import styled from '@emotion/styled';
 
-import backButton from '../../../../common/assets/images/backButton.svg';
+import backIcon from '../../../../common/assets/images/backIcon.svg';
 import Header from '../../../../common/components/Header/Header';
 function DetailHeader() {
   return (
     <Header>
       <StyledHeaderWrapper>
         <StyledBackButton>
-          <StyledImg src={backButton} alt="뒤로가기 버튼" />
+          <StyledImg src={backIcon} alt="뒤로가기 버튼" />
         </StyledBackButton>
         <StyledTitle>상세 정보</StyledTitle>
       </StyledHeaderWrapper>
