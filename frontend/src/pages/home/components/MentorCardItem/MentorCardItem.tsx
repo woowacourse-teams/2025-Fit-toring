@@ -6,8 +6,7 @@ import starIcon from '../../../../common/assets/images/starIcon.svg';
 import timeIcon from '../../../../common/assets/images/timeIcon.svg';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
-
-import MentorDetailInfoButton from './MentorDetailInfoButton';
+import MentorDetailInfoButton from '../MentorDetailInfoButton/MentorDetailInfoButton';
 
 function MentorCardItem() {
   return (
