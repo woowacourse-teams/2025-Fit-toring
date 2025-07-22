@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../../common/components/Button/Button';
@@ -16,6 +17,9 @@ function MentorDetailInfoButton() {
       size="full"
       type="button"
       onClick={handleDetailInfoButtonClick}
+      customStyle={css`
+        font-size: 1.2rem;
+      `}
     >
       상세 정보 보기
     </Button>
