@@ -2,15 +2,15 @@ import styled from '@emotion/styled';
 
 import DetailHeader from './components/DetailHeader/DetailHeader';
 import Introduction from './components/Introduction/Introduction';
+import MentorSummary from './components/MentorSummary/MentorSummary';
 import Profile from './components/Profile/Profile';
-import Summary from './components/Summary/Summary';
 
 function Detail() {
   return (
     <StyledContainer>
       <DetailHeader />
       <Profile />
-      <Summary />
+      <MentorSummary />
       <Introduction />
     </StyledContainer>
   );
