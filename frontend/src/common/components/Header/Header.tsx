@@ -10,7 +10,7 @@ export default Header;
 
 const StyledContainer = styled.header`
   position: sticky;
-  top: 0px;
+  top: 0;
   width: 48rem;
   height: 5.7rem;
   border-bottom: 1px solid ${({ theme }) => theme.LINE.REGULAR};
