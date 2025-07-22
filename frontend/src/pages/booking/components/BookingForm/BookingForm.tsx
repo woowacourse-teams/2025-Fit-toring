@@ -100,7 +100,7 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
   padding: 0.7rem 1.1rem;
   border: ${({ theme, errored }) =>
       errored ? theme.FONT.ERROR : theme.BORDER.GRAY300}
-    0.1rem solid;
+    1px solid;
   border-radius: 0.7rem;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
