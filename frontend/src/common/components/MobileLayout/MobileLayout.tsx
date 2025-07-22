@@ -18,6 +18,7 @@ const StyledContainer = styled.main`
 
   width: 100%;
   height: fit-content;
+  min-height: 100%;
 `;
 
 const StyledContents = styled.section`
