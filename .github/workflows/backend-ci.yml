@@ -24,7 +24,7 @@ jobs:
         fi
 
     - name: Start MySQL containers with Docker Compose
-      run: docker compose -f ./fittoring/docker-compose.yml up -d
+      run: docker compose -f ./fittoring/docker-compose.yml up -d db-test
 
     - name: Wait for MySQL
       run: |
@@ -44,11 +44,6 @@ jobs:
     - name: Create .env file
       run: |
         echo "ACTIVE_PROFILE=test" >> .env
-        echo "PROD_DATABASE_HOST=localhost" >> .env
-        echo "PROD_DATABASE_PORT=13306" >> .env
-        echo "PROD_DATABASE_NAME=fittoring" >> .env
-        echo "PROD_DATABASE_USER=root" >> .env
-        echo "PROD_DATABASE_PASSWORD=1234" >> .env
         echo "TEST_DATABASE_HOST=localhost" >> .env
         echo "TEST_DATABASE_PORT=13307" >> .env
         echo "TEST_DATABASE_NAME=fittoring-test" >> .env
