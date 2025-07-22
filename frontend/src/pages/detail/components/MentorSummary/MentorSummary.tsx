@@ -2,7 +2,7 @@ import React from 'react';
 
 import styled from '@emotion/styled';
 
-function Summary() {
+function MentorSummary() {
   return (
     <StyledContainer>
       <StyledSelfIntroduction>
@@ -17,7 +17,7 @@ function Summary() {
   );
 }
 
-export default Summary;
+export default MentorSummary;
 
 const StyledContainer = styled.section`
   display: flex;
