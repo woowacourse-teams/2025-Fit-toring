@@ -29,12 +29,12 @@ public class CategoryMentoring {
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
 
-    public String getCategoryTitle() {
-        return category.getTitle();
+    public CategoryMentoring(Category category, Mentoring mentoring) {
+        this(null, category, mentoring);
     }
 
-    public CategoryMentoring(final Category category, final Mentoring mentoring) {
-        this(null, category, mentoring);
+    public String getCategoryTitle() {
+        return category.getTitle();
     }
 }
 
