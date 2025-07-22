@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 
-import logo from '../../../../common/assets/imgs/logo.svg';
+import logo from '../../../../common/assets/images/logo.svg';
 import Header from '../../../../common/components/Header/Header';
 import { PAGE_URL } from '../../../../common/constants/url';
 
