@@ -45,7 +45,7 @@ jobs:
       run: |
         echo "ACTIVE_PROFILE=test" >> .env
         echo "TEST_DATABASE_HOST=localhost" >> .env
-        echo "TEST_DATABASE_PORT=13307" >> .env
+        echo "TEST_DATABASE_PORT=3307" >> .env
         echo "TEST_DATABASE_NAME=fittoring-test" >> .env
         echo "TEST_DATABASE_USER=root" >> .env
         echo "TEST_DATABASE_PASSWORD=1234" >> .env
