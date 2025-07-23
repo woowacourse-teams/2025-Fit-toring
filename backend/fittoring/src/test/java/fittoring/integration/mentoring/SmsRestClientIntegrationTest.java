@@ -97,6 +97,7 @@ class SmsRestClientIntegrationTest {
 
             // when
             // then
+            System.out.println("MockWebServer started at: " + mockWebServer.getHostName() + ":" + mockWebServer.getPort());
             assertThatThrownBy(() -> mockService.sendSms(
                     "010-0000-0000",
                     "read timeout test",
