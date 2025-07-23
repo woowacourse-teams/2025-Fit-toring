@@ -1,19 +1,12 @@
 import type React from 'react';
 import { useRef, useState } from 'react';
 
+import { getFormatPhoneNumber } from '../utils/getFormatPhoneNumber';
+
 const useFormattedPhoneNumber = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const formatPhoneNumber = (input: string) => {
-    const onlyNums = input.replace(/\D/g, '');
-
-    if (onlyNums.length < 4) return onlyNums;
-    if (onlyNums.length < 8)
-      return `${onlyNums.slice(0, 3)}-${onlyNums.slice(3)}`;
-    return `${onlyNums.slice(0, 3)}-${onlyNums.slice(3, 7)}-${onlyNums.slice(7, 11)}`;
-  };
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
@@ -21,7 +14,7 @@ const useFormattedPhoneNumber = () => {
     const cursorPos = e.target.selectionStart ?? rawValue.length;
 
     // 포매팅
-    const formatted = formatPhoneNumber(rawValue);
+    const formatted = getFormatPhoneNumber(rawValue);
 
     // 원본입력과 포매팅된 입력의 길이 차이
     const lengthDiff = formatted.length - prevValue.length;
