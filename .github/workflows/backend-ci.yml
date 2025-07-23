@@ -1,0 +1,76 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [ develop-be ]
+  workflow_dispatch: 
+
+jobs:
+  backend-ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/fittoring
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Compose
+      run: |
+        if ! docker compose version; then
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+        fi
+
+    - name: Start MySQL containers with Docker Compose
+      run: docker compose -f ./docker-compose.yml up -d db-test
+
+    - name: Wait for Test MySQL
+      run: |
+        echo "Waiting for Test MySQL..."
+        for i in {30..0}; do
+          nc -z localhost 3307 && echo "Test MySQL is up!" && break
+          echo "Still waiting for MySQL..."
+          sleep 2
+        done
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Create .env file
+      run: |
+        echo "ACTIVE_PROFILE=test" >> .env
+        echo "TEST_DATABASE_HOST=localhost" >> .env
+        echo "TEST_DATABASE_PORT=3307" >> .env
+        echo "TEST_DATABASE_NAME=fittoring-test" >> .env
+        echo "TEST_DATABASE_USER=root" >> .env
+        echo "TEST_DATABASE_PASSWORD=1234" >> .env
+        echo "COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}" >> .env
+        echo "COOL_SMS_HMAC_HEADER=HMAC-SHA256" >> .env
+        echo "COOL_SMS_HMAC_HASH=HmacSHA256" >> .env
+        echo "COOL_SMS_API_KEY=${{ secrets.COOL_SMS_API_KEY }}" >> .env
+        echo "COOL_SMS_SECRET_KEY=${{ secrets.COOL_SMS_SECRET_KEY }}" >> .env
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('./**/*.gradle*', './**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew
+
+    - name: Build & Run tests
+      run: ./gradlew clean build
+
+    - name: Stop Docker containers
+      if: always()
+      run: docker compose -f ./docker-compose.yml down
