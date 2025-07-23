@@ -50,8 +50,8 @@ jobs:
         echo "TEST_DATABASE_USER=root" >> .env
         echo "TEST_DATABASE_PASSWORD=1234" >> .env
         echo "COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}" >> .env
-        echo "COOL_SMS_HMAC_HEADER=${{ secrets.COOL_SMS_HMAC_HEADER }}" >> .env
-        echo "COOL_SMS_HMAC_HASH=${{ secrets.COOL_SMS_HMAC_HASH }}" >> .env
+        echo "COOL_SMS_HMAC_HEADER=HMAC-SHA256" >> .env
+        echo "COOL_SMS_HMAC_HASH=HmacSHA256" >> .env
         echo "COOL_SMS_API_KEY=${{ secrets.SMS_API_KEY }}" >> .env
         echo "COOL_SMS_SECRET_KEY=${{ secrets.SMS_SECRET_KEY }}" >> .env
 
