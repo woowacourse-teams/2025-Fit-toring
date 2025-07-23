@@ -1,5 +1,7 @@
 import { ThemeProvider } from '@emotion/react';
+import { BrowserRouter } from 'react-router-dom';
 
+import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
 import { THEME } from '../../../../common/styles/theme';
 
 import DetailHeader from './DetailHeader';
@@ -7,16 +9,20 @@ import DetailHeader from './DetailHeader';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
-  title: 'DetailHeader',
+  title: 'Detail/DetailHeader',
   component: DetailHeader,
 
   tags: ['autodocs'],
 
   decorators: [
     (Story) => (
-      <ThemeProvider theme={THEME}>
-        <Story />
-      </ThemeProvider>
+      <BrowserRouter>
+        <ThemeProvider theme={THEME}>
+          <MobileLayout>
+            <Story />
+          </MobileLayout>
+        </ThemeProvider>
+      </BrowserRouter>
     ),
   ],
 } satisfies Meta<typeof DetailHeader>;
