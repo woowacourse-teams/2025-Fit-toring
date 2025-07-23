@@ -28,7 +28,7 @@ export default Profile;
 
 const StyledContainer = styled.div`
   display: flex;
-  margin-top: 4.3rem;
+  margin-top: 2.3rem;
   align-items: center;
   justify-content: center;
   gap: 4rem;

@@ -1,41 +1,43 @@
 import { ThemeProvider } from '@emotion/react';
 import { BrowserRouter } from 'react-router-dom';
+import { fn } from 'storybook/test';
 
-import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
 import { THEME } from '../../../../common/styles/theme';
 
-import DetailHeader from './DetailHeader';
+import CompleteModal from './CompleteModal';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
-  title: 'Detail/DetailHeader',
-  component: DetailHeader,
+  title: 'Booking/CompleteModal',
+  component: CompleteModal,
 
   tags: ['autodocs'],
 
+  args: { opened: true, onCloseClick: fn() },
   decorators: [
     (Story) => (
       <BrowserRouter>
         <ThemeProvider theme={THEME}>
-          <MobileLayout>
-            <Story />
-          </MobileLayout>
+          <Story />
         </ThemeProvider>
       </BrowserRouter>
     ),
   ],
-} satisfies Meta<typeof DetailHeader>;
+} satisfies Meta<typeof CompleteModal>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const DefaultDetailHeader: Story = {
+export const DefaultModal: Story = {
+  args: {
+    opened: true,
+    onCloseClick: fn(),
+  },
   parameters: {
     docs: {
       description: {
-        story:
-          'DetailHeader 컴포넌트는 상세 정보 페이지의 헤더를 구성합니다. 뒤로가기 버튼과 제목을 포함하고 있습니다.',
+        story: `예약 완료 모달입니다. 사용자가 예약을 완료하면 이 모달이 표시되고 멘토의 번호를 확인할 수 있습니다.`,
       },
     },
   },
