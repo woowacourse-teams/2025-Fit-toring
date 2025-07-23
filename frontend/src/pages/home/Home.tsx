@@ -33,6 +33,7 @@ const StyledContainer = styled.div`
 const StyledContents = styled.main`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2rem;
   padding: 0 1.4rem;
 `;
