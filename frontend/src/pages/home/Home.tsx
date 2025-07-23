@@ -4,18 +4,19 @@ import Footer from '../../common/components/Footer/Footer';
 
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
+import MentorCardList from './components/MentorCardList/MentorCardList';
 import Slogan from './components/Slogan/Slogan';
 
 function Home() {
   return (
     <StyledContainer>
       <HomeHeader />
-      <Slogan />
-      <StyledSection>
-        <StyledUl>
+      <StyledContents>
+        <Slogan />
+        <MentorCardList>
           <MentorCardItem />
-        </StyledUl>
-      </StyledSection>
+        </MentorCardList>
+      </StyledContents>
       <Footer>문의: fitoring7@gmail.com</Footer>
     </StyledContainer>
   );
@@ -30,12 +31,8 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
-const StyledSection = styled.div`
-  flex-grow: 1;
-`;
-
-const StyledUl = styled.ul`
+const StyledContents = styled.div`
   display: flex;
-  justify-content: center;
-  padding: 1rem 1.4rem;
+  flex-direction: column;
+  gap: 2rem;
 `;
