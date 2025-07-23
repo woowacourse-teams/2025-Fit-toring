@@ -3,11 +3,13 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../../common/components/Button/Button';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 function ApplySection() {
   const navigate = useNavigate();
-  const moveToBookingPage = () => {
-    navigate('/booking');
+
+  const handleMoveToBookingPage = () => {
+    navigate(PAGE_URL.BOOKING);
   };
   return (
     <StyledContainer>
@@ -20,7 +22,7 @@ function ApplySection() {
         customStyle={css`
           font-size: 1.2rem;
         `}
-        onClick={moveToBookingPage}
+        onClick={handleMoveToBookingPage}
       >
         신청하기
       </Button>
