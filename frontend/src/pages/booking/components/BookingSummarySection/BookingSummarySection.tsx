@@ -1,12 +1,42 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import { apiClient } from '../../../../common/apis/apiClient';
 import timeIcon from '../../../../common/assets/images/timeIcon.svg';
 import Button from '../../../../common/components/Button/Button';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
+import { API_URL } from '../../../../common/constants/url';
 
-function BookingSummarySection() {
-  const handleBookingButtonClick = () => {};
+import type { BookingResponse } from '../../types/BookingResponse';
+
+interface BookingSummarySectionProps {
+  onBookingSuccess: (bookingResponse: BookingResponse) => void;
+  menteeName: string;
+  phoneNumber: string;
+  counselContent: string;
+}
+
+function BookingSummarySection({
+  onBookingSuccess,
+  menteeName,
+  phoneNumber,
+  counselContent,
+}: BookingSummarySectionProps) {
+  const handleClick = async () => {
+    try {
+      const response = await apiClient.post({
+        endpoint: `${API_URL.MENTORINGS}/1/reservation`,
+        searchParams: {
+          menteeName,
+          menteePhone: phoneNumber,
+          content: counselContent,
+        },
+      });
+      onBookingSuccess(response);
+    } catch (error) {
+      console.error('예약 중 에러 발생', error);
+    }
+  };
 
   return (
     <StyledContainer>
@@ -17,9 +47,9 @@ function BookingSummarySection() {
       <Button
         customStyle={css`
           flex-grow: 1;
-          padding: 0.8rem 0rem;
+          padding: 0.8rem 0;
         `}
-        onClick={handleBookingButtonClick}
+        onClick={handleClick}
       >
         예약하기
       </Button>
