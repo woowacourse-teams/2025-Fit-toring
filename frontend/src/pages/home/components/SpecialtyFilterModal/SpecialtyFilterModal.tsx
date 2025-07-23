@@ -19,6 +19,8 @@ const ALL_SPECIALTIES = [
   { id: 'competitionPrep', label: '대회 준비' },
 ] as const;
 
+const MAX_SPECIALTIES = 3;
+
 interface SpecialtyModalProps {
   opened: boolean;
   handleCloseModal: () => void;
@@ -61,6 +63,10 @@ function SpecialtyModal({
               key={specialty.id}
               specialty={specialty.label}
               checked={temporarySelectedSpecialties.includes(specialty.id)}
+              disabled={
+                temporarySelectedSpecialties.length >= MAX_SPECIALTIES &&
+                !temporarySelectedSpecialties.includes(specialty.id)
+              }
               onChange={() => handleTemporarySpecialtyToggle(specialty.id)}
             />
           ))}

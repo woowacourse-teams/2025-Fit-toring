@@ -3,12 +3,14 @@ import styled from '@emotion/styled';
 interface SpecialtyCheckboxProps {
   specialty: string;
   checked: boolean;
+  disabled: boolean;
   onChange: () => void;
 }
 
 function SpecialtyCheckbox({
   specialty,
   checked,
+  disabled,
   onChange,
 }: SpecialtyCheckboxProps) {
   return (
@@ -17,8 +19,11 @@ function SpecialtyCheckbox({
         type="checkbox"
         checked={checked}
         onChange={onChange}
+        disabled={disabled}
       />
-      <StyledCheckboxLabel checked={checked}>{specialty}</StyledCheckboxLabel>
+      <StyledCheckboxLabel checked={checked} disabled={disabled}>
+        {specialty}
+      </StyledCheckboxLabel>
     </StyledContainer>
   );
 }
@@ -28,7 +33,7 @@ export default SpecialtyCheckbox;
 const StyledContainer = styled.label`
   display: inline-flex;
   align-items: center;
-  cursor: pointer;
+
   transition: all 0.2s ease;
   user-select: none;
 `;
@@ -38,10 +43,12 @@ const StyledHiddenCheckbox = styled.input`
   width: 0;
   height: 0;
   opacity: 0;
-  cursor: pointer;
 `;
 
-const StyledCheckboxLabel = styled.span<{ checked: boolean }>`
+const StyledCheckboxLabel = styled.span<{
+  checked: boolean;
+  disabled: boolean;
+}>`
   display: inline-flex;
 
   padding: 0.6rem 1.2rem;
@@ -57,6 +64,9 @@ const StyledCheckboxLabel = styled.span<{ checked: boolean }>`
   align-items: center;
   border-radius: 16px;
   transition: all 0.2s ease;
+
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 
   &:hover {
     border-color: ${({ theme }) => theme.SYSTEM.MAIN700};
