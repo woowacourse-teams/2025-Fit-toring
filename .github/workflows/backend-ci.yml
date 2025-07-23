@@ -74,7 +74,7 @@ jobs:
         sudo lsof -i -P -n | grep LISTEN | sort -k9
 
     - name: Build & Run tests
-      run: ./gradlew clean build
+      run: ./gradlew clean build --debug
 
     - name: Stop Docker containers
       if: always()

@@ -36,6 +36,9 @@ class SmsRestClientIntegrationTest {
     private static MockWebServer mockWebServer;
 
     @Autowired
+    private SmsRestClientService smsRestClientService;
+
+    @Autowired
     private RestClient.Builder builder;
 
     @Value("${sms.timeout.read}")
@@ -98,20 +101,9 @@ class SmsRestClientIntegrationTest {
                     .setBody("{\"result\":\"ok\"}")
                     .setBodyDelay(overReadTimeout, TimeUnit.MILLISECONDS));
 
-            String mockUrl = mockWebServer.url("/").toString();
-            SmsRestClientService mockService = new SmsRestClientService(
-                    builder.baseUrl(mockUrl).build(),
-                    new SmsAuthHeaderGenerator(
-                            "HMAC-SHA256",
-                            "HmacSHA256",
-                            "API_TEST_KEY",
-                            "API_SECRET_KEY"
-                    )
-            );
-
             // when
             // then
-            assertThatThrownBy(() -> mockService.sendSms(
+            assertThatThrownBy(() -> smsRestClientService.sendSms(
                     "010-0000-0000",
                     "read timeout test",
                     "subject"
