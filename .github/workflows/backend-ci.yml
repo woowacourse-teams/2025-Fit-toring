@@ -68,7 +68,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
 
-      - name: Debug - show listening ports
+    - name: Debug - show listening ports
       run: |
         echo "=== Currently listening ports ==="
         sudo lsof -i -P -n | grep LISTEN | sort -k9
