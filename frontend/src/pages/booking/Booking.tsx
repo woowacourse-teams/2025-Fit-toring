@@ -1,10 +1,19 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
 import BookingForm from './components/BookingForm/BookingForm';
 import BookingHeader from './components/BookingHeader/BookingHeader';
+import CompleteModal from './components/CompleteModal/CompleteModal';
 import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 
 function Booking() {
+  const [opened, setOpened] = useState(false);
+
+  const handleCloseClick = () => {
+    setOpened(false);
+  };
+
   return (
     <>
       <BookingHeader />
@@ -12,6 +21,8 @@ function Booking() {
         <MentoInfoCard />
         <BookingForm />
       </StyledContentWrapper>
+      <CompleteModal opened={opened} onCloseClick={handleCloseClick} />
+
     </>
   );
 }
