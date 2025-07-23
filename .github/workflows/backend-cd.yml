@@ -1,0 +1,19 @@
+name: Backend CD
+
+on:
+  push:
+    branches: [ release ]
+
+jobs:
+  backend-cd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.BE_SERVER_HOST }}
+          username: ${{ secrets.BE_SSH_USER }}
+          key: ${{ secrets.BE_SSH_PRIVATE_KEY }}
+          script: |
+            ./deploy-be.sh
