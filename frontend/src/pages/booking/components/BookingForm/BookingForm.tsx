@@ -32,7 +32,7 @@ function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
   };
 
   return (
-    <StyledContainer>
+    <StyledContainer onSubmit={(e) => e.preventDefault()}>
       <StyledInfoText>
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
@@ -82,7 +82,7 @@ function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
 
 export default BookingForm;
 
-const StyledContainer = styled.div`
+const StyledContainer = styled.form`
   width: 100%;
   height: 100%;
   padding: 2.2rem;
