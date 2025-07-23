@@ -1,8 +1,8 @@
 name: Backend CD
 
 on:
-  pull_request:
-    branches: [ feature/88-cd-pipelines ]
+  push:
+    branches: [ release ]
 
 jobs:
   backend-cd:
