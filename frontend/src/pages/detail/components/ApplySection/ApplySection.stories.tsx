@@ -10,7 +10,6 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 const meta = {
   title: 'Detail/ApplySection',
   component: ApplySection,
-  parameters: {},
 
   tags: ['autodocs'],
   decorators: [
