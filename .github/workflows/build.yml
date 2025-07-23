@@ -24,9 +24,9 @@ jobs:
 
       - name: Generate environment variables
         run: |
-          echo "FE_BASE_URL=${{ secrets.FE_BASE_URL }}" >> .env
+          echo "BASE_URL=${{ secrets.FE_BASE_URL }}" >> .env
         env:
-          FE_BASE_URL: ${{ secrets.FE_BASE_URL }}
+          BASE_URL: ${{ secrets.FE_BASE_URL }}
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Build
