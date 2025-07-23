@@ -1,0 +1,43 @@
+name: "Deploy Storybook with Chromatic"
+
+on:
+  pull_request:
+    # PR에 다음 파일들이 변경되었을 때만 워크플로우 실행
+    paths:
+      - "**/*.stories.ts"
+      - "**/*.stories.tsx"
+      - ".storybook/**"
+
+jobs:
+  chromatic:
+    name: Run Chromatic
+    runs-on: ubuntu-latest # 최신 Ubuntu 환경에서 실행
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # 저장소 코드 체크아웃
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4 # Node.js 환경 설정
+        with:
+          node-version: 22.x # Node.js 22 버전 사용
+
+      - name: Install dependencies
+        run: npm ci # lockfile 기반으로 의존성 설치 (엄격한 일관성 보장)
+
+      - name: Build Storybook
+        run: npm run build-storybook # 정적 Storybook 사이트 빌드
+
+      - name: Run Chromatic
+        id: chromatic
+        uses: chromaui/action@latest # Chromatic에 Storybook 배포
+        with:
+          projectToken: ${{ secrets.FE_CHROMATIC_PROJECT_TOKEN }} # Chromatic 프로젝트 토큰
+          token: ${{ secrets.GITHUB_TOKEN }} # GitHub 인증용 토큰
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2 # PR에 코멘트 남기는 액션
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 코멘트 권한을 위한 토큰
+        with:
+          message: "🚀storybook: ${{ steps.chromatic.outputs.storybookUrl }}" # 배포된 Storybook 링크 코멘트로 추가
