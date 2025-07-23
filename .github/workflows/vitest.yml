@@ -2,10 +2,10 @@ name: "vitest test"
 
 on:
   pull_request:
-  types: [opened, synchronize]
-  paths:
-    - "**/*.test.ts"
-    - "**/*.test.tsx"
+    types: [opened, synchronize]
+    paths:
+      - "**/*.test.ts"
+      - "**/*.test.tsx"
 
 jobs:
   Component-test:
