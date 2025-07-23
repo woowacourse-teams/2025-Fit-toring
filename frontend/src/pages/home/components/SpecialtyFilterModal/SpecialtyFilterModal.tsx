@@ -65,6 +65,14 @@ function SpecialtyModal({
             />
           ))}
         </StyledSpecialtyWrapper>
+
+        <StyledLine />
+        <StyledButtonWrapper>
+          <StyledSecondaryButton onClick={handleReset}>
+            초기화
+          </StyledSecondaryButton>
+          <StyledPrimaryButton onClick={handleApply}>적용</StyledPrimaryButton>
+        </StyledButtonWrapper>
       </StyledContainer>
     </Modal>
   );
@@ -103,4 +111,51 @@ const StyledSpecialtyWrapper = styled.div`
   justify-content: center;
 
   max-height: 15rem;
+`;
+
+const StyledButtonWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 0.4rem;
+
+  gap: 1.2rem;
+`;
+
+const StyledButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  width: 100%;
+  padding: 1.2rem 1.6rem;
+
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_R};
+
+  transition: all 0.2s ease;
+  cursor: pointer;
+`;
+
+const StyledPrimaryButton = styled(StyledButton)`
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN800};
+
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN800};
+
+  color: ${({ theme }) => theme.BG.WHITE};
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
+
+  &:hover {
+    background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
+  }
+`;
+
+const StyledSecondaryButton = styled(StyledButton)`
+  border: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
+
+  background-color: transparent;
+
+  color: ${({ theme }) => theme.FONT.B01};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.BG.LIGHT};
+  }
 `;
