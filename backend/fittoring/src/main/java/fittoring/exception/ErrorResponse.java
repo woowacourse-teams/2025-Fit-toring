@@ -1,6 +1,7 @@
 package fittoring.exception;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -14,11 +15,12 @@ public record ErrorResponse(
         return new ErrorResponse(
                 httpStatus,
                 errorMessage,
-                LocalDateTime.now()
+                LocalDateTime.now(ZoneId.of("Asia/Seoul"))
         );
     }
 
     public ResponseEntity<ErrorResponse> toResponseEntity() {
-        return ResponseEntity.status(status).body(this);
+        return ResponseEntity.status(status)
+                .body(this);
     }
 }
