@@ -67,7 +67,11 @@ const StyledProfileImg = styled.img`
   height: 5.6rem;
   border-radius: 50%;
 
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+  border: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
+
+  :hover {
+    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+  }
 `;
 
 const StyledInfoWrapper = styled.div`
