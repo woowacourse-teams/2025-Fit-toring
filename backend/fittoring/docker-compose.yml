@@ -30,6 +30,8 @@ services:
       retries: 5
       start_period: 10s
       timeout: 2s
+    ports:
+      - "3307:3306"
 
   app:
     build:

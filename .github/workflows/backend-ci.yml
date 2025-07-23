@@ -30,7 +30,7 @@ jobs:
       run: |
         echo "Waiting for Test MySQL..."
         for i in {30..0}; do
-          nc -z localhost 13307 && echo "Test MySQL is up!" && break
+          nc -z localhost 3307 && echo "Test MySQL is up!" && break
           echo "Still waiting for MySQL..."
           sleep 2
         done
