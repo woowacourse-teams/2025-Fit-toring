@@ -13,8 +13,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -31,8 +29,6 @@ import org.springframework.web.client.RestClientException;
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class SmsRestClientIntegrationTest {
 
-    private static final Logger log = LoggerFactory.getLogger(SmsRestClientIntegrationTest.class);
-
     private static MockWebServer mockWebServer;
 
     @Autowired
@@ -48,16 +44,6 @@ class SmsRestClientIntegrationTest {
     static void setUpServer() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start(8089);
-        String host = mockWebServer.getHostName();
-        int port = mockWebServer.getPort();
-        String fullUrl = mockWebServer.url("/").toString();
-
-        log.info("========================================");
-        log.info("✅ MockWebServer started");
-        log.info("✅ Host: {}", host);
-        log.info("✅ Port: {}", port);
-        log.info("✅ Full URL: {}", fullUrl);
-        log.info("========================================");
     }
 
     @AfterAll
