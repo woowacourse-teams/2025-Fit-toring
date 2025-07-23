@@ -5,7 +5,7 @@ import Footer from '../../common/components/Footer/Footer';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorOverview from './components/MentorOverview/MentorOverview';
 import Slogan from './components/Slogan/Slogan';
-import SpecialtiesModalButton from './components/SpecialtiesModalButton/SpecialtiesModalButton';
+import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 function Home() {
   return (
@@ -14,7 +14,7 @@ function Home() {
       <StyledContents>
         <Slogan />
         <MentorOverview mentorCount={6} />
-        <SpecialtiesModalButton handleOpenModal={() => {}} />
+        <SpecialtyFilterModalButton handleOpenModal={() => {}} />
       </StyledContents>
       <Footer>문의: fitoring7@gmail.com</Footer>
     </StyledContainer>

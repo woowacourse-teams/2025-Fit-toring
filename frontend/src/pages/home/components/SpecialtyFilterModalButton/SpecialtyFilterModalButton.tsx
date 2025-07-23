@@ -2,13 +2,13 @@ import styled from '@emotion/styled';
 
 import goIcon from '../../../../common/assets/images/goIcon.svg';
 
-interface SpecialtiesModalButtonProps {
+interface SpecialtyFilterModalButtonProps {
   handleOpenModal: () => void;
 }
 
-function SpecialtiesModalButton({
+function SpecialtyFilterModalButton({
   handleOpenModal,
-}: SpecialtiesModalButtonProps) {
+}: SpecialtyFilterModalButtonProps) {
   return (
     <StyledButton onClick={handleOpenModal} type="button">
       <StyledText>전문 분야</StyledText>
@@ -17,7 +17,7 @@ function SpecialtiesModalButton({
   );
 }
 
-export default SpecialtiesModalButton;
+export default SpecialtyFilterModalButton;
 
 const StyledButton = styled.button`
   display: inline-flex;
