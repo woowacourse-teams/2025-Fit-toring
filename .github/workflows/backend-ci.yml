@@ -52,8 +52,8 @@ jobs:
         echo "COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}" >> .env
         echo "COOL_SMS_HMAC_HEADER=HMAC-SHA256" >> .env
         echo "COOL_SMS_HMAC_HASH=HmacSHA256" >> .env
-        echo "COOL_SMS_API_KEY=${{ secrets.SMS_API_KEY }}" >> .env
-        echo "COOL_SMS_SECRET_KEY=${{ secrets.SMS_SECRET_KEY }}" >> .env
+        echo "COOL_SMS_API_KEY=${{ secrets.COOL_SMS_API_KEY }}" >> .env
+        echo "COOL_SMS_SECRET_KEY=${{ secrets.COOL_SMS_SECRET_KEY }}" >> .env
 
     - name: Cache Gradle packages
       uses: actions/cache@v4
