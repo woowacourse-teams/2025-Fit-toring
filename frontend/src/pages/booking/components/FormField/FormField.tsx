@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 
 interface FormFieldProps {
   label: string;
-  errorMessage: string;
+  errorMessage?: string;
   htmlFor: string;
 }
 
