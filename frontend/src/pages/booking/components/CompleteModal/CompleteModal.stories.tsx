@@ -11,7 +11,6 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 const meta = {
   title: 'Booking/CompleteModal',
   component: CompleteModal,
-  parameters: {},
 
   tags: ['autodocs'],
 
