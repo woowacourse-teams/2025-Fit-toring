@@ -13,6 +13,7 @@ export default Introduction;
 
 const StyledContainer = styled.p`
   width: 100%;
+  padding: 0 1rem;
 
   white-space: pre-line;
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
