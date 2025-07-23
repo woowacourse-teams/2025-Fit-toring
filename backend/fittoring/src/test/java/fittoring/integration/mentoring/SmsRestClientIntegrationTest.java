@@ -41,6 +41,9 @@ class SmsRestClientIntegrationTest {
     static void setUpServer() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start(8089);
+        System.out.println("✅ MockWebServer started on: "
+                + mockWebServer.getHostName() + ":" + mockWebServer.getPort());
+        System.out.println("✅ Accessible at: " + mockWebServer.url("/"));
     }
 
     @AfterAll
@@ -97,7 +100,6 @@ class SmsRestClientIntegrationTest {
 
             // when
             // then
-            System.out.println("MockWebServer started at: " + mockWebServer.getHostName() + ":" + mockWebServer.getPort());
             assertThatThrownBy(() -> mockService.sendSms(
                     "010-0000-0000",
                     "read timeout test",
