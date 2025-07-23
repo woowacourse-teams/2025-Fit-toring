@@ -1,10 +1,13 @@
 package fittoring.mentoring.infra;
 
 import fittoring.mentoring.business.service.dto.SmsSendClientDto;
+import fittoring.mentoring.infra.exception.InfraErrorMessage;
+import fittoring.mentoring.infra.exception.SmsException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -31,6 +34,12 @@ public class SmsRestClientService {
                         subject
                 ))))
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new SmsException(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new SmsException(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
+                })
                 .body(String.class);
     }
 }
