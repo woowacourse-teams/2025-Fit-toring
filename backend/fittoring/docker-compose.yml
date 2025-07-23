@@ -8,7 +8,7 @@ services:
       MYSQL_DATABASE: fittoring
       MYSQL_ROOT_PASSWORD: 1234
     ports:
-      - "13306:3306"
+      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
     healthcheck:
@@ -24,8 +24,6 @@ services:
     environment:
       MYSQL_DATABASE: fittoring-test
       MYSQL_ROOT_PASSWORD: 1234
-    ports:
-      - "13307:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 5s
@@ -44,7 +42,7 @@ services:
       db-test:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "80:8080"
 
 volumes:
   db-data:
