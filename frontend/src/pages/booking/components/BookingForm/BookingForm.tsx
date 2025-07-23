@@ -6,7 +6,13 @@ import Input from '../../../../common/components/Input/Input';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import FormField from '../FormField/FormField';
 
-function BookingForm() {
+import type { BookingResponse } from '../../types/BookingResponse';
+
+interface BookingFormProps {
+  handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
+}
+
+function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
   const [menteeName, setMenteeName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [counselContent, setCounselContent] = useState('');
@@ -64,26 +70,33 @@ function BookingForm() {
           />
         </FormField>
       </StyledFieldWrapper>
-      <BookingSummarySection />
+      <BookingSummarySection
+        onBookingSuccess={handleBookingButtonClick}
+        menteeName={menteeName}
+        phoneNumber={phoneNumber}
+        counselContent={counselContent}
+      />
     </StyledContainer>
   );
 }
 
 export default BookingForm;
 
-const StyledContainer = styled.form`
-  padding: 2.2rem;
-  border-radius: 1.3rem;
-  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+const StyledContainer = styled.div`
   width: 100%;
   height: 100%;
+  padding: 2.2rem;
+  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+
   background-color: white;
+  border-radius: 1.3rem;
 `;
 
 const StyledInfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-  color: ${({ theme }) => theme.FONT.BLACK};
   margin-top: 1.7rem;
+
+  color: ${({ theme }) => theme.FONT.BLACK};
 `;
 
 const StyledFieldWrapper = styled.div`
