@@ -17,6 +17,7 @@ public class CategoryController {
 
     @GetMapping("/categories")
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+        System.out.println();
         List<CategoryResponse> responseBody = categoryService.getAllCategories();
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(responseBody);
