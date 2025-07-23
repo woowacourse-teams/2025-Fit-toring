@@ -29,8 +29,10 @@ export const THEME = {
     B02: '#45556C',
     B03: '#62748E',
     B04: '#F1F5F9',
+    BLACK: '#314158',
     W01: '#FFFFFF',
     G01: '#A7A7A7',
+    ERROR: '#fa5252',
   },
 
   LINE: {
