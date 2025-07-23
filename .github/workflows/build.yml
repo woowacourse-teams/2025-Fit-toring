@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  Component-test:
+  Build-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

@@ -13,11 +13,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return (
-    <MobileLayout>
-      <RouterProvider router={router} />
-    </MobileLayout>
-  );
+  return <MobileLayout></MobileLayout>;
 }
 
 export default App;
