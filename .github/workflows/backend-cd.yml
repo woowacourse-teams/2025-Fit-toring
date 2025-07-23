@@ -10,4 +10,6 @@ jobs:
 
     steps:
       - name: Run deploy script
-        run: ./deploy-be.sh
+        run: |
+          cd /home/ubuntu
+          ./deploy-be.sh
