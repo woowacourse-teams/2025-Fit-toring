@@ -31,7 +31,7 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
-const StyledContents = styled.div`
+const StyledContents = styled.main`
   display: flex;
   flex-direction: column;
   gap: 2rem;
