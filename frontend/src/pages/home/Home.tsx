@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 
 import Footer from '../../common/components/Footer/Footer';
+
 import HomeHeader from './components/HomeHeader/HomeHeader';
 
 function Home() {

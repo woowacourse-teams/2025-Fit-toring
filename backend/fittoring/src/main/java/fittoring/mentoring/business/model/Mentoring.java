@@ -9,7 +9,9 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "mentoring")
@@ -45,17 +47,5 @@ public class Mentoring {
             String introduction
     ) {
         this(null, mentorName, mentorPhone, price, career, content, introduction);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getMentorName() {
-        return mentorName;
-    }
-
-    public String getMentorPhone() {
-        return mentorPhone;
     }
 }
