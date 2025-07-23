@@ -2,6 +2,7 @@ name: "Deploy Storybook with Chromatic"
 
 on:
   pull_request:
+    types: [opened, synchronize]
     # PR에 아래 파일들이 변경될 경우에만 워크플로우 실행
     paths:
       - "**/*.stories.ts"
