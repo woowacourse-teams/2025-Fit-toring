@@ -22,7 +22,6 @@ export default MentorSummary;
 const StyledContainer = styled.section`
   display: flex;
   width: 100%;
-  margin-top: 3rem;
   padding: 1rem;
   flex-direction: column;
   align-items: center;

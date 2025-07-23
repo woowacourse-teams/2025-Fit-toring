@@ -49,6 +49,7 @@ export const THEME = {
     BLACK: '#111111',
     GRAY: '#E1E1E1',
     WHITE: '#FFFFFF',
+    GREEN: '#F0FDFA;',
   },
   TYPOGRAPHY: {
     H1_B: css`

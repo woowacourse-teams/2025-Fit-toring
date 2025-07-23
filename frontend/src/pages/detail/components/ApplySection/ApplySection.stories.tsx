@@ -1,41 +1,36 @@
 import { ThemeProvider } from '@emotion/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
 import { THEME } from '../../../../common/styles/theme';
 
-import DetailHeader from './DetailHeader';
+import ApplySection from './ApplySection';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
-  title: 'Detail/DetailHeader',
-  component: DetailHeader,
+  title: 'Detail/ApplySection',
+  component: ApplySection,
 
   tags: ['autodocs'],
-
   decorators: [
     (Story) => (
       <BrowserRouter>
         <ThemeProvider theme={THEME}>
-          <MobileLayout>
-            <Story />
-          </MobileLayout>
+          <Story />
         </ThemeProvider>
       </BrowserRouter>
     ),
   ],
-} satisfies Meta<typeof DetailHeader>;
+} satisfies Meta<typeof ApplySection>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const DefaultDetailHeader: Story = {
+export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'DetailHeader 컴포넌트는 상세 정보 페이지의 헤더를 구성합니다. 뒤로가기 버튼과 제목을 포함하고 있습니다.',
+        story: `상담 신청 섹션입니다. 사용자가 상담을 신청할 수 있는 버튼과 상담료 정보를 표시합니다.`,
       },
     },
   },
