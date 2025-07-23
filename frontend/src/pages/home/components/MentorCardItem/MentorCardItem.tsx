@@ -86,16 +86,12 @@ const StyledPersonalHistory = styled.p`
 `;
 
 const StyledSelfIntroduction = styled.p`
-  display: -webkit-box;
   overflow: hidden;
 
   color: ${({ theme }) => theme.FONT.B03};
   font-size: 1.2rem;
-
+  white-space: nowrap;
   text-overflow: ellipsis;
-  word-break: break-all;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
 `;
 
 const StyledPriceWrapper = styled.div`
