@@ -9,7 +9,6 @@ function Home() {
   return (
     <StyledContainer>
       <HomeHeader />
-      {if}
       <Slogan />
       <StyledSection>section</StyledSection>
       <Footer>문의: fitoring7@gmail.com</Footer>
