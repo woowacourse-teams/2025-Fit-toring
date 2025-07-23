@@ -26,10 +26,12 @@ function CompleteModal({ opened, onCloseClick }: CompleteModalProps) {
         <StyledCompleteNotice>
           <StyledImg src={bookedIcon} alt="Booked Icon" />
           <h3>신청이 완료되었습니다!</h3>
-          <p>
-            <strong>김트레이너</strong> 멘토에게
-            <br /> 상담 신청이 전송되었습니다.
-          </p>
+          <div>
+            <p>
+              <strong>김트레이너</strong> 멘토에게
+            </p>
+            <p>상담 신청이 전송되었습니다.</p>
+          </div>
         </StyledCompleteNotice>
         <StyledInfoWrapper>
           <p>신청자: 홍길동</p>
@@ -37,11 +39,10 @@ function CompleteModal({ opened, onCloseClick }: CompleteModalProps) {
           <p>멘토 연락처: 010-5678-5678</p>
         </StyledInfoWrapper>
         <StyledCompleteGuide>
-          <p>
-            멘토가 확인 후 연락드릴 예정입니다.
-            <br />
-            조금만 기다려주세요!
-          </p>
+          <div>
+            <p>멘토가 확인 후 연락드릴 예정입니다.</p>
+            <p>조금만 기다려주세요!</p>
+          </div>
         </StyledCompleteGuide>
         <Button
           onClick={handleGoHome}
