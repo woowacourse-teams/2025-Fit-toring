@@ -1,14 +1,16 @@
-FROM openjdk:21-jdk-slim
-RUN apt-get update && apt-get install -y findutils
-
+FROM gradle:8.7-jdk21 AS build
 WORKDIR /app
 
-COPY gradlew ./
-COPY gradle gradle
 COPY build.gradle settings.gradle ./
-RUN ./gradlew dependencies || true
+COPY gradle gradle
+RUN gradle dependencies --no-daemon || true
 COPY . .
-RUN ./gradlew clean bootJar -x test
-RUN mv build/libs/*SNAPSHOT.jar app.jar
+RUN gradle clean bootJar -x test --no-daemon
 
-CMD ["java", "-jar", "app.jar"]
+
+FROM openjdk:21-jdk-slim AS runtime
+WORKDIR /app
+
+COPY --from=build /app/build/libs/*SNAPSHOT.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
