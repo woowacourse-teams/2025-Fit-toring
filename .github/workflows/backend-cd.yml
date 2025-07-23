@@ -1,19 +1,13 @@
 name: Backend CD
 
 on:
-  push:
-    branches: [ release ]
+  pull_request:
+    branches: [ feature/88-cd-pipelines ]
 
 jobs:
   backend-cd:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.BE_SERVER_HOST }}
-          username: ${{ secrets.BE_SSH_USER }}
-          key: ${{ secrets.BE_SSH_PRIVATE_KEY }}
-          script: |
-            ./deploy-be.sh
+      - name: Run deploy script
+        run: ./deploy-be.sh
