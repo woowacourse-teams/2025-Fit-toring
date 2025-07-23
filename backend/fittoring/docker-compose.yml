@@ -45,6 +45,10 @@ services:
         condition: service_healthy
     ports:
       - "80:8080"
+    env_file:
+      .env
+    restart: always
+
 
 volumes:
   db-data:
