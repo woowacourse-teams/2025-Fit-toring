@@ -1,7 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.InvalidCategoryException;
+import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
@@ -92,7 +92,7 @@ public class MentoringService {
 
     private void validateExistCategoryTitle(String categoryTitle) {
         if (categoryTitle != null && !categoryRepository.existsByTitle(categoryTitle)) {
-            throw new InvalidCategoryException(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
+            throw new CategoryNotFoundException(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
         }
     }
 

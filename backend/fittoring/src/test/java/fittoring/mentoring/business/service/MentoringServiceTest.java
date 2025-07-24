@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.InvalidCategoryException;
+import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
@@ -208,7 +208,7 @@ class MentoringServiceTest {
                     categoryTitle2,
                     categoryTitle3
             ))
-                    .isInstanceOf(InvalidCategoryException.class)
+                    .isInstanceOf(CategoryNotFoundException.class)
                     .hasMessage(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
         }
 

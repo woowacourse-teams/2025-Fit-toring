@@ -3,6 +3,7 @@ package fittoring.integration.mentoring.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
@@ -369,9 +370,7 @@ class MentoringControllerTest {
             assertThat(response).isNotNull().isEmpty();
         }
 
-        // 전역 예외처리 도입 후 테스트 활성화 필요(@Disabled 어노테이션 제거)
-        @Disabled
-        @DisplayName("존재하지 않는 카테고리로 필터링을 시도할 때, 400 Bad Request 상태코드를 반환한다.")
+        @DisplayName("존재하지 않는 카테고리로 필터링을 시도할 때, 404 NotFound 상태코드를 반환한다.")
         @Test
         void getAllCategories5() {
             //given
@@ -419,8 +418,8 @@ class MentoringControllerTest {
             String responseMessage = response.jsonPath().getString("message");
             assertSoftly(softly -> {
                 softly.assertThat(response).isNotNull();
-                softly.assertThat(response.statusCode()).isEqualTo(400);
-                softly.assertThat(responseMessage).isEqualTo("존재하지 않는 카테고리가 포함되어 있습니다.");
+                softly.assertThat(response.statusCode()).isEqualTo(404);
+                softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
             });
         }
     }
@@ -539,7 +538,7 @@ class MentoringControllerTest {
         String responseMessage = response.jsonPath().getString("message");
         assertSoftly(softly -> {
             softly.assertThat(response.statusCode()).isEqualTo(404);
-            softly.assertThat(responseMessage).isEqualTo("존재하지 않는 멘토링입니다.");
+            softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
         });
     }
 
