@@ -1,4 +1,4 @@
-export interface Mentoring {
+export interface MentoringResponse {
   id: number;
   mentorName: string;
   categories: string[];

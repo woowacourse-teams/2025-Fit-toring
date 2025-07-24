@@ -10,11 +10,11 @@ import Introduction from './components/Introduction/Introduction';
 import MentorSummary from './components/MentorSummary/MentorSummary';
 import Profile from './components/Profile/Profile';
 
-import type { Mentoring } from './types/Mentoring';
+import type { MentoringResponse } from './types/MentoringResponse';
 
 function Detail() {
   const { mentoringId } = useParams();
-  const [data, setData] = useState<Mentoring | null>(null);
+  const [data, setData] = useState<MentoringResponse | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {

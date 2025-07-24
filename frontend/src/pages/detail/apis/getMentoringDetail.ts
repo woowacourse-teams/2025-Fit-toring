@@ -1,9 +1,9 @@
 import { apiClient } from '../../../common/apis/apiClient';
 
-import type { Mentoring } from '../types/Mentoring';
+import type { MentoringResponse } from '../types/MentoringResponse';
 
 export const getMentoringDetail = async (mentoringId: string) => {
-  return await apiClient.get<Mentoring>({
+  return await apiClient.get<MentoringResponse>({
     endpoint: `/mentorings/${mentoringId}`,
   });
 };
