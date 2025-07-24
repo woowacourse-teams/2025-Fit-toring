@@ -4,7 +4,7 @@ import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.Mentoring;
 import java.util.List;
 
-public record MentoringResponse(
+public record MentoringCardResponse(
         long id,
         String mentorName,
         List<String> categories,
@@ -14,8 +14,8 @@ public record MentoringResponse(
         String introduction
 ) {
 
-    public static MentoringResponse from(Mentoring mentoring, List<String> categoriesByMentoring) {
-        return new MentoringResponse(
+    public static MentoringCardResponse from(Mentoring mentoring, List<String> categoriesByMentoring) {
+        return new MentoringCardResponse(
                 mentoring.getId(),
                 mentoring.getMentorName(),
                 categoriesByMentoring,
@@ -26,8 +26,8 @@ public record MentoringResponse(
         );
     }
 
-    public static MentoringResponse from(Mentoring mentoring, List<String> categoriesByMentoring, Image image) {
-        return new MentoringResponse(
+    public static MentoringCardResponse from(Mentoring mentoring, List<String> categoriesByMentoring, Image image) {
+        return new MentoringCardResponse(
                 mentoring.getId(),
                 mentoring.getMentorName(),
                 categoriesByMentoring,

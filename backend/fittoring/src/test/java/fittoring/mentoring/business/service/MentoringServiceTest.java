@@ -11,7 +11,7 @@ import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.presentation.dto.MentoringResponse;
+import fittoring.mentoring.presentation.dto.MentoringCardResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,19 +76,19 @@ class MentoringServiceTest {
             String categoryTitle2 = null;
             String categoryTitle3 = null;
 
-            MentoringResponse expected = MentoringResponse.from(
+            fittoring.mentoring.presentation.dto.MentoringCardResponse expected = MentoringCardResponse.from(
                     mentoring1,
                     List.of(categoryMentoring1_1.getCategoryTitle()),
                     image1
             );
 
-            MentoringResponse expected2 = MentoringResponse.from(
+            MentoringCardResponse expected2 = MentoringCardResponse.from(
                     mentoring2,
                     List.of(categoryMentoring2_2.getCategoryTitle())
             );
 
             // when
-            List<MentoringResponse> actual = mentoringService.findMentorings(
+            List<MentoringCardResponse> actual = mentoringService.findMentorings(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -138,14 +138,14 @@ class MentoringServiceTest {
             String categoryTitle2 = category2.getTitle();
             String categoryTitle3 = null;
 
-            MentoringResponse expected = MentoringResponse.from(
+            MentoringCardResponse expected = MentoringCardResponse.from(
                     mentoring1,
                     List.of(categoryMentoring1_1.getCategoryTitle(),
                             categoryMentoring2_1.getCategoryTitle()),
                     image1
             );
 
-            MentoringResponse expected2 = MentoringResponse.from(
+            MentoringCardResponse expected2 = MentoringCardResponse.from(
                     mentoring3,
                     List.of(categoryMentoring1_3.getCategoryTitle(), categoryMentoring2_3.getCategoryTitle(),
                             categoryMentoring3_3.getCategoryTitle()),
@@ -153,7 +153,7 @@ class MentoringServiceTest {
             );
 
             // when
-            List<MentoringResponse> actual = mentoringService.findMentorings(
+            List<MentoringCardResponse> actual = mentoringService.findMentorings(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -233,7 +233,7 @@ class MentoringServiceTest {
             String categoryTitle3 = category3.getTitle();
 
             // when
-            List<MentoringResponse> actual = mentoringService.findMentorings(
+            List<MentoringCardResponse> actual = mentoringService.findMentorings(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -260,14 +260,14 @@ class MentoringServiceTest {
         Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
         em.persist(image1);
 
-        MentoringResponse expected = MentoringResponse.from(
+        MentoringCardResponse expected = MentoringCardResponse.from(
                 mentoring1,
                 List.of(category1.getTitle()),
                 image1
         );
 
         //when
-        MentoringResponse actual = mentoringService.getMentoring(mentoring1.getId());
+        MentoringCardResponse actual = mentoringService.getMentoring(mentoring1.getId());
 
         //then
         assertThat(actual).isEqualTo(expected);
