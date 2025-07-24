@@ -13,6 +13,7 @@ import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
+import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
@@ -106,7 +107,7 @@ class MentoringControllerTest {
             );
 
             //when
-            List<MentoringResponse> response = RestAssured
+            List<MentoringSummaryResponse> response = RestAssured
                     .given()
                     .log().all().contentType(ContentType.JSON)
                     .when()
@@ -118,7 +119,7 @@ class MentoringControllerTest {
                     });
 
             //then
-            MentoringResponse expected = new MentoringResponse(
+            MentoringSummaryResponse expected = new MentoringSummaryResponse(
                     savedMentoring.getId(),
                     savedMentoring.getMentorName(),
                     List.of(savedCategoryMentoring.getCategoryTitle()),
@@ -128,7 +129,7 @@ class MentoringControllerTest {
                     savedMentoring.getIntroduction()
             );
 
-            MentoringResponse expected2 = new MentoringResponse(
+            MentoringSummaryResponse expected2 = new MentoringSummaryResponse(
                     savedMentoring2.getId(),
                     savedMentoring2.getMentorName(),
                     List.of(savedCategoryMentoring2.getCategoryTitle()),
@@ -236,7 +237,7 @@ class MentoringControllerTest {
             );
 
             //when
-            List<MentoringResponse> response = RestAssured
+            List<MentoringSummaryResponse> response = RestAssured
                     .given()
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
@@ -250,7 +251,7 @@ class MentoringControllerTest {
                     });
 
             //then
-            MentoringResponse expected = new MentoringResponse(
+            MentoringSummaryResponse expected = new MentoringSummaryResponse(
                     savedMentoring.getId(),
                     savedMentoring.getMentorName(),
                     List.of(
@@ -263,7 +264,7 @@ class MentoringControllerTest {
                     savedMentoring.getIntroduction()
             );
 
-            MentoringResponse expected2 = new MentoringResponse(
+            MentoringSummaryResponse expected2 = new MentoringSummaryResponse(
                     savedMentoring2.getId(),
                     savedMentoring2.getMentorName(),
                     List.of(
@@ -276,7 +277,7 @@ class MentoringControllerTest {
                     savedMentoring2.getIntroduction()
             );
 
-            MentoringResponse expected3 = new MentoringResponse(
+            MentoringSummaryResponse expected3 = new MentoringSummaryResponse(
                     savedMentoring3.getId(),
                     savedMentoring3.getMentorName(),
                     List.of(
@@ -482,7 +483,8 @@ class MentoringControllerTest {
                 savedMentoring.getPrice(),
                 savedMentoring.getCareer(),
                 "image1.jpg",
-                savedMentoring.getIntroduction()
+                savedMentoring.getIntroduction(),
+                savedMentoring.getContent()
         );
         assertThat(response).isNotNull().isEqualTo(expected);
     }
