@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.InvalidCategoryException;
+import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
@@ -208,8 +208,8 @@ class MentoringServiceTest {
                     categoryTitle2,
                     categoryTitle3
             ))
-                    .isInstanceOf(InvalidCategoryException.class)
-                    .hasMessage(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
+                    .isInstanceOf(CategoryNotFoundException.class)
+                    .hasMessage(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage());
         }
 
         @DisplayName("필터 조건에 해당하는 멘토링이 존재하지 않는 경우, 빈 리스트를 반환한다.")
