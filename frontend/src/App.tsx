@@ -9,7 +9,7 @@ import Home from './pages/home/Home';
 const router = createBrowserRouter([
   { path: PAGE_URL.HOME, element: <Home /> },
   { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
-  { path: PAGE_URL.BOOKING, element: <Booking /> },
+  { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
 ]);
 
 function App() {
