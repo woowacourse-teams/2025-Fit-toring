@@ -28,6 +28,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultMentorSummary: Story = {
+  args: {
+    introduction:
+      '안녕하세요 김트레이너 입니다. 여러분의 건강과 체력을 책임지겠습니다.',
+    career: 5,
+  },
   parameters: {
     docs: {
       description: {
