@@ -42,7 +42,7 @@ function Detail() {
         categories={data.categories}
       />
       <MentorSummary introduction={data.introduction} career={data.career} />
-      <Introduction />
+      <Introduction content={data.content} />
       <ApplySection price={data.price} />
     </StyledContainer>
   );

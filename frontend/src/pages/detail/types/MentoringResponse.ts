@@ -6,4 +6,5 @@ export interface MentoringResponse {
   career: number;
   imageUrl: string;
   introduction: string;
+  content: string;
 }
