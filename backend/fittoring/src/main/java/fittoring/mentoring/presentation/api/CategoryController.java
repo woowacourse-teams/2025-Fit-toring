@@ -19,6 +19,6 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         List<CategoryResponse> responseBody = categoryService.getAllCategories();
         return ResponseEntity.status(HttpStatus.OK)
-            .body(responseBody);
+                .body(responseBody);
     }
 }
