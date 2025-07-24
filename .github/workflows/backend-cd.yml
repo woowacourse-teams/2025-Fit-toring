@@ -2,14 +2,11 @@ name: Backend CD
 
 on:
   pull_request:
-    types:
-      - closed
     branches:
-      - release
+      - feature/88-test-cd
 
 jobs:
   backend-cd:
-    if: github.event.pull_request.merged == true
     runs-on: self-hosted
 
     steps:
