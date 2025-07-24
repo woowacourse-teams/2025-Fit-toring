@@ -13,13 +13,23 @@ import CompleteModal from './components/CompleteModal/CompleteModal';
 import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 import { smoothScrollTo } from './utils/smoothScrollTo';
 
+import type { BookingResponse } from './types/BookingResponse';
+
 function Booking() {
   const [opened, setOpened] = useState(false);
+
   const [mentorDetail, setMentorDetail] = useState<MentoringDetail | null>(
     null,
   );
 
   const { mentoringId } = useParams();
+
+  const [bookedInfo, setBookedInfo] = useState<BookingResponse | null>(null);
+
+  const handleBookingButtonClick = (bookingResponse: BookingResponse) => {
+    setBookedInfo(bookingResponse);
+    setOpened(true);
+  };
 
   const handleCloseClick = () => {
     setOpened(false);
@@ -65,12 +75,16 @@ function Booking() {
       <StyledContentWrapper ref={wrapperRef}>
         <MentoInfoCard mentorDetail={mentorDetail} />
         <div ref={formRef}>
-          <BookingForm />
+          <BookingForm handleBookingButtonClick={handleBookingButtonClick} />
         </div>
       </StyledContentWrapper>
+      <CompleteModal
+        bookedInfo={bookedInfo}
+        opened={opened}
+        onCloseClick={handleCloseClick}
+      />
+    </>
 
-      <CompleteModal opened={opened} onCloseClick={handleCloseClick} />
-    </div>
   );
 }
 
