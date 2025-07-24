@@ -7,13 +7,14 @@ import { PAGE_URL } from '../../../../common/constants/url';
 
 interface ApplySectionProps {
   price: number;
+  mentoringId: string | undefined;
 }
 
-function ApplySection({ price }: ApplySectionProps) {
+function ApplySection({ price, mentoringId }: ApplySectionProps) {
   const navigate = useNavigate();
 
   const handleMoveToBookingPage = () => {
-    navigate(PAGE_URL.BOOKING);
+    navigate(`${PAGE_URL.BOOKING}/${mentoringId}`);
   };
   return (
     <StyledContainer>
