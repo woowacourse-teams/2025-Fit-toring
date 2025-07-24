@@ -48,6 +48,7 @@ function BookingForm() {
             errored={false}
             ref={inputRef}
             maxLength={13}
+            type="tel"
           />
         </FormField>
         <FormField
