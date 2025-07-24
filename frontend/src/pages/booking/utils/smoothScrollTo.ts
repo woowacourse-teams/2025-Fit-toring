@@ -8,7 +8,9 @@ export const smoothScrollTo = (targetY: number, duration = 1000) => {
     const eased = easeInOutCubic(time);
     window.scrollTo(0, startY + distance * eased);
 
-    if (time < 1) requestAnimationFrame(animate);
+    if (time < 1) {
+      requestAnimationFrame(animate);
+    }
   };
 
   requestAnimationFrame(animate);
