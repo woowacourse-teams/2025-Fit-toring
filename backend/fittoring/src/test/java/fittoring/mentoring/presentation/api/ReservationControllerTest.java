@@ -40,8 +40,6 @@ class ReservationControllerTest {
     @MockitoBean
     private SmsRestClientService smsRestClientService;
 
-    @Autowired
-    private DbCleaner dbCleaner;
 
     @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
@@ -54,6 +52,9 @@ class ReservationControllerTest {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private DbCleaner dbCleaner;
 
     @BeforeEach
     void setUp() {
