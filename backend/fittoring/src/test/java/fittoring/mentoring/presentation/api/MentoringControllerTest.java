@@ -487,8 +487,6 @@ class MentoringControllerTest {
         assertThat(response).isNotNull().isEqualTo(expected);
     }
 
-    // 전역 예외처리 도입 후 테스트 활성화 필요(@Disabled 어노테이션 제거)
-    @Disabled
     @DisplayName("존재하지 않는 멘토링 Id로 멘토링 조회에 실패하면 404 Not Found 상태코드를 반환한다.")
     @Test
     void getMentoring2() {
@@ -539,7 +537,7 @@ class MentoringControllerTest {
         String responseMessage = response.jsonPath().getString("message");
         assertSoftly(softly -> {
             softly.assertThat(response.statusCode()).isEqualTo(404);
-            softly.assertThat(responseMessage).isEqualTo("해당하는 멘토링을 찾을 수 없습니다. ID : " + mentoringId);
+            softly.assertThat(responseMessage).isEqualTo("존재하지 않는 멘토링입니다.");
         });
     }
 
