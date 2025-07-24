@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
 import Header from '../../../../common/components/Header/Header';
+
 function DetailHeader() {
   const navigate = useNavigate();
 
@@ -25,27 +26,28 @@ export default DetailHeader;
 
 const StyledHeaderWrapper = styled.div`
   display: flex;
-  position: relative;
   height: 100%;
   align-items: center;
-  justify-content: center;
 `;
 
 const StyledBackButton = styled.button`
   position: absolute;
-  left: 1.6rem;
+  margin-left: 1rem;
   padding: 0;
   border: none;
-  background: none;
+
+  background-color: transparent;
   cursor: pointer;
 `;
 
 const StyledImg = styled.img`
-  width: 5.4rem;
-  height: 5.7rem;
+  width: 3.4rem;
 `;
 
 const StyledTitle = styled.h3`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
-  color: ${({ theme }) => theme.FONT.B01};
+
+  flex-grow: 1;
+
+  text-align: center;
 `;
