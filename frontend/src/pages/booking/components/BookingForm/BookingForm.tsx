@@ -48,13 +48,13 @@ function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
       console.error('예약 중 에러 발생', error);
     }
   };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleBooking();
+  };
   return (
-    <StyledContainer
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleBooking();
-      }}
-    >
+    <StyledContainer onSubmit={handleSubmit}>
       <StyledInfoText>
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
