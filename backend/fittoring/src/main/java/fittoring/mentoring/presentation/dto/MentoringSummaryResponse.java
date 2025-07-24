@@ -2,7 +2,7 @@ package fittoring.mentoring.presentation.dto;
 
 import java.util.List;
 
-public record MentoringCardResponse(
+public record MentoringSummaryResponse(
         long id,
         String mentorName,
         List<String> categories,
@@ -12,8 +12,8 @@ public record MentoringCardResponse(
         String introduction
 ) {
 
-    public static MentoringCardResponse from(MentoringResponse mentoringResponse) {
-        return new MentoringCardResponse(
+    public static MentoringSummaryResponse from(MentoringResponse mentoringResponse) {
+        return new MentoringSummaryResponse(
                 mentoringResponse.id(),
                 mentoringResponse.mentorName(),
                 mentoringResponse.categories(),

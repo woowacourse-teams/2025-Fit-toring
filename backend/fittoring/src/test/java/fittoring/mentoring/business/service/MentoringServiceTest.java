@@ -11,7 +11,7 @@ import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.presentation.dto.MentoringCardResponse;
+import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
@@ -47,11 +47,11 @@ class MentoringServiceTest {
         dbCleaner.clean();
     }
 
-    @DisplayName("멘토링 카드 조회")
+    @DisplayName("멘토링 요약 조회")
     @Nested
-    class FindMentoringCards {
+    class FindMentoringSummary {
 
-        @DisplayName("필터링 설정이 없는 경우, 모든 멘토링의 카드 정보를 조회할 수 있다.")
+        @DisplayName("필터링 설정이 없는 경우, 모든 멘토링의 요약 정보를 조회할 수 있다.")
         @Test
         void getAllMentoring1() {
             // given
@@ -77,14 +77,14 @@ class MentoringServiceTest {
             String categoryTitle2 = null;
             String categoryTitle3 = null;
 
-            MentoringCardResponse expected = MentoringCardResponse.from(
+            MentoringSummaryResponse expected = MentoringSummaryResponse.from(
                     MentoringResponse.from(
                     mentoring1,
                     List.of(categoryMentoring1_1.getCategoryTitle()),
                     image1)
             );
 
-            MentoringCardResponse expected2 = MentoringCardResponse.from(
+            MentoringSummaryResponse expected2 = MentoringSummaryResponse.from(
                     MentoringResponse.from(
                     mentoring2,
                     List.of(categoryMentoring2_2.getCategoryTitle())
@@ -92,7 +92,7 @@ class MentoringServiceTest {
             );
 
             // when
-            List<MentoringCardResponse> actual = mentoringService.findMentoringCards(
+            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -102,7 +102,7 @@ class MentoringServiceTest {
             assertThat(actual).containsExactly(expected, expected2);
         }
 
-        @DisplayName("카테고리 필터링 조건을 만족하는 모든 멘토링의 카드 정보를 조회할 수 있다.")
+        @DisplayName("카테고리 필터링 조건을 만족하는 모든 멘토링의 요약 정보를 조회할 수 있다.")
         @Test
         void getAllMentoring2() {
             // given
@@ -142,7 +142,7 @@ class MentoringServiceTest {
             String categoryTitle2 = category2.getTitle();
             String categoryTitle3 = null;
 
-            MentoringCardResponse expected = MentoringCardResponse.from(
+            MentoringSummaryResponse expected = MentoringSummaryResponse.from(
                     MentoringResponse.from(
                         mentoring1,
                         List.of(categoryMentoring1_1.getCategoryTitle(),
@@ -151,7 +151,7 @@ class MentoringServiceTest {
                     )
             );
 
-            MentoringCardResponse expected2 = MentoringCardResponse.from(
+            MentoringSummaryResponse expected2 = MentoringSummaryResponse.from(
                     MentoringResponse.from(
                             mentoring3,
                             List.of(categoryMentoring1_3.getCategoryTitle(),
@@ -163,7 +163,7 @@ class MentoringServiceTest {
             );
 
             // when
-            List<MentoringCardResponse> actual = mentoringService.findMentoringCards(
+            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -203,7 +203,7 @@ class MentoringServiceTest {
 
             // when
             // then
-            assertThatThrownBy(() -> mentoringService.findMentoringCards(
+            assertThatThrownBy(() -> mentoringService.findMentoringSummaries(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -243,7 +243,7 @@ class MentoringServiceTest {
             String categoryTitle3 = category3.getTitle();
 
             // when
-            List<MentoringCardResponse> actual = mentoringService.findMentoringCards(
+            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3

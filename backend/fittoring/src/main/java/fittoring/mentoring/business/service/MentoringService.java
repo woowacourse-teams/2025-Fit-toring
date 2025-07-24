@@ -11,7 +11,7 @@ import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
-import fittoring.mentoring.presentation.dto.MentoringCardResponse;
+import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,19 +28,19 @@ public class MentoringService {
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final ImageRepository imageRepository;
 
-    public List<MentoringCardResponse> findMentoringCards(
+    public List<MentoringSummaryResponse> findMentoringSummaries(
             String categoryTitle1,
             String categoryTitle2,
             String categoryTitle3
     ) {
-        List<MentoringCardResponse> mentoringCardResponses;
+        List<MentoringSummaryResponse> mentoringSummaryResponse;
         List<MentoringResponse> mentoringResponses = findMentorings(categoryTitle1, categoryTitle2, categoryTitle3);
 
-        mentoringCardResponses = mentoringResponses.stream()
-                .map(MentoringCardResponse::from)
+        mentoringSummaryResponse = mentoringResponses.stream()
+                .map(MentoringSummaryResponse::from)
                 .collect(Collectors.toList());
 
-        return mentoringCardResponses;
+        return mentoringSummaryResponse;
     }
 
     private List<MentoringResponse> findMentorings(
