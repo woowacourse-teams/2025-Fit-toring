@@ -1,6 +1,7 @@
 import { useRef, useState, useLayoutEffect, useEffect } from 'react';
 
 import styled from '@emotion/styled';
+import { useParams } from 'react-router-dom';
 
 import {
   getMentoringDetail,
@@ -18,6 +19,8 @@ function Booking() {
     null,
   );
 
+  const { mentoringId } = useParams();
+
   const handleCloseClick = () => {
     setOpened(false);
   };
@@ -29,7 +32,7 @@ function Booking() {
   useEffect(() => {
     const fetchMentorDetail = async () => {
       try {
-        const response = await getMentoringDetail('1');
+        const response = await getMentoringDetail(mentoringId!);
         setMentorDetail(response);
       } catch (error) {
         console.error('멘토링 정보 조회 실패:', error);
@@ -37,7 +40,7 @@ function Booking() {
     };
 
     fetchMentorDetail();
-  }, []);
+  }, [mentoringId]);
 
   useLayoutEffect(() => {
     if (containerRef.current && formRef.current && wrapperRef.current) {
