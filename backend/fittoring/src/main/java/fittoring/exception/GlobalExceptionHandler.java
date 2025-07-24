@@ -1,5 +1,6 @@
 package fittoring.exception;
 
+import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.infra.exception.SmsException;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MentoringNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(MentoringNotFoundException e) {
+        return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(CategoryNotFoundException e) {
         return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
     }
 
