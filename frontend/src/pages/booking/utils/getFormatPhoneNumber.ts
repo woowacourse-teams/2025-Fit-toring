@@ -1,5 +1,5 @@
 export const getFormatPhoneNumber = (input: string) => {
-  const onlyNums = input.replace(/\D/g, '');
+  const onlyNums = input.replace(/\D/g, ''); // 숫자만 남기고 나머지 문자 제거
 
   if (onlyNums.length < 4) return onlyNums;
   if (onlyNums.length < 8)
