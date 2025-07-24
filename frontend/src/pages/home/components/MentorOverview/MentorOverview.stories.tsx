@@ -3,13 +3,13 @@ import { ThemeProvider } from '@emotion/react';
 import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
 import { THEME } from '../../../../common/styles/theme';
 
-import MentorSummary from './MentorSummary';
+import MentorOverview from './MentorOverview';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
-  title: 'Detail/MentorSummary',
-  component: MentorSummary,
+  title: 'Home/MentorOverview',
+  component: MentorOverview,
 
   tags: ['autodocs'],
 
@@ -22,22 +22,20 @@ const meta = {
       </ThemeProvider>
     ),
   ],
-} satisfies Meta<typeof MentorSummary>;
+} satisfies Meta<typeof MentorOverview>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const DefaultMentorSummary: Story = {
+export const Default: Story = {
   args: {
-    introduction:
-      '안녕하세요 김트레이너 입니다. 여러분의 건강과 체력을 책임지겠습니다.',
-    career: 5,
+    mentorCount: 6,
   },
   parameters: {
     docs: {
       description: {
         story:
-          'MentorSummary 컴포넌트는 상세 정보 페이지의 요약 정보를 표시합니다. 트레이너의 전문성과 서비스에 대한 간략한 설명을 포함하고 있습니다.',
+          'MentorOverview 컴포넌트는 홈페이지의 중단에 위치하여 사용자에게 멘토의 수와 서비스 개요를 전달합니다.',
       },
     },
   },
