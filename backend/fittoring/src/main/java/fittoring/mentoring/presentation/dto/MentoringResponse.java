@@ -11,7 +11,8 @@ public record MentoringResponse(
         int price,
         int career,
         String imageUrl,
-        String introduction
+        String introduction,
+        String content
 ) {
 
     public static MentoringResponse from(Mentoring mentoring, List<String> categoriesByMentoring) {
@@ -22,7 +23,8 @@ public record MentoringResponse(
                 mentoring.getPrice(),
                 mentoring.getCareer(),
                 null,
-                mentoring.getIntroduction()
+                mentoring.getIntroduction(),
+                mentoring.getContent()
         );
     }
 
@@ -34,7 +36,8 @@ public record MentoringResponse(
                 mentoring.getPrice(),
                 mentoring.getCareer(),
                 image.getUrl(),
-                mentoring.getIntroduction()
+                mentoring.getIntroduction(),
+                mentoring.getContent()
         );
     }
 }

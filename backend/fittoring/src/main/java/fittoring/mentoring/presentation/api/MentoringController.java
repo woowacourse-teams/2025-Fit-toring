@@ -1,6 +1,7 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.MentoringService;
+import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +18,13 @@ public class MentoringController {
     private final MentoringService mentoringService;
 
     @GetMapping("/mentorings")
-    public ResponseEntity<List<MentoringResponse>> getAllMentoring(
+    public ResponseEntity<List<MentoringSummaryResponse>> getMentoringSummaries(
             @RequestParam(required = false) String categoryTitle1,
             @RequestParam(required = false) String categoryTitle2,
             @RequestParam(required = false) String categoryTitle3
     ) {
         return ResponseEntity.ok()
-                .body(mentoringService.findMentorings(categoryTitle1, categoryTitle2, categoryTitle3));
+                .body(mentoringService.findMentoringSummaries(categoryTitle1, categoryTitle2, categoryTitle3));
     }
 
     @GetMapping("/mentorings/{mentoringId}")

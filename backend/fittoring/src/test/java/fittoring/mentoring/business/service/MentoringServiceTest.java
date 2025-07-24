@@ -11,6 +11,7 @@ import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
@@ -46,11 +47,11 @@ class MentoringServiceTest {
         dbCleaner.clean();
     }
 
-    @DisplayName("멘토링 조회")
+    @DisplayName("멘토링 요약 조회")
     @Nested
-    class FindMentoring {
+    class FindMentoringSummary {
 
-        @DisplayName("필터링을 안하는 경우, 모든 멘토링을 조회 할 수 있다.")
+        @DisplayName("필터링 설정이 없는 경우, 모든 멘토링의 요약 정보를 조회할 수 있다.")
         @Test
         void getAllMentoring1() {
             // given
@@ -76,19 +77,22 @@ class MentoringServiceTest {
             String categoryTitle2 = null;
             String categoryTitle3 = null;
 
-            MentoringResponse expected = MentoringResponse.from(
+            MentoringSummaryResponse expected = MentoringSummaryResponse.from(
+                    MentoringResponse.from(
                     mentoring1,
                     List.of(categoryMentoring1_1.getCategoryTitle()),
-                    image1
+                    image1)
             );
 
-            MentoringResponse expected2 = MentoringResponse.from(
+            MentoringSummaryResponse expected2 = MentoringSummaryResponse.from(
+                    MentoringResponse.from(
                     mentoring2,
                     List.of(categoryMentoring2_2.getCategoryTitle())
+                    )
             );
 
             // when
-            List<MentoringResponse> actual = mentoringService.findMentorings(
+            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -98,7 +102,7 @@ class MentoringServiceTest {
             assertThat(actual).containsExactly(expected, expected2);
         }
 
-        @DisplayName("카테고리 필터링 조건을 만족하는 모든 멘토링을 조회할 수 있다.")
+        @DisplayName("카테고리 필터링 조건을 만족하는 모든 멘토링의 요약 정보를 조회할 수 있다.")
         @Test
         void getAllMentoring2() {
             // given
@@ -138,22 +142,28 @@ class MentoringServiceTest {
             String categoryTitle2 = category2.getTitle();
             String categoryTitle3 = null;
 
-            MentoringResponse expected = MentoringResponse.from(
-                    mentoring1,
-                    List.of(categoryMentoring1_1.getCategoryTitle(),
-                            categoryMentoring2_1.getCategoryTitle()),
-                    image1
+            MentoringSummaryResponse expected = MentoringSummaryResponse.from(
+                    MentoringResponse.from(
+                        mentoring1,
+                        List.of(categoryMentoring1_1.getCategoryTitle(),
+                        categoryMentoring2_1.getCategoryTitle()),
+                        image1
+                    )
             );
 
-            MentoringResponse expected2 = MentoringResponse.from(
-                    mentoring3,
-                    List.of(categoryMentoring1_3.getCategoryTitle(), categoryMentoring2_3.getCategoryTitle(),
-                            categoryMentoring3_3.getCategoryTitle()),
-                    image2
+            MentoringSummaryResponse expected2 = MentoringSummaryResponse.from(
+                    MentoringResponse.from(
+                            mentoring3,
+                            List.of(categoryMentoring1_3.getCategoryTitle(),
+                                    categoryMentoring2_3.getCategoryTitle(),
+                                    categoryMentoring3_3.getCategoryTitle()
+                            ),
+                            image2
+                    )
             );
 
             // when
-            List<MentoringResponse> actual = mentoringService.findMentorings(
+            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -193,7 +203,7 @@ class MentoringServiceTest {
 
             // when
             // then
-            assertThatThrownBy(() -> mentoringService.findMentorings(
+            assertThatThrownBy(() -> mentoringService.findMentoringSummaries(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -233,7 +243,7 @@ class MentoringServiceTest {
             String categoryTitle3 = category3.getTitle();
 
             // when
-            List<MentoringResponse> actual = mentoringService.findMentorings(
+            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
@@ -244,58 +254,62 @@ class MentoringServiceTest {
         }
     }
 
-    @DisplayName("멘토링 id로 멘토링을 조회한다.")
-    @Test
-    void getMentoring() {
-        //given
-        Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
-        em.persist(mentoring1);
+    @Nested
+    @DisplayName("멘토링 정보 조회")
+    class FindMentoring{
+        @DisplayName("멘토링 id로 멘토링을 조회한다.")
+        @Test
+        void getMentoring() {
+            //given
+            Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            em.persist(mentoring1);
 
-        Category category1 = new Category("카테고리1");
-        em.persist(category1);
+            Category category1 = new Category("카테고리1");
+            em.persist(category1);
 
-        CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
-        em.persist(categoryMentoring1_1);
+            CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
+            em.persist(categoryMentoring1_1);
 
-        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
-        em.persist(image1);
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            em.persist(image1);
 
-        MentoringResponse expected = MentoringResponse.from(
-                mentoring1,
-                List.of(category1.getTitle()),
-                image1
-        );
+            MentoringResponse expected = MentoringResponse.from(
+                    mentoring1,
+                    List.of(category1.getTitle()),
+                    image1
+            );
 
-        //when
-        MentoringResponse actual = mentoringService.getMentoring(mentoring1.getId());
+            //when
+            MentoringResponse actual = mentoringService.getMentoring(mentoring1.getId());
 
-        //then
-        assertThat(actual).isEqualTo(expected);
-    }
+            //then
+            assertThat(actual).isEqualTo(expected);
+        }
 
-    @DisplayName("존재하지 않는 멘토링 id로 멘토링을 조회하는 경우 예외가 발생한다.")
-    @Test
-    void getMentoring2() {
-        //given
-        Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
-        em.persist(mentoring1);
+        @DisplayName("존재하지 않는 멘토링 id로 멘토링을 조회하는 경우 예외가 발생한다.")
+        @Test
+        void getMentoring2() {
+            //given
+            Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            em.persist(mentoring1);
 
-        Category category1 = new Category("카테고리1");
-        em.persist(category1);
+            Category category1 = new Category("카테고리1");
+            em.persist(category1);
 
-        CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
-        em.persist(categoryMentoring1_1);
+            CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
+            em.persist(categoryMentoring1_1);
 
-        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
-        em.persist(image1);
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            em.persist(image1);
 
-        Long invalidId = 100L;
+            Long invalidId = 100L;
 
-        //when
-        //then
-        assertThatThrownBy(() ->
-                mentoringService.getMentoring(invalidId))
-                .isInstanceOf(MentoringNotFoundException.class)
-                .hasMessageStartingWith(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
+            //when
+            //then
+            assertThatThrownBy(() ->
+                    mentoringService.getMentoring(invalidId))
+                    .isInstanceOf(MentoringNotFoundException.class)
+                    .hasMessageStartingWith(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
+        }
     }
 }
