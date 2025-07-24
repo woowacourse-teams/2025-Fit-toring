@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 import styled from '@emotion/styled';
 
+import { apiClient } from '../../../../common/apis/apiClient';
 import Input from '../../../../common/components/Input/Input';
+import { API_URL } from '../../../../common/constants/url';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import FormField from '../FormField/FormField';
 
@@ -31,8 +33,28 @@ function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
     setCounselContent(e.target.value);
   };
 
+  const handleBooking = async () => {
+    try {
+      const response = await apiClient.post({
+        endpoint: `${API_URL.MENTORINGS}/1/reservation`,
+        searchParams: {
+          menteeName,
+          menteePhone: phoneNumber,
+          content: counselContent,
+        },
+      });
+      handleBookingButtonClick(response);
+    } catch (error) {
+      console.error('예약 중 에러 발생', error);
+    }
+  };
   return (
-    <StyledContainer onSubmit={(e) => e.preventDefault()}>
+    <StyledContainer
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleBooking();
+      }}
+    >
       <StyledInfoText>
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
@@ -70,12 +92,7 @@ function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
           />
         </FormField>
       </StyledFieldWrapper>
-      <BookingSummarySection
-        onBookingSuccess={handleBookingButtonClick}
-        menteeName={menteeName}
-        phoneNumber={phoneNumber}
-        counselContent={counselContent}
-      />
+      <BookingSummarySection />
     </StyledContainer>
   );
 }

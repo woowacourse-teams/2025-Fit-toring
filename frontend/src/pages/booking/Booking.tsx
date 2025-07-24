@@ -49,17 +49,16 @@ function Booking() {
       <BookingHeader />
       <StyledContentWrapper ref={wrapperRef}>
         <MentoInfoCard />
-          <div ref={formRef}>
-        <BookingForm handleBookingButtonClick={handleBookingButtonClick} />
-             </div>
+        <div ref={formRef}>
+          <BookingForm handleBookingButtonClick={handleBookingButtonClick} />
+        </div>
       </StyledContentWrapper>
       <CompleteModal
         bookedInfo={bookedInfo}
         opened={opened}
         onCloseClick={handleCloseClick}
       />
-    </>
-
+    </div>
   );
 }
 
