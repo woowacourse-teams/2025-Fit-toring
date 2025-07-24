@@ -3,20 +3,19 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 
 import Input from '../../../../common/components/Input/Input';
+import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import FormField from '../FormField/FormField';
 
 function BookingForm() {
   const [menteeName, setMenteeName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+
+  const { phoneNumber, inputRef, handlePhoneNumberChange } =
+    useFormattedPhoneNumber();
   const [counselContent, setCounselContent] = useState('');
 
   const handleMenteeNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMenteeName(e.target.value);
-  };
-
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhoneNumber(e.target.value);
   };
 
   const handleCounselContentChange = (
@@ -47,6 +46,9 @@ function BookingForm() {
             value={phoneNumber}
             onChange={handlePhoneNumberChange}
             errored={false}
+            ref={inputRef}
+            maxLength={13}
+            type="tel"
           />
         </FormField>
         <FormField
