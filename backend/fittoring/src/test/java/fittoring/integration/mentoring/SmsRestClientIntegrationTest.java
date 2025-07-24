@@ -82,7 +82,8 @@ class SmsRestClientIntegrationTest {
         @Test
         void throwReadTimeout() {
             // given
-            int overReadTimeout = readTimeout + 10;
+            int delay = 100;
+            int overReadTimeout = readTimeout + delay;
             mockWebServer.enqueue(new MockResponse()
                     .setBody("{\"result\":\"ok\"}")
                     .setBodyDelay(overReadTimeout, TimeUnit.MILLISECONDS));
