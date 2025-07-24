@@ -1,7 +1,12 @@
-import { useRef, useState, useLayoutEffect } from 'react';
+import { useRef, useState, useLayoutEffect, useEffect } from 'react';
 
 import styled from '@emotion/styled';
+import { useParams } from 'react-router-dom';
 
+import {
+  getMentoringDetail,
+  type MentoringDetail,
+} from './apis/getMentoringDetail';
 import BookingForm from './components/BookingForm/BookingForm';
 import BookingHeader from './components/BookingHeader/BookingHeader';
 import CompleteModal from './components/CompleteModal/CompleteModal';
@@ -12,6 +17,13 @@ import type { BookingResponse } from './types/BookingResponse';
 
 function Booking() {
   const [opened, setOpened] = useState(false);
+
+  const [mentorDetail, setMentorDetail] = useState<MentoringDetail | null>(
+    null,
+  );
+
+  const { mentoringId } = useParams();
+
   const [bookedInfo, setBookedInfo] = useState<BookingResponse | null>(null);
 
   const handleBookingButtonClick = (bookingResponse: BookingResponse) => {
@@ -26,6 +38,19 @@ function Booking() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const fetchMentorDetail = async () => {
+      try {
+        const response = await getMentoringDetail(mentoringId!);
+        setMentorDetail(response);
+      } catch (error) {
+        console.error('멘토링 정보 조회 실패:', error);
+      }
+    };
+
+    fetchMentorDetail();
+  }, [mentoringId]);
 
   useLayoutEffect(() => {
     if (containerRef.current && formRef.current && wrapperRef.current) {
@@ -48,10 +73,10 @@ function Booking() {
     <div ref={containerRef}>
       <BookingHeader />
       <StyledContentWrapper ref={wrapperRef}>
-        <MentoInfoCard />
-          <div ref={formRef}>
-        <BookingForm handleBookingButtonClick={handleBookingButtonClick} />
-             </div>
+        <MentoInfoCard mentorDetail={mentorDetail} />
+        <div ref={formRef}>
+          <BookingForm handleBookingButtonClick={handleBookingButtonClick} />
+        </div>
       </StyledContentWrapper>
       <CompleteModal
         bookedInfo={bookedInfo}

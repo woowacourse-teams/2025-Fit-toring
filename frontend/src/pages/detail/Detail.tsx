@@ -43,7 +43,7 @@ function Detail() {
       />
       <MentorSummary introduction={data.introduction} career={data.career} />
       <Introduction content={data.content} />
-      <ApplySection price={data.price} />
+      <ApplySection price={data.price} mentoringId={mentoringId} />
     </StyledContainer>
   );
 }
