@@ -17,7 +17,7 @@ public class MentoringController {
 
     private final MentoringService mentoringService;
 
-    @GetMapping("/mentoring-cards")
+    @GetMapping("/mentorings")
     public ResponseEntity<List<MentoringCardResponse>> getMentoringCards(
             @RequestParam(required = false) String categoryTitle1,
             @RequestParam(required = false) String categoryTitle2,
