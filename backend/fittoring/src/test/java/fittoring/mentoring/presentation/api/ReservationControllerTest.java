@@ -20,7 +20,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -171,8 +170,6 @@ class ReservationControllerTest {
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
-    // 전역 예외처리 도입 후 테스트 활성화 필요(@Disabled 어노테이션 제거)
-    @Disabled
     @DisplayName("존재하지 않는 멘토링에 예약을 시도하면 상태코드 404 Not Found를 반환한다.")
     @Test
     void createReservation3() {
@@ -189,7 +186,7 @@ class ReservationControllerTest {
 
         ReservationCreateRequest request = new ReservationCreateRequest(
                 "멘티",
-                "invalid-phone",
+                "010-1234-5678",
                 "멘토링 예약 내용"
         );
 
