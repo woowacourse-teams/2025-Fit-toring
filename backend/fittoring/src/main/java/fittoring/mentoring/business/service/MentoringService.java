@@ -92,7 +92,7 @@ public class MentoringService {
 
     private void validateExistCategoryTitle(String categoryTitle) {
         if (categoryTitle != null && !categoryRepository.existsByTitle(categoryTitle)) {
-            throw new CategoryNotFoundException(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
+            throw new CategoryNotFoundException(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage());
         }
     }
 

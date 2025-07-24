@@ -22,7 +22,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -419,7 +418,7 @@ class MentoringControllerTest {
             assertSoftly(softly -> {
                 softly.assertThat(response).isNotNull();
                 softly.assertThat(response.statusCode()).isEqualTo(404);
-                softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
+                softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage());
             });
         }
     }

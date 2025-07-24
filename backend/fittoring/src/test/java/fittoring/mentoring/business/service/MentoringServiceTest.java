@@ -209,7 +209,7 @@ class MentoringServiceTest {
                     categoryTitle3
             ))
                     .isInstanceOf(CategoryNotFoundException.class)
-                    .hasMessage(BusinessErrorMessage.INVALID_CATEGORY.getMessage());
+                    .hasMessage(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage());
         }
 
         @DisplayName("필터 조건에 해당하는 멘토링이 존재하지 않는 경우, 빈 리스트를 반환한다.")
