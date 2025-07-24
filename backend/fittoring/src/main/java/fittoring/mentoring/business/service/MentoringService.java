@@ -12,6 +12,7 @@ import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.presentation.dto.MentoringCardResponse;
+import fittoring.mentoring.presentation.dto.MentoringResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +28,22 @@ public class MentoringService {
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final ImageRepository imageRepository;
 
-    public List<MentoringCardResponse> findMentorings(
+    public List<MentoringCardResponse> findMentoringCards(
+            String categoryTitle1,
+            String categoryTitle2,
+            String categoryTitle3
+    ) {
+        List<MentoringCardResponse> mentoringCardResponses;
+        List<MentoringResponse> mentoringResponses = findMentorings(categoryTitle1, categoryTitle2, categoryTitle3);
+
+        mentoringCardResponses = mentoringResponses.stream()
+                .map(MentoringCardResponse::from)
+                .collect(Collectors.toList());
+
+        return mentoringCardResponses;
+    }
+
+    private List<MentoringResponse> findMentorings(
             String categoryTitle1,
             String categoryTitle2,
             String categoryTitle3
@@ -53,16 +69,16 @@ public class MentoringService {
                && categoryTitle3 == null;
     }
 
-    private List<MentoringCardResponse> getMentoringResponses(List<Mentoring> mentorings) {
-        List<MentoringCardResponse> mentoringResponses = new ArrayList<>();
+    private List<MentoringResponse> getMentoringResponses(List<Mentoring> mentorings) {
+        List<MentoringResponse> mentoringResponses = new ArrayList<>();
         for (Mentoring mentoring : mentorings) {
             List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
 
             imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING, mentoring.getId())
                     .ifPresentOrElse(
                             image -> mentoringResponses.add(
-                                    MentoringCardResponse.from(mentoring, categoryTitles, image)),
-                            () -> mentoringResponses.add(MentoringCardResponse.from(mentoring, categoryTitles))
+                                    MentoringResponse.from(mentoring, categoryTitles, image)),
+                            () -> mentoringResponses.add(MentoringResponse.from(mentoring, categoryTitles))
                     );
         }
         return mentoringResponses;
@@ -92,7 +108,7 @@ public class MentoringService {
                 .collect(Collectors.toList());
     }
 
-    public MentoringCardResponse getMentoring(final Long id) {
+    public MentoringResponse getMentoring(final Long id) {
         Mentoring mentoring = mentoringRepository.findById(id)
                 .orElseThrow(
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
@@ -102,8 +118,8 @@ public class MentoringService {
                 .orElse(null);
 
         if (image == null) {
-            return MentoringCardResponse.from(mentoring, categoryTitles);
+            return MentoringResponse.from(mentoring, categoryTitles);
         }
-        return MentoringCardResponse.from(mentoring, categoryTitles, image);
+        return MentoringResponse.from(mentoring, categoryTitles, image);
     }
 }

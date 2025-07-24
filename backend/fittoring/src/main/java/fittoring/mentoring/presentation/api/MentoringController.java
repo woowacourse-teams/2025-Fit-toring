@@ -2,6 +2,7 @@ package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.MentoringService;
 import fittoring.mentoring.presentation.dto.MentoringCardResponse;
+import fittoring.mentoring.presentation.dto.MentoringResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +17,19 @@ public class MentoringController {
 
     private final MentoringService mentoringService;
 
-    @GetMapping("/mentorings")
-    public ResponseEntity<List<MentoringCardResponse>> getAllMentoring(
+    @GetMapping("/mentoring-cards")
+    public ResponseEntity<List<MentoringCardResponse>> getMentoringCards(
             @RequestParam(required = false) String categoryTitle1,
             @RequestParam(required = false) String categoryTitle2,
             @RequestParam(required = false) String categoryTitle3
     ) {
         return ResponseEntity.ok()
-                .body(mentoringService.findMentorings(categoryTitle1, categoryTitle2, categoryTitle3));
+                .body(mentoringService.findMentoringCards(categoryTitle1, categoryTitle2, categoryTitle3));
     }
 
     @GetMapping("/mentorings/{mentoringId}")
-    public ResponseEntity<MentoringCardResponse> getMentoring(@PathVariable("mentoringId") Long id) {
-        MentoringCardResponse response = mentoringService.getMentoring(id);
+    public ResponseEntity<MentoringResponse> getMentoring(@PathVariable("mentoringId") Long id) {
+        MentoringResponse response = mentoringService.getMentoring(id);
         return ResponseEntity.ok(response);
     }
 }

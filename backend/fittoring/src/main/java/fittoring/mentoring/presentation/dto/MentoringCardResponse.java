@@ -1,7 +1,5 @@
 package fittoring.mentoring.presentation.dto;
 
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.Mentoring;
 import java.util.List;
 
 public record MentoringCardResponse(
@@ -14,27 +12,15 @@ public record MentoringCardResponse(
         String introduction
 ) {
 
-    public static MentoringCardResponse from(Mentoring mentoring, List<String> categoriesByMentoring) {
+    public static MentoringCardResponse from(MentoringResponse mentoringResponse) {
         return new MentoringCardResponse(
-                mentoring.getId(),
-                mentoring.getMentorName(),
-                categoriesByMentoring,
-                mentoring.getPrice(),
-                mentoring.getCareer(),
-                null,
-                mentoring.getIntroduction()
-        );
-    }
-
-    public static MentoringCardResponse from(Mentoring mentoring, List<String> categoriesByMentoring, Image image) {
-        return new MentoringCardResponse(
-                mentoring.getId(),
-                mentoring.getMentorName(),
-                categoriesByMentoring,
-                mentoring.getPrice(),
-                mentoring.getCareer(),
-                image.getUrl(),
-                mentoring.getIntroduction()
+                mentoringResponse.id(),
+                mentoringResponse.mentorName(),
+                mentoringResponse.categories(),
+                mentoringResponse.price(),
+                mentoringResponse.career(),
+                mentoringResponse.imageUrl(),
+                mentoringResponse.introduction()
         );
     }
 }
