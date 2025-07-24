@@ -21,6 +21,12 @@ function Home() {
     setModalOpened(false);
   };
 
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+
+  const handleApply = (specialties: string[]) => {
+    setSelectedSpecialties(specialties);
+    handleCloseModal();
+  };
   return (
     <StyledContainer>
       <HomeHeader />
@@ -30,10 +36,9 @@ function Home() {
         <SpecialtyFilterModalButton handleOpenModal={handleOpenModal} />
         <SpecialtyFilterModal
           opened={modalOpened}
-          selectedSpecialties={[]}
           handleCloseModal={handleCloseModal}
-          handleReset={() => {}}
-          handleApply={() => {}}
+          selectedSpecialties={selectedSpecialties}
+          handleApply={handleApply}
         />
         <MentorCardList>
           <MentorCardItem />

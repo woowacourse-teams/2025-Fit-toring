@@ -26,8 +26,8 @@ interface SpecialtyModalProps {
   handleCloseModal: () => void;
 
   selectedSpecialties: string[];
-  handleReset: () => void;
-  handleApply: () => void;
+
+  handleApply: (specialties: string[]) => void;
 }
 
 function SpecialtyModal({
@@ -35,7 +35,6 @@ function SpecialtyModal({
   handleCloseModal,
 
   selectedSpecialties,
-  handleReset,
   handleApply,
 }: SpecialtyModalProps) {
   const [temporarySelectedSpecialties, setTemporarySelectedSpecialties] =
