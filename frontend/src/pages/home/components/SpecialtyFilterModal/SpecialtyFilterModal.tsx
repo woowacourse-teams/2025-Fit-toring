@@ -111,6 +111,7 @@ export default SpecialtyModal;
 
 const StyledContainer = styled.div`
   display: flex;
+  min-width: 30rem;
   flex-direction: column;
 
   align-items: center;
