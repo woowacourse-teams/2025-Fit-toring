@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MentoringNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(MentoringNotFoundException e) {
-        return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
+        return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
     }
 
     @ExceptionHandler(SystemException.class)
