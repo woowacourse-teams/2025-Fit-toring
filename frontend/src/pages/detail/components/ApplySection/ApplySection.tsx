@@ -5,7 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
 
-function ApplySection() {
+interface ApplySectionProps {
+  price: number;
+}
+
+function ApplySection({ price }: ApplySectionProps) {
   const navigate = useNavigate();
 
   const handleMoveToBookingPage = () => {
@@ -15,7 +19,7 @@ function ApplySection() {
     <StyledContainer>
       <StyledWrapper>
         <p>15분 상담료</p>
-        <strong>5,000원</strong>
+        <strong>{price.toLocaleString()}원</strong>
       </StyledWrapper>
       <Button
         size="full"

@@ -2,14 +2,17 @@ import React from 'react';
 
 import styled from '@emotion/styled';
 
-function MentorSummary() {
+interface MentorSummaryProps {
+  introduction: string;
+  career: number;
+}
+
+function MentorSummary({ introduction, career }: MentorSummaryProps) {
   return (
     <StyledContainer>
-      <StyledSelfIntroduction>
-        5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.
-      </StyledSelfIntroduction>
+      <StyledSelfIntroduction>{introduction}</StyledSelfIntroduction>
       <StyledCertifications>
-        <p>경력: 전문 트레이너 5년 </p>
+        <p>경력: 전문 트레이너 {career}년 </p>
         <p>자격증: 생활스포츠지도사, 운동처방사</p>
       </StyledCertifications>
       <StyledHr />

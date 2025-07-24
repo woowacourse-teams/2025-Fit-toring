@@ -27,6 +27,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {
+    price: 5000,
+  },
   parameters: {
     docs: {
       description: {

@@ -28,6 +28,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultProfile: Story = {
+  args: {
+    profileImg: 'https://example.com/profile.png',
+    mentorName: '김트레이너',
+    categories: ['식단관리', '체력 증진', '근력 운동'],
+  },
   parameters: {
     docs: {
       description: {
