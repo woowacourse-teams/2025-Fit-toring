@@ -54,6 +54,9 @@ function SpecialtyModal({
     );
   };
 
+  const handleResetTemporarySpecialties = () => {
+    setTemporarySelectedSpecialties([]);
+  };
   return (
     <Modal opened={opened} onCloseClick={handleCloseModal}>
       <StyledContainer>
@@ -77,7 +80,7 @@ function SpecialtyModal({
 
         <StyledLine />
         <StyledButtonWrapper>
-          <StyledSecondaryButton onClick={handleReset}>
+          <StyledSecondaryButton onClick={handleResetTemporarySpecialties}>
             초기화
           </StyledSecondaryButton>
           <StyledPrimaryButton onClick={handleApply}>적용</StyledPrimaryButton>
