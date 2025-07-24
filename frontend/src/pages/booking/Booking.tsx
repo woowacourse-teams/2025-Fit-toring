@@ -83,8 +83,7 @@ function Booking() {
         opened={opened}
         onCloseClick={handleCloseClick}
       />
-    </>
-
+    </div>
   );
 }
 
