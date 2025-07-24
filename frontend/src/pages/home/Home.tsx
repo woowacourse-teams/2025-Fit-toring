@@ -13,7 +13,7 @@ import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFil
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 function Home() {
-  const [modalOpened, setModalOpened] = useState(true);
+  const [modalOpened, setModalOpened] = useState(false);
   const handleOpenModal = () => {
     setModalOpened(true);
   };
