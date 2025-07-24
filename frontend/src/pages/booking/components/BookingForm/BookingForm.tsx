@@ -6,7 +6,13 @@ import Input from '../../../../common/components/Input/Input';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import FormField from '../FormField/FormField';
 
-function BookingForm() {
+import type { BookingResponse } from '../../types/BookingResponse';
+
+interface BookingFormProps {
+  handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
+}
+
+function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
   const [menteeName, setMenteeName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [counselContent, setCounselContent] = useState('');
@@ -26,7 +32,7 @@ function BookingForm() {
   };
 
   return (
-    <StyledContainer>
+    <StyledContainer onSubmit={(e) => e.preventDefault()}>
       <StyledInfoText>
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
@@ -64,7 +70,12 @@ function BookingForm() {
           />
         </FormField>
       </StyledFieldWrapper>
-      <BookingSummarySection />
+      <BookingSummarySection
+        onBookingSuccess={handleBookingButtonClick}
+        menteeName={menteeName}
+        phoneNumber={phoneNumber}
+        counselContent={counselContent}
+      />
     </StyledContainer>
   );
 }
@@ -72,18 +83,20 @@ function BookingForm() {
 export default BookingForm;
 
 const StyledContainer = styled.form`
-  padding: 2.2rem;
-  border-radius: 1.3rem;
-  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
   width: 100%;
   height: 100%;
+  padding: 2.2rem;
+  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+
   background-color: white;
+  border-radius: 1.3rem;
 `;
 
 const StyledInfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-  color: ${({ theme }) => theme.FONT.BLACK};
   margin-top: 1.7rem;
+
+  color: ${({ theme }) => theme.FONT.BLACK};
 `;
 
 const StyledFieldWrapper = styled.div`
