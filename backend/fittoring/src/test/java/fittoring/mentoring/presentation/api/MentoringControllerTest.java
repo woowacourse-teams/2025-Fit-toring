@@ -140,8 +140,7 @@ class MentoringControllerTest {
 
             assertThat(response)
                     .isNotNull()
-                    .hasSize(2)
-                    .contains(expected, expected2);
+                    .containsExactlyInAnyOrder(expected, expected2);
         }
 
         @DisplayName("조회할 멘토링 목록이 없을 때, 200 OK 상태코드와 멘토링 목록을 반환한다.")
@@ -293,8 +292,7 @@ class MentoringControllerTest {
             );
             assertThat(response)
                     .isNotNull()
-                    .hasSize(3)
-                    .contains(expected, expected2, expected3);
+                    .containsExactlyInAnyOrder(expected, expected2, expected3);
         }
 
         @DisplayName("필터 조건에 해당하는 멘토링이 존재하지 않는 경우 200 OK 상태코드와 빈 멘토링 목록을 반환한다.")

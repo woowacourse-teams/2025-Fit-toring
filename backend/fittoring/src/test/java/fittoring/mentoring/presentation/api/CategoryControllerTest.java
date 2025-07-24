@@ -63,9 +63,7 @@ class CategoryControllerTest {
         CategoryResponse expected2 = new CategoryResponse(savedCategory2.getId(), savedCategory2.getTitle());
         CategoryResponse expected3 = new CategoryResponse(savedCategory3.getId(), savedCategory3.getTitle());
 
-        assertThat(response)
-                .hasSize(3)
-                .contains(expected, expected2, expected3);
+        assertThat(response).containsExactlyInAnyOrder(expected, expected2, expected3);
     }
 
     @DisplayName("등록된 카테고리가 없을 때, 200 OK 상태코드와 빈 카테고리 목록을 반환한다.")
