@@ -1,11 +1,15 @@
 name: Backend CD
 
 on:
-  push:
-    branches: [ release ]
+  pull_request:
+    types:
+      - closed
+    branches:
+      - release
 
 jobs:
   backend-cd:
+    if: github.event.pull_request.merged == true
     runs-on: self-hosted
 
     steps:
