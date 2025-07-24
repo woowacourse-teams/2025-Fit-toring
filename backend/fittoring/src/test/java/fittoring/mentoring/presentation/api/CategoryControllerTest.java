@@ -38,7 +38,7 @@ class CategoryControllerTest {
         dbCleaner.clean();
     }
 
-    @DisplayName("카테고리 목록 조회가 성공하면, 200 OK 상태고리와 카테고리 목록을 반환한다.")
+    @DisplayName("카테고리 목록 조회가 성공하면, 200 OK 상태코드와 카테고리 목록을 반환한다.")
     @Test
     void getAllCategories() {
         //given
@@ -68,7 +68,7 @@ class CategoryControllerTest {
                 .contains(expected, expected2, expected3);
     }
 
-    @DisplayName("등록된 카테고리가 없을 때, 200 OK 상태고리와 빈 카테고리 목록을 반환한다.")
+    @DisplayName("등록된 카테고리가 없을 때, 200 OK 상태코드와 빈 카테고리 목록을 반환한다.")
     @Test
     void getAllCategories2() {
         //given
