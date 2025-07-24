@@ -56,6 +56,7 @@ const StyledContainer = styled.div`
   align-items: center;
   gap: 1.4rem;
   width: 100%;
+  height: 21.6rem;
   padding: 2.2rem;
   background-color: white;
   border: ${({ theme }) => theme.LINE.REGULAR} 0.1rem solid;
