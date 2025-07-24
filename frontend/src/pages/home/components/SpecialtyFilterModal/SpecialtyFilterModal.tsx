@@ -61,8 +61,19 @@ function SpecialtyModal({
   const handleResetTemporarySpecialties = () => {
     setTemporarySelectedSpecialties([]);
   };
+
+  const handleRollbackTemporarySpecialties = () => {
+    setTemporarySelectedSpecialties(selectedSpecialties);
+    handleCloseModal();
+  };
+
   return (
-    <Modal opened={opened} onCloseClick={handleCloseModal}>
+    <Modal
+      opened={opened}
+      onCloseClick={() => {
+        handleRollbackTemporarySpecialties();
+      }}
+    >
       <StyledContainer>
         <StyledTitle>전문 분야</StyledTitle>
         <StyledLine />
