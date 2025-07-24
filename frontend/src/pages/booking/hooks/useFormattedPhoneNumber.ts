@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useRef, useState } from 'react';
 
-import { getFormatPhoneNumber } from '../utils/getFormatPhoneNumber';
+import { getFormattedPhoneNumber } from '../utils/getFormattedPhoneNumber ';
 
 const useFormattedPhoneNumber = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -14,7 +14,7 @@ const useFormattedPhoneNumber = () => {
     const cursorPos = e.target.selectionStart ?? rawValue.length;
 
     // 포매팅
-    const formatted = getFormatPhoneNumber(rawValue);
+    const formatted = getFormattedPhoneNumber(rawValue);
 
     // 원본입력과 포매팅된 입력의 길이 차이
     const lengthDiff = formatted.length - prevValue.length;
