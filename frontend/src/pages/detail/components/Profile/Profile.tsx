@@ -44,6 +44,7 @@ const StyledContainer = styled.div`
   margin-top: 2.3rem;
   padding: 0 1rem;
   align-items: center;
+  justify-content: center;
   gap: 4rem;
 `;
 
