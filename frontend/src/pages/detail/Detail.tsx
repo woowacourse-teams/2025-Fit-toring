@@ -34,17 +34,19 @@ function Detail() {
   }
 
   return (
-    <StyledContainer>
+    <>
       <DetailHeader />
-      <Profile
-        profileImg={data.imageUrl}
-        mentorName={data.mentorName}
-        categories={data.categories}
-      />
-      <MentorSummary introduction={data.introduction} career={data.career} />
-      <Introduction content={data.content} />
-      <ApplySection price={data.price} mentoringId={mentoringId} />
-    </StyledContainer>
+      <StyledContainer>
+        <Profile
+          profileImg={data.imageUrl}
+          mentorName={data.mentorName}
+          categories={data.categories}
+        />
+        <MentorSummary introduction={data.introduction} career={data.career} />
+        <Introduction content={data.content} />
+        <ApplySection price={data.price} mentoringId={mentoringId} />
+      </StyledContainer>
+    </>
   );
 }
 
@@ -52,7 +54,7 @@ export default Detail;
 
 const StyledContainer = styled.div`
   display: flex;
-  padding: 0 4.1rem 2rem;
+  padding: 0 2rem 2rem;
   flex-direction: column;
   align-items: center;
   gap: 2.4rem;
