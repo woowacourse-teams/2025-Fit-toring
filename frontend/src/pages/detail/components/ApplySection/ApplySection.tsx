@@ -43,6 +43,8 @@ const StyledContainer = styled.section`
   align-items: center;
   width: 100%;
   height: 9.4rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
+  border-radius: 8px;
   padding: 2rem 2.1rem 0.8rem;
   gap: 1rem;
 
