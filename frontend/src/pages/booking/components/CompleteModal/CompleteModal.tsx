@@ -73,7 +73,6 @@ const StyledContainer = styled.div`
   flex-direction: column;
   gap: 2rem;
 
-  width: 34rem;
   height: 43.5rem;
   padding: 4rem 2.2rem 2.4rem;
 `;
