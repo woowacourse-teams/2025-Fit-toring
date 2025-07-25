@@ -30,4 +30,15 @@ export const Default: Story = {
       },
     },
   },
+  args: {
+    mentorDetail: {
+      id: 3,
+      mentorName: '범태',
+      categories: ['다이어트'],
+      price: 4500,
+      career: 4,
+      imageUrl: '',
+      introduction: '식단 중심의 다이어트',
+    },
+  },
 };
