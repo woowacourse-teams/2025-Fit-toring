@@ -68,12 +68,7 @@ function SpecialtyModal({
   };
 
   return (
-    <Modal
-      opened={opened}
-      onCloseClick={() => {
-        handleRollbackTemporarySpecialties();
-      }}
-    >
+    <Modal opened={opened} onCloseClick={handleRollbackTemporarySpecialties}>
       <StyledContainer>
         <StyledTitle>전문 분야</StyledTitle>
         <StyledLine />
