@@ -15,8 +15,7 @@ interface SpecialtyFilterModalProps {
   handleCloseModal: () => void;
 
   selectedSpecialties: string[];
-
-  handleApply: (specialties: string[]) => void;
+  handleApplyFinalSpecialties: (specialties: string[]) => void;
 }
 
 function SpecialtyFilterModal({
@@ -24,7 +23,7 @@ function SpecialtyFilterModal({
   handleCloseModal,
 
   selectedSpecialties,
-  handleApply,
+  handleApplyFinalSpecialties,
 }: SpecialtyFilterModalProps) {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
 
@@ -55,7 +54,7 @@ function SpecialtyFilterModal({
   };
 
   const handleApplySpecialties = () => {
-    handleApply(temporarySelectedSpecialties);
+    handleApplyFinalSpecialties(temporarySelectedSpecialties);
   };
 
   const handleResetTemporarySpecialties = () => {

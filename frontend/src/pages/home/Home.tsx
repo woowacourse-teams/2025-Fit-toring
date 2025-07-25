@@ -71,7 +71,7 @@ function Home() {
           opened={modalOpened}
           handleCloseModal={handleCloseModal}
           selectedSpecialties={selectedSpecialties}
-          handleApply={handleApply}
+          handleApplyFinalSpecialties={handleApply}
         />
         <MentorCardList>
           {mentorList.map((mentor) => (
