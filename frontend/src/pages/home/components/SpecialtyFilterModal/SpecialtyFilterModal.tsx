@@ -1,90 +1,107 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
 import Modal from '../../../../common/components/Modal/Modal';
+import { getSpecialties } from '../../apis/getSpecialties';
 import SpecialtyCheckbox from '../SpecialtyCheckbox/SpecialtyCheckbox';
 
-const ALL_SPECIALTIES = [
-  { id: 'weightLoss', label: '체중 감량' },
-  { id: 'muscleGain', label: '근력 증진' },
-  { id: 'bodyCorrection', label: '체형 교정' },
-  { id: 'muscleExercise', label: '근력 운동' },
-  { id: 'bulkUp', label: '벌크업' },
-  { id: 'rehabExercise', label: '재활 운동' },
-  { id: 'nutritionCounseling', label: '영양 상담' },
-  { id: 'postureCorrection', label: '자세 교정' },
-  { id: 'stretching', label: '스트레칭' },
-  { id: 'diet', label: '다이어트' },
-  { id: 'competitionPrep', label: '대회 준비' },
-] as const;
+import type { Specialty } from '../../types/Specialty';
 
 const MAX_SPECIALTIES = 3;
 
-interface SpecialtyModalProps {
+interface SpecialtyFilterModalProps {
   opened: boolean;
   handleCloseModal: () => void;
 
   selectedSpecialties: string[];
-  handleReset: () => void;
-  handleApply: () => void;
+  handleApplyFinalSpecialties: (specialties: string[]) => void;
 }
 
-function SpecialtyModal({
+function SpecialtyFilterModal({
   opened,
   handleCloseModal,
 
   selectedSpecialties,
-  handleReset,
-  handleApply,
-}: SpecialtyModalProps) {
+  handleApplyFinalSpecialties,
+}: SpecialtyFilterModalProps) {
+  const [specialties, setSpecialties] = useState<Specialty[]>([]);
+
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      try {
+        const data = await getSpecialties();
+        setSpecialties(data);
+      } catch (error) {
+        console.error('전문 분야 가져오기 실패:', error);
+      }
+    };
+
+    fetchSpecialties();
+  }, []);
+
   const [temporarySelectedSpecialties, setTemporarySelectedSpecialties] =
     useState<string[]>(selectedSpecialties);
 
   if (!opened) return null;
 
-  const handleTemporarySpecialtyToggle = (specialtyId: string) => {
+  const handleToggleTemporarySpecialty = (specialty: string) => {
     setTemporarySelectedSpecialties((prev) =>
-      prev.includes(specialtyId)
-        ? prev.filter((id) => id !== specialtyId)
-        : [...prev, specialtyId],
+      prev.includes(specialty)
+        ? prev.filter((prevSpecialty) => prevSpecialty !== specialty)
+        : [...prev, specialty],
     );
   };
 
+  const handleApplySpecialties = () => {
+    handleApplyFinalSpecialties(temporarySelectedSpecialties);
+  };
+
+  const handleResetTemporarySpecialties = () => {
+    setTemporarySelectedSpecialties([]);
+  };
+
+  const handleRollbackTemporarySpecialties = () => {
+    setTemporarySelectedSpecialties(selectedSpecialties);
+    handleCloseModal();
+  };
+
   return (
-    <Modal opened={opened} onCloseClick={handleCloseModal}>
+    <Modal opened={opened} onCloseClick={handleRollbackTemporarySpecialties}>
       <StyledContainer>
         <StyledTitle>전문 분야</StyledTitle>
         <StyledLine />
 
         <StyledSpecialtyWrapper>
-          {ALL_SPECIALTIES.map((specialty) => (
+          {specialties.map((specialty) => (
             <SpecialtyCheckbox
               key={specialty.id}
-              specialty={specialty.label}
-              checked={temporarySelectedSpecialties.includes(specialty.id)}
+              specialty={specialty.title}
+              checked={temporarySelectedSpecialties.includes(specialty.title)}
               disabled={
                 temporarySelectedSpecialties.length >= MAX_SPECIALTIES &&
-                !temporarySelectedSpecialties.includes(specialty.id)
+                !temporarySelectedSpecialties.includes(specialty.title)
               }
-              onChange={() => handleTemporarySpecialtyToggle(specialty.id)}
+              onChange={() => handleToggleTemporarySpecialty(specialty.title)}
             />
           ))}
         </StyledSpecialtyWrapper>
 
         <StyledLine />
         <StyledButtonWrapper>
-          <StyledSecondaryButton onClick={handleReset}>
+          <StyledSecondaryButton onClick={handleResetTemporarySpecialties}>
             초기화
           </StyledSecondaryButton>
-          <StyledPrimaryButton onClick={handleApply}>적용</StyledPrimaryButton>
+          <StyledPrimaryButton onClick={handleApplySpecialties}>
+            적용
+          </StyledPrimaryButton>
         </StyledButtonWrapper>
       </StyledContainer>
     </Modal>
   );
 }
 
-export default SpecialtyModal;
+export default SpecialtyFilterModal;
 
 const StyledContainer = styled.div`
   display: flex;
