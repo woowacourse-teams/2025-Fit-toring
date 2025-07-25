@@ -1,7 +1,7 @@
 import { apiClient } from '../../../common/apis/apiClient';
 
 export interface MentoringDetail {
-  id: 1;
+  id: number;
   mentorName: string;
   categories: string[];
   price: number;
