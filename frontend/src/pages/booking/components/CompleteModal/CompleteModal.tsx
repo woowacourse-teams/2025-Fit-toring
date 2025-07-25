@@ -7,12 +7,19 @@ import Button from '../../../../common/components/Button/Button';
 import Modal from '../../../../common/components/Modal/Modal';
 import { PAGE_URL } from '../../../../common/constants/url';
 
+import type { BookingResponse } from '../../types/BookingResponse';
+
 interface CompleteModalProps {
+  bookedInfo: BookingResponse | null;
   opened: boolean;
   onCloseClick: () => void;
 }
 
-function CompleteModal({ opened, onCloseClick }: CompleteModalProps) {
+function CompleteModal({
+  bookedInfo,
+  opened,
+  onCloseClick,
+}: CompleteModalProps) {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
@@ -28,15 +35,15 @@ function CompleteModal({ opened, onCloseClick }: CompleteModalProps) {
           <h3>신청이 완료되었습니다!</h3>
           <div>
             <p>
-              <strong>김트레이너</strong> 멘토에게
+              <strong>{bookedInfo?.mentorName}</strong> 멘토에게
             </p>
             <p>상담 신청이 전송되었습니다.</p>
           </div>
         </StyledCompleteNotice>
         <StyledInfoWrapper>
-          <p>신청자: 홍길동</p>
-          <p>연락처: 010-1234-1234</p>
-          <p>멘토 연락처: 010-5678-5678</p>
+          <p>신청자: {bookedInfo?.menteeName}</p>
+          <p>연락처: {bookedInfo?.menteePhone}</p>
+          <p>멘토 연락처: {bookedInfo?.mentorPhone}</p>
         </StyledInfoWrapper>
         <StyledCompleteGuide>
           <div>

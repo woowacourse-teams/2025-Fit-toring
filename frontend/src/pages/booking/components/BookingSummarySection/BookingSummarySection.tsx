@@ -6,8 +6,6 @@ import Button from '../../../../common/components/Button/Button';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
 function BookingSummarySection() {
-  const handleBookingButtonClick = () => {};
-
   return (
     <StyledContainer>
       <StyledWrapper>
@@ -17,9 +15,8 @@ function BookingSummarySection() {
       <Button
         customStyle={css`
           flex-grow: 1;
-          padding: 0.8rem 0rem;
+          padding: 0.8rem 0;
         `}
-        onClick={handleBookingButtonClick}
       >
         예약하기
       </Button>
