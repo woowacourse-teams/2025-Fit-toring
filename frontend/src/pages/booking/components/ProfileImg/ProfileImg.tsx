@@ -12,7 +12,11 @@ function ProfileImg({ src }: ProfileImgProps) {
     target.src = profileImg; // TODO: 임시 기본이미지 추후에 변경해야함
   };
   return (
-    <StyledContainer src={src} alt="프로필 이미지" onError={handleImgError} />
+    <StyledContainer
+      src={src || profileImg}
+      alt="프로필 이미지"
+      onError={handleImgError}
+    />
   );
 }
 

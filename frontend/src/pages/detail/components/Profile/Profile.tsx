@@ -16,7 +16,7 @@ function Profile({ profileImg, mentorName, categories }: ProfileProps) {
   return (
     <StyledContainer>
       <StyledProfileImg
-        src={profileImg}
+        src={profileImg || defaultProfileImg}
         alt="멘토 프로필 이미지"
         onError={(e) => {
           e.currentTarget.src = defaultProfileImg;
