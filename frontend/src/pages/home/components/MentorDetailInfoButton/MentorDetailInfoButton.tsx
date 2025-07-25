@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
 
-function MentorDetailInfoButton() {
+function MentorDetailInfoButton({ id }: { id: number }) {
   const navigate = useNavigate();
 
   const handleDetailInfoButtonClick = () => {
-    navigate(PAGE_URL.DETAIL);
+    navigate(`${PAGE_URL.DETAIL}/${id}`);
   };
 
   return (

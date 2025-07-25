@@ -48,7 +48,8 @@ const StyledContent = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
-
+  width: 100%;
+  max-width: 34rem;
   padding: 2.2rem;
 
   background-color: white;

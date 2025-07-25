@@ -8,27 +8,39 @@ import CategoryTags from '../../../../common/components/CategoryTags/CategoryTag
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import MentorDetailInfoButton from '../MentorDetailInfoButton/MentorDetailInfoButton';
 
-function MentorCardItem() {
+import type { MentorInformation } from '../../types/MentorInformation';
+
+interface MentorCardItemProps {
+  mentor: MentorInformation;
+}
+
+function MentorCardItem({
+  mentor: { id, mentorName, categories, price, career, imageUrl, introduction },
+}: MentorCardItemProps) {
   return (
     <StyledContainer>
       <StyledWrapper>
-        <StyledProfileImg src={profileImg} alt="트레이너 이미지" />
+        <StyledProfileImg
+          src={imageUrl || profileImg}
+          alt="트레이너 이미지"
+          onError={(e) => {
+            e.currentTarget.src = profileImg;
+          }}
+        />
         <StyledInfoWrapper>
-          <StyledTitle>김트레이너</StyledTitle>
+          <StyledTitle>{mentorName}</StyledTitle>
           <TextWithIcon text="4.9 (127)" iconSrc={starIcon} iconName="별점" />
           <TextWithIcon text="강남구" iconSrc={locationIcon} iconName="위치" />
-          <StyledPersonalHistory>경력: 전문 트레이너 5년</StyledPersonalHistory>
-          <CategoryTags tagNames={['근력 증진', '다이어트', '체형 교정']} />
+          <StyledPersonalHistory>경력: {career}년</StyledPersonalHistory>
+          <CategoryTags tagNames={categories} />
         </StyledInfoWrapper>
       </StyledWrapper>
-      <StyledSelfIntroduction>
-        5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.
-      </StyledSelfIntroduction>
+      <StyledSelfIntroduction>{introduction}</StyledSelfIntroduction>
       <StyledPriceWrapper>
         <TextWithIcon text="15분" iconSrc={timeIcon} iconName="시간" />
-        <StyledPrice>4,500원</StyledPrice>
+        <StyledPrice>{price.toLocaleString()}원</StyledPrice>
       </StyledPriceWrapper>
-      <MentorDetailInfoButton />
+      <MentorDetailInfoButton id={id} />
     </StyledContainer>
   );
 }

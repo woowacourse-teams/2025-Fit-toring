@@ -2,12 +2,22 @@ import { useState } from 'react';
 
 import styled from '@emotion/styled';
 
+import { apiClient } from '../../../../common/apis/apiClient';
 import Input from '../../../../common/components/Input/Input';
+
+import { API_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
+
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import FormField from '../FormField/FormField';
 
-function BookingForm() {
+import type { BookingResponse } from '../../types/BookingResponse';
+
+interface BookingFormProps {
+  handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
+}
+
+function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
   const [menteeName, setMenteeName] = useState('');
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
@@ -24,8 +34,28 @@ function BookingForm() {
     setCounselContent(e.target.value);
   };
 
+  const handleBooking = async () => {
+    try {
+      const response = await apiClient.post({
+        endpoint: `${API_URL.MENTORINGS}/1/reservation`,
+        searchParams: {
+          menteeName,
+          menteePhone: phoneNumber,
+          content: counselContent,
+        },
+      });
+      handleBookingButtonClick(response);
+    } catch (error) {
+      console.error('예약 중 에러 발생', error);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleBooking();
+  };
   return (
-    <StyledContainer>
+    <StyledContainer onSubmit={handleSubmit}>
       <StyledInfoText>
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
@@ -74,18 +104,20 @@ function BookingForm() {
 export default BookingForm;
 
 const StyledContainer = styled.form`
-  padding: 2.2rem;
-  border-radius: 1.3rem;
-  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
   width: 100%;
   height: 100%;
+  padding: 2.2rem;
+  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+
   background-color: white;
+  border-radius: 1.3rem;
 `;
 
 const StyledInfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-  color: ${({ theme }) => theme.FONT.BLACK};
   margin-top: 1.7rem;
+
+  color: ${({ theme }) => theme.FONT.BLACK};
 `;
 
 const StyledFieldWrapper = styled.div`
