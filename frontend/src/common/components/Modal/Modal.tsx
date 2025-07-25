@@ -37,6 +37,7 @@ const StyledOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
 
@@ -47,12 +48,12 @@ const StyledContent = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 34rem;
-  height: 30rem;
+  width: 100%;
+  max-width: 34rem;
   padding: 2.2rem;
-  word-break: break-all;
 
   background-color: white;
+  word-break: break-all;
   transform: translate(-50%, -50%);
   border-radius: 0.5rem;
   box-shadow: rgb(0 0 0 / 10%) 0 0.4rem 1.2rem;

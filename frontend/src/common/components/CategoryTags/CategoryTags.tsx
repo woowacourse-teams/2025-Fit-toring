@@ -9,7 +9,7 @@ function CategoryTags({ tagNames }: CategoryTags) {
   return (
     <StyledContainer>
       {tagNames.map((tagName) => (
-        <CategoryTag tagName={tagName} />
+        <CategoryTag tagName={tagName} key={tagName} />
       ))}
     </StyledContainer>
   );
