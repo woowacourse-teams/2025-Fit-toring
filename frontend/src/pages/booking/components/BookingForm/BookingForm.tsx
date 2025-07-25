@@ -4,10 +4,8 @@ import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
 import Input from '../../../../common/components/Input/Input';
-
-import { API_URL } from '../../../../common/constants/url';
+import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
-
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import FormField from '../FormField/FormField';
 
@@ -37,7 +35,7 @@ function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
   const handleBooking = async () => {
     try {
       const response = await apiClient.post({
-        endpoint: `${API_URL.MENTORINGS}/1/reservation`,
+        endpoint: `${API_ENDPOINTS.MENTORINGS}/1/reservation`,
         searchParams: {
           menteeName,
           menteePhone: phoneNumber,
