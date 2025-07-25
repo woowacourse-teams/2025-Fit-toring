@@ -10,7 +10,7 @@ import type { Specialty } from '../../types/Specialty';
 
 const MAX_SPECIALTIES = 3;
 
-interface SpecialtyModalProps {
+interface SpecialtyFilterModalProps {
   opened: boolean;
   handleCloseModal: () => void;
 
@@ -19,13 +19,13 @@ interface SpecialtyModalProps {
   handleApply: (specialties: string[]) => void;
 }
 
-function SpecialtyModal({
+function SpecialtyFilterModal({
   opened,
   handleCloseModal,
 
   selectedSpecialties,
   handleApply,
-}: SpecialtyModalProps) {
+}: SpecialtyFilterModalProps) {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
 
   useEffect(() => {
@@ -102,7 +102,7 @@ function SpecialtyModal({
   );
 }
 
-export default SpecialtyModal;
+export default SpecialtyFilterModal;
 
 const StyledContainer = styled.div`
   display: flex;
