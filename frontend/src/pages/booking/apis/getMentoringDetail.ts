@@ -1,4 +1,5 @@
 import { apiClient } from '../../../common/apis/apiClient';
+import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
 export interface MentoringDetail {
   id: number;
@@ -12,6 +13,6 @@ export interface MentoringDetail {
 
 export const getMentoringDetail = async (mentoringId: string) => {
   return await apiClient.get<MentoringDetail>({
-    endpoint: `/mentorings/${mentoringId}`,
+    endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}`,
   });
 };
