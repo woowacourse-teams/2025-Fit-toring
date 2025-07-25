@@ -10,8 +10,8 @@ export interface MentoringDetail {
   introduction: string;
 }
 
-export const getMentoringDetail = async (
-  mentoringId: string,
-): Promise<MentoringDetail> => {
-  return await apiClient.get({ endpoint: `/mentorings/${mentoringId}` });
+export const getMentoringDetail = async (mentoringId: string) => {
+  return await apiClient.get<MentoringDetail>({
+    endpoint: `/mentorings/${mentoringId}`,
+  });
 };
