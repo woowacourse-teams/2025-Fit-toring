@@ -4,7 +4,10 @@ import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
 import Input from '../../../../common/components/Input/Input';
+
 import { API_URL } from '../../../../common/constants/url';
+import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
+
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import FormField from '../FormField/FormField';
 
@@ -16,15 +19,13 @@ interface BookingFormProps {
 
 function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
   const [menteeName, setMenteeName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+
+  const { phoneNumber, inputRef, handlePhoneNumberChange } =
+    useFormattedPhoneNumber();
   const [counselContent, setCounselContent] = useState('');
 
   const handleMenteeNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMenteeName(e.target.value);
-  };
-
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhoneNumber(e.target.value);
   };
 
   const handleCounselContentChange = (
@@ -75,6 +76,9 @@ function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
             value={phoneNumber}
             onChange={handlePhoneNumberChange}
             errored={false}
+            ref={inputRef}
+            maxLength={13}
+            type="tel"
           />
         </FormField>
         <FormField
