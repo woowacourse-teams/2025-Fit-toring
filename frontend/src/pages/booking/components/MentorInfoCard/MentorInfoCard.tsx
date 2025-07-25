@@ -7,35 +7,44 @@ import CategoryTags from '../../../../common/components/CategoryTags/CategoryTag
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import ProfileImg from '../ProfileImg/ProfileImg';
 
-const DUMMY = {
-  id: 1,
-  mentor_name: '김트레이너',
-  categories: ['근력 증진', '다이어트', '체형 교정'],
-  price: 5000,
-  image:
-    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&crop=face',
-};
+import type { MentoringDetail } from '../../apis/getMentoringDetail';
 
-function MentoInfoCard() {
+interface MentoInfoCardProps {
+  mentorDetail: MentoringDetail | null;
+}
+
+function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
   return (
     <StyledContainer>
-      <StyledMentoProfileWrapper>
-        <ProfileImg src={DUMMY.image} />
-        <StyledMetoNameText>{DUMMY.mentor_name}</StyledMetoNameText>
-      </StyledMentoProfileWrapper>
-      <StyledInfoWithTags>
-        <StyledInfoWrapper>
-          <TextWithIcon iconSrc={startIcon} text="4.5 (127)" iconName="별점" />
-          <TextWithIcon
-            iconSrc={locationIcon}
-            text="서울 강남구"
-            iconName="위치"
-          />
-          <TextWithIcon iconSrc={timeIcon} text="15분" iconName="시간" />
-        </StyledInfoWrapper>
-        <CategoryTags tagNames={DUMMY.categories} />
-      </StyledInfoWithTags>
-      <StyledPriceText>{DUMMY.price.toLocaleString('ko')}원</StyledPriceText>
+      {mentorDetail ? (
+        <>
+          <StyledMentoProfileWrapper>
+            <ProfileImg src={mentorDetail.imageUrl} />
+            <StyledMetoNameText>{mentorDetail.mentorName}</StyledMetoNameText>
+          </StyledMentoProfileWrapper>
+          <StyledInfoWithTags>
+            <StyledInfoWrapper>
+              <TextWithIcon
+                iconSrc={startIcon}
+                text="4.5 (127)"
+                iconName="별점"
+              />
+              <TextWithIcon
+                iconSrc={locationIcon}
+                text="서울 강남구"
+                iconName="위치"
+              />
+              <TextWithIcon iconSrc={timeIcon} text="15분" iconName="시간" />
+            </StyledInfoWrapper>
+            <CategoryTags tagNames={mentorDetail.categories} />
+          </StyledInfoWithTags>
+          <StyledPriceText>
+            {mentorDetail.price.toLocaleString('ko')}원
+          </StyledPriceText>
+        </>
+      ) : (
+        <div>로딩중</div>
+      )}
     </StyledContainer>
   );
 }
@@ -43,21 +52,22 @@ function MentoInfoCard() {
 export default MentoInfoCard;
 
 const StyledContainer = styled.div`
-  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.4rem;
   width: 100%;
+  height: 21.6rem;
   padding: 2.2rem;
   background-color: white;
   border: ${({ theme }) => theme.LINE.REGULAR} 0.1rem solid;
   border-radius: 1.27rem;
+  display: flex;
 `;
 
 const StyledMentoProfileWrapper = styled.div`
-  display: flex;
   flex-direction: column;
   gap: 1.4rem;
+  display: flex;
   align-items: center;
 `;
 

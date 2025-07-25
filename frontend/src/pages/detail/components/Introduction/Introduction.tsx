@@ -15,7 +15,7 @@ function Introduction({ content }: IntroductionProps) {
 
 export default Introduction;
 
-const StyledContainer = styled.p`
+const StyledContainer = styled.div`
   width: 100%;
   padding: 0 1rem;
 

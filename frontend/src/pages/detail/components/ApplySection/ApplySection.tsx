@@ -7,13 +7,14 @@ import { PAGE_URL } from '../../../../common/constants/url';
 
 interface ApplySectionProps {
   price: number;
+  mentoringId: string | undefined;
 }
 
-function ApplySection({ price }: ApplySectionProps) {
+function ApplySection({ price, mentoringId }: ApplySectionProps) {
   const navigate = useNavigate();
 
   const handleMoveToBookingPage = () => {
-    navigate(PAGE_URL.BOOKING);
+    navigate(`${PAGE_URL.BOOKING}/${mentoringId}`);
   };
   return (
     <StyledContainer>
@@ -42,6 +43,8 @@ const StyledContainer = styled.section`
   align-items: center;
   width: 100%;
   height: 9.4rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
+  border-radius: 8px;
   padding: 2rem 2.1rem 0.8rem;
   gap: 1rem;
 

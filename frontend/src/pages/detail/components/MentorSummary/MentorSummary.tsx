@@ -35,7 +35,7 @@ const StyledSelfIntroduction = styled.p`
   color: ${({ theme }) => theme.FONT.B02}
 `;
 
-const StyledCertifications = styled.p`
+const StyledCertifications = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
