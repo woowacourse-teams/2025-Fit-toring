@@ -73,7 +73,10 @@ function Booking() {
       <StyledContentWrapper ref={wrapperRef}>
         <MentoInfoCard mentorDetail={mentorDetail} />
         <div ref={formRef}>
-          <BookingForm handleBookingButtonClick={handleBookingButtonClick} />
+          <BookingForm
+            handleBookingButtonClick={handleBookingButtonClick}
+            mentoringId={Number(mentoringId)}
+          />
         </div>
       </StyledContentWrapper>
       <CompleteModal

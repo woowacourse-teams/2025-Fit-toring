@@ -13,9 +13,13 @@ import type { BookingResponse } from '../../types/BookingResponse';
 
 interface BookingFormProps {
   handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
+  mentoringId: number;
 }
 
-function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
+function BookingForm({
+  handleBookingButtonClick,
+  mentoringId,
+}: BookingFormProps) {
   const [menteeName, setMenteeName] = useState('');
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
@@ -35,7 +39,7 @@ function BookingForm({ handleBookingButtonClick }: BookingFormProps) {
   const handleBooking = async () => {
     try {
       const response = await apiClient.post({
-        endpoint: `${API_ENDPOINTS.MENTORINGS}/1/reservation`,
+        endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}/reservation`,
         searchParams: {
           menteeName,
           menteePhone: phoneNumber,
