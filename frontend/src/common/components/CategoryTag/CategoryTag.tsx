@@ -17,10 +17,10 @@ export default CategoryTag;
 const StyledContainer = styled.div`
   width: fit-content;
   border-radius: 0.675rem;
-  border: ${({ theme }) => theme.SYSTEM.MAIN300} 0.1rem solid;
+  border: ${({ theme }) => theme.SYSTEM.MAIN400} 0.1rem solid;
   padding: 0.4rem 0.8rem;
 `;
 
 const StyledTagName = styled.span`
-  color: ${({ theme }) => theme.SYSTEM.MAIN800};
+  color: ${({ theme }) => theme.SYSTEM.MAIN600};
 `;

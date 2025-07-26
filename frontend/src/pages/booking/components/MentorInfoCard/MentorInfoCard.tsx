@@ -59,7 +59,7 @@ const StyledContainer = styled.div`
   height: 21.6rem;
   padding: 2.2rem;
   background-color: white;
-  border: ${({ theme }) => theme.LINE.REGULAR} 0.1rem solid;
+  border: ${({ theme }) => theme.OUTLINE.REGULAR} 0.1rem solid;
   border-radius: 1.27rem;
   display: flex;
 `;
@@ -89,7 +89,7 @@ const StyledInfoWrapper = styled.div`
 `;
 
 const StyledPriceText = styled.span`
-  color: ${({ theme }) => theme.SYSTEM.MAIN700};
+  color: ${({ theme }) => theme.SYSTEM.MAIN600};
   font-size: 1.6rem;
   font-weight: bold;
 `;

@@ -54,12 +54,12 @@ const StyledCheckboxLabel = styled.span<{
   padding: 0.6rem 1.2rem;
   border: 1px solid
     ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN800 : theme.BORDER.GRAY300};
+      checked ? theme.SYSTEM.MAIN800 : theme.OUTLINE.DARK};
 
   background-color: ${({ theme, checked }) =>
-    checked ? theme.SYSTEM.MAIN800 : theme.BG.WHITE};
+    checked ? theme.SYSTEM.MAIN600 : theme.BG.WHITE};
 
-  color: ${({ theme, checked }) => (checked ? theme.BG.WHITE : theme.FONT.B01)};
+  color: ${({ theme, checked }) => (checked ? theme.BG.WHITE : theme.FONT.B02)};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   align-items: center;
   border-radius: 16px;
@@ -69,10 +69,10 @@ const StyledCheckboxLabel = styled.span<{
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 
   &:hover {
-    border-color: ${({ theme }) => theme.SYSTEM.MAIN700};
+    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 
     background-color: ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN700 : theme.BG.LIGHT};
+      checked ? theme.SYSTEM.MAIN500 : theme.BG.LIGHT};
   }
 
   &:active {
