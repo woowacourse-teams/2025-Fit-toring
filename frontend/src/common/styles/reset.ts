@@ -61,8 +61,10 @@ export const resetCss = css`
     display: block;
   }
 
-  html {
+  html,
+  * {
     font-size: 62.5%;
+    font-family: Pretendard, sans-serif;
   }
 
   body {
