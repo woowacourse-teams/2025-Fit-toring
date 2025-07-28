@@ -24,11 +24,12 @@ export default MentorSummary;
 
 const StyledContainer = styled.section`
   display: flex;
-  width: 100%;
-  padding: 1rem;
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+
+  width: 100%;
+  padding: 1rem;
 `;
 const StyledSelfIntroduction = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_B}

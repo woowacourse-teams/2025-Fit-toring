@@ -19,8 +19,8 @@ export default TextWithIcon;
 
 const StyledContainer = styled.div`
   display: flex;
-  gap: 0.3rem;
   align-items: center;
+  gap: 0.3rem;
 `;
 
 const StyledImg = styled.img`

@@ -81,7 +81,6 @@ const StyledCompleteNotice = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   gap: 1.6rem;
 
   & p {
@@ -109,15 +108,15 @@ const StyledImg = styled.img`
 
 const StyledInfoWrapper = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 
   width: 100%;
   padding: 1.5rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 0.8rem;
 
   background-color: ${({ theme }) => theme.BG.LIGHT};
-  flex-direction: column;
-  gap: 0.8rem;
-  border-radius: 0.8rem;
 
   & p {
     ${({ theme }) => theme.TYPOGRAPHY.B2_R};
@@ -129,7 +128,6 @@ const StyledCompleteGuide = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   gap: 1.6rem;
 
   & p {

@@ -24,8 +24,9 @@ const Container = styled.input<InputProps>`
   border: ${({ theme, errored }) =>
       errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
     0.1rem solid;
-
   border-radius: 0.7rem;
+
+  color: ${({ theme }) => theme.FONT.B04};
 
   :focus {
     outline: none;
@@ -33,5 +34,4 @@ const Container = styled.input<InputProps>`
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
   ${({ customStyle }) => customStyle};
-  color: ${({ theme }) => theme.FONT.B04};
 `;

@@ -25,10 +25,11 @@ function FormField({
 
 export default FormField;
 const StyledField = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+
+  width: 100%;
 `;
 
 const StyledErrorText = styled.span`

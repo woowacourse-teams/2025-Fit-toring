@@ -41,12 +41,13 @@ const StyledContainer = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1rem;
+
   width: 100%;
   height: 9.4rem;
+  padding: 2rem 2.1rem 0.8rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
   border-radius: 8px;
-  padding: 2rem 2.1rem 0.8rem;
-  gap: 1rem;
 
   background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
 `;
@@ -54,6 +55,7 @@ const StyledContainer = styled.section`
 const StyledWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+
   width: 100%;
 
   & p {
