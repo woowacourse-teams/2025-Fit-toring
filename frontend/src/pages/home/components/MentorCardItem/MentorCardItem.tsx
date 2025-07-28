@@ -98,14 +98,14 @@ const StyledTitle = styled.h3`
 
 const StyledPersonalHistory = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
-  font-size: 1.2rem;
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
 `;
 
 const StyledSelfIntroduction = styled.p`
   overflow: hidden;
 
   color: ${({ theme }) => theme.FONT.B03};
-  font-size: 1.2rem;
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
   white-space: nowrap;
   text-overflow: ellipsis;
 `;

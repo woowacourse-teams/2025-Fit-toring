@@ -9,7 +9,6 @@ export const fonts = css`
 
     font-weight: 400;
     src: url(${PretendardRegular}) format('woff2');
-    font-display: swap;
   }
 
   @font-face {
@@ -17,6 +16,5 @@ export const fonts = css`
 
     font-weight: 700;
     src: url(${PretendardBold}) format('woff2');
-    font-display: swap;
   }
 `;

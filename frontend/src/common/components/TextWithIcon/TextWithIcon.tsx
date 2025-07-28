@@ -29,7 +29,8 @@ const StyledImg = styled.img`
 `;
 
 const StyledSpan = styled.span`
-  color: ${({ theme }) => theme.FONT.B04};
-  font-size: 1.2rem;
   display: flex;
+
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
 `;
