@@ -4,6 +4,6 @@ export type MentorInformation = {
   categories: string[];
   price: number;
   career: number;
-  imageUrl: string;
+  imageUrl: string | null;
   introduction: string;
 };
