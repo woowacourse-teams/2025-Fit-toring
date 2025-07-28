@@ -22,7 +22,7 @@ const Container = styled.input<InputProps>`
   width: 100%;
   padding: 0.7rem 1.1rem;
   border: ${({ theme, errored }) =>
-      errored ? theme.FONT.ERROR : theme.BORDER.GRAY300}
+      errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
     0.1rem solid;
 
   border-radius: 0.7rem;
@@ -33,4 +33,5 @@ const Container = styled.input<InputProps>`
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
   ${({ customStyle }) => customStyle};
+  color: ${({ theme }) => theme.FONT.B04};
 `;

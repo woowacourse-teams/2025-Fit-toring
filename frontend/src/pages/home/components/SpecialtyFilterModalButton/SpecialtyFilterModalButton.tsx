@@ -23,7 +23,7 @@ const StyledButton = styled.button`
   display: inline-flex;
   width: 90%;
   padding: 0.7rem 1.1rem;
-  border: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
   justify-content: space-between;
   align-items: center;
 
@@ -34,6 +34,7 @@ const StyledButton = styled.button`
 
 const StyledText = styled.span`
   ${({ theme }) => theme.TYPOGRAPHY.BTN4_R};
+  color: ${({ theme }) => theme.FONT.B02};
 `;
 
 const StyledGoIcon = styled.img`

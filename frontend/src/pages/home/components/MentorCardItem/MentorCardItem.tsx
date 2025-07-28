@@ -54,7 +54,7 @@ const StyledContainer = styled.li`
   width: 100%;
   height: 25.6rem;
   padding: 2.2rem 2.4rem;
-  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 
   background-color: ${({ theme }) => theme.BG.WHITE};
   border-radius: 12.75px;
@@ -63,7 +63,7 @@ const StyledContainer = styled.li`
     0 4px 6px -4px rgb(0 0 0 / 10%);
 
   :hover {
-    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
   }
 
   justify-content: space-between;
@@ -79,10 +79,10 @@ const StyledProfileImg = styled.img`
   height: 5.6rem;
   border-radius: 50%;
 
-  border: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 
   :hover {
-    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
   }
 `;
 
@@ -97,7 +97,7 @@ const StyledTitle = styled.h3`
 `;
 
 const StyledPersonalHistory = styled.p`
-  color: ${({ theme }) => theme.FONT.B03};
+  color: ${({ theme }) => theme.FONT.B04};
   font-size: 1.2rem;
 `;
 
@@ -117,6 +117,6 @@ const StyledPriceWrapper = styled.div`
 `;
 
 const StyledPrice = styled.span`
-  color: ${({ theme }) => theme.SYSTEM.MAIN800};
+  color: ${({ theme }) => theme.SYSTEM.MAIN600};
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;

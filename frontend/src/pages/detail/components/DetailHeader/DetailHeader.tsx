@@ -50,4 +50,6 @@ const StyledTitle = styled.h3`
   flex-grow: 1;
 
   text-align: center;
+
+  color: ${({ theme }) => theme.FONT.B01};
 `;

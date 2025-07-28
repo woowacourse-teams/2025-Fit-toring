@@ -52,7 +52,7 @@ const StyledProfileImg = styled.img`
   width: 14rem;
   height: 14rem;
   border-radius: 50%;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
 `;
 
 const StyledInfoWrapper = styled.div`
@@ -63,4 +63,5 @@ const StyledInfoWrapper = styled.div`
 
 const StyledTitle = styled.h3`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
+  color: ${({ theme }) => theme.FONT.B01}
 `;

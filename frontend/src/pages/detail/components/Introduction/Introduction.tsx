@@ -21,6 +21,7 @@ const StyledContainer = styled.div`
 
   white-space: pre-line;
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
+  color: ${({ theme }) => theme.FONT.B02};
 `;
 
 const StyledH4 = styled.h4`

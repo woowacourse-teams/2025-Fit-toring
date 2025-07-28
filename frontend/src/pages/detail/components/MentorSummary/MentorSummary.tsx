@@ -32,7 +32,7 @@ const StyledContainer = styled.section`
 `;
 const StyledSelfIntroduction = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_B}
-  color: ${({ theme }) => theme.FONT.B02}
+  color: ${({ theme }) => theme.FONT.B03}
 `;
 
 const StyledCertifications = styled.div`
@@ -48,5 +48,5 @@ const StyledCertifications = styled.div`
 const StyledHr = styled.hr`
   width: 100%;
   height: 0.1rem;
-  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;

@@ -122,7 +122,7 @@ const StyledLine = styled.hr`
   height: 1px;
   margin: 0;
   border: none;
-  border-top: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
+  border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
 const StyledSpecialtyWrapper = styled.div`
@@ -159,24 +159,24 @@ const StyledButton = styled.button`
 `;
 
 const StyledPrimaryButton = styled(StyledButton)`
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN800};
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN600};
 
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN800};
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
 
   color: ${({ theme }) => theme.BG.WHITE};
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
 
   &:hover {
-    background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
+    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 `;
 
 const StyledSecondaryButton = styled(StyledButton)`
-  border: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
 
   background-color: transparent;
 
-  color: ${({ theme }) => theme.FONT.B01};
+  color: ${({ theme }) => theme.FONT.B02};
 
   &:hover {
     background-color: ${({ theme }) => theme.BG.LIGHT};

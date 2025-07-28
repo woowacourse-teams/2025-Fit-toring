@@ -48,7 +48,7 @@ const StyledContainer = styled.section`
   padding: 2rem 2.1rem 0.8rem;
   gap: 1rem;
 
-  background-color: ${({ theme }) => theme.BG.GREEN};
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
 `;
 
 const StyledWrapper = styled.div`
@@ -58,7 +58,7 @@ const StyledWrapper = styled.div`
 
   & p {
     ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-    color: ${({ theme }) => theme.FONT.B02};
+    color: ${({ theme }) => theme.FONT.B03};
   }
 
   & strong {

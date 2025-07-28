@@ -47,6 +47,8 @@ const StyledTitle = styled.h1`
   flex-grow: 1;
 
   text-align: center;
+
+  color: ${({ theme }) => theme.FONT.B01};
 `;
 
 const StyledBackIcon = styled.img`

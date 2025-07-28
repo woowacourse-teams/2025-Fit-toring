@@ -37,5 +37,5 @@ const StyledErrorText = styled.span`
 
 const StyledLabel = styled.label`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-  color: ${({ theme }) => theme.FONT.BLACK};
+  color: ${({ theme }) => theme.FONT.B02};
 `;
