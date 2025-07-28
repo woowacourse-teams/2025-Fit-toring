@@ -79,6 +79,7 @@ function BookingForm({
             value={menteeName}
             onChange={handleMenteeNameChange}
             errored={menteeNameErrorMessage !== ''}
+            data-testid="mentee-name-input"
             required
           />
         </FormField>
@@ -96,6 +97,7 @@ function BookingForm({
             ref={inputRef}
             maxLength={13}
             type="tel"
+            data-testid="phone-number-input"
             required
           />
         </FormField>
