@@ -1,3 +1,7 @@
+import path from 'path';
+
+import DotenvWebpackPlugin from 'dotenv-webpack';
+
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
 const config: StorybookConfig = {
@@ -7,9 +11,18 @@ const config: StorybookConfig = {
     name: '@storybook/react-webpack5',
     options: {},
   },
-  env: (config) => ({
-    ...config,
-    BASE_URL: process.env.BASE_URL || 'http://localhost:6006',
-  }),
+  webpackFinal: async (config) => {
+    config.plugins = config.plugins || [];
+
+    config.plugins.push(
+      new DotenvWebpackPlugin({
+        path: path.resolve(__dirname, '../.env'),
+        systemvars: true,
+        safe: false,
+      }),
+    );
+
+    return config;
+  },
 };
 export default config;
