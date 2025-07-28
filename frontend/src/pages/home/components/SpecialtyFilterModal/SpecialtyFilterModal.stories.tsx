@@ -1,8 +1,3 @@
-import { ThemeProvider } from '@emotion/react';
-
-import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
-import { THEME } from '../../../../common/styles/theme';
-
 import SpecialtyFilterModal from './SpecialtyFilterModal';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -11,17 +6,11 @@ const meta = {
   title: 'Home/SpecialtyFilterModal',
   component: SpecialtyFilterModal,
 
-  tags: ['autodocs'],
-
   decorators: [
     (Story) => (
-      <ThemeProvider theme={THEME}>
-        <MobileLayout>
-          <div style={{ width: '100%', height: '50vh' }}>
-            <Story />
-          </div>
-        </MobileLayout>
-      </ThemeProvider>
+      <div style={{ width: '100%', height: '50vh' }}>
+        <Story />
+      </div>
     ),
   ],
 } satisfies Meta<typeof SpecialtyFilterModal>;
@@ -34,8 +23,7 @@ export const Default: Story = {
     opened: true,
     selectedSpecialties: [],
     handleCloseModal: () => {},
-    handleReset: () => {},
-    handleApply: () => {},
+    handleApplyFinalSpecialties: () => {},
   },
 
   parameters: {
@@ -53,8 +41,7 @@ export const Checked: Story = {
     opened: true,
     selectedSpecialties: ['백엔드'],
     handleCloseModal: () => {},
-    handleReset: () => {},
-    handleApply: () => {},
+    handleApplyFinalSpecialties: () => {},
   },
   parameters: {
     docs: {

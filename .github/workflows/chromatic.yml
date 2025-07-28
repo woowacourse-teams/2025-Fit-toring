@@ -28,6 +28,13 @@ jobs:
         run: npm ci # package-lock.json 기준으로 빠르고 일관되게 의존성 설치
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
+      - name: Generate environment variables
+        run: |
+          echo "BASE_URL=${{ secrets.FE_BASE_URL }}" >> .env
+        env:
+          BASE_URL: ${{ secrets.FE_BASE_URL }}
+        working-directory: ./frontend # frontend 디렉토리에서 실행
+
       - name: Build Storybook
         run: npm run build-storybook # 정적 Storybook 사이트 빌드
         working-directory: ./frontend # frontend 디렉토리에서 실행

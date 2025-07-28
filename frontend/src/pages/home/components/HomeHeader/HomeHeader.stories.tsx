@@ -12,8 +12,6 @@ const meta = {
   title: 'Home/HomeHeader',
   component: HomeHeader,
 
-  tags: ['autodocs'],
-
   decorators: [
     (Story) => (
       <ThemeProvider theme={THEME}>
