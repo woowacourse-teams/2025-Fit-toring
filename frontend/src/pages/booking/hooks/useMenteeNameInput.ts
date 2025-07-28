@@ -16,7 +16,7 @@ const useMenteeNameInput = () => {
       return ERROR_MESSAGE.INVALID_MENTEE_NAME_LENGTH;
     }
 
-    const regex = /^[ㄱ-ㅎ가-힣0-9]+$/; // 한글만 허용
+    const regex = /^[ㄱ-ㅎ가-힣]+$/; // 한글만 허용
 
     if (!regex.test(menteeName)) {
       return ERROR_MESSAGE.INVALID_MENTEE_NAME_CHARACTERS;
