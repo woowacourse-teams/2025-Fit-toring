@@ -56,22 +56,12 @@ function BookingForm({
     }
   };
 
-  const validateForm = () => {
-    const isPhoneNumberValid =
-      phoneNumber !== '' && phoneNumberErrorMessage === '';
-    const isMenteeNameValid =
-      menteeName !== '' && menteeNameErrorMessage === '';
-
-    return isPhoneNumberValid && isMenteeNameValid;
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      handleBooking();
-    }
+    handleBooking();
   };
+
   return (
     <StyledContainer onSubmit={handleSubmit}>
       <StyledInfoText>
