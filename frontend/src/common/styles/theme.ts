@@ -90,6 +90,46 @@ export const THEME = {
       font-size: 16px;
       line-height: normal;
     `,
+    LB1_R: css`
+      font-weight: 400;
+      font-size: 23px;
+      line-height: normal;
+    `,
+    LB1_B: css`
+      font-weight: 700;
+      font-size: 23px;
+      line-height: normal;
+    `,
+    LB2_R: css`
+      font-weight: 400;
+      font-size: 20px;
+      line-height: normal;
+    `,
+    LB2_B: css`
+      font-weight: 700;
+      font-size: 20px;
+      line-height: normal;
+    `,
+    LB3_R: css`
+      font-weight: 400;
+      font-size: 18px;
+      line-height: normal;
+    `,
+    LB3_B: css`
+      font-weight: 700;
+      font-size: 18px;
+      line-height: normal;
+    `,
+    LB4_R: css`
+      font-weight: 400;
+      font-size: 16px;
+      line-height: normal;
+    `,
+    LB4_B: css`
+      font-weight: 700;
+      font-size: 16px;
+      line-height: normal;
+    `,
     B1_B: css`
       font-weight: 700;
       font-size: 15px;
