@@ -1,8 +1,4 @@
-import { ThemeProvider } from '@emotion/react';
 import { BrowserRouter } from 'react-router-dom';
-
-import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
-import { THEME } from '../../../../common/styles/theme';
 
 import DetailHeader from './DetailHeader';
 
@@ -17,11 +13,7 @@ const meta = {
   decorators: [
     (Story) => (
       <BrowserRouter>
-        <ThemeProvider theme={THEME}>
-          <MobileLayout>
-            <Story />
-          </MobileLayout>
-        </ThemeProvider>
+        <Story />
       </BrowserRouter>
     ),
   ],

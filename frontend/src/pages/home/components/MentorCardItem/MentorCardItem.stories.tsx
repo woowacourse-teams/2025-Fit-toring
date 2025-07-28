@@ -1,12 +1,10 @@
-import { ThemeProvider } from '@emotion/react';
 import { MemoryRouter } from 'react-router-dom';
 
-import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from '../../../../common/constants/url';
-import { THEME } from '../../../../common/styles/theme';
 
 import MentorCardItem from './MentorCardItem';
 
+import type { MentorInformation } from '../../types/MentorInformation';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
@@ -17,13 +15,9 @@ const meta = {
 
   decorators: [
     (Story) => (
-      <ThemeProvider theme={THEME}>
-        <MemoryRouter initialEntries={[PAGE_URL.HOME]}>
-          <MobileLayout>
-            <Story />
-          </MobileLayout>
-        </MemoryRouter>
-      </ThemeProvider>
+      <MemoryRouter initialEntries={[PAGE_URL.HOME]}>
+        <Story />
+      </MemoryRouter>
     ),
   ],
 } satisfies Meta<typeof MentorCardItem>;
@@ -31,7 +25,20 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const MentorData: MentorInformation = {
+  id: 1,
+  mentorName: '홍길동',
+  categories: ['프론트엔드', '백엔드'],
+  price: 5000,
+  career: 5,
+  imageUrl: '',
+  introduction: '안녕하세요',
+};
+
 export const Default: Story = {
+  args: {
+    mentor: MentorData,
+  },
   parameters: {
     docs: {
       description: {
