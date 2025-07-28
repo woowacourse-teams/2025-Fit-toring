@@ -1,5 +1,6 @@
 import { Global } from '@emotion/react';
 
+import { fonts } from '../src/common/styles/fonts';
 import { resetCss } from '../src/common/styles/reset';
 
 import type { Preview } from '@storybook/react-webpack5';
@@ -17,7 +18,7 @@ const preview: Preview = {
     (Story) => {
       return (
         <>
-          <Global styles={resetCss} />
+          <Global styles={[resetCss, fonts]} />
           <Story />
         </>
       );
