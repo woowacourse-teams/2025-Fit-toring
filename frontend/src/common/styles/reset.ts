@@ -45,7 +45,6 @@ export const resetCss = css`
     border: 0;
 
     font: inherit;
-
     font-size: 100%;
     vertical-align: baseline;
   }
@@ -63,8 +62,8 @@ export const resetCss = css`
 
   html,
   * {
-    font-size: 62.5%;
     font-family: Pretendard, sans-serif;
+    font-size: 62.5%;
   }
 
   body {

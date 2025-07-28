@@ -39,10 +39,9 @@ const StyledContainer = styled.section`
 const StyledTitle = styled.h1`
   width: 23.2rem;
 
-  text-align: center;
-
-  ${({ theme }) => theme.TYPOGRAPHY.H2_R}
   color: ${({ theme }) => theme.FONT.B01};
+  text-align: center;
+  ${({ theme }) => theme.TYPOGRAPHY.H2_R}
 `;
 
 const StyledStrong = styled.strong`

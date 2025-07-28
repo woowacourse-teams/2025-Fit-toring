@@ -50,23 +50,22 @@ export default MentorCardItem;
 const StyledContainer = styled.li`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 
   width: 100%;
   height: 25.6rem;
   padding: 2.2rem 2.4rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-
-  background-color: ${({ theme }) => theme.BG.WHITE};
   border-radius: 12.75px;
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 10%),
     0 4px 6px -4px rgb(0 0 0 / 10%);
 
+  background-color: ${({ theme }) => theme.BG.WHITE};
+
   :hover {
     border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
   }
-
-  justify-content: space-between;
 `;
 
 const StyledWrapper = styled.div`
@@ -77,9 +76,8 @@ const StyledWrapper = styled.div`
 const StyledProfileImg = styled.img`
   width: 5.6rem;
   height: 5.6rem;
-  border-radius: 50%;
-
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 50%;
 
   :hover {
     border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
@@ -112,8 +110,8 @@ const StyledSelfIntroduction = styled.p`
 
 const StyledPriceWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const StyledPrice = styled.span`

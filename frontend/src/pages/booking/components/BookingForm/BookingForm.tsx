@@ -110,9 +110,9 @@ const StyledContainer = styled.form`
   height: 100%;
   padding: 2.2rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 1.3rem;
 
   background-color: white;
-  border-radius: 1.3rem;
 `;
 
 const StyledInfoText = styled.p`
@@ -125,9 +125,10 @@ const StyledInfoText = styled.p`
 const StyledFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 2.1rem;
+
   margin-top: 3.3rem;
   margin-bottom: 3.2rem;
-  gap: 2.1rem;
 `;
 
 const StyledTextarea = styled.textarea<{ errored: boolean }>`
