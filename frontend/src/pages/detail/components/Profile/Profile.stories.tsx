@@ -6,8 +6,6 @@ const meta = {
   title: 'Detail/Profile',
   component: Profile,
 
-  tags: ['autodocs'],
-
   decorators: [(Story) => <Story />],
 } satisfies Meta<typeof Profile>;
 

@@ -6,8 +6,6 @@ const meta = {
   title: 'Home/SpecialtyFilterModal',
   component: SpecialtyFilterModal,
 
-  tags: ['autodocs'],
-
   decorators: [
     (Story) => (
       <div style={{ width: '100%', height: '50vh' }}>

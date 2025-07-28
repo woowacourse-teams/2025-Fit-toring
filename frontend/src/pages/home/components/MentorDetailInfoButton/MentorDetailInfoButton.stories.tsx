@@ -10,8 +10,6 @@ const meta = {
   title: 'Home/MentorDetailInfoButton',
   component: MentorDetailInfoButton,
 
-  tags: ['autodocs'],
-
   decorators: [
     (Story) => (
       <MemoryRouter initialEntries={[PAGE_URL.HOME]}>

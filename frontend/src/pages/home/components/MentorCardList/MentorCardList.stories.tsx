@@ -12,8 +12,6 @@ const meta = {
   title: 'Home/MentorCardList',
   component: MentorCardList,
 
-  tags: ['autodocs'],
-
   decorators: [
     (Story) => (
       <MemoryRouter initialEntries={[PAGE_URL.HOME]}>

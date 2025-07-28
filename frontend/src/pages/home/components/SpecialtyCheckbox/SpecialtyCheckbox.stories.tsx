@@ -6,8 +6,6 @@ const meta = {
   title: 'Home/SpecialtyCheckbox',
   component: SpecialtyCheckbox,
 
-  tags: ['autodocs'],
-
   decorators: [(Story) => <Story />],
 } satisfies Meta<typeof SpecialtyCheckbox>;
 

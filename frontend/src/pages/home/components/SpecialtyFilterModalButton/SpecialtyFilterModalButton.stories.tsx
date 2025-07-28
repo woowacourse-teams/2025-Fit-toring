@@ -6,8 +6,6 @@ const meta = {
   title: 'Home/SpecialtyFilterModalButton',
   component: SpecialtyFilterModalButton,
 
-  tags: ['autodocs'],
-
   decorators: [(Story) => <Story />],
 } satisfies Meta<typeof SpecialtyFilterModalButton>;
 

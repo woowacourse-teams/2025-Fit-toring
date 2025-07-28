@@ -16,6 +16,8 @@ const preview: Preview = {
       },
     },
   },
+  tags: ['autodocs'],
+
   decorators: [
     (Story) => {
       return (

@@ -8,8 +8,6 @@ const meta = {
   title: 'Detail/DetailHeader',
   component: DetailHeader,
 
-  tags: ['autodocs'],
-
   decorators: [
     (Story) => (
       <BrowserRouter>

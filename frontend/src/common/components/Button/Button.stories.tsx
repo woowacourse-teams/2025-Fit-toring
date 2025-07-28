@@ -12,8 +12,6 @@ const meta = {
   component: Button,
   parameters: {},
 
-  tags: ['autodocs'],
-
   args: { onClick: fn() },
   decorators: [
     (Story) => (

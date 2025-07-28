@@ -6,8 +6,6 @@ const meta = {
   title: 'Home/MentorOverview',
   component: MentorOverview,
 
-  tags: ['autodocs'],
-
   decorators: [(Story) => <Story />],
 } satisfies Meta<typeof MentorOverview>;
 
