@@ -25,10 +25,11 @@ function FormField({
 
 export default FormField;
 const StyledField = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+
+  width: 100%;
 `;
 
 const StyledErrorText = styled.span`
@@ -37,5 +38,5 @@ const StyledErrorText = styled.span`
 
 const StyledLabel = styled.label`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-  color: ${({ theme }) => theme.FONT.BLACK};
+  color: ${({ theme }) => theme.FONT.B02};
 `;

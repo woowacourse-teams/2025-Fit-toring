@@ -81,12 +81,11 @@ const StyledCompleteNotice = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   gap: 1.6rem;
 
   & p {
     ${({ theme }) => theme.TYPOGRAPHY.B2_B};
-    color: ${({ theme }) => theme.FONT.B02};
+    color: ${({ theme }) => theme.FONT.B03};
     line-height: 2.2rem;
     text-align: center;
   }
@@ -98,6 +97,7 @@ const StyledCompleteNotice = styled.div`
 
   & h3 {
     ${({ theme }) => theme.TYPOGRAPHY.H3_R};
+    color: ${({ theme }) => theme.FONT.B01};
   }
 `;
 
@@ -108,19 +108,19 @@ const StyledImg = styled.img`
 
 const StyledInfoWrapper = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 
   width: 100%;
   padding: 1.5rem;
-  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 0.8rem;
 
   background-color: ${({ theme }) => theme.BG.LIGHT};
-  flex-direction: column;
-  gap: 0.8rem;
-  border-radius: 0.8rem;
 
   & p {
     ${({ theme }) => theme.TYPOGRAPHY.B2_R};
-    color: ${({ theme }) => theme.FONT.B02};
+    color: ${({ theme }) => theme.FONT.B03};
   }
 `;
 
@@ -128,12 +128,11 @@ const StyledCompleteGuide = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   gap: 1.6rem;
 
   & p {
     ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-    color: ${({ theme }) => theme.FONT.B02};
+    color: ${({ theme }) => theme.FONT.B04};
     line-height: 1.9rem;
     text-align: center;
   }

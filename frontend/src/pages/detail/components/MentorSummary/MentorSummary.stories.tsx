@@ -1,8 +1,3 @@
-import { ThemeProvider } from '@emotion/react';
-
-import MobileLayout from '../../../../common/components/MobileLayout/MobileLayout';
-import { THEME } from '../../../../common/styles/theme';
-
 import MentorSummary from './MentorSummary';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -11,17 +6,7 @@ const meta = {
   title: 'Detail/MentorSummary',
   component: MentorSummary,
 
-  tags: ['autodocs'],
-
-  decorators: [
-    (Story) => (
-      <ThemeProvider theme={THEME}>
-        <MobileLayout>
-          <Story />
-        </MobileLayout>
-      </ThemeProvider>
-    ),
-  ],
+  decorators: [(Story) => <Story />],
 } satisfies Meta<typeof MentorSummary>;
 
 export default meta;

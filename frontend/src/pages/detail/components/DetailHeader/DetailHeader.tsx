@@ -26,12 +26,14 @@ export default DetailHeader;
 
 const StyledHeaderWrapper = styled.div`
   display: flex;
-  height: 100%;
   align-items: center;
+
+  height: 100%;
 `;
 
 const StyledBackButton = styled.button`
   position: absolute;
+
   margin-left: 1rem;
   padding: 0;
   border: none;
@@ -45,9 +47,9 @@ const StyledImg = styled.img`
 `;
 
 const StyledTitle = styled.h3`
-  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
-
   flex-grow: 1;
 
+  color: ${({ theme }) => theme.FONT.B01};
   text-align: center;
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 `;

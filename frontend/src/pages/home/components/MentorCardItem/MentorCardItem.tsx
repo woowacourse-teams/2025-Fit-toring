@@ -50,23 +50,22 @@ export default MentorCardItem;
 const StyledContainer = styled.li`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 
   width: 100%;
   height: 25.6rem;
   padding: 2.2rem 2.4rem;
-  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
-
-  background-color: ${({ theme }) => theme.BG.WHITE};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 12.75px;
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 10%),
     0 4px 6px -4px rgb(0 0 0 / 10%);
 
-  :hover {
-    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
-  }
+  background-color: ${({ theme }) => theme.BG.WHITE};
 
-  justify-content: space-between;
+  :hover {
+    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
+  }
 `;
 
 const StyledWrapper = styled.div`
@@ -77,12 +76,11 @@ const StyledWrapper = styled.div`
 const StyledProfileImg = styled.img`
   width: 5.6rem;
   height: 5.6rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 50%;
 
-  border: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
-
   :hover {
-    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
+    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
   }
 `;
 
@@ -97,26 +95,26 @@ const StyledTitle = styled.h3`
 `;
 
 const StyledPersonalHistory = styled.p`
-  color: ${({ theme }) => theme.FONT.B03};
-  font-size: 1.2rem;
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
 `;
 
 const StyledSelfIntroduction = styled.p`
   overflow: hidden;
 
   color: ${({ theme }) => theme.FONT.B03};
-  font-size: 1.2rem;
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
   white-space: nowrap;
   text-overflow: ellipsis;
 `;
 
 const StyledPriceWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const StyledPrice = styled.span`
-  color: ${({ theme }) => theme.SYSTEM.MAIN800};
+  color: ${({ theme }) => theme.SYSTEM.MAIN600};
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;

@@ -127,25 +127,26 @@ const StyledContainer = styled.form`
   width: 100%;
   height: 100%;
   padding: 2.2rem;
-  border: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 1.3rem;
 
   background-color: white;
-  border-radius: 1.3rem;
 `;
 
 const StyledInfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   margin-top: 1.7rem;
 
-  color: ${({ theme }) => theme.FONT.BLACK};
+  color: ${({ theme }) => theme.FONT.B03};
 `;
 
 const StyledFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 2.1rem;
+
   margin-top: 3.3rem;
   margin-bottom: 3.2rem;
-  gap: 2.1rem;
 `;
 
 const StyledTextarea = styled.textarea<{ errored: boolean }>`
@@ -153,7 +154,7 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
   height: 5.8rem;
   padding: 0.7rem 1.1rem;
   border: ${({ theme, errored }) =>
-      errored ? theme.FONT.ERROR : theme.BORDER.GRAY300}
+      errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
     1px solid;
   border-radius: 0.7rem;
 
@@ -163,4 +164,6 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
   :focus {
     outline: none;
   }
+
+  color: ${({ theme }) => theme.FONT.B04};
 `;

@@ -12,7 +12,6 @@ const meta = {
   component: BookingHeader,
   parameters: {},
 
-  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <BrowserRouter>
