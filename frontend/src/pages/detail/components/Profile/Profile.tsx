@@ -1,24 +1,36 @@
 import styled from '@emotion/styled';
 
 import locationIcon from '../../../../common/assets/images/locationIcon.svg';
-import profileImg from '../../../../common/assets/images/profileImg.svg';
+import defaultProfileImg from '../../../../common/assets/images/profileImg.svg';
 import starIcon from '../../../../common/assets/images/starIcon.svg';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
-function Profile() {
+interface ProfileProps {
+  profileImg?: string;
+  mentorName: string;
+  categories: string[];
+}
+
+function Profile({ profileImg, mentorName, categories }: ProfileProps) {
   return (
     <StyledContainer>
-      <StyledProfileImg src={profileImg} alt="트레이너 이미지" />
+      <StyledProfileImg
+        src={profileImg || defaultProfileImg}
+        alt="멘토 프로필 이미지"
+        onError={(e) => {
+          e.currentTarget.src = defaultProfileImg;
+        }}
+      />
       <StyledInfoWrapper>
-        <StyledTitle>김트레이너</StyledTitle>
+        <StyledTitle>{mentorName}</StyledTitle>
         <TextWithIcon
           text="4.9 (127개 리뷰)"
           iconSrc={starIcon}
           iconName="별점"
         />
         <TextWithIcon text="강남구" iconSrc={locationIcon} iconName="위치" />
-        <CategoryTags tagNames={['근력 증진', '다이어트', '체형 교정']} />
+        <CategoryTags tagNames={categories} />
       </StyledInfoWrapper>
     </StyledContainer>
   );
@@ -28,7 +40,9 @@ export default Profile;
 
 const StyledContainer = styled.div`
   display: flex;
-  margin-top: 4.3rem;
+  width: 100%;
+  margin-top: 2.3rem;
+  padding: 0 1rem;
   align-items: center;
   justify-content: center;
   gap: 4rem;

@@ -99,3 +99,18 @@ export const FitContent: Story = {
     },
   },
 };
+
+export const Test: Story = {
+  args: {
+    size: 'fit',
+
+    children: 'Test Button',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'CI 테스트용 버튼입니다.',
+      },
+    },
+  },
+};
