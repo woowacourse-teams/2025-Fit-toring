@@ -1,0 +1,56 @@
+import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
+
+import backIcon from '../../../common/assets/images/backIcon.svg';
+import Header from '../../../common/components/Header/Header';
+
+function SignupHeader() {
+  const navigate = useNavigate();
+
+  const handleBackButtonClick = () => {
+    navigate(-1);
+  };
+
+  return (
+    <Header>
+      <StyledWrapper>
+        <StyledBackButton onClick={handleBackButtonClick}>
+          <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
+        </StyledBackButton>
+        <StyledTitle>회원가입</StyledTitle>
+      </StyledWrapper>
+    </Header>
+  );
+}
+
+export default SignupHeader;
+
+const StyledWrapper = styled.div`
+  display: flex;
+  align-items: center;
+
+  height: 100%;
+`;
+
+const StyledBackButton = styled.button`
+  position: absolute;
+
+  margin-left: 1rem;
+  padding: 0;
+  border: none;
+
+  background-color: transparent;
+  cursor: pointer;
+`;
+
+const StyledTitle = styled.h1`
+  flex-grow: 1;
+
+  color: ${({ theme }) => theme.FONT.B01};
+  text-align: center;
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
+`;
+
+const StyledBackIcon = styled.img`
+  width: 3.4rem;
+`;
