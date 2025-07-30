@@ -1,4 +1,4 @@
-name: "build test"
+name: "frontend-build test"
 
 on:
   pull_request:
