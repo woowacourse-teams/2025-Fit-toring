@@ -28,6 +28,6 @@ public record SignUpRequest(
 ) {
 
     public Member toEntity() {
-        return new Member(loginId, name, male, phone, password);
+        return Member.of(loginId, name, male, phone, password);
     }
 }
