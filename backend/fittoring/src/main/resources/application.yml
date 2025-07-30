@@ -23,7 +23,7 @@ sms:
     read: 5_000
 logging:
   file:
-    name: logs/application.log
+    name: /logs/application.log
   level:
     root: INFO
     fittoring.mentoring: DEBUG
