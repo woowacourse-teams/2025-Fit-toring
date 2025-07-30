@@ -1,7 +1,9 @@
 import { ERROR_MESSAGE } from '../constants/errorMessage';
 
 const validatePhoneNumberLength = (phoneNumber: string) => {
-  if (phoneNumber === '') return '';
+  if (phoneNumber === '') {
+    return false;
+  }
 
   const digits = phoneNumber.replace(/\D/g, '');
   return digits.length !== 11;
