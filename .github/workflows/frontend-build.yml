@@ -3,7 +3,8 @@ name: "frontend-build test"
 on:
   pull_request:
     types: [opened, synchronize]
-
+    paths:
+      - "frontend/**"
 jobs:
   Build-test:
     runs-on: ubuntu-latest
