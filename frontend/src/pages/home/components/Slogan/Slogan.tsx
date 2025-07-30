@@ -4,7 +4,7 @@ function Slogan() {
   return (
     <StyledContainer>
       <StyledTitle>
-        내가 알고 싶은 운동 & 식단, <StyledStrong>핏토링</StyledStrong>에서
+        내가 알고 싶은 운동 & 식단, <StyledStrong>온라인</StyledStrong>에서
         물어봐요!
       </StyledTitle>
     </StyledContainer>
@@ -33,13 +33,14 @@ const StyledContainer = styled.section`
 `;
 
 const StyledTitle = styled.h1`
-  width: 23.2rem;
+  width: 25.2rem;
 
   color: ${({ theme }) => theme.FONT.B01};
   text-align: center;
-  ${({ theme }) => theme.TYPOGRAPHY.H2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.H1_R}
 `;
 
 const StyledStrong = styled.strong`
   color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  ${({ theme }) => theme.TYPOGRAPHY.H1_B}
 `;
