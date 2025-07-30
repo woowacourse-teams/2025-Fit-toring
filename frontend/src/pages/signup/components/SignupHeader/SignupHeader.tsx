@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import Header from '../../../../common/components/Header/Header';
 import backIcon from '../../../common/assets/images/backIcon.svg';
-import Header from '../../../common/components/Header/Header';
 
 function SignupHeader() {
   const navigate = useNavigate();
