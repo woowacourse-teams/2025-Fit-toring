@@ -22,14 +22,16 @@ export default HomeHeader;
 
 const StyledHeaderWrapper = styled.div`
   display: flex;
-  height: 100%;
-  padding: 1.4rem 1.1rem;
   align-items: center;
   gap: 1.05rem;
+
+  height: 100%;
+  padding: 1.4rem 1.1rem;
 `;
 
 const StyledLogoLink = styled(Link)`
   display: flex;
+
   height: auto;
   padding: 0;
   border: none;

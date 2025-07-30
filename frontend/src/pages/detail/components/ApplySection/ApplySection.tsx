@@ -41,24 +41,26 @@ const StyledContainer = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  height: 9.4rem;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
-  border-radius: 8px;
-  padding: 2rem 2.1rem 0.8rem;
   gap: 1rem;
 
-  background-color: ${({ theme }) => theme.BG.GREEN};
+  width: 100%;
+  height: 9.4rem;
+  padding: 2rem 2.1rem 0.8rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
+  border-radius: 8px;
+
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
 `;
 
 const StyledWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+
   width: 100%;
 
   & p {
     ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-    color: ${({ theme }) => theme.FONT.B02};
+    color: ${({ theme }) => theme.FONT.B03};
   }
 
   & strong {

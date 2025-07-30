@@ -54,8 +54,9 @@ export default Detail;
 
 const StyledContainer = styled.div`
   display: flex;
-  padding: 0 2rem 2rem;
   flex-direction: column;
   align-items: center;
   gap: 2.4rem;
+
+  padding: 0 2rem 2rem;
 `;

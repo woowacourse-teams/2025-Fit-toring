@@ -1,13 +1,13 @@
-name: "Deploy Storybook with Chromatic"
+name: "frontend-chromatic"
 
 on:
   pull_request:
     types: [opened, synchronize]
     # PR에 아래 파일들이 변경될 경우에만 워크플로우 실행
     paths:
-      - "**/*.stories.ts"
-      - "**/*.stories.tsx"
-      - ".storybook/**"
+      - "frontend/**/*.stories.ts"
+      - "frontend/**/*.stories.tsx"
+      - "frontend/.storybook/**"
 
 jobs:
   chromatic:
@@ -26,6 +26,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci # package-lock.json 기준으로 빠르고 일관되게 의존성 설치
+        working-directory: ./frontend # frontend 디렉토리에서 실행
+
+      - name: Generate environment variables
+        run: |
+          echo "BASE_URL=${{ secrets.FE_BASE_URL }}" >> .env
+        env:
+          BASE_URL: ${{ secrets.FE_BASE_URL }}
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Build Storybook

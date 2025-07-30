@@ -10,8 +10,6 @@ const meta = {
   component: Modal,
   parameters: {},
 
-  tags: ['autodocs'],
-
   decorators: [(Story) => <Story />],
 } satisfies Meta<typeof Modal>;
 

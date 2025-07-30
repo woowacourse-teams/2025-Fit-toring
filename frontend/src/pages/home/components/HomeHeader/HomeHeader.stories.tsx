@@ -1,8 +1,8 @@
 import { ThemeProvider } from '@emotion/react';
 import { MemoryRouter } from 'react-router-dom';
 
-import { THEME } from '../../../../common/styles/theme';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { THEME } from '../../../../common/styles/theme';
 
 import HomeHeader from './HomeHeader';
 
@@ -11,8 +11,6 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 const meta = {
   title: 'Home/HomeHeader',
   component: HomeHeader,
-
-  tags: ['autodocs'],
 
   decorators: [
     (Story) => (

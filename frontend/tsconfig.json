@@ -10,6 +10,6 @@
     "jsxImportSource": "@emotion/react",
     "typeRoots": ["./src/common/types"]
   },
-  "include": ["./**/*.tsx", "./**/*.ts"],
+  "include": ["./**/*.tsx", "./**/*.ts", "./setupTests.ts"],
   "exclude": ["node_modules", "dist"]
 }

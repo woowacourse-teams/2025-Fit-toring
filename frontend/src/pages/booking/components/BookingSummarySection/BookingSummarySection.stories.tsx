@@ -9,7 +9,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 const meta = {
   title: 'booking/BookingSummarySection',
   component: BookingSummarySection,
-  tags: ['autodocs'],
+
   decorators: [
     (Story) => (
       <ThemeProvider theme={THEME}>

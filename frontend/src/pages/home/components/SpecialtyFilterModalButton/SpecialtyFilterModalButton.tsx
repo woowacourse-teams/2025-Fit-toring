@@ -21,19 +21,21 @@ export default SpecialtyFilterModalButton;
 
 const StyledButton = styled.button`
   display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+
   width: 90%;
   padding: 0.7rem 1.1rem;
-  border: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
-  justify-content: space-between;
-  align-items: center;
-
+  border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
   border-radius: 6.75px;
+
   background: ${({ theme }) => theme.BG.WHITE};
   cursor: pointer;
 `;
 
 const StyledText = styled.span`
   ${({ theme }) => theme.TYPOGRAPHY.BTN4_R};
+  color: ${({ theme }) => theme.FONT.B02};
 `;
 
 const StyledGoIcon = styled.img`

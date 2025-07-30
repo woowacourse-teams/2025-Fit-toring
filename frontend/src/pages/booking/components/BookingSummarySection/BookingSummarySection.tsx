@@ -15,6 +15,7 @@ function BookingSummarySection() {
       <Button
         customStyle={css`
           flex-grow: 1;
+
           padding: 0.8rem 0;
         `}
       >
@@ -30,6 +31,7 @@ const StyledContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
+
   width: 100%;
   height: 100%;
 `;
@@ -37,8 +39,9 @@ const StyledContainer = styled.div`
 const StyledWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 1.1rem;
   gap: 0.22rem;
+
+  padding-left: 1.1rem;
 `;
 
 const StyledPrice = styled.span`

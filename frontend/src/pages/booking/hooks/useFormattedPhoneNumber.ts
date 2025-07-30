@@ -24,7 +24,9 @@ const useFormattedPhoneNumber = () => {
 
     // 하이픈 직전 자리 숫자 추가 시 보정
     if (lengthDiff === 1) {
-      if (cursorPos - 1 === 8 || cursorPos - 1 === 3) gap = 0;
+      if (cursorPos - 1 === 8 || cursorPos - 1 === 3) {
+        gap = 0;
+      }
     }
 
     // 하이픈 삭제될 경우 보정
