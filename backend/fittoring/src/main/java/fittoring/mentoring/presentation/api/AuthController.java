@@ -2,6 +2,7 @@ package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.AuthService;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> sinUp(@RequestBody SignUpRequest request) {
+    public ResponseEntity<Void> sinUp(@RequestBody @Valid SignUpRequest request) {
         authService.register(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
