@@ -112,6 +112,7 @@ export default defineConfig([
         },
       ],
       'unused-imports/no-unused-imports': 'error',
+      curly: ['error', 'all'],
     },
   },
 ]);
