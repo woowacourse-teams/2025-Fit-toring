@@ -1,4 +1,4 @@
-name: "vitest test"
+name: "frontend-vitest test"
 
 on:
   pull_request:
