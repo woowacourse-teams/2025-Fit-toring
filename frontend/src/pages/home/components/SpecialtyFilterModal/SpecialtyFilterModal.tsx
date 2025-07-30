@@ -43,7 +43,9 @@ function SpecialtyFilterModal({
   const [temporarySelectedSpecialties, setTemporarySelectedSpecialties] =
     useState<string[]>(selectedSpecialties);
 
-  if (!opened) return null;
+  if (!opened) {
+    return null;
+  }
 
   const handleToggleTemporarySpecialty = (specialty: string) => {
     setTemporarySelectedSpecialties((prev) =>
