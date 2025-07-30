@@ -10,7 +10,9 @@ const useMenteeNameInput = () => {
   };
 
   const getMenteeNameErrorMessage = () => {
-    if (menteeName === '') return '';
+    if (menteeName === '') {
+      return '';
+    }
 
     if (menteeName.length < 1 || menteeName.length > 5) {
       return ERROR_MESSAGE.INVALID_MENTEE_NAME_LENGTH;
