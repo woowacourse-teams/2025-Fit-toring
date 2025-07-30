@@ -47,8 +47,9 @@ services:
       - "80:8080"
     env_file:
       .env
+    volumes:
+      - /home/ubuntu/2025-Fit-toring/backend/fittoring/logs:/logs
     restart: always
-
 
 volumes:
   db-data:

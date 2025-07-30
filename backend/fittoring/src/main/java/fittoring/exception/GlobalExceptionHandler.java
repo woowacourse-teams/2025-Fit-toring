@@ -3,7 +3,6 @@ package fittoring.exception;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.infra.exception.SmsException;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +36,7 @@ public class GlobalExceptionHandler {
     }
 
     private void logServerError(Exception e) {
-        log.error("ERROR: [{}], [{}]", e.getMessage(), (Object) e.getStackTrace());
+        log.error("[{}], [{}]", e.getMessage(), e.getStackTrace());
     }
 
     @ExceptionHandler(SmsException.class)
