@@ -9,6 +9,7 @@
     "test:watch": "vitest --watch",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "lint": "eslint './src/**/*.{js,jsx,ts,tsx}' --fix",
     "styled": "stylelint './src/**/*.tsx' --fix",
     "chromatic": "npx chromatic"
   },
@@ -42,6 +43,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "eslint-plugin-storybook": "^9.0.16",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "globals": "^16.3.0",
     "html-webpack-plugin": "^5.6.3",
     "jsdom": "^26.1.0",

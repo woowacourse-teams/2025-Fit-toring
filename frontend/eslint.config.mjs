@@ -10,6 +10,7 @@ import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import storybook from 'eslint-plugin-storybook';
+import unusedImportPlugin from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -36,6 +37,7 @@ export default defineConfig([
     plugins: {
       'react-refresh': reactRefresh,
       import: importPlugin,
+      'unused-imports': unusedImportPlugin,
     },
 
     languageOptions: {
@@ -109,6 +111,7 @@ export default defineConfig([
           'newlines-between': 'always',
         },
       ],
+      'unused-imports/no-unused-imports': 'error',
     },
   },
 ]);
