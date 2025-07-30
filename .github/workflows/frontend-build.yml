@@ -1,14 +1,11 @@
-name: "vitest test"
+name: "frontend-build test"
 
 on:
   pull_request:
     types: [opened, synchronize]
-    paths:
-      - "**/*.test.ts"
-      - "**/*.test.tsx"
 
 jobs:
-  Vitest:
+  Build-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,6 +22,13 @@ jobs:
         run: npm ci # package-lock.json 기반으로 설치 (CI 환경에 권장)
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
-      - name: Run Vitest
-        run: npm run test # package.json에 정의된 test 스크립트 실행
+      - name: Generate environment variables
+        run: |
+          echo "BASE_URL=${{ secrets.FE_BASE_URL }}" >> .env
+        env:
+          BASE_URL: ${{ secrets.FE_BASE_URL }}
+        working-directory: ./frontend # frontend 디렉토리에서 실행
+
+      - name: Build
+        run: npm run build # package.json에 정의된 test 스크립트 실행
         working-directory: ./frontend # frontend 디렉토리에서 실행
