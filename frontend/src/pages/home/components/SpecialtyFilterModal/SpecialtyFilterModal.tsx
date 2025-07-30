@@ -43,7 +43,9 @@ function SpecialtyFilterModal({
   const [temporarySelectedSpecialties, setTemporarySelectedSpecialties] =
     useState<string[]>(selectedSpecialties);
 
-  if (!opened) return null;
+  if (!opened) {
+    return null;
+  }
 
   const handleToggleTemporarySpecialty = (specialty: string) => {
     setTemporarySelectedSpecialties((prev) =>
@@ -106,10 +108,8 @@ export default SpecialtyFilterModal;
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
   gap: 1rem;
 `;
 
@@ -122,35 +122,36 @@ const StyledLine = styled.hr`
   height: 1px;
   margin: 0;
   border: none;
-  border-top: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
+  border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
 const StyledSpecialtyWrapper = styled.div`
   display: flex;
-  padding: 0.4rem;
-  overflow-y: auto;
   flex-wrap: wrap;
-  gap: 0.8rem;
   justify-content: center;
+  gap: 0.8rem;
 
   max-height: 15rem;
+  padding: 0.4rem;
+  overflow-y: auto;
 `;
 
 const StyledButtonWrapper = styled.div`
   display: flex;
+  gap: 1.2rem;
+
   width: 100%;
   padding: 0.4rem;
-
-  gap: 1.2rem;
 `;
 
 const StyledButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+
   width: 100%;
   padding: 1.2rem 1.6rem;
+  border-radius: 6px;
 
   ${({ theme }) => theme.TYPOGRAPHY.BTN2_R};
 
@@ -159,24 +160,24 @@ const StyledButton = styled.button`
 `;
 
 const StyledPrimaryButton = styled(StyledButton)`
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN800};
-
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN800};
-
-  color: ${({ theme }) => theme.BG.WHITE};
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN600};
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
 
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
+
+  color: ${({ theme }) => theme.BG.WHITE};
+
   &:hover {
-    background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
+    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 `;
 
 const StyledSecondaryButton = styled(StyledButton)`
-  border: 1px solid ${({ theme }) => theme.BORDER.GRAY300};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
 
   background-color: transparent;
 
-  color: ${({ theme }) => theme.FONT.B01};
+  color: ${({ theme }) => theme.FONT.B02};
 
   &:hover {
     background-color: ${({ theme }) => theme.BG.LIGHT};

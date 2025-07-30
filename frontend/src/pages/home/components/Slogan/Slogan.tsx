@@ -27,7 +27,7 @@ const StyledContainer = styled.section`
   width: 100%;
   height: auto;
   padding: 3rem 1.4rem;
-  border-bottom: 1px solid ${({ theme }) => theme.LINE.REGULAR};
+  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 
   background: linear-gradient(
     180deg,
@@ -39,13 +39,13 @@ const StyledContainer = styled.section`
 const StyledTitle = styled.h1`
   width: 23.2rem;
 
+  color: ${({ theme }) => theme.FONT.B01};
   text-align: center;
-
   ${({ theme }) => theme.TYPOGRAPHY.H2_R}
 `;
 
 const StyledStrong = styled.strong`
-  color: ${({ theme }) => theme.SYSTEM.MAIN700};
+  color: ${({ theme }) => theme.SYSTEM.MAIN600};
 `;
 
 const StyledDescription = styled.p`

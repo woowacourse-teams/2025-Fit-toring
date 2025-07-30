@@ -68,7 +68,7 @@ const primaryStyles = (theme: myTheme) => css`
 `;
 
 const secondaryStyles = (theme: myTheme) => css`
-  border: 1px solid ${theme.LINE.REGULAR};
+  border: 1px solid ${theme.OUTLINE.REGULAR};
 
   background-color: ${theme.BG.LIGHT};
 `;

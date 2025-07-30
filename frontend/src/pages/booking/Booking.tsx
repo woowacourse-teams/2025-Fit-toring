@@ -94,5 +94,6 @@ const StyledContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.8rem;
+
   padding: 2.8rem 1.4rem;
 `;

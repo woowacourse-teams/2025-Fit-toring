@@ -27,12 +27,14 @@ export default BookingHeader;
 
 const StyledWrapper = styled.div`
   display: flex;
-  height: 100%;
   align-items: center;
+
+  height: 100%;
 `;
 
 const StyledBackButton = styled.button`
   position: absolute;
+
   margin-left: 1rem;
   padding: 0;
   border: none;
@@ -42,11 +44,11 @@ const StyledBackButton = styled.button`
 `;
 
 const StyledTitle = styled.h1`
-  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
-
   flex-grow: 1;
 
+  color: ${({ theme }) => theme.FONT.B01};
   text-align: center;
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 `;
 
 const StyledBackIcon = styled.img`

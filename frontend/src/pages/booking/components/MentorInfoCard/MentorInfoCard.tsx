@@ -52,35 +52,37 @@ function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
 export default MentoInfoCard;
 
 const StyledContainer = styled.div`
+  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.4rem;
+
   width: 100%;
   height: 21.6rem;
   padding: 2.2rem;
-  background-color: white;
-  border: ${({ theme }) => theme.LINE.REGULAR} 0.1rem solid;
+  border: ${({ theme }) => theme.OUTLINE.REGULAR} 0.1rem solid;
   border-radius: 1.27rem;
-  display: flex;
+
+  background-color: white;
 `;
 
 const StyledMentoProfileWrapper = styled.div`
-  flex-direction: column;
-  gap: 1.4rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 1.4rem;
 `;
 
 const StyledMetoNameText = styled.span`
-  font-size: 1.6rem;
   color: ${({ theme }) => theme.FONT.B01};
+  font-size: 1.6rem;
 `;
 
 const StyledInfoWithTags = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
   align-items: center;
+  gap: 0.7rem;
 `;
 
 const StyledInfoWrapper = styled.div`
@@ -89,7 +91,7 @@ const StyledInfoWrapper = styled.div`
 `;
 
 const StyledPriceText = styled.span`
-  color: ${({ theme }) => theme.SYSTEM.MAIN700};
-  font-size: 1.6rem;
+  color: ${({ theme }) => theme.SYSTEM.MAIN600};
   font-weight: bold;
+  font-size: 1.6rem;
 `;
