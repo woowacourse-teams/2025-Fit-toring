@@ -8,7 +8,7 @@ services:
       MYSQL_DATABASE: fittoring
       MYSQL_ROOT_PASSWORD: 1234
     ports:
-      - "13306:3306"
+      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
     healthcheck:
@@ -31,25 +31,25 @@ services:
       start_period: 10s
       timeout: 2s
     ports:
-      - "13307:3306"
+      - "3307:3306"
 
-#  app:
-#    build:
-#      context: ./
-#      dockerfile: Dockerfile
-#    container_name: fittoring-app
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#      db-test:
-#        condition: service_healthy
-#    ports:
-#      - "80:8080"
-#    env_file:
-#      .env
-#    volumes:
-#      - /home/ubuntu/2025-Fit-toring/backend/fittoring/logs:/logs
-#    restart: always
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: fittoring-app
+    depends_on:
+      db:
+        condition: service_healthy
+      db-test:
+        condition: service_healthy
+    ports:
+      - "80:8080"
+    env_file:
+      .env
+    volumes:
+      - /home/ubuntu/2025-Fit-toring/backend/fittoring/logs:/logs
+    restart: always
 
 volumes:
   db-data:
