@@ -12,8 +12,6 @@ const meta = {
   title: 'Booking/CompleteModal',
   component: CompleteModal,
 
-  tags: ['autodocs'],
-
   args: { opened: true, onCloseClick: fn() },
   decorators: [
     (Story) => (

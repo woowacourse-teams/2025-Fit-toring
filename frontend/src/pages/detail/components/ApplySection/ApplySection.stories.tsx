@@ -11,7 +11,6 @@ const meta = {
   title: 'Detail/ApplySection',
   component: ApplySection,
 
-  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <BrowserRouter>

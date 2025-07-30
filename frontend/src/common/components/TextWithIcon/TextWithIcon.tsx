@@ -19,8 +19,8 @@ export default TextWithIcon;
 
 const StyledContainer = styled.div`
   display: flex;
-  gap: 0.3rem;
   align-items: center;
+  gap: 0.3rem;
 `;
 
 const StyledImg = styled.img`
@@ -29,7 +29,8 @@ const StyledImg = styled.img`
 `;
 
 const StyledSpan = styled.span`
-  color: ${({ theme }) => theme.FONT.B03};
-  font-size: 1.2rem;
   display: flex;
+
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
 `;

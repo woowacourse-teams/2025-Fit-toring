@@ -21,15 +21,15 @@ const StyledContainer = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   gap: 1rem;
 `;
 
 const StyledMentorCount = styled.h2`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
+  color: ${({ theme }) => theme.FONT.B01};
 `;
 
 const StyledServiceDescription = styled.p`
-  color: ${({ theme }) => theme.FONT.B02};
+  color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;

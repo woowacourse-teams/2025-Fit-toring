@@ -48,13 +48,14 @@ const StyledContent = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
+
   width: 100%;
   max-width: 34rem;
   padding: 2.2rem;
+  border-radius: 0.5rem;
+  box-shadow: rgb(0 0 0 / 10%) 0 0.4rem 1.2rem;
 
   background-color: white;
   word-break: break-all;
   transform: translate(-50%, -50%);
-  border-radius: 0.5rem;
-  box-shadow: rgb(0 0 0 / 10%) 0 0.4rem 1.2rem;
 `;

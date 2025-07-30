@@ -10,9 +10,10 @@ export default MentorCardList;
 
 const StyledContainer = styled.ul`
   display: flex;
-  width: 100%;
   flex-direction: column;
-  gap: 3rem;
   justify-content: center;
+  gap: 3rem;
+
+  width: 100%;
   padding: 1rem 1.4rem;
 `;

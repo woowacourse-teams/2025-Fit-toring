@@ -11,8 +11,6 @@ const meta = {
   component: Input,
   parameters: {},
 
-  tags: ['autodocs'],
-
   decorators: [
     (Story) => (
       <ThemeProvider theme={THEME}>
