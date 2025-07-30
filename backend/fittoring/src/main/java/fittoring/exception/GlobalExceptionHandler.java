@@ -3,9 +3,11 @@ package fittoring.exception;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.infra.exception.SmsException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -21,6 +23,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(CategoryNotFoundException e) {
         return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException e) {
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
 
     @ExceptionHandler(SystemException.class)
@@ -42,6 +49,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handle(Exception e) {
         logServerError(e);
-        return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, SystemErrorMessage.INTERNAL_SERVER_ERROR.getMessage()).toResponseEntity();
+        return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, SystemErrorMessage.INTERNAL_SERVER_ERROR.getMessage())
+                .toResponseEntity();
     }
 }
