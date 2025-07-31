@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.model.password;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.PasswordEncryptionException;
 import jakarta.persistence.Embeddable;
 import java.security.MessageDigest;
@@ -40,7 +41,7 @@ public class Password {
             return hex.toString();
 
         } catch (NoSuchAlgorithmException e) {
-            throw new PasswordEncryptionException("비밀번호 암호화에 실패했습니다.");
+            throw new PasswordEncryptionException(BusinessErrorMessage.PASSWORD_ENCRYPTION_FAILED.getMessage());
         }
     }
 }
