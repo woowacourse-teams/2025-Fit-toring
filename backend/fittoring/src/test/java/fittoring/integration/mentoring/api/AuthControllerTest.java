@@ -156,7 +156,7 @@ class AuthControllerTest {
                         "LoginId",
                         "이름",
                         "남",
-                        "010-1234-5678",
+                        "010-5678-9123",
                         "password"
                 )
         );
