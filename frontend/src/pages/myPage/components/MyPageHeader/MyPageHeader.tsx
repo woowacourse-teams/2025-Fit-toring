@@ -1,14 +1,21 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
 import menuIcon from '../../../../common/assets/images/bars-3.svg';
 import Header from '../../../../common/components/Header/Header';
 
 function MyPageHeader() {
+  const navigate = useNavigate();
+
+  const handleBackButtonClick = () => {
+    navigate(-1);
+  };
+
   return (
     <Header>
       <StyledWrapper>
-        <StyledBackButton onClick={() => {}} type="button">
+        <StyledBackButton onClick={handleBackButtonClick} type="button">
           <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
         </StyledBackButton>
         <StyledTitle>마이 페이지</StyledTitle>
