@@ -43,10 +43,10 @@ class AuthControllerTest {
         //given
         String loginId = "loginId";
         String name = "이름";
-        String male = "남";
+        String gender = "남";
         String phone = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, male, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
 
         //when
         RestAssured
@@ -69,10 +69,10 @@ class AuthControllerTest {
         //given
         String loginId = null;
         String name = "이름";
-        String male = "남";
+        String gender = "남";
         String phone = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, male, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
 
         //when
         Response response = RestAssured
@@ -101,10 +101,10 @@ class AuthControllerTest {
 
         String loginId = "loginId";
         String name = "이름";
-        String male = "남";
+        String gender = "남";
         String phone = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, male, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
 
         //when
         Response response = RestAssured

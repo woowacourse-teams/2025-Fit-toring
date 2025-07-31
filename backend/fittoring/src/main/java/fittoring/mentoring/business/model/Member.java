@@ -25,7 +25,7 @@ public class Member {
     private String loginId;
 
     @Column(nullable = false)
-    private String male;
+    private String gender;
 
     @Column(nullable = false)
     private String name;
@@ -37,12 +37,12 @@ public class Member {
     @Column(nullable = false)
     private Password password;
 
-    private Member(String loginId, String male, String name, String phone, Password password) {
-        this(null, loginId, male, name, phone, password);
+    private Member(String loginId, String gender, String name, String phone, Password password) {
+        this(null, loginId, gender, name, phone, password);
     }
 
-    public static Member of(String loginId, String male, String name, String phone, String password) {
-        return new Member(loginId, male, name, phone, Password.createEncrypt(password));
+    public static Member of(String loginId, String gender, String name, String phone, String password) {
+        return new Member(loginId, gender, name, phone, Password.createEncrypt(password));
     }
 
     public String getPassword() {

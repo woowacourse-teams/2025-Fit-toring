@@ -16,7 +16,7 @@ public record SignUpRequest(
         String name,
 
         @NotBlank
-        String male,
+        String gender,
 
         @PhoneNumber
         @NotBlank
@@ -28,6 +28,6 @@ public record SignUpRequest(
 ) {
 
     public Member toEntity() {
-        return Member.of(loginId, name, male, phone, password);
+        return Member.of(loginId, name, gender, phone, password);
     }
 }
