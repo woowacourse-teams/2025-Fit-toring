@@ -1,19 +1,43 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
 
+const MENU_ITEMS = [
+  '개설한 멘토링',
+  '참여한 멘토링',
+  '회원 정보',
+  '로그아웃',
+] as const;
+
 function MenuDropDown() {
+  const [opened, setOpened] = useState(false);
+
+  const [selectedMenu, setSelectedMenu] = useState<(typeof MENU_ITEMS)[number]>(
+    MENU_ITEMS[0],
+  );
+
+  const handleMenuButtonClick = () => {
+    setOpened((prev) => !prev);
+  };
+
   return (
     <StyledContainer>
-      <StyledMenuButton>
+      <StyledMenuButton onClick={handleMenuButtonClick}>
         <StyledMenuIcon src={menuIcon} alt="메뉴 열기 아이콘" />
       </StyledMenuButton>
 
-      <StyledMenuList opened={true}>
-        <StyledMenuItem>개설한 멘토링</StyledMenuItem>
-        <StyledMenuItem>참여한 멘토링</StyledMenuItem>
-        <StyledMenuItem>회원 정보</StyledMenuItem>
-        <StyledMenuItem>로그아웃</StyledMenuItem>
+      <StyledMenuList opened={opened}>
+        {MENU_ITEMS.map((item) => (
+          <StyledMenuItem
+            key={item}
+            onClick={() => setSelectedMenu(item)}
+            selected={selectedMenu === item}
+          >
+            {item}
+          </StyledMenuItem>
+        ))}
       </StyledMenuList>
     </StyledContainer>
   );
@@ -78,9 +102,18 @@ const StyledMenuList = styled.ul<{ opened: boolean }>`
   transition: all 0.2s ease;
 `;
 
-const StyledMenuItem = styled.li`
+const StyledMenuItem = styled.li<{ selected: boolean }>`
   width: 100%;
-  padding: 0.8rem 1.2rem;
+  padding: 1rem 1.2rem;
+
+  background-color: ${({ selected, theme }) =>
+    selected ? theme.SYSTEM.MAIN50 : 'transparent'};
+
+  color: ${({ selected, theme }) =>
+    selected ? theme.SYSTEM.MAIN700 : theme.FONT.B03};
+
+  transition: all 0.2s ease;
+  cursor: pointer;
 
   :first-of-type {
     border-radius: 16px 16px 0 0;
