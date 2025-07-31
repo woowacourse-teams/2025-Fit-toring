@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 public record SignUpRequest(
 
-        @Size(min = 4, max = 20, message = "아이디는 5자 이상 15자 이하로 입력해주세요.")
+        @Size(min = 5, max = 15, message = "아이디는 5자 이상 15자 이하로 입력해주세요.")
         @NotBlank
         String loginId,
 
