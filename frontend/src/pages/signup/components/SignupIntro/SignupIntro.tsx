@@ -32,7 +32,7 @@ const StyledContainer = styled.div`
   padding-bottom: 1.8rem;
   border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.LIGHT};
 
-  background-color: white;
+  background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
 const StyledImgWrapper = styled.div`
