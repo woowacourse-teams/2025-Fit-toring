@@ -16,6 +16,9 @@ spring:
     hibernate:
       ddl-auto: create
     defer-datasource-initialization: true
+  web:
+    resources:
+      add-mappings: false
 sms:
   base-url: https://api.solapi.com
   timeout:
