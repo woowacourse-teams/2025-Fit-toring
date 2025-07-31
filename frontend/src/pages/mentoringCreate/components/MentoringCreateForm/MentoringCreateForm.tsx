@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 
-import BaseInfo from '../BaseInfo/BaseInfo';
+import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
 
 function MentoringCreateForm() {
   return (
     <StyledContainer>
-      <BaseInfo />
+      <BaseInfoSection />
     </StyledContainer>
   );
 }

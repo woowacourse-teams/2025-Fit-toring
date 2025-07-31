@@ -4,7 +4,7 @@ import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-function BaseInfo() {
+function BaseInfoSection() {
   return (
     <>
       <TitleSeparator>기본 정보</TitleSeparator>
@@ -23,7 +23,7 @@ function BaseInfo() {
   );
 }
 
-export default BaseInfo;
+export default BaseInfoSection;
 
 const StyledFormFieldWrapper = styled.section`
   display: flex;
