@@ -15,95 +15,102 @@ function SignupForm() {
 
   return (
     <StyledContainer>
-      <StyledNameAndGenderWrapper>
-        <FormField label="이름 *" htmlFor="name">
-          <StyledNameInputWrapper>
-            <Input id="name" placeholder="홍길동" />
-          </StyledNameInputWrapper>
+      <StyledFormFields>
+        <StyledNameAndGenderWrapper>
+          <FormField label="이름 *" htmlFor="name">
+            <StyledNameInputWrapper>
+              <Input id="name" placeholder="홍길동" />
+            </StyledNameInputWrapper>
+          </FormField>
+          <fieldset>
+            <StyledLegend>성별 *</StyledLegend>
+            <StyledRadios>
+              <StyledRadioWrapper>
+                <StyledLabel htmlFor="male">남</StyledLabel>
+                <StyledRadio
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  id="male"
+                />
+              </StyledRadioWrapper>
+              <StyledRadioWrapper>
+                <StyledLabel htmlFor="female">여</StyledLabel>
+                <StyledRadio
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  id="female"
+                />
+              </StyledRadioWrapper>
+            </StyledRadios>
+          </fieldset>
+        </StyledNameAndGenderWrapper>
+
+        <FormField label="아이디 *" htmlFor="id">
+          <StyledInputAndBtnWrapper>
+            <div className="input-wapper">
+              <Input id="id" placeholder="fittoring" />
+            </div>
+            <Button type="button" customStyle={buttonCustomStyle}>
+              중복확인
+            </Button>
+          </StyledInputAndBtnWrapper>
         </FormField>
-        <fieldset>
-          <StyledLegend>성별 *</StyledLegend>
-          <StyledRadios>
-            <StyledRadioWrapper>
-              <StyledLabel htmlFor="male">남</StyledLabel>
-              <StyledRadio type="radio" name="gender" value="male" id="male" />
-            </StyledRadioWrapper>
-            <StyledRadioWrapper>
-              <StyledLabel htmlFor="female">여</StyledLabel>
-              <StyledRadio
-                type="radio"
-                name="gender"
-                value="female"
-                id="female"
-              />
-            </StyledRadioWrapper>
-          </StyledRadios>
-        </fieldset>
-      </StyledNameAndGenderWrapper>
 
-      <FormField label="아이디 *" htmlFor="id">
-        <StyledInputAndBtnWrapper>
-          <div className="input-wapper">
-            <Input id="id" placeholder="fittoring" />
-          </div>
-          <Button type="button" customStyle={buttonCustomStyle}>
-            중복확인
-          </Button>
-        </StyledInputAndBtnWrapper>
-      </FormField>
+        <FormField label="비밀번호 *" htmlFor="password">
+          <StyledInputWithIconWrapper>
+            <StyledInput
+              id="password"
+              placeholder="5자이상 15자이하 입력하세요"
+              type={passwordVisible ? 'text' : 'password'}
+            />
+            <StyledImg
+              src={passwordVisible ? blind : notBlind}
+              onClick={() => setPasswordVisible((prev) => !prev)}
+            />
+          </StyledInputWithIconWrapper>
+        </FormField>
+        <FormField label="비밀번호 확인*" htmlFor="passwordConfrim">
+          <StyledInputWithIconWrapper>
+            <StyledInput
+              id="passwordConfrim"
+              placeholder="비밀번호를 다시 입력하세요"
+              type={passwordConfrimVisible ? 'text' : 'password'}
+            />
+            <StyledImg
+              src={passwordConfrimVisible ? blind : notBlind}
+              onClick={() => setPasswordConfrimVisible((prev) => !prev)}
+            />
+          </StyledInputWithIconWrapper>
+        </FormField>
 
-      <FormField label="비밀번호 *" htmlFor="password">
-        <StyledInputWithIconWrapper>
-          <StyledInput
-            id="password"
-            placeholder="5자이상 15자이하 입력하세요"
-            type={passwordVisible ? 'text' : 'password'}
-          />
-          <StyledImg
-            src={passwordVisible ? blind : notBlind}
-            onClick={() => setPasswordVisible((prev) => !prev)}
-          />
-        </StyledInputWithIconWrapper>
-      </FormField>
-      <FormField label="비밀번호 확인*" htmlFor="passwordConfrim">
-        <StyledInputWithIconWrapper>
-          <StyledInput
-            id="passwordConfrim"
-            placeholder="비밀번호를 다시 입력하세요"
-            type={passwordConfrimVisible ? 'text' : 'password'}
-          />
-          <StyledImg
-            src={passwordConfrimVisible ? blind : notBlind}
-            onClick={() => setPasswordConfrimVisible((prev) => !prev)}
-          />
-        </StyledInputWithIconWrapper>
-      </FormField>
-
-      <FormField label="전화번호 *" htmlFor="phone">
-        <StyledInputAndBtnWrapper>
-          <div className="input-wapper">
-            <Input id="phone" placeholder="010-1234-5678" type="tel" />
-          </div>
-          <Button type="button" customStyle={buttonCustomStyle}>
-            인증요청
-          </Button>
-        </StyledInputAndBtnWrapper>
-      </FormField>
-      <FormField label="인증번호 확인 *" htmlFor="verificationCode">
-        <StyledInputAndBtnWrapper>
-          <div className="input-wapper">
-            <Input id="verificationCode" placeholder="123456" type="tel" />
-          </div>
-          <Button type="button" customStyle={buttonCustomStyle}>
-            인증하기
-          </Button>
-        </StyledInputAndBtnWrapper>
-      </FormField>
+        <FormField label="전화번호 *" htmlFor="phone">
+          <StyledInputAndBtnWrapper>
+            <div className="input-wapper">
+              <Input id="phone" placeholder="010-1234-5678" type="tel" />
+            </div>
+            <Button type="button" customStyle={buttonCustomStyle}>
+              인증요청
+            </Button>
+          </StyledInputAndBtnWrapper>
+        </FormField>
+        <FormField label="인증번호 확인 *" htmlFor="verificationCode">
+          <StyledInputAndBtnWrapper>
+            <div className="input-wapper">
+              <Input id="verificationCode" placeholder="123456" type="tel" />
+            </div>
+            <Button type="button" customStyle={buttonCustomStyle}>
+              인증하기
+            </Button>
+          </StyledInputAndBtnWrapper>
+        </FormField>
+      </StyledFormFields>
       <Button
         type="submit"
         size="full"
         customStyle={css`
-          height: 5.2rem;
+          height: 4.3rem;
           box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
 
           font-size: 1.6rem;
@@ -120,11 +127,17 @@ export default SignupForm;
 const StyledContainer = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.7rem;
+  gap: 3rem;
 
   padding: 2.8rem 3.3rem;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
+`;
+
+const StyledFormFields = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.7rem;
 `;
 
 const StyledNameAndGenderWrapper = styled.div`
