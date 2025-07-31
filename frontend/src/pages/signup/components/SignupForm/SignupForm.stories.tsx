@@ -16,7 +16,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: '회원가입 페이지의 회원가임 폼입니다.',
+        story: '회원가입 페이지의 회원가입 폼입니다.',
       },
     },
   },
