@@ -16,7 +16,7 @@ function BaseInfo() {
           <Input placeholder="5,000" id="price" required />
         </FormField>
         <FormField label="전화번호 *" htmlFor="phone">
-          <Input placeholder="010-1234-5678" id="phone" required />
+          <Input placeholder="010-1234-5678" type="tel" id="phone" required />
         </FormField>
       </StyledWrapper>
     </>
