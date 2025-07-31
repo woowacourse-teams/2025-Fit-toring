@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
-import menuIcon from '../../../../common/assets/images/bars-3.svg';
+import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import Header from '../../../../common/components/Header/Header';
 
 function MyPageHeader() {
