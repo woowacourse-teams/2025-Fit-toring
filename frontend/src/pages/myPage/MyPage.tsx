@@ -1,7 +1,13 @@
 import styled from '@emotion/styled';
 
+import MyPageHeader from './components/MyPageHeader/MyPageHeader';
+
 function MyPage() {
-  return <StyledContainer></StyledContainer>;
+  return (
+    <StyledContainer>
+      <MyPageHeader />
+    </StyledContainer>
+  );
 }
 
 export default MyPage;
