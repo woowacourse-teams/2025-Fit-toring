@@ -1,0 +1,51 @@
+import { css } from '@emotion/react';
+import styled from '@emotion/styled';
+
+import Button from '../../../../common/components/Button/Button';
+import FormField from '../../../../common/components/FormField/FormField';
+import Input from '../../../../common/components/Input/Input';
+
+function PhoneFields() {
+  return (
+    <>
+      <FormField label="전화번호 *">
+        <StyledInputAndBtnWrapper>
+          <div className="input-wrapper">
+            <Input id="phone" placeholder="010-1234-5678" type="tel" />
+          </div>
+          <Button type="button" customStyle={buttonCustomStyle}>
+            인증요청
+          </Button>
+        </StyledInputAndBtnWrapper>
+      </FormField>
+      <FormField label="인증번호 확인 *">
+        <StyledInputAndBtnWrapper>
+          <div className="input-wrapper">
+            <Input id="verificationCode" placeholder="123456" type="tel" />
+          </div>
+          <Button type="button" customStyle={buttonCustomStyle}>
+            인증하기
+          </Button>
+        </StyledInputAndBtnWrapper>
+      </FormField>
+    </>
+  );
+}
+
+export default PhoneFields;
+
+const StyledInputAndBtnWrapper = styled.div`
+  display: flex;
+  gap: 1.4rem;
+
+  & > .input-wrapper {
+    flex-grow: 1;
+  }
+`;
+
+const buttonCustomStyle = css`
+  height: 4rem;
+  padding: 1.1rem 0.8rem;
+
+  font-size: 1.4rem;
+`;
