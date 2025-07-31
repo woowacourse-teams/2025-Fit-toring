@@ -31,4 +31,8 @@ public class PhoneVerification {
 
     @Column(nullable = false)
     private LocalDateTime expireAt;
+
+    public PhoneVerification(Phone phone, String code, LocalDateTime expireAt) {
+        this(null, phone, code, expireAt);
+    }
 }
