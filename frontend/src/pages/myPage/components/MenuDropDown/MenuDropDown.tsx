@@ -77,6 +77,7 @@ const StyledMenuIcon = styled.img`
 `;
 
 const StyledMenuList = styled.ul<{ opened: boolean }>`
+  visibility: ${({ opened }) => (opened ? 'visible' : 'hidden')};
   position: absolute;
   top: 100%;
   right: 2rem;
