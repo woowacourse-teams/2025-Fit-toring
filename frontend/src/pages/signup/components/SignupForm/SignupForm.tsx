@@ -53,7 +53,7 @@ function SignupForm() {
       </FormField>
 
       <FormField label="비밀번호 *" htmlFor="password">
-        <StyledInputWrapper>
+        <StyledInputWithIconWrapper>
           <StyledInput
             id="password"
             placeholder="5자이상 15자이하 입력하세요"
@@ -63,10 +63,10 @@ function SignupForm() {
             src={passwordVisible ? blind : notBlind}
             onClick={() => setPasswordVisible((prev) => !prev)}
           />
-        </StyledInputWrapper>
+        </StyledInputWithIconWrapper>
       </FormField>
       <FormField label="비밀번호 확인*" htmlFor="passwordConfrim">
-        <StyledInputWrapper>
+        <StyledInputWithIconWrapper>
           <StyledInput
             id="passwordConfrim"
             placeholder="비밀번호를 다시 입력하세요"
@@ -76,7 +76,7 @@ function SignupForm() {
             src={passwordConfrimVisible ? blind : notBlind}
             onClick={() => setPasswordConfrimVisible((prev) => !prev)}
           />
-        </StyledInputWrapper>
+        </StyledInputWithIconWrapper>
       </FormField>
 
       <FormField label="전화번호 *" htmlFor="phone">
@@ -104,6 +104,7 @@ function SignupForm() {
         size="full"
         customStyle={css`
           height: 5.2rem;
+          box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
 
           font-size: 1.6rem;
         `}
@@ -146,37 +147,48 @@ const StyledInputAndBtnWrapper = styled.div`
   }
 `;
 
-const StyledInputWrapper = styled.div<{ errored?: boolean }>`
-  display: flex;
+const StyledInputWithIconWrapper = styled.div<{ errored?: boolean }>`
+  position: relative;
+`;
+
+const StyledInput = styled.input<{ errored?: boolean }>`
+  flex-grow: 1;
 
   width: 100%;
-  height: 100%;
   height: 4rem;
+  padding: 0.7rem 1.1rem;
+  padding-right: 4rem;
   border: ${({ theme, errored }) =>
       errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
     0.1rem solid;
   border-radius: 0.7rem;
 
-  background-color: white;
-`;
-
-const StyledInput = styled.input`
-  flex-grow: 1;
-
-  padding: 0.7rem 1.1rem;
-  border: none;
-
   background-color: transparent;
 
   :focus {
     outline: none;
+    border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN600};
   }
 
   ::placeholder {
     color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
 
+  color: ${({ theme }) => theme.FONT.B01};
+
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+`;
+
+const StyledImg = styled.img`
+  position: absolute;
+  right: 0;
+  bottom: 50%;
+
+  width: 2rem;
+  transform: translateY(50%);
+  cursor: pointer;
+
+  margin-right: 1rem;
 `;
 
 const StyledLegend = styled.legend`
@@ -202,8 +214,8 @@ const StyledRadios = styled.div`
 const StyledRadio = styled.input`
   flex-shrink: 0;
 
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   margin: 0;
   outline: none;
   border: 1px solid #ccc;
@@ -223,12 +235,6 @@ const StyledLabel = styled.label`
   color: ${({ theme }) => theme.FONT.B02};
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
-  cursor: pointer;
-`;
-
-const StyledImg = styled.img`
-  width: 2rem;
-  margin: 0.8rem;
   cursor: pointer;
 `;
 
