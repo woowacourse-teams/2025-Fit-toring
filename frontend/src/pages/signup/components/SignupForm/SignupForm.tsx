@@ -169,8 +169,6 @@ const StyledInputWithIconWrapper = styled.div<{ errored?: boolean }>`
 `;
 
 const StyledInput = styled.input<{ errored?: boolean }>`
-  flex-grow: 1;
-
   width: 100%;
   height: 4rem;
   padding: 0.7rem 1.1rem;
