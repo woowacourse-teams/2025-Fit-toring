@@ -14,11 +14,16 @@ const MENU_ITEMS = [
 function MenuDropDown() {
   const [opened, setOpened] = useState(false);
 
+  const handleMenuButtonClick = () => {
+    setOpened((prev) => !prev);
+  };
+
   const [selectedMenu, setSelectedMenu] = useState<(typeof MENU_ITEMS)[number]>(
     MENU_ITEMS[0],
   );
 
-  const handleMenuButtonClick = () => {
+  const handleSelectMenu = (item: (typeof MENU_ITEMS)[number]) => {
+    setSelectedMenu(item);
     setOpened((prev) => !prev);
   };
 
@@ -32,7 +37,7 @@ function MenuDropDown() {
         {MENU_ITEMS.map((item) => (
           <StyledMenuItem
             key={item}
-            onClick={() => setSelectedMenu(item)}
+            onClick={() => handleSelectMenu(item)}
             selected={selectedMenu === item}
           >
             {item}
