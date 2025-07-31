@@ -4,8 +4,8 @@ function Slogan() {
   return (
     <StyledContainer>
       <StyledTitle>
-        내가 알고 싶은 운동 & 식단, <StyledStrong>온라인</StyledStrong>에서
-        물어봐요!
+        내가 알고 싶은 운동 & 식단, <StyledStrong>온라인</StyledStrong>으로
+        편하게 물어봐요!
       </StyledTitle>
     </StyledContainer>
   );
@@ -33,7 +33,7 @@ const StyledContainer = styled.section`
 `;
 
 const StyledTitle = styled.h1`
-  width: 25.2rem;
+  width: 27.2rem;
 
   color: ${({ theme }) => theme.FONT.B01};
   text-align: center;
