@@ -25,6 +25,8 @@ const StyledTitle = styled.h2`
 
 const StyledWrapper = styled.div`
   display: flex;
+
+  margin-bottom: 3.5rem;
 `;
 
 const StyledLeftBar = styled.div`

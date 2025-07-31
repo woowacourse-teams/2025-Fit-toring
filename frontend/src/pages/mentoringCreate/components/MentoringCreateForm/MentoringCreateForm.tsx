@@ -12,7 +12,7 @@ function MentoringCreateForm() {
 
 export default MentoringCreateForm;
 
-const StyledContainer = styled.div`
+const StyledContainer = styled.form`
   display: flex;
   flex-direction: column;
 
