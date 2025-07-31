@@ -10,6 +10,7 @@ function MyPageHeader() {
         <StyledBackButton onClick={() => {}} type="button">
           <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
         </StyledBackButton>
+        <StyledTitle>마이 페이지</StyledTitle>
       </StyledWrapper>
     </Header>
   );
@@ -37,4 +38,12 @@ const StyledBackButton = styled.button`
 
 const StyledBackIcon = styled.img`
   width: 3.4rem;
+`;
+
+const StyledTitle = styled.h1`
+  flex-grow: 1;
+
+  color: ${({ theme }) => theme.FONT.B01};
+  text-align: center;
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 `;
