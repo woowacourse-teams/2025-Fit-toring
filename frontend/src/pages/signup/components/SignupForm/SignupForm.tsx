@@ -17,7 +17,7 @@ function SignupForm() {
     <StyledContainer>
       <StyledFormFields>
         <StyledNameAndGenderWrapper>
-          <FormField label="이름 *" htmlFor="name">
+          <FormField label="이름 *">
             <StyledNameInputWrapper>
               <Input id="name" placeholder="홍길동" />
             </StyledNameInputWrapper>
@@ -26,28 +26,32 @@ function SignupForm() {
             <StyledLegend>성별 *</StyledLegend>
             <StyledRadios>
               <StyledRadioWrapper>
-                <StyledLabel htmlFor="male">남</StyledLabel>
-                <StyledRadio
-                  type="radio"
-                  name="gender"
-                  value="male"
-                  id="male"
-                />
+                <StyledLabel>
+                  남
+                  <StyledRadio
+                    type="radio"
+                    name="gender"
+                    value="male"
+                    id="male"
+                  />
+                </StyledLabel>
               </StyledRadioWrapper>
               <StyledRadioWrapper>
-                <StyledLabel htmlFor="female">여</StyledLabel>
-                <StyledRadio
-                  type="radio"
-                  name="gender"
-                  value="female"
-                  id="female"
-                />
+                <StyledLabel>
+                  여
+                  <StyledRadio
+                    type="radio"
+                    name="gender"
+                    value="female"
+                    id="female"
+                  />
+                </StyledLabel>
               </StyledRadioWrapper>
             </StyledRadios>
           </fieldset>
         </StyledNameAndGenderWrapper>
 
-        <FormField label="아이디 *" htmlFor="id">
+        <FormField label="아이디 *">
           <StyledInputAndBtnWrapper>
             <div className="input-wapper">
               <Input id="id" placeholder="fittoring" />
@@ -58,7 +62,7 @@ function SignupForm() {
           </StyledInputAndBtnWrapper>
         </FormField>
 
-        <FormField label="비밀번호 *" htmlFor="password">
+        <FormField label="비밀번호 *">
           <StyledInputWithIconWrapper>
             <StyledInput
               id="password"
@@ -71,7 +75,7 @@ function SignupForm() {
             />
           </StyledInputWithIconWrapper>
         </FormField>
-        <FormField label="비밀번호 확인*" htmlFor="passwordConfrim">
+        <FormField label="비밀번호 확인*">
           <StyledInputWithIconWrapper>
             <StyledInput
               id="passwordConfrim"
@@ -85,7 +89,7 @@ function SignupForm() {
           </StyledInputWithIconWrapper>
         </FormField>
 
-        <FormField label="전화번호 *" htmlFor="phone">
+        <FormField label="전화번호 *">
           <StyledInputAndBtnWrapper>
             <div className="input-wapper">
               <Input id="phone" placeholder="010-1234-5678" type="tel" />
@@ -95,7 +99,7 @@ function SignupForm() {
             </Button>
           </StyledInputAndBtnWrapper>
         </FormField>
-        <FormField label="인증번호 확인 *" htmlFor="verificationCode">
+        <FormField label="인증번호 확인 *">
           <StyledInputAndBtnWrapper>
             <div className="input-wapper">
               <Input id="verificationCode" placeholder="123456" type="tel" />
@@ -245,6 +249,10 @@ const StyledRadio = styled.input`
 `;
 
 const StyledLabel = styled.label`
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
   color: ${({ theme }) => theme.FONT.B02};
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};

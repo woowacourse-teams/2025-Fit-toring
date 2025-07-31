@@ -68,11 +68,7 @@ function BookingForm({
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
       <StyledFieldWrapper>
-        <FormField
-          label="상담자명 *"
-          htmlFor="name"
-          errorMessage={menteeNameErrorMessage}
-        >
+        <FormField label="상담자명 *" errorMessage={menteeNameErrorMessage}>
           <Input
             placeholder="홍길동"
             id="name"
@@ -83,11 +79,7 @@ function BookingForm({
             required
           />
         </FormField>
-        <FormField
-          label="전화번호 *"
-          htmlFor="phone"
-          errorMessage={phoneNumberErrorMessage}
-        >
+        <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
           <Input
             placeholder="010-1234-4986"
             id="phone"
@@ -101,11 +93,7 @@ function BookingForm({
             required
           />
         </FormField>
-        <FormField
-          label="상담 내용(선택사항)"
-          htmlFor="details"
-          errorMessage={''}
-        >
+        <FormField label="상담 내용(선택사항)" errorMessage={''}>
           <StyledTextarea
             id="details"
             placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
