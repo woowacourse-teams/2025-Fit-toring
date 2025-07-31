@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class Phone {
 
-    @Column(nullable = false)
+    @Column(name = "phone", nullable = false)
     private String number;
 
     public Phone(String phoneNumber) {

@@ -31,7 +31,4 @@ public class PhoneVerification {
 
     @Column(nullable = false)
     private LocalDateTime expireAt;
-
-    @Column(nullable = false)
-    private PhoneVerificationStatus status = PhoneVerificationStatus.PENDING;
 }
