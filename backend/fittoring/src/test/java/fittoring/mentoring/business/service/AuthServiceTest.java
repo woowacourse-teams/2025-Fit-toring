@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.mentoring.business.exception.DuplicateIdException;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.util.DbCleaner;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,12 +66,12 @@ class AuthServiceTest {
         //given
         String loginId = "loginId";
 
-        Member member = Member.of(
+        Member member = new Member(
                 loginId,
                 "이름",
                 "남",
                 "010-1234-5678",
-                "password"
+                Password.createEncrypt("password")
         );
         em.persist(member);
 
@@ -87,12 +88,12 @@ class AuthServiceTest {
         //given
         String loginId = "nonDuplicateId";
 
-        Member member = Member.of(
+        Member member = new Member(
                 "loginId",
                 "이름",
                 "남",
                 "010-1234-5678",
-                "password"
+                Password.createEncrypt("password")
         );
         em.persist(member);
 

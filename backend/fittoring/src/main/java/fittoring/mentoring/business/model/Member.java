@@ -38,12 +38,8 @@ public class Member {
     @Column(nullable = false)
     private Password password;
 
-    private Member(String loginId, String gender, String name, String phone, Password password) {
+    public Member(String loginId, String gender, String name, String phone, Password password) {
         this(null, loginId, gender, name, phone, password);
-    }
-
-    public static Member of(String loginId, String gender, String name, String phone, String password) {
-        return new Member(loginId, gender, name, phone, Password.createEncrypt(password));
     }
 
     public String getPassword() {

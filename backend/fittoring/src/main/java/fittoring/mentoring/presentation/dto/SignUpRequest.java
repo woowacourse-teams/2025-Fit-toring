@@ -1,6 +1,5 @@
 package fittoring.mentoring.presentation.dto;
 
-import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.presentation.PhoneNumber;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,8 +25,4 @@ public record SignUpRequest(
         @NotBlank
         String password
 ) {
-
-    public Member toEntity() {
-        return Member.of(loginId, name, gender, phone, password);
-    }
 }

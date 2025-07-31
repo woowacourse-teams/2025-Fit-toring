@@ -3,6 +3,7 @@ package fittoring.integration.mentoring.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateIdRequest;
@@ -90,13 +91,14 @@ class AuthControllerTest {
     @Test
     void signUp3() {
         //given
-        Member member = Member.of(
+        Member member = new Member(
                 "loginId",
                 "이름",
                 "남",
                 "010-1234-5678",
-                "password"
+                Password.createEncrypt("password")
         );
+
         memberRepository.save(member);
 
         String loginId = "loginId";
@@ -142,22 +144,22 @@ class AuthControllerTest {
     void validateDuplicateId2() {
         //given
         memberRepository.save(
-                Member.of(
+                new Member(
                         "uniqueLoginId",
                         "이름",
                         "남",
                         "010-1234-5678",
-                        "password"
+                        Password.createEncrypt("password")
                 )
         );
 
         memberRepository.save(
-                Member.of(
+                new Member(
                         "LoginId",
                         "이름",
                         "남",
                         "010-5678-9123",
-                        "password"
+                        Password.createEncrypt("password")
                 )
         );
 
