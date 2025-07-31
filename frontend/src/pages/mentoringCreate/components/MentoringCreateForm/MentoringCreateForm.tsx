@@ -5,7 +5,7 @@ import BaseInfo from '../BaseInfo/BaseInfo';
 function MentoringCreateForm() {
   return (
     <StyledContainer>
-      <BaseInfo></BaseInfo>
+      <BaseInfo />
     </StyledContainer>
   );
 }

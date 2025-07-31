@@ -10,13 +10,13 @@ function BaseInfo() {
       <TitleSeparator>기본 정보</TitleSeparator>
       <StyledWrapper>
         <FormField label="이름 *" htmlFor="name">
-          <Input placeholder="홍길동" id="name" required></Input>
+          <Input placeholder="홍길동" id="name" required />
         </FormField>
         <FormField label="15분 상담료 (원) *" htmlFor="price">
-          <Input placeholder="5,000" id="price" required></Input>
+          <Input placeholder="5,000" id="price" required />
         </FormField>
         <FormField label="전화번호 *" htmlFor="phone">
-          <Input placeholder="010-1234-5678" id="phone" required></Input>
+          <Input placeholder="010-1234-5678" id="phone" required />
         </FormField>
       </StyledWrapper>
     </>
