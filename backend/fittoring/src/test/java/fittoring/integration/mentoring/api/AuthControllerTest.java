@@ -2,8 +2,10 @@ package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
+import fittoring.mentoring.presentation.dto.ValidateDuplicateIdRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -64,6 +66,7 @@ class AuthControllerTest {
     @DisplayName("사용자는 유효하지 않은 정보로 회원가입을 할 수 없다.")
     @Test
     void signUp2() {
+        //given
         String loginId = null;
         String name = "이름";
         String male = "남";
@@ -83,4 +86,92 @@ class AuthControllerTest {
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
+    @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")
+    @Test
+    void signUp3() {
+        //given
+        Member member = Member.of(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                "password"
+        );
+        memberRepository.save(member);
+
+        String loginId = "loginId";
+        String name = "이름";
+        String male = "남";
+        String phone = "010-1234-5678";
+        String password = "password";
+        SignUpRequest request = new SignUpRequest(loginId, name, male, phone, password);
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/signup");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+
+    @DisplayName("사용자는 중복되지 않은 아이디로 아이디 중복 검증을 시도할 경우 200 상태코드를 받는다.")
+    @Test
+    void validateDuplicateId() {
+        //given
+        ValidateDuplicateIdRequest request = new ValidateDuplicateIdRequest("uniqueLoginId");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/validate-id");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @DisplayName("사용자는 중복된 아이디로 회원가입을 시도할 경우 400 상태코드를 받는다.")
+    @Test
+    void validateDuplicateId2() {
+        //given
+        memberRepository.save(
+                Member.of(
+                        "uniqueLoginId",
+                        "이름",
+                        "남",
+                        "010-1234-5678",
+                        "password"
+                )
+        );
+
+        memberRepository.save(
+                Member.of(
+                        "LoginId",
+                        "이름",
+                        "남",
+                        "010-1234-5678",
+                        "password"
+                )
+        );
+
+        ValidateDuplicateIdRequest request = new ValidateDuplicateIdRequest("uniqueLoginId");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/validate-id");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
 }

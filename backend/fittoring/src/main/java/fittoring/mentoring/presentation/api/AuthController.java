@@ -2,6 +2,7 @@ package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.AuthService;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
+import fittoring.mentoring.presentation.dto.ValidateDuplicateIdRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,5 +21,11 @@ public class AuthController {
     public ResponseEntity<Void> sinUp(@RequestBody @Valid SignUpRequest request) {
         authService.register(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/validate-id")
+    public ResponseEntity<Void> validateDuplicateId(@RequestBody @Valid ValidateDuplicateIdRequest request) {
+        authService.validateDuplicateId(request.id());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

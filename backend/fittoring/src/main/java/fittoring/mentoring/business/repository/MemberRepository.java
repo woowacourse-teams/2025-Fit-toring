@@ -5,4 +5,5 @@ import org.springframework.data.repository.ListCrudRepository;
 
 public interface MemberRepository extends ListCrudRepository<Member, Long> {
 
+    boolean existsByLoginId(String loginId);
 }
