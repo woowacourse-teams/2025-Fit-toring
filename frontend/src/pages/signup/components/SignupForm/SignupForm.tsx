@@ -229,8 +229,8 @@ const StyledRadios = styled.div`
 const StyledRadio = styled.input`
   flex-shrink: 0;
 
-  width: 14px;
-  height: 14px;
+  width: 1.4rem;
+  height: 1.4rem;
   margin: 0;
   outline: none;
   border: 1px solid #ccc;

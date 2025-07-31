@@ -41,9 +41,9 @@ const StyledImgWrapper = styled.div`
   justify-content: center;
   overflow: hidden;
 
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: 1.6rem;
   box-shadow: 0 4px 12px rgb(0 120 111 / 20%);
 `;
 
