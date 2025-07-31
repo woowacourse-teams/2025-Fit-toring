@@ -1,12 +1,18 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import blind from '../../../../common/assets/images/blind.svg';
 import notBlind from '../../../../common/assets/images/notBlind.svg';
 import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 
 function SignupForm() {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordConfrimVisible, setPasswordConfrimVisible] = useState(false);
+
   return (
     <StyledContainer>
       <StyledNameAndGenderWrapper>
@@ -51,8 +57,12 @@ function SignupForm() {
           <StyledInput
             id="password"
             placeholder="5자이상 15자이하 입력하세요"
+            type={passwordVisible ? 'text' : 'password'}
           />
-          <StyledImg src={notBlind} />
+          <StyledImg
+            src={passwordVisible ? blind : notBlind}
+            onClick={() => setPasswordVisible((prev) => !prev)}
+          />
         </StyledInputWrapper>
       </FormField>
       <FormField label="비밀번호 확인*" htmlFor="passwordConfrim">
@@ -60,8 +70,12 @@ function SignupForm() {
           <StyledInput
             id="passwordConfrim"
             placeholder="비밀번호를 다시 입력하세요"
+            type={passwordConfrimVisible ? 'text' : 'password'}
           />
-          <StyledImg src={notBlind} />
+          <StyledImg
+            src={passwordConfrimVisible ? blind : notBlind}
+            onClick={() => setPasswordConfrimVisible((prev) => !prev)}
+          />
         </StyledInputWrapper>
       </FormField>
 
