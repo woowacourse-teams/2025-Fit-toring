@@ -3,9 +3,10 @@ package fittoring.integration.mentoring.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
-import fittoring.mentoring.presentation.dto.ValidateDuplicateIdRequest;
+import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -43,10 +44,10 @@ class AuthControllerTest {
         //given
         String loginId = "loginId";
         String name = "이름";
-        String male = "남";
+        String gender = "남";
         String phone = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, male, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
 
         //when
         RestAssured
@@ -69,10 +70,10 @@ class AuthControllerTest {
         //given
         String loginId = null;
         String name = "이름";
-        String male = "남";
+        String gender = "남";
         String phone = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, male, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
 
         //when
         Response response = RestAssured
@@ -90,21 +91,22 @@ class AuthControllerTest {
     @Test
     void signUp3() {
         //given
-        Member member = Member.of(
+        Member member = new Member(
                 "loginId",
                 "이름",
                 "남",
                 "010-1234-5678",
-                "password"
+                Password.from("password")
         );
+
         memberRepository.save(member);
 
         String loginId = "loginId";
         String name = "이름";
-        String male = "남";
+        String gender = "남";
         String phone = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, male, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
 
         //when
         Response response = RestAssured
@@ -121,9 +123,9 @@ class AuthControllerTest {
 
     @DisplayName("사용자는 중복되지 않은 아이디로 아이디 중복 검증을 시도할 경우 200 상태코드를 받는다.")
     @Test
-    void validateDuplicateId() {
+    void validateDuplicateLoginId() {
         //given
-        ValidateDuplicateIdRequest request = new ValidateDuplicateIdRequest("uniqueLoginId");
+        ValidateDuplicateLoginIdRequest request = new ValidateDuplicateLoginIdRequest("uniqueLoginId");
 
         //when
         Response response = RestAssured
@@ -139,29 +141,29 @@ class AuthControllerTest {
 
     @DisplayName("사용자는 중복된 아이디로 회원가입을 시도할 경우 400 상태코드를 받는다.")
     @Test
-    void validateDuplicateId2() {
+    void validateDuplicateLoginId2() {
         //given
         memberRepository.save(
-                Member.of(
+                new Member(
                         "uniqueLoginId",
                         "이름",
                         "남",
                         "010-1234-5678",
-                        "password"
+                        Password.from("password")
                 )
         );
 
         memberRepository.save(
-                Member.of(
+                new Member(
                         "LoginId",
                         "이름",
                         "남",
-                        "010-1234-5678",
-                        "password"
+                        "010-5678-9123",
+                        Password.from("password")
                 )
         );
 
-        ValidateDuplicateIdRequest request = new ValidateDuplicateIdRequest("uniqueLoginId");
+        ValidateDuplicateLoginIdRequest request = new ValidateDuplicateLoginIdRequest("uniqueLoginId");
 
         //when
         Response response = RestAssured
