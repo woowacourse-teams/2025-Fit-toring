@@ -7,14 +7,14 @@ import Header from '../../../../common/components/Header/Header';
 function MentoringCreateHeader() {
   const navigate = useNavigate();
 
-  const handleMoveBack = () => {
+  const handleBackButtonClick = () => {
     navigate(-1);
   };
 
   return (
     <Header>
       <StyledHeaderWrapper>
-        <StyledBackButton onClick={handleMoveBack}>
+        <StyledBackButton onClick={handleBackButtonClick}>
           <StyledImg src={backIcon} alt="뒤로가기 버튼" />
         </StyledBackButton>
         <StyledTitle>멘토링 개설</StyledTitle>

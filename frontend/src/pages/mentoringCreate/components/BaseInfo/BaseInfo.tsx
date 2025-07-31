@@ -8,7 +8,7 @@ function BaseInfo() {
   return (
     <>
       <TitleSeparator>기본 정보</TitleSeparator>
-      <StyledWrapper>
+      <StyledFormFieldWrapper>
         <FormField label="이름 *" htmlFor="name">
           <Input placeholder="홍길동" id="name" required />
         </FormField>
@@ -18,14 +18,14 @@ function BaseInfo() {
         <FormField label="전화번호 *" htmlFor="phone">
           <Input placeholder="010-1234-5678" type="tel" id="phone" required />
         </FormField>
-      </StyledWrapper>
+      </StyledFormFieldWrapper>
     </>
   );
 }
 
 export default BaseInfo;
 
-const StyledWrapper = styled.section`
+const StyledFormFieldWrapper = styled.section`
   display: flex;
   flex-direction: column;
   gap: 2rem;
