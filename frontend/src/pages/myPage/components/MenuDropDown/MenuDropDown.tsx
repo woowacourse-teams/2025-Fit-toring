@@ -10,10 +10,10 @@ function MenuDropDown() {
       </StyledMenuButton>
 
       <StyledMenuList opened={true}>
-        <li>개설한 멘토링</li>
-        <li>참여한 멘토링</li>
-        <li>회원 정보</li>
-        <li>로그아웃</li>
+        <StyledMenuItem>개설한 멘토링</StyledMenuItem>
+        <StyledMenuItem>참여한 멘토링</StyledMenuItem>
+        <StyledMenuItem>회원 정보</StyledMenuItem>
+        <StyledMenuItem>로그아웃</StyledMenuItem>
       </StyledMenuList>
     </StyledContainer>
   );
@@ -76,4 +76,25 @@ const StyledMenuList = styled.ul<{ opened: boolean }>`
   transform: ${({ opened }) =>
     opened ? 'translateY(0)' : 'translateY(-10px)'};
   transition: all 0.2s ease;
+`;
+
+const StyledMenuItem = styled.li`
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+
+  :first-of-type {
+    border-radius: 16px 16px 0 0;
+  }
+
+  :last-of-type {
+    border-radius: 0 0 16px 16px;
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
+
+    color: ${({ theme }) => theme.SYSTEM.MAIN700};
+  }
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
