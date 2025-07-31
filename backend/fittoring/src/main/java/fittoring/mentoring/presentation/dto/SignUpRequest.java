@@ -11,8 +11,8 @@ public record SignUpRequest(
         @NotBlank
         String loginId,
 
-        @NotBlank
         @Size(min = 2, max = 5, message = "이름은 2자 이상 5자 이하로 입력해주세요.")
+        @NotBlank
         String name,
 
         @NotBlank
