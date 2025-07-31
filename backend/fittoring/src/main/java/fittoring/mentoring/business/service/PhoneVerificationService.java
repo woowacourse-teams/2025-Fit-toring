@@ -20,13 +20,19 @@ public class PhoneVerificationService {
     public String createPhoneVerification(Phone phone) {
         deleteExpiredVerification(phone);
         String code = codeGenerator.generate();
+        LocalDateTime expiredDateTime = calculateExpiredTime();
         PhoneVerification phoneVerification = new PhoneVerification(
                 phone,
                 code,
-                LocalDateTime.now(ZoneId.of("Asia/Seoul")
-                ));
+                expiredDateTime
+        );
         phoneVerificationRepository.save(phoneVerification);
         return code;
+    }
+
+    private LocalDateTime calculateExpiredTime() {
+        return LocalDateTime.now(ZoneId.of("Asia/Seoul"))
+                .plusMinutes(3);
     }
 
     private void deleteExpiredVerification(Phone phone) {
