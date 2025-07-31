@@ -6,9 +6,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Phone {
@@ -16,9 +18,9 @@ public class Phone {
     @Column(nullable = false)
     private String number;
 
-    public Phone(String number) {
-        validate(number);
-        this.number = number;
+    public Phone(String phoneNumber) {
+        validate(phoneNumber);
+        this.number = phoneNumber;
     }
 
     private void validate(String number) {
