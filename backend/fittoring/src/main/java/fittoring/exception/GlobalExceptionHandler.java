@@ -3,6 +3,7 @@ package fittoring.exception;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.exception.PasswordEncryptionException;
 import fittoring.mentoring.infra.exception.SmsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateLoginIdException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateId(DuplicateLoginIdException e) {
+    public ResponseEntity<ErrorResponse> handle(DuplicateLoginIdException e) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
 
@@ -37,6 +38,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SystemException.class)
     public ResponseEntity<ErrorResponse> handle(SystemException e) {
+        logServerError(e);
+        return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()).toResponseEntity();
+    }
+
+    @ExceptionHandler(PasswordEncryptionException.class)
+    public ResponseEntity<ErrorResponse> handle(PasswordEncryptionException e) {
         logServerError(e);
         return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()).toResponseEntity();
     }
