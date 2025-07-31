@@ -58,22 +58,13 @@ const StyledMenuButton = styled.button`
   height: 3.8rem;
   margin-right: 2rem;
   padding: 0;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 50%;
+  border: none;
 
-  background: ${({ theme }) => theme.BG.WHITE};
-  background-color: transparent;
+  background: transparent;
 
   color: ${({ theme }) => theme.FONT.B03};
   cursor: pointer;
   transition: all 0.2s ease;
-
-  &:hover {
-    background: ${({ theme }) => theme.SYSTEM.MAIN50};
-    border-color: ${({ theme }) => theme.SYSTEM.MAIN300};
-
-    color: ${({ theme }) => theme.SYSTEM.MAIN700};
-  }
 `;
 
 const StyledMenuIcon = styled.img`
@@ -81,9 +72,6 @@ const StyledMenuIcon = styled.img`
 `;
 
 const StyledMenuList = styled.ul<{ opened: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
   position: absolute;
   top: 100%;
   right: 2rem;
