@@ -3,13 +3,13 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
+import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
 import useMenteeNameInput from '../../hooks/useMenteeNameInput';
 import { getPhoneNumberErrorMessage } from '../../utils/phoneNumberValidator';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
-import FormField from '../FormField/FormField';
 
 import type { BookingResponse } from '../../types/BookingResponse';
 
