@@ -1,6 +1,6 @@
 package fittoring.mentoring.business.service;
 
-import fittoring.mentoring.business.exception.DuplicateIdException;
+import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
@@ -17,14 +17,14 @@ public class AuthService {
 
     @Transactional
     public void register(SignUpRequest request) {
-        validateDuplicateId(request.loginId());
+        validateDuplicateLoginId(request.loginId());
         Member member = createMember(request);
         memberRepository.save(member);
     }
 
-    public void validateDuplicateId(String id) {
-        if (memberRepository.existsByLoginId(id)) {
-            throw new DuplicateIdException("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.");
+    public void validateDuplicateLoginId(String loginId) {
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw new DuplicateLoginIdException("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.");
         }
     }
 

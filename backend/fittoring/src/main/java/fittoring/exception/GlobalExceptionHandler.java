@@ -1,7 +1,7 @@
 package fittoring.exception;
 
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
-import fittoring.mentoring.business.exception.DuplicateIdException;
+import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.infra.exception.SmsException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +25,8 @@ public class GlobalExceptionHandler {
         return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
     }
 
-    @ExceptionHandler(DuplicateIdException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateId(DuplicateIdException e) {
+    @ExceptionHandler(DuplicateLoginIdException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateId(DuplicateLoginIdException e) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
 

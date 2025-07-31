@@ -6,7 +6,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
-import fittoring.mentoring.presentation.dto.ValidateDuplicateIdRequest;
+import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -123,9 +123,9 @@ class AuthControllerTest {
 
     @DisplayName("사용자는 중복되지 않은 아이디로 아이디 중복 검증을 시도할 경우 200 상태코드를 받는다.")
     @Test
-    void validateDuplicateId() {
+    void validateDuplicateLoginId() {
         //given
-        ValidateDuplicateIdRequest request = new ValidateDuplicateIdRequest("uniqueLoginId");
+        ValidateDuplicateLoginIdRequest request = new ValidateDuplicateLoginIdRequest("uniqueLoginId");
 
         //when
         Response response = RestAssured
@@ -141,7 +141,7 @@ class AuthControllerTest {
 
     @DisplayName("사용자는 중복된 아이디로 회원가입을 시도할 경우 400 상태코드를 받는다.")
     @Test
-    void validateDuplicateId2() {
+    void validateDuplicateLoginId2() {
         //given
         memberRepository.save(
                 new Member(
@@ -163,7 +163,7 @@ class AuthControllerTest {
                 )
         );
 
-        ValidateDuplicateIdRequest request = new ValidateDuplicateIdRequest("uniqueLoginId");
+        ValidateDuplicateLoginIdRequest request = new ValidateDuplicateLoginIdRequest("uniqueLoginId");
 
         //when
         Response response = RestAssured
