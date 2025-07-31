@@ -53,7 +53,7 @@ function SignupForm() {
 
         <FormField label="아이디 *">
           <StyledInputAndBtnWrapper>
-            <div className="input-wapper">
+            <div className="input-wrapper">
               <Input id="id" placeholder="fittoring" />
             </div>
             <Button type="button" customStyle={buttonCustomStyle}>
@@ -91,7 +91,7 @@ function SignupForm() {
 
         <FormField label="전화번호 *">
           <StyledInputAndBtnWrapper>
-            <div className="input-wapper">
+            <div className="input-wrapper">
               <Input id="phone" placeholder="010-1234-5678" type="tel" />
             </div>
             <Button type="button" customStyle={buttonCustomStyle}>
@@ -101,7 +101,7 @@ function SignupForm() {
         </FormField>
         <FormField label="인증번호 확인 *">
           <StyledInputAndBtnWrapper>
-            <div className="input-wapper">
+            <div className="input-wrapper">
               <Input id="verificationCode" placeholder="123456" type="tel" />
             </div>
             <Button type="button" customStyle={buttonCustomStyle}>
@@ -159,7 +159,7 @@ const StyledInputAndBtnWrapper = styled.div`
   display: flex;
   gap: 1.4rem;
 
-  & > .input-wapper {
+  & > .input-wrapper {
     flex-grow: 1;
   }
 `;
