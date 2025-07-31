@@ -25,7 +25,7 @@ function BaseInfo() {
 
 export default BaseInfo;
 
-const StyledWrapper = styled.div`
+const StyledWrapper = styled.section`
   display: flex;
   flex-direction: column;
   gap: 2rem;
