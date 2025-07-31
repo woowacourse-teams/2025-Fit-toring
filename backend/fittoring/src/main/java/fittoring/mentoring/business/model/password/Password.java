@@ -1,24 +1,26 @@
 package fittoring.mentoring.business.model.password;
 
+import jakarta.persistence.Embeddable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @EqualsAndHashCode
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Embeddable
 public class Password {
 
     private final String password;
 
-    public static Password formEncrypt(String password) {
-        return new Password(password);
+    protected Password() {
+        this.password = null;
     }
 
-    public static Password createEncrypt(String password) {
+    public static Password from(String password) {
         return new Password(encrypt(password));
     }
 

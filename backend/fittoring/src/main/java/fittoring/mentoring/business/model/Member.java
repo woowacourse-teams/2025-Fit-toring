@@ -1,9 +1,8 @@
 package fittoring.mentoring.business.model;
 
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.model.password.PasswordConverter;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,7 +33,7 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String phone;
 
-    @Convert(converter = PasswordConverter.class)
+    @Embedded
     @Column(nullable = false)
     private Password password;
 

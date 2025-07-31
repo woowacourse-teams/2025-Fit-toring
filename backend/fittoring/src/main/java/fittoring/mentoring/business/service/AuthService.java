@@ -34,7 +34,7 @@ public class AuthService {
                 request.gender(),
                 request.name(),
                 request.phone(),
-                Password.createEncrypt(request.password())
+                Password.from(request.password())
         );
     }
 }

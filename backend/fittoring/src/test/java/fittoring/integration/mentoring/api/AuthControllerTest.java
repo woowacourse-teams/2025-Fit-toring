@@ -96,7 +96,7 @@ class AuthControllerTest {
                 "이름",
                 "남",
                 "010-1234-5678",
-                Password.createEncrypt("password")
+                Password.from("password")
         );
 
         memberRepository.save(member);
@@ -149,7 +149,7 @@ class AuthControllerTest {
                         "이름",
                         "남",
                         "010-1234-5678",
-                        Password.createEncrypt("password")
+                        Password.from("password")
                 )
         );
 
@@ -159,7 +159,7 @@ class AuthControllerTest {
                         "이름",
                         "남",
                         "010-5678-9123",
-                        Password.createEncrypt("password")
+                        Password.from("password")
                 )
         );
 

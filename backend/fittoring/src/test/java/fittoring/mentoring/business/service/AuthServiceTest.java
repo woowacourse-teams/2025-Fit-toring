@@ -71,7 +71,7 @@ class AuthServiceTest {
                 "이름",
                 "남",
                 "010-1234-5678",
-                Password.createEncrypt("password")
+                Password.from("password")
         );
         em.persist(member);
 
@@ -93,7 +93,7 @@ class AuthServiceTest {
                 "이름",
                 "남",
                 "010-1234-5678",
-                Password.createEncrypt("password")
+                Password.from("password")
         );
         em.persist(member);
 
