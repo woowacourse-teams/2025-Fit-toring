@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { ERROR_MESSAGE } from '../constants/errorMessage';
 
-const VERIFICATION_CODE_LENGTH = 6;
+export const VERIFICATION_CODE_LENGTH = 6;
 
 const useVerificationCodeInput = () => {
   const [verificationCode, setVerificationCode] = useState('');
