@@ -1,8 +1,11 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
 import fittoring.mentoring.business.repository.PhoneVerificationRepository;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +44,17 @@ public class PhoneVerificationService {
     private LocalDateTime calculateExpiredTime() {
         return LocalDateTime.now(ZoneId.of("Asia/Seoul"))
                 .plusMinutes(EXPIRE_TIME);
+    }
+
+    public void verifyCode(VerificationCodeRequest request) {
+        Phone phone = new Phone(request.phone());
+        LocalDateTime requestTime = LocalDateTime.now(ZoneId.of("Asis/Seoul"));
+        PhoneVerification phoneVerification = phoneVerificationRepository.findByPhoneOrderByExpireAtDesc(phone)
+                .orElseThrow(() -> new InvalidPhoneVerificationException(
+                        BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage()
+                ));
+        if (phoneVerification.expiredStatus(requestTime) || phoneVerification.notMatchCode(request.code())) {
+            throw new InvalidPhoneVerificationException(BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage());
+        }
     }
 }

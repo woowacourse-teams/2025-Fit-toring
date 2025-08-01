@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.infra.SmsRestClientService;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

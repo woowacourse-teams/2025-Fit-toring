@@ -41,4 +41,12 @@ public class PhoneVerification {
     public String getPhoneNumber() {
         return this.phone.getNumber();
     }
+
+    public boolean notMatchCode(String code) {
+        return !this.code.equals(code);
+    }
+
+    public boolean expiredStatus(LocalDateTime requestTime) {
+        return requestTime.isBefore(requestTime);
+    }
 }

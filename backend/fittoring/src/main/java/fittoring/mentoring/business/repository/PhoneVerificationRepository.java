@@ -2,6 +2,7 @@ package fittoring.mentoring.business.repository;
 
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
+import java.util.Optional;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,6 @@ public interface PhoneVerificationRepository extends ListCrudRepository<PhoneVer
     boolean existsByPhone(Phone phone);
 
     void deleteByPhone(Phone phone);
+
+    Optional<PhoneVerification> findByPhoneOrderByExpireAtDesc(Phone phone);
 }
