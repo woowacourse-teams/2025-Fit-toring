@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { ERROR_MESSAGE } from '../../pages/booking/constants/errorMessage';
+import { NAME } from '../../pages/booking/constants/name';
 
 const useNameInput = () => {
   const [name, setName] = useState('');
@@ -14,7 +15,7 @@ const useNameInput = () => {
       return '';
     }
 
-    if (name.length < 1 || name.length > 5) {
+    if (name.length < NAME.MIN_LENGTH || name.length > NAME.MAX_LENGTH) {
       return ERROR_MESSAGE.INVALID_NAME_LENGTH;
     }
 
