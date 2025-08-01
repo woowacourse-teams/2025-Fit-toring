@@ -4,7 +4,7 @@ import { validateLength } from '../../../common/utils/validateLength';
 import { ERROR_MESSAGE } from '../constants/errorMessage';
 import { PASSWORD } from '../constants/password';
 
-const usePassword = () => {
+const usePasswordInput = () => {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
@@ -58,4 +58,4 @@ const usePassword = () => {
   };
 };
 
-export default usePassword;
+export default usePasswordInput;

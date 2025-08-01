@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 
 import Button from '../../../../common/components/Button/Button';
 import useNameInput from '../../../../common/hooks/useNameInput';
-import usePassword from '../../hooks/usePassword';
+import usePasswordInput from '../../hooks/usePasswordInput';
 import PasswordFields from '../PasswordFields/PasswordFields';
 import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
@@ -31,7 +31,7 @@ function SignupForm() {
     passwordConfirmErrorMessage,
     handlePasswordChange,
     handlePasswordConfirmChange,
-  } = usePassword();
+  } = usePasswordInput();
 
   const isFormValid = () => {
     return false;
