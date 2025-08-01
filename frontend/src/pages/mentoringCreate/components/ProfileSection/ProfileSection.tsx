@@ -7,8 +7,8 @@ import TitleSeparator from '../TitleSeparator/TitleSeparator';
 function ProfileSection() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
 
     if (!file) {
       return;
@@ -17,6 +17,7 @@ function ProfileSection() {
     const fileUrl = URL.createObjectURL(file);
     setPreviewUrl(fileUrl);
   };
+
   return (
     <section>
       <TitleSeparator>프로필 사진</TitleSeparator>
