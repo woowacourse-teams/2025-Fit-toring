@@ -6,18 +6,36 @@ import blind from '../../../../common/assets/images/blind.svg';
 import notBlind from '../../../../common/assets/images/notBlind.svg';
 import FormField from '../../../../common/components/FormField/FormField';
 
-function PasswordFields() {
+interface PasswordFieldsProps {
+  password: string;
+  passwordConfirm: string;
+  passwordErrorMessage: string;
+  passwordConfirmErrorMessage: string;
+  handlePasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handlePasswordConfirmChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function PasswordFields({
+  password,
+  passwordConfirm,
+  passwordErrorMessage,
+  passwordConfirmErrorMessage,
+  handlePasswordChange,
+  handlePasswordConfirmChange,
+}: PasswordFieldsProps) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordConfrimVisible, setPasswordConfrimVisible] = useState(false);
 
   return (
     <>
-      <FormField label="비밀번호 *">
+      <FormField label="비밀번호 *" errorMessage={passwordErrorMessage}>
         <StyledInputWithIconWrapper>
           <StyledInput
             id="password"
             placeholder="5자이상 15자이하 입력하세요"
             type={passwordVisible ? 'text' : 'password'}
+            value={password}
+            onChange={handlePasswordChange}
           />
           <StyledImg
             src={passwordVisible ? blind : notBlind}
@@ -25,12 +43,17 @@ function PasswordFields() {
           />
         </StyledInputWithIconWrapper>
       </FormField>
-      <FormField label="비밀번호 확인*">
+      <FormField
+        label="비밀번호 확인 *"
+        errorMessage={passwordConfirmErrorMessage}
+      >
         <StyledInputWithIconWrapper>
           <StyledInput
             id="passwordConfrim"
             placeholder="비밀번호를 다시 입력하세요"
             type={passwordConfrimVisible ? 'text' : 'password'}
+            value={passwordConfirm}
+            onChange={handlePasswordConfirmChange}
           />
           <StyledImg
             src={passwordConfrimVisible ? blind : notBlind}

@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 
 import Button from '../../../../common/components/Button/Button';
 import useNameInput from '../../../../common/hooks/useNameInput';
+import usePassword from '../../hooks/usePassword';
 import PasswordFields from '../PasswordFields/PasswordFields';
 import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
@@ -23,6 +24,15 @@ function SignupForm() {
     setGender(e.target.value);
   };
 
+  const {
+    password,
+    passwordConfirm,
+    passwordErrorMessage,
+    passwordConfirmErrorMessage,
+    handlePasswordChange,
+    handlePasswordConfirmChange,
+  } = usePassword();
+
   const isFormValid = () => {
     return false;
   };
@@ -38,7 +48,14 @@ function SignupForm() {
           handleGenderChange={handleGenderChange}
         />
         <UserIdField />
-        <PasswordFields />
+        <PasswordFields
+          password={password}
+          passwordConfirm={passwordConfirm}
+          passwordErrorMessage={passwordErrorMessage}
+          passwordConfirmErrorMessage={passwordConfirmErrorMessage}
+          handlePasswordChange={handlePasswordChange}
+          handlePasswordConfirmChange={handlePasswordConfirmChange}
+        />
         <PhoneFields />
       </StyledFormFields>
       <Button
