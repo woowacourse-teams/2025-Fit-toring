@@ -101,7 +101,7 @@ const StyledGuideText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
   text-align: center;
 
-  & strong {
+  & > strong {
     color: ${({ theme }) => theme.SYSTEM.MAIN700};
     ${({ theme }) => theme.TYPOGRAPHY.LB4_B}
   }
