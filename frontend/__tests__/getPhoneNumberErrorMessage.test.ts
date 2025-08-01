@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
+import { ERROR_MESSAGE } from '../src/common/constants/errorMessage';
 import { getPhoneNumberErrorMessage } from '../src/common/utils/phoneNumberValidator';
-import { ERROR_MESSAGE } from '../src/pages/booking/constants/errorMessage';
 
 describe('getPhoneNumberErrorMessage 유틸 함수 테스트', () => {
   it.each([['0'], ['010-1234'], ['010-1234-567']])(

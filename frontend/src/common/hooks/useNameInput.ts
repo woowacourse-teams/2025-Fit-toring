@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { ERROR_MESSAGE } from '../../pages/booking/constants/errorMessage';
-import { NAME } from '../../pages/booking/constants/name';
+import { ERROR_MESSAGE } from '../constants/errorMessage';
+import { NAME } from '../constants/name';
 
 const useNameInput = () => {
   const [name, setName] = useState('');

@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 
+import { ERROR_MESSAGE } from '../src/common/constants/errorMessage';
 import { THEME } from '../src/common/styles/theme';
 import BookingForm from '../src/pages/booking/components/BookingForm/BookingForm';
-import { ERROR_MESSAGE } from '../src/pages/booking/constants/errorMessage';
 
 const renderBookingForm = (handleBookingButtonClick: () => void) => {
   return render(

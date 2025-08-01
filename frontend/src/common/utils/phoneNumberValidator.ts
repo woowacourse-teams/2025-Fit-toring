@@ -1,4 +1,4 @@
-import { ERROR_MESSAGE } from '../../pages/booking/constants/errorMessage';
+import { ERROR_MESSAGE } from '../constants/errorMessage';
 
 const VALID_PHONE_NUMBER_LENGTH = 11;
 
