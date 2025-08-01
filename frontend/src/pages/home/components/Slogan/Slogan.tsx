@@ -4,13 +4,9 @@ function Slogan() {
   return (
     <StyledContainer>
       <StyledTitle>
-        내가 알고 싶은 운동 & 식단, <StyledStrong>핏토링</StyledStrong>에서
-        물어봐요!
+        내가 알고 싶은 운동 & 식단, <StyledStrong>온라인</StyledStrong>으로
+        편하게 물어봐요!
       </StyledTitle>
-      <StyledDescription>
-        전문 트레이너와 운동 애호가들로부터 15분 단위로 합리적인 비용의 1회성
-        멘토링을 받아보세요
-      </StyledDescription>
     </StyledContainer>
   );
 }
@@ -37,22 +33,14 @@ const StyledContainer = styled.section`
 `;
 
 const StyledTitle = styled.h1`
-  width: 23.2rem;
+  width: 27.2rem;
 
   color: ${({ theme }) => theme.FONT.B01};
   text-align: center;
-  ${({ theme }) => theme.TYPOGRAPHY.H2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.H1_R}
 `;
 
 const StyledStrong = styled.strong`
   color: ${({ theme }) => theme.SYSTEM.MAIN600};
-`;
-
-const StyledDescription = styled.p`
-  width: 28.2rem;
-
-  color: ${({ theme }) => theme.FONT.B03};
-  text-align: center;
-
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.H1_B}
 `;
