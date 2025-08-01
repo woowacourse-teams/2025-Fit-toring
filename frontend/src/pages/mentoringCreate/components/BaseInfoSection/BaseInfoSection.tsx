@@ -6,7 +6,7 @@ import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 function BaseInfoSection() {
   return (
-    <>
+    <div>
       <TitleSeparator>기본 정보</TitleSeparator>
       <StyledFormFieldWrapper>
         <FormField label="이름 *" htmlFor="name">
@@ -19,7 +19,7 @@ function BaseInfoSection() {
           <Input placeholder="010-1234-5678" type="tel" id="phone" required />
         </FormField>
       </StyledFormFieldWrapper>
-    </>
+    </div>
   );
 }
 
