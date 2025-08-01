@@ -6,9 +6,9 @@ import { apiClient } from '../../../../common/apis/apiClient';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
+import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
-import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
-import { getPhoneNumberErrorMessage } from '../../utils/phoneNumberValidator';
+import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
 import type { BookingResponse } from '../../types/BookingResponse';
@@ -60,6 +60,9 @@ function BookingForm({
     e.preventDefault();
 
     handleBooking();
+
+    // 이때 입력하지 않은 것들에 대한 유효성검사 돌아가고 errorMessage 화면에 노출
+    // 유효성검사를 트리거 시켜야함.
   };
 
   return (

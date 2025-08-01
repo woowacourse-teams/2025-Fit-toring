@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useRef, useState } from 'react';
 
-import { getFormattedPhoneNumber } from '../utils/getFormattedPhoneNumber ';
+import { getFormattedPhoneNumber } from '../../pages/booking/utils/getFormattedPhoneNumber ';
 
 const useFormattedPhoneNumber = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
