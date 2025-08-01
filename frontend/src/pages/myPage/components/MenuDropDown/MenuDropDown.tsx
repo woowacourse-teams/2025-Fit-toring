@@ -51,7 +51,12 @@ function MenuDropDown() {
 export default MenuDropDown;
 
 const StyledContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
+
+  width: 5rem;
 `;
 
 const StyledMenuButton = styled.button`
@@ -61,7 +66,6 @@ const StyledMenuButton = styled.button`
 
   width: 3.8rem;
   height: 3.8rem;
-  margin-right: 2rem;
   padding: 0;
   border: none;
 
@@ -80,7 +84,7 @@ const StyledMenuList = styled.ul<{ opened: boolean }>`
   visibility: ${({ opened }) => (opened ? 'visible' : 'hidden')};
   position: absolute;
   top: 100%;
-  right: 2rem;
+  right: 1rem;
   z-index: 50;
 
   width: 20rem;
