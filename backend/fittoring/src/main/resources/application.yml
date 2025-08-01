@@ -21,3 +21,17 @@ sms:
   timeout:
     connect: 1_200
     read: 5_000
+logging:
+  file:
+    name: /logs/application.log
+  level:
+    root: INFO
+    fittoring.mentoring: DEBUG
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"
+  logback:
+    rollingpolicy:
+      file-name-pattern: logs/application.%d{yyyy-MM}.%i.log
+      max-history: 2
+      max-file-size: 10MB

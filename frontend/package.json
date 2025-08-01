@@ -10,7 +10,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "lint": "eslint './src/**/*.{js,jsx,ts,tsx}' --fix",
-    "styled": "stylelint './src/**/*.tsx' --fix",
+    "styled": "stylelint \"./src/**/*.tsx\" --fix",
     "chromatic": "npx chromatic"
   },
   "keywords": [],

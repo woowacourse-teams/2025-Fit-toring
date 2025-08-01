@@ -24,26 +24,27 @@ export default SignupIntro;
 
 const StyledContainer = styled.div`
   display: flex;
-  align-items: center;
   flex-direction: column;
-
-  background-color: white;
-  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.LIGHT};
+  align-items: center;
+  gap: 3.2rem;
 
   padding-top: 3.2rem;
   padding-bottom: 1.8rem;
-  gap: 3.2rem;
+  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.LIGHT};
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
 const StyledImgWrapper = styled.div`
   display: flex;
-  height: 64px;
-  width: 64px;
   align-items: center;
   justify-content: center;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 120, 111, 0.2);
   overflow: hidden;
+
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: 1.6rem;
+  box-shadow: 0 4px 12px rgb(0 120 111 / 20%);
 `;
 
 const StyledImg = styled.img`
@@ -54,9 +55,9 @@ const StyledImg = styled.img`
 
 const StyledInfoTextWrapper = styled.div`
   display: flex;
-  gap: 1.1rem;
   flex-direction: column;
   align-items: center;
+  gap: 1.1rem;
 `;
 
 const StlyedWelcome = styled.p`

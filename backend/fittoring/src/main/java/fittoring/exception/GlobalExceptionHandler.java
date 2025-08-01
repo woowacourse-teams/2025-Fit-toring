@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     }
 
     private void logServerError(Exception e) {
-        log.error("ERROR: [{}], [{}]", e.getMessage(), (Object) e.getStackTrace());
+        log.error("[{}], [{}]", e.getMessage(), e.getStackTrace());
     }
 
     @ExceptionHandler(SmsException.class)
