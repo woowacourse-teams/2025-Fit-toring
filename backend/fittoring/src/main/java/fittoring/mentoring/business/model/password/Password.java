@@ -1,6 +1,7 @@
 package fittoring.mentoring.business.model.password;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.MisMatchPasswordException;
 import fittoring.mentoring.business.exception.PasswordEncryptionException;
 import fittoring.mentoring.infra.HexEncoder;
 import jakarta.persistence.Embeddable;
@@ -37,5 +38,15 @@ public class Password {
         } catch (NoSuchAlgorithmException e) {
             throw new PasswordEncryptionException(BusinessErrorMessage.PASSWORD_ENCRYPTION_FAILED.getMessage());
         }
+    }
+
+    public void validateMatches(String password) {
+        if (isNotMatches(password)) {
+            throw new MisMatchPasswordException(BusinessErrorMessage.MIS_MATCH_PASSWORD.getMessage());
+        }
+    }
+
+    private boolean isNotMatches(String password) {
+        return !encrypt(password).equals(this.password);
     }
 }
