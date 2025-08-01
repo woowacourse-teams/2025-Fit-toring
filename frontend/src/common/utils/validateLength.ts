@@ -5,5 +5,5 @@ interface ValidateParams {
 }
 
 export const validateLength = ({ min, max, value }: ValidateParams) => {
-  return value.length > min && value.length < max;
+  return value.length >= min && value.length <= max;
 };
