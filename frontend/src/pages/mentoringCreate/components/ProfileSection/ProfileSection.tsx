@@ -1,13 +1,40 @@
+import { useState } from 'react';
 
 import styled from '@emotion/styled';
 
 import uploadIcon from '../../../../common/assets/images/uploadIcon.svg';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 function ProfileSection() {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const fileUrl = URL.createObjectURL(file);
+    setPreviewUrl(fileUrl);
+  };
   return (
     <section>
       <TitleSeparator>프로필 사진</TitleSeparator>
       <StyledProfileWrapper htmlFor="profileImage">
+        {previewUrl ? (
+          <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
+        ) : (
+          <>
+            <StyledHiddenInput
+              type="file"
+              accept="image/*"
+              id="profileImage"
+              onChange={handleImageChange}
+            />
+
+            <StyledContentWrapper>
+              <StyledUploadIcon src={uploadIcon} alt="업로드 아이콘" />
+              {/* TODO: 드래그를 통한 업로드 기능 추가 */}
               <StyledGuideText>
                 <strong>클릭하여 업로드</strong> 또는 파일을 드래그 하세요
               </StyledGuideText>{' '}
@@ -16,10 +43,14 @@ function ProfileSection() {
               </StyledFileTypeText>
             </StyledContentWrapper>
           </>
+        )}
       </StyledProfileWrapper>
     </section>
   );
 }
+
+export default ProfileSection;
+
 const StyledProfileWrapper = styled.label`
   display: flex;
   flex-direction: column;
@@ -46,6 +77,14 @@ const StyledContentWrapper = styled.div`
 
   width: 100%;
   height: 100%;
+`;
+
+const StyledPreviewImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  border-radius: 16px;
 `;
 
 const StyledGuideText = styled.p`
