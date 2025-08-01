@@ -35,10 +35,13 @@ const useUserIdInput = () => {
     return '';
   };
 
+  const errorMessage = getUserIdErrorMessage();
+
   return {
     userId,
-    errorMessage: getUserIdErrorMessage(),
+    errorMessage,
     handleUserIdChange,
+    isValid: userId !== '' && errorMessage === '',
   };
 };
 

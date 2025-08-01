@@ -48,13 +48,19 @@ const usePasswordInput = () => {
     return '';
   };
 
+  const passwordErrorMessage = getPasswordErrorMessage();
+  const passwordConfirmErrorMessage = getPasswordConfirmError();
+
   return {
     password,
     passwordConfirm,
     handlePasswordChange,
     handlePasswordConfirmChange,
-    passwordErrorMessage: getPasswordErrorMessage(),
+    passwordErrorMessage,
     passwordConfirmErrorMessage: getPasswordConfirmError(),
+    isPasswordValid: password !== '' && passwordErrorMessage === '',
+    isPasswordConfrimValid:
+      passwordConfirm !== '' && passwordConfirmErrorMessage === '',
   };
 };
 

@@ -30,7 +30,12 @@ const useNameInput = () => {
 
   const errorMessage = getNameErrorMessage();
 
-  return { name, handleNameChange, errorMessage };
+  return {
+    name,
+    handleNameChange,
+    errorMessage,
+    isValid: name !== '' && errorMessage === '',
+  };
 };
 
 export default useNameInput;

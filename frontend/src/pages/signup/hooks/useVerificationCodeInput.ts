@@ -29,10 +29,13 @@ const useVerificationCodeInput = () => {
     return '';
   };
 
+  const errorMessage = getVerificationCodeErrorMessage();
+
   return {
     verificationCode,
     handleVerificationCodeChange,
-    errorMessage: getVerificationCodeErrorMessage(),
+    errorMessage,
+    isValid: verificationCode !== '' && errorMessage === '',
   };
 };
 
