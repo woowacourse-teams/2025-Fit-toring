@@ -1,6 +1,6 @@
 package fittoring.mentoring.infra;
 
-import fittoring.mentoring.business.model.PhoneNumber;
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.infra.exception.InfraErrorMessage;
 import fittoring.mentoring.infra.exception.SmsException;
 import java.io.IOException;
@@ -65,7 +65,7 @@ class SmsRestClientServiceTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(to, text, subject))
+        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(new Phone(to), text, subject))
                 .isInstanceOf(SmsException.class)
                 .hasMessage(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
     }
@@ -81,7 +81,7 @@ class SmsRestClientServiceTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(to, text, subject))
+        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(new Phone(to), text, subject))
                 .isInstanceOf(SmsException.class)
                 .hasMessage(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
     }
@@ -92,12 +92,12 @@ class SmsRestClientServiceTest {
         // given
         mockWebServer.enqueue(new MockResponse().setResponseCode(400).setBody("Bad Request"));
         String to = "010-1234-5678";
-        PhoneNumber toPhoneNumber = new PhoneNumber(to);
+        Phone toPhone = new Phone(to);
         String text = "Test Message";
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(toPhoneNumber, text))
+        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(toPhone, text))
                 .isInstanceOf(SmsException.class)
                 .hasMessage(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
     }
@@ -108,12 +108,12 @@ class SmsRestClientServiceTest {
         // given
         mockWebServer.enqueue(new MockResponse().setResponseCode(500).setBody("Internal Server Error"));
         String to = "010-1234-5678";
-        PhoneNumber toPhoneNumber = new PhoneNumber(to);
+        Phone toPhone = new Phone(to);
         String text = "Test Message";
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(toPhoneNumber, text))
+        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(toPhone, text))
                 .isInstanceOf(SmsException.class)
                 .hasMessage(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
     }

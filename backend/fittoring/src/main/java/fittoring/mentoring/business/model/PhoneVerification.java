@@ -25,7 +25,7 @@ public class PhoneVerification {
     private Long id;
 
     @Embedded
-    private PhoneNumber phone;
+    private Phone phone;
 
     @Column(nullable = false)
     private String code;
@@ -33,7 +33,7 @@ public class PhoneVerification {
     @Column(nullable = false)
     private LocalDateTime expireAt;
 
-    public PhoneVerification(PhoneNumber phone, String code, LocalDateTime expireAt) {
+    public PhoneVerification(Phone phone, String code, LocalDateTime expireAt) {
         this(null, phone, code, expireAt);
     }
 

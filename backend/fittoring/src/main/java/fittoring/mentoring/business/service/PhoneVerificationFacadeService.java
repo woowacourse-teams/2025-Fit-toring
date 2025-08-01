@@ -1,6 +1,6 @@
 package fittoring.mentoring.business.service;
 
-import fittoring.mentoring.business.model.PhoneNumber;
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.infra.SmsRestClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class PhoneVerificationFacadeService {
     private final SmsRestClientService smsRestClientService;
 
     public void sendPhoneVerificationCode(String phoneNumber) {
-        PhoneNumber phone = new PhoneNumber(phoneNumber);
+        Phone phone = new Phone(phoneNumber);
         String code = phoneVerificationService.createPhoneVerification(phone);
         smsRestClientService.sendSms(phone, VERIFICATION_MESSAGE_PREFIX + code + VERIFICATION_MESSAGE_SUFFIX);
     }

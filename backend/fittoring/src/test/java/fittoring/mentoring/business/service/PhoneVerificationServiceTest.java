@@ -1,6 +1,6 @@
 package fittoring.mentoring.business.service;
 
-import fittoring.mentoring.business.model.PhoneNumber;
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
 import fittoring.mentoring.infra.VerificationCodeGenerator;
 import fittoring.util.DbCleaner;
@@ -23,7 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({DbCleaner.class, PhoneVerificationService.class, VerificationCodeGenerator.class})
 @DataJpaTest
-class PhoneNumberVerificationServiceTest {
+class PhoneVerificationServiceTest {
 
     @Autowired
     private PhoneVerificationService phoneVerificationService;
@@ -41,14 +41,14 @@ class PhoneNumberVerificationServiceTest {
 
     @DisplayName("전화번호 인증번호 발급")
     @Nested
-    class CreatePhoneNumberVerification {
+    class CreatePhoneVerification {
 
         @DisplayName("인증번호를 발급한다.")
         @Test
         void createVerificationCode() {
             // given
             String phoneNumber = "010-1234-5678";
-            PhoneNumber phone = new PhoneNumber(phoneNumber);
+            Phone phone = new Phone(phoneNumber);
 
             // when
             String phoneVerificationCode = phoneVerificationService.createPhoneVerification(phone);
@@ -70,7 +70,7 @@ class PhoneNumberVerificationServiceTest {
         void deleteExpiredVerification() {
             // given
             String phoneNumber = "010-1234-5678";
-            PhoneNumber phone = new PhoneNumber(phoneNumber);
+            Phone phone = new Phone(phoneNumber);
             LocalDateTime expireTime = LocalDateTime.now().plusMinutes(3);
             PhoneVerification expectedExpireVerification = new PhoneVerification(
                     phone,
