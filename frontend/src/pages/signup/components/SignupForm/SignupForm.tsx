@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 import Button from '../../../../common/components/Button/Button';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import usePasswordInput from '../../hooks/usePasswordInput';
+import useUserIdInput from '../../hooks/useUserIdInput';
 import PasswordFields from '../PasswordFields/PasswordFields';
 import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
@@ -33,6 +34,12 @@ function SignupForm() {
     handlePasswordConfirmChange,
   } = usePasswordInput();
 
+  const {
+    userId,
+    handleUserIdChange,
+    errorMessage: userIdErrorMessage,
+  } = useUserIdInput();
+
   const isFormValid = () => {
     return false;
   };
@@ -47,7 +54,11 @@ function SignupForm() {
           gender={gender}
           handleGenderChange={handleGenderChange}
         />
-        <UserIdField />
+        <UserIdField
+          userId={userId}
+          handleUserIdChange={handleUserIdChange}
+          errorMessage={userIdErrorMessage}
+        />
         <PasswordFields
           password={password}
           passwordConfirm={passwordConfirm}
