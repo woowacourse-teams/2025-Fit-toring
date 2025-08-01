@@ -43,6 +43,7 @@ function PasswordFields() {
 }
 
 export default PasswordFields;
+
 const StyledInputWithIconWrapper = styled.div<{ errored?: boolean }>`
   position: relative;
 `;
