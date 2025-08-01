@@ -1,3 +1,5 @@
+import { userEvent, within } from 'storybook/internal/test';
+
 import MenuDropDown from './MenuDropDown';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -32,5 +34,16 @@ export const Default: Story = {
           'MenuDropDown 컴포넌트는 마이 페이지의 메뉴를 구성합니다. 사용자가 메뉴 버튼을 클릭하면 드롭다운 메뉴가 열리고, 각 메뉴 항목을 선택할 수 있습니다. 선택된 메뉴 항목은 강조 표시됩니다.',
       },
     },
+  },
+};
+
+export const Opened: Story = {
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step('메뉴 버튼 클릭', async () => {
+      const menuButton = canvas.getByRole('button');
+      await userEvent.click(menuButton);
+    });
   },
 };
