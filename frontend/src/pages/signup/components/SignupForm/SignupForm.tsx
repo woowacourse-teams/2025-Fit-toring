@@ -69,14 +69,6 @@ function SignupForm() {
       isVerificationCodeValid,
     ];
 
-    console.log(
-      isNameValid,
-      isUserIdValid,
-      isPasswordValid,
-      isPasswordConfrimValid,
-      phoneNumber !== '' && phoneNumberErrorMessage === '',
-      isVerificationCodeValid,
-    );
     return validations.every(Boolean);
   };
 
