@@ -13,7 +13,10 @@ function MyProfile() {
 
   return (
     <StyledContainer>
-      <h2>멘토링 활동 내역을 확인하고 개인정보를 관리하세요.</h2>
+      <StyledIntro>
+        멘토링 활동 내역을 확인하고 개인정보를 관리하세요.
+      </StyledIntro>
+
       <div>
         <img src={img} alt="Profile" />
         <p>이름: {name}</p>
@@ -30,8 +33,13 @@ const StyledContainer = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2rem;
 
   height: 100%;
   padding: 2rem;
-  border-radius: 8px;
+`;
+
+const StyledIntro = styled.h2`
+  color: ${({ theme }) => theme.FONT.B03};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
