@@ -2,6 +2,7 @@ package fittoring.mentoring.business.model.password;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.PasswordEncryptionException;
+import fittoring.mentoring.infra.HexEncoder;
 import jakarta.persistence.Embeddable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,14 +33,7 @@ public class Password {
             MessageDigest md = MessageDigest.getInstance(algorithm);
             byte[] bytes = password.getBytes();
             byte[] digest = md.digest(bytes);
-
-            StringBuilder hex = new StringBuilder();
-
-            for (byte b : digest) {
-                hex.append(String.format("%02x", b));
-            }
-            return hex.toString();
-
+            return HexEncoder.convertHex(digest);
         } catch (NoSuchAlgorithmException e) {
             throw new PasswordEncryptionException(BusinessErrorMessage.PASSWORD_ENCRYPTION_FAILED.getMessage());
         }
