@@ -32,14 +32,14 @@ public class PhoneVerificationService {
         return code;
     }
 
-    private LocalDateTime calculateExpiredTime() {
-        return LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-                .plusMinutes(EXPIRE_TIME);
-    }
-
     private void deleteExpiredVerification(Phone phone) {
         if (phoneVerificationRepository.existsByPhone(phone)) {
             phoneVerificationRepository.deleteByPhone(phone);
         }
+    }
+
+    private LocalDateTime calculateExpiredTime() {
+        return LocalDateTime.now(ZoneId.of("Asia/Seoul"))
+                .plusMinutes(EXPIRE_TIME);
     }
 }

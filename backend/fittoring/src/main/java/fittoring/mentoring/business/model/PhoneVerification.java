@@ -10,8 +10,10 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "phone_verification")
@@ -34,5 +36,9 @@ public class PhoneVerification {
 
     public PhoneVerification(Phone phone, String code, LocalDateTime expireAt) {
         this(null, phone, code, expireAt);
+    }
+
+    public String getPhoneNumber() {
+        return this.phone.getNumber();
     }
 }
