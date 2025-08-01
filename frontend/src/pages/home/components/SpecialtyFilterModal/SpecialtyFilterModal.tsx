@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
+import { getSpecialties } from '../../../../common/apis/getSpecialties';
 import Modal from '../../../../common/components/Modal/Modal';
-import { getSpecialties } from '../../apis/getSpecialties';
 import SpecialtyCheckbox from '../SpecialtyCheckbox/SpecialtyCheckbox';
 
-import type { Specialty } from '../../types/Specialty';
+import type { Specialty } from '../../../../common/types/Specialty';
 
 const MAX_SPECIALTIES = 3;
 
