@@ -5,13 +5,33 @@ import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 
-function PhoneFields() {
+interface PhoneFieldsProps {
+  phoneNumber: string;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  handlePhoneNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  phoneNumberErrorMessage: string;
+}
+
+function PhoneFields({
+  phoneNumber,
+  inputRef,
+  handlePhoneNumberChange,
+  phoneNumberErrorMessage,
+}: PhoneFieldsProps) {
   return (
     <>
-      <FormField label="전화번호 *">
+      <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
         <StyledInputAndBtnWrapper>
           <div className="input-wrapper">
-            <Input id="phone" placeholder="010-1234-5678" type="tel" />
+            <Input
+              id="phone"
+              placeholder="010-1234-5678"
+              type="tel"
+              value={phoneNumber}
+              ref={inputRef}
+              onChange={handlePhoneNumberChange}
+              errored={phoneNumberErrorMessage !== ''}
+            />
           </div>
           <Button type="button" customStyle={buttonCustomStyle}>
             인증요청

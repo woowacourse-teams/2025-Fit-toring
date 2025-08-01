@@ -4,7 +4,9 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import Button from '../../../../common/components/Button/Button';
+import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
+import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import usePasswordInput from '../../hooks/usePasswordInput';
 import useUserIdInput from '../../hooks/useUserIdInput';
 import PasswordFields from '../PasswordFields/PasswordFields';
@@ -40,6 +42,11 @@ function SignupForm() {
     errorMessage: userIdErrorMessage,
   } = useUserIdInput();
 
+  const { phoneNumber, inputRef, handlePhoneNumberChange } =
+    useFormattedPhoneNumber();
+
+  const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
+
   const isFormValid = () => {
     return false;
   };
@@ -67,7 +74,12 @@ function SignupForm() {
           handlePasswordChange={handlePasswordChange}
           handlePasswordConfirmChange={handlePasswordConfirmChange}
         />
-        <PhoneFields />
+        <PhoneFields
+          phoneNumber={phoneNumber}
+          inputRef={inputRef}
+          handlePhoneNumberChange={handlePhoneNumberChange}
+          phoneNumberErrorMessage={phoneNumberErrorMessage}
+        />
       </StyledFormFields>
       <Button
         variant={isFormValid() ? 'primary' : 'disabled'}
