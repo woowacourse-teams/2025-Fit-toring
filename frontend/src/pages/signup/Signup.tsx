@@ -1,3 +1,4 @@
+import SignupForm from './components/SignupForm/SignupForm';
 import SignupHeader from './components/SignupHeader/SignupHeader';
 import SignupIntro from './components/SignupIntro/SignupIntro';
 
@@ -6,6 +7,7 @@ function Signup() {
     <div>
       <SignupHeader />
       <SignupIntro />
+      <SignupForm />
     </div>
   );
 }
