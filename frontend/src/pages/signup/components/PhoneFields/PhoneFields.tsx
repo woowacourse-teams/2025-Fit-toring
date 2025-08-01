@@ -33,6 +33,7 @@ function PhoneFields({
           <div className="input-wrapper">
             <Input
               id="phone"
+              name="phone"
               placeholder="010-1234-5678"
               type="tel"
               value={phoneNumber}
@@ -54,6 +55,7 @@ function PhoneFields({
           <div className="input-wrapper">
             <Input
               id="verificationCode"
+              name="verificationCode"
               placeholder="123456"
               type="tel"
               value={verificationCode}

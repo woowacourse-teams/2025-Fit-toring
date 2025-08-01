@@ -25,6 +25,7 @@ function UserIdField({
           <Input
             id="id"
             placeholder="fittoring"
+            name="id"
             value={userId}
             onChange={handleUserIdChange}
             errored={errorMessage !== ''}

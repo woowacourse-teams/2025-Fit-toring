@@ -32,6 +32,7 @@ function PasswordFields({
         <StyledInputWithIconWrapper>
           <StyledInput
             id="password"
+            name="password"
             placeholder="5자이상 15자이하 입력하세요"
             type={passwordVisible ? 'text' : 'password'}
             value={password}
@@ -50,6 +51,7 @@ function PasswordFields({
         <StyledInputWithIconWrapper>
           <StyledInput
             id="passwordConfrim"
+            name="passwordConfrim"
             placeholder="비밀번호를 다시 입력하세요"
             type={passwordConfrimVisible ? 'text' : 'password'}
             value={passwordConfirm}
