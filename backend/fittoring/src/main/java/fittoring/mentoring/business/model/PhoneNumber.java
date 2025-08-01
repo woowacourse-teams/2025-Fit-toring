@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
-public class Phone {
+public class PhoneNumber {
 
     @Column(name = "phone", nullable = false)
     private String number;
 
-    public Phone(String phoneNumber) {
+    public PhoneNumber(String phoneNumber) {
         validate(phoneNumber);
         this.number = phoneNumber;
     }

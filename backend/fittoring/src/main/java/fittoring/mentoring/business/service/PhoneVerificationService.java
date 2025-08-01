@@ -1,6 +1,6 @@
 package fittoring.mentoring.business.service;
 
-import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.PhoneNumber;
 import fittoring.mentoring.business.model.PhoneVerification;
 import fittoring.mentoring.business.repository.PhoneVerificationRepository;
 import java.time.LocalDateTime;
@@ -19,12 +19,12 @@ public class PhoneVerificationService {
     private final CodeGenerator codeGenerator;
 
     @Transactional
-    public String createPhoneVerification(Phone phone) {
-        deleteExpiredVerification(phone);
+    public String createPhoneVerification(PhoneNumber phoneNumber) {
+        deleteExpiredVerification(phoneNumber);
         String code = codeGenerator.generate();
         LocalDateTime expiredDateTime = calculateExpiredTime();
         PhoneVerification phoneVerification = new PhoneVerification(
-                phone,
+                phoneNumber,
                 code,
                 expiredDateTime
         );
@@ -32,9 +32,9 @@ public class PhoneVerificationService {
         return code;
     }
 
-    private void deleteExpiredVerification(Phone phone) {
-        if (phoneVerificationRepository.existsByPhone(phone)) {
-            phoneVerificationRepository.deleteByPhone(phone);
+    private void deleteExpiredVerification(PhoneNumber phoneNumber) {
+        if (phoneVerificationRepository.existsByPhone(phoneNumber)) {
+            phoneVerificationRepository.deleteByPhone(phoneNumber);
         }
     }
 

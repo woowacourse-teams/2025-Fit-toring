@@ -1,6 +1,6 @@
 package fittoring.mentoring.infra;
 
-import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.PhoneNumber;
 import fittoring.mentoring.business.service.dto.LongSmsSendClientDto;
 import fittoring.mentoring.business.service.dto.ShortSmsSendClientDto;
 import fittoring.mentoring.infra.exception.InfraErrorMessage;
@@ -45,12 +45,12 @@ public class SmsRestClientService {
                 .body(String.class);
     }
 
-    public void sendSms(Phone toPhone, String text) {
+    public void sendSms(PhoneNumber toPhoneNumber, String text) {
         smsRestClient.post()
                 .uri(SEND_MESSAGE_ENDPOINT)
                 .header("Authorization", authHeaderGenerator.createAuthorization())
                 .body(Map.of("messages", List.of(new ShortSmsSendClientDto(
-                        toPhone.getNumber(),
+                        toPhoneNumber.getNumber(),
                         fromPhone,
                         text
                 ))))

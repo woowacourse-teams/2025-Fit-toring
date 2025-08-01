@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class PhoneTest {
+class PhoneNumberTest {
 
     @DisplayName("형식에 맞지 않으면 전화번호가 생성 시 예외가 발생한다.")
     @Test
@@ -16,7 +16,7 @@ class PhoneTest {
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> new Phone(phoneNumber))
+        Assertions.assertThatThrownBy(() -> new PhoneNumber(phoneNumber))
                 .isInstanceOf(InvalidPhoneException.class)
                 .hasMessage(BusinessErrorMessage.PHONE_INVALID + phoneNumber);
     }
@@ -28,7 +28,7 @@ class PhoneTest {
 
         // when
         // then
-        Assertions.assertThatCode(() -> new Phone(phoneNumber))
+        Assertions.assertThatCode(() -> new PhoneNumber(phoneNumber))
                 .doesNotThrowAnyException();
     }
 }
