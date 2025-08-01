@@ -6,6 +6,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import reactPlugin from 'eslint-plugin-react';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -38,6 +39,7 @@ export default defineConfig([
       'react-refresh': reactRefresh,
       import: importPlugin,
       'unused-imports': unusedImportPlugin,
+      react: reactPlugin,
     },
 
     languageOptions: {
@@ -59,6 +61,7 @@ export default defineConfig([
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-var': 'error',
       'prefer-const': 'error',
+      'react/self-closing-comp': 'error',
 
       eqeqeq: ['error', 'always'],
       'prefer-arrow-callback': 'warn',
