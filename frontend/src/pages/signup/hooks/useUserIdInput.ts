@@ -5,10 +5,10 @@ import { ERROR_MESSAGE } from '../constants/errorMessage';
 import { ID } from '../constants/id';
 
 const useUserIdInput = () => {
-  const [userId, setUserIdId] = useState('');
+  const [userId, setUserId] = useState('');
 
   const handleUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserIdId(e.target.value);
+    setUserId(e.target.value);
   };
 
   const getUserIdErrorMessage = () => {
