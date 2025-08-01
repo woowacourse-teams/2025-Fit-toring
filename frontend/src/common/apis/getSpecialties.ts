@@ -1,5 +1,6 @@
-import { apiClient } from '../../../common/apis/apiClient';
-import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
+import { API_ENDPOINTS } from '../constants/apiEndpoints';
+
+import { apiClient } from './apiClient';
 
 import type { Specialty } from '../types/Specialty';
 
