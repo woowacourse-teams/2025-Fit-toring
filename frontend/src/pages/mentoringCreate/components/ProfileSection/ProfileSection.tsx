@@ -22,7 +22,15 @@ function ProfileSection() {
       <TitleSeparator>프로필 사진</TitleSeparator>
       <StyledProfileWrapper>
         {previewUrl ? (
-          <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
+          <>
+            <StyledHiddenInput
+              type="file"
+              accept="image/*"
+              id="profileImage"
+              onChange={handleImageChange}
+            />
+            <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
+          </>
         ) : (
           <>
             <StyledHiddenInput
