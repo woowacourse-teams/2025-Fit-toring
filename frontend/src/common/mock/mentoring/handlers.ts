@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-import { MENTORINGS } from '../data/mentorings';
+import { MENTORINGS } from './data';
 
 export const testStateStore = {
   shouldFailCart: false,
