@@ -19,6 +19,13 @@ spring:
   web:
     resources:
       add-mappings: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      path-mapping:
+        health: healthcheck
 sms:
   base-url: https://api.solapi.com
   timeout:
