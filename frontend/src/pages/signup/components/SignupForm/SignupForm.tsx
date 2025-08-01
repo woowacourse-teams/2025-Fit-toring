@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
@@ -15,6 +17,12 @@ function SignupForm() {
     errorMessage: nameErrorMessage,
   } = useNameInput();
 
+  const [gender, setGender] = useState('male');
+
+  const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGender(e.target.value);
+  };
+
   const isFormValid = () => {
     return false;
   };
@@ -26,6 +34,8 @@ function SignupForm() {
           name={name}
           nameErrorMessage={nameErrorMessage}
           handleNameChange={handleNameChange}
+          gender={gender}
+          handleGenderChange={handleGenderChange}
         />
         <UserIdField />
         <PasswordFields />
