@@ -121,8 +121,8 @@ const StyledRadio = styled.input`
 
 const StyledLabel = styled.label`
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 1rem;
 
   color: ${({ theme }) => theme.FONT.B02};
 
