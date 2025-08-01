@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PhoneVerificationFacade {
 
-    private final static String VERIFICATION_MESSAGE_PREFIX = "핏토링 인증번호는 [";
-    private final static String VERIFICATION_MESSAGE_SUFFIX = "]입니다.";
+    private static final String VERIFICATION_MESSAGE_PREFIX = "핏토링 인증번호는 [";
+    private static final String VERIFICATION_MESSAGE_SUFFIX = "] 입니다.";
 
     private final PhoneVerificationService phoneVerificationService;
     private final SmsRestClientService smsRestClientService;

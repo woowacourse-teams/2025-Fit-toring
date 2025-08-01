@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PhoneVerificationService {
 
+    public static final int EXPIRE_TIME = 3;
+
     private final PhoneVerificationRepository phoneVerificationRepository;
     private final CodeGenerator codeGenerator;
 
@@ -32,7 +34,7 @@ public class PhoneVerificationService {
 
     private LocalDateTime calculateExpiredTime() {
         return LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-                .plusMinutes(3);
+                .plusMinutes(EXPIRE_TIME);
     }
 
     private void deleteExpiredVerification(Phone phone) {
