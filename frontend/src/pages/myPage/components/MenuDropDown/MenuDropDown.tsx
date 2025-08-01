@@ -92,7 +92,7 @@ const StyledMenuList = styled.ul<{ opened: boolean }>`
   background-color: ${({ theme }) => theme.BG.WHITE};
   opacity: ${({ opened }) => (opened ? 1 : 0)};
   transform: ${({ opened }) =>
-    opened ? 'translateY(0)' : 'translateY(-10px)'};
+    opened ? 'translateY(0)' : 'translateY(-1rem)'};
   transition: all 0.2s ease;
 `;
 
