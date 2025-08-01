@@ -19,7 +19,7 @@ const usePasswordInput = () => {
   };
 
   const getPasswordErrorMessage = () => {
-    if (password.length === 0 || passwordConfirm.length === 0) {
+    if (password.length === 0) {
       return '';
     }
 
