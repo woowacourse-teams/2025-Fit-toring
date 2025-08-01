@@ -9,6 +9,7 @@ import useNameInput from '../../../../common/hooks/useNameInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import usePasswordInput from '../../hooks/usePasswordInput';
 import useUserIdInput from '../../hooks/useUserIdInput';
+import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
 import PasswordFields from '../PasswordFields/PasswordFields';
 import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
@@ -47,6 +48,12 @@ function SignupForm() {
 
   const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
 
+  const {
+    verificationCode,
+    handleVerificationCodeChange,
+    errorMessage: verificationCodeErrorMessage,
+  } = useVerificationCodeInput();
+
   const isFormValid = () => {
     return false;
   };
@@ -76,9 +83,12 @@ function SignupForm() {
         />
         <PhoneFields
           phoneNumber={phoneNumber}
-          inputRef={inputRef}
-          handlePhoneNumberChange={handlePhoneNumberChange}
+          verificationCode={verificationCode}
+          verificationCodeErrorMessage={verificationCodeErrorMessage}
           phoneNumberErrorMessage={phoneNumberErrorMessage}
+          handlePhoneNumberChange={handlePhoneNumberChange}
+          inputRef={inputRef}
+          handleVerificationCodeChange={handleVerificationCodeChange}
         />
       </StyledFormFields>
       <Button

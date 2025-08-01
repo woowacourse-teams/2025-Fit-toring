@@ -7,16 +7,24 @@ import Input from '../../../../common/components/Input/Input';
 
 interface PhoneFieldsProps {
   phoneNumber: string;
+  verificationCode: string;
   inputRef: React.RefObject<HTMLInputElement | null>;
   handlePhoneNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleVerificationCodeChange: (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
   phoneNumberErrorMessage: string;
+  verificationCodeErrorMessage: string;
 }
 
 function PhoneFields({
   phoneNumber,
+  verificationCode,
   inputRef,
   handlePhoneNumberChange,
+  handleVerificationCodeChange,
   phoneNumberErrorMessage,
+  verificationCodeErrorMessage,
 }: PhoneFieldsProps) {
   return (
     <>
@@ -38,10 +46,21 @@ function PhoneFields({
           </Button>
         </StyledInputAndBtnWrapper>
       </FormField>
-      <FormField label="인증번호 확인 *">
+      <FormField
+        label="인증번호 확인 *"
+        errorMessage={verificationCodeErrorMessage}
+      >
         <StyledInputAndBtnWrapper>
           <div className="input-wrapper">
-            <Input id="verificationCode" placeholder="123456" type="tel" />
+            <Input
+              id="verificationCode"
+              placeholder="123456"
+              type="tel"
+              value={verificationCode}
+              onChange={handleVerificationCodeChange}
+              errored={verificationCodeErrorMessage !== ''}
+              maxLength={6}
+            />
           </div>
           <Button type="button" customStyle={buttonCustomStyle}>
             인증하기
