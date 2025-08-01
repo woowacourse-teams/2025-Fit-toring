@@ -20,7 +20,7 @@ function ProfileSection() {
   return (
     <section>
       <TitleSeparator>프로필 사진</TitleSeparator>
-      <StyledProfileWrapper htmlFor="profileImage">
+      <StyledProfileWrapper>
         {previewUrl ? (
           <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
         ) : (
