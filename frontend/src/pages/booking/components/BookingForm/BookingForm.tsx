@@ -6,8 +6,8 @@ import { apiClient } from '../../../../common/apis/apiClient';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
+import useNameInput from '../../../../common/hooks/useNameInput';
 import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
-import useMenteeNameInput from '../../hooks/useMenteeNameInput';
 import { getPhoneNumberErrorMessage } from '../../utils/phoneNumberValidator';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
@@ -23,10 +23,10 @@ function BookingForm({
   mentoringId,
 }: BookingFormProps) {
   const {
-    menteeName,
-    handleMenteeNameChange,
+    name,
+    handleNameChange,
     errorMessage: menteeNameErrorMessage,
-  } = useMenteeNameInput();
+  } = useNameInput();
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
     useFormattedPhoneNumber();
@@ -45,7 +45,7 @@ function BookingForm({
       const response = await apiClient.post({
         endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.RESERVATION}`,
         searchParams: {
-          menteeName,
+          name,
           menteePhone: phoneNumber,
           content: counselContent,
         },
@@ -72,8 +72,8 @@ function BookingForm({
           <Input
             placeholder="홍길동"
             id="name"
-            value={menteeName}
-            onChange={handleMenteeNameChange}
+            value={name}
+            onChange={handleNameChange}
             errored={menteeNameErrorMessage !== ''}
             data-testid="mentee-name-input"
             required

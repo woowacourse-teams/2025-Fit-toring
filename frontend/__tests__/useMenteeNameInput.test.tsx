@@ -26,9 +26,7 @@ describe('BookingForm 검증', () => {
       const input = screen.getByTestId('mentee-name-input');
       await userEvent.type(input, '홍길동동동동');
 
-      const errorText = screen.getByText(
-        ERROR_MESSAGE.INVALID_MENTEE_NAME_LENGTH,
-      );
+      const errorText = screen.getByText(ERROR_MESSAGE.INVALID_NAME_LENGTH);
       expect(errorText).toBeInTheDocument();
     });
 
@@ -38,9 +36,7 @@ describe('BookingForm 검증', () => {
       const input = screen.getByTestId('mentee-name-input');
       await userEvent.type(input, '홍길동12');
 
-      const errorText = screen.getByText(
-        ERROR_MESSAGE.INVALID_MENTEE_NAME_CHARACTERS,
-      );
+      const errorText = screen.getByText(ERROR_MESSAGE.INVALID_NAME_CHARACTERS);
       expect(errorText).toBeInTheDocument();
     });
   });
