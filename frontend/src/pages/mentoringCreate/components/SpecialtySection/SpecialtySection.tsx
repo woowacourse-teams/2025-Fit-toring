@@ -8,14 +8,48 @@ import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { Specialty } from '../../../../common/types/Specialty';
 
+const MAX_SPECIALTIES = 3;
 
 function SpecialtySection() {
+  const [specialties, setSpecialties] = useState<Specialty[]>([]);
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+
+  const handleToggleSpecialtyTag = (title: string) => {
+    setSelectedSpecialties((prev) => {
+      return prev.includes(title)
+        ? prev.filter((item) => item !== title)
+        : [...prev, title];
+    });
+  };
+
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      try {
+        const data = await getSpecialties();
+        setSpecialties(data);
+      } catch (error) {
+        console.error('전문 분야 가져오기 실패:', error);
+      }
+    };
+
+    fetchSpecialties();
+  }, []);
 
   return (
     <section>
       <TitleSeparator>전문 분야</TitleSeparator>
       <StyledGuideText>최대 3개까지 등록 가능합니다.</StyledGuideText>
       <StyledSpecialtyWrapper>
+        {specialties.map((specialty) => (
+          <SpecialtyTag
+            key={specialty.id}
+            title={specialty.title}
+            onChange={() => handleToggleSpecialtyTag(specialty.title)}
+            disabled={
+              selectedSpecialties.length >= MAX_SPECIALTIES &&
+              !selectedSpecialties.includes(specialty.title)
+            }
+            checked={selectedSpecialties.includes(specialty.title)}
           />
         ))}
       </StyledSpecialtyWrapper>
