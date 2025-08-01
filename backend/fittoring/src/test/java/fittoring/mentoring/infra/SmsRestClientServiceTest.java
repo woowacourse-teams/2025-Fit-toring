@@ -1,5 +1,6 @@
 package fittoring.mentoring.infra;
 
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.infra.exception.InfraErrorMessage;
 import fittoring.mentoring.infra.exception.SmsException;
 import java.io.IOException;
@@ -53,7 +54,7 @@ class SmsRestClientServiceTest {
         mockWebServer.shutdown();
     }
 
-    @DisplayName("SMS 전송 실패 - 4xx 클라이언트 오류")
+    @DisplayName("장문 SMS 전송 실패 - 4xx 클라이언트 오류")
     @Test
     void sendSms_ClientError() {
         // given
@@ -69,7 +70,7 @@ class SmsRestClientServiceTest {
                 .hasMessage(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
     }
 
-    @DisplayName("SMS 전송 실패 - 5xx 서버 오류")
+    @DisplayName("장문 SMS 전송 실패 - 5xx 서버 오류")
     @Test
     void sendSms_ServerError() {
         // given
@@ -81,6 +82,38 @@ class SmsRestClientServiceTest {
         // when
         // then
         Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(to, text, subject))
+                .isInstanceOf(SmsException.class)
+                .hasMessage(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
+    }
+
+    @DisplayName("단문 SMS 전송 실패 - 4xx 클라이언트 오류")
+    @Test
+    void sendShortSms_ClientError() {
+        // given
+        mockWebServer.enqueue(new MockResponse().setResponseCode(400).setBody("Bad Request"));
+        String to = "010-1234-5678";
+        Phone toPhone = new Phone(to);
+        String text = "Test Message";
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(toPhone, text))
+                .isInstanceOf(SmsException.class)
+                .hasMessage(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
+    }
+
+    @DisplayName("단문 SMS 전송 실패 - 5xx 서버 오류")
+    @Test
+    void sendShortSms_ServerError() {
+        // given
+        mockWebServer.enqueue(new MockResponse().setResponseCode(500).setBody("Internal Server Error"));
+        String to = "010-1234-5678";
+        Phone toPhone = new Phone(to);
+        String text = "Test Message";
+
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(toPhone, text))
                 .isInstanceOf(SmsException.class)
                 .hasMessage(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
     }
