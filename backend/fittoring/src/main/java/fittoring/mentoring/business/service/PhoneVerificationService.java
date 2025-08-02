@@ -16,12 +16,12 @@ public class PhoneVerificationService {
     private static final int EXPIRE_TIME_MINUTE = 3;
 
     private final PhoneVerificationRepository phoneVerificationRepository;
-    private final CodeGenerator codeGenerator;
+    private final CodeGenerator verificationCodeGenerator;
 
     @Transactional
     public String createPhoneVerification(Phone phone) {
         deleteExpiredVerification(phone);
-        String code = codeGenerator.generate();
+        String code = verificationCodeGenerator.generate();
         LocalDateTime expiredDateTime = calculateExpiredTime();
         PhoneVerification phoneVerification = new PhoneVerification(
                 phone,

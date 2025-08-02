@@ -2,7 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
-import fittoring.mentoring.infra.VerificationCodeGenerator;
+import fittoring.mentoring.infra.CodeGeneratorStub;
 import fittoring.util.DbCleaner;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, PhoneVerificationService.class, VerificationCodeGenerator.class})
+@Import({DbCleaner.class, PhoneVerificationService.class, CodeGeneratorStub.class})
 @DataJpaTest
 class PhoneVerificationServiceTest {
 
