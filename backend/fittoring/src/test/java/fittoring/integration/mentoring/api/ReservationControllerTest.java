@@ -41,7 +41,6 @@ class ReservationControllerTest {
     @MockitoBean
     private SmsRestClientService smsRestClientService;
 
-
     @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
 
@@ -70,7 +69,7 @@ class ReservationControllerTest {
         doNothing()
                 .when(smsRestClientService)
                 .sendSms(
-                        new Phone(ArgumentMatchers.anyString()),
+                        ArgumentMatchers.any(Phone.class),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString()
                 );
@@ -130,7 +129,7 @@ class ReservationControllerTest {
         doNothing()
                 .when(smsRestClientService)
                 .sendSms(
-                        new Phone(ArgumentMatchers.anyString()),
+                        ArgumentMatchers.any(Phone.class),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString()
                 );
@@ -179,7 +178,7 @@ class ReservationControllerTest {
         doNothing()
                 .when(smsRestClientService)
                 .sendSms(
-                        new Phone(ArgumentMatchers.anyString()),
+                        ArgumentMatchers.any(Phone.class),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString()
                 );
