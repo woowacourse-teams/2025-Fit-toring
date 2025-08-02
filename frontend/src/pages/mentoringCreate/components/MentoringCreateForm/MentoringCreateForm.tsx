@@ -1,11 +1,13 @@
 import styled from '@emotion/styled';
 
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
+import ProfileSection from '../ProfileSection/ProfileSection';
 
 function MentoringCreateForm() {
   return (
     <StyledContainer>
       <BaseInfoSection />
+      <ProfileSection />
     </StyledContainer>
   );
 }
@@ -15,6 +17,7 @@ export default MentoringCreateForm;
 const StyledContainer = styled.form`
   display: flex;
   flex-direction: column;
+  gap: 3.2rem;
 
   width: 100%;
   height: 100%;
