@@ -19,7 +19,7 @@ public record MentoringSummaryResponse(
                 mentoringResponse.categories(),
                 mentoringResponse.price(),
                 mentoringResponse.career(),
-                mentoringResponse.imageUrl(),
+                mentoringResponse.profileImageUrl(),
                 mentoringResponse.introduction()
         );
     }

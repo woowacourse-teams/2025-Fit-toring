@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface CategoryRepository extends ListCrudRepository<Category, Long> {
 
     boolean existsByTitle(String title);
+
+    Category findByTitle(String title);
 }
