@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 
+import CertificateInput from '../CertificateInput/CertificateInput';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 function CertificateSection() {
@@ -16,6 +17,7 @@ function CertificateSection() {
         </p>
         <p>멘토 페이지에는 항목 형식에 따라 순서대로 보여집니다.</p>
       </StyledDescriptionWrapper>
+      <CertificateInput />
       <StyledAddButton type="button">+ 자격 항목 추가하기</StyledAddButton>
     </section>
   );
@@ -56,6 +58,7 @@ const StyledDescriptionWrapper = styled.div`
 const StyledAddButton = styled.button`
   width: 100%;
   height: 6.8rem;
+  margin-top: 1.5rem;
   border: 1px dashed ${({ theme }) => theme.SYSTEM.MAIN600};
   ${({ theme }) => theme.TYPOGRAPHY.BTN1_R}
   border-radius: 12px;
