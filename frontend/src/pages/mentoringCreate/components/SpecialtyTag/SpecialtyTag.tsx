@@ -13,16 +13,14 @@ function SpecialtyTag({
   onChange,
 }: SpecialtyTagProps) {
   return (
-    <>
-      <StyledContainer checked={checked} disabled={disabled}>
-        <StyledHiddenInput
-          onChange={onChange}
-          type="checkbox"
-          disabled={disabled}
-        />
-        {title}
-      </StyledContainer>
-    </>
+    <StyledContainer checked={checked} disabled={disabled}>
+      <StyledHiddenInput
+        onChange={onChange}
+        type="checkbox"
+        disabled={disabled}
+      />
+      {title}
+    </StyledContainer>
   );
 }
 
