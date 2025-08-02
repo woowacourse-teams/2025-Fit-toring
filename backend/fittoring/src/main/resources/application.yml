@@ -37,3 +37,4 @@ logging:
       max-file-size: 10MB
 jwt:
   secret-key: ${JWT_SECRET_KEY}
+  expiration-millis: ${JWT_EXPIRATION_MILLIS}
