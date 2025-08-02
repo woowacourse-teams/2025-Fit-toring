@@ -70,7 +70,7 @@ class MentoringServiceTest {
             em.persist(categoryMentoring1_1);
             em.persist(categoryMentoring2_2);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             String categoryTitle1 = null;
@@ -133,8 +133,8 @@ class MentoringServiceTest {
             em.persist(categoryMentoring2_3);
             em.persist(categoryMentoring3_3);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
-            Image image2 = new Image("멘토링이미지3url", ImageType.MENTORING, mentoring3.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
+            Image image2 = new Image("멘토링이미지3url", ImageType.MENTORING_PROFILE, mentoring3.getId());
             em.persist(image1);
             em.persist(image2);
 
@@ -194,7 +194,7 @@ class MentoringServiceTest {
             em.persist(categoryMentoring1_2);
             em.persist(categoryMentoring2_2);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             String categoryTitle1 = category1.getTitle();
@@ -235,7 +235,7 @@ class MentoringServiceTest {
             em.persist(categoryMentoring2_1);
             em.persist(categoryMentoring2_2);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             String categoryTitle1 = null;
@@ -270,7 +270,7 @@ class MentoringServiceTest {
             CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
             em.persist(categoryMentoring1_1);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             MentoringResponse expected = MentoringResponse.from(
@@ -299,7 +299,7 @@ class MentoringServiceTest {
             CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
             em.persist(categoryMentoring1_1);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             Long invalidId = 100L;
