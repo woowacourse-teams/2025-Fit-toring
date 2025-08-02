@@ -15,9 +15,11 @@ function MyPageHeader() {
   return (
     <Header>
       <StyledWrapper>
-        <StyledBackButton onClick={handleBackButtonClick} type="button">
-          <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
-        </StyledBackButton>
+        <StyledButtonWrapper>
+          <StyledBackButton onClick={handleBackButtonClick} type="button">
+            <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
+          </StyledBackButton>
+        </StyledButtonWrapper>
         <StyledTitle>마이 페이지</StyledTitle>
 
         <MenuDropDown />
@@ -35,8 +37,15 @@ const StyledWrapper = styled.div`
   height: 100%;
 `;
 
+const StyledButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 5rem;
+`;
+
 const StyledBackButton = styled.button`
-  margin-left: 1rem;
   padding: 0;
   border: none;
 
