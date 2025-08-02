@@ -1,6 +1,7 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.AuthService;
+import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
 import jakarta.validation.Valid;
@@ -21,6 +22,12 @@ public class AuthController {
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
         authService.register(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request) {
+        authService.login(request.loginId(), request.password());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/validate-id")

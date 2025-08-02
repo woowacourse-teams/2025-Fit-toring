@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
+import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
@@ -21,6 +22,9 @@ public class AuthService {
         validateDuplicateLoginId(request.loginId());
         Member member = createMember(request);
         memberRepository.save(member);
+    }
+
+    public void login(String loginId, String password) {
     }
 
     public void validateDuplicateLoginId(String loginId) {
