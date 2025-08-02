@@ -4,19 +4,20 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.InvalidPhoneException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Phone {
 
     @Column(name = "phone", nullable = false)
-    private String number;
+    final private String number;
+
+    protected Phone() {
+        this.number = null;
+    }
 
     public Phone(String phoneNumber) {
         validate(phoneNumber);
