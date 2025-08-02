@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PhoneVerificationService {
 
-    public static final int EXPIRE_TIME_MINUTE = 3;
+    private static final int EXPIRE_TIME_MINUTE = 3;
 
     private final PhoneVerificationRepository phoneVerificationRepository;
     private final CodeGenerator codeGenerator;
