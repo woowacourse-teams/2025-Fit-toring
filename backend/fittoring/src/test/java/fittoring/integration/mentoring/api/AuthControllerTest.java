@@ -3,15 +3,20 @@ package fittoring.integration.mentoring.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.PhoneVerification;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.business.repository.PhoneVerificationRepository;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +34,9 @@ class AuthControllerTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private PhoneVerificationRepository phoneVerificationRepository;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -195,5 +203,74 @@ class AuthControllerTest {
                 .then()
                 .log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("사용자는 잘못된 코드로 인증을 요청하면 400 응답을 받는다.")
+    @Test
+    void invalidCodeVerification() {
+        // given
+        Phone phone = new Phone("010-1234-5678");
+        String code = "123456";
+        PhoneVerification phoneVerification = new PhoneVerification(phone, code, LocalDateTime.now().plusMinutes(3));
+        phoneVerificationRepository.save(phoneVerification);
+        VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), "invalidCode");
+
+        // when
+        // then
+        RestAssured.given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .when()
+                .post("/auth-code/verify")
+                .then()
+                .log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("사용자는 만료된 코드로 인증을 요청하면 400 응답을 받는다.")
+    @Test
+    void expiredCodeVerification() {
+        // given
+        Phone phone = new Phone("010-1234-5678");
+        String code = "123456";
+        PhoneVerification phoneVerification = new PhoneVerification(phone, code, LocalDateTime.now().minusMinutes(3));
+        phoneVerificationRepository.save(phoneVerification);
+        VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), code);
+
+        // when
+        // then
+        RestAssured.given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .when()
+                .post("/auth-code/verify")
+                .then()
+                .log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("사용자는 유효한 인증을 요청하면 200 응답을 받는다.")
+    @Test
+    void validCodeVerification() {
+        // given
+        Phone phone = new Phone("010-1234-5678");
+        String code = "123456";
+        PhoneVerification phoneVerification = new PhoneVerification(phone, code, LocalDateTime.now().plusMinutes(3));
+        phoneVerificationRepository.save(phoneVerification);
+        VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), code);
+
+        // when
+        // then
+        RestAssured.given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .when()
+                .post("/auth-code/verify")
+                .then()
+                .log().all()
+                .statusCode(200);
     }
 }
