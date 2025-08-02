@@ -1,9 +1,15 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
 import CertificateInput from '../CertificateInput/CertificateInput';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 function CertificateSection() {
+  const [certificates, setCertificates] = useState<number[]>([]);
+  const handleAddButtonClick = () => {
+    setCertificates((prev) => [...prev, prev.length]);
+  };
   return (
     <section>
       <TitleSeparator>검증된 자격 사항</TitleSeparator>
@@ -17,8 +23,13 @@ function CertificateSection() {
         </p>
         <p>멘토 페이지에는 항목 형식에 따라 순서대로 보여집니다.</p>
       </StyledDescriptionWrapper>
-      <CertificateInput />
-      <StyledAddButton type="button">+ 자격 항목 추가하기</StyledAddButton>
+      {certificates.map((index) => (
+        <CertificateInput key={index} />
+      ))}
+
+      <StyledAddButton type="button" onClick={handleAddButtonClick}>
+        + 자격 항목 추가하기
+      </StyledAddButton>
     </section>
   );
 }
