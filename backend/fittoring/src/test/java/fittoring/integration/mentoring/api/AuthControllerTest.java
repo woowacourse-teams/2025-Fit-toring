@@ -90,7 +90,7 @@ class AuthControllerTest {
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
-    @DisplayName("사용자는 유효하지 않은 아이디로 로그인을 할 수 없다.")
+    @DisplayName("사용자는 유효하지 않은 아이디로 로그인을 할 수 없고, 쿠키에 토큰이 저장되지 않는다.")
     @Test
     void login() {
         //given
@@ -106,18 +106,25 @@ class AuthControllerTest {
         SignInRequest request = new SignInRequest("invalidLoginId", "password");
 
         //when
-        //then
-        RestAssured
+        Response response = RestAssured
                 .given()
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/signin")
-                .then().log().all()
-                .statusCode(400);
+                .post("/signin");
+        //then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(400);
+                    assertThat(response.getHeaders().hasHeaderWithName("Set-Cookie")).isFalse();
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
     }
 
-    @DisplayName("사용자는 유효하지 않은 비밀번호로 로그인을 할 수 없다.")
+    @DisplayName("사용자는 유효하지 않은 비밀번호로 로그인을 할 수 없고, 쿠키에 토큰이 저장되지 않는다.")
     @Test
     void login2() {
         //given
@@ -133,15 +140,23 @@ class AuthControllerTest {
         SignInRequest request = new SignInRequest("loginId", "invalidPassword");
 
         //when
-        //then
-        RestAssured
+        Response response = RestAssured
                 .given()
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/signin")
-                .then().log().all()
-                .statusCode(400);
+                .post("/signin");
+
+        //then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(400);
+                    assertThat(response.getHeaders().hasHeaderWithName("Set-Cookie")).isFalse();
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
     }
 
     @DisplayName("사용자가 로그인에 성공하면 상태코드 200을 응답하고, accessToken과 refreshToken을 쿠키에 저장한다.")
@@ -168,8 +183,8 @@ class AuthControllerTest {
                 .post("/signin");
 
         // then
-        // Set-Cookie 헤더 추출
         List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
         SoftAssertions.assertSoftly(softly -> {
                     assertThat(response.statusCode()).isEqualTo(200);
                     assertThat(cookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
