@@ -8,7 +8,11 @@ import TitleSeparator from '../TitleSeparator/TitleSeparator';
 function CertificateSection() {
   const [certificates, setCertificates] = useState<number[]>([]);
   const handleAddButtonClick = () => {
-    setCertificates((prev) => [...prev, prev.length]);
+    setCertificates((prev) => [...prev, Date.now()]);
+  };
+
+  const handleDeleteButtonClick = (id: number) => {
+    setCertificates((prev) => prev.filter((item) => item !== id));
   };
   return (
     <section>
@@ -23,8 +27,11 @@ function CertificateSection() {
         </p>
         <p>멘토 페이지에는 항목 형식에 따라 순서대로 보여집니다.</p>
       </StyledDescriptionWrapper>
-      {certificates.map((index) => (
-        <CertificateInput key={index} />
+      {certificates.map((id) => (
+        <CertificateInput
+          key={id}
+          onDeleteButtonClick={() => handleDeleteButtonClick(id)}
+        />
       ))}
 
       <StyledAddButton type="button" onClick={handleAddButtonClick}>
