@@ -26,6 +26,7 @@ public class AuthService {
 
     public void login(String loginId, String password) {
         Member member = getMemberByLoginId(loginId);
+        member.matchPassword(password);
     }
 
     public void validateDuplicateLoginId(String loginId) {

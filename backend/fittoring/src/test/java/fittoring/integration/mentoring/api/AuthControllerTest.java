@@ -115,6 +115,33 @@ class AuthControllerTest {
                 .statusCode(400);
     }
 
+    @DisplayName("사용자는 유효하지 않은 비밀번호로 로그인을 할 수 없다.")
+    @Test
+    void login2() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("loginId", "invalidPassword");
+
+        //when
+        //then
+        RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/signin")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")
     @Test
     void signUp3() {

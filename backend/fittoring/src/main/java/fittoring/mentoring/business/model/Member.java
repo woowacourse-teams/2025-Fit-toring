@@ -41,6 +41,10 @@ public class Member {
         this(null, loginId, gender, name, phone, password);
     }
 
+    public void matchPassword(String password) {
+        this.password.validateMatches(password);
+    }
+
     public String getPassword() {
         return password.getPassword();
     }
