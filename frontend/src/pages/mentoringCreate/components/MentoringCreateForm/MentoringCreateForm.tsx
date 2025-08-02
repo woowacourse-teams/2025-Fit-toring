@@ -2,12 +2,14 @@ import styled from '@emotion/styled';
 
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
 import ProfileSection from '../ProfileSection/ProfileSection';
+import SpecialtySection from '../SpecialtySection/SpecialtySection';
 
 function MentoringCreateForm() {
   return (
     <StyledContainer>
       <BaseInfoSection />
       <ProfileSection />
+      <SpecialtySection />
     </StyledContainer>
   );
 }
