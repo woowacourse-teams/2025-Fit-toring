@@ -88,7 +88,7 @@ class ReviewControllerTest {
             // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
-            .post("/mentorings/" + mentoring.getId() + "/review")
+            .post("/mentorings/" + mentoring.getId() + "/reviews")
             .then().log().all()
             .statusCode(201)
             .body(
@@ -116,7 +116,7 @@ class ReviewControllerTest {
             // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
-            .post("/mentorings/999/review")
+            .post("/mentorings/999/reviews")
             .then().log().all()
             .statusCode(400);
     }
@@ -148,7 +148,7 @@ class ReviewControllerTest {
             // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
-            .post("/mentorings/" + mentoring.getId() + "/review")
+            .post("/mentorings/" + mentoring.getId() + "/reviews")
             .then().log().all()
             .statusCode(400);
     }
@@ -180,7 +180,7 @@ class ReviewControllerTest {
             // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
-            .post("/mentorings/" + mentoring.getId() + "/review")
+            .post("/mentorings/" + mentoring.getId() + "/reviews")
             .then().log().all()
             .statusCode(404);
     }
@@ -216,7 +216,7 @@ class ReviewControllerTest {
             .log().all().contentType(ContentType.JSON)
             .body(requestBody)
             .when()
-            .post("/mentorings/" + mentoring.getId() + "/review")
+            .post("/mentorings/" + mentoring.getId() + "/reviews")
             .then().log().all()
             .statusCode(201);
 
@@ -228,7 +228,7 @@ class ReviewControllerTest {
             // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
-            .post("/mentorings/" + mentoring.getId() + "/review")
+            .post("/mentorings/" + mentoring.getId() + "/reviews")
             .then().log().all()
             .statusCode(400);
     }

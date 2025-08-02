@@ -1,17 +1,21 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.ReviewService;
+import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
+import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +28,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("mentorings/{mentoringId}/review")
+    @PostMapping("mentorings/{mentoringId}/reviews")
     public ResponseEntity<ReviewCreateResponse> createReview(
         // TODO: 로그인 정보 받기
         @PathVariable("mentoringId") Long mentoringId,
@@ -37,6 +41,16 @@ public class ReviewController {
         );
         ReviewCreateResponse responseBody = reviewService.createReview(reviewCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
+            .body(responseBody);
+    }
+
+    @GetMapping("reviews/mine")
+    public ResponseEntity<List<MemberReviewGetResponse>> findMyReviews(
+        // TODO: 로그인 정보 받기
+    ) {
+        MemberReviewGetDto memberReviewGetDto = new MemberReviewGetDto(1L);
+        List<MemberReviewGetResponse> responseBody = reviewService.findMemberReviews(memberReviewGetDto);
+        return ResponseEntity.status(HttpStatus.OK)
             .body(responseBody);
     }
 

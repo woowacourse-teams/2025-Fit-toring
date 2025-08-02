@@ -41,6 +41,7 @@ public class Review {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Getter
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
     private Mentoring mentoring;
