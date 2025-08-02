@@ -1,9 +1,11 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.AuthService;
+import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,8 +27,8 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request) {
-        authService.login(request.loginId(), request.password());
+    public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
+        AuthTokenResponse response = authService.login(request.loginId(), request.password());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
