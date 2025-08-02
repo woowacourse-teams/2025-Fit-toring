@@ -6,12 +6,14 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
+import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.business.exception.ReviewerNotSameException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.util.DbCleaner;
@@ -209,6 +211,8 @@ class ReviewServiceTest {
             .hasMessage(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
     }
 
+    // TODO: 없는 리뷰 ID로 수정 요청 시 예외 케이스
+
     @DisplayName("본인이 작성하지 않은 리뷰를 수정하려고 하면 예외가 발생한다")
     @Test
     void modifyReviewFail() {
@@ -252,6 +256,71 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
+            .isInstanceOf(ReviewerNotSameException.class)
+            .hasMessage(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+    }
+
+    @DisplayName("존재하지 않는 리뷰 삭제 요청 시 예외가 발생한다")
+    @Test
+    void deleteReviewFail1() {
+        // given
+        Member reviewer = entityManager.persist(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(reviewer.getId(), 999L);
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
+            .isInstanceOf(ReviewNotFoundException.class)
+            .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("본인이 작성하지 않은 리뷰를 삭제하려고 하면 예외가 발생한다")
+    @Test
+    void deleteReviewFail2() {
+        // given
+        Member reviewer = entityManager.persist(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            "mentorName",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
+        Review review = entityManager.persist(new Review(
+            (byte) 5,
+            "최고의 멘토링이었습니다.",
+            mentoring,
+            reviewer
+        ));
+        Member invalidMember = entityManager.persist(new Member(
+            "loginId2",
+            "남",
+            "name2",
+            "010-1234-5679",
+            "password"
+        ));
+        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(
+            invalidMember.getId(),
+            review.getId()
+        );
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
             .isInstanceOf(ReviewerNotSameException.class)
             .hasMessage(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
     }

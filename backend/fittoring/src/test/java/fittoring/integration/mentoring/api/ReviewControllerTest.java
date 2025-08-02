@@ -325,4 +325,110 @@ class ReviewControllerTest {
             .then().log().all()
             .statusCode(400);
     }
+
+    @DisplayName("리뷰 삭제에 성공하면 204 NO CONTENT를 반환한다")
+    @Test
+    void deleteReview() {
+        // given
+        Member reviewer = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+            "mentorName",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
+        Review review = reviewRepository.save(new Review(
+            (byte) 4,
+            "전반적으로 좋았습니다.",
+            mentoring,
+            reviewer
+        ));
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
+            .when()
+            .delete("/reviews/" + review.getId())
+            .then().log().all()
+            .statusCode(204);
+    }
+
+    @DisplayName("존재하지 않는 리뷰 삭제 요청 시 404 NOT FOUND를 반환한다")
+    @Test
+    void deleteReviewFail1() {
+        // given
+        Member reviewer = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
+            .when()
+            .delete("/reviews/999")
+            .then().log().all()
+            .statusCode(404);
+    }
+
+    @DisplayName("본인이 작성하지 않은 리뷰를 삭제하려고 하면 400 Bad Request를 반환한다")
+    @Test
+    void deleteReviewFail2() {
+        // given
+        Member reviewer = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+            "mentorName",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
+        Review review = reviewRepository.save(new Review(
+            (byte) 4,
+            "전반적으로 좋았습니다.",
+            mentoring,
+            reviewer
+        ));
+        Member invalidMember = memberRepository.save(new Member(
+            "loginId2",
+            "남",
+            "name2",
+            "010-1234-5679",
+            "password"
+        ));
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
+            .when()
+            .delete("/reviews/" + review.getId())
+            .then().log().all()
+            .statusCode(400);
+    }
 }
