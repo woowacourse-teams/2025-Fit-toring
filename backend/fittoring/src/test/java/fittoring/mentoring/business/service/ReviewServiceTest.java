@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
@@ -12,11 +13,14 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
+import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
+import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.util.DbCleaner;
+import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -209,6 +213,70 @@ class ReviewServiceTest {
         assertThatThrownBy(() -> reviewService.createReview(reviewCreateDto))
             .isInstanceOf(ReviewAlreadyExistsException.class)
             .hasMessage(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
+    }
+
+    @DisplayName("특정 멤버의 리뷰를 모두 조회 성공 시 리뷰 정보를 반환한다")
+    @Test
+    void findMemberReviews() {
+        // given
+        Member reviewer = entityManager.persist(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Mentoring mentoring1 = entityManager.persist(new Mentoring(
+            "mentorName1",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        Mentoring mentoring2 = entityManager.persist(new Mentoring(
+            "mentorName2",
+            "010-5678-1235",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
+        entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id2 넣어주기
+        Review review1 = entityManager.persist(new Review(
+            (byte) 5,
+            "최고의 멘토링이었습니다.",
+            mentoring1,
+            reviewer
+        ));
+        Review review2 = entityManager.persist(new Review(
+            (byte) 5,
+            "최고의 멘토링이었습니다.",
+            mentoring2,
+            reviewer
+        ));
+        MemberReviewGetDto memberReviewGetDto = new MemberReviewGetDto(reviewer.getId());
+
+        // when
+        List<MemberReviewGetResponse> memberReviewGetResponses =
+            reviewService.findMemberReviews(memberReviewGetDto);
+
+        // then
+        assertThat(memberReviewGetResponses).containsExactlyInAnyOrder(
+            new MemberReviewGetResponse(
+                review1.getId(),
+                review1.getMentoring().getId(),
+                review1.getRating(),
+                review1.getContent()
+            ),
+            new MemberReviewGetResponse(
+                review2.getId(),
+                review2.getMentoring().getId(),
+                review2.getRating(),
+                review2.getContent()
+            )
+        );
     }
 
     // TODO: 없는 리뷰 ID로 수정 요청 시 예외 케이스

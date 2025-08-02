@@ -1,6 +1,7 @@
 package fittoring.integration.mentoring.api;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
@@ -231,6 +232,60 @@ class ReviewControllerTest {
             .post("/mentorings/" + mentoring.getId() + "/reviews")
             .then().log().all()
             .statusCode(400);
+    }
+
+    @DisplayName("특정 멤버의 리뷰를 모두 조회 성공 시 200 OK를 반환한다")
+    @Test
+    void findMemberReviews() {
+        // given
+        Member reviewer = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Mentoring mentoring1 = mentoringRepository.save(new Mentoring(
+            "mentorName",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
+            "mentorName2",
+            "010-5678-1235",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
+        reservationRepository.save(new Reservation()); // TODO: 예약2 추가하기
+        Review review1 = reviewRepository.save(new Review(
+            (byte) 4,
+            "전반적으로 좋았습니다.",
+            mentoring1,
+            reviewer
+        ));
+        Review review2 = reviewRepository.save(new Review(
+            (byte) 4,
+            "전반적으로 좋았습니다.",
+            mentoring1,
+            reviewer
+        ));
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
+            .when()
+            .get("/reviews/mine")
+            .then().log().all()
+            .statusCode(200)
+            .body("", hasSize(2));
     }
 
     @DisplayName("리뷰 수정에 성공하면 200 OK를 반환한다")
