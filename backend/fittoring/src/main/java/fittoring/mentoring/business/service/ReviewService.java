@@ -13,6 +13,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import jakarta.transaction.Transactional;
@@ -68,5 +69,13 @@ public class ReviewService {
             return;
         }
         throw new ReviewerNotSameException(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+    }
+
+    @Transactional
+    public void deleteReview(ReviewDeleteDto reviewDeleteDto) {
+        Review review = reviewRepository.findById((reviewDeleteDto.reviewId()))
+            .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
+        validateReviewer(review, reviewDeleteDto.reviewerId());
+        reviewRepository.delete(review);
     }
 }

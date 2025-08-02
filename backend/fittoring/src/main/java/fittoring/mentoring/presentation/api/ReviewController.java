@@ -2,6 +2,7 @@ package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.ReviewService;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +53,17 @@ public class ReviewController {
         );
         reviewService.modifyReview(reviewModifyDto);
         return ResponseEntity.status(HttpStatus.OK)
+            .build();
+    }
+
+    @DeleteMapping("reviews/{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+        // TODO: 로그인 정보 받기
+        @PathVariable("reviewId") Long reviewId
+    ) {
+        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(1L, reviewId);
+        reviewService.deleteReview(reviewDeleteDto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
     }
 }
