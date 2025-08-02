@@ -11,7 +11,7 @@ class JwtProviderTest {
 
     private final JwtProvider jwtProvider = new JwtProvider(SECRET_KEY);
 
-    @DisplayName("memberId로 토큰을 발급한다.")
+    @DisplayName("토큰을 발급할 수 있다.")
     @Test
     void createToken() {
         //given
