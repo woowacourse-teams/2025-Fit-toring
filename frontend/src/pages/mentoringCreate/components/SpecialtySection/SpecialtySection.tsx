@@ -14,7 +14,7 @@ function SpecialtySection() {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
 
-  const handleToggleSpecialtyTag = (title: string) => {
+  const handleToggleSpecialtyTagChange = (title: string) => {
     setSelectedSpecialties((prev) => {
       return prev.includes(title)
         ? prev.filter((item) => item !== title)
@@ -44,7 +44,7 @@ function SpecialtySection() {
           <SpecialtyTag
             key={specialty.id}
             title={specialty.title}
-            onChange={() => handleToggleSpecialtyTag(specialty.title)}
+            onChange={() => handleToggleSpecialtyTagChange(specialty.title)}
             disabled={
               selectedSpecialties.length >= MAX_SPECIALTIES &&
               !selectedSpecialties.includes(specialty.title)
