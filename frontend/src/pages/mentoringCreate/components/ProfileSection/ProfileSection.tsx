@@ -1,22 +1,10 @@
-import { useState } from 'react';
-
 import styled from '@emotion/styled';
 
 import uploadIcon from '../../../../common/assets/images/uploadIcon.svg';
+import usePreviewImage from '../../../../common/hooks/usePreviewImage';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 function ProfileSection() {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    const fileUrl = URL.createObjectURL(file);
-    setPreviewUrl(fileUrl);
-  };
+  const { previewUrl, handleImageChange } = usePreviewImage();
 
   return (
     <section>

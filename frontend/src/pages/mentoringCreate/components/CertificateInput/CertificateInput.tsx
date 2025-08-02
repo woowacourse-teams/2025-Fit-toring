@@ -1,24 +1,12 @@
-import { useState } from 'react';
-
 import styled from '@emotion/styled';
 
 import certificateUploadIcon from '../../../../common/assets/images/certificateUploadIcon.svg';
 import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import downIcon from '../../../../common/assets/images/downIcon.svg';
+import usePreviewImage from '../../../../common/hooks/usePreviewImage';
 
 function CertificateInput() {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    const fileUrl = URL.createObjectURL(file);
-    setPreviewUrl(fileUrl);
-  };
+  const { previewUrl, handleImageChange } = usePreviewImage();
   return (
     <StyledContainer>
       <StyledTitleWrapper>
