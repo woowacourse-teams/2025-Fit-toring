@@ -12,6 +12,8 @@ import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -140,6 +142,40 @@ class AuthControllerTest {
                 .post("/signin")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("사용자가 로그인에 성공하면 상태코드 200을 응답하고, accessToken과 refreshToken을 쿠키에 저장한다.")
+    @Test
+    void login3() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("loginId", "password");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/signin");
+
+        // then
+        // Set-Cookie 헤더 추출
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(200);
+                    assertThat(cookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
     }
 
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")
