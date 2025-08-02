@@ -67,6 +67,7 @@ const StyledContainer = styled.div`
 
   width: 100%;
   height: 100%;
+  margin-bottom: 2rem;
   padding: 2.5rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 12px;
