@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
+import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
@@ -101,5 +102,27 @@ class AuthServiceTest {
         //then
         assertThatCode(() -> authService.validateDuplicateLoginId(loginId))
                 .doesNotThrowAnyException();
+    }
+
+    @DisplayName("잘못된 아이디로 로그인에 실패하면 예외가 발생한다.")
+    @Test
+    void login() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                Password.from("password")
+        );
+        em.persist(member);
+
+        String loginId = "wrongLoginId";
+        String password = "password";
+
+        //when
+        //then
+        assertThatThrownBy(() -> authService.login(loginId, password))
+                .isInstanceOf(NotFoundMemberException.class);
     }
 }

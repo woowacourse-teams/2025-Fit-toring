@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
 import fittoring.util.DbCleaner;
@@ -85,6 +86,33 @@ class AuthControllerTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @DisplayName("사용자는 유효하지 않은 아이디로 로그인을 할 수 없다.")
+    @Test
+    void login() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("invalidLoginId", "password");
+
+        //when
+        //then
+        RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/signin")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")

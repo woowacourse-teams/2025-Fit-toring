@@ -4,6 +4,7 @@ import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.MisMatchPasswordException;
+import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.exception.PasswordEncryptionException;
 import fittoring.mentoring.infra.exception.SmsException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateLoginIdException.class)
     public ResponseEntity<ErrorResponse> handle(DuplicateLoginIdException e) {
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
+    }
+
+    @ExceptionHandler(NotFoundMemberException.class)
+    public ResponseEntity<ErrorResponse> handle(NotFoundMemberException e) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
 

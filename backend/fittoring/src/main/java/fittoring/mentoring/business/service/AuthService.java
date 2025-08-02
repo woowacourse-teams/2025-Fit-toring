@@ -25,12 +25,18 @@ public class AuthService {
     }
 
     public void login(String loginId, String password) {
+        Member member = getMemberByLoginId(loginId);
     }
 
     public void validateDuplicateLoginId(String loginId) {
         if (memberRepository.existsByLoginId(loginId)) {
             throw new DuplicateLoginIdException(BusinessErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
         }
+    }
+
+    private Member getMemberByLoginId(String loginId) {
+        return memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
     }
 
     private Member createMember(SignUpRequest request) {
