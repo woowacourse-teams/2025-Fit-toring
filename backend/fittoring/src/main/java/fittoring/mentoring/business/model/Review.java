@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Review {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

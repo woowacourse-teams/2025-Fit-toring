@@ -5,11 +5,14 @@ import static org.hamcrest.Matchers.equalTo;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
+import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -28,6 +31,9 @@ class ReviewControllerTest {
 
     @LocalServerPort
     private int port;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private MentoringRepository mentoringRepository;
@@ -66,7 +72,7 @@ class ReviewControllerTest {
             "content",
             "introduction"
         ));
-        Reservation reservation = reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
+        reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         byte rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
@@ -79,6 +85,7 @@ class ReviewControllerTest {
         RestAssured
             .given()
             .log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
             .post("/mentorings/" + mentoring.getId() + "/review")
@@ -94,13 +101,6 @@ class ReviewControllerTest {
     @Test
     void createReviewFail1() {
         // given
-        Member reviewer = memberRepository.save(new Member(
-            "loginId",
-            "남",
-            "name",
-            "010-1234-5678",
-            "password"
-        ));
         byte rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
@@ -113,6 +113,7 @@ class ReviewControllerTest {
         RestAssured
             .given()
             .log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
             .post("/mentorings/999/review")
@@ -144,6 +145,7 @@ class ReviewControllerTest {
         RestAssured
             .given()
             .log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
             .post("/mentorings/" + mentoring.getId() + "/review")
@@ -155,13 +157,6 @@ class ReviewControllerTest {
     @Test
     void createReviewFail3() {
         // given
-        Member reviewer = memberRepository.save(new Member(
-            "loginId",
-            "남",
-            "name",
-            "010-1234-5678",
-            "password"
-        ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
             "mentorName",
             "010-5678-1234",
@@ -182,6 +177,7 @@ class ReviewControllerTest {
         RestAssured
             .given()
             .log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
             .post("/mentorings/" + mentoring.getId() + "/review")
@@ -208,7 +204,7 @@ class ReviewControllerTest {
             "content",
             "introduction"
         ));
-        Reservation reservation = reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
+        reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         byte rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
@@ -229,9 +225,103 @@ class ReviewControllerTest {
         RestAssured
             .given()
             .log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
             .body(requestBody)
             .when()
             .post("/mentorings/" + mentoring.getId() + "/review")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @DisplayName("리뷰 수정에 성공하면 200 OK를 반환한다")
+    @Test
+    void modifyReview() {
+        // given
+        Member reviewer = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+            "mentorName",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
+        Review review = reviewRepository.save(new Review(
+            (byte) 4,
+            "전반적으로 좋았습니다.",
+            mentoring,
+            reviewer
+        ));
+        ReviewModifyRequest requestBody = new ReviewModifyRequest(
+            (byte) 2,
+            "생각해 보니 비용이 너무 비쌌던 것 같아요"
+        );
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
+            .body(requestBody)
+            .when()
+            .patch("/reviews/" + review.getId())
+            .then().log().all()
+            .statusCode(200);
+    }
+
+    @DisplayName("본인이 작성하지 않은 리뷰를 수정하려고 하면 400 Bad Request를 반환한다")
+    @Test
+    void modifyReviewFail() {
+        // given
+        Member reviewer = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+            "mentorName",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
+        Review review = reviewRepository.save(new Review(
+            (byte) 4,
+            "전반적으로 좋았습니다.",
+            mentoring,
+            reviewer
+        ));
+        Member invalidMember = memberRepository.save(new Member(
+            "loginId2",
+            "남",
+            "name2",
+            "010-1234-5679",
+            "password"
+        ));
+        ReviewModifyRequest requestBody = new ReviewModifyRequest(
+            (byte) 2,
+            "생각해 보니 비용이 너무 비쌌던 것 같아요"
+        );
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
+            .body(requestBody)
+            .when()
+            .patch("/reviews/" + review.getId())
             .then().log().all()
             .statusCode(400);
     }
