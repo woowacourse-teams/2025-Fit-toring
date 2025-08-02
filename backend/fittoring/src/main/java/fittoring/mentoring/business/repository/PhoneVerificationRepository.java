@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PhoneVerificationRepository extends ListCrudRepository<PhoneVerification, Long> {
 
-    boolean existsByPhone(Phone phone);
+    Optional<PhoneVerification> findFirstByPhoneAndCodeOrderByExpireAtDesc(Phone phone, String code);
 
     void deleteByPhone(Phone phone);
-
-    Optional<PhoneVerification> findFirstByPhoneAndCodeOrderByExpireAtDesc(Phone phone, String code);
 }
