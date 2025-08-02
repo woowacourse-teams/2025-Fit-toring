@@ -44,11 +44,17 @@ public class Review {
     @JoinColumn(nullable = false, unique = true)
     private Mentoring mentoring;
 
+    @Getter
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
     private Member reviewer;
 
     public Review(byte rating, String content, Mentoring mentoring, Member reviewer) {
         this(null, rating, content, null, mentoring, reviewer);
+    }
+
+    public void modify(byte rating, String content) {
+        this.rating = rating;
+        this.content = content;
     }
 }

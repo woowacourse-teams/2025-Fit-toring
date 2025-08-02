@@ -2,16 +2,18 @@ package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.ReviewService;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
+import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -22,8 +24,9 @@ public class ReviewController {
 
     @PostMapping("mentorings/{mentoringId}/review")
     public ResponseEntity<ReviewCreateResponse> createReview(
+        // TODO: 로그인 정보 받기
         @PathVariable("mentoringId") Long mentoringId,
-        @Valid  @RequestBody ReviewCreateRequest requestBody
+        @Valid @RequestBody ReviewCreateRequest requestBody
     ) {
         ReviewCreateDto reviewCreateDto = ReviewCreateDto.of(
             1L,
@@ -33,5 +36,21 @@ public class ReviewController {
         ReviewCreateResponse responseBody = reviewService.createReview(reviewCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(responseBody);
+    }
+
+    @PatchMapping("reviews/{reviewId}")
+    public ResponseEntity<Void> modifyReview(
+        // TODO: 로그인 정보 받기
+        @PathVariable("reviewId") Long reviewId,
+        @Valid @RequestBody ReviewModifyRequest requestBody
+    ) {
+        ReviewModifyDto reviewModifyDto = ReviewModifyDto.of(
+            1L,
+            reviewId,
+            requestBody
+        );
+        reviewService.modifyReview(reviewModifyDto);
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
     }
 }

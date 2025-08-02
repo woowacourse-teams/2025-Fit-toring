@@ -4,6 +4,8 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
+import fittoring.mentoring.business.exception.ReviewNotFoundException;
+import fittoring.mentoring.business.exception.ReviewerNotSameException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Review;
@@ -11,7 +13,9 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,7 @@ public class ReviewService {
     private final MentoringRepository mentoringRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public ReviewCreateResponse createReview(ReviewCreateDto dto) {
         Long mentoringId = dto.mentoringId();
         Long reviewerId = dto.reviewerId();
@@ -48,5 +53,20 @@ public class ReviewService {
         if (reviewRepository.existsByMentoringIdAndReviewerId(mentoringId, reviewerId)) {
             throw new ReviewAlreadyExistsException(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
         }
+    }
+
+    @Transactional
+    public void modifyReview(ReviewModifyDto reviewModifyDto) {
+        Review review = reviewRepository.findById(reviewModifyDto.reviewId())
+                .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
+        validateReviewer(review, reviewModifyDto.reviewerId());
+        review.modify(reviewModifyDto.rating(), reviewModifyDto.content());
+    }
+
+    private void validateReviewer(Review review, Long reviewerId) {
+        if (review.getReviewer().getId().equals(reviewerId)) {
+            return;
+        }
+        throw new ReviewerNotSameException(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
     }
 }
