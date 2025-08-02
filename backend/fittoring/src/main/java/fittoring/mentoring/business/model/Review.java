@@ -11,11 +11,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "review")
 @Entity
@@ -25,9 +28,11 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @Column(nullable = false)
-    private byte rating;
+    private byte rating; // TODO: int로 바꾸기
 
+    @Getter
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
@@ -42,4 +47,8 @@ public class Review {
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
     private Member reviewer;
+
+    public Review(byte rating, String content, Mentoring mentoring, Member reviewer) {
+        this(null, rating, content, null, mentoring, reviewer);
+    }
 }
