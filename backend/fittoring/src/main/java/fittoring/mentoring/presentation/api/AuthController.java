@@ -1,7 +1,7 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.AuthService;
-import fittoring.mentoring.business.service.PhoneVerificationFacade;
+import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
 import fittoring.mentoring.business.service.PhoneVerificationService;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
-    private final PhoneVerificationFacade phoneVerificationFacade;
+    private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
 
     @PostMapping("/signup")
@@ -37,7 +37,7 @@ public class AuthController {
 
     @PostMapping("/auth-code")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
-        phoneVerificationFacade.sendPhoneVerificationCode(request.phone());
+        phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

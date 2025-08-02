@@ -2,7 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
-import fittoring.mentoring.infra.VerificationCodeGenerator;
+import fittoring.mentoring.infra.CodeGeneratorStub;
 import fittoring.util.DbCleaner;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, PhoneVerificationService.class, VerificationCodeGenerator.class})
+@Import({DbCleaner.class, PhoneVerificationService.class, CodeGeneratorStub.class})
 @DataJpaTest
 class PhoneVerificationServiceTest {
 
@@ -60,7 +60,7 @@ class PhoneVerificationServiceTest {
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(phoneVerifications).hasSize(1);
-                softAssertions.assertThat(phoneVerifications.get(0).getPhoneNumber()).isEqualTo(phoneNumber);
+                softAssertions.assertThat(phoneVerifications.get(0).getPhone()).isEqualTo(phoneNumber);
                 softAssertions.assertThat(phoneVerifications.get(0).getCode()).isEqualTo(phoneVerificationCode);
             });
         }
@@ -89,7 +89,7 @@ class PhoneVerificationServiceTest {
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(phoneVerifications).hasSize(1);
-                softAssertions.assertThat(phoneVerifications.get(0).getPhoneNumber()).isEqualTo(phoneNumber);
+                softAssertions.assertThat(phoneVerifications.get(0).getPhone()).isEqualTo(phoneNumber);
                 softAssertions.assertThat(phoneVerifications.get(0).getCode()).isEqualTo(phoneVerificationCode);
             });
         }

@@ -25,12 +25,12 @@ public class SmsRestClientService {
     @Value("${COOL_SMS_FROM_PHONE}")
     private String fromPhone;
 
-    public void sendSms(String toPhone, String text, String subject) {
+    public void sendSms(Phone toPhone, String text, String subject) {
         smsRestClient.post()
                 .uri(SEND_MESSAGE_ENDPOINT)
                 .header("Authorization", authHeaderGenerator.createAuthorization())
                 .body(Map.of("messages", List.of(new LongSmsSendClientDto(
-                        toPhone,
+                        toPhone.getNumber(),
                         fromPhone,
                         text,
                         subject

@@ -22,7 +22,6 @@ public class PhoneVerification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
     @Embedded
@@ -38,7 +37,7 @@ public class PhoneVerification {
         this(null, phone, code, expireAt);
     }
 
-    public String getPhoneNumber() {
+    public String getPhone() {
         return this.phone.getNumber();
     }
 

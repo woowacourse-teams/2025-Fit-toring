@@ -2,6 +2,7 @@ package fittoring.integration.mentoring;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.infra.SmsAuthHeaderGenerator;
 import fittoring.mentoring.infra.SmsRestClientService;
 import java.io.IOException;
@@ -71,7 +72,7 @@ class SmsRestClientIntegrationTest {
             // when
             // then
             assertThatThrownBy(() -> service.sendSms(
-                    "010-0000-0000",
+                    new Phone("010-0000-0000"),
                     "connect timeout test",
                     "subject"
             ))
@@ -91,7 +92,7 @@ class SmsRestClientIntegrationTest {
             // when
             // then
             assertThatThrownBy(() -> smsRestClientService.sendSms(
-                    "010-0000-0000",
+                    new Phone("010-0000-0000"),
                     "read timeout test",
                     "subject"
             ))

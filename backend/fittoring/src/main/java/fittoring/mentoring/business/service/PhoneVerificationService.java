@@ -16,15 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PhoneVerificationService {
 
-    public static final int EXPIRE_TIME = 3;
+    private static final int EXPIRE_TIME_MINUTE = 3;
 
     private final PhoneVerificationRepository phoneVerificationRepository;
-    private final CodeGenerator codeGenerator;
+    private final CodeGenerator verificationCodeGenerator;
 
     @Transactional
     public String createPhoneVerification(Phone phone) {
         deleteExpiredVerification(phone);
-        String code = codeGenerator.generate();
+        String code = verificationCodeGenerator.generate();
         LocalDateTime expiredDateTime = calculateExpiredTime();
         PhoneVerification phoneVerification = new PhoneVerification(
                 phone,
@@ -43,7 +43,7 @@ public class PhoneVerificationService {
 
     private LocalDateTime calculateExpiredTime() {
         return LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-                .plusMinutes(EXPIRE_TIME);
+                .plusMinutes(EXPIRE_TIME_MINUTE);
     }
 
     public void verifyCode(VerificationCodeRequest request) {

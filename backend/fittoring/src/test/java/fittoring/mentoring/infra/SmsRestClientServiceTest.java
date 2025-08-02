@@ -59,13 +59,14 @@ class SmsRestClientServiceTest {
     void sendSms_ClientError() {
         // given
         mockWebServer.enqueue(new MockResponse().setResponseCode(400).setBody("Bad Request"));
-        String to = "01012345678";
+        String to = "010-1234-5678";
+        Phone toPhone = new Phone(to);
         String text = "Test Message";
         String subject = "Test Subject";
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(to, text, subject))
+        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(toPhone, text, subject))
                 .isInstanceOf(SmsException.class)
                 .hasMessage(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
     }
@@ -75,13 +76,14 @@ class SmsRestClientServiceTest {
     void sendSms_ServerError() {
         // given
         mockWebServer.enqueue(new MockResponse().setResponseCode(500).setBody("Internal Server Error"));
-        String to = "01012345678";
+        String to = "010-1234-5678";
+        Phone toPhone = new Phone(to);
         String text = "Test Message";
         String subject = "Test Subject";
 
         // when
         // then
-        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(to, text, subject))
+        Assertions.assertThatThrownBy(() -> smsRestClientService.sendSms(toPhone, text, subject))
                 .isInstanceOf(SmsException.class)
                 .hasMessage(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
     }
