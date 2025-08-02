@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test;
 
 class JwtProviderTest {
 
-    private final String secretKey = "my-test-secret-key-my-test-secret-key";
-    private final long expirationMillis = 1000L; //1초
-
     private JwtProvider jwtProvider;
 
     @BeforeEach
     void setUp() {
-        jwtProvider = new JwtProvider(secretKey, expirationMillis);
+        String secretKey = "my-test-secret-key-my-test-secret-key";
+        long accessExpirationMillis = 1000L; //1초
+        long refreshExpirationMillis = 2000L; //2초
+        jwtProvider = new JwtProvider(secretKey, accessExpirationMillis, refreshExpirationMillis);
     }
 
     @DisplayName("토큰을 발급할 수 있다.")
@@ -62,5 +62,16 @@ class JwtProviderTest {
         //then
         assertThatThrownBy(() -> jwtProvider.getSubjectFromPayloadBy(token))
                 .isInstanceOf(InvalidTokenException.class);
+    }
+
+    @DisplayName("refresh 토큰을 발급할 수 있다.")
+    @Test
+    void createRefreshToken() {
+        //given
+        //when
+        String refreshToken = jwtProvider.createRefreshToken();
+
+        //then
+        assertThat(refreshToken).isNotNull();
     }
 }

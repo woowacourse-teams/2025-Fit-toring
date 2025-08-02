@@ -3,6 +3,7 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.InvalidTokenException;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -18,26 +19,41 @@ import org.springframework.stereotype.Component;
 public class JwtProvider {
 
     private final SecretKey secretKey;
-    private final long expirationMillis;
+    private final long accessExpirationMillis;
+    private final long refreshExpirationMillis;
 
     public JwtProvider(
             @Value("${jwt.secret-key}") String secretKey,
-            @Value("${jwt.expiration-millis}") long expirationMillis
+            @Value("${jwt.access-token-expiration-millis}") long accessExpirationMillis,
+            @Value("${jwt.refresh-token-expiration-millis}") long refreshExpirationMillis
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
-        this.expirationMillis = expirationMillis;
+        this.accessExpirationMillis = accessExpirationMillis;
+        this.refreshExpirationMillis = refreshExpirationMillis;
     }
 
     public String createToken(Long memberId) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + expirationMillis);
+        Date accessMillis = new Date(now.getTime() + accessExpirationMillis);
+        return buildToken(memberId, now, accessMillis);
+    }
 
-        return Jwts.builder()
-                .setSubject(memberId.toString())
+    public String createRefreshToken() {
+        Date now = new Date();
+        Date refreshMillis = new Date(now.getTime() + refreshExpirationMillis);
+        return buildToken(null, now, refreshMillis);
+    }
+
+    private String buildToken(Long subject, Date issuedAt, Date expiresAt) {
+        JwtBuilder builder = Jwts.builder()
                 .signWith(secretKey, SignatureAlgorithm.HS256)
-                .setIssuedAt(now)
-                .setExpiration(expiry)
-                .compact();
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiresAt);
+
+        if (subject != null) {
+            builder.setSubject(subject.toString());
+        }
+        return builder.compact();
     }
 
     public Long getSubjectFromPayloadBy(String token) {
