@@ -10,5 +10,7 @@ public interface ReviewRepository extends ListCrudRepository<Review, Long> {
 
     List<Review> findByReviewerId(Long reviewerId);
 
+    List<Review> findByMentoringId(Long mentoringId);
+
     boolean existsByMentoringIdAndReviewerId(Long mentoringId, Long reviewerId);
 }

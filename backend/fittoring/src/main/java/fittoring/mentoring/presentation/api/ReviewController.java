@@ -2,10 +2,12 @@ package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.ReviewService;
 import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
+import fittoring.mentoring.business.service.dto.MentoringReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
+import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
@@ -50,6 +52,16 @@ public class ReviewController {
     ) {
         MemberReviewGetDto memberReviewGetDto = new MemberReviewGetDto(1L);
         List<MemberReviewGetResponse> responseBody = reviewService.findMemberReviews(memberReviewGetDto);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(responseBody);
+    }
+
+    @GetMapping("mentorings/{mentoringId}/reviews")
+    public ResponseEntity<List<MentoringReviewGetResponse>> findMentoringReviews(
+        @PathVariable("mentoringId") Long mentoringId
+    ) {
+        MentoringReviewGetDto mentoringReviewGetDto = new MentoringReviewGetDto(mentoringId);
+        List<MentoringReviewGetResponse> responseBody = reviewService.findMentoringReviews(mentoringReviewGetDto);
         return ResponseEntity.status(HttpStatus.OK)
             .body(responseBody);
     }
