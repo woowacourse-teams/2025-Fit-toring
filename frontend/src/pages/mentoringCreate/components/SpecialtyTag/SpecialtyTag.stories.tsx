@@ -39,8 +39,8 @@ export const SelectedSpecialtySection: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          '멘토링 생성 페이지의 전문 분야 태그 컴포넌트입니다. 사용자가 전문 분야를 선택할 수 있도록 합니다.',
+
+        story: '선택된 전문 분야입니다.',
       },
     },
   },
@@ -56,8 +56,8 @@ export const DisabledSpecialtySection: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          '멘토링 생성 페이지의 전문 분야 태그 컴포넌트입니다. 사용자가 전문 분야를 선택할 수 있도록 합니다.',
+
+        story: '비활성화된 전문 분야 태그입니다.',
       },
     },
   },

@@ -14,7 +14,8 @@ function SpecialtySection() {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
 
-  const handleToggleSpecialtyTag = (title: string) => {
+
+  const handleToggleSpecialtyTagChange = (title: string) => {
     setSelectedSpecialties((prev) => {
       return prev.includes(title)
         ? prev.filter((item) => item !== title)
@@ -38,13 +39,17 @@ function SpecialtySection() {
   return (
     <section>
       <TitleSeparator>전문 분야</TitleSeparator>
-      <StyledGuideText>최대 3개까지 등록 가능합니다.</StyledGuideText>
+
+      <StyledGuideText>
+        최대 {MAX_SPECIALTIES}개까지 등록 가능합니다.
+      </StyledGuideText>
       <StyledSpecialtyWrapper>
         {specialties.map((specialty) => (
           <SpecialtyTag
             key={specialty.id}
             title={specialty.title}
-            onChange={() => handleToggleSpecialtyTag(specialty.title)}
+
+            onChange={() => handleToggleSpecialtyTagChange(specialty.title)}
             disabled={
               selectedSpecialties.length >= MAX_SPECIALTIES &&
               !selectedSpecialties.includes(specialty.title)

@@ -1,3 +1,6 @@
+
+import { specialtiesHandler } from '../../../../common/mock/common/handlers';
+
 import SpecialtySection from './SpecialtySection';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -14,6 +17,10 @@ type Story = StoryObj<typeof meta>;
 
 export const DefaultSpecialtySection: Story = {
   parameters: {
+
+    msw: {
+      handlers: [...specialtiesHandler],
+    },
     docs: {
       description: {
         story:

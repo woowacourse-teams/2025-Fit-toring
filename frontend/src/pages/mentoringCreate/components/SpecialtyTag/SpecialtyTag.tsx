@@ -6,6 +6,9 @@ interface SpecialtyTagProps {
   checked: boolean;
   onChange: () => void;
 }
+
+type LabelType = Pick<SpecialtyTagProps, 'disabled' | 'checked'>;
+
 function SpecialtyTag({
   title,
   disabled,
@@ -13,22 +16,22 @@ function SpecialtyTag({
   onChange,
 }: SpecialtyTagProps) {
   return (
-    <>
-      <StyledContainer checked={checked} disabled={disabled}>
-        <StyledHiddenInput
-          onChange={onChange}
-          type="checkbox"
-          disabled={disabled}
-        />
-        {title}
-      </StyledContainer>
-    </>
+
+    <StyledContainer checked={checked} disabled={disabled}>
+      <StyledHiddenInput
+        onChange={onChange}
+        type="checkbox"
+        disabled={disabled}
+      />
+      {title}
+    </StyledContainer>
   );
 }
 
 export default SpecialtyTag;
 
-const StyledContainer = styled.label<{ checked: boolean; disabled: boolean }>`
+
+const StyledContainer = styled.label<LabelType>`
   display: flex;
   align-items: center;
   justify-content: center;
