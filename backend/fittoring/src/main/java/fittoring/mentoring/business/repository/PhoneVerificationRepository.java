@@ -13,5 +13,5 @@ public interface PhoneVerificationRepository extends ListCrudRepository<PhoneVer
 
     void deleteByPhone(Phone phone);
 
-    Optional<PhoneVerification> findByPhoneOrderByExpireAtDesc(Phone phone);
+    Optional<PhoneVerification> findFirstByPhoneAndCodeOrderByExpireAtDesc(Phone phone, String code);
 }

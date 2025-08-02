@@ -48,12 +48,15 @@ public class PhoneVerificationService {
 
     public void verifyCode(VerificationCodeRequest request) {
         Phone phone = new Phone(request.phone());
-        LocalDateTime requestTime = LocalDateTime.now(ZoneId.of("Asis/Seoul"));
-        PhoneVerification phoneVerification = phoneVerificationRepository.findByPhoneOrderByExpireAtDesc(phone)
+        LocalDateTime requestTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        PhoneVerification phoneVerification = phoneVerificationRepository.findFirstByPhoneAndCodeOrderByExpireAtDesc(
+                        phone,
+                        request.code()
+                )
                 .orElseThrow(() -> new InvalidPhoneVerificationException(
                         BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage()
                 ));
-        if (phoneVerification.expiredStatus(requestTime) || phoneVerification.notMatchCode(request.code())) {
+        if (phoneVerification.expiredStatus(requestTime)) {
             throw new InvalidPhoneVerificationException(BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage());
         }
     }
