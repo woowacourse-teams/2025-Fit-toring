@@ -36,9 +36,7 @@ public class PhoneVerificationService {
     }
 
     private void deleteExpiredVerification(Phone phone) {
-        if (phoneVerificationRepository.existsByPhone(phone)) {
-            phoneVerificationRepository.deleteByPhone(phone);
-        }
+        phoneVerificationRepository.deleteByPhone(phone);
     }
 
     private LocalDateTime calculateExpiredTime() {
