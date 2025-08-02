@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class VerificationCodeGenerator implements CodeGenerator {
 
-    private static final SecureRandom secureRandom = new SecureRandom();
+    private static final SecureRandom SECURE_RAMDOM = new SecureRandom();
 
     @Override
     public String generate() {
-        int code = secureRandom.nextInt(1_000_000);
+        int code = SECURE_RAMDOM.nextInt(1_000_000);
         return String.format("%06d", code);
     }
 }
