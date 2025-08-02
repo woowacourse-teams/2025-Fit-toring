@@ -38,7 +38,9 @@ function SpecialtySection() {
   return (
     <section>
       <TitleSeparator>전문 분야</TitleSeparator>
-      <StyledGuideText>최대 3개까지 등록 가능합니다.</StyledGuideText>
+      <StyledGuideText>
+        최대 {MAX_SPECIALTIES}개까지 등록 가능합니다.
+      </StyledGuideText>
       <StyledSpecialtyWrapper>
         {specialties.map((specialty) => (
           <SpecialtyTag
