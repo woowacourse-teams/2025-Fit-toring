@@ -8,9 +8,12 @@ import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.MisMatchPasswordException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.util.DbCleaner;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, AuthService.class})
+@Import({DbCleaner.class, AuthService.class, JwtProvider.class})
 @DataJpaTest
 class AuthServiceTest {
 
@@ -147,5 +150,36 @@ class AuthServiceTest {
         //then
         assertThatThrownBy(() -> authService.login(loginId, password))
                 .isInstanceOf(MisMatchPasswordException.class);
+    }
+
+    @DisplayName("정상적인 로그인이 성공하면 토큰을 반환한다.")
+    @Test
+    void login3() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                Password.from("password")
+        );
+        Member savedMember = em.persist(member);
+
+        String loginId = "loginId";
+        String password = "password";
+
+        //when
+        AuthTokenResponse actual = authService.login(loginId, password);
+
+        //then
+        RefreshToken refreshToken = em.find(RefreshToken.class, 1L);
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(actual.accessToken()).isNotNull();
+                    assertThat(actual.refreshToken()).isNotNull();
+                    assertThat(refreshToken).isNotNull();
+                    assertThat(refreshToken.getMemberId()).isEqualTo(savedMember.getId());
+                    assertThat(refreshToken.getToken()).isEqualTo(actual.refreshToken());
+                }
+        );
     }
 }
