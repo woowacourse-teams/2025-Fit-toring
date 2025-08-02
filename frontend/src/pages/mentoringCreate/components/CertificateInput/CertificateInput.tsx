@@ -5,13 +5,17 @@ import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import downIcon from '../../../../common/assets/images/downIcon.svg';
 import usePreviewImage from '../../../../common/hooks/usePreviewImage';
 
-function CertificateInput() {
+interface CertificateInputProps {
+  onDeleteButtonClick: () => void;
+}
+
+function CertificateInput({ onDeleteButtonClick }: CertificateInputProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
   return (
     <StyledContainer>
       <StyledTitleWrapper>
         <h4>자격증</h4>
-        <button>
+        <button type="button" onClick={onDeleteButtonClick}>
           <img src={deleteIcon} alt="삭제 아이콘" />
         </button>
       </StyledTitleWrapper>
