@@ -263,16 +263,16 @@ class ReviewControllerTest {
         ));
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         reservationRepository.save(new Reservation()); // TODO: 예약2 추가하기
-        Review review1 = reviewRepository.save(new Review(
+        reviewRepository.save(new Review(
             (byte) 4,
             "전반적으로 좋았습니다.",
             mentoring1,
             reviewer
         ));
-        Review review2 = reviewRepository.save(new Review(
+        reviewRepository.save(new Review(
             (byte) 4,
             "전반적으로 좋았습니다.",
-            mentoring1,
+            mentoring2,
             reviewer
         ));
 
@@ -283,6 +283,59 @@ class ReviewControllerTest {
             // TODO: 작성자 정보 넣기
             .when()
             .get("/reviews/mine")
+            .then().log().all()
+            .statusCode(200)
+            .body("", hasSize(2));
+    }
+
+    @DisplayName("특정 멘토링에 달린 리뷰 조회 성공 시 200 OK를 반환한다")
+    @Test
+    void findMentoringReviews() {
+        // given
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+            "mentorName",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        Member reviewer1 = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Member reviewer2 = memberRepository.save(new Member(
+            "loginId2",
+            "남",
+            "name",
+            "010-1234-5679",
+            "password"
+        ));
+        reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
+        reservationRepository.save(new Reservation()); // TODO: 예약2 추가하기
+        reviewRepository.save(new Review(
+            (byte) 4,
+            "전반적으로 좋았습니다.",
+            mentoring,
+            reviewer1
+        ));
+        reviewRepository.save(new Review(
+            (byte) 4,
+            "전반적으로 좋았습니다.",
+            mentoring,
+            reviewer2
+        ));
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
+            .when()
+            .get("/mentorings" + mentoring.getId() + "/reviews")
             .then().log().all()
             .statusCode(200)
             .body("", hasSize(2));

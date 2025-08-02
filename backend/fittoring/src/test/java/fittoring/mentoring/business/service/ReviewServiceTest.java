@@ -14,10 +14,12 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
+import fittoring.mentoring.business.service.dto.MentoringReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
+import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
@@ -259,8 +261,8 @@ class ReviewServiceTest {
         MemberReviewGetDto memberReviewGetDto = new MemberReviewGetDto(reviewer.getId());
 
         // when
-        List<MemberReviewGetResponse> memberReviewGetResponses =
-            reviewService.findMemberReviews(memberReviewGetDto);
+        List<MemberReviewGetResponse> memberReviewGetResponses
+            = reviewService.findMemberReviews(memberReviewGetDto);
 
         // then
         assertThat(memberReviewGetResponses).containsExactlyInAnyOrder(
@@ -273,6 +275,69 @@ class ReviewServiceTest {
             new MemberReviewGetResponse(
                 review2.getId(),
                 review2.getMentoring().getId(),
+                review2.getRating(),
+                review2.getContent()
+            )
+        );
+    }
+
+    @DisplayName("특정 멘토링에 달린 리뷰 조회 성공 시 리뷰 정보를 반환한다")
+    @Test
+    void findMentoringReviews() {
+        // given
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            "mentorName",
+            "010-5678-1234",
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        Member reviewer1 = entityManager.persist(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        Member reviewer2 = entityManager.persist(new Member(
+            "loginId2",
+            "남",
+            "name",
+            "010-1234-5679",
+            "password"
+        ));
+        entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
+        entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
+        Review review1 = entityManager.persist(new Review(
+            (byte) 5,
+            "최고의 멘토링이었습니다.",
+            mentoring,
+            reviewer1
+        ));
+        Review review2 = entityManager.persist(new Review(
+            (byte) 5,
+            "최고의 멘토링이었습니다.",
+            mentoring,
+            reviewer2
+        ));
+        MentoringReviewGetDto mentoringReviewGetDto = new MentoringReviewGetDto(mentoring.getId());
+
+        // when
+        List<MentoringReviewGetResponse> mentoringReviewGetResponses
+            = reviewService.findMentoringReviews(mentoringReviewGetDto);
+
+        // then
+        assertThat(mentoringReviewGetResponses).containsExactlyInAnyOrder(
+            new MentoringReviewGetResponse(
+                review1.getId(),
+                review1.getReviewer().getName(),
+                review1.getRating(),
+                review1.getContent()
+            ),
+            new MentoringReviewGetResponse(
+                review2.getId(),
+                review1.getReviewer().getName(),
                 review2.getRating(),
                 review2.getContent()
             )
