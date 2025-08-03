@@ -5,9 +5,9 @@ import styled from '@emotion/styled';
 import defaultProfile from '../../../../common/assets/images/profileImg.svg';
 import { getMyProfile } from '../../apis/getMyProfile';
 
-import type { MyProfile } from '../../types/myProfile';
+import type { MyProfileType } from '../../types/myProfile';
 
-const INITIAL_PROFILE: MyProfile = {
+const INITIAL_PROFILE: MyProfileType = {
   name: '',
   phoneNumber: '',
   loginId: '',
@@ -15,7 +15,7 @@ const INITIAL_PROFILE: MyProfile = {
 } as const;
 
 function MyProfile() {
-  const [myProfile, setMyProfile] = useState<MyProfile>(INITIAL_PROFILE);
+  const [myProfile, setMyProfile] = useState<MyProfileType>(INITIAL_PROFILE);
   const { name, phoneNumber, loginId, imageUrl } = myProfile;
 
   useEffect(() => {
