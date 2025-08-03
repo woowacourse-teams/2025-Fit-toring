@@ -80,22 +80,22 @@ function CreatedMentoring() {
             }) => (
               <StyledApplicationItem key={id}>
                 <StyledName>{name}님의 상담 신청</StyledName>
-                <StyledDateAndFeeWrapper>
+                <StyledApplicationInfoWrapper>
                   <StyledApplicationDate>
                     ⏰ {applicationDate}
                   </StyledApplicationDate>
                   <StyledApplicationFee>
                     💰 15분 {fee.toLocaleString()}원
                   </StyledApplicationFee>
-                </StyledDateAndFeeWrapper>
+                  <StyledApplicationStatus status={status}>
+                    {getStatusImage(status)} {status}
+                  </StyledApplicationStatus>
+                </StyledApplicationInfoWrapper>
                 {phoneNumber && (
                   <StyledApplicationPhoneNumber>
                     연락처: {phoneNumber}
                   </StyledApplicationPhoneNumber>
                 )}
-                <StyledApplicationStatus status={status}>
-                  {getStatusImage(status)} {status}
-                </StyledApplicationStatus>
                 <StyledApplicationContent>{content}</StyledApplicationContent>
               </StyledApplicationItem>
             ),
@@ -192,8 +192,10 @@ const StyledName = styled.h4`
   ${({ theme }) => theme.TYPOGRAPHY.B1_R}
 `;
 
-const StyledDateAndFeeWrapper = styled.div`
+const StyledApplicationInfoWrapper = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 1rem;
 `;
 
@@ -208,6 +210,10 @@ const StyledApplicationFee = styled.p`
 `;
 
 const StyledApplicationPhoneNumber = styled.p`
+  width: fit-content;
+
+  background-color: ${({ theme }) => theme.BG.YELLOW};
+
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
