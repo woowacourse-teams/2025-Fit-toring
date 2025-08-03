@@ -6,12 +6,11 @@ import CertificateInput from '../CertificateInput/CertificateInput';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 function CertificateSection() {
-  const [certificates, setCertificates] = useState<number[]>([]);
+  const [certificates, setCertificates] = useState<string[]>([]);
   const handleAddButtonClick = () => {
-    setCertificates((prev) => [...prev, Date.now()]);
+    setCertificates((prev) => [...prev, crypto.randomUUID()]);
   };
-
-  const handleDeleteButtonClick = (id: number) => {
+  const handleDeleteButtonClick = (id: string) => {
     setCertificates((prev) => prev.filter((item) => item !== id));
   };
   return (
@@ -50,7 +49,6 @@ const StyledDescriptionWrapper = styled.div`
   gap: 1.4rem;
 
   width: 100%;
-  height: 100%;
   margin-bottom: 3.5rem;
   padding: 2rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
