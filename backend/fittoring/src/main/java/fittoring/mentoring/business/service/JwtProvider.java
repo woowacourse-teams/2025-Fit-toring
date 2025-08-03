@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 public class JwtProvider {
 
     private final SecretKey secretKey;
+    private final JwtParser jwtParser;
     private final long accessExpirationMillis;
     private final long refreshExpirationMillis;
 
@@ -30,6 +31,9 @@ public class JwtProvider {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
         this.accessExpirationMillis = accessExpirationMillis;
         this.refreshExpirationMillis = refreshExpirationMillis;
+        this.jwtParser = Jwts.parserBuilder()
+                .setSigningKey(this.secretKey)
+                .build();
     }
 
     public String createAccessToken(Long memberId) {
@@ -63,7 +67,7 @@ public class JwtProvider {
 
     private void validateToken(String token) {
         try {
-            getParse().parseClaimsJws(token);
+            jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             throw new InvalidTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
         } catch (MalformedJwtException | UnsupportedJwtException e) {
@@ -74,15 +78,9 @@ public class JwtProvider {
     }
 
     private String getSubject(String token) {
-        return getParse()
+        return jwtParser
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-    }
-
-    private JwtParser getParse() {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build();
     }
 }
