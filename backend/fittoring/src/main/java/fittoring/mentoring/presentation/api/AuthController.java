@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
+
+    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 
     private final AuthService authService;
 
@@ -36,6 +40,16 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/reissue")
+    public ResponseEntity<Void> reissue(
+            @CookieValue(REFRESH_TOKEN_COOKIE_NAME) String refreshToken,
+            HttpServletResponse httpResponse
+    ) {
+        AuthTokenResponse response = authService.reissue(refreshToken);
+        setCookie(httpResponse, response);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/validate-id")
     public ResponseEntity<Void> validateDuplicateLoginId(@RequestBody @Valid ValidateDuplicateLoginIdRequest request) {
         authService.validateDuplicateLoginId(request.loginId());
@@ -43,8 +57,14 @@ public class AuthController {
     }
 
     private void setCookie(HttpServletResponse httpResponse, AuthTokenResponse response) {
-        ResponseCookie accessTokenCookie = CookieProvider.createCookie(("accessToken"), response.accessToken());
-        ResponseCookie refreshTokenCookie = CookieProvider.createCookie(("refreshToken"), response.refreshToken());
+        ResponseCookie accessTokenCookie = CookieProvider.createCookie(
+                ACCESS_TOKEN_COOKIE_NAME,
+                response.accessToken()
+        );
+        ResponseCookie refreshTokenCookie = CookieProvider.createCookie(
+                REFRESH_TOKEN_COOKIE_NAME,
+                response.refreshToken()
+        );
         httpResponse.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         httpResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
     }
