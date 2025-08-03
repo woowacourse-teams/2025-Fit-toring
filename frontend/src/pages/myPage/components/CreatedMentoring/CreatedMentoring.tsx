@@ -41,6 +41,19 @@ const MENTORING_APPLICATIONS: MentoringApplication[] = [
 ] as const;
 
 function CreatedMentoring() {
+  const getStatusImage = (status: string) => {
+    switch (status) {
+      case '승인 대기':
+        return '⏳';
+      case '승인됨':
+        return '✅';
+      case '완료됨':
+        return '🎉';
+      default:
+        return null;
+    }
+  };
+
   return (
     <StyledContainer>
       <StyledTitle>개설한 멘토링</StyledTitle>
@@ -80,6 +93,9 @@ function CreatedMentoring() {
                     연락처: {phoneNumber}
                   </StyledApplicationPhoneNumber>
                 )}
+                <StyledApplicationStatus status={status}>
+                  {getStatusImage(status)} {status}
+                </StyledApplicationStatus>
                 <StyledApplicationContent>{content}</StyledApplicationContent>
               </StyledApplicationItem>
             ),
@@ -196,6 +212,57 @@ const StyledApplicationPhoneNumber = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
+const StyledApplicationStatus = styled.p<{
+  status: '승인 대기' | '승인됨' | '완료됨';
+}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid
+    ${({ theme, status }) => {
+      switch (status) {
+        case '승인 대기':
+          return theme.OUTLINE.YELLOW;
+        case '승인됨':
+          return theme.SYSTEM.MAIN300;
+        case '완료됨':
+          return theme.SYSTEM.MAIN400;
+        default:
+          return theme.OUTLINE.REGULAR;
+      }
+    }};
+  border-radius: 8px;
+
+  background-color: ${({ theme, status }) => {
+    switch (status) {
+      case '승인 대기':
+        return theme.BG.YELLOW;
+      case '승인됨':
+        return theme.SYSTEM.MAIN100;
+      case '완료됨':
+        return theme.SYSTEM.MAIN200;
+      default:
+        return theme.BG.WHITE;
+    }
+  }};
+
+  color: ${({ theme, status }) => {
+    switch (status) {
+      case '승인 대기':
+        return theme.FONT.Y01;
+      case '승인됨':
+      case '완료됨':
+        return theme.SYSTEM.MAIN700;
+      default:
+        return theme.FONT.B04;
+    }
+  }};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
 
 const StyledApplicationContent = styled.p`
   color: ${({ theme }) => theme.FONT.B03};
