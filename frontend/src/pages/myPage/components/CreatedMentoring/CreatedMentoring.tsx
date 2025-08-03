@@ -97,6 +97,12 @@ function CreatedMentoring() {
                   </StyledApplicationPhoneNumber>
                 )}
                 <StyledApplicationContent>{content}</StyledApplicationContent>
+                {status === '승인 대기' && (
+                  <StyledButtonWrapper>
+                    <StyledPrimaryButton>승인</StyledPrimaryButton>
+                    <StyledSecondaryButton>거절</StyledSecondaryButton>
+                  </StyledButtonWrapper>
+                )}
               </StyledApplicationItem>
             ),
           )}
@@ -273,4 +279,30 @@ const StyledApplicationStatus = styled.p<{
 const StyledApplicationContent = styled.p`
   color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const StyledBaseButton = styled.button`
+  width: fit-content;
+  padding: 0.8rem 1.3rem;
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  color: ${({ theme }) => theme.FONT.W01};
+  ${({ theme }) => theme.TYPOGRAPHY.BTN4_R}
+`;
+
+const StyledPrimaryButton = styled(StyledBaseButton)`
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
+`;
+
+const StyledSecondaryButton = styled(StyledBaseButton)`
+  background-color: ${({ theme }) => theme.FONT.ERROR};
 `;
