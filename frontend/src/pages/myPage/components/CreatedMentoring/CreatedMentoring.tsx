@@ -54,6 +54,32 @@ function CreatedMentoring() {
           </StyledDescription>
         </StyledInfoWrapper>
         <StyledLine />
+        <StyledApplicationList>
+          {MENTORING_APPLICATIONS.map(
+            ({
+              id,
+              name,
+              phoneNumber,
+              fee,
+              content,
+              status,
+              applicationDate,
+              scheduledDate,
+              completionDate,
+            }) => (
+              <StyledApplicationItem key={id}>
+                <h4>{name}님의 상담 신청</h4>
+                <p>⏰ {applicationDate}</p>
+                {phoneNumber && <p>전화번호: {phoneNumber}</p>}
+                <p>💰 15분 {fee.toLocaleString()}원</p>
+                <p>{status}</p>
+                <p>{content}</p>
+                {scheduledDate && <p>예정 날짜: {scheduledDate}</p>}
+                {completionDate && <p>완료 날짜: {completionDate}</p>}
+              </StyledApplicationItem>
+            ),
+          )}
+        </StyledApplicationList>
       </StyledWrapper>
     </StyledContainer>
   );
@@ -111,4 +137,31 @@ const StyledLine = styled.hr`
   margin: 0;
   border: none;
   border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+`;
+
+const StyledApplicationList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  padding: 1.5rem 2rem;
+`;
+
+const StyledApplicationItem = styled.li`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  height: auto;
+  padding: 1.5rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 16px;
+
+  transition: all 0.2s ease;
+
+  :hover {
+    box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
+  }
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
