@@ -82,7 +82,7 @@ describe('usePasswordInput 훅 테스트', () => {
       );
     });
 
-    it('비밀번호와 비밀번호 확인이 일치하면 에러 메시지를 반환하지 않는다', () => {
+    it('비밀번호와 비밀번호 확인이 일치하면 빈 문자열을 반환한다', () => {
       const { result } = renderHook(() => usePasswordInput());
 
       act(() => {
