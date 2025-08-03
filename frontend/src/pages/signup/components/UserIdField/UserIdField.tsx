@@ -7,12 +7,29 @@ import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 
-function UserIdField() {
+interface UserIdFieldProps {
+  userId: string;
+  errorMessage: string;
+  handleUserIdChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function UserIdField({
+  userId,
+  errorMessage,
+  handleUserIdChange,
+}: UserIdFieldProps) {
   return (
-    <FormField label="아이디 *">
+    <FormField label="아이디 *" errorMessage={errorMessage}>
       <StyledInputAndBtnWrapper>
         <div className="input-wrapper">
-          <Input id="id" placeholder="fittoring" />
+          <Input
+            id="id"
+            placeholder="fittoring"
+            name="id"
+            value={userId}
+            onChange={handleUserIdChange}
+            errored={errorMessage !== ''}
+          />
         </div>
         <Button type="button" customStyle={buttonCustomStyle}>
           중복확인
