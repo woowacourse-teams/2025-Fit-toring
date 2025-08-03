@@ -4,7 +4,9 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.InvalidTokenException;
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JwtExtractor {
 
     public String extractTokenFromCookie(String name, Cookie[] cookies) {
