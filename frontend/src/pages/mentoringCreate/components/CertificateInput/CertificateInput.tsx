@@ -13,20 +13,20 @@ function CertificateInput({ onDeleteButtonClick }: CertificateInputProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
   return (
     <StyledContainer>
-      <StyledTitleWrapper>
-        <h4>자격증</h4>
+      <StyledCertificateHeader>
+        <p>자격증</p>
         <button type="button" onClick={onDeleteButtonClick}>
           <img src={deleteIcon} alt="삭제 아이콘" />
         </button>
-      </StyledTitleWrapper>
+      </StyledCertificateHeader>
       <StyledContentWrapper>
         <p>유형</p>
-        <select defaultValue="자격증" name="certificateType">
+        <StyledSelect defaultValue="자격증" name="certificateType">
           <option value="자격증">자격증</option>
           <option value="학력">학력</option>
           <option value="수상 경력">수상 경력</option>
           <option value="기타">기타</option>
-        </select>
+        </StyledSelect>
       </StyledContentWrapper>
       <StyledContentWrapper>
         <p>이름</p>
@@ -79,14 +79,14 @@ const StyledContainer = styled.div`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyledTitleWrapper = styled.div`
+const StyledCertificateHeader = styled.div`
   display: flex;
   justify-content: space-between;
 
   width: 100%;
 
-  & > h4 {
-    ${({ theme }) => theme.TYPOGRAPHY.H4_R};
+  & > p {
+    ${({ theme }) => theme.TYPOGRAPHY.LB4_R};
     color: ${({ theme }) => theme.FONT.B01};
   }
 
@@ -122,34 +122,6 @@ const StyledContentWrapper = styled.div`
     color: ${({ theme }) => theme.FONT.B02};
   }
 
-  & > select {
-    appearance: none;
-
-    width: 100%;
-    padding: 1.6rem;
-    border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-    border-radius: 12px;
-
-    background-color: ${({ theme }) => theme.BG.WHITE};
-
-    ${({ theme }) => theme.TYPOGRAPHY.B3_R};
-    color: ${({ theme }) => theme.FONT.B01};
-    background-image: url(${downIcon});
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 1.2rem;
-
-    &:hover {
-      border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-    }
-
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
-      border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-    }
-  }
-
   & > input {
     width: 100%;
     padding: 1.6rem;
@@ -170,6 +142,34 @@ const StyledContentWrapper = styled.div`
       box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
       border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
     }
+  }
+`;
+
+const StyledSelect = styled.select`
+  appearance: none;
+
+  width: 100%;
+  padding: 1.6rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 12px;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+  color: ${({ theme }) => theme.FONT.B01};
+  background-image: url(${downIcon});
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 1.2rem;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
+    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 `;
 
