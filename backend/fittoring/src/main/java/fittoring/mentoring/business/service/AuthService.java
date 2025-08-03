@@ -40,7 +40,7 @@ public class AuthService {
     public AuthTokenResponse login(String loginId, String password) {
         Member member = getMemberByLoginId(loginId);
         member.matchPassword(password);
-        String accessToken = jwtProvider.createToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId());
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken saveRefreshToken = new RefreshToken(

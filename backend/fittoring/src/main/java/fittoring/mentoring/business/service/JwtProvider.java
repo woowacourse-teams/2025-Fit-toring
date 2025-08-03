@@ -32,7 +32,7 @@ public class JwtProvider {
         this.refreshExpirationMillis = refreshExpirationMillis;
     }
 
-    public String createToken(Long memberId) {
+    public String createAccessToken(Long memberId) {
         Date now = new Date();
         Date accessMillis = new Date(now.getTime() + accessExpirationMillis);
         return buildToken(memberId, now, accessMillis);
