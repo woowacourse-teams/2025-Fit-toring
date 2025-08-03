@@ -35,12 +35,10 @@ class JwtProviderTest {
 
     @DisplayName("만료되지 않은 토큰에서 subject를 추출할 수 있다.")
     @Test
-    void getSubjectFromPayloadBy() throws InterruptedException {
+    void getSubjectFromPayloadBy() {
         //given
         Long memberId = 1L;
         String token = jwtProvider.createAccessToken(memberId);
-
-        Thread.sleep(100); //0.1초 대기
 
         //when
         Long actual = jwtProvider.getSubjectFromPayloadBy(token);
