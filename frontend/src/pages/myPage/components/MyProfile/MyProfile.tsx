@@ -53,7 +53,7 @@ const StyledContainer = styled.section`
   align-items: center;
   gap: 2rem;
 
-  height: 100%;
+  height: auto;
   padding: 2rem;
 `;
 
@@ -70,7 +70,6 @@ const StyledWrapper = styled.div`
 
   width: 100%;
   height: auto;
-  max-height: 24rem;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: rgb(0 0 0 / 10%) 0 0.4rem 1.2rem;
