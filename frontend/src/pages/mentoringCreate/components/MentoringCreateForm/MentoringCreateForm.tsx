@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
 import CertificateSection from '../CertificateSection/CertificateSection';
+import DetailIntroduce from '../DetailIntroduce/DetailIntroduce';
 import IntroduceSection from '../IntroduceSection/IntroduceSection';
 import ProfileSection from '../ProfileSection/ProfileSection';
 import SpecialtySection from '../SpecialtySection/SpecialtySection';
@@ -14,6 +15,7 @@ function MentoringCreateForm() {
       <SpecialtySection />
       <IntroduceSection />
       <CertificateSection />
+      <DetailIntroduce />
     </StyledContainer>
   );
 }
