@@ -64,18 +64,23 @@ function CreatedMentoring() {
               content,
               status,
               applicationDate,
-              scheduledDate,
-              completionDate,
             }) => (
               <StyledApplicationItem key={id}>
-                <h4>{name}님의 상담 신청</h4>
-                <p>⏰ {applicationDate}</p>
-                {phoneNumber && <p>전화번호: {phoneNumber}</p>}
-                <p>💰 15분 {fee.toLocaleString()}원</p>
-                <p>{status}</p>
-                <p>{content}</p>
-                {scheduledDate && <p>예정 날짜: {scheduledDate}</p>}
-                {completionDate && <p>완료 날짜: {completionDate}</p>}
+                <StyledName>{name}님의 상담 신청</StyledName>
+                <StyledDateAndFeeWrapper>
+                  <StyledApplicationDate>
+                    ⏰ {applicationDate}
+                  </StyledApplicationDate>
+                  <StyledApplicationFee>
+                    💰 15분 {fee.toLocaleString()}원
+                  </StyledApplicationFee>
+                </StyledDateAndFeeWrapper>
+                {phoneNumber && (
+                  <StyledApplicationPhoneNumber>
+                    연락처: {phoneNumber}
+                  </StyledApplicationPhoneNumber>
+                )}
+                <StyledApplicationContent>{content}</StyledApplicationContent>
               </StyledApplicationItem>
             ),
           )}
@@ -163,5 +168,36 @@ const StyledApplicationItem = styled.li`
     box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
   }
 
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledName = styled.h4`
+  color: ${({ theme }) => theme.FONT.B01};
+  ${({ theme }) => theme.TYPOGRAPHY.B1_R}
+`;
+
+const StyledDateAndFeeWrapper = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+const StyledApplicationDate = styled.p`
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledApplicationFee = styled.p`
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledApplicationPhoneNumber = styled.p`
+  color: ${({ theme }) => theme.FONT.B01};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+
+const StyledApplicationContent = styled.p`
+  color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;

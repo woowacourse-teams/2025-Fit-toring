@@ -33,6 +33,7 @@ export const THEME = {
     W01: '#FFFFFF',
     G01: '#A7A7A7',
     ERROR: '#fa5252',
+    Y01: '#b77503ff',
   },
 
   OUTLINE: {
@@ -40,6 +41,7 @@ export const THEME = {
     REGULAR: '#E2E8F0',
     DARK: '#CAD5E2',
     BLACK: '#111111',
+    YELLOW: '#f7d6adff',
   },
 
   BG: {
@@ -48,6 +50,7 @@ export const THEME = {
     GRAY: '#E1E1E1',
     WHITE: '#FFFFFF',
     GREEN: '#F0FDFA;',
+    YELLOW: '#fef3c7',
   },
   TYPOGRAPHY: {
     H1_B: css`
