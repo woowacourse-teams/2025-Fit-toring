@@ -57,7 +57,7 @@ const usePasswordInput = () => {
     handlePasswordChange,
     handlePasswordConfirmChange,
     passwordErrorMessage,
-    passwordConfirmErrorMessage: getPasswordConfirmError(),
+    passwordConfirmErrorMessage,
     isPasswordValid: password !== '' && passwordErrorMessage === '',
     isPasswordConfrimValid:
       passwordConfirm !== '' && passwordConfirmErrorMessage === '',
