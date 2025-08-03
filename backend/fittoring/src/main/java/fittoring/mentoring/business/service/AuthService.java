@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
+import fittoring.mentoring.business.exception.InvalidTokenException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.RefreshToken;
@@ -45,6 +46,22 @@ public class AuthService {
         refreshTokenRepository.save(saveRefreshToken);
 
         return new AuthTokenResponse(accessToken, refreshToken);
+    }
+
+    @Transactional
+    public AuthTokenResponse reissue(String refreshToken) {
+        jwtProvider.validateToken(refreshToken);
+        RefreshToken findRefreshToken = getRefreshToken(refreshToken);
+        String newAccessToken = jwtProvider.createToken(findRefreshToken.getMemberId());
+        String newRefreshToken = jwtProvider.createRefreshToken();
+        findRefreshToken.update(newRefreshToken, LocalDateTime.now());
+
+        return new AuthTokenResponse(newAccessToken, newRefreshToken);
+    }
+
+    private RefreshToken getRefreshToken(String refreshToken) {
+        return refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.NOT_FOUND_TOKEN.getMessage()));
     }
 
     public void validateDuplicateLoginId(String loginId) {

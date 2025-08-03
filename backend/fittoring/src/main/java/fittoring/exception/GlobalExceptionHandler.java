@@ -2,6 +2,7 @@ package fittoring.exception;
 
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
+import fittoring.mentoring.business.exception.InvalidTokenException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.MisMatchPasswordException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
@@ -47,6 +48,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException e) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidTokenException e) {
+        return ErrorResponse.of(HttpStatus.UNAUTHORIZED, e.getMessage()).toResponseEntity();
+    }
+
 
     @ExceptionHandler(SystemException.class)
     public ResponseEntity<ErrorResponse> handle(SystemException e) {

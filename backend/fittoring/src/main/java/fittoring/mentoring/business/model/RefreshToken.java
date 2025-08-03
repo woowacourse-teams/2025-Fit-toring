@@ -30,10 +30,16 @@ public class RefreshToken {
     @Column(nullable = false)
     private String token;
 
+    @Getter
     @Column(nullable = false)
     private LocalDateTime createAt;
 
     public RefreshToken(Long memberId, String token, LocalDateTime createAt) {
         this(null, memberId, token, createAt);
+    }
+
+    public void update(String token, LocalDateTime createAt) {
+        this.token = token;
+        this.createAt = createAt;
     }
 }
