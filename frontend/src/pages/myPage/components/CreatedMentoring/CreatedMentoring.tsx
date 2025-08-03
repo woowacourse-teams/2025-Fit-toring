@@ -48,6 +48,9 @@ function CreatedMentoring() {
         <StyledSubTitle>
           멘토링 신청 목록 ({MENTORING_APPLICATIONS.length}건)
         </StyledSubTitle>
+        <StyledDescription>
+          사용자들이 신청한 멘토링을 승인하거나 거절할 수 있습니다.
+        </StyledDescription>
       </StyledWrapper>
     </StyledContainer>
   );
@@ -84,6 +87,11 @@ const StyledWrapper = styled.div`
 `;
 
 const StyledSubTitle = styled.h3`
-  color: ${({ theme }) => theme.FONT.B03};
+  color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
+`;
+
+const StyledDescription = styled.p`
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B1_R}
 `;
