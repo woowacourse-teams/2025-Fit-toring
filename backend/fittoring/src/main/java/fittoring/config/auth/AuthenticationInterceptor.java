@@ -1,6 +1,8 @@
 package fittoring.config.auth;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.service.JwtExtractor;
+import fittoring.mentoring.business.service.JwtProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,6 +13,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
+    private final JwtProvider jwtProvider;
+    private final JwtExtractor jwtExtractor;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
@@ -19,6 +24,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             responseUnauthorized(response, BusinessErrorMessage.EMPTY_COOKIE.getMessage());
             return false;
         }
+
+        try {
+            String accessToken = jwtExtractor.extractTokenFromCookie("accessToken", cookies);
+            jwtProvider.validateToken(accessToken);
+        } catch (Exception e) {
+            responseUnauthorized(response, BusinessErrorMessage.INVALID_TOKEN.getMessage());
+            return false;
+        }
+
         return true;
     }
 

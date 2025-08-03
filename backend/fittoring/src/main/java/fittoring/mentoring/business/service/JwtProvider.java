@@ -61,7 +61,7 @@ public class JwtProvider {
         return Long.valueOf(getSubject(token));
     }
 
-    private void validateToken(String token) {
+    public void validateToken(String token) {
         try {
             getParse().parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
