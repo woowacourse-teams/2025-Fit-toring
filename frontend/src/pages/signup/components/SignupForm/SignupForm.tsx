@@ -59,7 +59,7 @@ function SignupForm() {
     isValid: isVerificationCodeValid,
   } = useVerificationCodeInput();
 
-  const isFormValid = () => {
+  const validateForm = () => {
     const validations = [
       isNameValid,
       isUserIdValid,
@@ -106,13 +106,13 @@ function SignupForm() {
         />
       </StyledFormFields>
       <Button
-        variant={isFormValid() ? 'primary' : 'disabled'}
+        variant={validateForm() ? 'primary' : 'disabled'}
         type="submit"
         size="full"
         customStyle={css`
           height: 4.3rem;
           box-shadow: 0 4px 12px 0
-            ${isFormValid() ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
+            ${validateForm() ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
 
           font-size: 1.6rem;
         `}
