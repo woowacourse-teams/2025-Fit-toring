@@ -30,6 +30,12 @@ public class AuthService {
         memberRepository.save(member);
     }
 
+    public void validateDuplicateLoginId(String loginId) {
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw new DuplicateLoginIdException(BusinessErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
+        }
+    }
+
     @Transactional
     public AuthTokenResponse login(String loginId, String password) {
         Member member = getMemberByLoginId(loginId);
@@ -45,12 +51,6 @@ public class AuthService {
         refreshTokenRepository.save(saveRefreshToken);
 
         return new AuthTokenResponse(accessToken, refreshToken);
-    }
-
-    public void validateDuplicateLoginId(String loginId) {
-        if (memberRepository.existsByLoginId(loginId)) {
-            throw new DuplicateLoginIdException(BusinessErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
-        }
     }
 
     private Member getMemberByLoginId(String loginId) {
