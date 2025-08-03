@@ -62,7 +62,7 @@ public class JwtProvider {
 
     public Long getSubjectFromPayloadBy(String token) {
         validateToken(token);
-        return Long.valueOf(getSubject(token));
+        return Long.valueOf(getJwtParser(token));
     }
 
     private void validateToken(String token) {
@@ -77,7 +77,7 @@ public class JwtProvider {
         }
     }
 
-    private String getSubject(String token) {
+    private String getJwtParser(String token) {
         return jwtParser
                 .parseClaimsJws(token)
                 .getBody()
