@@ -16,7 +16,7 @@ function IntroduceSection() {
           />
         </FormField>
         <FormField label="경력" htmlFor="career">
-          <Input placeholder="숫자만 입력해주세요." id="career" />
+          <Input placeholder="숫자만 입력해주세요." type="tel" id="career" />
         </FormField>
       </StyledFormFieldWrapper>
     </section>
