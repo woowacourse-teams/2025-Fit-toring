@@ -39,6 +39,7 @@ export const SelectedSpecialtySection: Story = {
   parameters: {
     docs: {
       description: {
+
         story: '선택된 전문 분야입니다.',
       },
     },
@@ -55,6 +56,7 @@ export const DisabledSpecialtySection: Story = {
   parameters: {
     docs: {
       description: {
+
         story: '비활성화된 전문 분야 태그입니다.',
       },
     },

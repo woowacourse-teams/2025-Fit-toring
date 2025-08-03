@@ -4,26 +4,26 @@ import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-function BaseInfoSection() {
+function IntroduceSection() {
   return (
     <section>
-      <TitleSeparator>기본 정보</TitleSeparator>
+      <TitleSeparator>소개 및 경력</TitleSeparator>
       <StyledFormFieldWrapper>
-        <FormField label="이름 *" htmlFor="name">
-          <Input placeholder="홍길동" id="name" required />
+        <FormField label="한줄 소개" htmlFor="introduce">
+          <Input
+            placeholder="간단한 소개를 한 줄로 작성해주세요"
+            id="introduce"
+          />
         </FormField>
-        <FormField label="15분 상담료 (원) *" htmlFor="price">
-          <Input placeholder="5,000" id="price" required />
-        </FormField>
-        <FormField label="전화번호 *" htmlFor="phone">
-          <Input placeholder="010-1234-5678" type="tel" id="phone" required />
+        <FormField label="경력" htmlFor="career">
+          <Input placeholder="숫자만 입력해주세요." type="tel" id="career" />
         </FormField>
       </StyledFormFieldWrapper>
     </section>
   );
 }
 
-export default BaseInfoSection;
+export default IntroduceSection;
 
 const StyledFormFieldWrapper = styled.div`
   display: flex;
