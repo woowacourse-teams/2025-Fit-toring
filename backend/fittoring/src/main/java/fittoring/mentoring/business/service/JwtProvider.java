@@ -76,7 +76,8 @@ public class JwtProvider {
     private String getSubject(String token) {
         return getParse()
                 .parseClaimsJws(token)
-                .getBody().getSubject();
+                .getBody()
+                .getSubject();
     }
 
     private JwtParser getParse() {
