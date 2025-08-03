@@ -13,6 +13,7 @@ import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.util.DbCleaner;
+import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +37,9 @@ class AuthServiceTest {
 
     @Autowired
     private TestEntityManager em;
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -179,6 +183,39 @@ class AuthServiceTest {
                     assertThat(refreshToken).isNotNull();
                     assertThat(refreshToken.getMemberId()).isEqualTo(savedMember.getId());
                     assertThat(refreshToken.getToken()).isEqualTo(actual.refreshToken());
+                }
+        );
+    }
+
+    @DisplayName("refreshToken을 이용해 accessToken과 refreshToken을 재발급 할 수 있다.")
+    @Test
+    void reissue() {
+        //given
+        String accessToken = jwtProvider.createToken(1L);
+        String refreshToken = jwtProvider.createRefreshToken();
+
+        RefreshToken savedRefreshToken = new RefreshToken(
+                1L,
+                refreshToken,
+                LocalDateTime.now().minusDays(1)
+        );
+
+        em.persist(savedRefreshToken);
+
+        //when
+        AuthTokenResponse actual = authService.reissue(refreshToken);
+
+        //then
+        RefreshToken newRefreshToken = em.find(RefreshToken.class, 1L);
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(actual.accessToken()).isNotNull();
+                    assertThat(actual.refreshToken()).isNotNull();
+                    assertThat(actual.accessToken()).isNotEqualTo(accessToken);
+                    assertThat(actual.refreshToken()).isNotEqualTo(refreshToken);
+                    assertThat(newRefreshToken.getToken()).isEqualTo(actual.refreshToken());
+                    assertThat(newRefreshToken.getMemberId()).isEqualTo(savedRefreshToken.getMemberId());
+                    assertThat(newRefreshToken.getCreateAt()).isAfterOrEqualTo(savedRefreshToken.getCreateAt());
                 }
         );
     }
