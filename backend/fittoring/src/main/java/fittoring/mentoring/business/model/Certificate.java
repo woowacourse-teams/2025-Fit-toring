@@ -2,6 +2,8 @@ package fittoring.mentoring.business.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,8 +26,9 @@ public class Certificate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String type;
+    private CertificateType type;
 
     @Column(nullable = false)
     private String title;
@@ -34,7 +37,11 @@ public class Certificate {
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
 
-    public Certificate(String type, String title, Mentoring mentoring){
-        this(null, type, title, mentoring);
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status verificationStatus;
+
+    public Certificate(CertificateType type, String title, Mentoring mentoring){
+        this(null, type, title, mentoring, Status.PENDING);
     }
 }

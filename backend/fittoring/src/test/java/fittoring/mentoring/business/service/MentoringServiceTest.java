@@ -416,8 +416,8 @@ class MentoringServiceTest {
         @Test
         void registerMentoringProfileCertificates() throws IOException {
             //given
-            CertificateInfo certificateInfo1 = new CertificateInfo("자격증", "제1종 보통 운전면허");
-            CertificateInfo certificateInfo2 = new CertificateInfo("수상경력", "광진구 건강 청년 선발 대회 준우승");
+            CertificateInfo certificateInfo1 = new CertificateInfo(CertificateType.LICENSE, "제1종 보통 운전면허");
+            CertificateInfo certificateInfo2 = new CertificateInfo(CertificateType.AWARD, "광진구 건강 청년 선발 대회 준우승");
 
             MentoringRequest request = new MentoringRequest(
                     5000,

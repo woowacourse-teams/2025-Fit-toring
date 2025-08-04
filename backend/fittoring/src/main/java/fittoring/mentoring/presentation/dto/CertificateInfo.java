@@ -1,7 +1,9 @@
 package fittoring.mentoring.presentation.dto;
 
+import fittoring.mentoring.business.model.CertificateType;
+
 public record CertificateInfo(
-        String type,
+        CertificateType type,
         String title
 ) {
 }
