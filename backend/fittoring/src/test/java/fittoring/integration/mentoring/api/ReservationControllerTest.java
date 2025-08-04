@@ -8,6 +8,7 @@ import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
@@ -40,7 +41,6 @@ class ReservationControllerTest {
     @MockitoBean
     private SmsRestClientService smsRestClientService;
 
-
     @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
 
@@ -69,7 +69,7 @@ class ReservationControllerTest {
         doNothing()
                 .when(smsRestClientService)
                 .sendSms(
-                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.any(Phone.class),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString()
                 );
@@ -129,7 +129,7 @@ class ReservationControllerTest {
         doNothing()
                 .when(smsRestClientService)
                 .sendSms(
-                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.any(Phone.class),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString()
                 );
@@ -178,7 +178,7 @@ class ReservationControllerTest {
         doNothing()
                 .when(smsRestClientService)
                 .sendSms(
-                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.any(Phone.class),
                         ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString()
                 );

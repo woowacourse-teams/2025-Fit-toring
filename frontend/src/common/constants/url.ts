@@ -4,4 +4,5 @@ export const PAGE_URL = {
   BOOKING: '/booking',
   MENTORING_CREATE: '/mentoring-create',
   MY_PAGE: '/my-page',
+  SIGNUP: '/signup',
 } as const;
