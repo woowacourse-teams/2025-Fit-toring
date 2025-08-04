@@ -7,7 +7,6 @@ import Button from '../../../../common/components/Button/Button';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
-import { postAuthCode } from '../../apis/postAuthCode';
 import { postAuthCodeVerify } from '../../apis/postAuthCodeVerify';
 import { postSignup } from '../../apis/postSignup';
 import { useConfirmState } from '../../hooks/useConfirmStatus';
@@ -15,6 +14,7 @@ import usePasswordInput from '../../hooks/usePasswordInput';
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
 import useUserIdInput from '../../hooks/useUserIdInput';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
+import useVerificationCodeRequest from '../../hooks/useVerificationCodeRequest';
 import PasswordFields from '../PasswordFields/PasswordFields';
 import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
@@ -65,30 +65,10 @@ function SignupForm() {
   const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
 
   const {
-    confirm: phoneNumberConfirm,
-    isCheckNeeded: isPhoneNumberCheck,
-    shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
-  } = useConfirmState(phoneNumber);
-
-  const handleAuthCodeClick = async () => {
-    try {
-      const response = await postAuthCode(phoneNumber);
-      if (response.status === 200) {
-        alert('인증요청 성공');
-        phoneNumberConfirm();
-      }
-    } catch (error) {
-      console.error('인증요청 실패', error);
-    }
-  };
-
-  const getFinalPhoneNumberErrorMessage = () => {
-    if (!isPhoneNumberCheck) {
-      return '인증요청을 해주세요.';
-    }
-
-    return phoneNumberErrorMessage;
-  };
+    shouldBlockSubmitByPhoneNumberCheck,
+    handleAuthCodeClick,
+    getFinalPhoneNumberErrorMessage,
+  } = useVerificationCodeRequest({ phoneNumber, phoneNumberErrorMessage });
 
   const {
     verificationCode,
