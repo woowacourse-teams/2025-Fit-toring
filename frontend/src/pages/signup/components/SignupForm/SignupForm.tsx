@@ -7,6 +7,7 @@ import Button from '../../../../common/components/Button/Button';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
+import { postAuthCode } from '../../apis/postAuthCode';
 import { postAuthCodeVerify } from '../../apis/postAuthCodeVerify';
 import { postSignup } from '../../apis/postSignup';
 import { posValidateId } from '../../apis/postValidateId';
@@ -93,6 +94,32 @@ function SignupForm() {
   const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
 
   const {
+    confirm: phoneNumberConfirm,
+    isCheckNeeded: isPhoneNumberCheck,
+    shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
+  } = useConfirmState(phoneNumber);
+
+  const handleAuthCodeClick = async () => {
+    try {
+      const response = await postAuthCode(phoneNumber);
+      if (response.status === 200) {
+        alert('인증요청 성공');
+        phoneNumberConfirm();
+      }
+    } catch (error) {
+      console.error('인증요청 실패', error);
+    }
+  };
+
+  const getFinalPhoneNumberErrorMessage = () => {
+    if (!isPhoneNumberCheck) {
+      return '인증요청을 해주세요.';
+    }
+
+    return phoneNumberErrorMessage;
+  };
+
+  const {
     verificationCode,
     handleVerificationCodeChange,
     errorMessage: verificationCodeErrorMessage,
@@ -156,6 +183,10 @@ function SignupForm() {
       return;
     }
 
+    if (shouldBlockSubmitByPhoneNumberCheck()) {
+      return;
+    }
+
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
 
@@ -211,11 +242,12 @@ function SignupForm() {
           phoneNumber={phoneNumber}
           verificationCode={verificationCode}
           verificationCodeErrorMessage={getVerificationCodeErrorMessage()}
-          phoneNumberErrorMessage={phoneNumberErrorMessage}
+          phoneNumberErrorMessage={getFinalPhoneNumberErrorMessage()}
           handlePhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
           handleVerificationCodeChange={handleVerificationCodeChange}
           handleAuthCodeVerifyClick={handleAuthCodeVerifyClick}
+          handleAuthCodeClick={handleAuthCodeClick}
         />
       </StyledFormFields>
       <Button

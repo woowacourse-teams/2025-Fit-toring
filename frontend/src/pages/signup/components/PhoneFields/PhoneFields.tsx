@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
-import { postAuthCode } from '../../apis/postAuthCode';
 
 interface PhoneFieldsProps {
   phoneNumber: string;
@@ -15,6 +14,7 @@ interface PhoneFieldsProps {
     e: React.ChangeEvent<HTMLInputElement>,
   ) => void;
   handleAuthCodeVerifyClick: (phoneNumber: string) => void;
+  handleAuthCodeClick: (phoneNumber: string) => void;
   phoneNumberErrorMessage: string;
   verificationCodeErrorMessage: string;
 }
@@ -25,21 +25,11 @@ function PhoneFields({
   inputRef,
   handlePhoneNumberChange,
   handleVerificationCodeChange,
+  handleAuthCodeClick,
   handleAuthCodeVerifyClick,
   phoneNumberErrorMessage,
   verificationCodeErrorMessage,
 }: PhoneFieldsProps) {
-  const handleAuthCodeClick = async () => {
-    try {
-      const response = await postAuthCode(phoneNumber);
-      if (response.status === 200) {
-        alert('인증요청 성공');
-      }
-    } catch (error) {
-      console.error('인증요청 실패', error);
-    }
-  };
-
   return (
     <>
       <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
