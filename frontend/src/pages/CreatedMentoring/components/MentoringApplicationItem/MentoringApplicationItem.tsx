@@ -18,7 +18,7 @@ function MentoringApplicationItem({
     applicationDate,
   },
 }: MentoringApplicationItemProps) {
-  const getStatusImage = (status: string) => {
+  const getStatusEmoticon = (status: string) => {
     switch (status) {
       case '승인 대기':
         return '⏳';
@@ -40,7 +40,7 @@ function MentoringApplicationItem({
           💰 15분 {fee.toLocaleString()}원
         </StyledApplicationFee>
         <StyledApplicationStatus status={status}>
-          {getStatusImage(status)} {status}
+          {getStatusEmoticon(status)} {status}
         </StyledApplicationStatus>
       </StyledApplicationInfoWrapper>
       {(status === '승인됨' || status === '완료됨') && (
