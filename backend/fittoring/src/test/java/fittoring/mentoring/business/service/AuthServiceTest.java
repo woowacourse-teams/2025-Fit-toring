@@ -191,7 +191,7 @@ class AuthServiceTest {
     @Test
     void reissue() {
         //given
-        String accessToken = jwtProvider.createToken(1L);
+        String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken savedRefreshToken = new RefreshToken(

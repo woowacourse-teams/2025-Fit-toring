@@ -3,15 +3,15 @@ package fittoring.integration.mentoring.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
+import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.business.repository.PhoneVerificationRepository;
 import fittoring.mentoring.business.repository.RefreshTokenRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.presentation.dto.SignInRequest;
-import fittoring.mentoring.business.repository.PhoneVerificationRepository;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
 import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
@@ -23,7 +23,6 @@ import io.restassured.response.Response;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ class AuthControllerTest {
 
     @Autowired
     private JwtProvider jwtProvider;
-  
+
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
 
@@ -216,7 +215,7 @@ class AuthControllerTest {
     @Test
     void reissue() {
         //given
-        String accessToken = jwtProvider.createToken(1L);
+        String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
 
         refreshTokenRepository.save(new RefreshToken(1L, refreshToken, LocalDateTime.now()));
@@ -244,7 +243,7 @@ class AuthControllerTest {
     @Test
     void reissue2() {
         //given
-        String accessToken = jwtProvider.createToken(1L);
+        String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
 
         //when

@@ -58,7 +58,7 @@ public class AuthService {
     public AuthTokenResponse reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        String newAccessToken = jwtProvider.createToken(findRefreshToken.getMemberId());
+        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMemberId());
         String newRefreshToken = jwtProvider.createRefreshToken();
         findRefreshToken.update(newRefreshToken, LocalDateTime.now());
 
@@ -68,12 +68,6 @@ public class AuthService {
     private RefreshToken getRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.NOT_FOUND_TOKEN.getMessage()));
-    }
-
-    public void validateDuplicateLoginId(String loginId) {
-        if (memberRepository.existsByLoginId(loginId)) {
-            throw new DuplicateLoginIdException(BusinessErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
-        }
     }
 
     private Member getMemberByLoginId(String loginId) {
