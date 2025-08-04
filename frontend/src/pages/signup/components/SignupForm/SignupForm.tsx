@@ -91,6 +91,7 @@ function SignupForm() {
     handleVerificationCodeChange,
     errorMessage: verificationCodeErrorMessage,
     isValid: isVerificationCodeValid,
+    handleAuthCodeVerifyClick,
   } = useVerificationCodeInput();
 
   const validateForm = () => {
@@ -138,6 +139,7 @@ function SignupForm() {
           handlePhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
           handleVerificationCodeChange={handleVerificationCodeChange}
+          handleAuthCodeVerifyClick={handleAuthCodeVerifyClick}
         />
       </StyledFormFields>
       <Button

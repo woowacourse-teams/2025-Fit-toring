@@ -14,6 +14,7 @@ interface PhoneFieldsProps {
   handleVerificationCodeChange: (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => void;
+  handleAuthCodeVerifyClick: (phoneNumber: string) => void;
   phoneNumberErrorMessage: string;
   verificationCodeErrorMessage: string;
 }
@@ -24,6 +25,7 @@ function PhoneFields({
   inputRef,
   handlePhoneNumberChange,
   handleVerificationCodeChange,
+  handleAuthCodeVerifyClick,
   phoneNumberErrorMessage,
   verificationCodeErrorMessage,
 }: PhoneFieldsProps) {
@@ -80,7 +82,11 @@ function PhoneFields({
               maxLength={6}
             />
           </div>
-          <Button type="button" customStyle={buttonCustomStyle}>
+          <Button
+            type="button"
+            customStyle={buttonCustomStyle}
+            onClick={() => handleAuthCodeVerifyClick(phoneNumber)}
+          >
             인증하기
           </Button>
         </StyledInputAndBtnWrapper>
