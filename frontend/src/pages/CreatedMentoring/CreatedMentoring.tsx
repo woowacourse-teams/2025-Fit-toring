@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-import type { MentoringApplication } from '../../types/mentoringApplication';
+import type { MentoringApplication } from './types/mentoringApplication';
 
 const MENTORING_APPLICATIONS: MentoringApplication[] = [
   {
