@@ -29,14 +29,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // health-check api
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // AWS S3
+    implementation 'software.amazon.awssdk:s3:2.32.14'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // web mock server
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
-    //rest-assured
+    // rest-assured
     testImplementation("io.rest-assured:rest-assured:5.5.5")
 }
 

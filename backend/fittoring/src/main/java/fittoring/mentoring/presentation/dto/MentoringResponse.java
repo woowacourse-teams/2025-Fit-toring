@@ -10,16 +10,16 @@ public record MentoringResponse(
         List<String> categories,
         int price,
         int career,
-        String imageUrl,
+        String profileImageUrl,
         String introduction,
         String content
 ) {
 
-    public static MentoringResponse from(Mentoring mentoring, List<String> categoriesByMentoring) {
+    public static MentoringResponse from(Mentoring mentoring, List<String> categoryTitles) {
         return new MentoringResponse(
                 mentoring.getId(),
                 mentoring.getMentorName(),
-                categoriesByMentoring,
+                categoryTitles,
                 mentoring.getPrice(),
                 mentoring.getCareer(),
                 null,
@@ -28,11 +28,14 @@ public record MentoringResponse(
         );
     }
 
-    public static MentoringResponse from(Mentoring mentoring, List<String> categoriesByMentoring, Image image) {
+    public static MentoringResponse from(Mentoring mentoring, List<String> categoryTitles, Image image) {
+        if(image==null){
+            return from(mentoring, categoryTitles);
+        }
         return new MentoringResponse(
                 mentoring.getId(),
                 mentoring.getMentorName(),
-                categoriesByMentoring,
+                categoryTitles,
                 mentoring.getPrice(),
                 mentoring.getCareer(),
                 image.getUrl(),

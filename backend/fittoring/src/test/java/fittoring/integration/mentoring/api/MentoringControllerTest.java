@@ -100,10 +100,10 @@ class MentoringControllerTest {
             );
 
             Image savedImage = imageRepository.save(
-                    new Image("image1.jpg", ImageType.MENTORING, savedMentoring.getId())
+                    new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId())
             );
             Image savedImage2 = imageRepository.save(
-                    new Image("image2.jpg", ImageType.MENTORING, savedMentoring2.getId())
+                    new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId())
             );
 
             //when
@@ -227,13 +227,13 @@ class MentoringControllerTest {
             );
 
             Image savedImage = imageRepository.save(
-                    new Image("image1.jpg", ImageType.MENTORING, savedMentoring.getId())
+                    new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId())
             );
             Image savedImage2 = imageRepository.save(
-                    new Image("image2.jpg", ImageType.MENTORING, savedMentoring2.getId())
+                    new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId())
             );
             Image savedImage3 = imageRepository.save(
-                    new Image("image3.jpg", ImageType.MENTORING, savedMentoring3.getId())
+                    new Image("image3.jpg", ImageType.MENTORING_PROFILE, savedMentoring3.getId())
             );
 
             //when
@@ -347,9 +347,9 @@ class MentoringControllerTest {
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring3));
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory3, savedMentoring3));
 
-            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING, savedMentoring.getId()));
-            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING, savedMentoring2.getId()));
-            imageRepository.save(new Image("image3.jpg", ImageType.MENTORING, savedMentoring3.getId()));
+            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
+            imageRepository.save(new Image("image3.jpg", ImageType.MENTORING_PROFILE, savedMentoring3.getId()));
 
             //when
             List<MentoringResponse> response = RestAssured
@@ -401,8 +401,8 @@ class MentoringControllerTest {
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
 
-            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING, savedMentoring.getId()));
-            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING, savedMentoring2.getId()));
+            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
 
             //when
             Response response = RestAssured
@@ -455,8 +455,8 @@ class MentoringControllerTest {
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
 
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING, savedMentoring.getId()));
-        imageRepository.save(new Image("image2.jpg", ImageType.MENTORING, savedMentoring2.getId()));
+        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+        imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
 
         Long mentoringId = savedMentoring.getId();
 
@@ -519,8 +519,8 @@ class MentoringControllerTest {
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
 
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING, savedMentoring.getId()));
-        imageRepository.save(new Image("image2.jpg", ImageType.MENTORING, savedMentoring2.getId()));
+        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+        imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
 
         Long mentoringId = 100L;
 

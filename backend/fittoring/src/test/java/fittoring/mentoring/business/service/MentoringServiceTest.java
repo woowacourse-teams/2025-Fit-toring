@@ -1,46 +1,64 @@
 package fittoring.mentoring.business.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
-import fittoring.mentoring.business.model.Category;
-import fittoring.mentoring.business.model.CategoryMentoring;
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.ImageType;
-import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+import fittoring.mentoring.business.model.*;
+import fittoring.mentoring.business.repository.CategoryRepository;
+import fittoring.mentoring.business.repository.ImageRepository;
+import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
+import fittoring.mentoring.infra.S3Uploader;
+import fittoring.mentoring.presentation.dto.CertificateInfo;
+import fittoring.mentoring.presentation.dto.MentoringRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
+import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.DbCleaner;
-import java.util.List;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, MentoringService.class})
-@DataJpaTest
+@Transactional
+@SpringBootTest
 class MentoringServiceTest {
 
     @Autowired
     private MentoringService mentoringService;
 
+    @PersistenceContext
+    private EntityManager em;
+
     @Autowired
-    private TestEntityManager em;
+    private CategoryRepository categoryRepository;
 
     @Autowired
     private DbCleaner dbCleaner;
+
+    @MockitoBean
+    private S3Uploader s3Uploader;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     @BeforeEach
     void setUp() {
@@ -70,7 +88,7 @@ class MentoringServiceTest {
             em.persist(categoryMentoring1_1);
             em.persist(categoryMentoring2_2);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             String categoryTitle1 = null;
@@ -79,15 +97,15 @@ class MentoringServiceTest {
 
             MentoringSummaryResponse expected = MentoringSummaryResponse.from(
                     MentoringResponse.from(
-                    mentoring1,
-                    List.of(categoryMentoring1_1.getCategoryTitle()),
-                    image1)
+                            mentoring1,
+                            List.of(categoryMentoring1_1.getCategoryTitle()),
+                            image1)
             );
 
             MentoringSummaryResponse expected2 = MentoringSummaryResponse.from(
                     MentoringResponse.from(
-                    mentoring2,
-                    List.of(categoryMentoring2_2.getCategoryTitle())
+                            mentoring2,
+                            List.of(categoryMentoring2_2.getCategoryTitle())
                     )
             );
 
@@ -133,8 +151,8 @@ class MentoringServiceTest {
             em.persist(categoryMentoring2_3);
             em.persist(categoryMentoring3_3);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
-            Image image2 = new Image("멘토링이미지3url", ImageType.MENTORING, mentoring3.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
+            Image image2 = new Image("멘토링이미지3url", ImageType.MENTORING_PROFILE, mentoring3.getId());
             em.persist(image1);
             em.persist(image2);
 
@@ -144,10 +162,10 @@ class MentoringServiceTest {
 
             MentoringSummaryResponse expected = MentoringSummaryResponse.from(
                     MentoringResponse.from(
-                        mentoring1,
-                        List.of(categoryMentoring1_1.getCategoryTitle(),
-                        categoryMentoring2_1.getCategoryTitle()),
-                        image1
+                            mentoring1,
+                            List.of(categoryMentoring1_1.getCategoryTitle(),
+                                    categoryMentoring2_1.getCategoryTitle()),
+                            image1
                     )
             );
 
@@ -194,7 +212,7 @@ class MentoringServiceTest {
             em.persist(categoryMentoring1_2);
             em.persist(categoryMentoring2_2);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             String categoryTitle1 = category1.getTitle();
@@ -235,7 +253,7 @@ class MentoringServiceTest {
             em.persist(categoryMentoring2_1);
             em.persist(categoryMentoring2_2);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             String categoryTitle1 = null;
@@ -256,7 +274,7 @@ class MentoringServiceTest {
 
     @Nested
     @DisplayName("멘토링 정보 조회")
-    class FindMentoring{
+    class FindMentoring {
         @DisplayName("멘토링 id로 멘토링을 조회한다.")
         @Test
         void getMentoring() {
@@ -270,7 +288,7 @@ class MentoringServiceTest {
             CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
             em.persist(categoryMentoring1_1);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             MentoringResponse expected = MentoringResponse.from(
@@ -299,7 +317,7 @@ class MentoringServiceTest {
             CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
             em.persist(categoryMentoring1_1);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING, mentoring1.getId());
+            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
             Long invalidId = 100L;
@@ -310,6 +328,148 @@ class MentoringServiceTest {
                     mentoringService.getMentoring(invalidId))
                     .isInstanceOf(MentoringNotFoundException.class)
                     .hasMessageStartingWith(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("멘토링 등록")
+    class RegisterMentoring {
+
+        @DisplayName("아무 이미지 없이 멘토링을 등록할 수 있다.")
+        @Test
+        void registerMentoring() throws IOException {
+            //given
+            MentoringRequest request = new MentoringRequest(
+                    5000,
+                    List.of("근육증가", "다이어트"),
+                    "자기소개",
+                    3,
+                    "컨텐츠컨텐츠",
+                    List.of()
+            );
+
+            Category category1 = new Category("근육증가");
+            Category category2 = new Category("다이어트");
+
+            categoryRepository.save(category1);
+            categoryRepository.save(category2);
+
+            when(s3Uploader.upload(any(), any())).thenReturn(null);
+
+            // when
+            MentoringResponse actual = mentoringService.registerMentoring(RegisterMentoringDto.of(request, null, null));
+
+            // then
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(actual.price()).isEqualTo(request.price());
+                softAssertions.assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트");
+                softAssertions.assertThat(actual.introduction()).isEqualTo(request.introduction());
+                softAssertions.assertThat(actual.career()).isEqualTo(request.career());
+                softAssertions.assertThat(actual.content()).isEqualTo(request.content());
+                softAssertions.assertThat(actual.profileImageUrl()).isNull();
+            });
+        }
+
+        @DisplayName("프로필 이미지를 포함하여 멘토링을 등록할 수 있다.")
+        @Test
+        void registerMentoringProfile() throws IOException {
+            //given
+            MentoringRequest request = new MentoringRequest(
+                    5000,
+                    List.of("근육증가", "다이어트"),
+                    "자기소개",
+                    3,
+                    "컨텐츠컨텐츠",
+                    List.of()
+            );
+
+            Category category1 = new Category("근육증가");
+            Category category2 = new Category("다이어트");
+
+            categoryRepository.save(category1);
+            categoryRepository.save(category2);
+
+            MockMultipartFile imageFile = new MockMultipartFile("testProfile", "testProfile".getBytes(StandardCharsets.UTF_8));
+            String profileImageS3Url = "profileImageS3Url";
+            when(s3Uploader.upload(imageFile, "profile-image")).thenReturn(profileImageS3Url);
+
+            // when
+            MentoringResponse actual = mentoringService.registerMentoring(
+                    RegisterMentoringDto.of(
+                            request,
+                            imageFile,
+                            null
+                    )
+            );
+
+            // then
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(actual.price()).isEqualTo(request.price());
+                softAssertions.assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트");
+                softAssertions.assertThat(actual.introduction()).isEqualTo(request.introduction());
+                softAssertions.assertThat(actual.career()).isEqualTo(request.career());
+                softAssertions.assertThat(actual.content()).isEqualTo(request.content());
+                softAssertions.assertThat(actual.profileImageUrl()).isEqualTo(profileImageS3Url);
+            });
+        }
+
+        @DisplayName("프로필 이미지와 자격증을 포함하여 멘토링을 등록할 수 있다.")
+        @Test
+        void registerMentoringProfileCertificates() throws IOException {
+            //given
+            CertificateInfo certificateInfo1 = new CertificateInfo(CertificateType.LICENSE, "제1종 보통 운전면허");
+            CertificateInfo certificateInfo2 = new CertificateInfo(CertificateType.AWARD, "광진구 건강 청년 선발 대회 준우승");
+
+            MentoringRequest request = new MentoringRequest(
+                    5000,
+                    List.of("근육증가", "다이어트"),
+                    "자기소개",
+                    3,
+                    "컨텐츠컨텐츠",
+                    List.of(certificateInfo1, certificateInfo2)
+            );
+
+            Category category1 = new Category("근육증가");
+            Category category2 = new Category("다이어트");
+
+            categoryRepository.save(category1);
+            categoryRepository.save(category2);
+
+            MockMultipartFile profileImageFile = new MockMultipartFile("testProfile", "testProfile".getBytes(StandardCharsets.UTF_8));
+            String profileImageS3Url = "profileImageS3Url";
+            when(s3Uploader.upload(profileImageFile, "profile-image")).thenReturn(profileImageS3Url);
+
+            MockMultipartFile certificateImageFile1 = new MockMultipartFile("testCertificate1", "testCertificate1".getBytes(StandardCharsets.UTF_8));
+            MockMultipartFile certificateImageFile2 = new MockMultipartFile("testCertificate2", "testCertificate2".getBytes(StandardCharsets.UTF_8));
+
+            String certificateImageS3Url1 = "testCertificate1ImageS3Url";
+            String certificateImageS3Url2 = "testCertificate2ImageS3Url";
+            when(s3Uploader.upload(certificateImageFile1, "certificate-image")).thenReturn(certificateImageS3Url1);
+            when(s3Uploader.upload(certificateImageFile2, "certificate-image")).thenReturn(certificateImageS3Url2);
+
+            // when
+            MentoringResponse actual = mentoringService.registerMentoring(
+                    RegisterMentoringDto.of(
+                            request,
+                            profileImageFile,
+                            List.of(certificateImageFile1, certificateImageFile2)
+                    )
+            );
+
+            // then
+            Image certificateImage1 = imageRepository.findByImageTypeAndRelationId(ImageType.CERTIFICATE, 1L).get();
+            Image certificateImage2 = imageRepository.findByImageTypeAndRelationId(ImageType.CERTIFICATE, 2L).get();
+
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(actual.price()).isEqualTo(request.price());
+                softAssertions.assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트");
+                softAssertions.assertThat(actual.introduction()).isEqualTo(request.introduction());
+                softAssertions.assertThat(actual.career()).isEqualTo(request.career());
+                softAssertions.assertThat(actual.content()).isEqualTo(request.content());
+                softAssertions.assertThat(actual.profileImageUrl()).isEqualTo(profileImageS3Url);
+                softAssertions.assertThat(certificateImage1.getUrl()).isEqualTo(certificateImageS3Url1);
+                softAssertions.assertThat(certificateImage2.getUrl()).isEqualTo(certificateImageS3Url2);
+            });
         }
     }
 }

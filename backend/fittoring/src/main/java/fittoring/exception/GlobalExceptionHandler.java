@@ -2,6 +2,7 @@ package fittoring.exception;
 
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.infra.exception.S3UploadException;
 import fittoring.mentoring.infra.exception.SmsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -58,5 +59,11 @@ public class GlobalExceptionHandler {
         log.warn("[{}], [{}], [{}]", e.getClass(), e.getMessage(), e.getStackTrace());
         return ErrorResponse.of(HttpStatus.NOT_FOUND, SystemErrorMessage.RESOURCE_NOT_FOUND_ERROR.getMessage())
                 .toResponseEntity();
+    }
+
+    @ExceptionHandler(S3UploadException.class)
+    public ResponseEntity<ErrorResponse> handle(S3UploadException e) {
+        logServerError(e);
+        return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()).toResponseEntity();
     }
 }
