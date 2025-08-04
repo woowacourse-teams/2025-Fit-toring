@@ -105,7 +105,10 @@ function SignupForm() {
 
   const getVerificationButtonEnabled = () => {
     return (
-      isPhoneNumberCheck && phoneNumberErrorMessage === '' && isRequestCompleted
+      isPhoneNumberCheck &&
+      phoneNumberErrorMessage === '' &&
+      isVerificationCodeValid &&
+      isRequestCompleted
     );
   };
 
