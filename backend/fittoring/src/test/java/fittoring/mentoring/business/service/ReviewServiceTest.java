@@ -75,7 +75,7 @@ class ReviewServiceTest {
             "introduction"
         ));
         entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
-        byte rating = 5;
+        int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             reviewer.getId(),
@@ -109,7 +109,7 @@ class ReviewServiceTest {
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             999L,
             mentoring.getId(),
-            (byte) 5,
+            5,
             "최고의 멘토링이었습니다."
         );
         
@@ -164,7 +164,7 @@ class ReviewServiceTest {
             "content",
             "introduction"
         ));
-        byte rating = 5;
+        int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             reviewer.getId(),
@@ -200,7 +200,7 @@ class ReviewServiceTest {
             "introduction"
         ));
         entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
-        byte rating = 5;
+        int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             reviewer.getId(),
@@ -247,13 +247,13 @@ class ReviewServiceTest {
         entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
         entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id2 넣어주기
         Review review1 = entityManager.persist(new Review(
-            (byte) 5,
+            5,
             "최고의 멘토링이었습니다.",
             mentoring1,
             reviewer
         ));
         Review review2 = entityManager.persist(new Review(
-            (byte) 5,
+            5,
             "최고의 멘토링이었습니다.",
             mentoring2,
             reviewer
@@ -310,13 +310,13 @@ class ReviewServiceTest {
         entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
         entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
         Review review1 = entityManager.persist(new Review(
-            (byte) 5,
+            5,
             "최고의 멘토링이었습니다.",
             mentoring,
             reviewer1
         ));
         Review review2 = entityManager.persist(new Review(
-            (byte) 5,
+            5,
             "최고의 멘토링이었습니다.",
             mentoring,
             reviewer2
@@ -344,11 +344,34 @@ class ReviewServiceTest {
         );
     }
 
-    // TODO: 없는 리뷰 ID로 수정 요청 시 예외 케이스
+    @DisplayName("존재하지 않는 리뷰를 수정하려고 하면 예외가 발생한다")
+    @Test
+    void modifyReviewFail1() {
+        // given
+        Member reviewer = entityManager.persist(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        ReviewModifyDto reviewModifyDto = new ReviewModifyDto(
+            reviewer.getId(),
+            999L,
+            2,
+            "생각해 보니 비용이 너무 비쌌던 것 같아요"
+        );
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
+            .isInstanceOf(ReviewNotFoundException.class)
+            .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
+    }
 
     @DisplayName("본인이 작성하지 않은 리뷰를 수정하려고 하면 예외가 발생한다")
     @Test
-    void modifyReviewFail() {
+    void modifyReviewFail2() {
         // given
         Member reviewer = entityManager.persist(new Member(
             "loginId",
@@ -367,7 +390,7 @@ class ReviewServiceTest {
         ));
         entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
         Review review = entityManager.persist(new Review(
-            (byte) 5,
+            5,
             "최고의 멘토링이었습니다.",
             mentoring,
             reviewer
@@ -382,7 +405,7 @@ class ReviewServiceTest {
         ReviewModifyDto reviewModifyDto = new ReviewModifyDto(
             invalidMember.getId(),
             review.getId(),
-            (byte) 2,
+            2,
             "생각해 보니 비용이 너무 비쌌던 것 같아요"
         );
 
@@ -434,7 +457,7 @@ class ReviewServiceTest {
         ));
         entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
         Review review = entityManager.persist(new Review(
-            (byte) 5,
+            5,
             "최고의 멘토링이었습니다.",
             mentoring,
             reviewer

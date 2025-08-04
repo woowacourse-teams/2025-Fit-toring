@@ -10,9 +10,7 @@ import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
-import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
-import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
@@ -74,7 +72,7 @@ class ReviewControllerTest {
             "introduction"
         ));
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
-        byte rating = 4;
+        int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
             rating,
@@ -102,7 +100,7 @@ class ReviewControllerTest {
     @Test
     void createReviewFail1() {
         // given
-        byte rating = 4;
+        int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
             rating,
@@ -134,7 +132,7 @@ class ReviewControllerTest {
             "content",
             "introduction"
         ));
-        byte rating = 4;
+        int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
             rating,
@@ -166,7 +164,7 @@ class ReviewControllerTest {
             "content",
             "introduction"
         ));
-        byte rating = 4;
+        int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
             rating,
@@ -206,7 +204,7 @@ class ReviewControllerTest {
             "introduction"
         ));
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
-        byte rating = 4;
+        int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
             rating,
@@ -264,13 +262,13 @@ class ReviewControllerTest {
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         reservationRepository.save(new Reservation()); // TODO: 예약2 추가하기
         reviewRepository.save(new Review(
-            (byte) 4,
+            4,
             "전반적으로 좋았습니다.",
             mentoring1,
             reviewer
         ));
         reviewRepository.save(new Review(
-            (byte) 4,
+            4,
             "전반적으로 좋았습니다.",
             mentoring2,
             reviewer
@@ -317,13 +315,13 @@ class ReviewControllerTest {
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         reservationRepository.save(new Reservation()); // TODO: 예약2 추가하기
         reviewRepository.save(new Review(
-            (byte) 4,
+            4,
             "전반적으로 좋았습니다.",
             mentoring,
             reviewer1
         ));
         reviewRepository.save(new Review(
-            (byte) 4,
+            4,
             "전반적으로 좋았습니다.",
             mentoring,
             reviewer2
@@ -362,13 +360,13 @@ class ReviewControllerTest {
         ));
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         Review review = reviewRepository.save(new Review(
-            (byte) 4,
+            4,
             "전반적으로 좋았습니다.",
             mentoring,
             reviewer
         ));
         ReviewModifyRequest requestBody = new ReviewModifyRequest(
-            (byte) 2,
+            2,
             "생각해 보니 비용이 너무 비쌌던 것 같아요"
         );
 
@@ -384,9 +382,37 @@ class ReviewControllerTest {
             .statusCode(200);
     }
 
+    @DisplayName("존재하지 않는 리뷰를 수정하려고 하면 404 Not Found를 반환한다")
+    @Test
+    void modifyReviewFail1() {
+        // given
+        Member reviewer = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            "010-1234-5678",
+            "password"
+        ));
+        ReviewModifyRequest requestBody = new ReviewModifyRequest(
+            2,
+            "생각해 보니 비용이 너무 비쌌던 것 같아요"
+        );
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            // TODO: 작성자 정보 넣기
+            .body(requestBody)
+            .when()
+            .patch("/reviews/999")
+            .then().log().all()
+            .statusCode(404);
+    }
+
     @DisplayName("본인이 작성하지 않은 리뷰를 수정하려고 하면 400 Bad Request를 반환한다")
     @Test
-    void modifyReviewFail() {
+    void modifyReviewFail2() {
         // given
         Member reviewer = memberRepository.save(new Member(
             "loginId",
@@ -405,7 +431,7 @@ class ReviewControllerTest {
         ));
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         Review review = reviewRepository.save(new Review(
-            (byte) 4,
+            4,
             "전반적으로 좋았습니다.",
             mentoring,
             reviewer
@@ -418,7 +444,7 @@ class ReviewControllerTest {
             "password"
         ));
         ReviewModifyRequest requestBody = new ReviewModifyRequest(
-            (byte) 2,
+            2,
             "생각해 보니 비용이 너무 비쌌던 것 같아요"
         );
 
@@ -455,7 +481,7 @@ class ReviewControllerTest {
         ));
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         Review review = reviewRepository.save(new Review(
-            (byte) 4,
+            4,
             "전반적으로 좋았습니다.",
             mentoring,
             reviewer
@@ -516,7 +542,7 @@ class ReviewControllerTest {
         ));
         reservationRepository.save(new Reservation()); // TODO: 예약 추가하기
         Review review = reviewRepository.save(new Review(
-            (byte) 4,
+            4,
             "전반적으로 좋았습니다.",
             mentoring,
             reviewer
