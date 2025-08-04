@@ -7,6 +7,7 @@ import Button from '../../../../common/components/Button/Button';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
+import { postAuthCodeVerify } from '../../apis/postAuthCodeVerify';
 import { postSignup } from '../../apis/postSignup';
 import { posValidateId } from '../../apis/postValidateId';
 import usePasswordInput from '../../hooks/usePasswordInput';
@@ -39,6 +40,7 @@ function SignupForm() {
   } = useUserIdInput();
 
   const [lastCheckedUserId, setLastCheckedUserId] = useState('');
+
   const [duplicateError, setDuplicateError] = useState(false);
   const [isUserIdCheck, setIsUserIdCheck] = useState(false);
 
@@ -92,8 +94,39 @@ function SignupForm() {
     handleVerificationCodeChange,
     errorMessage: verificationCodeErrorMessage,
     isValid: isVerificationCodeValid,
-    handleAuthCodeVerifyClick,
   } = useVerificationCodeInput();
+
+  const [verificationCodeError, setVerificationCodeError] = useState(false);
+  const [lastCheckedVerificationCode, setLastCheckedVerificationCode] =
+    useState('');
+  const [isVerificationCodeCheck, setIsVerificationCodeCheck] = useState(true);
+
+  const handleAuthCodeVerifyClick = async (phoneNumber: string) => {
+    setVerificationCodeError(false);
+    try {
+      const response = await postAuthCodeVerify(phoneNumber, verificationCode);
+      if (response.status === 200) {
+        alert('인증 성공');
+        setLastCheckedVerificationCode(verificationCode);
+        setIsVerificationCodeCheck(true);
+      }
+    } catch (error) {
+      setVerificationCodeError(true);
+      console.error('인증 실패', error);
+    }
+  };
+
+  const getVerificationCodeErrorMessage = () => {
+    if (verificationCodeError) {
+      return '인증 실패';
+    }
+
+    if (!isVerificationCodeCheck) {
+      return '인증을 해주세요';
+    }
+
+    return verificationCodeErrorMessage;
+  };
 
   const validateForm = () => {
     const validations = [
@@ -113,6 +146,11 @@ function SignupForm() {
 
     if (lastCheckedUserId !== userId) {
       setIsUserIdCheck(true);
+      return;
+    }
+
+    if (lastCheckedVerificationCode !== verificationCode) {
+      setIsVerificationCodeCheck(false);
       return;
     }
 
@@ -170,7 +208,7 @@ function SignupForm() {
         <PhoneFields
           phoneNumber={phoneNumber}
           verificationCode={verificationCode}
-          verificationCodeErrorMessage={verificationCodeErrorMessage}
+          verificationCodeErrorMessage={getVerificationCodeErrorMessage()}
           phoneNumberErrorMessage={phoneNumberErrorMessage}
           handlePhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
