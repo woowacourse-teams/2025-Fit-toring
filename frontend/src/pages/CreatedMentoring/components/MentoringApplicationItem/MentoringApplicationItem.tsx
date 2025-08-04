@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 
+import type { myTheme } from '../../../../common/types/theme';
 import type { MentoringApplication } from '../../types/mentoringApplication';
 
 interface MentoringApplicationItemProps {
@@ -110,6 +111,24 @@ const StyledApplicationPhoneNumber = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
+const statusStyles = {
+  '승인 대기': {
+    border: (theme: myTheme) => theme.OUTLINE.YELLOW,
+    background: (theme: myTheme) => theme.BG.YELLOW,
+    color: (theme: myTheme) => theme.FONT.Y01,
+  },
+  승인됨: {
+    border: (theme: myTheme) => theme.SYSTEM.MAIN300,
+    background: (theme: myTheme) => theme.SYSTEM.MAIN100,
+    color: (theme: myTheme) => theme.SYSTEM.MAIN700,
+  },
+  완료됨: {
+    border: (theme: myTheme) => theme.SYSTEM.MAIN400,
+    background: (theme: myTheme) => theme.SYSTEM.MAIN200,
+    color: (theme: myTheme) => theme.SYSTEM.MAIN700,
+  },
+} as const;
+
 const StyledApplicationStatus = styled.p<{
   status: '승인 대기' | '승인됨' | '완료됨';
 }>`
@@ -119,45 +138,13 @@ const StyledApplicationStatus = styled.p<{
 
   width: fit-content;
   padding: 0.3rem 0.6rem;
-  border: 1px solid
-    ${({ theme, status }) => {
-      switch (status) {
-        case '승인 대기':
-          return theme.OUTLINE.YELLOW;
-        case '승인됨':
-          return theme.SYSTEM.MAIN300;
-        case '완료됨':
-          return theme.SYSTEM.MAIN400;
-        default:
-          return theme.OUTLINE.REGULAR;
-      }
-    }};
+  border: 1px solid ${({ theme, status }) => statusStyles[status].border(theme)};
   border-radius: 8px;
 
-  background-color: ${({ theme, status }) => {
-    switch (status) {
-      case '승인 대기':
-        return theme.BG.YELLOW;
-      case '승인됨':
-        return theme.SYSTEM.MAIN100;
-      case '완료됨':
-        return theme.SYSTEM.MAIN200;
-      default:
-        return theme.BG.WHITE;
-    }
-  }};
+  background-color: ${({ theme, status }) =>
+    statusStyles[status].background(theme)};
 
-  color: ${({ theme, status }) => {
-    switch (status) {
-      case '승인 대기':
-        return theme.FONT.Y01;
-      case '승인됨':
-      case '완료됨':
-        return theme.SYSTEM.MAIN700;
-      default:
-        return theme.FONT.B04;
-    }
-  }};
+  color: ${({ theme, status }) => statusStyles[status].color(theme)};
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
