@@ -67,6 +67,7 @@ public class ReviewService {
             .map(review -> new MemberReviewGetResponse(
                 review.getId(),
                 review.getMentoring().getId(),
+                review.getCreatedAt(),
                 review.getRating(),
                 review.getContent()
             ))
@@ -79,6 +80,7 @@ public class ReviewService {
             .map(review -> new MentoringReviewGetResponse(
                 review.getId(),
                 review.getReviewer().getName(),
+                review.getCreatedAt(),
                 review.getRating(),
                 review.getContent()
             ))

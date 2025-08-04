@@ -37,6 +37,7 @@ public class Review {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Getter
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
