@@ -33,14 +33,15 @@ public class Member {
     @Column(nullable = false)
     private String name;
 
+    @Embedded
     @Column(nullable = false, unique = true)
-    private String phone;
+    private Phone phone;
 
     @Embedded
     @Column(nullable = false)
     private Password password;
 
-    public Member(String loginId, String gender, String name, String phone, Password password) {
+    public Member(String loginId, String gender, String name, Phone phone, Password password) {
         this(null, loginId, gender, name, phone, password);
     }
 
