@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../MentoringApplicationStatus/MentoringApplicationStatus';
+import PhoneNumber from '../PhoneNumber/PhoneNumber';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';
 
@@ -29,11 +30,7 @@ function MentoringApplicationItem({
         </StyledApplicationFee>
         <MentoringApplicationStatus status={status} />
       </StyledApplicationInfoWrapper>
-      {(status === '승인됨' || status === '완료됨') && (
-        <StyledApplicationPhoneNumber>
-          연락처: {phoneNumber}
-        </StyledApplicationPhoneNumber>
-      )}
+      <PhoneNumber status={status} phoneNumber={phoneNumber} />
       <StyledApplicationContent>{content}</StyledApplicationContent>
       {status === '승인 대기' && (
         <StyledButtonWrapper>
@@ -85,15 +82,6 @@ const StyledApplicationDate = styled.p`
 
 const StyledApplicationFee = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
-`;
-
-const StyledApplicationPhoneNumber = styled.p`
-  width: fit-content;
-
-  background-color: ${({ theme }) => theme.BG.YELLOW};
-
-  color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
