@@ -10,19 +10,11 @@ function ButtonSection() {
         type="button"
         variant="secondary"
         size="full"
-        customStyle={css`
-          padding: 1.6rem 0;
-        `}
+        customStyle={buttonStyle}
       >
         취소
       </Button>
-      <Button
-        type="submit"
-        size="full"
-        customStyle={css`
-          padding: 1.6rem 0;
-        `}
-      >
+      <Button type="submit" size="full" customStyle={buttonStyle}>
         등록하기
       </Button>
     </StyledContainer>
@@ -38,4 +30,8 @@ const StyledContainer = styled.div`
 
   width: 100%;
   height: 100%;
+`;
+
+const buttonStyle = css`
+  padding: 1.6rem 0;
 `;
