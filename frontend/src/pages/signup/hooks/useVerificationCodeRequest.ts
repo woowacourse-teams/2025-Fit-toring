@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { postAuthCode } from '../apis/postAuthCode';
 
 import { useConfirmState } from './useConfirmStatus';
@@ -17,12 +19,15 @@ const useVerificationCodeRequest = ({
     shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
   } = useConfirmState(phoneNumber);
 
+  const [isRequestCompleted, setIsRequestCompleted] = useState(false);
+
   const handleAuthCodeClick = async (phoneNumber: string) => {
     try {
       const response = await postAuthCode(phoneNumber);
       if (response.status === 200) {
         alert('인증요청 성공');
         phoneNumberConfirm();
+        setIsRequestCompleted(true);
       }
     } catch (error) {
       console.error('인증요청 실패', error);
@@ -41,6 +46,8 @@ const useVerificationCodeRequest = ({
     shouldBlockSubmitByPhoneNumberCheck,
     handleAuthCodeClick,
     getFinalPhoneNumberErrorMessage,
+    isPhoneNumberCheck,
+    isRequestCompleted,
   };
 };
 

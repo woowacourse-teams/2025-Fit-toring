@@ -17,6 +17,8 @@ interface PhoneFieldsProps {
   handleAuthCodeClick: (phoneNumber: string) => void;
   phoneNumberErrorMessage: string;
   verificationCodeErrorMessage: string;
+  isVerificationButtonEnabled: boolean;
+  isVerificationRequestButtonEnabled: boolean;
 }
 
 function PhoneFields({
@@ -29,6 +31,8 @@ function PhoneFields({
   handleAuthCodeVerifyClick,
   phoneNumberErrorMessage,
   verificationCodeErrorMessage,
+  isVerificationButtonEnabled,
+  isVerificationRequestButtonEnabled,
 }: PhoneFieldsProps) {
   return (
     <>
@@ -50,6 +54,9 @@ function PhoneFields({
             type="button"
             customStyle={buttonCustomStyle}
             onClick={() => handleAuthCodeClick(phoneNumber)}
+            variant={
+              isVerificationRequestButtonEnabled ? 'primary' : 'disabled'
+            }
           >
             인증요청
           </Button>
@@ -76,6 +83,7 @@ function PhoneFields({
             type="button"
             customStyle={buttonCustomStyle}
             onClick={() => handleAuthCodeVerifyClick(phoneNumber)}
+            variant={isVerificationButtonEnabled ? 'primary' : 'disabled'}
           >
             인증하기
           </Button>

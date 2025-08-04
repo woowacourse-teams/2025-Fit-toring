@@ -69,6 +69,8 @@ function SignupForm() {
     shouldBlockSubmitByPhoneNumberCheck,
     handleAuthCodeClick,
     getFinalPhoneNumberErrorMessage,
+    isPhoneNumberCheck,
+    isRequestCompleted,
   } = useVerificationCodeRequest({ phoneNumber, phoneNumberErrorMessage });
 
   const {
@@ -99,6 +101,16 @@ function SignupForm() {
     ];
 
     return validations.every(Boolean);
+  };
+
+  const getVerificationRequestButtonEnabled = () => {
+    return phoneNumber !== '' && phoneNumberErrorMessage === '';
+  };
+
+  const getVerificationButtonEnabled = () => {
+    return (
+      isPhoneNumberCheck && phoneNumberErrorMessage === '' && isRequestCompleted
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -187,6 +199,8 @@ function SignupForm() {
           handleVerificationCodeChange={handleVerificationCodeChange}
           handleAuthCodeVerifyClick={handleAuthCodeVerifyClick}
           handleAuthCodeClick={handleAuthCodeClick}
+          isVerificationButtonEnabled={getVerificationButtonEnabled()}
+          isVerificationRequestButtonEnabled={getVerificationRequestButtonEnabled()}
         />
       </StyledFormFields>
       <Button
