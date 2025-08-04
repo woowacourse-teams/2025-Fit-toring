@@ -33,7 +33,7 @@ const MENTORING_APPLICATIONS: MentoringApplication[] = [
   {
     id: 3,
     name: '박철수',
-    phoneNumber: null,
+    phoneNumber: '010-3456-7890',
     fee: 5000,
     content: '헬스장에서 운동하고 있는데 정체기가 와서 도움이 필요해요.',
     status: '완료됨',
