@@ -42,20 +42,20 @@ public class ReviewService {
             .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
         Member reviewer = memberRepository.findById(reviewerId)
             .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        validateReserved(mentoringId, reviewerId);
-        validateDuplicated(mentoringId, reviewerId);
+        validateReservationExists(mentoringId, reviewerId);
+        validateReviewNotDuplicated(mentoringId, reviewerId);
         Review savedReview = reviewRepository.save(new Review(dto.rating(), dto.content(), mentoring, reviewer));
         return ReviewCreateResponse.of(savedReview);
     }
 
-    private void validateReserved(Long mentoringId, Long reviewerId) {
+    private void validateReservationExists(Long mentoringId, Long reviewerId) {
         if (reservationRepository.existsByMentoringIdAndMemberId(mentoringId, reviewerId)) { // TODO: Member을 예약자 필드 이름으로 고치기
             return;
         }
         throw new ReservationNotFoundException(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());
     }
 
-    private void validateDuplicated(Long mentoringId, Long reviewerId) {
+    private void validateReviewNotDuplicated(Long mentoringId, Long reviewerId) {
         if (reviewRepository.existsByMentoringIdAndReviewerId(mentoringId, reviewerId)) {
             throw new ReviewAlreadyExistsException(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
         }
@@ -91,11 +91,11 @@ public class ReviewService {
     public void modifyReview(ReviewModifyDto reviewModifyDto) {
         Review review = reviewRepository.findById(reviewModifyDto.reviewId())
                 .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
-        validateReviewer(review, reviewModifyDto.reviewerId());
+        validateReviewerIsSame(review, reviewModifyDto.reviewerId());
         review.modify(reviewModifyDto.rating(), reviewModifyDto.content());
     }
 
-    private void validateReviewer(Review review, Long reviewerId) {
+    private void validateReviewerIsSame(Review review, Long reviewerId) {
         if (review.getReviewer().getId().equals(reviewerId)) {
             return;
         }
@@ -106,7 +106,7 @@ public class ReviewService {
     public void deleteReview(ReviewDeleteDto reviewDeleteDto) {
         Review review = reviewRepository.findById((reviewDeleteDto.reviewId()))
             .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
-        validateReviewer(review, reviewDeleteDto.reviewerId());
+        validateReviewerIsSame(review, reviewDeleteDto.reviewerId());
         reviewRepository.delete(review);
     }
 }
