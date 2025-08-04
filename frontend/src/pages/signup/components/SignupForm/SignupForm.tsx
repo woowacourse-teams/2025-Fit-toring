@@ -24,7 +24,7 @@ function SignupForm() {
     isValid: isNameValid,
   } = useNameInput();
 
-  const [gender, setGender] = useState('male');
+  const [gender, setGender] = useState('남');
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGender(e.target.value);

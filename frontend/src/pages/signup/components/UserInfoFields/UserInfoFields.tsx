@@ -24,6 +24,7 @@ function UserInfoFields({
         <StyledNameInputWrapper>
           <Input
             id="name"
+            name="name"
             placeholder="홍길동"
             value={name}
             onChange={handleNameChange}
@@ -41,9 +42,9 @@ function UserInfoFields({
                 onChange={handleGenderChange}
                 type="radio"
                 name="gender"
-                value="male"
+                value="남"
                 id="male"
-                checked={gender === 'male'}
+                checked={gender === '남'}
               />
             </StyledLabel>
           </StyledRadioWrapper>
@@ -54,9 +55,9 @@ function UserInfoFields({
                 onChange={handleGenderChange}
                 type="radio"
                 name="gender"
-                value="female"
+                value="여"
                 id="female"
-                checked={gender === 'female'}
+                checked={gender === '여'}
               />
             </StyledLabel>
           </StyledRadioWrapper>
