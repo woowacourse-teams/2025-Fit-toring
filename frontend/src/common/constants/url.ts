@@ -5,4 +5,5 @@ export const PAGE_URL = {
   MENTORING_CREATE: '/mentoring-create',
   MY_PAGE: '/my-page',
   SIGNUP: '/signup',
+  LOGIN: '/login',
 } as const;
