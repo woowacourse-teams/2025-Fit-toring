@@ -1,20 +1,24 @@
 import styled from '@emotion/styled';
 
+import { StatusTypeEnum, type StatusType } from '../../types/statusType';
+
 import type { myTheme } from '../../../../common/types/theme';
 
 interface MentoringApplicationStatusProps {
-  status: '승인 대기' | '승인됨' | '완료됨';
+  status: StatusType;
 }
 
 function StatusEmoticon({ status }: MentoringApplicationStatusProps) {
-  const getEmoticon = (status: string) => {
+  const getEmoticon = (status: StatusType) => {
     switch (status) {
-      case '승인 대기':
+      case StatusTypeEnum.pending:
         return '⏳';
-      case '승인됨':
+      case StatusTypeEnum.approved:
         return '✅';
-      case '완료됨':
+      case StatusTypeEnum.completed:
         return '🎉';
+      case StatusTypeEnum.rejected:
+        return '❌';
       default:
         return null;
     }
@@ -36,21 +40,33 @@ function MentoringApplicationStatus({
 
 export default MentoringApplicationStatus;
 
-const statusStyles = {
-  '승인 대기': {
-    border: (theme: myTheme) => theme.OUTLINE.YELLOW,
-    background: (theme: myTheme) => theme.BG.YELLOW,
-    color: (theme: myTheme) => theme.FONT.Y01,
+const statusStyles: Record<
+  StatusType,
+  {
+    border: (theme: myTheme) => string;
+    background: (theme: myTheme) => string;
+    color: (theme: myTheme) => string;
+  }
+> = {
+  승인대기: {
+    border: (theme) => theme.OUTLINE.YELLOW,
+    background: (theme) => theme.BG.YELLOW,
+    color: (theme) => theme.FONT.Y01,
   },
   승인됨: {
-    border: (theme: myTheme) => theme.SYSTEM.MAIN300,
-    background: (theme: myTheme) => theme.SYSTEM.MAIN100,
-    color: (theme: myTheme) => theme.SYSTEM.MAIN700,
+    border: (theme) => theme.SYSTEM.MAIN300,
+    background: (theme) => theme.SYSTEM.MAIN100,
+    color: (theme) => theme.SYSTEM.MAIN700,
   },
   완료됨: {
-    border: (theme: myTheme) => theme.SYSTEM.MAIN400,
-    background: (theme: myTheme) => theme.SYSTEM.MAIN200,
-    color: (theme: myTheme) => theme.SYSTEM.MAIN700,
+    border: (theme) => theme.SYSTEM.MAIN400,
+    background: (theme) => theme.SYSTEM.MAIN200,
+    color: (theme) => theme.SYSTEM.MAIN700,
+  },
+  거절됨: {
+    border: (theme) => theme.FONT.ERROR,
+    background: (theme) => theme.BG.GRAY,
+    color: (theme) => theme.FONT.W01,
   },
 } as const;
 

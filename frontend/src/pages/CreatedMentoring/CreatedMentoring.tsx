@@ -13,7 +13,7 @@ const MENTORING_APPLICATIONS: MentoringApplication[] = [
     fee: 5000,
     content:
       '다이어트를 위한 운동 계획과 식단 관리에 대해 상담받고 싶습니다. 현재 직장인이라 시간이 제한적인데, 효율적인 운동 방법을 알고 싶어요.',
-    status: '승인 대기',
+    status: '승인대기',
     applicationDate: '2025-01-15',
     scheduledDate: null,
     completionDate: null,

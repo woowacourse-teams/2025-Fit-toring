@@ -1,13 +1,17 @@
 import styled from '@emotion/styled';
 
+import { StatusTypeEnum, type StatusType } from '../../types/statusType';
+
 interface PhoneNumberProps {
-  status: '승인 대기' | '승인됨' | '완료됨' | '거절됨';
+  status: StatusType;
   phoneNumber: string | null;
 }
 
 function PhoneNumber({ status, phoneNumber }: PhoneNumberProps) {
   const canShowPhoneNumber =
-    (status === '승인됨' || status === '완료됨') && phoneNumber;
+    (status === StatusTypeEnum.approved ||
+      status === StatusTypeEnum.completed) &&
+    phoneNumber;
 
   return canShowPhoneNumber ? (
     <StyledContainer>연락처: {phoneNumber}</StyledContainer>

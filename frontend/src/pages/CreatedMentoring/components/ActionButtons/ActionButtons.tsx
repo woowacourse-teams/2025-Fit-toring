@@ -1,11 +1,13 @@
 import styled from '@emotion/styled';
 
+import { StatusTypeEnum, type StatusType } from '../../types/statusType';
+
 interface ActionButtonsProps {
-  status: '승인 대기' | '승인됨' | '완료됨' | '거절됨';
+  status: StatusType;
 }
 
 function ActionButtons({ status }: ActionButtonsProps) {
-  return status === '승인 대기' ? (
+  return status === StatusTypeEnum.pending ? (
     <StyledContainer>
       <StyledPrimaryButton>승인</StyledPrimaryButton>
       <StyledSecondaryButton>거절</StyledSecondaryButton>
