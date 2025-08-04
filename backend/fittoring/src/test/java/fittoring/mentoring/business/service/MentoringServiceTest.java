@@ -16,6 +16,7 @@ import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -359,14 +360,14 @@ class MentoringServiceTest {
             MentoringResponse actual = mentoringService.registerMentoring(RegisterMentoringDto.of(request, null, null));
 
             // then
-            assertAll(
-                    () -> assertThat(actual.price()).isEqualTo(request.price()),
-                    () -> assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트"),
-                    () -> assertThat(actual.introduction()).isEqualTo(request.introduction()),
-                    () -> assertThat(actual.career()).isEqualTo(request.career()),
-                    () -> assertThat(actual.content()).isEqualTo(request.content()),
-                    () -> assertThat(actual.profileImageUrl()).isNull()
-            );
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(actual.price()).isEqualTo(request.price());
+                softAssertions.assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트");
+                softAssertions.assertThat(actual.introduction()).isEqualTo(request.introduction());
+                softAssertions.assertThat(actual.career()).isEqualTo(request.career());
+                softAssertions.assertThat(actual.content()).isEqualTo(request.content());
+                softAssertions.assertThat(actual.profileImageUrl()).isNull();
+            });
         }
 
         @DisplayName("프로필 이미지를 포함하여 멘토링을 등록할 수 있다.")
@@ -402,14 +403,14 @@ class MentoringServiceTest {
             );
 
             // then
-            assertAll(
-                    () -> assertThat(actual.price()).isEqualTo(request.price()),
-                    () -> assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트"),
-                    () -> assertThat(actual.introduction()).isEqualTo(request.introduction()),
-                    () -> assertThat(actual.career()).isEqualTo(request.career()),
-                    () -> assertThat(actual.content()).isEqualTo(request.content()),
-                    () -> assertThat(actual.profileImageUrl()).isEqualTo(profileImageS3Url)
-            );
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(actual.price()).isEqualTo(request.price());
+                softAssertions.assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트");
+                softAssertions.assertThat(actual.introduction()).isEqualTo(request.introduction());
+                softAssertions.assertThat(actual.career()).isEqualTo(request.career());
+                softAssertions.assertThat(actual.content()).isEqualTo(request.content());
+                softAssertions.assertThat(actual.profileImageUrl()).isEqualTo(profileImageS3Url);
+            });
         }
 
         @DisplayName("프로필 이미지와 자격증을 포함하여 멘토링을 등록할 수 있다.")
@@ -459,16 +460,16 @@ class MentoringServiceTest {
             Image certificateImage1 = imageRepository.findByImageTypeAndRelationId(ImageType.CERTIFICATE, 1L).get();
             Image certificateImage2 = imageRepository.findByImageTypeAndRelationId(ImageType.CERTIFICATE, 2L).get();
 
-            assertAll(
-                    () -> assertThat(actual.price()).isEqualTo(request.price()),
-                    () -> assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트"),
-                    () -> assertThat(actual.introduction()).isEqualTo(request.introduction()),
-                    () -> assertThat(actual.career()).isEqualTo(request.career()),
-                    () -> assertThat(actual.content()).isEqualTo(request.content()),
-                    () -> assertThat(actual.profileImageUrl()).isEqualTo(profileImageS3Url),
-                    () -> assertThat(certificateImage1.getUrl()).isEqualTo(certificateImageS3Url1),
-                    () -> assertThat(certificateImage2.getUrl()).isEqualTo(certificateImageS3Url2)
-            );
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(actual.price()).isEqualTo(request.price());
+                softAssertions.assertThat(actual.categories()).containsExactlyInAnyOrder("근육증가", "다이어트");
+                softAssertions.assertThat(actual.introduction()).isEqualTo(request.introduction());
+                softAssertions.assertThat(actual.career()).isEqualTo(request.career());
+                softAssertions.assertThat(actual.content()).isEqualTo(request.content());
+                softAssertions.assertThat(actual.profileImageUrl()).isEqualTo(profileImageS3Url);
+                softAssertions.assertThat(certificateImage1.getUrl()).isEqualTo(certificateImageS3Url1);
+                softAssertions.assertThat(certificateImage2.getUrl()).isEqualTo(certificateImageS3Url2);
+            });
         }
     }
 }
