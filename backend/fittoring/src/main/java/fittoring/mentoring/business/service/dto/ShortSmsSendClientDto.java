@@ -1,9 +1,8 @@
 package fittoring.mentoring.business.service.dto;
 
-public record SmsSendClientDto(
+public record ShortSmsSendClientDto(
         String to,
         String from,
-        String text,
-        String subject
+        String text
 ) {
 }

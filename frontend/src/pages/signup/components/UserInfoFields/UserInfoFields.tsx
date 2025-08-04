@@ -3,12 +3,32 @@ import styled from '@emotion/styled';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 
-function UserInfoFields() {
+interface UserInfoFields {
+  name: string;
+  nameErrorMessage: string;
+  handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  gender: string;
+  handleGenderChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function UserInfoFields({
+  name,
+  nameErrorMessage,
+  handleNameChange,
+  gender,
+  handleGenderChange,
+}: UserInfoFields) {
   return (
     <StyledContainer>
-      <FormField label="이름 *">
+      <FormField label="이름 *" errorMessage={nameErrorMessage}>
         <StyledNameInputWrapper>
-          <Input id="name" placeholder="홍길동" />
+          <Input
+            id="name"
+            placeholder="홍길동"
+            value={name}
+            onChange={handleNameChange}
+            errored={nameErrorMessage !== ''}
+          />
         </StyledNameInputWrapper>
       </FormField>
       <fieldset>
@@ -17,17 +37,26 @@ function UserInfoFields() {
           <StyledRadioWrapper>
             <StyledLabel>
               남
-              <StyledRadio type="radio" name="gender" value="male" id="male" />
+              <StyledRadio
+                onChange={handleGenderChange}
+                type="radio"
+                name="gender"
+                value="male"
+                id="male"
+                checked={gender === 'male'}
+              />
             </StyledLabel>
           </StyledRadioWrapper>
           <StyledRadioWrapper>
             <StyledLabel>
               여
               <StyledRadio
+                onChange={handleGenderChange}
                 type="radio"
                 name="gender"
                 value="female"
                 id="female"
+                checked={gender === 'female'}
               />
             </StyledLabel>
           </StyledRadioWrapper>
@@ -92,8 +121,8 @@ const StyledRadio = styled.input`
 
 const StyledLabel = styled.label`
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 1rem;
 
   color: ${({ theme }) => theme.FONT.B02};
 

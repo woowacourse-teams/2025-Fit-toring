@@ -79,5 +79,5 @@ const disabledStyles = (theme: myTheme) => css`
   background-color: ${theme.BG.GRAY};
 
   color: ${theme.FONT.G01};
-  cursor: not-allowed;
+  pointer-events: none;
 `;

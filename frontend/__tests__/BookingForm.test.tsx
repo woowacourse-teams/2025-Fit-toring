@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 
+import { ERROR_MESSAGE } from '../src/common/constants/errorMessage';
 import { THEME } from '../src/common/styles/theme';
 import BookingForm from '../src/pages/booking/components/BookingForm/BookingForm';
-import { ERROR_MESSAGE } from '../src/pages/booking/constants/errorMessage';
 
 const renderBookingForm = (handleBookingButtonClick: () => void) => {
   return render(
@@ -26,9 +26,7 @@ describe('BookingForm 검증', () => {
       const input = screen.getByTestId('mentee-name-input');
       await userEvent.type(input, '홍길동동동동');
 
-      const errorText = screen.getByText(
-        ERROR_MESSAGE.INVALID_MENTEE_NAME_LENGTH,
-      );
+      const errorText = screen.getByText(ERROR_MESSAGE.INVALID_NAME_LENGTH);
       expect(errorText).toBeInTheDocument();
     });
 
@@ -38,9 +36,7 @@ describe('BookingForm 검증', () => {
       const input = screen.getByTestId('mentee-name-input');
       await userEvent.type(input, '홍길동12');
 
-      const errorText = screen.getByText(
-        ERROR_MESSAGE.INVALID_MENTEE_NAME_CHARACTERS,
-      );
+      const errorText = screen.getByText(ERROR_MESSAGE.INVALID_NAME_CHARACTERS);
       expect(errorText).toBeInTheDocument();
     });
   });

@@ -1,6 +1,8 @@
 package fittoring.mentoring.infra;
 
-import fittoring.mentoring.business.service.dto.SmsSendClientDto;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.service.dto.LongSmsSendClientDto;
+import fittoring.mentoring.business.service.dto.ShortSmsSendClientDto;
 import fittoring.mentoring.infra.exception.InfraErrorMessage;
 import fittoring.mentoring.infra.exception.SmsException;
 import java.util.List;
@@ -23,15 +25,34 @@ public class SmsRestClientService {
     @Value("${COOL_SMS_FROM_PHONE}")
     private String fromPhone;
 
-    public void sendSms(String to, String text, String subject) {
+    public void sendSms(Phone toPhone, String text, String subject) {
         smsRestClient.post()
                 .uri(SEND_MESSAGE_ENDPOINT)
                 .header("Authorization", authHeaderGenerator.createAuthorization())
-                .body(Map.of("messages", List.of(new SmsSendClientDto(
-                        to,
+                .body(Map.of("messages", List.of(new LongSmsSendClientDto(
+                        toPhone.getNumber(),
                         fromPhone,
                         text,
                         subject
+                ))))
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new SmsException(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new SmsException(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
+                })
+                .body(String.class);
+    }
+
+    public void sendSms(Phone toPhone, String text) {
+        smsRestClient.post()
+                .uri(SEND_MESSAGE_ENDPOINT)
+                .header("Authorization", authHeaderGenerator.createAuthorization())
+                .body(Map.of("messages", List.of(new ShortSmsSendClientDto(
+                        toPhone.getNumber(),
+                        fromPhone,
+                        text
                 ))))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
