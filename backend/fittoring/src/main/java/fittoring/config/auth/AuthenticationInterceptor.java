@@ -30,6 +30,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         try {
             String accessToken = jwtExtractor.extractTokenFromCookie("accessToken", cookies);
             jwtProvider.validateToken(accessToken);
+            Long memberId = jwtProvider.getSubjectFromPayloadBy(accessToken);
+            request.setAttribute("memberId", memberId);
         } catch (Exception e) {
             responseUnauthorized(response, BusinessErrorMessage.INVALID_TOKEN.getMessage());
             return false;
