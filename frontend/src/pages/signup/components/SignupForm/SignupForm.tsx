@@ -10,6 +10,7 @@ import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumber
 import { postAuthCodeVerify } from '../../apis/postAuthCodeVerify';
 import { postSignup } from '../../apis/postSignup';
 import { posValidateId } from '../../apis/postValidateId';
+import { useConfirmState } from '../../hooks/useConfirmStatus';
 import usePasswordInput from '../../hooks/usePasswordInput';
 import useUserIdInput from '../../hooks/useUserIdInput';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
@@ -39,10 +40,13 @@ function SignupForm() {
     isValid: isUserIdValid,
   } = useUserIdInput();
 
-  const [lastCheckedUserId, setLastCheckedUserId] = useState('');
-
   const [duplicateError, setDuplicateError] = useState(false);
-  const [isUserIdCheck, setIsUserIdCheck] = useState(false);
+
+  const {
+    confirm: userIdConfirm,
+    isCheckNeeded: isUserIdCheck,
+    shouldBlockSubmit: shouldBlockSubmitByUserId,
+  } = useConfirmState(userId);
 
   const handleDuplicateConfrimClick = async () => {
     setDuplicateError(false);
@@ -51,8 +55,7 @@ function SignupForm() {
       const response = await posValidateId(userId);
 
       if (response.status === 200) {
-        setLastCheckedUserId(userId);
-        setIsUserIdCheck(false);
+        userIdConfirm();
         alert('사용 가능한 아이디입니다.');
       }
     } catch (error) {
@@ -66,7 +69,7 @@ function SignupForm() {
       return '이미 사용중인 아이디입니다.';
     }
 
-    if (isUserIdCheck) {
+    if (!isUserIdCheck) {
       return '중복확인을 해주세요';
     }
 
@@ -131,7 +134,7 @@ function SignupForm() {
   const validateForm = () => {
     const validations = [
       isNameValid,
-      isUserIdValid && !duplicateError && !isUserIdCheck,
+      isUserIdValid && !duplicateError,
       isPasswordValid,
       isPasswordConfrimValid,
       phoneNumber !== '' && phoneNumberErrorMessage === '',
@@ -144,8 +147,7 @@ function SignupForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (lastCheckedUserId !== userId) {
-      setIsUserIdCheck(true);
+    if (shouldBlockSubmitByUserId()) {
       return;
     }
 
