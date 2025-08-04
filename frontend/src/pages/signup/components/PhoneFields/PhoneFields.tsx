@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
+import { postAuthCode } from '../../apis/postAuthCode';
 
 interface PhoneFieldsProps {
   phoneNumber: string;
@@ -26,6 +27,17 @@ function PhoneFields({
   phoneNumberErrorMessage,
   verificationCodeErrorMessage,
 }: PhoneFieldsProps) {
+  const handleAuthCodeClick = async () => {
+    try {
+      const response = await postAuthCode(phoneNumber);
+      if (response.status === 200) {
+        alert('인증요청 성공');
+      }
+    } catch (error) {
+      console.error('인증요청 실패', error);
+    }
+  };
+
   return (
     <>
       <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
@@ -42,7 +54,11 @@ function PhoneFields({
               errored={phoneNumberErrorMessage !== ''}
             />
           </div>
-          <Button type="button" customStyle={buttonCustomStyle}>
+          <Button
+            type="button"
+            customStyle={buttonCustomStyle}
+            onClick={handleAuthCodeClick}
+          >
             인증요청
           </Button>
         </StyledInputAndBtnWrapper>
