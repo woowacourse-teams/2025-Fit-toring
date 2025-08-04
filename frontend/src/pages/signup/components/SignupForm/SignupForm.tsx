@@ -10,9 +10,9 @@ import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumber
 import { postAuthCode } from '../../apis/postAuthCode';
 import { postAuthCodeVerify } from '../../apis/postAuthCodeVerify';
 import { postSignup } from '../../apis/postSignup';
-import { posValidateId } from '../../apis/postValidateId';
 import { useConfirmState } from '../../hooks/useConfirmStatus';
 import usePasswordInput from '../../hooks/usePasswordInput';
+import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
 import useUserIdInput from '../../hooks/useUserIdInput';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
 import PasswordFields from '../PasswordFields/PasswordFields';
@@ -41,41 +41,12 @@ function SignupForm() {
     isValid: isUserIdValid,
   } = useUserIdInput();
 
-  const [duplicateError, setDuplicateError] = useState(false);
-
   const {
-    confirm: userIdConfirm,
-    isCheckNeeded: isUserIdCheck,
-    shouldBlockSubmit: shouldBlockSubmitByUserId,
-  } = useConfirmState(userId);
-
-  const handleDuplicateConfrimClick = async () => {
-    setDuplicateError(false);
-
-    try {
-      const response = await posValidateId(userId);
-
-      if (response.status === 200) {
-        userIdConfirm();
-        alert('사용 가능한 아이디입니다.');
-      }
-    } catch (error) {
-      console.error('아이디 중복 확인 에러:', error);
-      setDuplicateError(true);
-    }
-  };
-
-  const getUserIdErrorMessage = () => {
-    if (duplicateError) {
-      return '이미 사용중인 아이디입니다.';
-    }
-
-    if (!isUserIdCheck) {
-      return '중복확인을 해주세요';
-    }
-
-    return userIdErrorMessage;
-  };
+    duplicateError,
+    handleDuplicateConfrimClick,
+    shouldBlockSubmitByUserId,
+    getFinalUserIdErrorMessage,
+  } = useUserIdDuplicateCheck({ userId, userIdErrorMessage });
 
   const {
     password,
@@ -228,7 +199,7 @@ function SignupForm() {
           userId={userId}
           handleUserIdChange={handleUserIdChange}
           handleDuplicateConfrimClick={handleDuplicateConfrimClick}
-          errorMessage={getUserIdErrorMessage()}
+          errorMessage={getFinalUserIdErrorMessage()}
         />
         <PasswordFields
           password={password}
