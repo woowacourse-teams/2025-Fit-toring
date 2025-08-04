@@ -1,15 +1,18 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.MentoringService;
+import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
+import fittoring.mentoring.presentation.dto.MentoringRequest;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
+
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,5 +34,16 @@ public class MentoringController {
     public ResponseEntity<MentoringResponse> getMentoring(@PathVariable("mentoringId") Long id) {
         MentoringResponse response = mentoringService.getMentoring(id);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/mentorings")
+    public ResponseEntity<MentoringResponse> registerMentoring(
+            @RequestPart("data") MentoringRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile profileImage,
+            @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
+    ) {
+        RegisterMentoringDto dto = RegisterMentoringDto.of(request, profileImage, certificateImages);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(mentoringService.registerMentoring(dto));
     }
 }

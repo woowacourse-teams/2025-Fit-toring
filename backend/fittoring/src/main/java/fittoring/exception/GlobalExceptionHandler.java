@@ -4,6 +4,7 @@ import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.infra.exception.S3UploadException;
 import fittoring.mentoring.business.exception.MisMatchPasswordException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.exception.PasswordEncryptionException;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -67,7 +69,7 @@ public class GlobalExceptionHandler {
     }
 
     private void logServerError(Exception e) {
-        log.error("[{}], [{}]", e.getMessage(), e.getStackTrace());
+        log.error("[{}], [{}], [{}]", e.getClass(), e.getMessage(), e.getStackTrace());
     }
 
     @ExceptionHandler(SmsException.class)
@@ -81,5 +83,18 @@ public class GlobalExceptionHandler {
         logServerError(e);
         return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, SystemErrorMessage.INTERNAL_SERVER_ERROR.getMessage())
                 .toResponseEntity();
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(NoHandlerFoundException e) {
+        log.warn("[{}], [{}], [{}]", e.getClass(), e.getMessage(), e.getStackTrace());
+        return ErrorResponse.of(HttpStatus.NOT_FOUND, SystemErrorMessage.RESOURCE_NOT_FOUND_ERROR.getMessage())
+                .toResponseEntity();
+    }
+
+    @ExceptionHandler(S3UploadException.class)
+    public ResponseEntity<ErrorResponse> handle(S3UploadException e) {
+        logServerError(e);
+        return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()).toResponseEntity();
     }
 }

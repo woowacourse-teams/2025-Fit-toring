@@ -38,6 +38,10 @@ const Container = styled.input<InputProps>`
     color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
 
+  ::placeholder {
+    color: ${({ theme }) => theme.SYSTEM.GRAY200};
+  }
+
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
   ${({ customStyle }) => customStyle};
 `;

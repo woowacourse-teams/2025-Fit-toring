@@ -89,7 +89,7 @@ class ReservationControllerTest {
 
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
 
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING, savedMentoring.getId()));
+        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
 
         Long mentoringId = savedMentoring.getId();
 
@@ -149,7 +149,7 @@ class ReservationControllerTest {
 
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
 
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING, savedMentoring.getId()));
+        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
 
         Long mentoringId = savedMentoring.getId();
 

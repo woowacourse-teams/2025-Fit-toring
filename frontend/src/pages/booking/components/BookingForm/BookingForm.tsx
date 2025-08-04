@@ -12,6 +12,7 @@ import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumber
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
 import type { BookingResponse } from '../../types/BookingResponse';
+import FormField from '../../../../common/components/FormField/FormField';
 
 interface BookingFormProps {
   handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
