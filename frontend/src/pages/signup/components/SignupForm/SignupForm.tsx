@@ -99,10 +99,13 @@ function SignupForm() {
     isValid: isVerificationCodeValid,
   } = useVerificationCodeInput();
 
+  const {
+    confirm: verificationCodeConfirm,
+    isCheckNeeded: isVerificationCodeCheck,
+    shouldBlockSubmit: shouldBlockSubmitByVerificationCode,
+  } = useConfirmState(verificationCode);
+
   const [verificationCodeError, setVerificationCodeError] = useState(false);
-  const [lastCheckedVerificationCode, setLastCheckedVerificationCode] =
-    useState('');
-  const [isVerificationCodeCheck, setIsVerificationCodeCheck] = useState(true);
 
   const handleAuthCodeVerifyClick = async (phoneNumber: string) => {
     setVerificationCodeError(false);
@@ -110,8 +113,7 @@ function SignupForm() {
       const response = await postAuthCodeVerify(phoneNumber, verificationCode);
       if (response.status === 200) {
         alert('인증 성공');
-        setLastCheckedVerificationCode(verificationCode);
-        setIsVerificationCodeCheck(true);
+        verificationCodeConfirm();
       }
     } catch (error) {
       setVerificationCodeError(true);
@@ -120,12 +122,11 @@ function SignupForm() {
   };
 
   const getVerificationCodeErrorMessage = () => {
-    if (verificationCodeError) {
-      return '인증 실패';
-    }
-
     if (!isVerificationCodeCheck) {
       return '인증을 해주세요';
+    }
+    if (verificationCodeError) {
+      return '인증 실패';
     }
 
     return verificationCodeErrorMessage;
@@ -138,7 +139,7 @@ function SignupForm() {
       isPasswordValid,
       isPasswordConfrimValid,
       phoneNumber !== '' && phoneNumberErrorMessage === '',
-      isVerificationCodeValid,
+      isVerificationCodeValid && !verificationCodeError,
     ];
 
     return validations.every(Boolean);
@@ -151,8 +152,7 @@ function SignupForm() {
       return;
     }
 
-    if (lastCheckedVerificationCode !== verificationCode) {
-      setIsVerificationCodeCheck(false);
+    if (shouldBlockSubmitByVerificationCode()) {
       return;
     }
 
