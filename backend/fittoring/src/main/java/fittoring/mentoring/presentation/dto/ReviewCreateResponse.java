@@ -3,7 +3,7 @@ package fittoring.mentoring.presentation.dto;
 import fittoring.mentoring.business.model.Review;
 
 public record ReviewCreateResponse(
-    byte rating,
+    int rating,
     String content
 ) {
 

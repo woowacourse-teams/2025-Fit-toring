@@ -3,7 +3,7 @@ package fittoring.mentoring.presentation.dto;
 public record MemberReviewGetResponse(
     Long id,
     Long mentoringId,
-    byte rating,
+    int rating,
     String content
 ) {
 

@@ -5,7 +5,7 @@ import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
 public record ReviewModifyDto(
     Long reviewerId,
     Long reviewId,
-    byte rating,
+    int rating,
     String content
 ) {
 

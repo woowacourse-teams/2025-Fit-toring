@@ -5,7 +5,7 @@ import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 public record ReviewCreateDto(
     Long reviewerId,
     Long mentoringId,
-    byte rating,
+    int rating,
     String content
 ) {
 

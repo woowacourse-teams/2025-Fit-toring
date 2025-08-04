@@ -30,8 +30,8 @@ public class Review {
     private Long id;
 
     @Getter
-    @Column(nullable = false)
-    private byte rating; // TODO: int로 바꾸기
+    @Column(columnDefinition = "TINYINT", nullable = false)
+    private int rating;
 
     @Getter
     @Column(columnDefinition = "TEXT", nullable = false)
@@ -51,11 +51,11 @@ public class Review {
     @JoinColumn(nullable = false, unique = true)
     private Member reviewer;
 
-    public Review(byte rating, String content, Mentoring mentoring, Member reviewer) {
+    public Review(int rating, String content, Mentoring mentoring, Member reviewer) {
         this(null, rating, content, null, mentoring, reviewer);
     }
 
-    public void modify(byte rating, String content) {
+    public void modify(int rating, String content) {
         this.rating = rating;
         this.content = content;
     }
