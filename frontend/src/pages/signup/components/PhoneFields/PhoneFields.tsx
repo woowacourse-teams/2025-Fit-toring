@@ -18,7 +18,6 @@ interface PhoneFieldsProps {
   phoneNumberErrorMessage: string;
   verificationCodeErrorMessage: string;
   isVerificationButtonEnabled: boolean;
-  isVerificationRequestButtonEnabled: boolean;
 }
 
 function PhoneFields({
@@ -32,8 +31,9 @@ function PhoneFields({
   phoneNumberErrorMessage,
   verificationCodeErrorMessage,
   isVerificationButtonEnabled,
-  isVerificationRequestButtonEnabled,
 }: PhoneFieldsProps) {
+  const isVerificationRequestButtonEnabled =
+    phoneNumber !== '' && phoneNumberErrorMessage === '';
   return (
     <>
       <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
