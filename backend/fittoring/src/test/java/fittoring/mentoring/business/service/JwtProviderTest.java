@@ -22,12 +22,12 @@ class JwtProviderTest {
 
     @DisplayName("토큰을 발급할 수 있다.")
     @Test
-    void createToken() {
+    void createAccessToken() {
         //given
         Long memberId = 1L;
 
         //when
-        String actual = jwtProvider.createToken(memberId);
+        String actual = jwtProvider.createAccessToken(memberId);
 
         //then
         assertThat(actual).isNotNull();
@@ -35,12 +35,10 @@ class JwtProviderTest {
 
     @DisplayName("만료되지 않은 토큰에서 subject를 추출할 수 있다.")
     @Test
-    void getSubjectFromPayloadBy() throws InterruptedException {
+    void getSubjectFromPayloadBy() {
         //given
         Long memberId = 1L;
-        String token = jwtProvider.createToken(memberId);
-
-        Thread.sleep(100); //0.1초 대기
+        String token = jwtProvider.createAccessToken(memberId);
 
         //when
         Long actual = jwtProvider.getSubjectFromPayloadBy(token);
@@ -54,7 +52,7 @@ class JwtProviderTest {
     void getSubjectFromPayloadBy2() throws InterruptedException {
         //given
         Long memberId = 1L;
-        String token = jwtProvider.createToken(memberId);
+        String token = jwtProvider.createAccessToken(memberId);
 
         Thread.sleep(2000); // 2초 대기
 

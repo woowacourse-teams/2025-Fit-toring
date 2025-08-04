@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class JwtProvider {
 
     private final SecretKey secretKey;
+    private final JwtParser jwtParser;
     private final long accessExpirationMillis;
     private final long refreshExpirationMillis;
 
@@ -31,9 +32,12 @@ public class JwtProvider {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
         this.accessExpirationMillis = accessExpirationMillis;
         this.refreshExpirationMillis = refreshExpirationMillis;
+        this.jwtParser = Jwts.parserBuilder()
+                .setSigningKey(this.secretKey)
+                .build();
     }
 
-    public String createToken(Long memberId) {
+    public String createAccessToken(Long memberId) {
         Date now = new Date();
         Date accessMillis = new Date(now.getTime() + accessExpirationMillis);
         return buildToken(memberId.toString(), now, accessMillis);
@@ -60,12 +64,12 @@ public class JwtProvider {
 
     public Long getSubjectFromPayloadBy(String token) {
         validateToken(token);
-        return Long.valueOf(getSubject(token));
+        return Long.valueOf(getJwtParser(token));
     }
 
     public void validateToken(String token) {
         try {
-            getParse().parseClaimsJws(token);
+            jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             throw new InvalidTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
         } catch (MalformedJwtException | UnsupportedJwtException e) {
@@ -75,15 +79,10 @@ public class JwtProvider {
         }
     }
 
-    private String getSubject(String token) {
-        return getParse()
+    private String getJwtParser(String token) {
+        return jwtParser
                 .parseClaimsJws(token)
-                .getBody().getSubject();
-    }
-
-    private JwtParser getParse() {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build();
+                .getBody()
+                .getSubject();
     }
 }

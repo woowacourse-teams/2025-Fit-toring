@@ -1,17 +1,19 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.AuthService;
-import fittoring.mentoring.presentation.CookieProvider;
+import fittoring.mentoring.presentation.CookieWriter;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
+import fittoring.mentoring.business.service.PhoneVerificationService;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
+import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,8 @@ public class AuthController {
     private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 
     private final AuthService authService;
+    private final PhoneVerificationFacadeService phoneVerificationFacadeService;
+    private final PhoneVerificationService phoneVerificationService;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
@@ -33,10 +37,10 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
         AuthTokenResponse response = authService.login(request.loginId(), request.password());
-        setCookie(httpResponse, response);
+        CookieWriter.write(httpResponse, response);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -67,5 +71,16 @@ public class AuthController {
         );
         httpResponse.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         httpResponse.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+    }
+    @PostMapping("/auth-code")
+    public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
+        phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/auth-code/verify")
+    public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerificationCodeRequest request) {
+        phoneVerificationService.verifyCode(request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

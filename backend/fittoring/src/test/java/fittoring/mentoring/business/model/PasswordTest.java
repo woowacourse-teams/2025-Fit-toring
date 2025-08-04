@@ -34,7 +34,8 @@ class PasswordTest {
         //when
         //then
         assertThatThrownBy(() -> password.validateMatches(inputPassword))
-                .isInstanceOf(MisMatchPasswordException.class);
+                .isInstanceOf(MisMatchPasswordException.class)
+                .hasMessage("비밀번호가 일치하지 않습니다.");
     }
 
     @DisplayName("비밀번호가 일치하면 정상동작 한다.")

@@ -6,9 +6,9 @@ import { apiClient } from '../../../../common/apis/apiClient';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
-import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
-import useMenteeNameInput from '../../hooks/useMenteeNameInput';
-import { getPhoneNumberErrorMessage } from '../../utils/phoneNumberValidator';
+import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
+import useNameInput from '../../../../common/hooks/useNameInput';
+import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
 import type { BookingResponse } from '../../types/BookingResponse';
@@ -23,10 +23,10 @@ function BookingForm({
   mentoringId,
 }: BookingFormProps) {
   const {
-    menteeName,
-    handleMenteeNameChange,
+    name,
+    handleNameChange,
     errorMessage: menteeNameErrorMessage,
-  } = useMenteeNameInput();
+  } = useNameInput();
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
     useFormattedPhoneNumber();
@@ -45,7 +45,7 @@ function BookingForm({
       const response = await apiClient.post({
         endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.RESERVATION}`,
         searchParams: {
-          menteeName,
+          name,
           menteePhone: phoneNumber,
           content: counselContent,
         },
@@ -60,6 +60,9 @@ function BookingForm({
     e.preventDefault();
 
     handleBooking();
+
+    // 이때 입력하지 않은 것들에 대한 유효성검사 돌아가고 errorMessage 화면에 노출
+    // 유효성검사를 트리거 시켜야함.
   };
 
   return (
@@ -72,8 +75,8 @@ function BookingForm({
           <Input
             placeholder="홍길동"
             id="name"
-            value={menteeName}
-            onChange={handleMenteeNameChange}
+            value={name}
+            onChange={handleNameChange}
             errored={menteeNameErrorMessage !== ''}
             data-testid="mentee-name-input"
             required
