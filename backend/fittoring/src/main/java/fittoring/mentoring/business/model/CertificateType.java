@@ -5,5 +5,6 @@ public enum CertificateType {
     LICENSE,
     EDUCATION,
     AWARD,
-    ETC
+    ETC,
+    ;
 }
