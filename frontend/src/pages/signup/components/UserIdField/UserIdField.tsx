@@ -12,6 +12,7 @@ interface UserIdFieldProps {
   errorMessage: string;
   handleUserIdChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDuplicateConfrimClick: () => void;
+  isUserIdInputValid: boolean;
 }
 
 function UserIdField({
@@ -19,7 +20,10 @@ function UserIdField({
   errorMessage,
   handleUserIdChange,
   handleDuplicateConfrimClick,
+  isUserIdInputValid,
 }: UserIdFieldProps) {
+  const isUserIdDuplicateButtonEnabled = userId !== '' && isUserIdInputValid;
+
   return (
     <FormField label="아이디 *" errorMessage={errorMessage}>
       <StyledInputAndBtnWrapper>
@@ -37,6 +41,7 @@ function UserIdField({
           type="button"
           customStyle={buttonCustomStyle}
           onClick={handleDuplicateConfrimClick}
+          variant={isUserIdDuplicateButtonEnabled ? 'primary' : 'disabled'}
         >
           중복확인
         </Button>

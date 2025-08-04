@@ -176,6 +176,7 @@ function SignupForm() {
           handleUserIdChange={handleUserIdChange}
           handleDuplicateConfrimClick={handleDuplicateConfrimClick}
           errorMessage={getFinalUserIdErrorMessage()}
+          isUserIdInputValid={userIdErrorMessage === ''}
         />
         <PasswordFields
           password={password}
