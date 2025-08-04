@@ -7,6 +7,7 @@ import Button from '../../../../common/components/Button/Button';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
+import { postSignup } from '../../apis/postSignup';
 import { posValidateId } from '../../apis/postValidateId';
 import usePasswordInput from '../../hooks/usePasswordInput';
 import useUserIdInput from '../../hooks/useUserIdInput';
@@ -107,8 +108,43 @@ function SignupForm() {
     return validations.every(Boolean);
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (lastCheckedUserId !== userId) {
+      setIsUserIdCheck(true);
+      return;
+    }
+
+    const form = e.target as HTMLFormElement;
+    const data = new FormData(form);
+
+    const name = data.get('name');
+    const gender = data.get('gender');
+    const password = data.get('password');
+    const loginId = data.get('id');
+    const phone = data.get('phone');
+
+    const signupInfo = {
+      name,
+      loginId,
+      gender,
+      phone,
+      password,
+    };
+
+    try {
+      const response = await postSignup(signupInfo);
+      if (response.status === 201) {
+        alert('가입에 성공했습니다.');
+      }
+    } catch (error) {
+      console.error('회원가입 실패', error);
+    }
+  };
+
   return (
-    <StyledContainer>
+    <StyledContainer onSubmit={handleSubmit}>
       <StyledFormFields>
         <UserInfoFields
           name={name}
