@@ -49,7 +49,7 @@ function PhoneFields({
           <Button
             type="button"
             customStyle={buttonCustomStyle}
-            onClick={handleAuthCodeClick}
+            onClick={() => handleAuthCodeClick(phoneNumber)}
           >
             인증요청
           </Button>

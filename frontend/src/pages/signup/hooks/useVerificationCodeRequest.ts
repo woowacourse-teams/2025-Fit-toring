@@ -17,7 +17,7 @@ const useVerificationCodeRequest = ({
     shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
   } = useConfirmState(phoneNumber);
 
-  const handleAuthCodeClick = async () => {
+  const handleAuthCodeClick = async (phoneNumber: string) => {
     try {
       const response = await postAuthCode(phoneNumber);
       if (response.status === 200) {
