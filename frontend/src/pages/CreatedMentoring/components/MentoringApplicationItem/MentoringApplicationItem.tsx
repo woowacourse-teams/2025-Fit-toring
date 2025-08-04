@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 
-import type { myTheme } from '../../../../common/types/theme';
+import MentoringApplicationStatus from '../MentoringApplicationStatus/MentoringApplicationStatus';
+
 import type { MentoringApplication } from '../../types/mentoringApplication';
 
 interface MentoringApplicationItemProps {
@@ -18,19 +19,6 @@ function MentoringApplicationItem({
     applicationDate,
   },
 }: MentoringApplicationItemProps) {
-  const getStatusEmoticon = (status: string) => {
-    switch (status) {
-      case '승인 대기':
-        return '⏳';
-      case '승인됨':
-        return '✅';
-      case '완료됨':
-        return '🎉';
-      default:
-        return null;
-    }
-  };
-
   return (
     <StyledContainer key={id}>
       <StyledName>{name}님의 상담 신청</StyledName>
@@ -39,9 +27,7 @@ function MentoringApplicationItem({
         <StyledApplicationFee>
           💰 15분 {fee.toLocaleString()}원
         </StyledApplicationFee>
-        <StyledApplicationStatus status={status}>
-          {getStatusEmoticon(status)} {status}
-        </StyledApplicationStatus>
+        <MentoringApplicationStatus status={status} />
       </StyledApplicationInfoWrapper>
       {(status === '승인됨' || status === '완료됨') && (
         <StyledApplicationPhoneNumber>
@@ -108,44 +94,6 @@ const StyledApplicationPhoneNumber = styled.p`
   background-color: ${({ theme }) => theme.BG.YELLOW};
 
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
-`;
-
-const statusStyles = {
-  '승인 대기': {
-    border: (theme: myTheme) => theme.OUTLINE.YELLOW,
-    background: (theme: myTheme) => theme.BG.YELLOW,
-    color: (theme: myTheme) => theme.FONT.Y01,
-  },
-  승인됨: {
-    border: (theme: myTheme) => theme.SYSTEM.MAIN300,
-    background: (theme: myTheme) => theme.SYSTEM.MAIN100,
-    color: (theme: myTheme) => theme.SYSTEM.MAIN700,
-  },
-  완료됨: {
-    border: (theme: myTheme) => theme.SYSTEM.MAIN400,
-    background: (theme: myTheme) => theme.SYSTEM.MAIN200,
-    color: (theme: myTheme) => theme.SYSTEM.MAIN700,
-  },
-} as const;
-
-const StyledApplicationStatus = styled.p<{
-  status: '승인 대기' | '승인됨' | '완료됨';
-}>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: fit-content;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid ${({ theme, status }) => statusStyles[status].border(theme)};
-  border-radius: 8px;
-
-  background-color: ${({ theme, status }) =>
-    statusStyles[status].background(theme)};
-
-  color: ${({ theme, status }) => statusStyles[status].color(theme)};
-
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
