@@ -26,13 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class MentoringService {
 
+    private final ImageService imageService;
+
     private final MentoringRepository mentoringRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
-    private final ImageRepository imageRepository;
-    private final S3Uploader s3Uploader;
     private final CertificateRepository certificateRepository;
-
 
     public List<MentoringSummaryResponse> findMentoringSummaries(
             String categoryTitle1,
@@ -79,8 +78,7 @@ public class MentoringService {
         List<MentoringResponse> mentoringResponses = new ArrayList<>();
         for (Mentoring mentoring : mentorings) {
             List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
-
-            imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
+            imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
                     .ifPresentOrElse(
                             image -> mentoringResponses.add(
                                     MentoringResponse.from(mentoring, categoryTitles, image)),
@@ -120,9 +118,8 @@ public class MentoringService {
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
 
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
-        Image image = imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
+        Image image = imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
                 .orElse(null);
-
         if (image == null) {
             return MentoringResponse.from(mentoring, categoryTitles);
         }
@@ -136,7 +133,7 @@ public class MentoringService {
         List<String> categoryTitles = dto.category();
         categoryMapping(categoryTitles, savedMentoring);
 
-        Image profileImage = saveProfileImage(dto, savedMentoring);
+        Image profileImage = saveProfileImage(dto.profileImage(), savedMentoring);
 
         certificateMapping(dto, savedMentoring);
 
@@ -145,23 +142,18 @@ public class MentoringService {
 
     private void categoryMapping(List<String> categoryTitles, Mentoring savedMentoring) {
         for (String categoryTitle : categoryTitles) {
-            Category category = categoryRepository.findByTitle(categoryTitle);
+            Category category = categoryRepository.findByTitle(categoryTitle)
+                    .orElseThrow(() -> new CategoryNotFoundException(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage()));
             CategoryMentoring categoryMentoring = new CategoryMentoring(category, savedMentoring);
             categoryMentoringRepository.save(categoryMentoring);
         }
     }
 
-    private Image saveProfileImage(RegisterMentoringDto dto, Mentoring mentoring) {
-        if (dto.profileImage() == null) {
+    private Image saveProfileImage(MultipartFile profileImageFile, Mentoring mentoring) {
+        if (profileImageFile == null) {
             return null;
         }
-        try {
-            String profileUrl = s3Uploader.upload(dto.profileImage(), "profile-image");
-            Image profile = new Image(profileUrl, ImageType.MENTORING_PROFILE, mentoring.getId());
-            return imageRepository.save(profile);
-        } catch (IOException e) {
-            throw new S3UploadException(InfraErrorMessage.S3_UPLOAD_ERROR.getMessage());
-        }
+        return imageService.uploadImageToS3(profileImageFile, "profile-image", ImageType.MENTORING_PROFILE, mentoring.getId());
     }
 
     private void certificateMapping(RegisterMentoringDto dto, Mentoring savedMentoring) {
@@ -190,13 +182,8 @@ public class MentoringService {
     private void saveCertificate(CertificateInfo request, MultipartFile certificateImageFile, Mentoring mentoring) {
         final Certificate certificate = new Certificate(request.type(), request.title(), mentoring);
         final Certificate savedCertificate = certificateRepository.save(certificate);
-        try {
-            String certificateUrl = s3Uploader.upload(certificateImageFile, "certificate-image");
-            Image certificateImage = new Image(certificateUrl, ImageType.CERTIFICATE, savedCertificate.getId());
-            imageRepository.save(certificateImage);
-        } catch (IOException e) {
-            throw new S3UploadException(InfraErrorMessage.S3_UPLOAD_ERROR.getMessage());
-        }
-    }
+        Long certificateId = savedCertificate.getId();
 
+        imageService.uploadImageToS3(certificateImageFile, "certificate-image", ImageType.CERTIFICATE, certificateId);
+    }
 }
