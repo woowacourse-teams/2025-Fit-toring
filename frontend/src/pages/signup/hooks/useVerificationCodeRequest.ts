@@ -1,0 +1,47 @@
+import { postAuthCode } from '../apis/postAuthCode';
+
+import { useConfirmState } from './useConfirmStatus';
+
+interface useVerificationCodeRequestParams {
+  phoneNumber: string;
+  phoneNumberErrorMessage: string;
+}
+
+const useVerificationCodeRequest = ({
+  phoneNumber,
+  phoneNumberErrorMessage,
+}: useVerificationCodeRequestParams) => {
+  const {
+    confirm: phoneNumberConfirm,
+    isCheckNeeded: isPhoneNumberCheck,
+    shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
+  } = useConfirmState(phoneNumber);
+
+  const handleAuthCodeClick = async () => {
+    try {
+      const response = await postAuthCode(phoneNumber);
+      if (response.status === 200) {
+        alert('인증요청 성공');
+        phoneNumberConfirm();
+      }
+    } catch (error) {
+      console.error('인증요청 실패', error);
+    }
+  };
+
+  const getFinalPhoneNumberErrorMessage = () => {
+    if (!isPhoneNumberCheck) {
+      return '인증요청을 해주세요.';
+    }
+
+    return phoneNumberErrorMessage;
+  };
+
+  return {
+    shouldBlockSubmitByPhoneNumberCheck,
+    handleAuthCodeClick,
+    getFinalPhoneNumberErrorMessage,
+  };
+};
+
+export default useVerificationCodeRequest;
