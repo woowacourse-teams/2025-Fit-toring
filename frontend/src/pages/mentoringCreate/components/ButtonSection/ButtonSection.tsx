@@ -7,7 +7,7 @@ function ButtonSection() {
   return (
     <StyledContainer>
       <Button
-        type="submit"
+        type="button"
         variant="secondary"
         size="full"
         customStyle={css`
