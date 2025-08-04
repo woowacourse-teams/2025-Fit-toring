@@ -37,6 +37,10 @@ public class PhoneVerification {
         this(null, phone, code, expireAt);
     }
 
+    public boolean expiredStatus(LocalDateTime requestTime) {
+        return requestTime.isAfter(this.expireAt);
+    }
+
     public String getPhone() {
         return this.phone.getNumber();
     }

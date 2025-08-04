@@ -2,8 +2,10 @@ package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.AuthService;
 import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
+import fittoring.mentoring.business.service.PhoneVerificationService;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
+    private final PhoneVerificationService phoneVerificationService;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
@@ -36,5 +39,11 @@ public class AuthController {
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
         phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/auth-code/verify")
+    public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerificationCodeRequest request) {
+        phoneVerificationService.verifyCode(request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
