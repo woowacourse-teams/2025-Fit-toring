@@ -56,12 +56,12 @@ const statusStyles: Record<
   승인됨: {
     border: (theme) => theme.SYSTEM.MAIN300,
     background: (theme) => theme.SYSTEM.MAIN100,
-    color: (theme) => theme.SYSTEM.MAIN700,
+    color: (theme) => theme.SYSTEM.MAIN800,
   },
   완료됨: {
-    border: (theme) => theme.SYSTEM.MAIN400,
+    border: (theme) => theme.SYSTEM.MAIN500,
     background: (theme) => theme.SYSTEM.MAIN200,
-    color: (theme) => theme.SYSTEM.MAIN700,
+    color: (theme) => theme.SYSTEM.MAIN900,
   },
   거절됨: {
     border: (theme) => theme.FONT.ERROR,

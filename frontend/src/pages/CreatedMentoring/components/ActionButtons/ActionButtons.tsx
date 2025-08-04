@@ -36,9 +36,9 @@ const StyledBaseButton = styled.button`
 `;
 
 const StyledPrimaryButton = styled(StyledBaseButton)`
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
 `;
 
 const StyledSecondaryButton = styled(StyledBaseButton)`
-  background-color: ${({ theme }) => theme.FONT.ERROR};
+  background-color: ${({ theme }) => theme.BG.RED};
 `;
