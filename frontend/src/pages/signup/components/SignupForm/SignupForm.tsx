@@ -19,6 +19,8 @@ import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
 import UserInfoFields from '../UserInfoFields/UserInfoFields';
 
+import type { SignupInfo } from '../../types/signupInfo';
+
 function SignupForm() {
   const {
     name,
@@ -123,7 +125,17 @@ function SignupForm() {
     const loginId = data.get('id');
     const phone = data.get('phone');
 
-    const signupInfo = {
+    if (
+      typeof name !== 'string' ||
+      (gender !== '남' && gender !== '여') ||
+      typeof password !== 'string' ||
+      typeof loginId !== 'string' ||
+      typeof phone !== 'string'
+    ) {
+      return;
+    }
+
+    const signupInfo: SignupInfo = {
       name,
       loginId,
       gender,
