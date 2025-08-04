@@ -1,3 +1,3 @@
-import { mentoringHandler } from './handlers/mentoring';
+import { mentoringHandler } from './mentoring/handlers';
 
 export const handlers = [...mentoringHandler];
