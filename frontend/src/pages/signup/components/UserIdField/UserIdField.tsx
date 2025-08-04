@@ -11,12 +11,14 @@ interface UserIdFieldProps {
   userId: string;
   errorMessage: string;
   handleUserIdChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDuplicateConfrimClick: () => void;
 }
 
 function UserIdField({
   userId,
   errorMessage,
   handleUserIdChange,
+  handleDuplicateConfrimClick,
 }: UserIdFieldProps) {
   return (
     <FormField label="아이디 *" errorMessage={errorMessage}>
@@ -31,7 +33,11 @@ function UserIdField({
             errored={errorMessage !== ''}
           />
         </div>
-        <Button type="button" customStyle={buttonCustomStyle}>
+        <Button
+          type="button"
+          customStyle={buttonCustomStyle}
+          onClick={handleDuplicateConfrimClick}
+        >
           중복확인
         </Button>
       </StyledInputAndBtnWrapper>

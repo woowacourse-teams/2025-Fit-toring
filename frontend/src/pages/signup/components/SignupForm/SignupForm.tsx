@@ -7,6 +7,7 @@ import Button from '../../../../common/components/Button/Button';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
+import { posValidateId } from '../../apis/postValidateId';
 import usePasswordInput from '../../hooks/usePasswordInput';
 import useUserIdInput from '../../hooks/useUserIdInput';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
@@ -36,6 +37,39 @@ function SignupForm() {
     isValid: isUserIdValid,
   } = useUserIdInput();
 
+  const [lastCheckedUserId, setLastCheckedUserId] = useState('');
+  const [duplicateError, setDuplicateError] = useState(false);
+  const [isUserIdCheck, setIsUserIdCheck] = useState(false);
+
+  const handleDuplicateConfrimClick = async () => {
+    setDuplicateError(false);
+
+    try {
+      const response = await posValidateId(userId);
+
+      if (response.status === 200) {
+        setLastCheckedUserId(userId);
+        setIsUserIdCheck(false);
+        alert('사용 가능한 아이디입니다.');
+      }
+    } catch (error) {
+      console.error('아이디 중복 확인 에러:', error);
+      setDuplicateError(true);
+    }
+  };
+
+  const getUserIdErrorMessage = () => {
+    if (duplicateError) {
+      return '이미 사용중인 아이디입니다.';
+    }
+
+    if (isUserIdCheck) {
+      return '중복확인을 해주세요';
+    }
+
+    return userIdErrorMessage;
+  };
+
   const {
     password,
     passwordConfirm,
@@ -62,7 +96,7 @@ function SignupForm() {
   const validateForm = () => {
     const validations = [
       isNameValid,
-      isUserIdValid,
+      isUserIdValid && !duplicateError && !isUserIdCheck,
       isPasswordValid,
       isPasswordConfrimValid,
       phoneNumber !== '' && phoneNumberErrorMessage === '',
@@ -85,7 +119,8 @@ function SignupForm() {
         <UserIdField
           userId={userId}
           handleUserIdChange={handleUserIdChange}
-          errorMessage={userIdErrorMessage}
+          handleDuplicateConfrimClick={handleDuplicateConfrimClick}
+          errorMessage={getUserIdErrorMessage()}
         />
         <PasswordFields
           password={password}
