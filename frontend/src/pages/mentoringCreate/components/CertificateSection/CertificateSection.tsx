@@ -6,18 +6,16 @@ import CertificateInput from '../CertificateInput/CertificateInput';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 function CertificateSection() {
-  const [certificates, setCertificates] = useState<number[]>([]);
+  const [certificates, setCertificates] = useState<string[]>([]);
   const handleAddButtonClick = () => {
-    setCertificates((prev) => [...prev, Date.now()]);
+    setCertificates((prev) => [...prev, crypto.randomUUID()]);
   };
-
-  const handleDeleteButtonClick = (id: number) => {
+  const handleDeleteButtonClick = (id: string) => {
     setCertificates((prev) => prev.filter((item) => item !== id));
   };
   return (
     <section>
       <TitleSeparator>검증된 자격 사항</TitleSeparator>
-      <StyledGuideText>최대 3개까지 등록 가능합니다.</StyledGuideText>
       <StyledDescriptionWrapper>
         <p>증명서 또는 관련 사진이 확인된 후 게시됩니다.</p>
         <p>항목 작성 후 게시요청 해주세요.</p>
@@ -43,14 +41,6 @@ function CertificateSection() {
 
 export default CertificateSection;
 
-const StyledGuideText = styled.p`
-  margin-bottom: 2rem;
-  padding-left: 0.5rem;
-
-  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
-  color: ${({ theme }) => theme.FONT.B04}
-`;
-
 const StyledDescriptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -59,7 +49,6 @@ const StyledDescriptionWrapper = styled.div`
   gap: 1.4rem;
 
   width: 100%;
-  height: 100%;
   margin-bottom: 3.5rem;
   padding: 2rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
