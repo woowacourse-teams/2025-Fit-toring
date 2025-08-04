@@ -21,6 +21,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -420,7 +421,8 @@ class AuthControllerTest {
         // given
         Phone phone = new Phone("010-1234-5678");
         String code = "123456";
-        PhoneVerification phoneVerification = new PhoneVerification(phone, code, LocalDateTime.now().plusMinutes(3));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        PhoneVerification phoneVerification = new PhoneVerification(phone, code, now.plusMinutes(3));
         phoneVerificationRepository.save(phoneVerification);
         VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), code);
 
