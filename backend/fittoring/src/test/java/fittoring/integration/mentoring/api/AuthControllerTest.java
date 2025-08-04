@@ -120,7 +120,7 @@ class AuthControllerTest {
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/signin");
+                .post("/login");
         //then
         List<String> cookies = response.getHeaders().getValues("Set-Cookie");
 
@@ -154,7 +154,7 @@ class AuthControllerTest {
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/signin");
+                .post("/login");
 
         //then
         List<String> cookies = response.getHeaders().getValues("Set-Cookie");
@@ -189,7 +189,7 @@ class AuthControllerTest {
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/signin");
+                .post("/login");
 
         // then
         List<String> cookies = response.getHeaders().getValues("Set-Cookie");

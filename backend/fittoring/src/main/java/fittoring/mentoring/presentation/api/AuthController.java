@@ -33,7 +33,7 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
         AuthTokenResponse response = authService.login(request.loginId(), request.password());
         CookieWriter.write(httpResponse, response);
