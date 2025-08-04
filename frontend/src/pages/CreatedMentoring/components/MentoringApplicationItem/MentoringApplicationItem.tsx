@@ -43,7 +43,7 @@ function MentoringApplicationItem({
           {getStatusImage(status)} {status}
         </StyledApplicationStatus>
       </StyledApplicationInfoWrapper>
-      {phoneNumber && (
+      {(status === '승인됨' || status === '완료됨') && (
         <StyledApplicationPhoneNumber>
           연락처: {phoneNumber}
         </StyledApplicationPhoneNumber>
