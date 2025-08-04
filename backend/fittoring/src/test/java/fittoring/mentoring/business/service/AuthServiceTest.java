@@ -182,7 +182,7 @@ class AuthServiceTest {
                     assertThat(actual.refreshToken()).isNotNull();
                     assertThat(refreshToken).isNotNull();
                     assertThat(refreshToken.getMemberId()).isEqualTo(savedMember.getId());
-                    assertThat(refreshToken.getToken()).isEqualTo(actual.refreshToken());
+                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.refreshToken());
                 }
         );
     }
@@ -213,7 +213,7 @@ class AuthServiceTest {
                     assertThat(actual.refreshToken()).isNotNull();
                     assertThat(actual.accessToken()).isNotEqualTo(accessToken);
                     assertThat(actual.refreshToken()).isNotEqualTo(refreshToken);
-                    assertThat(newRefreshToken.getToken()).isEqualTo(actual.refreshToken());
+                    assertThat(newRefreshToken.getTokenValue()).isEqualTo(actual.refreshToken());
                     assertThat(newRefreshToken.getMemberId()).isEqualTo(savedRefreshToken.getMemberId());
                     assertThat(newRefreshToken.getCreateAt()).isAfterOrEqualTo(savedRefreshToken.getCreateAt());
                 }

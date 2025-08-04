@@ -66,7 +66,7 @@ public class AuthService {
     }
 
     private RefreshToken getRefreshToken(String refreshToken) {
-        return refreshTokenRepository.findByToken(refreshToken)
+        return refreshTokenRepository.findByTokenValue(refreshToken)
                 .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.NOT_FOUND_TOKEN.getMessage()));
     }
 
