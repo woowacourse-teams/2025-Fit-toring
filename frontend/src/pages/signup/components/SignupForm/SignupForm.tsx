@@ -7,12 +7,11 @@ import Button from '../../../../common/components/Button/Button';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
-import { postAuthCodeVerify } from '../../apis/postAuthCodeVerify';
 import { postSignup } from '../../apis/postSignup';
-import { useConfirmState } from '../../hooks/useConfirmStatus';
 import usePasswordInput from '../../hooks/usePasswordInput';
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
 import useUserIdInput from '../../hooks/useUserIdInput';
+import useVerificationCodeConfirm from '../../hooks/useVerificationCodeConfirm';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
 import useVerificationCodeRequest from '../../hooks/useVerificationCodeRequest';
 import PasswordFields from '../PasswordFields/PasswordFields';
@@ -78,37 +77,14 @@ function SignupForm() {
   } = useVerificationCodeInput();
 
   const {
-    confirm: verificationCodeConfirm,
-    isCheckNeeded: isVerificationCodeCheck,
-    shouldBlockSubmit: shouldBlockSubmitByVerificationCode,
-  } = useConfirmState(verificationCode);
-
-  const [verificationCodeError, setVerificationCodeError] = useState(false);
-
-  const handleAuthCodeVerifyClick = async (phoneNumber: string) => {
-    setVerificationCodeError(false);
-    try {
-      const response = await postAuthCodeVerify(phoneNumber, verificationCode);
-      if (response.status === 200) {
-        alert('인증 성공');
-        verificationCodeConfirm();
-      }
-    } catch (error) {
-      setVerificationCodeError(true);
-      console.error('인증 실패', error);
-    }
-  };
-
-  const getVerificationCodeErrorMessage = () => {
-    if (!isVerificationCodeCheck) {
-      return '인증을 해주세요';
-    }
-    if (verificationCodeError) {
-      return '인증 실패';
-    }
-
-    return verificationCodeErrorMessage;
-  };
+    verificationCodeError,
+    handleAuthCodeVerifyClick,
+    getFinalVerificationCodeErrorMessage,
+    shouldBlockSubmitByVerificationCode,
+  } = useVerificationCodeConfirm({
+    verificationCode,
+    verificationCodeErrorMessage,
+  });
 
   const validateForm = () => {
     const validations = [
@@ -192,7 +168,7 @@ function SignupForm() {
         <PhoneFields
           phoneNumber={phoneNumber}
           verificationCode={verificationCode}
-          verificationCodeErrorMessage={getVerificationCodeErrorMessage()}
+          verificationCodeErrorMessage={getFinalVerificationCodeErrorMessage()}
           phoneNumberErrorMessage={getFinalPhoneNumberErrorMessage()}
           handlePhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
