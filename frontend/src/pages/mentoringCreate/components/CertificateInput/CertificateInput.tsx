@@ -209,9 +209,9 @@ const StyledUploadDescription = styled.div`
   }
 
   & > p {
-    ${({ theme }) => theme.TYPOGRAPHY.B4_R};
     color: ${({ theme }) => theme.FONT.G01};
     text-align: center;
+    ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   }
 `;
 
