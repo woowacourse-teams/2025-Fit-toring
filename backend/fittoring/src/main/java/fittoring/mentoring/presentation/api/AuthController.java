@@ -1,20 +1,21 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.mentoring.business.service.AuthService;
+import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
+import fittoring.mentoring.business.service.PhoneVerificationService;
 import fittoring.mentoring.presentation.CookieWriter;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
-import fittoring.mentoring.business.service.PhoneVerificationService;
 import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
+
+    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
@@ -36,6 +40,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
         AuthTokenResponse response = authService.login(request.loginId(), request.password());
+        CookieWriter.write(httpResponse, response);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<Void> reissue(
+            @CookieValue(REFRESH_TOKEN_COOKIE_NAME) String refreshToken,
+            HttpServletResponse httpResponse
+    ) {
+        AuthTokenResponse response = authService.reissue(refreshToken);
         CookieWriter.write(httpResponse, response);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -28,12 +28,18 @@ public class RefreshToken {
 
     @Getter
     @Column(nullable = false)
-    private String token;
+    private String tokenValue;
 
+    @Getter
     @Column(nullable = false)
     private LocalDateTime createAt;
 
-    public RefreshToken(Long memberId, String token, LocalDateTime createAt) {
-        this(null, memberId, token, createAt);
+    public RefreshToken(Long memberId, String tokenValue, LocalDateTime createAt) {
+        this(null, memberId, tokenValue, createAt);
+    }
+
+    public void update(String tokenValue, LocalDateTime createAt) {
+        this.tokenValue = tokenValue;
+        this.createAt = createAt;
     }
 }

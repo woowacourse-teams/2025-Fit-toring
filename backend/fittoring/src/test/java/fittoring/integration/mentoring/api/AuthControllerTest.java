@@ -5,10 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
+import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
-import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.business.repository.PhoneVerificationRepository;
+import fittoring.mentoring.business.repository.RefreshTokenRepository;
+import fittoring.mentoring.business.service.JwtProvider;
+import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
 import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
@@ -17,9 +20,9 @@ import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +40,12 @@ class AuthControllerTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
@@ -200,6 +209,54 @@ class AuthControllerTest {
                     assertThat(cookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
                 }
         );
+    }
+
+    @DisplayName("토큰을 재발급 하면 상태코드 200을 응답하고, 새로운 accessToken과 refreshToken을 쿠키에 저장한다.")
+    @Test
+    void reissue() {
+        //given
+        String accessToken = jwtProvider.createAccessToken(1L);
+        String refreshToken = jwtProvider.createRefreshToken();
+
+        refreshTokenRepository.save(new RefreshToken(1L, refreshToken, LocalDateTime.now()));
+
+        //when
+        Response reissueResponse = RestAssured
+                .given()
+                .log().all()
+                .cookie("accessToken", accessToken)
+                .cookie("refreshToken", refreshToken)
+                .when()
+                .post("/reissue");
+
+        //then
+        List<String> reissueCookies = reissueResponse.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(reissueResponse.statusCode()).isEqualTo(200);
+            softly.assertThat(reissueCookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
+            softly.assertThat(reissueCookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
+        });
+    }
+
+    @DisplayName("토큰을 재발급 할 때, 유효하지 않은(존재하지 않는) refreshToken을 제공하면 401 상태코드를 받는다.")
+    @Test
+    void reissue2() {
+        //given
+        String accessToken = jwtProvider.createAccessToken(1L);
+        String refreshToken = jwtProvider.createRefreshToken();
+
+        //when
+        Response reissueResponse = RestAssured
+                .given()
+                .log().all()
+                .cookie("accessToken", accessToken)
+                .cookie("refreshToken", refreshToken)
+                .when()
+                .post("/reissue");
+
+        //then
+        assertThat(reissueResponse.statusCode()).isEqualTo(401);
     }
 
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")

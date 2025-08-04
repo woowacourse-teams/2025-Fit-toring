@@ -11,6 +11,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,23 +40,24 @@ public class JwtProvider {
     public String createAccessToken(Long memberId) {
         Date now = new Date();
         Date accessMillis = new Date(now.getTime() + accessExpirationMillis);
-        return buildToken(memberId, now, accessMillis);
+        return buildToken(memberId.toString(), now, accessMillis);
     }
 
     public String createRefreshToken() {
         Date now = new Date();
         Date refreshMillis = new Date(now.getTime() + refreshExpirationMillis);
-        return buildToken(null, now, refreshMillis);
+        return buildToken(UUID.randomUUID().toString(), now, refreshMillis);
     }
 
-    private String buildToken(Long subject, Date issuedAt, Date expiresAt) {
+    private String buildToken(String subject, Date issuedAt, Date expiresAt) {
         JwtBuilder builder = Jwts.builder()
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .setIssuedAt(issuedAt)
+                .setId(UUID.randomUUID().toString())
                 .setExpiration(expiresAt);
 
         if (subject != null) {
-            builder.setSubject(subject.toString());
+            builder.setSubject(subject);
         }
         return builder.compact();
     }
@@ -65,7 +67,7 @@ public class JwtProvider {
         return Long.valueOf(getJwtParser(token));
     }
 
-    private void validateToken(String token) {
+    public void validateToken(String token) {
         try {
             jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
