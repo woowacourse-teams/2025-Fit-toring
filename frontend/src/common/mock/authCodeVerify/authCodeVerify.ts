@@ -27,4 +27,4 @@ const postAuthCodeVerify = http.post(
   },
 );
 
-export const postAuthCodeVerifyHandler = [postAuthCodeVerify];
+export const authCodeVerifyHandler = [postAuthCodeVerify];
