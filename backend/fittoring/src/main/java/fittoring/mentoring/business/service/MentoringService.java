@@ -3,23 +3,24 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
-import fittoring.mentoring.business.model.*;
-import fittoring.mentoring.business.repository.*;
+import fittoring.mentoring.business.model.Category;
+import fittoring.mentoring.business.model.CategoryMentoring;
+import fittoring.mentoring.business.model.Image;
+import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.repository.CategoryMentoringRepository;
+import fittoring.mentoring.business.repository.CategoryRepository;
+import fittoring.mentoring.business.repository.CertificateRepository;
+import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
-import fittoring.mentoring.infra.S3Uploader;
-import fittoring.mentoring.infra.exception.InfraErrorMessage;
-import fittoring.mentoring.infra.exception.S3UploadException;
-import fittoring.mentoring.presentation.dto.CertificateInfo;
-import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
-
-import java.io.IOException;
+import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
@@ -127,6 +128,7 @@ public class MentoringService {
         return MentoringResponse.from(mentoring, categoryTitles, image);
     }
 
+    @Transactional
     public MentoringResponse registerMentoring(RegisterMentoringDto dto) {
         final Mentoring mentoring = new Mentoring(dto.mentorInfo(), dto.mentorInfo(), dto.price(), dto.career(), dto.content(), dto.introduction());
         final Mentoring savedMentoring = mentoringRepository.save(mentoring);
