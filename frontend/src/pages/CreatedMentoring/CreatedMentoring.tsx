@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
 
+import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
+
 import type { MentoringApplication } from './types/mentoringApplication';
 
 const MENTORING_APPLICATIONS: MentoringApplication[] = [
@@ -67,7 +69,7 @@ function CreatedMentoring() {
           </StyledDescription>
         </StyledInfoWrapper>
         <StyledLine />
-        <StyledApplicationList>
+        <MentoringApplicationList>
           {MENTORING_APPLICATIONS.map(
             ({
               id,
@@ -106,7 +108,7 @@ function CreatedMentoring() {
               </StyledApplicationItem>
             ),
           )}
-        </StyledApplicationList>
+        </MentoringApplicationList>
       </StyledWrapper>
     </StyledContainer>
   );
@@ -164,14 +166,6 @@ const StyledLine = styled.hr`
   margin: 0;
   border: none;
   border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-`;
-
-const StyledApplicationList = styled.ul`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  padding: 1.5rem 2rem;
 `;
 
 const StyledApplicationItem = styled.li`
