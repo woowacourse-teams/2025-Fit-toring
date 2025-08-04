@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Member {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +29,7 @@ public class Member {
     @Column(nullable = false)
     private String gender;
 
+    @Getter
     @Column(nullable = false)
     private String name;
 
@@ -39,6 +42,10 @@ public class Member {
 
     public Member(String loginId, String gender, String name, String phone, Password password) {
         this(null, loginId, gender, name, phone, password);
+    }
+
+    public void matchPassword(String password) {
+        this.password.validateMatches(password);
     }
 
     public String getPassword() {

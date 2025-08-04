@@ -35,3 +35,7 @@ logging:
       file-name-pattern: logs/application.%d{yyyy-MM}.%i.log
       max-history: 2
       max-file-size: 10MB
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-expiration-millis: ${ACCESS_TOKEN_EXPIRATION_MILLIS}
+  refresh-token-expiration-millis: ${REFRESH_TOKEN_EXPIRATION_MILLIS}

@@ -9,7 +9,12 @@ public enum BusinessErrorMessage {
     CATEGORY_NOT_FOUND("존재하지 않는 카테고리가 포함되어 있습니다."),
     PHONE_INVALID("유효하지 않은 전화번호 형식입니다."),
     PASSWORD_ENCRYPTION_FAILED("비밀번호 암호화에 실패했습니다."),
+    MIS_MATCH_PASSWORD("비밀번호가 일치하지 않습니다."),
     DUPLICATE_LOGIN_ID("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요."),
+    LOGIN_ID_NOT_FOUND("존재하지 않는 아이디입니다."),
+    EXPIRED_TOKEN("유효시간이 만료된 토큰입니다."),
+    INVALID_TOKEN("유효하지 않은 토큰입니다."),
+    EMPTY_TOKEN("토큰이 비어있습니다."),
     PHONE_VERIFICATION_INVALID("만료 혹은 인증되지 않은 요청입니다."),
     ;
 

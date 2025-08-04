@@ -7,6 +7,7 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.business.repository.PhoneVerificationRepository;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
@@ -16,6 +17,8 @@ import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -94,6 +97,109 @@ class AuthControllerTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @DisplayName("사용자는 유효하지 않은 아이디로 로그인을 할 수 없고, 쿠키에 토큰이 저장되지 않는다.")
+    @Test
+    void login() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("invalidLoginId", "password");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/login");
+        //then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(400);
+                    assertThat(response.getHeaders().hasHeaderWithName("Set-Cookie")).isFalse();
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
+    }
+
+    @DisplayName("사용자는 유효하지 않은 비밀번호로 로그인을 할 수 없고, 쿠키에 토큰이 저장되지 않는다.")
+    @Test
+    void login2() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("loginId", "invalidPassword");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/login");
+
+        //then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(400);
+                    assertThat(response.getHeaders().hasHeaderWithName("Set-Cookie")).isFalse();
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
+    }
+
+    @DisplayName("사용자가 로그인에 성공하면 상태코드 200을 응답하고, accessToken과 refreshToken을 쿠키에 저장한다.")
+    @Test
+    void login3() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                "010-1234-5678",
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("loginId", "password");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/login");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(200);
+                    assertThat(cookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
     }
 
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")
