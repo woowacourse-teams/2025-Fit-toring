@@ -4,9 +4,10 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 const MENU_ITEMS = [
-  { name: '개설한 멘토링', path: 'created-mentoring' },
+  { name: '개설한 멘토링', path: PAGE_URL.CREATED_MENTORING },
   { name: '참여한 멘토링', path: 'participated-mentoring' },
   { name: '회원 정보', path: 'my-profile' },
   { name: '로그아웃', path: 'logout' },

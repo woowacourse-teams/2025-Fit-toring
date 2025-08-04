@@ -23,7 +23,7 @@ const router = createBrowserRouter([
         element: <CreatedMentoring />,
       },
       {
-        path: 'created-mentoring',
+        path: PAGE_URL.CREATED_MENTORING,
         element: <CreatedMentoring />,
       },
     ],
