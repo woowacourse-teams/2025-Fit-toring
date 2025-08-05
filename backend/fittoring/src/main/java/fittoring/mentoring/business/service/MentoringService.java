@@ -3,14 +3,17 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.CertificateRepository;
+import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
@@ -34,6 +37,7 @@ public class MentoringService {
     private final CategoryRepository categoryRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final CertificateRepository certificateRepository;
+    private final MemberRepository memberRepository;
 
     public List<MentoringSummaryResponse> findMentoringSummaries(
             String categoryTitle1,
@@ -130,7 +134,15 @@ public class MentoringService {
 
     @Transactional
     public MentoringResponse registerMentoring(RegisterMentoringDto dto) {
-        final Mentoring mentoring = new Mentoring(dto.mentorInfo(), dto.mentorInfo(), dto.price(), dto.career(), dto.content(), dto.introduction());
+        Member member = memberRepository.findById(dto.mentorId())
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        final Mentoring mentoring = new Mentoring(
+                dto.price(),
+                dto.career(),
+                dto.content(),
+                dto.introduction(),
+                member
+        );
         final Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         List<String> categoryTitles = dto.category();
@@ -145,7 +157,8 @@ public class MentoringService {
     private void categoryMapping(List<String> categoryTitles, Mentoring savedMentoring) {
         for (String categoryTitle : categoryTitles) {
             Category category = categoryRepository.findByTitle(categoryTitle)
-                    .orElseThrow(() -> new CategoryNotFoundException(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage()));
+                    .orElseThrow(
+                            () -> new CategoryNotFoundException(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage()));
             CategoryMentoring categoryMentoring = new CategoryMentoring(category, savedMentoring);
             categoryMentoringRepository.save(categoryMentoring);
         }
@@ -155,6 +168,7 @@ public class MentoringService {
         if (profileImageFile == null) {
             return null;
         }
-        return imageService.uploadImageToS3(profileImageFile, "profile-image", ImageType.MENTORING_PROFILE, mentoring.getId());
+        return imageService.uploadImageToS3(profileImageFile, "profile-image", ImageType.MENTORING_PROFILE,
+                mentoring.getId());
     }
 }
