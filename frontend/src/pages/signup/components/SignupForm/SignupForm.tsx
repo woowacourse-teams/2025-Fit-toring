@@ -127,30 +127,22 @@ function SignupForm() {
       return;
     }
 
-    const form = e.target as HTMLFormElement;
-    const data = new FormData(form);
-
-    const name = data.get('name');
-    const gender = data.get('gender');
-    const password = data.get('password');
-    const loginId = data.get('id');
-    const phone = data.get('phone');
-
-    if (
-      typeof name !== 'string' ||
+    const invalidSignupInfo =
+      !name ||
       (gender !== '남' && gender !== '여') ||
-      typeof password !== 'string' ||
-      typeof loginId !== 'string' ||
-      typeof phone !== 'string'
-    ) {
+      !password ||
+      !userId ||
+      !phoneNumber;
+
+    if (invalidSignupInfo) {
       return;
     }
 
     const signupInfo: SignupInfo = {
       name,
-      loginId,
+      loginId: userId,
       gender,
-      phone,
+      phone: phoneNumber,
       password,
     };
 
