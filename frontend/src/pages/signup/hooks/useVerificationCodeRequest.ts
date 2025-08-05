@@ -19,7 +19,7 @@ const useVerificationCodeRequest = ({
     shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
   } = useSubmitGuardWithConfirm(phoneNumber);
 
-  const [isRequestCompleted, setIsRequestCompleted] = useState(false);
+  const [requestCompleted, setRequestCompleted] = useState(false);
 
   const handleAuthCodeClick = async (phoneNumber: string) => {
     try {
@@ -27,7 +27,7 @@ const useVerificationCodeRequest = ({
       if (response.status === 201) {
         alert('인증요청 성공');
         confirmPhoneNumber();
-        setIsRequestCompleted(true);
+        setRequestCompleted(true);
       }
     } catch (error) {
       console.error('인증요청 실패', error);
@@ -47,7 +47,7 @@ const useVerificationCodeRequest = ({
     handleAuthCodeClick,
     getFinalPhoneNumberErrorMessage,
     matchConfirmedPhoneNumber,
-    isRequestCompleted,
+    requestCompleted,
   };
 };
 

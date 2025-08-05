@@ -35,7 +35,7 @@ const useVerificationCodeInput = () => {
     verificationCode,
     handleVerificationCodeChange,
     errorMessage,
-    isValid: verificationCode !== '' && errorMessage === '',
+    validated: verificationCode !== '' && errorMessage === '',
   };
 };
 

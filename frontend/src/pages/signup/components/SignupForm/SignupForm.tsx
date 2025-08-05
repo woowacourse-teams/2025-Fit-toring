@@ -26,7 +26,7 @@ function SignupForm() {
     name,
     handleNameChange,
     errorMessage: nameErrorMessage,
-    isValid: isNameValid,
+    validated: nameValidated,
   } = useNameInput();
 
   const [gender, setGender] = useState('남');
@@ -39,7 +39,7 @@ function SignupForm() {
     userId,
     handleUserIdChange,
     errorMessage: userIdErrorMessage,
-    isValid: isUserIdValid,
+    validated: userIdValidated,
   } = useUserIdInput();
 
   const {
@@ -56,8 +56,8 @@ function SignupForm() {
     passwordConfirmErrorMessage,
     handlePasswordChange,
     handlePasswordConfirmChange,
-    isPasswordValid,
-    isPasswordConfrimValid,
+    passwordValidated,
+    passwordConfrimValidated,
   } = usePasswordInput();
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
@@ -70,14 +70,14 @@ function SignupForm() {
     handleAuthCodeClick,
     getFinalPhoneNumberErrorMessage,
     matchConfirmedPhoneNumber,
-    isRequestCompleted,
+    requestCompleted,
   } = useVerificationCodeRequest({ phoneNumber, phoneNumberErrorMessage });
 
   const {
     verificationCode,
     handleVerificationCodeChange,
     errorMessage: verificationCodeErrorMessage,
-    isValid: isVerificationCodeValid,
+    validated: verificationCodeValidated,
   } = useVerificationCodeInput();
 
   const {
@@ -92,12 +92,12 @@ function SignupForm() {
 
   const validateForm = () => {
     const validations = [
-      isNameValid,
-      isUserIdValid && !duplicateError,
-      isPasswordValid,
-      isPasswordConfrimValid,
+      nameValidated,
+      userIdValidated && !duplicateError,
+      passwordValidated,
+      passwordConfrimValidated,
       phoneNumber !== '' && phoneNumberErrorMessage === '',
-      isVerificationCodeValid && !verificationCodeError,
+      verificationCodeValidated && !verificationCodeError,
     ];
 
     return validations.every(Boolean);
@@ -107,8 +107,8 @@ function SignupForm() {
     return (
       matchConfirmedPhoneNumber &&
       phoneNumberErrorMessage === '' &&
-      isVerificationCodeValid &&
-      isRequestCompleted
+      verificationCodeValidated &&
+      requestCompleted
     );
   };
 
