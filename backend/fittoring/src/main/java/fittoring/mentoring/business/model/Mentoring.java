@@ -38,7 +38,7 @@ public class Mentoring {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Member member;
+    private Member mentor;
 
     public Mentoring(
             Member member,
@@ -51,10 +51,10 @@ public class Mentoring {
     }
 
     public String getMentorName() {
-        return this.member.getName();
+        return this.mentor.getName();
     }
 
     public String getMentorPhone() {
-        return this.member.getPhoneNumber();
+        return this.mentor.getPhoneNumber();
     }
 }

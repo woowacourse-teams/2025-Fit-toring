@@ -23,12 +23,12 @@ public class PhoneVerificationService {
 
     @Transactional
     public String createPhoneVerification(Phone phone) {
-        PhoneVerification pv = phoneVerificationRepository.findByPhone(phone)
+        PhoneVerification phoneVerification = phoneVerificationRepository.findByPhone(phone)
                 .orElse(new PhoneVerification(phone, null, null));
-        String generated = verificationCodeGenerator.generate();
-        pv.refresh(phone, generated, calculateExpiredTime());
-        phoneVerificationRepository.save(pv);
-        return generated;
+        String generatedCode = verificationCodeGenerator.generate();
+        phoneVerification.refresh(phone, generatedCode, calculateExpiredTime());
+        phoneVerificationRepository.save(phoneVerification);
+        return generatedCode;
     }
 
     private LocalDateTime calculateExpiredTime() {
