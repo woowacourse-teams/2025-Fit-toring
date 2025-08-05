@@ -1,11 +1,13 @@
 import styled from '@emotion/styled';
 
+import AuthFooter from '../../../signup/components/AuthFooter/AuthFooter';
 import LoginForm from '../LoginForm/LoginForm';
 
 function LoginFormSection() {
   return (
     <StyledContainer>
       <LoginForm />
+      <AuthFooter currentPage="login" />
     </StyledContainer>
   );
 }
