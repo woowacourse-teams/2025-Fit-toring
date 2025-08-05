@@ -18,4 +18,5 @@ const StyledContainer = styled.div`
   border-radius: 16px;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 `;
