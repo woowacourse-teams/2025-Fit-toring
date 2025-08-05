@@ -44,9 +44,9 @@ const StyledDivider = styled.div`
 `;
 
 const StyledText = styled.span`
-  padding: 0 16px;
-  font-size: 14px;
+  padding: 0 1.6rem;
   color: ${({ theme }) => theme.FONT.G01};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
 const StyledInfoText = styled.p`
