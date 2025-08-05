@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { getFormattedPhoneNumber } from '../src/pages/booking/utils/getFormattedPhoneNumber ';
+import { getFormattedPhoneNumber } from '../src/common/utils/getFormattedPhoneNumber ';
 
 describe('getFormattedPhoneNumber 유틸 함수 테스트', () => {
   it('숫자 3자리 이하 입력 시 그대로 반환', () => {

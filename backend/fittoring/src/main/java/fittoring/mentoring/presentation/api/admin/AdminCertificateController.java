@@ -1,5 +1,7 @@
 package fittoring.mentoring.presentation.api.admin;
 
+import fittoring.config.auth.Login;
+import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.service.CertificateService;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;

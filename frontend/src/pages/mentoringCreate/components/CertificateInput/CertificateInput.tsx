@@ -32,31 +32,25 @@ function CertificateInput({ onDeleteButtonClick }: CertificateInputProps) {
         <p>이름</p>
         <input type="text" placeholder="생활체육지도자 자격증 1급" />
       </StyledContentWrapper>
-      {previewUrl ? (
-        <StyledImageInputLabel>
-          <StyledHiddenInput
-            type="file"
-            accept="image/*"
-            id="profileImage"
-            onChange={handleImageChange}
-          />
-          <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
-        </StyledImageInputLabel>
-      ) : (
-        <StyledImageInputLabel>
-          <StyledHiddenInput
-            type="file"
-            accept="image/*"
-            id="certificateImage"
-            onChange={handleImageChange}
-            required
-          />
+
+      <StyledImageInputLabel htmlFor="certificateImage">
+        <StyledHiddenInput
+          type="file"
+          accept="image/*"
+          id="certificateImage"
+          name="certificateImage"
+          onChange={handleImageChange}
+          required
+        />
+        {previewUrl ? (
+          <StyledPreviewImage src={previewUrl} alt="자격증 사진 미리보기" />
+        ) : (
           <StyledUploadDescription>
             <img src={certificateUploadIcon} alt="업로드 아이콘" />
             <p>증명서/사진 업로드 [필수]</p>
           </StyledUploadDescription>
-        </StyledImageInputLabel>
-      )}
+        )}
+      </StyledImageInputLabel>
     </StyledContainer>
   );
 }
@@ -209,9 +203,9 @@ const StyledUploadDescription = styled.div`
   }
 
   & > p {
-    ${({ theme }) => theme.TYPOGRAPHY.B4_R};
     color: ${({ theme }) => theme.FONT.G01};
     text-align: center;
+    ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   }
 `;
 
