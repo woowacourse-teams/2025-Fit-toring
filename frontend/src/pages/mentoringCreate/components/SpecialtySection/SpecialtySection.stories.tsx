@@ -1,4 +1,3 @@
-
 import { specialtiesHandler } from '../../../../common/mock/common/handlers';
 
 import SpecialtySection from './SpecialtySection';
@@ -16,8 +15,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultSpecialtySection: Story = {
+  args: {
+    onSpecialtyChange: () => {},
+  },
   parameters: {
-
     msw: {
       handlers: [...specialtiesHandler],
     },
