@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.business.service.dto.SmsReservationMessageDto;
 import fittoring.mentoring.infra.SmsMessageFormatter;
@@ -20,8 +21,8 @@ public class MentoringReservationService {
 
     public ReservationCreateResponse reserveMentoring(ReservationCreateDto dto) {
         ReservationCreateResponse response = reservationService.createReservation(dto);
-        String smsMessage = smsMessageFormatter.createSmsReservationMessage(SmsReservationMessageDto.of(dto));
-        smsRestClientService.sendSms(response.mentorPhone(), smsMessage, RESERVATION_SUBJECT);
+        String smsMessage = smsMessageFormatter.createSmsReservationMessage(SmsReservationMessageDto.of(response));
+        smsRestClientService.sendSms(new Phone(response.mentorPhone()), smsMessage, RESERVATION_SUBJECT);
         return response;
     }
 }

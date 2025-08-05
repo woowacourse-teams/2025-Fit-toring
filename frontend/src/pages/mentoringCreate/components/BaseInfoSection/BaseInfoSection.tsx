@@ -6,7 +6,7 @@ import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 function BaseInfoSection() {
   return (
-    <>
+    <section>
       <TitleSeparator>기본 정보</TitleSeparator>
       <StyledFormFieldWrapper>
         <FormField label="이름 *" htmlFor="name">
@@ -19,14 +19,26 @@ function BaseInfoSection() {
           <Input placeholder="010-1234-5678" type="tel" id="phone" required />
         </FormField>
       </StyledFormFieldWrapper>
-    </>
+    </section>
   );
 }
 
 export default BaseInfoSection;
 
-const StyledFormFieldWrapper = styled.section`
+const StyledFormFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+
+  & > div > input {
+    &:hover {
+      border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+    }
+
+    &:focus {
+      border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+
+      box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
+    }
+  }
 `;

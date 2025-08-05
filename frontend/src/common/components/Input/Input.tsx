@@ -31,6 +31,11 @@ const Container = styled.input<InputProps>`
 
   :focus {
     outline: none;
+    border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN600};
+  }
+
+  ::placeholder {
+    color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
 
   ::placeholder {
