@@ -21,7 +21,7 @@ const useUserIdDuplicateCheck = ({
     shouldBlockSubmit: shouldBlockSubmitByUserId,
   } = useSubmitGuardWithConfirm(userId);
 
-  const handleDuplicateConfrimClick = async () => {
+  const handleDuplicateConfirmClick = async () => {
     setDuplicateError(false);
 
     try {
@@ -51,7 +51,7 @@ const useUserIdDuplicateCheck = ({
 
   return {
     duplicateError,
-    handleDuplicateConfrimClick,
+    handleDuplicateConfirmClick,
     shouldBlockSubmitByUserId,
     getFinalUserIdErrorMessage,
   };

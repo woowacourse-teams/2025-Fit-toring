@@ -55,7 +55,7 @@ function SignupForm() {
 
   const {
     duplicateError,
-    handleDuplicateConfrimClick,
+    handleDuplicateConfirmClick,
     shouldBlockSubmitByUserId,
     getFinalUserIdErrorMessage,
   } = useUserIdDuplicateCheck({ userId, userIdErrorMessage });
@@ -180,7 +180,7 @@ function SignupForm() {
         <UserIdField
           userId={userId}
           onUserIdChange={handleUserIdChange}
-          onDuplicateConfrimClick={handleDuplicateConfrimClick}
+          onDuplicateConfrimClick={handleDuplicateConfirmClick}
           errorMessage={getFinalUserIdErrorMessage()}
           isUserIdInputValid={userIdErrorMessage === ''}
         />
