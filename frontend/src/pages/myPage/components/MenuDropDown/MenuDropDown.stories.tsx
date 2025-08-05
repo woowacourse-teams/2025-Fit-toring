@@ -1,4 +1,7 @@
+import { MemoryRouter } from 'react-router-dom';
 import { userEvent, within } from 'storybook/internal/test';
+
+import { PAGE_URL } from '../../../../common/constants/url';
 
 import MenuDropDown from './MenuDropDown';
 
@@ -17,7 +20,9 @@ const meta = {
           width: '100px',
         }}
       >
-        <Story />
+        <MemoryRouter initialEntries={[PAGE_URL.MY_PAGE]}>
+          <Story />
+        </MemoryRouter>
       </div>
     ),
   ],

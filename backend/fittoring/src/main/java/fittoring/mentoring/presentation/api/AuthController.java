@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
-    private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;

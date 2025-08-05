@@ -25,6 +25,7 @@ public class PhoneVerification {
     private Long id;
 
     @Embedded
+    @Column(unique = true)
     private Phone phone;
 
     @Column(nullable = false)
@@ -41,7 +42,13 @@ public class PhoneVerification {
         return requestTime.isAfter(this.expireAt);
     }
 
-    public String getPhone() {
+    public String getPhoneNumber() {
         return this.phone.getNumber();
+    }
+
+    public void refresh(Phone phone, String code, LocalDateTime expireAt){
+        this.phone = phone;
+        this.code = code;
+        this.expireAt = expireAt;
     }
 }
