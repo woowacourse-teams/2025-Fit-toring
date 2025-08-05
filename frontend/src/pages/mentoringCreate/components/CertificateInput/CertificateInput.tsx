@@ -11,12 +11,14 @@ interface CertificateInputProps {
   id: string;
   onDeleteButtonClick: () => void;
   onCertificateChange: (id: string, changed: Partial<CertificateItem>) => void;
+  onCertificateImageFileChange: (file: File) => void;
 }
 
 function CertificateInput({
   id,
   onDeleteButtonClick,
   onCertificateChange,
+  onCertificateImageFileChange,
 }: CertificateInputProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
   return (
@@ -59,7 +61,13 @@ function CertificateInput({
           accept="image/*"
           id={id}
           name="certificateImage"
-          onChange={handleImageChange}
+          onChange={(event) => {
+            handleImageChange(event);
+            const file = event.target.files?.[0];
+            if (file) {
+              onCertificateImageFileChange(file);
+            }
+          }}
           required
         />
         {previewUrl ? (

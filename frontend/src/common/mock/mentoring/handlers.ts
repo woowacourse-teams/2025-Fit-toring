@@ -30,8 +30,13 @@ const postMentoringCreate = http.post(MENTORING_URL, async ({ request }) => {
   const formData = await request.formData();
 
   const dataJson = formData.get('data');
+  const image = formData.get('image');
+  const certificateImages = formData.getAll('certificateImages');
 
   const parsedData = JSON.parse(dataJson as string);
+  console.log(parsedData);
+  console.log(image);
+  console.log('certificateImages:', certificateImages);
 
   if (!parsedData) {
     return HttpResponse.json({ message: 'Bad Request' }, { status: 400 });
