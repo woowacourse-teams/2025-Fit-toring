@@ -4,6 +4,8 @@ import fittoring.mentoring.business.model.password.Password;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,15 +36,18 @@ public class Member {
     private String name;
 
     @Embedded
-    @Column(nullable = false, unique = true)
     private Phone phone;
 
     @Embedded
     @Column(nullable = false)
     private Password password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MemberRole role;
+
     public Member(String loginId, String gender, String name, Phone phone, Password password) {
-        this(null, loginId, gender, name, phone, password);
+        this(null, loginId, gender, name, phone, password, MemberRole.USER);
     }
 
     public void matchPassword(String password) {
@@ -51,5 +56,9 @@ public class Member {
 
     public String getPassword() {
         return password.getPassword();
+    }
+
+    public String getPhoneNumber() {
+        return phone.getNumber();
     }
 }

@@ -330,7 +330,7 @@ class AuthControllerTest {
                         "LoginId",
                         "이름",
                         "남",
-                        "010-5678-9123",
+                        new Phone("010-5678-9123"),
                         Password.from("password")
                 )
         );
