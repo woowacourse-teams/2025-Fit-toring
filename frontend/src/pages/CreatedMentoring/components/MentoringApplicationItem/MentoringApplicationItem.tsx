@@ -21,13 +21,14 @@ function MentoringApplicationItem({
     applicationDate,
   },
 }: MentoringApplicationItemProps) {
+  const TIME = '15';
   return (
     <StyledContainer key={id}>
       <StyledName>{name}님의 상담 신청</StyledName>
       <StyledApplicationInfoWrapper>
         <StyledApplicationDate>⏰ {applicationDate}</StyledApplicationDate>
         <StyledApplicationFee>
-          💰 15분 {fee.toLocaleString()}원
+          💰 {TIME}분 {fee.toLocaleString()}원
         </StyledApplicationFee>
         <MentoringApplicationStatus status={status} />
       </StyledApplicationInfoWrapper>
