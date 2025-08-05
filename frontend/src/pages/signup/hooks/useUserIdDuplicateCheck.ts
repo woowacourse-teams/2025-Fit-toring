@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { postValidateId } from '../apis/postValidateId';
 
-import { useConfirmState } from './useConfirmStatus';
+import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 
 interface useDuplicateCheckParams {
   userId: string;
@@ -19,7 +19,7 @@ const useUserIdDuplicateCheck = ({
     confirm: userIdConfirm,
     isCheckNeeded: isUserIdCheck,
     shouldBlockSubmit: shouldBlockSubmitByUserId,
-  } = useConfirmState(userId);
+  } = useSubmitGuardWithConfirm(userId);
 
   const handleDuplicateConfrimClick = async () => {
     setDuplicateError(false);

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { postAuthCode } from '../apis/postAuthCode';
 
-import { useConfirmState } from './useConfirmStatus';
+import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 
 interface useVerificationCodeRequestParams {
   phoneNumber: string;
@@ -17,7 +17,7 @@ const useVerificationCodeRequest = ({
     confirm: phoneNumberConfirm,
     isCheckNeeded: isPhoneNumberCheck,
     shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
-  } = useConfirmState(phoneNumber);
+  } = useSubmitGuardWithConfirm(phoneNumber);
 
   const [isRequestCompleted, setIsRequestCompleted] = useState(false);
 

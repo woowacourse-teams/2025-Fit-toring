@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { postAuthCodeVerify } from '../apis/postAuthCodeVerify';
 
-import { useConfirmState } from './useConfirmStatus';
+import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 
 interface useVerificationCodeConfirmParams {
   verificationCode: string;
@@ -17,7 +17,7 @@ const useVerificationCodeConfirm = ({
     confirm: verificationCodeConfirm,
     isCheckNeeded: isVerificationCodeCheck,
     shouldBlockSubmit: shouldBlockSubmitByVerificationCode,
-  } = useConfirmState(verificationCode);
+  } = useSubmitGuardWithConfirm(verificationCode);
 
   const [verificationCodeError, setVerificationCodeError] = useState(false);
 

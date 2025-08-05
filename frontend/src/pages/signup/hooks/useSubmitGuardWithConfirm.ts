@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const useConfirmState = <T>(value: T) => {
+const useSubmitGuardWithConfirm = <T>(value: T) => {
   const [lastConfirmedValue, setLastConfirmedValue] = useState<T | null>(null);
   const [isCheckNeeded, setIsCheckNeeded] = useState(true);
 
@@ -25,3 +25,5 @@ export const useConfirmState = <T>(value: T) => {
     shouldBlockSubmit,
   };
 };
+
+export default useSubmitGuardWithConfirm;
