@@ -30,7 +30,7 @@ public class ReservationService {
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
         Member mentee = memberRepository.findById(dto.menteeId())
                 .orElseThrow(
-                        () -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+                        () -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         Reservation savedReservation = reservationRepository.save(new Reservation(
                 dto.content(),
                 mentoring,

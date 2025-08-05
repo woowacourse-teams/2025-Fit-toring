@@ -135,7 +135,7 @@ public class MentoringService {
     @Transactional
     public MentoringResponse registerMentoring(RegisterMentoringDto dto) {
         Member member = memberRepository.findById(dto.mentorId())
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         final Mentoring mentoring = new Mentoring(
                 member,
                 dto.price(),
