@@ -43,7 +43,7 @@ function Home() {
     handleCloseModal();
   };
 
-  const handleToggleSelectedSpecialty = (specialty: string) => {
+  const handleSelectedSpecialtyChange = (specialty: string) => {
     setSelectedSpecialties((prev) =>
       prev.includes(specialty)
         ? prev.filter((prevSpecialty) => prevSpecialty !== specialty)
@@ -90,7 +90,7 @@ function Home() {
               specialty={specialty}
               checked={selectedSpecialties.includes(specialty)}
               disabled={false}
-              onChange={() => handleToggleSelectedSpecialty(specialty)}
+              onChange={() => handleSelectedSpecialtyChange(specialty)}
             />
           ))}
         </StyledCheckboxWrapper>
