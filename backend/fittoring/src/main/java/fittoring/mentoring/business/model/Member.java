@@ -12,13 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Table(name = "member")
 @Entity
 public class Member {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,11 +26,9 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String loginId;
 
-    @Getter
     @Column(nullable = false)
     private String gender;
 
-    @Getter
     @Column(nullable = false)
     private String name;
 
