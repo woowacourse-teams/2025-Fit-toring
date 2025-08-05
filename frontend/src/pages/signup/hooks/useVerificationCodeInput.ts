@@ -23,7 +23,7 @@ const useVerificationCodeInput = () => {
     }
 
     if (verificationCode.length < VERIFICATION_CODE_LENGTH) {
-      return ERROR_MESSAGE.INVALID_PASSWORD_LENGTH;
+      return ERROR_MESSAGE.INVALID_VERIFICATION_CODE;
     }
 
     return '';
