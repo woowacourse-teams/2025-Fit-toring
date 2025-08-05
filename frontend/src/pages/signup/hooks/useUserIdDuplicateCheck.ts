@@ -4,7 +4,7 @@ import { postValidateId } from '../apis/postValidateId';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 
-interface useDuplicateCheckParams {
+interface useUserIdDuplicateCheckParams {
   userId: string;
   userIdErrorMessage: string;
 }
@@ -12,7 +12,7 @@ interface useDuplicateCheckParams {
 const useUserIdDuplicateCheck = ({
   userId,
   userIdErrorMessage,
-}: useDuplicateCheckParams) => {
+}: useUserIdDuplicateCheckParams) => {
   const [duplicateError, setDuplicateError] = useState(false);
 
   const {
