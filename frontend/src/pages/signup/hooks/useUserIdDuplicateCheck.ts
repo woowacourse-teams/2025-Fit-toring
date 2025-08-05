@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { posValidateId } from '../apis/postValidateId';
+import { postValidateId } from '../apis/postValidateId';
 
 import { useConfirmState } from './useConfirmStatus';
 
@@ -25,7 +25,7 @@ const useUserIdDuplicateCheck = ({
     setDuplicateError(false);
 
     try {
-      const response = await posValidateId(userId);
+      const response = await postValidateId(userId);
 
       if (response.status === 200) {
         userIdConfirm();
