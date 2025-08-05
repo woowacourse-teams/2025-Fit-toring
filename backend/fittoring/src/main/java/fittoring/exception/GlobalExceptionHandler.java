@@ -65,6 +65,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SystemException.class)
     public ResponseEntity<ErrorResponse> handle(SystemException e) {
         logServerError(e);
+        System.out.println(e.getMessage());
         return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()).toResponseEntity();
     }
 
