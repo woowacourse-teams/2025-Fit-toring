@@ -45,7 +45,6 @@ class PhoneVerificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        System.out.println("클리너클리너");
         dbCleaner.clean();
     }
 
