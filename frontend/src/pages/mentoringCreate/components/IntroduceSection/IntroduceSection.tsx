@@ -4,7 +4,15 @@ import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-function IntroduceSection() {
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+
+interface IntroduceSectionProps {
+  onIntroduceChange: (
+    newData: Partial<Pick<mentoringCreateFormData, 'introduction' | 'career'>>,
+  ) => void;
+}
+
+function IntroduceSection({ onIntroduceChange }: IntroduceSectionProps) {
   return (
     <section>
       <TitleSeparator>소개 및 경력</TitleSeparator>
@@ -13,10 +21,20 @@ function IntroduceSection() {
           <Input
             placeholder="간단한 소개를 한 줄로 작성해주세요"
             id="introduce"
+            onChange={(e) =>
+              onIntroduceChange({ introduction: e.target.value })
+            }
           />
         </FormField>
         <FormField label="경력" htmlFor="career">
-          <Input placeholder="숫자만 입력해주세요." type="tel" id="career" />
+          <Input
+            placeholder="숫자만 입력해주세요."
+            type="tel"
+            id="career"
+            onChange={(e) =>
+              onIntroduceChange({ career: Number(e.target.value) })
+            }
+          />
         </FormField>
       </StyledFormFieldWrapper>
     </section>

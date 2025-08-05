@@ -67,7 +67,7 @@ function MentoringCreateForm() {
       <BaseInfoSection onPriceChange={handleMentoringDataChange} />
       <ProfileSection />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
-      <IntroduceSection />
+      <IntroduceSection onIntroduceChange={handleMentoringDataChange} />
       <CertificateSection />
       <DetailIntroduce />
       <StyledSeparator />
