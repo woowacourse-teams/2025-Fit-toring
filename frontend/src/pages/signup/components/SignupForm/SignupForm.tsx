@@ -69,7 +69,7 @@ function SignupForm() {
     shouldBlockSubmitByPhoneNumberCheck,
     handleAuthCodeClick,
     getFinalPhoneNumberErrorMessage,
-    isPhoneNumberCheck,
+    matchConfirmedPhoneNumber,
     isRequestCompleted,
   } = useVerificationCodeRequest({ phoneNumber, phoneNumberErrorMessage });
 
@@ -105,7 +105,7 @@ function SignupForm() {
 
   const getVerificationButtonEnabled = () => {
     return (
-      isPhoneNumberCheck &&
+      matchConfirmedPhoneNumber &&
       phoneNumberErrorMessage === '' &&
       isVerificationCodeValid &&
       isRequestCompleted

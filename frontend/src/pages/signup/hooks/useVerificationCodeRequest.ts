@@ -15,7 +15,7 @@ const useVerificationCodeRequest = ({
 }: useVerificationCodeRequestParams) => {
   const {
     confirm: confirmPhoneNumber,
-    isCheckNeeded: isPhoneNumberCheck,
+    matchConfirmed: matchConfirmedPhoneNumber,
     shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
   } = useSubmitGuardWithConfirm(phoneNumber);
 
@@ -35,7 +35,7 @@ const useVerificationCodeRequest = ({
   };
 
   const getFinalPhoneNumberErrorMessage = () => {
-    if (!isPhoneNumberCheck) {
+    if (!matchConfirmedPhoneNumber) {
       return '인증요청을 해주세요.';
     }
 
@@ -46,7 +46,7 @@ const useVerificationCodeRequest = ({
     shouldBlockSubmitByPhoneNumberCheck,
     handleAuthCodeClick,
     getFinalPhoneNumberErrorMessage,
-    isPhoneNumberCheck,
+    matchConfirmedPhoneNumber,
     isRequestCompleted,
   };
 };

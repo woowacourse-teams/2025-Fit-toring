@@ -17,7 +17,7 @@ const useUserIdDuplicateCheck = ({
 
   const {
     confirm: confirmUserId,
-    isCheckNeeded: isUserIdCheck,
+    matchConfirmed: userIdMatchConfirmed,
     shouldBlockSubmit: shouldBlockSubmitByUserId,
   } = useSubmitGuardWithConfirm(userId);
 
@@ -42,7 +42,7 @@ const useUserIdDuplicateCheck = ({
       return '이미 사용중인 아이디입니다.';
     }
 
-    if (!isUserIdCheck) {
+    if (!userIdMatchConfirmed) {
       return '중복확인을 해주세요';
     }
 

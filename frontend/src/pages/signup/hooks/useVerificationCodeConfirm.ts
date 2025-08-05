@@ -15,7 +15,7 @@ const useVerificationCodeConfirm = ({
 }: useVerificationCodeConfirmParams) => {
   const {
     confirm: confrimVerificationCode,
-    isCheckNeeded: isVerificationCodeCheck,
+    matchConfirmed: verificationCodeMatchConfirmed,
     shouldBlockSubmit: shouldBlockSubmitByVerificationCode,
   } = useSubmitGuardWithConfirm(verificationCode);
 
@@ -36,7 +36,7 @@ const useVerificationCodeConfirm = ({
   };
 
   const getFinalVerificationCodeErrorMessage = () => {
-    if (!isVerificationCodeCheck) {
+    if (!verificationCodeMatchConfirmed) {
       return '인증을 해주세요';
     }
     if (verificationCodeError) {

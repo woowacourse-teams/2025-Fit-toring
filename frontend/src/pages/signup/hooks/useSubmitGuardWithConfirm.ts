@@ -2,16 +2,16 @@ import { useState } from 'react';
 
 const useSubmitGuardWithConfirm = <T>(value: T) => {
   const [lastConfirmedValue, setLastConfirmedValue] = useState<T | null>(null);
-  const [isCheckNeeded, setIsCheckNeeded] = useState(true);
+  const [matchConfirmed, setMatchConfirmed] = useState(true);
 
   const confirm = () => {
     setLastConfirmedValue(value);
-    setIsCheckNeeded(true);
+    setMatchConfirmed(true);
   };
 
   const shouldBlockSubmit = () => {
     if (!isMatchedValue) {
-      setIsCheckNeeded(false);
+      setMatchConfirmed(false);
       return true;
     }
     return false;
@@ -21,7 +21,7 @@ const useSubmitGuardWithConfirm = <T>(value: T) => {
 
   return {
     confirm,
-    isCheckNeeded,
+    matchConfirmed,
     shouldBlockSubmit,
   };
 };
