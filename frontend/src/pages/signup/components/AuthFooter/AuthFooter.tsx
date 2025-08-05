@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const AUTH_TYPE = {
   signup: { url: '/login', text: '이미 계정이 있으신가요?', goPage: '로그인' },
   login: { url: '/signup', text: '계정이 없으신가요?', goPage: '회원가입' },
-};
+} as const;
 
 function AuthFooter({ currentPage }: { currentPage: 'login' | 'signup' }) {
   return (
