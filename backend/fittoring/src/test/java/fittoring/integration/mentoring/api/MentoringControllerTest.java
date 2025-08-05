@@ -8,10 +8,14 @@ import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
+import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
@@ -39,10 +43,13 @@ class MentoringControllerTest {
     public int port;
 
     @Autowired
-    private CategoryMentoringRepository categoryMentoringRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
     private MentoringRepository mentoringRepository;
+
+    @Autowired
+    private CategoryMentoringRepository categoryMentoringRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -67,13 +74,14 @@ class MentoringControllerTest {
         @Test
         void getAllCategories() {
             //given
-            Category savedCategory = categoryRepository.save(new Category("체형교정"));
-            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
+            Member member1 = memberRepository.save(
+                    new Member("id1", "MALE", "멘토링1", new Phone("010-1234-5678"), Password.from("pw")));
+            Member member2 = memberRepository.save(
+                    new Member("id2", "MALE", "멘토링2", new Phone("010-1111-2222"), Password.from("pw")));
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링1",
-                            "010-1234-5678",
+                            member1,
                             1000,
                             3,
                             "멘토링 내용",
@@ -83,14 +91,16 @@ class MentoringControllerTest {
 
             Mentoring savedMentoring2 = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링2",
-                            "010-1111-2222",
+                            member2,
                             1000,
                             4,
                             "멘토링 내용",
                             "멘토링 자기소개"
                     )
             );
+
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
 
             CategoryMentoring savedCategoryMentoring = categoryMentoringRepository.save(
                     new CategoryMentoring(savedCategory, savedMentoring)
@@ -167,14 +177,17 @@ class MentoringControllerTest {
         @DisplayName("필터링을 통해서 멘토링 목록을 조회할 때, 요청의 카테고리를 모두 포함하고, 추가적인 카테고리를 포함하는 멘토링 조회에 성공하면 200 OK 상태코드와 필터링된 멘토링 목록을 반환한다.")
         @Test
         void getAllCategories3() {
-            Category savedCategory = categoryRepository.save(new Category("체형교정"));
-            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
-            Category savedCategory3 = categoryRepository.save(new Category("영양식단"));
+            //given
+            Member member1 = memberRepository.save(
+                    new Member("id1", "MALE", "멘토링1", new Phone("010-1234-5678"), Password.from("pw")));
+            Member member2 = memberRepository.save(
+                    new Member("id2", "MALE", "멘토링2", new Phone("010-1111-2222"), Password.from("pw")));
+            Member member3 = memberRepository.save(
+                    new Member("id3", "MALE", "멘토링3", new Phone("010-2222-3333"), Password.from("pw")));
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링1",
-                            "010-1234-5678",
+                            member1,
                             1000,
                             3,
                             "멘토링 내용",
@@ -184,8 +197,7 @@ class MentoringControllerTest {
 
             Mentoring savedMentoring2 = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링2",
-                            "010-1111-2222",
+                            member2,
                             1000,
                             4,
                             "멘토링 내용",
@@ -195,14 +207,17 @@ class MentoringControllerTest {
 
             Mentoring savedMentoring3 = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링3",
-                            "010-2222-3333",
-                            1001,
+                            member3,
+                            1000,
                             5,
                             "멘토링 내용",
                             "멘토링 자기소개"
                     )
             );
+
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
+            Category savedCategory3 = categoryRepository.save(new Category("영양식단"));
 
             CategoryMentoring savedCategoryMentoring = categoryMentoringRepository.save(
                     new CategoryMentoring(savedCategory, savedMentoring)
@@ -284,7 +299,6 @@ class MentoringControllerTest {
                             savedCategoryMentoring1_3.getCategoryTitle(),
                             savedCategoryMentoring2_3.getCategoryTitle(),
                             savedCategoryMentoring3_3.getCategoryTitle()
-
                     ),
                     savedMentoring3.getPrice(),
                     savedMentoring3.getCareer(),
@@ -300,16 +314,16 @@ class MentoringControllerTest {
         @Test
         void getAllCategories4() {
             //given
-            Category savedCategory = categoryRepository.save(new Category("체형교정"));
-            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
-            Category savedCategory3 = categoryRepository.save(new Category("영양식단"));
-            Category savedCategory4 = categoryRepository.save(new Category("건강관리"));
-            Category savedCategory5 = categoryRepository.save(new Category("민간요법"));
+            Member member1 = memberRepository.save(
+                    new Member("id1", "MALE", "멘토링1", new Phone("010-1234-5678"), Password.from("pw")));
+            Member member2 = memberRepository.save(
+                    new Member("id2", "MALE", "멘토링2", new Phone("010-1111-2222"), Password.from("pw")));
+            Member member3 = memberRepository.save(
+                    new Member("id3", "MALE", "멘토링3", new Phone("010-2222-3333"), Password.from("pw")));
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링1",
-                            "010-1234-5678",
+                            member1,
                             1000,
                             3,
                             "멘토링 내용",
@@ -319,8 +333,7 @@ class MentoringControllerTest {
 
             Mentoring savedMentoring2 = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링2",
-                            "010-1111-2222",
+                            member2,
                             1000,
                             4,
                             "멘토링 내용",
@@ -330,14 +343,19 @@ class MentoringControllerTest {
 
             Mentoring savedMentoring3 = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링3",
-                            "010-2222-3333",
+                            member3,
                             1001,
                             5,
                             "멘토링 내용",
                             "멘토링 자기소개"
                     )
             );
+
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
+            Category savedCategory3 = categoryRepository.save(new Category("영양식단"));
+            Category savedCategory4 = categoryRepository.save(new Category("건강관리"));
+            Category savedCategory5 = categoryRepository.save(new Category("민간요법"));
 
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring));
@@ -358,6 +376,7 @@ class MentoringControllerTest {
                     .queryParam("categoryTitle1", savedCategory4.getTitle())
                     .queryParam("categoryTitle2", savedCategory5.getTitle())
                     .when()
+
                     .get("/mentorings")
                     .then().log().all()
                     .statusCode(200)
@@ -373,13 +392,14 @@ class MentoringControllerTest {
         @Test
         void getAllCategories5() {
             //given
-            Category savedCategory = categoryRepository.save(new Category("체형교정"));
-            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
+            Member member1 = memberRepository.save(
+                    new Member("id1", "MALE", "멘토링1", new Phone("010-1234-5678"), Password.from("pw")));
+            Member member2 = memberRepository.save(
+                    new Member("id2", "MALE", "멘토링2", new Phone("010-1111-2222"), Password.from("pw")));
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링1",
-                            "010-1234-5678",
+                            member1,
                             1000,
                             3,
                             "멘토링 내용",
@@ -389,14 +409,16 @@ class MentoringControllerTest {
 
             Mentoring savedMentoring2 = mentoringRepository.save(
                     new Mentoring(
-                            "멘토링2",
-                            "010-1111-2222",
+                            member2,
                             1000,
                             4,
                             "멘토링 내용",
                             "멘토링 자기소개"
                     )
             );
+
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
 
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
@@ -421,126 +443,131 @@ class MentoringControllerTest {
                 softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage());
             });
         }
+
+        @DisplayName("멘토링 Id로 멘토링 조회에 성공하면 200 OK 상태코드와 멘토링 정보를 반환한다.")
+        @Test
+        void getMentoring() {
+            //given
+            Member member1 = memberRepository.save(
+                    new Member("id1", "MALE", "멘토링1", new Phone("010-1234-5678"), Password.from("pw")));
+            Member member2 = memberRepository.save(
+                    new Member("id2", "MALE", "멘토링2", new Phone("010-1111-2222"), Password.from("pw")));
+
+            Mentoring savedMentoring = mentoringRepository.save(
+                    new Mentoring(
+                            member1,
+                            1000,
+                            3,
+                            "멘토링 내용",
+                            "멘토링 자기소개"
+                    )
+            );
+
+            Mentoring savedMentoring2 = mentoringRepository.save(
+                    new Mentoring(
+                            member2,
+                            1000,
+                            4,
+                            "멘토링 내용",
+                            "멘토링 자기소개"
+                    )
+            );
+
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
+
+            categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
+            categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
+
+            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
+
+            Long mentoringId = savedMentoring.getId();
+
+            //when
+            MentoringResponse response = RestAssured
+                    .given()
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("categoryTitle1", savedCategory.getTitle())
+                    .queryParam("categoryTitle2", savedCategory2.getTitle())
+                    .when()
+                    .get("/mentorings/" + mentoringId)
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringResponse.class);
+
+            //then
+            MentoringResponse expected = new MentoringResponse(
+                    savedMentoring.getId(),
+                    savedMentoring.getMentorName(),
+                    List.of(savedCategory.getTitle()),
+                    savedMentoring.getPrice(),
+                    savedMentoring.getCareer(),
+                    "image1.jpg",
+                    savedMentoring.getIntroduction(),
+                    savedMentoring.getContent()
+            );
+            assertThat(response).isNotNull().isEqualTo(expected);
+        }
+
+        @DisplayName("존재하지 않는 멘토링 Id로 멘토링 조회에 실패하면 404 Not Found 상태코드를 반환한다.")
+        @Test
+        void getMentoring2() {
+            //given
+            Member member1 = memberRepository.save(
+                    new Member("id1", "MALE", "멘토링1", new Phone("010-1234-5678"), Password.from("pw")));
+            Member member2 = memberRepository.save(
+                    new Member("id2", "MALE", "멘토링2", new Phone("010-1111-2222"), Password.from("pw")));
+
+            Mentoring savedMentoring = mentoringRepository.save(
+                    new Mentoring(
+                            member1,
+                            1000,
+                            3,
+                            "멘토링 내용",
+                            "멘토링 자기소개"
+                    )
+            );
+
+            Mentoring savedMentoring2 = mentoringRepository.save(
+                    new Mentoring(
+                            member2,
+                            1000,
+                            4,
+                            "멘토링 내용",
+                            "멘토링 자기소개"
+                    )
+            );
+
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
+
+            categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
+            categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
+
+            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
+
+            long invalidId = 100L;
+
+            //when
+            Response response = RestAssured
+                    .given()
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("categoryTitle1", savedCategory.getTitle())
+                    .queryParam("categoryTitle2", savedCategory.getTitle())
+                    .when()
+                    .get("/mentorings/" + invalidId);
+
+            //then
+            String responseMessage = response.jsonPath().getString("message");
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(404);
+                softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
+            });
+        }
     }
-
-    @DisplayName("멘토링 Id로 멘토링 조회에 성공하면 200 OK 상태코드와 멘토링 정보를 반환한다.")
-    @Test
-    void getMentoring() {
-        //given
-        Category savedCategory = categoryRepository.save(new Category("체형교정"));
-        Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
-
-        Mentoring savedMentoring = mentoringRepository.save(
-                new Mentoring(
-                        "멘토링1",
-                        "010-1234-5678",
-                        1000,
-                        3,
-                        "멘토링 내용",
-                        "멘토링 자기소개"
-                )
-        );
-
-        Mentoring savedMentoring2 = mentoringRepository.save(
-                new Mentoring(
-                        "멘토링2",
-                        "010-1111-2222",
-                        1000,
-                        4,
-                        "멘토링 내용",
-                        "멘토링 자기소개"
-                )
-        );
-
-        categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
-        categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
-
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
-        imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
-
-        Long mentoringId = savedMentoring.getId();
-
-        //when
-        MentoringResponse response = RestAssured
-                .given()
-                .log().all().contentType(ContentType.JSON)
-                .queryParam("categoryTitle1", "존재하지 않는 카테고리")
-                .queryParam("categoryTitle2", savedCategory.getTitle())
-                .when()
-                .get("/mentorings/" + mentoringId)
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .as(MentoringResponse.class);
-
-        //then
-        MentoringResponse expected = new MentoringResponse(
-                savedMentoring.getId(),
-                savedMentoring.getMentorName(),
-                List.of(savedCategory.getTitle()),
-                savedMentoring.getPrice(),
-                savedMentoring.getCareer(),
-                "image1.jpg",
-                savedMentoring.getIntroduction(),
-                savedMentoring.getContent()
-        );
-        assertThat(response).isNotNull().isEqualTo(expected);
-    }
-
-    @DisplayName("존재하지 않는 멘토링 Id로 멘토링 조회에 실패하면 404 Not Found 상태코드를 반환한다.")
-    @Test
-    void getMentoring2() {
-        //given
-        Category savedCategory = categoryRepository.save(new Category("체형교정"));
-        Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
-
-        Mentoring savedMentoring = mentoringRepository.save(
-                new Mentoring(
-                        "멘토링1",
-                        "010-1234-5678",
-                        1000,
-                        3,
-                        "멘토링 내용",
-                        "멘토링 자기소개"
-                )
-        );
-
-        Mentoring savedMentoring2 = mentoringRepository.save(
-                new Mentoring(
-                        "멘토링2",
-                        "010-1111-2222",
-                        1000,
-                        4,
-                        "멘토링 내용",
-                        "멘토링 자기소개"
-                )
-        );
-
-        categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
-        categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
-
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
-        imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
-
-        Long mentoringId = 100L;
-
-        //when
-        Response response = RestAssured
-                .given()
-                .log().all().contentType(ContentType.JSON)
-                .queryParam("categoryTitle1", "존재하지 않는 카테고리")
-                .queryParam("categoryTitle2", savedCategory.getTitle())
-                .when()
-                .get("/mentorings/" + mentoringId);
-
-        //then
-        String responseMessage = response.jsonPath().getString("message");
-        assertSoftly(softly -> {
-            softly.assertThat(response.statusCode()).isEqualTo(404);
-            softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
-        });
-    }
-
 }
 
 

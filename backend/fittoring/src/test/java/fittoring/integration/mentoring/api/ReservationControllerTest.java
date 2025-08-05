@@ -7,11 +7,14 @@ import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
+import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
@@ -55,6 +58,8 @@ class ReservationControllerTest {
 
     @Autowired
     private DbCleaner dbCleaner;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -74,18 +79,20 @@ class ReservationControllerTest {
                         ArgumentMatchers.anyString()
                 );
 
-        Category savedCategory = categoryRepository.save(new Category("체형교정"));
+        Member member1 = memberRepository.save(
+                new Member("id1", "MALE", "멘토링1", new Phone("010-1234-5678"), Password.from("pw")));
 
         Mentoring savedMentoring = mentoringRepository.save(
                 new Mentoring(
-                        "멘토링1",
-                        "010-1234-5678",
+                        member1,
                         1000,
                         3,
                         "멘토링 내용",
                         "멘토링 자기소개"
                 )
         );
+
+        Category savedCategory = categoryRepository.save(new Category("체형교정"));
 
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
 
@@ -134,18 +141,20 @@ class ReservationControllerTest {
                         ArgumentMatchers.anyString()
                 );
 
-        Category savedCategory = categoryRepository.save(new Category("체형교정"));
+        Member member1 = memberRepository.save(
+                new Member("id1", "MALE", "멘토링1", new Phone("010-1234-5678"), Password.from("pw")));
 
         Mentoring savedMentoring = mentoringRepository.save(
                 new Mentoring(
-                        "멘토링1",
-                        "010-1234-5678",
+                        member1,
                         1000,
                         3,
                         "멘토링 내용",
                         "멘토링 자기소개"
                 )
         );
+
+        Category savedCategory = categoryRepository.save(new Category("체형교정"));
 
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
 
