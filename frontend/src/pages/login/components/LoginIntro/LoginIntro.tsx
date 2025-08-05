@@ -54,12 +54,6 @@ const StyledInfoTextWrapper = styled.div`
   gap: 1.1rem;
 `;
 
-const StlyedWelcome = styled.p`
-  color: ${({ theme }) => theme.FONT.B01};
-
-  ${({ theme }) => theme.TYPOGRAPHY.LB2_R};
-`;
-
 const StyledSubText = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
 
