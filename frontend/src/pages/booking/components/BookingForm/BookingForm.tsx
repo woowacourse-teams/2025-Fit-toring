@@ -7,6 +7,7 @@ import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
+import Checkbox from '../Checkbox/Checkbox';
 
 import type { BookingResponse } from '../../types/BookingResponse';
 
@@ -24,6 +25,7 @@ function BookingForm({
     name: '',
     phone: '',
   });
+  const [sharingAgreed, setSharingAgreed] = useState(false);
 
   const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -49,6 +51,10 @@ function BookingForm({
     e.preventDefault();
 
     handleBooking();
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSharingAgreed(e.target.checked);
   };
 
   useEffect(() => {
@@ -86,16 +92,23 @@ function BookingForm({
           />
         </FormField>
       </StyledUserInfoWrapper>
+      <StyledLabelWrapper>
+        <Checkbox
+          id="sharingAgreed"
+          checked={sharingAgreed}
+          onChange={handleCheckboxChange}
+          label={
+            <StyledLabelTextWrapper>
+              <strong>전화번호 제공 동의</strong>
+              <p>
+                멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게
+                전달됩니다.
+              </p>
+            </StyledLabelTextWrapper>
+          }
+        />
+      </StyledLabelWrapper>
 
-      <StyledCheckBoxLabel>
-        <input type="checkbox" name="agreeToSharePhoneNumber" />
-        <StyledLabelTextWrapper>
-          <strong>전화번호 제공 동의</strong>
-          <p>
-            멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
-          </p>
-        </StyledLabelTextWrapper>
-      </StyledCheckBoxLabel>
       <BookingSummarySection />
     </StyledContainer>
   );
@@ -163,15 +176,12 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const StyledCheckBoxLabel = styled.label`
+const StyledLabelWrapper = styled.div`
   display: flex;
-  align-items: flex-start;
-  gap: 0.3rem;
+  flex-direction: column;
+  gap: 0.6rem;
 
   margin: 2rem 0;
-
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
-  line-height: 1.5;
 `;
 
 const StyledLabelTextWrapper = styled.div`
@@ -179,6 +189,7 @@ const StyledLabelTextWrapper = styled.div`
   flex-direction: column;
 
   & > strong {
+    ${({ theme }) => theme.TYPOGRAPHY.B2_R};
     font-weight: bold;
   }
 
