@@ -16,13 +16,13 @@ const postAuthCodeVerify = http.post(
     const body = await request.json();
 
     if (!body) {
-      return new HttpResponse(null, { status: 400 });
+      return await new HttpResponse(null, { status: 400 });
     }
 
     const { code } = body as AuthCodeVerifyBody;
 
     if (code === DUMMY_AUTH_CODE) {
-      return HttpResponse.json({ message: '인증 완료' }, { status: 200 });
+      return await HttpResponse.json({ message: '인증 완료' }, { status: 200 });
     }
   },
 );

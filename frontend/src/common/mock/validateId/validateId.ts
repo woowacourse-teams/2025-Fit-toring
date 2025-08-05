@@ -15,19 +15,19 @@ const postValidateId = http.post(AUTH_CODE_URL, async ({ request }) => {
   const body = await request.json();
 
   if (!body) {
-    return new HttpResponse(null, { status: 400 });
+    return await new HttpResponse(null, { status: 400 });
   }
 
   const { loginId } = body as AuthCodeBody;
 
   if (loginId === DUMMY_DUPLICATE_USER_ID) {
-    return HttpResponse.json(
+    return await HttpResponse.json(
       { message: '중복된 아이디입니다.' },
       { status: 400 },
     );
   }
 
-  return HttpResponse.json(
+  return await HttpResponse.json(
     { message: '사용 가능한 아이디입니다.' },
     { status: 200 },
   );
