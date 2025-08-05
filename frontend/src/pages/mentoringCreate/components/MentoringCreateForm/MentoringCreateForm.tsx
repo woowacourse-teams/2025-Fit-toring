@@ -64,9 +64,9 @@ function MentoringCreateForm() {
 
   return (
     <StyledContainer onSubmit={handleSubmitButtonClick}>
-      <BaseInfoSection onMentoringDataChange={handleMentoringDataChange} />
+      <BaseInfoSection onPriceChange={handleMentoringDataChange} />
       <ProfileSection />
-      <SpecialtySection />
+      <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
       <IntroduceSection />
       <CertificateSection />
       <DetailIntroduce />
