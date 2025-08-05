@@ -41,11 +41,11 @@ public class Mentoring {
     private Member member;
 
     public Mentoring(
+            Member member,
             int price,
             Integer career,
             String content,
-            String introduction,
-            Member member
+            String introduction
     ) {
         this(null, price, career, content, introduction, member);
     }

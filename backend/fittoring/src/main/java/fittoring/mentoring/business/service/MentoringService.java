@@ -137,11 +137,11 @@ public class MentoringService {
         Member member = memberRepository.findById(dto.mentorId())
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
         final Mentoring mentoring = new Mentoring(
+                member,
                 dto.price(),
                 dto.career(),
                 dto.content(),
-                dto.introduction(),
-                member
+                dto.introduction()
         );
         final Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
