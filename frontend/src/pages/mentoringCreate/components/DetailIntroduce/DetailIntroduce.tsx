@@ -3,7 +3,15 @@ import styled from '@emotion/styled';
 import FormField from '../../../../common/components/FormField/FormField';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-function DetailIntroduce() {
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+
+interface DetailIntroduceProps {
+  onDetailIntroduceChange: (
+    newData: Pick<mentoringCreateFormData, 'content'>,
+  ) => void;
+}
+
+function DetailIntroduce({ onDetailIntroduceChange }: DetailIntroduceProps) {
   return (
     <section>
       <TitleSeparator>상세 소개</TitleSeparator>
@@ -12,6 +20,9 @@ function DetailIntroduce() {
           <StyledTextarea
             placeholder="멘토링 경험, 전문성, 제공하는 서비스 등을 자세히 소개해주세요"
             id="content"
+            onChange={(event) =>
+              onDetailIntroduceChange({ content: event.target.value })
+            }
             required
           />
         </FormField>
