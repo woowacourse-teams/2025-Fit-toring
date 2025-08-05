@@ -34,7 +34,7 @@ export const SignupPageFooter: Story = {
   },
 };
 
-export const SigninPageFooter: Story = {
+export const LoginPageFooter: Story = {
   parameters: {
     docs: {
       description: {
@@ -44,6 +44,6 @@ export const SigninPageFooter: Story = {
     },
   },
   args: {
-    currentPage: 'signin',
+    currentPage: 'login',
   },
 };
