@@ -86,9 +86,15 @@ function BookingForm({
           />
         </FormField>
       </StyledUserInfoWrapper>
+
       <StyledCheckBoxLabel>
-        <StyledCheckbox type="checkbox" />
-        멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
+        <input type="checkbox" name="agreeToSharePhoneNumber" />
+        <StyledLabelTextWrapper>
+          <strong>전화번호 제공 동의</strong>
+          <p>
+            멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
+          </p>
+        </StyledLabelTextWrapper>
       </StyledCheckBoxLabel>
       <BookingSummarySection />
     </StyledContainer>
@@ -120,7 +126,6 @@ const StyledUserInfoWrapper = styled.div`
   gap: 2.1rem;
 
   margin-top: 3.3rem;
-  margin-bottom: 3.2rem;
 `;
 
 const StyledInfoRow = styled.div`
@@ -130,8 +135,8 @@ const StyledInfoRow = styled.div`
 `;
 
 const StyledUserInfoLabel = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   color: ${({ theme }) => theme.FONT.B02};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
 
 const StyledUserInfoText = styled.p`
@@ -161,11 +166,25 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
 const StyledCheckBoxLabel = styled.label`
   display: flex;
   align-items: flex-start;
-  gap: 0.7rem;
+  gap: 0.3rem;
+
+  margin: 2rem 0;
 
   ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+  line-height: 1.5;
 `;
 
-const StyledCheckbox = styled.input`
-  margin-top: 0.4rem;
+const StyledLabelTextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  & > strong {
+    font-weight: bold;
+  }
+
+  & > p {
+    ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  }
+
+  color: ${({ theme }) => theme.FONT.B03};
 `;
