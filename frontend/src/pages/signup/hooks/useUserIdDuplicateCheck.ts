@@ -38,6 +38,10 @@ const useUserIdDuplicateCheck = ({
   };
 
   const getFinalUserIdErrorMessage = () => {
+    if (userIdErrorMessage !== '') {
+      return userIdErrorMessage;
+    }
+
     if (duplicateError) {
       return '이미 사용중인 아이디입니다.';
     }
