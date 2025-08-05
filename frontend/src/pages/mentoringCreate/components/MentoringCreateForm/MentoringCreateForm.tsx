@@ -31,6 +31,11 @@ function MentoringCreateForm() {
       },
     ],
   });
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
+    [],
+  );
+
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,
   ) => {
@@ -39,10 +44,14 @@ function MentoringCreateForm() {
       ...newData,
     }));
   };
-  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-  const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
-    [],
-  );
+
+  const handleProfileImageChange = (file: File | null) => {
+    setProfileImageFile(file);
+  };
+
+  const handleCertificateImageFilesChange = (files: File[]) => {
+    setCertificateImageFiles(files);
+  };
 
   const submitMentoringForm = async () => {
     const response = await postMentoringCreate(
@@ -65,7 +74,7 @@ function MentoringCreateForm() {
   return (
     <StyledContainer onSubmit={handleSubmitButtonClick}>
       <BaseInfoSection onPriceChange={handleMentoringDataChange} />
-      <ProfileSection />
+      <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
       <IntroduceSection onIntroduceChange={handleMentoringDataChange} />
       <CertificateSection handleCertificateChange={handleMentoringDataChange} />

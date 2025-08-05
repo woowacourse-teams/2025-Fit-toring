@@ -3,7 +3,12 @@ import styled from '@emotion/styled';
 import uploadIcon from '../../../../common/assets/images/uploadIcon.svg';
 import usePreviewImage from '../../../../common/hooks/usePreviewImage';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
-function ProfileSection() {
+
+interface ProfileSectionProps {
+  onProfileImageChange: (file: File | null) => void;
+}
+
+function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
 
   return (
@@ -16,7 +21,10 @@ function ProfileSection() {
               type="file"
               accept="image/*"
               id="profileImage"
-              onChange={handleImageChange}
+              onChange={(event) => {
+                handleImageChange(event);
+                onProfileImageChange(event.target.files?.[0] || null);
+              }}
             />
             <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
           </>
@@ -26,7 +34,10 @@ function ProfileSection() {
               type="file"
               accept="image/*"
               id="profileImage"
-              onChange={handleImageChange}
+              onChange={(event) => {
+                handleImageChange(event);
+                onProfileImageChange(event.target.files?.[0] || null);
+              }}
             />
 
             <StyledContentWrapper>
