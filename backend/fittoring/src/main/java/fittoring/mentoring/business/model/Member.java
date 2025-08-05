@@ -26,6 +26,7 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String loginId;
 
+    @Getter
     @Column(nullable = false)
     private String gender;
 
@@ -33,14 +34,14 @@ public class Member {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String phone;
+    @Embedded
+    private Phone phone;
 
     @Embedded
     @Column(nullable = false)
     private Password password;
 
-    public Member(String loginId, String gender, String name, String phone, Password password) {
+    public Member(String loginId, String gender, String name, Phone phone, Password password) {
         this(null, loginId, gender, name, phone, password);
     }
 
@@ -50,5 +51,9 @@ public class Member {
 
     public String getPassword() {
         return password.getPassword();
+    }
+
+    public String getPhoneNumber() {
+        return this.phone.getNumber();
     }
 }
