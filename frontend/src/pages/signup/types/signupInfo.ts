@@ -1,7 +1,9 @@
+type Gender = '남' | '여';
+
 export interface SignupInfo {
   loginId: string;
   name: string;
-  gender: '남' | '여';
+  gender: Gender;
   phone: string;
   password: string;
 }
