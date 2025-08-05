@@ -68,7 +68,7 @@ function MentoringCreateForm() {
       <ProfileSection />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
       <IntroduceSection onIntroduceChange={handleMentoringDataChange} />
-      <CertificateSection />
+      <CertificateSection handleCertificateChange={handleMentoringDataChange} />
       <DetailIntroduce />
       <StyledSeparator />
       <ButtonSection />

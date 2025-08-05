@@ -5,14 +5,50 @@ import styled from '@emotion/styled';
 import CertificateInput from '../CertificateInput/CertificateInput';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-function CertificateSection() {
-  const [certificates, setCertificates] = useState<string[]>([]);
+import type { CertificateItem } from '../types/certificateItem';
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+
+interface CertificateSectionProps {
+  handleCertificateChange: (
+    newData: Pick<mentoringCreateFormData, 'certificate'>,
+  ) => void;
+}
+
+function CertificateSection({
+  handleCertificateChange,
+}: CertificateSectionProps) {
+  const [certificates, setCertificates] = useState<CertificateItem[]>([]);
   const handleAddButtonClick = () => {
-    setCertificates((prev) => [...prev, crypto.randomUUID()]);
+    setCertificates((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        title: '',
+        type: '자격증',
+      },
+    ]);
   };
   const handleDeleteButtonClick = (id: string) => {
-    setCertificates((prev) => prev.filter((item) => item !== id));
+    const updated = certificates.filter((item) => item.id !== id);
+    setCertificates(updated);
+    handleCertificateChange({ certificate: updated });
   };
+
+  const handleCertificateChangeById = (
+    id: string,
+    changed: Partial<CertificateItem>,
+  ) => {
+    const updated = certificates.map((item) =>
+      item.id === id ? { ...item, ...changed } : item,
+    );
+    setCertificates(updated);
+    const finalCertificates = updated.map(({ title, type }) => ({
+      title,
+      type,
+    }));
+    handleCertificateChange({ certificate: finalCertificates });
+  };
+
   return (
     <section>
       <TitleSeparator>검증된 자격 사항</TitleSeparator>
@@ -25,10 +61,12 @@ function CertificateSection() {
         </p>
         <p>멘토 페이지에는 항목 형식에 따라 순서대로 보여집니다.</p>
       </StyledDescriptionWrapper>
-      {certificates.map((id) => (
+      {certificates.map((item) => (
         <CertificateInput
-          key={id}
-          onDeleteButtonClick={() => handleDeleteButtonClick(id)}
+          key={item.id}
+          id={item.id}
+          onDeleteButtonClick={() => handleDeleteButtonClick(item.id)}
+          onCertificateChange={handleCertificateChangeById}
         />
       ))}
 
