@@ -1,6 +1,6 @@
 package fittoring.config.auth;
 
-public record LoginMember(
+public record LoginInfo(
         Long memberId
 ) {
 }

@@ -14,7 +14,7 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         boolean hasLoginAnnotation = parameter.hasParameterAnnotation(Login.class);
-        boolean hasLoginMemberType = parameter.getParameterType().equals(LoginMember.class);
+        boolean hasLoginMemberType = parameter.getParameterType().equals(LoginInfo.class);
         return hasLoginAnnotation && hasLoginMemberType;
     }
 
@@ -24,6 +24,6 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String requestAttributeName = "memberId";
         Object memberId = request.getAttribute(requestAttributeName);
-        return new LoginMember((Long) memberId);
+        return new LoginInfo((Long) memberId);
     }
 }
