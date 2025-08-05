@@ -20,16 +20,26 @@ export default Input;
 
 const Container = styled.input<InputProps>`
   width: 100%;
+  height: 100%;
   padding: 0.7rem 1.1rem;
   border: ${({ theme, errored }) =>
       errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
     0.1rem solid;
   border-radius: 0.7rem;
 
-  color: ${({ theme }) => theme.FONT.B04};
+  color: ${({ theme }) => theme.FONT.B01};
 
   :focus {
     outline: none;
+    border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN600};
+  }
+
+  ::placeholder {
+    color: ${({ theme }) => theme.SYSTEM.GRAY200};
+  }
+
+  ::placeholder {
+    color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};

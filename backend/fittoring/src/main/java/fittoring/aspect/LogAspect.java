@@ -3,8 +3,6 @@ package fittoring.aspect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -27,7 +25,7 @@ public class LogAspect {
     }
 
     @Before("controller()")
-    public void logBeforeApiCall(final JoinPoint joinPoint) {
+    public void logBeforeApiCall() {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
@@ -45,9 +43,8 @@ public class LogAspect {
             String userAgent = request.getHeader("User-Agent");
 
             log.info(
-                    "{}: time=[{}] client=[{}:{}] request=[{} {} query={} body={}]",
+                    "{}: client=[{}:{}] request=[{} {} query={} body={}]",
                     prefix,
-                    LocalDateTime.now(ZoneId.of("Asia/Seoul")),
                     clientIp,
                     userAgent,
                     httpMethod,
@@ -67,7 +64,7 @@ public class LogAspect {
     }
 
     @AfterReturning(pointcut = "controller()", returning = "result")
-    public void logAfterApiCall(final JoinPoint joinPoint, final Object result) {
+    public void logAfterApiCall(Object result) {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -81,7 +78,7 @@ public class LogAspect {
     @AfterThrowing(pointcut = "controller()", throwing = "e")
     public void afterThrowingController(JoinPoint joinPoint, Throwable e) {
         Method method = getMethod(joinPoint);
-        log.warn("WARN: [{}] [{}] [{}]", method.getName(), e.getMessage(), (Object) e.getStackTrace());
+        log.warn("[{}], [{}], [{}], [{}]", method.getName(), e.getClass() , e.getMessage(), e.getStackTrace());
     }
 
     private Method getMethod(JoinPoint joinPoint) {

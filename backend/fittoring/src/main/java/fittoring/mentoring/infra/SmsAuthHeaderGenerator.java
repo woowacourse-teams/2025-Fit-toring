@@ -58,17 +58,9 @@ public class SmsAuthHeaderGenerator {
             Mac mac = Mac.getInstance(authenticationMethodForHash);
             mac.init(secretKey);
             byte[] rawHmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            return convertHex(rawHmac);
+            return HexEncoder.convertHex(rawHmac);
         } catch (NoSuchAlgorithmException | InvalidKeyException exception) {
             throw new SmsException(InfraErrorMessage.SMS_SENDING_ERROR.getMessage());
         }
-    }
-
-    private String convertHex(byte[] rawHmac) {
-        StringBuilder sb = new StringBuilder(rawHmac.length * 2);
-        for (byte byteData : rawHmac) {
-            sb.append(String.format("%02x", byteData));
-        }
-        return sb.toString();
     }
 }

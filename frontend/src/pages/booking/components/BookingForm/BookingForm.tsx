@@ -3,13 +3,13 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
+import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
-import useFormattedPhoneNumber from '../../hooks/useFormattedPhoneNumber';
-import useMenteeNameInput from '../../hooks/useMenteeNameInput';
-import { getPhoneNumberErrorMessage } from '../../utils/phoneNumberValidator';
+import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
+import useNameInput from '../../../../common/hooks/useNameInput';
+import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
-import FormField from '../FormField/FormField';
 
 import type { BookingResponse } from '../../types/BookingResponse';
 
@@ -23,10 +23,10 @@ function BookingForm({
   mentoringId,
 }: BookingFormProps) {
   const {
-    menteeName,
-    handleMenteeNameChange,
+    name,
+    handleNameChange,
     errorMessage: menteeNameErrorMessage,
-  } = useMenteeNameInput();
+  } = useNameInput();
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
     useFormattedPhoneNumber();
@@ -45,7 +45,7 @@ function BookingForm({
       const response = await apiClient.post({
         endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.RESERVATION}`,
         searchParams: {
-          menteeName,
+          name,
           menteePhone: phoneNumber,
           content: counselContent,
         },
@@ -60,6 +60,9 @@ function BookingForm({
     e.preventDefault();
 
     handleBooking();
+
+    // 이때 입력하지 않은 것들에 대한 유효성검사 돌아가고 errorMessage 화면에 노출
+    // 유효성검사를 트리거 시켜야함.
   };
 
   return (
@@ -68,26 +71,18 @@ function BookingForm({
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
       <StyledFieldWrapper>
-        <FormField
-          label="상담자명 *"
-          htmlFor="name"
-          errorMessage={menteeNameErrorMessage}
-        >
+        <FormField label="상담자명 *" errorMessage={menteeNameErrorMessage}>
           <Input
             placeholder="홍길동"
             id="name"
-            value={menteeName}
-            onChange={handleMenteeNameChange}
+            value={name}
+            onChange={handleNameChange}
             errored={menteeNameErrorMessage !== ''}
             data-testid="mentee-name-input"
             required
           />
         </FormField>
-        <FormField
-          label="전화번호 *"
-          htmlFor="phone"
-          errorMessage={phoneNumberErrorMessage}
-        >
+        <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
           <Input
             placeholder="010-1234-4986"
             id="phone"
@@ -101,11 +96,7 @@ function BookingForm({
             required
           />
         </FormField>
-        <FormField
-          label="상담 내용(선택사항)"
-          htmlFor="details"
-          errorMessage={''}
-        >
+        <FormField label="상담 내용(선택사항)" errorMessage={''}>
           <StyledTextarea
             id="details"
             placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 

@@ -16,8 +16,41 @@ spring:
     hibernate:
       ddl-auto: create
     defer-datasource-initialization: true
+  web:
+    resources:
+      add-mappings: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health
+      path-mapping:
+        health: healthcheck
 sms:
   base-url: https://api.solapi.com
   timeout:
     connect: 1_200
     read: 5_000
+logging:
+  file:
+    name: /logs/application.log
+  level:
+    root: INFO
+    fittoring.mentoring: DEBUG
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"
+  logback:
+    rollingpolicy:
+      file-name-pattern: logs/application.%d{yyyy-MM}.%i.log
+      max-history: 2
+      max-file-size: 10MB
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-expiration-millis: ${ACCESS_TOKEN_EXPIRATION_MILLIS}
+  refresh-token-expiration-millis: ${REFRESH_TOKEN_EXPIRATION_MILLIS}
