@@ -1,5 +1,4 @@
-
-import { specialtiesHandler } from '../../../../common/mock/common/handlers';
+import { commonHandler } from '../../../../common/mock/common/handlers';
 
 import SpecialtySection from './SpecialtySection';
 
@@ -17,9 +16,8 @@ type Story = StoryObj<typeof meta>;
 
 export const DefaultSpecialtySection: Story = {
   parameters: {
-
     msw: {
-      handlers: [...specialtiesHandler],
+      handlers: [...commonHandler],
     },
     docs: {
       description: {
