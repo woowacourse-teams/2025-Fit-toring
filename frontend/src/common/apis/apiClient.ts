@@ -55,9 +55,7 @@ class ApiClient {
 
     const options = {
       method: 'POST',
-      headers: isFormData
-        ? { 'Content-Type': 'multipart/form-data' }
-        : { 'Content-Type': 'application/json' },
+      headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
       body: isFormData ? searchParams : JSON.stringify(searchParams),
     };
 
