@@ -170,14 +170,14 @@ function SignupForm() {
         <UserInfoFields
           name={name}
           nameErrorMessage={nameErrorMessage}
-          handleNameChange={handleNameChange}
+          onNameChange={handleNameChange}
           gender={gender}
-          handleGenderChange={handleGenderChange}
+          onGenderChange={handleGenderChange}
         />
         <UserIdField
           userId={userId}
-          handleUserIdChange={handleUserIdChange}
-          handleDuplicateConfrimClick={handleDuplicateConfrimClick}
+          onUserIdChange={handleUserIdChange}
+          onDuplicateConfrimClick={handleDuplicateConfrimClick}
           errorMessage={getFinalUserIdErrorMessage()}
           isUserIdInputValid={userIdErrorMessage === ''}
         />
@@ -186,19 +186,19 @@ function SignupForm() {
           passwordConfirm={passwordConfirm}
           passwordErrorMessage={passwordErrorMessage}
           passwordConfirmErrorMessage={passwordConfirmErrorMessage}
-          handlePasswordChange={handlePasswordChange}
-          handlePasswordConfirmChange={handlePasswordConfirmChange}
+          onPasswordChange={handlePasswordChange}
+          onPasswordConfirmChange={handlePasswordConfirmChange}
         />
         <PhoneFields
           phoneNumber={phoneNumber}
           verificationCode={verificationCode}
           verificationCodeErrorMessage={getFinalVerificationCodeErrorMessage()}
           phoneNumberErrorMessage={getFinalPhoneNumberErrorMessage()}
-          handlePhoneNumberChange={handlePhoneNumberChange}
+          onPhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
-          handleVerificationCodeChange={handleVerificationCodeChange}
-          handleAuthCodeVerifyClick={handleAuthCodeVerifyClick}
-          handleAuthCodeClick={handleAuthCodeClick}
+          onVerificationCodeChange={handleVerificationCodeChange}
+          onAuthCodeVerifyClick={handleAuthCodeVerifyClick}
+          onAuthCodeClick={handleAuthCodeClick}
           isVerificationButtonEnabled={getVerificationButtonEnabled()}
         />
       </StyledFormFields>

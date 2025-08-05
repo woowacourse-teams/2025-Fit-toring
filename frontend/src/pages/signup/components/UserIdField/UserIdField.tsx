@@ -10,16 +10,16 @@ import Input from '../../../../common/components/Input/Input';
 interface UserIdFieldProps {
   userId: string;
   errorMessage: string;
-  handleUserIdChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleDuplicateConfrimClick: () => void;
+  onUserIdChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onDuplicateConfrimClick: () => void;
   isUserIdInputValid: boolean;
 }
 
 function UserIdField({
   userId,
   errorMessage,
-  handleUserIdChange,
-  handleDuplicateConfrimClick,
+  onUserIdChange,
+  onDuplicateConfrimClick,
   isUserIdInputValid,
 }: UserIdFieldProps) {
   const isUserIdDuplicateButtonEnabled = userId !== '' && isUserIdInputValid;
@@ -33,14 +33,14 @@ function UserIdField({
             placeholder="fittoring"
             name="id"
             value={userId}
-            onChange={handleUserIdChange}
+            onChange={onUserIdChange}
             errored={errorMessage !== ''}
           />
         </div>
         <Button
           type="button"
           customStyle={buttonCustomStyle}
-          onClick={handleDuplicateConfrimClick}
+          onClick={onDuplicateConfrimClick}
           variant={isUserIdDuplicateButtonEnabled ? 'primary' : 'disabled'}
         >
           중복확인

@@ -9,12 +9,10 @@ interface PhoneFieldsProps {
   phoneNumber: string;
   verificationCode: string;
   inputRef: React.RefObject<HTMLInputElement | null>;
-  handlePhoneNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleVerificationCodeChange: (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
-  handleAuthCodeVerifyClick: (phoneNumber: string) => void;
-  handleAuthCodeClick: (phoneNumber: string) => void;
+  onPhoneNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onVerificationCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAuthCodeVerifyClick: (phoneNumber: string) => void;
+  onAuthCodeClick: (phoneNumber: string) => void;
   phoneNumberErrorMessage: string;
   verificationCodeErrorMessage: string;
   isVerificationButtonEnabled: boolean;
@@ -24,10 +22,10 @@ function PhoneFields({
   phoneNumber,
   verificationCode,
   inputRef,
-  handlePhoneNumberChange,
-  handleVerificationCodeChange,
-  handleAuthCodeClick,
-  handleAuthCodeVerifyClick,
+  onPhoneNumberChange,
+  onVerificationCodeChange,
+  onAuthCodeClick,
+  onAuthCodeVerifyClick,
   phoneNumberErrorMessage,
   verificationCodeErrorMessage,
   isVerificationButtonEnabled,
@@ -46,14 +44,14 @@ function PhoneFields({
               type="tel"
               value={phoneNumber}
               ref={inputRef}
-              onChange={handlePhoneNumberChange}
+              onChange={onPhoneNumberChange}
               errored={phoneNumberErrorMessage !== ''}
             />
           </div>
           <Button
             type="button"
             customStyle={buttonCustomStyle}
-            onClick={() => handleAuthCodeClick(phoneNumber)}
+            onClick={() => onAuthCodeClick(phoneNumber)}
             variant={
               isVerificationRequestButtonEnabled ? 'primary' : 'disabled'
             }
@@ -74,7 +72,7 @@ function PhoneFields({
               placeholder="123456"
               type="tel"
               value={verificationCode}
-              onChange={handleVerificationCodeChange}
+              onChange={onVerificationCodeChange}
               errored={verificationCodeErrorMessage !== ''}
               maxLength={6}
             />
@@ -82,7 +80,7 @@ function PhoneFields({
           <Button
             type="button"
             customStyle={buttonCustomStyle}
-            onClick={() => handleAuthCodeVerifyClick(phoneNumber)}
+            onClick={() => onAuthCodeVerifyClick(phoneNumber)}
             variant={isVerificationButtonEnabled ? 'primary' : 'disabled'}
           >
             인증하기

@@ -6,17 +6,17 @@ import Input from '../../../../common/components/Input/Input';
 interface UserInfoFields {
   name: string;
   nameErrorMessage: string;
-  handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   gender: string;
-  handleGenderChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onGenderChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function UserInfoFields({
   name,
   nameErrorMessage,
-  handleNameChange,
+  onNameChange,
   gender,
-  handleGenderChange,
+  onGenderChange,
 }: UserInfoFields) {
   return (
     <StyledContainer>
@@ -27,7 +27,7 @@ function UserInfoFields({
             name="name"
             placeholder="홍길동"
             value={name}
-            onChange={handleNameChange}
+            onChange={onNameChange}
             errored={nameErrorMessage !== ''}
           />
         </StyledNameInputWrapper>
@@ -39,7 +39,7 @@ function UserInfoFields({
             <StyledLabel>
               남
               <StyledRadio
-                onChange={handleGenderChange}
+                onChange={onGenderChange}
                 type="radio"
                 name="gender"
                 value="남"
@@ -52,7 +52,7 @@ function UserInfoFields({
             <StyledLabel>
               여
               <StyledRadio
-                onChange={handleGenderChange}
+                onChange={onGenderChange}
                 type="radio"
                 name="gender"
                 value="여"
