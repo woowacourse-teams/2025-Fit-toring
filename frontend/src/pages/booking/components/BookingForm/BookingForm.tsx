@@ -1,14 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
+import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
-import Input from '../../../../common/components/Input/Input';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
-import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
-import useNameInput from '../../../../common/hooks/useNameInput';
-import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
 import type { BookingResponse } from '../../types/BookingResponse';
@@ -22,17 +19,11 @@ function BookingForm({
   handleBookingButtonClick,
   mentoringId,
 }: BookingFormProps) {
-  const {
-    name,
-    handleNameChange,
-    errorMessage: menteeNameErrorMessage,
-  } = useNameInput();
-
-  const { phoneNumber, inputRef, handlePhoneNumberChange } =
-    useFormattedPhoneNumber();
   const [counselContent, setCounselContent] = useState('');
-
-  const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    phone: '',
+  });
 
   const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -45,8 +36,6 @@ function BookingForm({
       const response = await apiClient.post({
         endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.RESERVATION}`,
         searchParams: {
-          name,
-          menteePhone: phoneNumber,
           content: counselContent,
         },
       });
@@ -60,10 +49,17 @@ function BookingForm({
     e.preventDefault();
 
     handleBooking();
-
-    // 이때 입력하지 않은 것들에 대한 유효성검사 돌아가고 errorMessage 화면에 노출
-    // 유효성검사를 트리거 시켜야함.
   };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const response = await getUserInfo();
+
+      setUserInfo(response);
+    };
+
+    fetchUserInfo();
+  }, []);
 
   return (
     <StyledContainer onSubmit={handleSubmit}>
@@ -71,31 +67,14 @@ function BookingForm({
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
       <StyledFieldWrapper>
-        <FormField label="상담자명 *" errorMessage={menteeNameErrorMessage}>
-          <Input
-            placeholder="홍길동"
-            id="name"
-            value={name}
-            onChange={handleNameChange}
-            errored={menteeNameErrorMessage !== ''}
-            data-testid="mentee-name-input"
-            required
-          />
-        </FormField>
-        <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
-          <Input
-            placeholder="010-1234-4986"
-            id="phone"
-            value={phoneNumber}
-            onChange={handlePhoneNumberChange}
-            errored={phoneNumberErrorMessage !== ''}
-            ref={inputRef}
-            maxLength={13}
-            type="tel"
-            data-testid="phone-number-input"
-            required
-          />
-        </FormField>
+        <StyledInfoRow>
+          <StyledUserInfoLabel>상담자명</StyledUserInfoLabel>
+          <StyledUserInfoText>{userInfo.name}</StyledUserInfoText>
+        </StyledInfoRow>
+        <StyledInfoRow>
+          <StyledUserInfoLabel>전화번호</StyledUserInfoLabel>
+          <StyledUserInfoText>{userInfo.phone}</StyledUserInfoText>
+        </StyledInfoRow>
         <FormField label="상담 내용(선택사항)" errorMessage={''}>
           <StyledTextarea
             id="details"
@@ -140,6 +119,22 @@ const StyledFieldWrapper = styled.div`
   margin-bottom: 3.2rem;
 `;
 
+const StyledInfoRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const StyledUserInfoLabel = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  color: ${({ theme }) => theme.FONT.B02};
+`;
+
+const StyledUserInfoText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  color: ${({ theme }) => theme.FONT.B01};
+`;
+
 const StyledTextarea = styled.textarea<{ errored: boolean }>`
   width: 100%;
   height: 5.8rem;
@@ -156,5 +151,5 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
     outline: none;
   }
 
-  color: ${({ theme }) => theme.FONT.B04};
+  color: ${({ theme }) => theme.FONT.B01};
 `;
