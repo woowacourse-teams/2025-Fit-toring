@@ -25,7 +25,7 @@ const useVerificationCodeConfirm = ({
     setVerificationCodeError(false);
     try {
       const response = await postAuthCodeVerify(phoneNumber, verificationCode);
-      if (response.status === 200) {
+      if (response.status === 201) {
         alert('인증 성공');
         verificationCodeConfirm();
       }
