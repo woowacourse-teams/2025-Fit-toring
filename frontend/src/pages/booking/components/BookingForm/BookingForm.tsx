@@ -27,6 +27,8 @@ function BookingForm({
   });
   const [sharingAgreed, setSharingAgreed] = useState(false);
 
+  const [errored, setErrored] = useState(false);
+
   const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
@@ -50,10 +52,16 @@ function BookingForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!sharingAgreed) {
+      setErrored(true);
+      return;
+    }
+
     handleBooking();
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setErrored(false);
     setSharingAgreed(e.target.checked);
   };
 
@@ -97,6 +105,7 @@ function BookingForm({
           id="sharingAgreed"
           checked={sharingAgreed}
           onChange={handleCheckboxChange}
+          errored={errored}
           label={
             <StyledLabelTextWrapper>
               <strong>전화번호 제공 동의</strong>
@@ -107,6 +116,9 @@ function BookingForm({
             </StyledLabelTextWrapper>
           }
         />
+        {errored && (
+          <StyledErrorText>전화번호 제공 동의를 해주세요.</StyledErrorText>
+        )}
       </StyledLabelWrapper>
 
       <BookingSummarySection />
@@ -198,4 +210,9 @@ const StyledLabelTextWrapper = styled.div`
   }
 
   color: ${({ theme }) => theme.FONT.B03};
+`;
+
+const StyledErrorText = styled.span`
+  color: ${({ theme }) => theme.FONT.ERROR};
+  ${({ theme }) => theme.TYPOGRAPHY.C3_R};
 `;
