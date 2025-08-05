@@ -5,11 +5,19 @@ import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import downIcon from '../../../../common/assets/images/downIcon.svg';
 import usePreviewImage from '../../../../common/hooks/usePreviewImage';
 
+import type { CertificateItem } from '../types/certificateItem';
+
 interface CertificateInputProps {
+  id: string;
   onDeleteButtonClick: () => void;
+  onCertificateChange: (id: string, changed: Partial<CertificateItem>) => void;
 }
 
-function CertificateInput({ onDeleteButtonClick }: CertificateInputProps) {
+function CertificateInput({
+  id,
+  onDeleteButtonClick,
+  onCertificateChange,
+}: CertificateInputProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
   return (
     <StyledContainer>
@@ -21,7 +29,13 @@ function CertificateInput({ onDeleteButtonClick }: CertificateInputProps) {
       </StyledCertificateHeader>
       <StyledContentWrapper>
         <p>유형</p>
-        <StyledSelect defaultValue="자격증" name="certificateType">
+        <StyledSelect
+          defaultValue="자격증"
+          name="certificateType"
+          onChange={(event) =>
+            onCertificateChange(id, { type: event.target.value })
+          }
+        >
           <option value="자격증">자격증</option>
           <option value="학력">학력</option>
           <option value="수상 경력">수상 경력</option>
@@ -30,14 +44,20 @@ function CertificateInput({ onDeleteButtonClick }: CertificateInputProps) {
       </StyledContentWrapper>
       <StyledContentWrapper>
         <p>이름</p>
-        <input type="text" placeholder="생활체육지도자 자격증 1급" />
+        <input
+          type="text"
+          placeholder="생활체육지도자 자격증 1급"
+          onChange={(event) =>
+            onCertificateChange(id, { title: event.target.value })
+          }
+        />
       </StyledContentWrapper>
 
-      <StyledImageInputLabel htmlFor="certificateImage">
+      <StyledImageInputLabel htmlFor={id}>
         <StyledHiddenInput
           type="file"
           accept="image/*"
-          id="certificateImage"
+          id={id}
           name="certificateImage"
           onChange={handleImageChange}
           required
