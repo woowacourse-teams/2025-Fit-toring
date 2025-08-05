@@ -7,9 +7,16 @@ import Input from '../../../../common/components/Input/Input';
 import { getUserInfo } from '../../apis/getUserInfo';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
 import type { UserInfoResponse } from '../types/userInfoResponse';
 
-function BaseInfoSection() {
+interface BaseInfoSectionProps {
+  onMentoringDataChange: (
+    newData: Pick<mentoringCreateFormData, 'price'>,
+  ) => void;
+}
+
+function BaseInfoSection({ onMentoringDataChange }: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
     phoneNumber: '',
@@ -36,7 +43,14 @@ function BaseInfoSection() {
           <Input value={userInfo.name} id="name" readOnly />
         </FormField>
         <FormField label="15분 상담료 (원) *" htmlFor="price">
-          <Input placeholder="5,000" id="price" required />
+          <Input
+            placeholder="5,000"
+            id="price"
+            required
+            onChange={(event) =>
+              onMentoringDataChange({ price: Number(event.target.value) })
+            }
+          />
         </FormField>
         <FormField label="전화번호 *" htmlFor="phone">
           <Input value={userInfo.phoneNumber} id="phone" readOnly />

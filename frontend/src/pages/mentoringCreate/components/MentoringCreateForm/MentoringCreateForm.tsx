@@ -31,6 +31,14 @@ function MentoringCreateForm() {
       },
     ],
   });
+  const handleMentoringDataChange = (
+    newData: Partial<mentoringCreateFormData>,
+  ) => {
+    setMentoringData((prevData) => ({
+      ...prevData,
+      ...newData,
+    }));
+  };
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
     [],
@@ -56,7 +64,7 @@ function MentoringCreateForm() {
 
   return (
     <StyledContainer onSubmit={handleSubmitButtonClick}>
-      <BaseInfoSection />
+      <BaseInfoSection onMentoringDataChange={handleMentoringDataChange} />
       <ProfileSection />
       <SpecialtySection />
       <IntroduceSection />
