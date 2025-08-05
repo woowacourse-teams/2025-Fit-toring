@@ -4,6 +4,7 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
+import fittoring.mentoring.business.repository.PhoneVerificationRepository;
 import fittoring.mentoring.infra.CodeGeneratorStub;
 import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.util.DbCleaner;
@@ -37,6 +38,9 @@ class PhoneVerificationServiceTest {
     private TestEntityManager em;
 
     @Autowired
+    private PhoneVerificationRepository phoneVerificationRepository;
+
+    @Autowired
     private DbCleaner dbCleaner;
 
     @BeforeEach
@@ -65,7 +69,7 @@ class PhoneVerificationServiceTest {
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(phoneVerifications).hasSize(1);
-                softAssertions.assertThat(phoneVerifications.get(0).getPhone()).isEqualTo(phoneNumber);
+                softAssertions.assertThat(phoneVerifications.get(0).getPhoneNumber()).isEqualTo(phoneNumber);
                 softAssertions.assertThat(phoneVerifications.get(0).getCode()).isEqualTo(phoneVerificationCode);
             });
         }
@@ -82,7 +86,7 @@ class PhoneVerificationServiceTest {
                     "123456",
                     expireTime
             );
-            em.persist(expectedExpireVerification);
+            phoneVerificationRepository.save(expectedExpireVerification);
 
             // when
             String phoneVerificationCode = phoneVerificationService.createPhoneVerification(phone);
@@ -94,7 +98,7 @@ class PhoneVerificationServiceTest {
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(phoneVerifications).hasSize(1);
-                softAssertions.assertThat(phoneVerifications.get(0).getPhone()).isEqualTo(phoneNumber);
+                softAssertions.assertThat(phoneVerifications.get(0).getPhoneNumber()).isEqualTo(phoneNumber);
                 softAssertions.assertThat(phoneVerifications.get(0).getCode()).isEqualTo(phoneVerificationCode);
             });
         }

@@ -2,9 +2,12 @@ package fittoring.mentoring.business.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,12 +26,6 @@ public class Mentoring {
     private Long id;
 
     @Column(nullable = false)
-    private String mentorName;
-
-    @Column(nullable = false, unique = true)
-    private String mentorPhone;
-
-    @Column(nullable = false)
     private int price;
 
     private Integer career;
@@ -39,14 +36,25 @@ public class Mentoring {
     @Column(nullable = false)
     private String introduction;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private Member mentor;
+
     public Mentoring(
-            String mentorName,
-            String mentorPhone,
+            Member member,
             int price,
             Integer career,
             String content,
             String introduction
     ) {
-        this(null, mentorName, mentorPhone, price, career, content, introduction);
+        this(null, price, career, content, introduction, member);
+    }
+
+    public String getMentorName() {
+        return this.mentor.getName();
+    }
+
+    public String getMentorPhone() {
+        return this.mentor.getPhoneNumber();
     }
 }
