@@ -1,5 +1,8 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
+import { postMentoringCreate } from '../../apis/postMentoringCreate';
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
 import ButtonSection from '../ButtonSection/ButtonSection';
 import CertificateSection from '../CertificateSection/CertificateSection';
@@ -8,9 +11,51 @@ import IntroduceSection from '../IntroduceSection/IntroduceSection';
 import ProfileSection from '../ProfileSection/ProfileSection';
 import SpecialtySection from '../SpecialtySection/SpecialtySection';
 
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+
 function MentoringCreateForm() {
+  const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
+    price: null,
+    category: [],
+    introduction: '',
+    career: null,
+    content: '',
+    certificate: [
+      {
+        type: '',
+        title: '',
+      },
+      {
+        type: '',
+        title: '',
+      },
+    ],
+  });
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
+    [],
+  );
+
+  const submitMentoringForm = async () => {
+    const response = await postMentoringCreate(
+      mentoringData,
+      profileImageFile,
+      certificateImageFiles,
+    );
+    if (response.status === 201) {
+      alert('멘토링 등록 성공');
+    } else {
+      console.error('멘토링 등록 실패');
+    }
+  };
+
+  const handleSubmitButtonClick = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    submitMentoringForm();
+  };
+
   return (
-    <StyledContainer>
+    <StyledContainer onSubmit={handleSubmitButtonClick}>
       <BaseInfoSection />
       <ProfileSection />
       <SpecialtySection />
