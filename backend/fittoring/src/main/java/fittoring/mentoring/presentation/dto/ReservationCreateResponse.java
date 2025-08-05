@@ -6,7 +6,8 @@ public record ReservationCreateResponse(
         String mentorName,
         String menteeName,
         String mentorPhone,
-        String menteePhone
+        String menteePhone,
+        String content
 ) {
 
     public static ReservationCreateResponse from(Reservation savedReservation) {
@@ -14,7 +15,8 @@ public record ReservationCreateResponse(
                 savedReservation.getMentorName(),
                 savedReservation.getMenteeName(),
                 savedReservation.getMentorPhone(),
-                savedReservation.getMenteePhone()
+                savedReservation.getMenteePhone(),
+                savedReservation.getContext()
         );
     }
 }

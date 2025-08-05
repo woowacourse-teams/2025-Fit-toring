@@ -1,5 +1,7 @@
 package fittoring.mentoring.presentation.api;
 
+import fittoring.config.auth.Login;
+import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringReservationService;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
@@ -21,10 +23,12 @@ public class ReservationController {
 
     @PostMapping("/mentorings/{mentoringId}/reservation")
     public ResponseEntity<ReservationCreateResponse> createReservation(
+            @Login LoginInfo loginInfo,
             @PathVariable("mentoringId") Long mentoringId,
             @Valid @RequestBody ReservationCreateRequest requestBody
     ) {
         ReservationCreateDto reservationCreateDto = ReservationCreateDto.of(
+                loginInfo.memberId(),
                 mentoringId,
                 requestBody
         );
