@@ -15,7 +15,7 @@ const postValidateId = http.post(AUTH_CODE_URL, async ({ request }) => {
   const body = await request.json();
 
   if (!body) {
-    return;
+    return new HttpResponse(null, { status: 400 });
   }
 
   const { loginId } = body as AuthCodeBody;

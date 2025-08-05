@@ -16,7 +16,7 @@ const postAuthCodeVerify = http.post(
     const body = await request.json();
 
     if (!body) {
-      return;
+      return new HttpResponse(null, { status: 400 });
     }
 
     const { code } = body as AuthCodeVerifyBody;
