@@ -24,7 +24,7 @@ const useVerificationCodeRequest = ({
   const handleAuthCodeClick = async (phoneNumber: string) => {
     try {
       const response = await postAuthCode(phoneNumber);
-      if (response.status === 200) {
+      if (response.status === 201) {
         alert('인증요청 성공');
         phoneNumberConfirm();
         setIsRequestCompleted(true);
