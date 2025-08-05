@@ -21,8 +21,8 @@ function IntroduceSection({ onIntroduceChange }: IntroduceSectionProps) {
           <Input
             placeholder="간단한 소개를 한 줄로 작성해주세요"
             id="introduce"
-            onChange={(e) =>
-              onIntroduceChange({ introduction: e.target.value })
+            onChange={(event) =>
+              onIntroduceChange({ introduction: event.target.value })
             }
           />
         </FormField>
@@ -31,8 +31,8 @@ function IntroduceSection({ onIntroduceChange }: IntroduceSectionProps) {
             placeholder="숫자만 입력해주세요."
             type="tel"
             id="career"
-            onChange={(e) =>
-              onIntroduceChange({ career: Number(e.target.value) })
+            onChange={(event) =>
+              onIntroduceChange({ career: Number(event.target.value) })
             }
           />
         </FormField>
