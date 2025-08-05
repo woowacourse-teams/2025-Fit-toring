@@ -11,12 +11,10 @@ import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
 import type { UserInfoResponse } from '../types/userInfoResponse';
 
 interface BaseInfoSectionProps {
-  onMentoringDataChange: (
-    newData: Pick<mentoringCreateFormData, 'price'>,
-  ) => void;
+  onPriceChange: (newData: Pick<mentoringCreateFormData, 'price'>) => void;
 }
 
-function BaseInfoSection({ onMentoringDataChange }: BaseInfoSectionProps) {
+function BaseInfoSection({ onPriceChange }: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
     phoneNumber: '',
@@ -48,7 +46,7 @@ function BaseInfoSection({ onMentoringDataChange }: BaseInfoSectionProps) {
             id="price"
             required
             onChange={(event) =>
-              onMentoringDataChange({ price: Number(event.target.value) })
+              onPriceChange({ price: Number(event.target.value) })
             }
           />
         </FormField>
