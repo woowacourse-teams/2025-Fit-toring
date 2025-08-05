@@ -1,4 +1,4 @@
-type Gender = '남' | '여';
+export type Gender = '남' | '여';
 
 export interface SignupInfo {
   loginId: string;

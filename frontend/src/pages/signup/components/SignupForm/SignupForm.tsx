@@ -19,7 +19,7 @@ import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
 import UserInfoFields from '../UserInfoFields/UserInfoFields';
 
-import type { SignupInfo } from '../../types/signupInfo';
+import type { Gender, SignupInfo } from '../../types/signupInfo';
 
 function SignupForm() {
   const {
@@ -29,10 +29,21 @@ function SignupForm() {
     validated: nameValidated,
   } = useNameInput();
 
-  const [gender, setGender] = useState('남');
+  const [gender, setGender] = useState<Gender>('남');
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setGender(e.target.value);
+    const { value } = e.target;
+
+    const isGenderType = (value: string): value is SignupInfo['gender'] => {
+      const genders = ['남', '여'];
+      return genders.includes(value);
+    };
+
+    if (!isGenderType(value)) {
+      return;
+    }
+
+    setGender(value);
   };
 
   const {
