@@ -37,7 +37,7 @@ const StyledImgWrapper = styled.div`
 
   width: 6.4rem;
   height: 6.4rem;
-  border-radius: 1.6rem;
+  border-radius: 16px;
   box-shadow: 0 4px 12px rgb(0 120 111 / 20%);
 `;
 
