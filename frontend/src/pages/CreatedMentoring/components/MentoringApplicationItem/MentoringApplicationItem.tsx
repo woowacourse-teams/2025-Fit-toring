@@ -15,7 +15,7 @@ function MentoringApplicationItem({
     id,
     name,
     phoneNumber,
-    fee,
+    price,
     content,
     status,
     applicationDate,
@@ -27,9 +27,9 @@ function MentoringApplicationItem({
       <StyledName>{name}님의 상담 신청</StyledName>
       <StyledApplicationInfoWrapper>
         <StyledApplicationDate>⏰ {applicationDate}</StyledApplicationDate>
-        <StyledApplicationFee>
-          💰 {TIME}분 {fee.toLocaleString()}원
-        </StyledApplicationFee>
+        <StyledApplicationPrice>
+          💰 {TIME}분 {price.toLocaleString()}원
+        </StyledApplicationPrice>
         <MentoringApplicationStatus status={status} />
       </StyledApplicationInfoWrapper>
       <PhoneNumber status={status} phoneNumber={phoneNumber} />
@@ -77,7 +77,7 @@ const StyledApplicationDate = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledApplicationFee = styled.p`
+const StyledApplicationPrice = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;

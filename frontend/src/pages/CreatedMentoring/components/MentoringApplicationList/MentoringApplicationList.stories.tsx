@@ -29,7 +29,7 @@ const MENTORING_APPLICATIONS: MentoringApplication[] = [
     id: 1,
     name: '홍길동',
     phoneNumber: null,
-    fee: 5000,
+    price: 5000,
     content:
       '다이어트를 위한 운동 계획과 식단 관리에 대해 상담받고 싶습니다. 현재 직장인이라 시간이 제한적인데, 효율적인 운동 방법을 알고 싶어요.',
     status: '승인대기',
@@ -41,7 +41,7 @@ const MENTORING_APPLICATIONS: MentoringApplication[] = [
     id: 2,
     name: '김영희',
     phoneNumber: '010-2345-6789',
-    fee: 5000,
+    price: 5000,
     content:
       '근육 증가를 위한 식단과 운동 계획에 대해 상담받고 싶습니다. 평일에 짧게 운동할 시간이 있어 효율적인 방법을 찾고 싶어요.',
     status: '승인됨',
@@ -53,7 +53,7 @@ const MENTORING_APPLICATIONS: MentoringApplication[] = [
     id: 3,
     name: '박철수',
     phoneNumber: '010-3456-7890',
-    fee: 5000,
+    price: 5000,
     content: '헬스장에서 운동하고 있는데 정체기가 와서 도움이 필요해요.',
     status: '완료됨',
     applicationDate: '2025-01-12',

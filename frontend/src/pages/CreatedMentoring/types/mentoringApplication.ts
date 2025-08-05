@@ -4,7 +4,7 @@ export interface MentoringApplication {
   id: number;
   name: string;
   phoneNumber: string | null; // 승인 대기중, 완료됨이면 null, 승인됨이면 전화번호 제공
-  fee: number;
+  price: number;
   content: string;
   status: StatusType;
   applicationDate: string; // 신청일
