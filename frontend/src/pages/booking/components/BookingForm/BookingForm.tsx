@@ -86,6 +86,10 @@ function BookingForm({
           />
         </FormField>
       </StyledFieldWrapper>
+      <StyledCheckBoxLabel>
+        <StyledCheckbox type="checkbox" />
+        멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
+      </StyledCheckBoxLabel>
       <BookingSummarySection />
     </StyledContainer>
   );
@@ -152,4 +156,16 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
   }
 
   color: ${({ theme }) => theme.FONT.B01};
+`;
+
+const StyledCheckBoxLabel = styled.label`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+`;
+
+const StyledCheckbox = styled.input`
+  margin-top: 0.4rem;
 `;
