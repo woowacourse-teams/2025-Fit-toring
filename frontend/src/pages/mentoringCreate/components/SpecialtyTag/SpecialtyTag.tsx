@@ -16,6 +16,7 @@ function SpecialtyTag({
   onChange,
 }: SpecialtyTagProps) {
   return (
+
     <StyledContainer checked={checked} disabled={disabled}>
       <StyledHiddenInput
         onChange={onChange}
@@ -28,6 +29,7 @@ function SpecialtyTag({
 }
 
 export default SpecialtyTag;
+
 
 const StyledContainer = styled.label<LabelType>`
   display: flex;

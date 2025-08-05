@@ -27,6 +27,7 @@ function Button({
   size = 'fit',
   customStyle,
   children,
+  ...rest
 }: PropsWithChildren<ComponentProps<'button'> & ButtonProps>) {
   return (
     <StyledContainer
@@ -34,6 +35,7 @@ function Button({
       variant={variant}
       size={size}
       onClick={onClick}
+      {...rest}
     >
       {children}
     </StyledContainer>
@@ -77,5 +79,5 @@ const disabledStyles = (theme: myTheme) => css`
   background-color: ${theme.BG.GRAY};
 
   color: ${theme.FONT.G01};
-  cursor: not-allowed;
+  pointer-events: none;
 `;

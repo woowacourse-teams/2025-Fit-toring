@@ -29,4 +29,16 @@ const StyledFormFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+
+  & > div > input {
+    &:hover {
+      border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+    }
+
+    &:focus {
+      border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+
+      box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
+    }
+  }
 `;

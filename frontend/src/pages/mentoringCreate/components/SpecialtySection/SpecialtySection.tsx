@@ -14,6 +14,7 @@ function SpecialtySection() {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
 
+
   const handleToggleSpecialtyTagChange = (title: string) => {
     setSelectedSpecialties((prev) => {
       return prev.includes(title)
@@ -38,6 +39,7 @@ function SpecialtySection() {
   return (
     <section>
       <TitleSeparator>전문 분야</TitleSeparator>
+
       <StyledGuideText>
         최대 {MAX_SPECIALTIES}개까지 등록 가능합니다.
       </StyledGuideText>
@@ -46,6 +48,7 @@ function SpecialtySection() {
           <SpecialtyTag
             key={specialty.id}
             title={specialty.title}
+
             onChange={() => handleToggleSpecialtyTagChange(specialty.title)}
             disabled={
               selectedSpecialties.length >= MAX_SPECIALTIES &&
