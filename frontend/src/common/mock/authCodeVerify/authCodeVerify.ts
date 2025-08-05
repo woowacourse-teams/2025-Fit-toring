@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw';
 import { API_ENDPOINTS } from '../../constants/apiEndpoints';
 
 interface AuthCodeVerifyBody {
-  authcode: string;
+  code: string;
 }
 
 const BASE_URL = process.env.BASE_URL;
@@ -19,9 +19,9 @@ const postAuthCodeVerify = http.post(
       return;
     }
 
-    const { authcode } = body as AuthCodeVerifyBody;
+    const { code } = body as AuthCodeVerifyBody;
 
-    if (authcode === DUMMY_AUTH_CODE) {
+    if (code === DUMMY_AUTH_CODE) {
       return HttpResponse.json({ message: '인증 완료' }, { status: 200 });
     }
   },
