@@ -13,6 +13,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultCertificateSection: Story = {
+  args: {
+    handleCertificateChange: () => {},
+    handleCertificateImageFilesChange: () => {},
+  },
   parameters: {
     docs: {
       description: {
