@@ -82,11 +82,12 @@ class MentoringServiceTest {
         @Test
         void getAllMentoring1() {
             // given
-            Member member = new Member("id1", "MALE", "김트레이너", new Phone("010-4321-9048"), Password.from("pw"));
-            Member member2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
-
-            Mentoring mentoring1 = new Mentoring(member, 5000, 3, "컨텐츠1", "자기소개1");
-            Mentoring mentoring2 = new Mentoring(member2, 5000, 3, "컨텐츠2", "자기소개2");
+            Member mentor1 = new Member("id1", "MALE", "김트레이너", new Phone("010-4321-9048"), Password.from("pw"));
+            Member mentor2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
+            em.persist(mentor1);
+            em.persist(mentor2);
+            Mentoring mentoring1 = new Mentoring(mentor1, 5000, 3, "컨텐츠1", "자기소개1");
+            Mentoring mentoring2 = new Mentoring(mentor2, 5000, 3, "컨텐츠2", "자기소개2");
             em.persist(mentoring1);
             em.persist(mentoring2);
 
