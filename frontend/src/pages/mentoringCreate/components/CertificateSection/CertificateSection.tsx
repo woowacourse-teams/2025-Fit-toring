@@ -12,10 +12,12 @@ interface CertificateSectionProps {
   handleCertificateChange: (
     newData: Pick<mentoringCreateFormData, 'certificate'>,
   ) => void;
+  handleCertificateImageFilesChange: (files: File[]) => void;
 }
 
 function CertificateSection({
   handleCertificateChange,
+  handleCertificateImageFilesChange,
 }: CertificateSectionProps) {
   const [certificates, setCertificates] = useState<CertificateItem[]>([]);
   const handleAddButtonClick = () => {
@@ -25,6 +27,7 @@ function CertificateSection({
         id: crypto.randomUUID(),
         title: '',
         type: '자격증',
+        file: undefined,
       },
     ]);
   };
@@ -42,11 +45,17 @@ function CertificateSection({
       item.id === id ? { ...item, ...changed } : item,
     );
     setCertificates(updated);
+
     const finalCertificates = updated.map(({ title, type }) => ({
       title,
       type,
     }));
     handleCertificateChange({ certificate: finalCertificates });
+
+    const files = updated
+      .map((item) => item.file)
+      .filter((file): file is File => !!file);
+    handleCertificateImageFilesChange(files);
   };
 
   return (
@@ -67,6 +76,9 @@ function CertificateSection({
           id={item.id}
           onDeleteButtonClick={() => handleDeleteButtonClick(item.id)}
           onCertificateChange={handleCertificateChangeById}
+          onCertificateImageFileChange={(file) =>
+            handleCertificateChangeById(item.id, { file })
+          }
         />
       ))}
 
