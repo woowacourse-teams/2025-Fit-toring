@@ -16,7 +16,7 @@ const useUserIdDuplicateCheck = ({
   const [duplicateError, setDuplicateError] = useState(false);
 
   const {
-    confirm: userIdConfirm,
+    confirm: confirmUserId,
     isCheckNeeded: isUserIdCheck,
     shouldBlockSubmit: shouldBlockSubmitByUserId,
   } = useSubmitGuardWithConfirm(userId);
@@ -28,7 +28,7 @@ const useUserIdDuplicateCheck = ({
       const response = await postValidateId(userId);
 
       if (response.status === 200) {
-        userIdConfirm();
+        confirmUserId();
         alert('사용 가능한 아이디입니다.');
       }
     } catch (error) {

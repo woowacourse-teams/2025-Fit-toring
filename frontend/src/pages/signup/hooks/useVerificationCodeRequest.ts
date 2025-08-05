@@ -14,7 +14,7 @@ const useVerificationCodeRequest = ({
   phoneNumberErrorMessage,
 }: useVerificationCodeRequestParams) => {
   const {
-    confirm: phoneNumberConfirm,
+    confirm: confirmPhoneNumber,
     isCheckNeeded: isPhoneNumberCheck,
     shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
   } = useSubmitGuardWithConfirm(phoneNumber);
@@ -26,7 +26,7 @@ const useVerificationCodeRequest = ({
       const response = await postAuthCode(phoneNumber);
       if (response.status === 201) {
         alert('인증요청 성공');
-        phoneNumberConfirm();
+        confirmPhoneNumber();
         setIsRequestCompleted(true);
       }
     } catch (error) {

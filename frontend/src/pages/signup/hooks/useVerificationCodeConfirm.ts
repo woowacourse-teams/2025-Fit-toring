@@ -14,7 +14,7 @@ const useVerificationCodeConfirm = ({
   verificationCodeErrorMessage,
 }: useVerificationCodeConfirmParams) => {
   const {
-    confirm: verificationCodeConfirm,
+    confirm: confrimVerificationCode,
     isCheckNeeded: isVerificationCodeCheck,
     shouldBlockSubmit: shouldBlockSubmitByVerificationCode,
   } = useSubmitGuardWithConfirm(verificationCode);
@@ -27,7 +27,7 @@ const useVerificationCodeConfirm = ({
       const response = await postAuthCodeVerify(phoneNumber, verificationCode);
       if (response.status === 200) {
         alert('인증 성공');
-        verificationCodeConfirm();
+        confrimVerificationCode();
       }
     } catch (error) {
       setVerificationCodeError(true);
