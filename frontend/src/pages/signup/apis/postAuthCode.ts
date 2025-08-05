@@ -4,6 +4,6 @@ import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 export const postAuthCode = async (phone: string) => {
   return await apiClient.post({
     endpoint: API_ENDPOINTS.AUTH_CODE,
-    searchParams: { phone },
+    body: { phone },
   });
 };
