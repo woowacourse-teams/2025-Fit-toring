@@ -11,3 +11,8 @@ export interface MentoringApplication {
   scheduledDate: string | null;
   completionDate: string | null;
 }
+
+export interface MentoringApplicationResponse {
+  data: MentoringApplication[];
+  statusCode: number;
+}
