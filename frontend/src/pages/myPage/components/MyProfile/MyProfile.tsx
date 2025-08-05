@@ -5,9 +5,9 @@ import styled from '@emotion/styled';
 import defaultProfile from '../../../../common/assets/images/profileImg.svg';
 import { getMyProfile } from '../../apis/getMyProfile';
 
-import type { MyProfile } from '../../types/myProfile';
+import type { MyProfileType } from '../../types/myProfile';
 
-const INITIAL_PROFILE: MyProfile = {
+const INITIAL_PROFILE: MyProfileType = {
   name: '',
   phoneNumber: '',
   loginId: '',
@@ -15,7 +15,7 @@ const INITIAL_PROFILE: MyProfile = {
 } as const;
 
 function MyProfile() {
-  const [myProfile, setMyProfile] = useState<MyProfile>(INITIAL_PROFILE);
+  const [myProfile, setMyProfile] = useState<MyProfileType>(INITIAL_PROFILE);
   const { name, phoneNumber, loginId, imageUrl } = myProfile;
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const StyledContainer = styled.section`
   align-items: center;
   gap: 2rem;
 
-  height: 100%;
+  height: auto;
   padding: 2rem;
 `;
 
@@ -70,7 +70,6 @@ const StyledWrapper = styled.div`
 
   width: 100%;
   height: auto;
-  max-height: 24rem;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: rgb(0 0 0 / 10%) 0 0.4rem 1.2rem;
