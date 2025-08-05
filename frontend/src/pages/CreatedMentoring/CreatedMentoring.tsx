@@ -1,56 +1,37 @@
+import { useEffect, useState } from 'react';
+
 import styled from '@emotion/styled';
 
+import { getMentoringApplicationList } from './apis/getMentoringApplicationList';
 import MentoringApplicationItem from './components/MentoringApplicationItem/MentoringApplicationItem';
 import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
 
 import type { MentoringApplication } from './types/mentoringApplication';
 
-const MENTORING_APPLICATIONS: MentoringApplication[] = [
-  {
-    id: 1,
-    name: '홍길동',
-    phoneNumber: null,
-    price: 5000,
-    content:
-      '다이어트를 위한 운동 계획과 식단 관리에 대해 상담받고 싶습니다. 현재 직장인이라 시간이 제한적인데, 효율적인 운동 방법을 알고 싶어요.',
-    status: '승인대기',
-    applicationDate: '2025-01-15',
-    scheduledDate: null,
-    completionDate: null,
-  },
-  {
-    id: 2,
-    name: '김영희',
-    phoneNumber: '010-2345-6789',
-    price: 5000,
-    content:
-      '근육 증가를 위한 식단과 운동 계획에 대해 상담받고 싶습니다. 평일에 짧게 운동할 시간이 있어 효율적인 방법을 찾고 싶어요.',
-    status: '승인됨',
-    applicationDate: '2025-01-14',
-    scheduledDate: '2025-01-21',
-    completionDate: null,
-  },
-  {
-    id: 3,
-    name: '박철수',
-    phoneNumber: '010-3456-7890',
-    price: 5000,
-    content: '헬스장에서 운동하고 있는데 정체기가 와서 도움이 필요해요.',
-    status: '완료됨',
-    applicationDate: '2025-01-12',
-    scheduledDate: '2025-01-18',
-    completionDate: '2025-01-18',
-  },
-] as const;
-
 function CreatedMentoring() {
+  const [mentoringApplicationList, setMentoringApplicationList] = useState<
+    MentoringApplication[] | null
+  >(null);
+
+  useEffect(() => {
+    async function fetchMentoringApplicationList() {
+      const response = await getMentoringApplicationList();
+      setMentoringApplicationList(response);
+    }
+    fetchMentoringApplicationList();
+  }, []);
+
+  if (!mentoringApplicationList) {
+    return null;
+  }
+
   return (
     <StyledContainer>
       <StyledTitle>개설한 멘토링</StyledTitle>
       <StyledWrapper>
         <StyledInfoWrapper>
           <StyledSubTitle>
-            멘토링 신청 목록 ({MENTORING_APPLICATIONS.length}건)
+            멘토링 신청 목록 ({mentoringApplicationList.length}건)
           </StyledSubTitle>
           <StyledDescription>
             사용자들이 신청한 멘토링을 승인하거나 거절할 수 있습니다.
@@ -58,7 +39,7 @@ function CreatedMentoring() {
         </StyledInfoWrapper>
         <StyledLine />
         <MentoringApplicationList>
-          {MENTORING_APPLICATIONS.map((item) => (
+          {mentoringApplicationList.map((item) => (
             <MentoringApplicationItem
               key={item.id}
               mentoringApplication={item}
