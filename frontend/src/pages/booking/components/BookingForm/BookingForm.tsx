@@ -66,7 +66,7 @@ function BookingForm({
       <StyledInfoText>
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
-      <StyledFieldWrapper>
+      <StyledUserInfoWrapper>
         <StyledInfoRow>
           <StyledUserInfoLabel>상담자명</StyledUserInfoLabel>
           <StyledUserInfoText>{userInfo.name}</StyledUserInfoText>
@@ -85,7 +85,7 @@ function BookingForm({
             value={counselContent}
           />
         </FormField>
-      </StyledFieldWrapper>
+      </StyledUserInfoWrapper>
       <StyledCheckBoxLabel>
         <StyledCheckbox type="checkbox" />
         멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
@@ -114,7 +114,7 @@ const StyledInfoText = styled.p`
   color: ${({ theme }) => theme.FONT.B03};
 `;
 
-const StyledFieldWrapper = styled.div`
+const StyledUserInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.1rem;
