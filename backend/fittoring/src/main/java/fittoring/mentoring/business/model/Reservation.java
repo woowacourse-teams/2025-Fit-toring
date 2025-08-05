@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,18 +34,20 @@ public class Reservation {
     @Column(nullable = false)
     private String menteePhone;
 
-    private String context;
+    private String content;
 
+    @Getter
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
 
-    public Reservation(String menteeName, String menteePhone, String context, Mentoring mentoring) {
-        this(null, menteeName, menteePhone, context, null, mentoring);
+    public Reservation(String menteeName, String menteePhone, String content, Mentoring mentoring) {
+        this(null, menteeName, menteePhone, content, null, mentoring);
     }
 
     public String getMenteeName() {
