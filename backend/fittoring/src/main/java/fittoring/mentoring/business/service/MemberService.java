@@ -1,7 +1,6 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
@@ -25,19 +24,20 @@ public class MemberService {
     public MyInfoResponse getMeInfo(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
-        if (!MemberRole.isMentee(member.getRole())) {
+        if (!MemberRole.isMentorOrHigher(member.getRole())) {
             return MyInfoResponse.from(member);
         }
         Mentoring mentoring = getMentoring(member);
+        if (mentoring == null) {
+            return MyInfoResponse.from(member);
+        }
         Image image = findMentoringImage(mentoring);
         return MyInfoResponse.of(member, image);
     }
 
     private Mentoring getMentoring(Member member) {
         return mentoringRepository.findByMentor(member)
-                .orElseThrow(
-                        () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage())
-                );
+                .orElse(null);
     }
 
     private Image findMentoringImage(Mentoring mentoring) {
