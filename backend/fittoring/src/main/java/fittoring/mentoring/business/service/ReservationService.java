@@ -11,6 +11,7 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
+import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,5 +77,9 @@ public class ReservationService {
         return reservations.stream()
                 .map(MentorMentoringReservationResponse::of)
                 .toList();
+    }
+
+    public PhoneNumberResponse updateStatus(Long mentorId, Long reservationId) {
+        return null;
     }
 }
