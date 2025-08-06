@@ -3,6 +3,7 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
+import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
@@ -28,6 +29,7 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final ReviewRepository reviewRepository;
+    private final ImageService imageService;
 
     @Transactional
     public ReservationCreateResponse createReservation(ReservationCreateDto dto) {
@@ -46,25 +48,24 @@ public class ReservationService {
     }
 
     public List<MemberReservationGetResponse> findMemberReservations(Long memberId) {
-        List<Reservation> memberReservations = reservationRepository.findByMemberId(memberId) // TODO: 멤버 이름 수정하기
-            .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        List<Reservation> memberReservations = reservationRepository.findAllByMenteeId(memberId);
         return memberReservations.stream()
-            .map(reservation -> {
-                Mentoring mentoring = reservation.getMentoring();
-                String mentorProfileImage = imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
-                List<String> categories = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
-                boolean isReviewed = reviewRepository.existsByMentoringIdAndReviewerId(mentoring.getId(), memberId);
-                return new MemberReservationGetResponse(
-                    mentoring.getMentor().getName(),
-                    mentorProfileImage,
-                    mentoring.getPrice(),
-                    mentoring.getCreatedAt(),
-                    reservation.getCreatedAt(),
-                    reservation.getStatus(),
-                    categories,
-                    isReviewed
-                );
-            })
+            .map(this::generateMemberReservationGetResponse)
             .toList();
+    }
+
+    private MemberReservationGetResponse generateMemberReservationGetResponse(Reservation reservation) {
+        Mentoring mentoring = reservation.getMentoring();
+        String mentorProfileImage = imageService.findUrlByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
+        List<String> categories = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
+        boolean isReviewed = reviewRepository.existsByReservationId(mentoring.getId());
+        return new MemberReservationGetResponse(
+            mentoring.getMentor().getName(),
+            mentorProfileImage,
+            mentoring.getPrice(),
+            reservation.getCreatedAt().toLocalDate(),
+            categories,
+            isReviewed
+        );
     }
 }

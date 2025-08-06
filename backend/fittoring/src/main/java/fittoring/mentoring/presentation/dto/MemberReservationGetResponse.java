@@ -9,9 +9,7 @@ public record MemberReservationGetResponse(
     String mentorName,
     String mentorProfileImage,
     int price,
-    LocalDateTime mentoringAt,
     LocalDate reservedAt,
-    Status status,
     List<String> categories,
     boolean isReviewed
 ) {
