@@ -2,7 +2,8 @@ package fittoring.mentoring.business.model;
 
 public enum MemberRole {
 
-    USER,
+    MENTEE,
+    MENTOR,
     ADMIN,
     ;
 }

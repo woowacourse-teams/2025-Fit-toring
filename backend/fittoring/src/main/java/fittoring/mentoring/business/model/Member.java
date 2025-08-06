@@ -46,7 +46,7 @@ public class Member {
     private MemberRole role;
 
     public Member(String loginId, String gender, String name, Phone phone, Password password) {
-        this(null, loginId, gender, name, phone, password, MemberRole.USER);
+        this(null, loginId, gender, name, phone, password, MemberRole.MENTEE);
     }
 
     public void matchPassword(String password) {
@@ -59,5 +59,11 @@ public class Member {
 
     public String getPhoneNumber() {
         return this.phone.getNumber();
+    }
+
+    public void registerAsMentor() {
+        if (this.role != MemberRole.ADMIN) {
+            this.role = MemberRole.MENTOR;
+        }
     }
 }
