@@ -21,6 +21,19 @@ function CertificateInput({
   onCertificateImageFileChange,
 }: CertificateInputProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
+
+  const handleCertificateIdChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    onCertificateChange(id, { type: event.target.value });
+  };
+
+  const handleCertificateTitleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    onCertificateChange(id, { title: event.target.value });
+  };
+
   return (
     <StyledContainer>
       <StyledCertificateHeader>
@@ -34,9 +47,7 @@ function CertificateInput({
         <StyledSelect
           defaultValue="자격증"
           name="certificateType"
-          onChange={(event) =>
-            onCertificateChange(id, { type: event.target.value })
-          }
+          onChange={handleCertificateIdChange}
         >
           <option value="자격증">자격증</option>
           <option value="학력">학력</option>
@@ -49,9 +60,7 @@ function CertificateInput({
         <input
           type="text"
           placeholder="생활체육지도자 자격증 1급"
-          onChange={(event) =>
-            onCertificateChange(id, { title: event.target.value })
-          }
+          onChange={handleCertificateTitleChange}
         />
       </StyledContentWrapper>
 

@@ -33,6 +33,10 @@ function BaseInfoSection({ onPriceChange }: BaseInfoSectionProps) {
     fetchUserInfo();
   }, []);
 
+  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onPriceChange({ price: Number(event.target.value) });
+  };
+
   return (
     <section>
       <TitleSeparator>기본 정보</TitleSeparator>
@@ -45,9 +49,7 @@ function BaseInfoSection({ onPriceChange }: BaseInfoSectionProps) {
             placeholder="5000"
             id="price"
             required
-            onChange={(event) =>
-              onPriceChange({ price: Number(event.target.value) })
-            }
+            onChange={handlePriceChange}
           />
         </FormField>
         <FormField label="전화번호 *">
