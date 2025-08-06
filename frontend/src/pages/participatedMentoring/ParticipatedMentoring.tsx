@@ -1,13 +1,6 @@
 import styled from '@emotion/styled';
 
-interface ParticipatedMentoringType {
-  mentorName: string;
-  mentorProfileImage: string;
-  price: string;
-  reservedAt: string;
-  categories: string[];
-  isReviewed: boolean;
-}
+import type { ParticipatedMentoringType } from './types/participatedMentoring';
 
 const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
   {
