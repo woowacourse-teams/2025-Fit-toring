@@ -107,15 +107,14 @@ function BookingForm({
           onChange={handleCheckboxChange}
           errored={errored}
           label={
-            <StyledLabelTextWrapper>
-              <strong>전화번호 제공 동의</strong>
-              <p>
-                멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게
-                전달됩니다.
-              </p>
-            </StyledLabelTextWrapper>
+            <StyledCheckboxLabelText>
+              전화번호 제공 동의
+            </StyledCheckboxLabelText>
           }
         />
+        <StyledCheckboxSubText>
+          멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
+        </StyledCheckboxSubText>
         {errored && (
           <StyledErrorText>전화번호 제공 동의를 해주세요.</StyledErrorText>
         )}
@@ -196,19 +195,14 @@ const StyledLabelWrapper = styled.div`
   margin: 2rem 0;
 `;
 
-const StyledLabelTextWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+const StyledCheckboxLabelText = styled.strong`
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  font-weight: bold;
+  color: ${({ theme }) => theme.FONT.B03};
+`;
 
-  & > strong {
-    ${({ theme }) => theme.TYPOGRAPHY.B2_R};
-    font-weight: bold;
-  }
-
-  & > p {
-    ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-  }
-
+const StyledCheckboxSubText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   color: ${({ theme }) => theme.FONT.B03};
 `;
 
