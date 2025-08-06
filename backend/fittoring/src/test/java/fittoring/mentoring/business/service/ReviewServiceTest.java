@@ -9,6 +9,7 @@ import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
@@ -51,22 +52,32 @@ class ReviewServiceTest {
     void createReservation() {
         // given
         Password password = Password.from("password");
+        Member mentor = entityManager.persist(new Member(
+            "mentor",
+            "MALE",
+            "김트레이너",
+            new Phone("010-2222-3333"),
+            password
+        ));
         Member reviewer = entityManager.persist(new Member(
             "loginId",
-            "남",
+            "MALE",
             "name",
-            "010-1234-5678",
+            new Phone("010-1234-5678"),
             password
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            "mentorName",
-            "010-5678-1234",
+            mentor,
             5000,
             5,
             "content",
             "introduction"
         ));
-        entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
+        entityManager.persist(new Reservation(
+            "예약 신청합니다.",
+            mentoring,
+            reviewer
+        ));
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
@@ -82,7 +93,7 @@ class ReviewServiceTest {
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(reviewCreateResponse.rating()).isEqualTo(rating);
-            softAssertions.assertThat(reviewCreateResponse.rating()).isEqualTo(content);
+            softAssertions.assertThat(reviewCreateResponse.content()).isEqualTo(content);
         });
     }
 
@@ -90,9 +101,15 @@ class ReviewServiceTest {
     @Test
     void createReservationFail1() {
         // given
+        Member mentor = entityManager.persist(new Member(
+            "mentor",
+            "MALE",
+            "김트레이너",
+            new Phone("010-2222-3333"),
+            Password.from("password")
+        ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            "mentorName",
-            "010-5678-1234",
+            mentor,
             5000,
             5,
             "content",
@@ -119,9 +136,9 @@ class ReviewServiceTest {
         Password password = Password.from("password");
         Member reviewer = entityManager.persist(new Member(
             "loginId",
-            "남",
+            "MALE",
             "name",
-            "010-1234-5678",
+            new Phone("010-1234-5678"),
             password
         ));
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
@@ -143,16 +160,22 @@ class ReviewServiceTest {
     void createReservationFail3() {
         // given
         Password password = Password.from("password");
+        Member mentor = entityManager.persist(new Member(
+            "mentor",
+            "MALE",
+            "김트레이너",
+            new Phone("010-2222-3333"),
+            password
+        ));
         Member reviewer = entityManager.persist(new Member(
             "loginId",
-            "남",
+            "MALE",
             "name",
-            "010-1234-5678",
+            new Phone("010-1234-5678"),
             password
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            "mentorName",
-            "010-5678-1234",
+            mentor,
             5000,
             5,
             "content",
@@ -179,22 +202,32 @@ class ReviewServiceTest {
     void createReservationFail4() {
         // given
         Password password = Password.from("password");
+        Member mentor = entityManager.persist(new Member(
+            "mentor",
+            "MALE",
+            "김트레이너",
+            new Phone("010-2222-3333"),
+            password
+        ));
         Member reviewer = entityManager.persist(new Member(
             "loginId",
-            "남",
+            "MALE",
             "name",
-            "010-1234-5678",
+            new Phone("010-1234-5678"),
             password
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            "mentorName",
-            "010-5678-1234",
+            mentor,
             5000,
             5,
             "content",
             "introduction"
         ));
-        entityManager.persist(new Reservation()); // TODO: 멘토링 개설 되면 id 넣어주기
+        entityManager.persist(new Reservation(
+            "예약 신청합니다.",
+            mentoring,
+            reviewer
+        ));
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(

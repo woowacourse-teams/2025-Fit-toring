@@ -40,7 +40,7 @@ public class ReviewService {
     }
 
     private void validateReserved(Long mentoringId, Long reviewerId) {
-        if (reservationRepository.existsByMentoringIdAndMemberId(mentoringId, reviewerId)) { // TODO: Member을 예약자 필드 이름으로 고치기
+        if (reservationRepository.existsByMentoringIdAndMenteeId(mentoringId, reviewerId)) {
             return;
         }
         throw new ReservationNotFoundException(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());
