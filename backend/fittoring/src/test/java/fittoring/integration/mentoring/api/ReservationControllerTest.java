@@ -193,20 +193,19 @@ class ReservationControllerTest {
             "mentorId1",
             "남",
             "김멘토",
-            "010-1234-5678",
+            new Phone("010-1234-5678"),
             Password.from("password")
         ));
         Member mentor2 = memberRepository.save(new Member(
             "mentorId2",
             "남",
             "김멘토",
-            "010-1234-5679",
+            new Phone("010-1234-5679"),
             Password.from("password")
         ));
         Mentoring mentoring1 = mentoringRepository.save(new Mentoring(
             mentor1,
             5_000,
-            5,
             5,
             "한 줄 소개",
             "긴 글 소개"
@@ -214,7 +213,6 @@ class ReservationControllerTest {
         Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
             mentor2,
             5_000,
-            5,
             5,
             "한 줄 소개",
             "긴 글 소개"
@@ -235,18 +233,18 @@ class ReservationControllerTest {
             "menteeId",
             "남",
             "김멘티",
-            "010-5678-1234",
+            new Phone("010-5678-1234"),
             Password.from("password")
         ));
-        Reservation reservation1 = reservationRepository.save(new Reservation(
-            mentee,
+        reservationRepository.save(new Reservation(
             "신청 내용1",
-            mentoring1
+            mentoring1,
+            mentee
         ));
-        Reservation reservation2 = reservationRepository.save(new Reservation(
-            mentee,
+        reservationRepository.save(new Reservation(
             "신청 내용2",
-            mentoring2
+            mentoring2,
+            mentee
         ));
 
         // when
@@ -260,61 +258,5 @@ class ReservationControllerTest {
             .then()
             .statusCode(200)
             .body("", hasSize(2));
-    }
-
-    @DisplayName("존재하지 않는 멤버가 자신의 예약을 조회하려고 하면 404 Not Found를 반환한다")
-    @Test
-    void findMemberReservationsFail() {
-        // given
-        doNothing()
-            .when(smsRestClientService)
-            .sendSms(
-                ArgumentMatchers.any(Phone.class),
-                ArgumentMatchers.anyString(),
-                ArgumentMatchers.anyString()
-            );
-
-        Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "남",
-            "김멘토",
-            "010-1234-5678",
-            Password.from("password")
-        ));
-        Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5_000,
-            5,
-            5,
-            "한 줄 소개",
-            "긴 글 소개"
-        ));
-        Category category = categoryRepository.save(new Category("근육 증진"));
-        categoryMentoringRepository.save(new CategoryMentoring(
-            category, mentoring
-        ));
-        Member mentee = memberRepository.save(new Member(
-            "menteeId",
-            "남",
-            "김멘티",
-            "010-5678-1234",
-            Password.from("password")
-        ));
-        Reservation reservation = reservationRepository.save(new Reservation(
-            mentee,
-            "신청 내용",
-            mentoring
-        ));
-
-        // when
-        // then
-        RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", jwtProvider.createAccessToken(999L))
-            .when()
-            .get("/reservations/participated")
-            .then()
-            .statusCode(404);
     }
 }

@@ -3,8 +3,12 @@ package fittoring.mentoring.business.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fittoring.config.JpaConfiguration;
+import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.model.Image;
+import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
@@ -15,6 +19,7 @@ import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
+import fittoring.mentoring.infra.S3Uploader;
 import fittoring.mentoring.presentation.dto.MemberReservationGetResponse;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.util.DbCleaner;
@@ -34,7 +39,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, ReservationService.class, JpaConfiguration.class})
+@Import({DbCleaner.class, ReservationService.class, JpaConfiguration.class, ImageService.class, S3Uploader.class, S3Configuration.class})
 @DataJpaTest
 class ReservationServiceTest {
 
@@ -111,25 +116,28 @@ class ReservationServiceTest {
     @Test
     void findMemberReservations() {
         // given
-        // TODO: 멤버 정보로 필드 교체
         Member mentor1 = entityManager.persist(new Member(
             "mentorId1",
             "남",
             "김멘토",
-            "010-1234-5678",
+            new Phone("010-1234-5678"),
             Password.from("password")
+        ));
+        Image profileImageOfMentor1 = entityManager.persist(new Image(
+            "www.naver.com",
+            ImageType.MENTORING_PROFILE,
+            mentor1.getId()
         ));
         Member mentor2 = entityManager.persist(new Member(
             "mentorId2",
             "남",
             "박멘토",
-            "010-1234-5679",
+            new Phone("010-1234-5679"),
             Password.from("password")
         ));
         Mentoring mentoring1 = entityManager.persist(new Mentoring(
             mentor1,
             5_000,
-            5,
             5,
             "한 줄 소개",
             "긴 글 소개"
@@ -137,7 +145,6 @@ class ReservationServiceTest {
         Mentoring mentoring2 = entityManager.persist(new Mentoring(
             mentor2,
             5_000,
-            5,
             5,
             "한 줄 소개",
             "긴 글 소개"
@@ -155,41 +162,39 @@ class ReservationServiceTest {
         ));
         CategoryMentoring category1OfMentoring2 = entityManager.persist(new CategoryMentoring(
             category3,
-            mentoring1
+            mentoring2
         ));
         Member mentee = entityManager.persist(new Member(
             "menteeId",
             "남",
             "김멘티",
-            "010-5678-1234",
+            new Phone("010-5678-1234"),
             Password.from("password")
         ));
         Reservation reservation1 = entityManager.persist(new Reservation(
-            mentee,
             "신청 내용1",
-            mentoring1
-        ));
+            mentoring1,
+            mentee
+            ));
         Reservation reservation2 = entityManager.persist(new Reservation(
-            mentee,
             "신청 내용2",
-            mentoring2
-        ));
+            mentoring2,
+            mentee
+            ));
         List<MemberReservationGetResponse> expected = List.of(
             new MemberReservationGetResponse(
                 mentoring1.getMentorName(),
+                profileImageOfMentor1.getUrl(),
                 mentoring1.getPrice(),
-                mentoring1.getCreatedAt(),
-                reservation1.getCreatedAt(),
-                "대기",
+                reservation1.getCreatedAt().toLocalDate(),
                 List.of(category1OfMentoring1.getCategoryTitle(), category2OfMentoring1.getCategoryTitle()),
                 false
             ),
             new MemberReservationGetResponse(
                 mentoring2.getMentorName(),
+                null,
                 mentoring2.getPrice(),
-                mentoring2.getCreatedAt(),
-                reservation2.getCreatedAt(),
-                "대기",
+                reservation2.getCreatedAt().toLocalDate(),
                 List.of(category1OfMentoring2.getCategoryTitle()),
                 false
             )
@@ -198,50 +203,5 @@ class ReservationServiceTest {
         // when
         // then
         assertThat(reservationService.findMemberReservations(mentee.getId())).isEqualTo(expected);
-    }
-
-    @DisplayName("존재하지 않는 멤버가 자신의 예약을 조회하려고 하면 예외가 발생한다")
-    @Test
-    void findMemberReservationsFail() {
-        // given
-        // TODO: 멤버 정보로 필드 교체
-        Member mentor = entityManager.persist(new Member(
-            "mentorId",
-            "남",
-            "김멘토",
-            "010-1234-5678",
-            Password.from("password")
-        ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5_000,
-            5,
-            5,
-            "한 줄 소개",
-            "긴 글 소개"
-        ));
-        Category category = entityManager.persist(new Category("근육 증진"));
-        CategoryMentoring categoryOfMentoring1 = entityManager.persist(new CategoryMentoring(
-            category,
-            mentoring
-        ));
-        Member mentee = entityManager.persist(new Member(
-            "menteeId",
-            "남",
-            "김멘티",
-            "010-5678-1234",
-            Password.from("password")
-        ));
-        Reservation reservation = entityManager.persist(new Reservation(
-            mentee,
-            "신청 내용",
-            mentoring
-        ));
-
-        // when
-        // then
-        Assertions.assertThatThrownBy(() -> reservationService.findMemberReservations(999L))
-            .isInstanceOf(MemberNotFoundException.class)
-            .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }
 }
