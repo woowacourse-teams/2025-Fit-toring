@@ -3,6 +3,7 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
+import { useCareerError } from '../../hooks/useCareerError';
 import { useIntroduceError } from '../../hooks/useIntroduceError';
 import { usePriceError } from '../../hooks/usePriceError';
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
@@ -42,6 +43,7 @@ function MentoringCreateForm() {
   const { introduceErrorMessage } = useIntroduceError(
     mentoringData.introduction,
   );
+  const { careerErrorMessage } = useCareerError(mentoringData.career);
 
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,
@@ -89,6 +91,7 @@ function MentoringCreateForm() {
       <IntroduceSection
         onIntroduceChange={handleMentoringDataChange}
         introduceErrorMessage={introduceErrorMessage}
+        careerErrorMessage={careerErrorMessage}
       />
       <CertificateSection
         onCertificateChange={handleMentoringDataChange}

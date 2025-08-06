@@ -11,11 +11,13 @@ interface IntroduceSectionProps {
     newData: Partial<Pick<mentoringCreateFormData, 'introduction' | 'career'>>,
   ) => void;
   introduceErrorMessage: string;
+  careerErrorMessage: string;
 }
 
 function IntroduceSection({
   onIntroduceChange,
   introduceErrorMessage,
+  careerErrorMessage,
 }: IntroduceSectionProps) {
   return (
     <section>
@@ -31,7 +33,7 @@ function IntroduceSection({
             errored={introduceErrorMessage !== ''}
           />
         </FormField>
-        <FormField label="경력">
+        <FormField label="경력" errorMessage={careerErrorMessage}>
           <Input
             placeholder="숫자만 입력해주세요."
             type="tel"
@@ -39,6 +41,7 @@ function IntroduceSection({
             onChange={(event) =>
               onIntroduceChange({ career: Number(event.target.value) })
             }
+            errored={careerErrorMessage !== ''}
           />
         </FormField>
       </StyledFormFieldWrapper>
