@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
 
+import defaultImage from '../../../common/assets/images/profileImg.svg';
+
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
 
 interface MentoringItemProps {
@@ -17,7 +19,17 @@ function MentoringItem({
     status,
   },
 }: MentoringItemProps) {
-  return <StyledContainer key={mentorName} />;
+  return (
+    <StyledContainer key={mentorName}>
+      <StyledProfileImage
+        src={mentorProfileImage || defaultImage}
+        alt={`${mentorName} 멘토`}
+        onError={(e) => {
+          e.currentTarget.src = defaultImage;
+        }}
+      />
+    </StyledContainer>
+  );
 }
 
 export default MentoringItem;
@@ -39,4 +51,11 @@ const StyledContainer = styled.li`
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledProfileImage = styled.img`
+  width: 4.8rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
 `;
