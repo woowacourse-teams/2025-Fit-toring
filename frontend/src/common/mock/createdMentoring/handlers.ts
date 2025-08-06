@@ -19,10 +19,12 @@ const getCreatedMentoringList = http.get(CREATED_MENTORING_URL, () => {
   const response = { data: MENTORING_APPLICATIONS };
 
   if (testStateStore.shouldFail) {
-    return new HttpResponse(null, {
-      status: 500,
-      statusText: 'created mentoring list fetch Failed',
-    });
+    return new HttpResponse(
+      { message: 'created mentoring list fetch failed' },
+      {
+        status: 500,
+      },
+    );
   }
 
   return HttpResponse.json(response);
