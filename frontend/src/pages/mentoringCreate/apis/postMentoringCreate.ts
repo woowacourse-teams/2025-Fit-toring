@@ -9,6 +9,7 @@ export const postMentoringCreate = async (
   certificateImageFiles: File[],
 ) => {
   const formData = new FormData();
+
   formData.append('data', JSON.stringify(mentoringData));
   if (profileImageFile) {
     formData.append('image', profileImageFile);
