@@ -39,10 +39,9 @@ class MemberControllerTest {
         dbCleaner.clean();
     }
 
-    //    @Transactional
-    @DisplayName("로그인 중에 내 정보를 조회할 수 있다.")
+    @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수 있다.")
     @Test
-    void loginGetMeInfo() {
+    void loginGetMeInfoForMentee() {
         // given
         Member mentee = memberRepository.save(
                 new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
@@ -62,7 +61,30 @@ class MemberControllerTest {
                 .body("name", Matchers.equalTo("멘티1"));
     }
 
-    @DisplayName("비로그인 중에 내 정보를 조회할 수 없다.")
+    @DisplayName("로그인 중에 멘토는 내 정보를 조회할 수 있다.")
+    @Test
+    void loginGetMeInfoForMentor() {
+        // given
+        Member mentor = memberRepository.save(
+                new Member("id", "MALE", "멘토1", new Phone("010-1231-1231"), Password.from("pw")));
+        mentor.registerAsMentor();
+        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+
+        // when
+        // then
+        RestAssured
+                .given()
+                .cookie("accessToken", accessToken)
+                .log().all().then()
+                .when()
+                .get("/members/me")
+                .then()
+                .statusCode(200)
+                .body("loginId", Matchers.equalTo("id"))
+                .body("name", Matchers.equalTo("멘토1"));
+    }
+
+    @DisplayName("비로그인 중에 멘티는 내 정보를 조회할 수 없다.")
     @Test
     void nonLoginGetMeInfo() {
         // given
