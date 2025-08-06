@@ -13,8 +13,8 @@ public enum Status {
 
     private final String value;
 
-    Status(String name) {
-        this.value = name;
+    Status(String value) {
+        this.value = value;
     }
 
     public boolean isPending() {
