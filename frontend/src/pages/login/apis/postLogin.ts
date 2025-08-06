@@ -5,5 +5,6 @@ export const postLogin = async (loginId: string, password: string) => {
   return await apiClient.post({
     endpoint: API_ENDPOINTS.LOGIN,
     body: { loginId, password },
+    withCredentials: true,
   });
 };
