@@ -8,6 +8,7 @@ import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.MisMatchPasswordException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
@@ -79,7 +80,7 @@ class AuthServiceTest {
                 loginId,
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
         em.persist(member);
@@ -101,7 +102,7 @@ class AuthServiceTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
         em.persist(member);
@@ -120,7 +121,7 @@ class AuthServiceTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
         em.persist(member);
@@ -142,7 +143,7 @@ class AuthServiceTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
         em.persist(member);
@@ -164,7 +165,7 @@ class AuthServiceTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
         Member savedMember = em.persist(member);

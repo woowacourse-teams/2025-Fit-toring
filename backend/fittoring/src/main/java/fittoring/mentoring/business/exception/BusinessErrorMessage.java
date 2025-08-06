@@ -18,7 +18,7 @@ public enum BusinessErrorMessage {
     NOT_FOUND_TOKEN("토큰을 찾을 수 없습니다."),
     EMPTY_COOKIE("쿠키가 존재하지 않습니다."),
     PHONE_VERIFICATION_INVALID("만료 혹은 인증되지 않은 요청입니다."),
-    MEMBER_NOT_FOUND("존재하지 않는 멤버입니다."),
+    MEMBER_NOT_FOUND("존재하지 않는 회원입니다."),
     REVIEWING_RESERVATION_NOT_FOUND("신청 이력이 있는 멘토링에만 리뷰를 남길 수 있습니다."),
     DUPLICATED_REVIEW("이미 리뷰를 남긴 멘토링입니다."),
     ;
