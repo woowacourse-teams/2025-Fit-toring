@@ -10,6 +10,7 @@ import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
@@ -128,9 +129,9 @@ class ReservationControllerTest {
         ReservationCreateResponse expected = new ReservationCreateResponse(
                 mentor.getName(),
                 mentee.getName(),
-                mentor.getPhoneNumber(),
                 mentee.getPhoneNumber(),
-                request.content()
+                request.content(),
+                Status.PENDING.getValue()
         );
 
         assertThat(response).isEqualTo(expected);
