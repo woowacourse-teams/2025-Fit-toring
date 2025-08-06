@@ -26,6 +26,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Reservation {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,10 +34,12 @@ public class Reservation {
     @Getter
     private String context;
 
+    @Getter
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
@@ -52,6 +55,10 @@ public class Reservation {
 
     public Reservation(String context, Mentoring mentoring, Member mentee, Status status) {
         this(null, context, null, mentoring, mentee, status);
+    }
+
+    public boolean isPending() {
+        return this.status.isPending();
     }
 
     public String getMenteeName() {

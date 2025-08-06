@@ -1,5 +1,7 @@
 package fittoring.mentoring.business.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
@@ -9,8 +11,10 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.util.DbCleaner;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,48 +104,85 @@ class ReservationServiceTest {
                 .hasMessage(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
     }
 
-//    @DisplayName("특정 멘토가 개설한 멘토링에 대한 모든 예약을 반환한다.")
-//    @Test
-//    void getAllReservationByMentor() {
-//        //given
-//        //멘토 등록
-//        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
-//        Member savedMentor = entityManager.persist(mentor);
-//
-//        //멘티 생성
-//        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
-//        Member savedMentee = entityManager.persist(mentee);
-//
-//        Member mentee2 = new Member("id3", "MALE", "멘토1", new Phone("010-5432-1234"), Password.from("pw"));
-//        Member savedMentee2 = entityManager.persist(mentee2);
-//
-//        Member mentee3 = new Member("id4", "MALE", "멘토1", new Phone("010-8909-1234"), Password.from("pw"));
-//        Member savedMentee3 = entityManager.persist(mentee3);
-//
-//        //멘토링 개설
-//        Mentoring mentoring = new Mentoring(
-//                mentor,
-//                5000,
-//                5,
-//                "content",
-//                "introduction"
-//        );
-//        entityManager.persist(mentoring);
-//
-//        //예약 생성
-//        Reservation reservation = new Reservation("context", mentoring, savedMentee, Status.PENDING);
-//        entityManager.persist(reservation);
-//
-//        Reservation reservation2 = new Reservation("context", mentoring, savedMentee2, Status.PENDING);
-//        entityManager.persist(reservation2);
-//
-//        Reservation reservation3 = new Reservation("context", mentoring, savedMentee3, Status.PENDING);
-//        entityManager.persist(reservation3);
-//
-//        //when
-//        List<Reservation> actual = reservationService.getMentoringReservation(savedMentor.getId());
-//
-//        //then
-//        assertThat(actual).hasSize(3);
-//    }
+    @DisplayName("특정 멘토가 개설한 멘토링의 모든 예약을 반환한다.")
+    @Test
+    void getAllReservationByMentor() {
+        //given
+        //멘토 등록
+        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+        Member savedMentor = entityManager.persist(mentor);
+
+        //멘티 생성
+        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
+        Member savedMentee = entityManager.persist(mentee);
+
+        Member mentee2 = new Member("id3", "MALE", "멘토1", new Phone("010-5432-1234"), Password.from("pw"));
+        Member savedMentee2 = entityManager.persist(mentee2);
+
+        Member mentee3 = new Member("id4", "MALE", "멘토1", new Phone("010-8909-1234"), Password.from("pw"));
+        Member savedMentee3 = entityManager.persist(mentee3);
+
+        //멘토링 개설
+        Mentoring mentoring = new Mentoring(
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
+        );
+        entityManager.persist(mentoring);
+
+        //예약 생성
+        Reservation reservation = new Reservation("context", mentoring, savedMentee, Status.PENDING);
+        entityManager.persist(reservation);
+
+        Reservation reservation2 = new Reservation("context", mentoring, savedMentee2, Status.PENDING);
+        entityManager.persist(reservation2);
+
+        Reservation reservation3 = new Reservation("context", mentoring, savedMentee3, Status.PENDING);
+        entityManager.persist(reservation3);
+
+        //when
+        List<MentorMentoringReservationResponse> actual = reservationService.getReservationsByMentor(
+                savedMentor.getId());
+
+        //then
+        assertThat(actual).hasSize(3);
+    }
+
+    @DisplayName("특정 멘토가 개설한 멘토링의 예약이 존재하지 않으면 빈 리스트를 반환한다.")
+    @Test
+    void getAllReservationByMentor2() {
+        //given
+        //멘토 생성
+        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+        Member savedMentor = entityManager.persist(mentor);
+
+        //멘토링 개설
+        Mentoring mentoring = new Mentoring(
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
+        );
+        entityManager.persist(mentoring);
+
+        //멘티 생성
+        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
+        Member savedMentee = entityManager.persist(mentee);
+
+        Member mentee2 = new Member("id3", "MALE", "멘토1", new Phone("010-5432-1234"), Password.from("pw"));
+        Member savedMentee2 = entityManager.persist(mentee2);
+
+        Member mentee3 = new Member("id4", "MALE", "멘토1", new Phone("010-8909-1234"), Password.from("pw"));
+        Member savedMentee3 = entityManager.persist(mentee3);
+
+        //when
+        List<MentorMentoringReservationResponse> actual = reservationService.getReservationsByMentor(
+                savedMentor.getId());
+
+        //then
+        assertThat(actual).isEmpty();
+    }
 }

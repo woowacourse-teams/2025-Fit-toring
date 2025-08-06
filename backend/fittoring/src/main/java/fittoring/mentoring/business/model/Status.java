@@ -16,4 +16,8 @@ public enum Status {
     Status(String name) {
         this.value = name;
     }
+
+    public boolean isPending() {
+        return this.equals(PENDING);
+    }
 }

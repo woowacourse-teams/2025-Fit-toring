@@ -10,7 +10,10 @@ import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,5 +53,28 @@ public class ReservationService {
         return memberRepository.findById(menteeId)
                 .orElseThrow(
                         () -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<MentorMentoringReservationResponse> getReservationsByMentor(Long mentorId) {
+        List<Mentoring> mentoringsByMentor = mentoringRepository.findAllByMentorId(mentorId);
+        List<Reservation> reservations = findReservation(mentoringsByMentor);
+        return getMentorMentoringReservationResponses(reservations);
+    }
+
+    private List<Reservation> findReservation(List<Mentoring> mentoringsByMentor) {
+        List<Reservation> reservations = new ArrayList<>();
+        for (Mentoring mentoring : mentoringsByMentor) {
+            List<Reservation> mentorings = reservationRepository.findAllByMentoringId(mentoring.getId());
+            reservations.addAll(mentorings);
+        }
+        return reservations;
+    }
+
+    private List<MentorMentoringReservationResponse> getMentorMentoringReservationResponses(
+            List<Reservation> reservations) {
+        return reservations.stream()
+                .map(MentorMentoringReservationResponse::of)
+                .toList();
     }
 }
