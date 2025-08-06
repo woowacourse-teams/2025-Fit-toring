@@ -13,7 +13,7 @@ const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     price: '5000',
     reservedAt: '2024-01-10',
     categories: ['근력 증진', '다이어트'],
-    isReviewed: true,
+    isReviewed: false,
     status: '완료됨',
   },
   {

@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 
 import defaultImage from '../../../common/assets/images/profileImg.svg';
 import MentoringApplicationStatus from '../../CreatedMentoring/components/MentoringApplicationStatus/MentoringApplicationStatus';
+import { StatusTypeEnum } from '../../CreatedMentoring/types/statusType';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
 interface MentoringItemProps {
@@ -20,6 +21,8 @@ function MentoringItem({
   },
 }: MentoringItemProps) {
   const TIME = '15';
+
+  const canWriteReview = !isReviewed && status === StatusTypeEnum.completed;
 
   return (
     <StyledContainer key={mentorName}>
@@ -48,7 +51,7 @@ function MentoringItem({
         <StyledApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
         </StyledApplicationPrice>
-        {!isReviewed && <StyledReviewButton>리뷰 작성</StyledReviewButton>}
+        {canWriteReview && <StyledReviewButton>리뷰 작성</StyledReviewButton>}
       </StyledApplicationInfoWrapper>
     </StyledContainer>
   );
