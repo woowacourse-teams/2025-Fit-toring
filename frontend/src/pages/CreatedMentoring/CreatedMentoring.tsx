@@ -14,10 +14,11 @@ function CreatedMentoring() {
   >(null);
 
   useEffect(() => {
-    async function fetchMentoringApplicationList() {
+    const fetchMentoringApplicationList = async () => {
       const response = await getMentoringApplicationList();
       setMentoringApplicationList(response);
-    }
+    };
+
     fetchMentoringApplicationList();
   }, []);
 
