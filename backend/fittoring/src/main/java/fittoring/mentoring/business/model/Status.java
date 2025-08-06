@@ -1,5 +1,8 @@
 package fittoring.mentoring.business.model;
 
+import lombok.Getter;
+
+@Getter
 public enum Status {
 
     APPROVED("승인"),

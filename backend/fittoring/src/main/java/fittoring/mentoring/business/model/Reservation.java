@@ -41,6 +41,7 @@ public class Reservation {
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
 
+    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Member mentee;
@@ -66,6 +67,6 @@ public class Reservation {
     }
 
     public String getStatus() {
-        return status.name();
+        return status.getValue();
     }
 }
