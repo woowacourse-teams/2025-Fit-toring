@@ -7,7 +7,7 @@ public enum MemberRole {
     ADMIN,
     ;
 
-    public static boolean isMentorOrHigher(MemberRole role) {
-        return role == MENTOR || role == ADMIN;
+    public static boolean isMentee(MemberRole role) {
+        return role == MENTEE;
     }
 }

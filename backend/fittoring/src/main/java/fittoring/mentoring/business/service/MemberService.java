@@ -24,7 +24,7 @@ public class MemberService {
     public MyInfoResponse getMeInfo(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
-        if (!MemberRole.isMentorOrHigher(member.getRole())) {
+        if (MemberRole.isMentee(member.getRole())) {
             return MyInfoResponse.from(member);
         }
         Mentoring mentoring = getMentoring(member);

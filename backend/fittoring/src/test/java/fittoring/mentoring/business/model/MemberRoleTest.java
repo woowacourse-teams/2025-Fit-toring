@@ -8,20 +8,20 @@ import org.junit.jupiter.api.Test;
 
 class MemberRoleTest {
 
-    @DisplayName("사용자가 mentee라면 false를 반환한다.")
+    @DisplayName("사용자가 mentee라면 true 반환한다.")
     @Test
     void isMenteeTrue() {
         // given
         MemberRole mentee = MemberRole.MENTEE;
 
         // when
-        boolean actual = MemberRole.isMentorOrHigher(mentee);
+        boolean actual = MemberRole.isMentee(mentee);
 
         // then
-        assertThat(actual).isFalse();
+        assertThat(actual).isTrue();
     }
 
-    @DisplayName("사용자가 mentor 혹은 admin 이라면 true를 반환한다.")
+    @DisplayName("사용자가 mentor 혹은 admin 이라면 false 반환한다.")
     @Test
     void isMenteeFalse() {
         // given
@@ -29,13 +29,13 @@ class MemberRoleTest {
         MemberRole admin = MemberRole.ADMIN;
 
         // when
-        boolean actual1 = MemberRole.isMentorOrHigher(mentor);
-        boolean actual2 = MemberRole.isMentorOrHigher(admin);
+        boolean actual1 = MemberRole.isMentee(mentor);
+        boolean actual2 = MemberRole.isMentee(admin);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(actual1).isTrue();
-            assertThat(actual2).isTrue();
+            assertThat(actual1).isFalse();
+            assertThat(actual2).isFalse();
         });
     }
 
