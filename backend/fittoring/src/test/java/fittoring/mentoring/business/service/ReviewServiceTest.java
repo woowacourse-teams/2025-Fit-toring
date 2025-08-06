@@ -83,7 +83,6 @@ class ReviewServiceTest {
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             mentee.getId(),
-            mentoring.getId(),
             reservation.getId(),
             rating,
             content
@@ -110,6 +109,13 @@ class ReviewServiceTest {
             new Phone("010-2222-3333"),
             Password.from("password")
         ));
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
             mentor,
             5000,
@@ -117,9 +123,13 @@ class ReviewServiceTest {
             "content",
             "introduction"
         ));
+        entityManager.persist(new Reservation(
+            "예약 신청합니다.",
+            mentoring,
+            mentee
+        ));
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             999L,
-            mentoring.getId(),
             1L,
             5,
             "최고의 멘토링이었습니다."
@@ -132,7 +142,7 @@ class ReviewServiceTest {
             .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }
 
-    @DisplayName("존재하지 않는 멘토링이라면 예외가 발생한다.")
+    @DisplayName("신청하지 않았던 멘토링에 리뷰 작성을 요청하면 예외가 발생한다")
     @Test
     void createReservationFail2() {
         // given
@@ -163,53 +173,18 @@ class ReviewServiceTest {
             mentoring,
             mentee
         ));
-        ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            mentee.getId(),
-            999L,
-            reservation.getId(),
-            5,
-            "최고의 멘토링이었습니다."
-        );
-
-        // when
-        // then
-        assertThatThrownBy(() -> reviewService.createReview(reviewCreateDto))
-            .isInstanceOf(MentoringNotFoundException.class)
-            .hasMessage(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
-    }
-
-    @DisplayName("신청하지 않았던 멘토링에 리뷰 작성을 요청하면 예외가 발생한다")
-    @Test
-    void createReservationFail3() {
-        // given
-        Password password = Password.from("password");
-        Member mentor = entityManager.persist(new Member(
-            "mentor",
+        Member anotherMember = entityManager.persist(new Member(
+            "anotherMember",
             "MALE",
-            "김트레이너",
-            new Phone("010-2222-3333"),
+            "김멘티",
+            new Phone("010-2222-3334"),
             password
-        ));
-        Member mentee = entityManager.persist(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            password
-        ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "content",
-            "introduction"
         ));
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            mentee.getId(),
-            mentoring.getId(),
-            999L,
+            anotherMember.getId(),
+            reservation.getId(),
             rating,
             content
         );
@@ -223,7 +198,7 @@ class ReviewServiceTest {
 
     @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 예외가 발생한다")
     @Test
-    void createReservationFail4() {
+    void createReservationFail3() {
         // given
         Password password = Password.from("password");
         Member mentor = entityManager.persist(new Member(
@@ -256,7 +231,6 @@ class ReviewServiceTest {
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             mentee.getId(),
-            mentoring.getId(),
             reservation.getId(),
             rating,
             content

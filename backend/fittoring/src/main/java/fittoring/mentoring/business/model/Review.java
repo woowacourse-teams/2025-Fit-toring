@@ -40,18 +40,15 @@ public class Review {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, unique = true)
-    private Long reservationId;
-
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
-    private Mentoring mentoring;
+    private Reservation reservation;
 
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
     private Member mentee;
 
-    public Review(int rating, String content, Long reservationid, Mentoring mentoring, Member mentee) {
-        this(null, rating, content, null, reservationid, mentoring, mentee);
+    public Review(int rating, String content, Reservation reservation, Member mentee) {
+        this(null, rating, content, null, reservation, mentee);
     }
 }

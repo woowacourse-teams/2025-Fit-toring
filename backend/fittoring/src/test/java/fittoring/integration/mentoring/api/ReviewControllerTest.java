@@ -100,7 +100,7 @@ class ReviewControllerTest {
             .cookie("accessToken", accessToken)
             .body(requestBody)
             .when()
-            .post("/mentorings/" + mentoring.getId() + "/review")
+            .post("/reviews")
             .then().log().all()
             .statusCode(201)
             .body(
@@ -109,43 +109,9 @@ class ReviewControllerTest {
             );
     }
 
-    @DisplayName("존재하지 않는 멘토링에 리뷰 작성을 요청하면 404 Not Found를 반환한다")
-    @Test
-    void createReviewFail1() {
-        // given
-        Password password = Password.from("password");
-        Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            password
-        ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
-        int rating = 4;
-        String content = "전반적으로 좋았습니다.";
-        ReviewCreateRequest requestBody = new ReviewCreateRequest(
-            999L,
-            rating,
-            content
-        );
-
-        // when
-        // then
-        RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .body(requestBody)
-            .when()
-            .post("/mentorings/999/review")
-            .then().log().all()
-            .statusCode(404);
-    }
-
     @DisplayName("존재하지 않는 멤버가 리뷰 작성을 요청하면 404 Not Found를 반환한다")
     @Test
-    void createReviewFail2() {
+    void createReviewFail1() {
         // given
         Member mentor = memberRepository.save(new Member(
             "mentor",
@@ -197,7 +163,7 @@ class ReviewControllerTest {
 
     @DisplayName("신청하지 않았던 멘토링에 리뷰 작성을 요청하면 404 Not Found를 반환한다")
     @Test
-    void createReviewFail3() {
+    void createReviewFail2() {
         // given
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
@@ -255,9 +221,9 @@ class ReviewControllerTest {
             .statusCode(404);
     }
 
-    @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 400 Bad Request를 반환한다")
+    @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 404 Not Found를 반환한다")
     @Test
-    void createReviewFail4() {
+    void createReviewFail3() {
         // given
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
@@ -300,7 +266,7 @@ class ReviewControllerTest {
             .cookie("accessToken", accessToken)
             .body(requestBody)
             .when()
-            .post("/mentorings/" + mentoring.getId() + "/review")
+            .post("/reviews")
             .then().log().all()
             .statusCode(201);
 
@@ -314,6 +280,6 @@ class ReviewControllerTest {
             .when()
             .post("/mentorings/" + mentoring.getId() + "/review")
             .then().log().all()
-            .statusCode(400);
+            .statusCode(404);
     }
 }

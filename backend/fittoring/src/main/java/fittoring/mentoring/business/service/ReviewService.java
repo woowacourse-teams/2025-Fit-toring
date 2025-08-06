@@ -2,14 +2,12 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
-import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.repository.MemberRepository;
-import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
@@ -24,33 +22,31 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
-    private final MentoringRepository mentoringRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
     public ReviewCreateResponse createReview(ReviewCreateDto dto) {
-        Long mentoringId = dto.mentoringId();
         Long menteeId = dto.menteeId();
         Long reservationId = dto.reservationId();
-        Mentoring mentoring = mentoringRepository.findById(mentoringId)
-            .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new ReservationNotFoundException(BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
         Member mentee = memberRepository.findById(menteeId)
             .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        validateReserved(reservationId, menteeId);
-        validateDuplicated(reservationId, menteeId);
-        Review savedReview = reviewRepository.save(new Review(dto.rating(), dto.content(), reservationId, mentoring, mentee));
+        validateReservation(reservation, menteeId);
+        validateDuplicated(reservation, menteeId);
+        Review savedReview = reviewRepository.save(new Review(dto.rating(), dto.content(), reservation, mentee));
         return ReviewCreateResponse.of(savedReview);
     }
 
-    private void validateReserved(Long reservationId, Long menteeId) {
-        if (reservationRepository.existsByIdAndMenteeId(reservationId, menteeId)) {
+    private void validateReservation(Reservation reservation, Long menteeId) {
+        if (reservation.getMentee().getId().equals(menteeId)) {
             return;
         }
         throw new ReservationNotFoundException(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());
     }
 
-    private void validateDuplicated(Long reservationId, Long menteeId) {
-        if (reviewRepository.existsByReservationIdAndMenteeId(reservationId, menteeId)) {
+    private void validateDuplicated(Reservation reservation, Long menteeId) {
+        if (reviewRepository.existsByReservationIdAndMenteeId(reservation.getId(), menteeId)) {
             throw new ReviewAlreadyExistsException(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
         }
     }

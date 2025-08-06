@@ -21,15 +21,13 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("mentorings/{mentoringId}/review")
+    @PostMapping("reviews")
     public ResponseEntity<ReviewCreateResponse> createReview(
         @Login LoginInfo loginInfo,
-        @PathVariable("mentoringId") Long mentoringId,
         @Valid  @RequestBody ReviewCreateRequest requestBody
     ) {
         ReviewCreateDto reviewCreateDto = ReviewCreateDto.of(
             loginInfo.memberId(),
-            mentoringId,
             requestBody
         );
         ReviewCreateResponse responseBody = reviewService.createReview(reviewCreateDto);

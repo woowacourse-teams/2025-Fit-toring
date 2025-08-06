@@ -82,6 +82,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SystemException.class)
     public ResponseEntity<ErrorResponse> handle(SystemException e) {
+        e.printStackTrace();
         logServerError(e);
         return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()).toResponseEntity();
     }
