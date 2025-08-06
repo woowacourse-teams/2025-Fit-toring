@@ -10,6 +10,7 @@ import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
@@ -17,14 +18,18 @@ import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.JwtProvider;
+import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +52,9 @@ class ReservationControllerTest {
     private SmsRestClientService smsRestClientService;
 
     @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
 
     @Autowired
@@ -66,7 +74,6 @@ class ReservationControllerTest {
 
     @Autowired
     private JwtProvider jwtProvider;
-
 
     @BeforeEach
     void setUp() {
@@ -169,5 +176,200 @@ class ReservationControllerTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(404);
+    }
+
+    @DisplayName("멘토가 개설한 단일 멘토링의 모든 예약을 조회하면 상태코드 200 OK와 예약 정보를 반환한다.")
+    @Test
+    void getReservationsByMentor() {
+        //given
+        //멘티 생성
+        Member mentor = memberRepository.save(
+                new Member("id1",
+                        "MALE",
+                        "박멘토",
+                        new Phone("010-1234-5679"),
+                        Password.from("pw"))
+        );
+        Member savedMentor = memberRepository.save(mentor);
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+
+        //멘토링 생성
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring savedMentoring = mentoringRepository.save(mentoring);
+
+        //멘티 생성
+        Member mentee = memberRepository.save(
+                new Member("id2",
+                        "MALE",
+                        "김멘티",
+                        new Phone("010-5678-9123"),
+                        Password.from("pw"))
+        );
+        Member savedMentee = memberRepository.save(mentee);
+
+        //예약 생성
+        Reservation savedReservation = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
+        );
+        Reservation savedReservation2 = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
+        );
+        Reservation savedReservation3 = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
+        );
+        Reservation savedReservation4 = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVED)
+        );
+
+        //when
+        List<MentorMentoringReservationResponse> response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/mentorings/mine/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        //then
+        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation);
+        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2);
+        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
+        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
+
+        assertThat(response).containsExactlyInAnyOrder(expected, expected2, expected3, expected4);
+    }
+
+    @DisplayName("멘토가 개설한 복수개의 멘토링의 모든 예약을 조회하면 상태코드 200 OK와 예약 정보를 반환한다.")
+    @Test
+    void getReservationsByMentor2() {
+        //given
+        //멘티 생성
+        Member mentor = memberRepository.save(
+                new Member("id1",
+                        "MALE",
+                        "박멘토",
+                        new Phone("010-1234-5679"),
+                        Password.from("pw"))
+        );
+        Member savedMentor = memberRepository.save(mentor);
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+
+        //멘토링 생성
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring savedMentoring = mentoringRepository.save(mentoring);
+
+        Mentoring mentoring2 = new Mentoring(mentor, 1500, 3, "멘토링 내용2", "멘토링 자기소개2");
+        Mentoring savedMentoring2 = mentoringRepository.save(mentoring2);
+
+        //멘티 생성
+        Member mentee = memberRepository.save(
+                new Member("id2",
+                        "MALE",
+                        "김멘티",
+                        new Phone("010-5678-9123"),
+                        Password.from("pw"))
+        );
+        Member savedMentee = memberRepository.save(mentee);
+
+        Member mentee2 = memberRepository.save(
+                new Member("id3",
+                        "MALE",
+                        "이멘티",
+                        new Phone("010-1357-2468"),
+                        Password.from("pw"))
+        );
+        Member savedMentee2 = memberRepository.save(mentee2);
+
+        //예약 생성
+        //mentee1의 예약
+        Reservation savedReservation = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
+        );
+        Reservation savedReservation2 = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
+        );
+        Reservation savedReservation3 = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
+        );
+        Reservation savedReservation4 = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee, Status.APPROVED)
+        );
+
+        //mentee2의 예약
+        Reservation savedReservation5 = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee2, Status.PENDING)
+        );
+        Reservation savedReservation6 = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee2, Status.COMPLETE)
+        );
+
+        //when
+        List<MentorMentoringReservationResponse> response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/mentorings/mine/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        //then
+        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation);
+        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2);
+        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
+        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
+        MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5);
+        MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6);
+
+        assertThat(response).containsExactlyInAnyOrder(expected, expected2, expected3, expected4, expected5, expected6);
+    }
+
+    @DisplayName("멘토가 개설한 멘토링의 예약이 존재하지 않으면 상태코드 200 OK와 빈 리스트를 반환한다.")
+    @Test
+    void getReservationsByMentor3() {
+        //given
+        //멘티 생성
+        Member mentor = memberRepository.save(
+                new Member("id1",
+                        "MALE",
+                        "박멘토",
+                        new Phone("010-1234-5679"),
+                        Password.from("pw"))
+        );
+        Member savedMentor = memberRepository.save(mentor);
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+
+        //멘토링 생성
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring savedMentoring = mentoringRepository.save(mentoring);
+
+        //when
+        List<MentorMentoringReservationResponse> response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/mentorings/mine/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        //then
+        assertThat(response).isEmpty();
     }
 }
