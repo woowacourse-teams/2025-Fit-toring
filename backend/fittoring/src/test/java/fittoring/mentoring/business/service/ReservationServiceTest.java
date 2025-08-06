@@ -187,6 +187,8 @@ class ReservationServiceTest {
         ));
         List<MemberReservationGetResponse> expected = List.of(
             new MemberReservationGetResponse(
+                reservation1.getId(),
+                mentoring1.getId(),
                 mentoring1.getMentorName(),
                 profileImageOfMentor1.getUrl(),
                 mentoring1.getPrice(),
@@ -195,6 +197,8 @@ class ReservationServiceTest {
                 false
             ),
             new MemberReservationGetResponse(
+                reservation2.getId(),
+                mentoring2.getId(),
                 mentoring2.getMentorName(),
                 null,
                 mentoring2.getPrice(),

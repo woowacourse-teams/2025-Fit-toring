@@ -60,6 +60,8 @@ public class ReservationService {
         List<String> categories = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
         boolean isReviewed = reviewRepository.existsByReservationId(reservation.getId());
         return new MemberReservationGetResponse(
+            reservation.getId(),
+            mentoring.getId(),
             mentoring.getMentor().getName(),
             mentorProfileImage,
             mentoring.getPrice(),
