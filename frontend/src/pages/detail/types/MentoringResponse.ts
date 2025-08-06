@@ -4,7 +4,7 @@ export interface MentoringResponse {
   categories: string[];
   price: number;
   career: number;
-  imageUrl: string;
+  imageUrl: string | null;
   introduction: string;
   content: string;
 }
