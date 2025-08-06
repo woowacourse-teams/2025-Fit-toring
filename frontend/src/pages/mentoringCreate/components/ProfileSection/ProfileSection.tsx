@@ -11,6 +11,13 @@ interface ProfileSectionProps {
 function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
 
+  const handleProfileImageInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    handleImageChange(event);
+    onProfileImageChange(event.target.files?.[0] || null);
+  };
+
   return (
     <section>
       <TitleSeparator>프로필 사진</TitleSeparator>
@@ -22,8 +29,7 @@ function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
               accept="image/*"
               id="profileImage"
               onChange={(event) => {
-                handleImageChange(event);
-                onProfileImageChange(event.target.files?.[0] || null);
+                handleProfileImageInputChange(event);
               }}
             />
             <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
@@ -35,8 +41,7 @@ function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
               accept="image/*"
               id="profileImage"
               onChange={(event) => {
-                handleImageChange(event);
-                onProfileImageChange(event.target.files?.[0] || null);
+                handleProfileImageInputChange(event);
               }}
             />
 
