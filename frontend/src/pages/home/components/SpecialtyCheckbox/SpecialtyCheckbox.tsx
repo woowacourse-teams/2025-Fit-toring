@@ -72,10 +72,11 @@ const StyledCheckboxLabel = styled.span<{
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 
   &:hover {
-    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+    border-color: ${({ theme, disabled }) =>
+      disabled ? theme.OUTLINE.DARK : theme.SYSTEM.MAIN500};
 
     background-color: ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN500 : theme.BG.LIGHT};
+      checked ? theme.SYSTEM.MAIN500 : theme.BG.WHITE};
   }
 
   &:active {
