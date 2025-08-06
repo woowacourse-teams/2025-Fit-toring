@@ -13,12 +13,14 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
@@ -90,12 +92,14 @@ class ReservationControllerTest {
                         ArgumentMatchers.anyString()
                 );
 
-        Category savedCategory = categoryRepository.save(new Category("체형교정"));
+        Member mentor = memberRepository.save(
+                new Member("id1", "MALE", "박멘토", new Phone("010-1234-5678"), Password.from("pw")));
+        Member mentee = memberRepository.save(
+                new Member("id2", "MALE", "김멘티", new Phone("010-1234-5679"), Password.from("pw")));
 
         Mentoring savedMentoring = mentoringRepository.save(
                 new Mentoring(
-                        "멘토링1",
-                        "010-1234-5678",
+                        mentor,
                         1000,
                         3,
                         "멘토링 내용",
@@ -103,22 +107,22 @@ class ReservationControllerTest {
                 )
         );
 
+        Category savedCategory = categoryRepository.save(new Category("체형교정"));
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
 
         imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
 
         Long mentoringId = savedMentoring.getId();
 
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                "멘티",
-                "010-1111-2222",
-                "멘토링 예약 내용"
-        );
+        ReservationCreateRequest request = new ReservationCreateRequest("멘토링 예약 내용");
+
+        String accessToken = jwtProvider.createAccessToken(mentee.getId());
 
         //when
         ReservationCreateResponse response = RestAssured
                 .given()
                 .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
                 .body(request)
                 .when()
                 .post("/mentorings/" + mentoringId + "/reservation")
@@ -129,19 +133,23 @@ class ReservationControllerTest {
 
         //then
         ReservationCreateResponse expected = new ReservationCreateResponse(
-                savedMentoring.getMentorName(),
-                request.menteeName(),
-                savedMentoring.getMentorPhone(),
-                request.menteePhone()
+                mentor.getName(),
+                mentee.getName(),
+                mentor.getPhoneNumber(),
+                mentee.getPhoneNumber(),
+                request.content()
         );
 
         assertThat(response).isEqualTo(expected);
     }
 
-    @DisplayName("멘토링 예약 정보가 잘못되었다면 400 Bad Request 상태코드를 반환한다.")
+    @DisplayName("존재하지 않는 멘토링에 예약을 시도하면 상태코드 404 Not Found를 반환한다.")
     @Test
     void createReservation2() {
         //given
+        Member mentee = memberRepository.save(
+                new Member("id1", "MALE", "김멘티", new Phone("010-1234-5679"), Password.from("pw")));
+        String accessToken = jwtProvider.createAccessToken(mentee.getId());
         doNothing()
                 .when(smsRestClientService)
                 .sendSms(
@@ -150,28 +158,9 @@ class ReservationControllerTest {
                         ArgumentMatchers.anyString()
                 );
 
-        Category savedCategory = categoryRepository.save(new Category("체형교정"));
-
-        Mentoring savedMentoring = mentoringRepository.save(
-                new Mentoring(
-                        "멘토링1",
-                        "010-1234-5678",
-                        1000,
-                        3,
-                        "멘토링 내용",
-                        "멘토링 자기소개"
-                )
-        );
-
-        categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
-
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
-
-        Long mentoringId = savedMentoring.getId();
+        Long invalidMentoringId = 1L;
 
         ReservationCreateRequest request = new ReservationCreateRequest(
-                "멘티",
-                "invalid-phone",
                 "멘토링 예약 내용"
         );
 
@@ -179,41 +168,10 @@ class ReservationControllerTest {
         Response response = RestAssured
                 .given()
                 .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
                 .body(request)
                 .when()
-                .post("/mentorings/" + mentoringId + "/reservation");
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(400);
-    }
-
-    @DisplayName("존재하지 않는 멘토링에 예약을 시도하면 상태코드 404 Not Found를 반환한다.")
-    @Test
-    void createReservation3() {
-        //given
-        doNothing()
-                .when(smsRestClientService)
-                .sendSms(
-                        ArgumentMatchers.any(Phone.class),
-                        ArgumentMatchers.anyString(),
-                        ArgumentMatchers.anyString()
-                );
-
-        Long mentoringId = 1L;
-
-        ReservationCreateRequest request = new ReservationCreateRequest(
-                "멘티",
-                "010-1234-5678",
-                "멘토링 예약 내용"
-        );
-
-        //when
-        Response response = RestAssured
-                .given()
-                .log().all().contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/mentorings/" + mentoringId + "/reservation");
+                .post("/mentorings/" + invalidMentoringId + "/reservation");
 
         //then
         assertThat(response.statusCode()).isEqualTo(404);

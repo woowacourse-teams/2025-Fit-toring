@@ -117,7 +117,7 @@ class AuthControllerTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
         memberRepository.save(member);
@@ -151,7 +151,7 @@ class AuthControllerTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
         memberRepository.save(member);
@@ -186,7 +186,7 @@ class AuthControllerTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
         memberRepository.save(member);
@@ -268,7 +268,7 @@ class AuthControllerTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
 
@@ -320,7 +320,7 @@ class AuthControllerTest {
                         "uniqueLoginId",
                         "이름",
                         "남",
-                        "010-1234-5678",
+                        new Phone("010-1234-5678"),
                         Password.from("password")
                 )
         );
@@ -330,7 +330,7 @@ class AuthControllerTest {
                         "LoginId",
                         "이름",
                         "남",
-                        "010-5678-9123",
+                        new Phone("010-5678-9123"),
                         Password.from("password")
                 )
         );

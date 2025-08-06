@@ -1,11 +1,26 @@
 package fittoring.mentoring.business.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
-import fittoring.mentoring.business.model.*;
+import fittoring.mentoring.business.model.Category;
+import fittoring.mentoring.business.model.CategoryMentoring;
+import fittoring.mentoring.business.model.CertificateType;
+import fittoring.mentoring.business.model.Image;
+import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
+import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
+import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.infra.S3Uploader;
 import fittoring.mentoring.presentation.dto.CertificateInfo;
@@ -16,6 +31,9 @@ import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,16 +44,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @Transactional
@@ -59,6 +67,8 @@ class MentoringServiceTest {
 
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -73,8 +83,12 @@ class MentoringServiceTest {
         @Test
         void getAllMentoring1() {
             // given
-            Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
-            Mentoring mentoring2 = new Mentoring("박트레이너", "010-1234-5678", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Member mentor1 = new Member("id1", "MALE", "김트레이너", new Phone("010-4321-9048"), Password.from("pw"));
+            Member mentor2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
+            em.persist(mentor1);
+            em.persist(mentor2);
+            Mentoring mentoring1 = new Mentoring(mentor1, 5000, 3, "컨텐츠1", "자기소개1");
+            Mentoring mentoring2 = new Mentoring(mentor2, 5000, 3, "컨텐츠2", "자기소개2");
             em.persist(mentoring1);
             em.persist(mentoring2);
 
@@ -124,9 +138,16 @@ class MentoringServiceTest {
         @Test
         void getAllMentoring2() {
             // given
-            Mentoring mentoring1 = new Mentoring("김트레이너", "010-3333-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
-            Mentoring mentoring2 = new Mentoring("박트레이너", "010-1234-5678", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
-            Mentoring mentoring3 = new Mentoring("이트레이너", "010-1234-5679", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-3333-9048"), Password.from("pw"));
+            Member member2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
+            Member member3 = new Member("id3", "MALE", "이트레이너", new Phone("010-1234-5679"), Password.from("pw"));
+            em.persist(member1);
+            em.persist(member2);
+            em.persist(member3);
+
+            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Mentoring mentoring2 = new Mentoring(member2, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Mentoring mentoring3 = new Mentoring(member3, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
             em.persist(mentoring1);
             em.persist(mentoring2);
             em.persist(mentoring3);
@@ -195,8 +216,13 @@ class MentoringServiceTest {
         @Test
         void getAllMentoring5() {
             // given
-            Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
-            Mentoring mentoring2 = new Mentoring("박트레이너", "010-1234-5678", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
+            Member member2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
+            em.persist(member1);
+            em.persist(member2);
+
+            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Mentoring mentoring2 = new Mentoring(member2, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
             em.persist(mentoring1);
             em.persist(mentoring2);
 
@@ -225,17 +251,22 @@ class MentoringServiceTest {
                     categoryTitle1,
                     categoryTitle2,
                     categoryTitle3
-            ))
-                    .isInstanceOf(CategoryNotFoundException.class)
+            )).isInstanceOf(CategoryNotFoundException.class)
                     .hasMessage(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage());
+
         }
 
         @DisplayName("필터 조건에 해당하는 멘토링이 존재하지 않는 경우, 빈 리스트를 반환한다.")
         @Test
         void getAllMentoring6() {
             // given
-            Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
-            Mentoring mentoring2 = new Mentoring("박트레이너", "010-1234-5678", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
+            Member member2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
+            em.persist(member1);
+            em.persist(member2);
+
+            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Mentoring mentoring2 = new Mentoring(member2, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
             em.persist(mentoring1);
             em.persist(mentoring2);
 
@@ -279,7 +310,10 @@ class MentoringServiceTest {
         @Test
         void getMentoring() {
             //given
-            Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-3378-9048"), Password.from("pw"));
+            em.persist(member1);
+
+            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
             em.persist(mentoring1);
 
             Category category1 = new Category("카테고리1");
@@ -304,11 +338,15 @@ class MentoringServiceTest {
             assertThat(actual).isEqualTo(expected);
         }
 
+
         @DisplayName("존재하지 않는 멘토링 id로 멘토링을 조회하는 경우 예외가 발생한다.")
         @Test
         void getMentoring2() {
             //given
-            Mentoring mentoring1 = new Mentoring("김트레이너", "010-3378-9048", 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
+            em.persist(member1);
+
+            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
             em.persist(mentoring1);
 
             Category category1 = new Category("카테고리1");
@@ -339,6 +377,9 @@ class MentoringServiceTest {
         @Test
         void registerMentoring() throws IOException {
             //given
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
+            Member savedMentor = memberRepository.save(member1);
+
             MentoringRequest request = new MentoringRequest(
                     5000,
                     List.of("근육증가", "다이어트"),
@@ -357,7 +398,8 @@ class MentoringServiceTest {
             when(s3Uploader.upload(any(), any())).thenReturn(null);
 
             // when
-            MentoringResponse actual = mentoringService.registerMentoring(RegisterMentoringDto.of(request, null, null));
+            MentoringResponse actual = mentoringService.registerMentoring(
+                    RegisterMentoringDto.of(savedMentor.getId(), request, null, null));
 
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
@@ -367,6 +409,7 @@ class MentoringServiceTest {
                 softAssertions.assertThat(actual.career()).isEqualTo(request.career());
                 softAssertions.assertThat(actual.content()).isEqualTo(request.content());
                 softAssertions.assertThat(actual.profileImageUrl()).isNull();
+                softAssertions.assertThat(savedMentor.getRole()).isEqualTo(MemberRole.MENTOR);
             });
         }
 
@@ -374,6 +417,9 @@ class MentoringServiceTest {
         @Test
         void registerMentoringProfile() throws IOException {
             //given
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
+            memberRepository.save(member1);
+
             MentoringRequest request = new MentoringRequest(
                     5000,
                     List.of("근육증가", "다이어트"),
@@ -389,13 +435,15 @@ class MentoringServiceTest {
             categoryRepository.save(category1);
             categoryRepository.save(category2);
 
-            MockMultipartFile imageFile = new MockMultipartFile("testProfile", "testProfile".getBytes(StandardCharsets.UTF_8));
+            MockMultipartFile imageFile = new MockMultipartFile("testProfile",
+                    "testProfile".getBytes(StandardCharsets.UTF_8));
             String profileImageS3Url = "profileImageS3Url";
             when(s3Uploader.upload(imageFile, "profile-image")).thenReturn(profileImageS3Url);
 
             // when
             MentoringResponse actual = mentoringService.registerMentoring(
                     RegisterMentoringDto.of(
+                            member1.getId(),
                             request,
                             imageFile,
                             null
@@ -417,6 +465,9 @@ class MentoringServiceTest {
         @Test
         void registerMentoringProfileCertificates() throws IOException {
             //given
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
+            memberRepository.save(member1);
+
             CertificateInfo certificateInfo1 = new CertificateInfo(CertificateType.LICENSE, "제1종 보통 운전면허");
             CertificateInfo certificateInfo2 = new CertificateInfo(CertificateType.AWARD, "광진구 건강 청년 선발 대회 준우승");
 
@@ -435,12 +486,15 @@ class MentoringServiceTest {
             categoryRepository.save(category1);
             categoryRepository.save(category2);
 
-            MockMultipartFile profileImageFile = new MockMultipartFile("testProfile", "testProfile".getBytes(StandardCharsets.UTF_8));
+            MockMultipartFile profileImageFile = new MockMultipartFile("testProfile",
+                    "testProfile".getBytes(StandardCharsets.UTF_8));
             String profileImageS3Url = "profileImageS3Url";
             when(s3Uploader.upload(profileImageFile, "profile-image")).thenReturn(profileImageS3Url);
 
-            MockMultipartFile certificateImageFile1 = new MockMultipartFile("testCertificate1", "testCertificate1".getBytes(StandardCharsets.UTF_8));
-            MockMultipartFile certificateImageFile2 = new MockMultipartFile("testCertificate2", "testCertificate2".getBytes(StandardCharsets.UTF_8));
+            MockMultipartFile certificateImageFile1 = new MockMultipartFile("testCertificate1",
+                    "testCertificate1".getBytes(StandardCharsets.UTF_8));
+            MockMultipartFile certificateImageFile2 = new MockMultipartFile("testCertificate2",
+                    "testCertificate2".getBytes(StandardCharsets.UTF_8));
 
             String certificateImageS3Url1 = "testCertificate1ImageS3Url";
             String certificateImageS3Url2 = "testCertificate2ImageS3Url";
@@ -450,6 +504,7 @@ class MentoringServiceTest {
             // when
             MentoringResponse actual = mentoringService.registerMentoring(
                     RegisterMentoringDto.of(
+                            member1.getId(),
                             request,
                             profileImageFile,
                             List.of(certificateImageFile1, certificateImageFile2)

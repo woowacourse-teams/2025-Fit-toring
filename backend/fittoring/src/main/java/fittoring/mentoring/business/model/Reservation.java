@@ -24,17 +24,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Reservation {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String menteeName;
-
-    @Column(nullable = false)
-    private String menteePhone;
-
-    private String content;
+    @Getter
+    private String context;
 
     @Getter
     @CreatedDate
@@ -46,16 +42,21 @@ public class Reservation {
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
 
-    public Reservation(String menteeName, String menteePhone, String content, Mentoring mentoring) {
-        this(null, menteeName, menteePhone, content, null, mentoring);
+    @Getter
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Member mentee;
+
+    public Reservation(String context, Mentoring mentoring, Member mentee) {
+        this(null, context, null, mentoring, mentee);
     }
 
     public String getMenteeName() {
-        return menteeName;
+        return mentee.getName();
     }
 
     public String getMenteePhone() {
-        return menteePhone;
+        return mentee.getPhoneNumber();
     }
 
     public String getMentorName() {

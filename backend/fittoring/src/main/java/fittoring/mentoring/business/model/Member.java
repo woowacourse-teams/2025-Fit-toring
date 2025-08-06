@@ -4,6 +4,8 @@ import fittoring.mentoring.business.model.password.Password;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,13 +14,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Table(name = "member")
 @Entity
 public class Member {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,19 +31,22 @@ public class Member {
     @Column(nullable = false)
     private String gender;
 
-    @Getter
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String phone;
+    @Embedded
+    private Phone phone;
 
     @Embedded
     @Column(nullable = false)
     private Password password;
 
-    public Member(String loginId, String gender, String name, String phone, Password password) {
-        this(null, loginId, gender, name, phone, password);
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MemberRole role;
+
+    public Member(String loginId, String gender, String name, Phone phone, Password password) {
+        this(null, loginId, gender, name, phone, password, MemberRole.MENTEE);
     }
 
     public void matchPassword(String password) {
@@ -50,5 +55,15 @@ public class Member {
 
     public String getPassword() {
         return password.getPassword();
+    }
+
+    public String getPhoneNumber() {
+        return this.phone.getNumber();
+    }
+
+    public void registerAsMentor() {
+        if (this.role != MemberRole.ADMIN) {
+            this.role = MemberRole.MENTOR;
+        }
     }
 }

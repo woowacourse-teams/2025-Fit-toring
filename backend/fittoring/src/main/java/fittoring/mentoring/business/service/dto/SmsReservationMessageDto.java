@@ -1,15 +1,17 @@
 package fittoring.mentoring.business.service.dto;
 
+import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
+
 public record SmsReservationMessageDto(
-        String menteeName,
-        String menteePhone,
+        String mentorName,
+        String mentorPhone,
         String content
 ) {
 
-    public static SmsReservationMessageDto of(ReservationCreateDto dto) {
+    public static SmsReservationMessageDto of(ReservationCreateResponse dto) {
         return new SmsReservationMessageDto(
-                dto.menteeName(),
-                dto.menteePhone(),
+                dto.mentorName(),
+                dto.mentorPhone(),
                 dto.content()
         );
     }

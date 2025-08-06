@@ -28,10 +28,12 @@ public class ReservationController {
 
     @PostMapping("/mentorings/{mentoringId}/reservation")
     public ResponseEntity<ReservationCreateResponse> createReservation(
+            @Login LoginInfo loginInfo,
             @PathVariable("mentoringId") Long mentoringId,
             @Valid @RequestBody ReservationCreateRequest requestBody
     ) {
         ReservationCreateDto reservationCreateDto = ReservationCreateDto.of(
+                loginInfo.memberId(),
                 mentoringId,
                 requestBody
         );
