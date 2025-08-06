@@ -9,6 +9,8 @@ const useSubmitGuardWithConfirm = <T>(value: T) => {
     setMatchConfirmed(true);
   };
 
+  const isMatchedValue = value === lastConfirmedValue;
+
   const shouldBlockSubmit = () => {
     if (!isMatchedValue) {
       setMatchConfirmed(false);
@@ -16,8 +18,6 @@ const useSubmitGuardWithConfirm = <T>(value: T) => {
     }
     return false;
   };
-
-  const isMatchedValue = value === lastConfirmedValue;
 
   return {
     confirm,
