@@ -9,14 +9,14 @@ import type { CertificateItem } from '../types/certificateItem';
 import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
 
 interface CertificateSectionProps {
-  handleCertificateChange: (
+  onCertificateChange: (
     newData: Pick<mentoringCreateFormData, 'certificate'>,
   ) => void;
   handleCertificateImageFilesChange: (files: File[]) => void;
 }
 
 function CertificateSection({
-  handleCertificateChange,
+  onCertificateChange,
   handleCertificateImageFilesChange,
 }: CertificateSectionProps) {
   const [certificates, setCertificates] = useState<CertificateItem[]>([]);
@@ -34,7 +34,7 @@ function CertificateSection({
   const handleDeleteButtonClick = (id: string) => {
     const updated = certificates.filter((item) => item.id !== id);
     setCertificates(updated);
-    handleCertificateChange({ certificate: updated });
+    onCertificateChange({ certificate: updated });
   };
 
   const handleCertificateChangeById = (
@@ -50,7 +50,7 @@ function CertificateSection({
       title,
       type,
     }));
-    handleCertificateChange({ certificate: finalCertificates });
+    onCertificateChange({ certificate: finalCertificates });
 
     const files = updated
       .map((item) => item.file)
