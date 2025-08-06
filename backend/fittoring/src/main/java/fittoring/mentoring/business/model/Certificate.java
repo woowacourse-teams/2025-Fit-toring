@@ -67,7 +67,7 @@ public class Certificate {
     }
 
     private void validateAlreadyProcessedCertificate() {
-        if (verificationStatus == Status.PENDING) {
+        if (verificationStatus != Status.PENDING) {
             throw new AlreadyProcessedCertificateException(
                     BusinessErrorMessage.ALREADY_PROCESSED_CERTIFICATE.getMessage());
         }
