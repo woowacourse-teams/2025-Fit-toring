@@ -49,6 +49,10 @@ public class Member {
         this(null, loginId, gender, name, phone, password, MemberRole.MENTEE);
     }
 
+    public Member(String loginId, String gender, String name, Phone phone, Password password, MemberRole role) {
+        this(null, loginId, gender, name, phone, password, role);
+    }
+
     public void matchPassword(String password) {
         this.password.validateMatches(password);
     }
