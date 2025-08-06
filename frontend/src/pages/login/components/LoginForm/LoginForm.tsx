@@ -59,7 +59,7 @@ function LoginForm() {
             <StyledInput
               id="password"
               name="password"
-              placeholder="5자이상 15자이하 입력하세요"
+              placeholder="••••••••"
               type={passwordVisible ? 'text' : 'password'}
               value={password}
               onChange={handlePasswordChange}
