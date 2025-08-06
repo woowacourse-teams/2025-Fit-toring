@@ -8,16 +8,50 @@ import notBlind from '../../../../common/assets/images/notBlind.svg';
 import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
+import { postLogin } from '../../apis/postLogin';
 
 function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
+
+  const fetchLogin = async () => {
+    try {
+      const response = await postLogin(userId, password);
+      if (response.status === 200) {
+        alert('로그인에 성공했습니다.');
+      }
+    } catch (error) {
+      console.error('로그인 실패', error);
+    }
+  };
+
+  const handleUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserId(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    fetchLogin();
+  };
+
   return (
-    <StyledContainer>
+    <StyledContainer onSubmit={handleSubmit}>
       <StyledFields>
         <FormField label="아이디">
           <StyledInputWrapper>
-            <Input placeholder="fittoring" required />
+            <Input
+              placeholder="fittoring"
+              value={userId}
+              onChange={handleUserIdChange}
+              required
+            />
           </StyledInputWrapper>
         </FormField>
         <FormField label="비밀번호 *" errorMessage={''}>
@@ -27,6 +61,8 @@ function LoginForm() {
               name="password"
               placeholder="5자이상 15자이하 입력하세요"
               type={passwordVisible ? 'text' : 'password'}
+              value={password}
+              onChange={handlePasswordChange}
               required
             />
             <StyledImg
