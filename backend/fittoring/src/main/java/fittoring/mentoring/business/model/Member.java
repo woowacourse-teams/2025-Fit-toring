@@ -53,17 +53,17 @@ public class Member {
         this.password.validateMatches(password);
     }
 
+    public void registerAsMentor() {
+        if (this.role != MemberRole.ADMIN) {
+            this.role = MemberRole.MENTOR;
+        }
+    }
+
     public String getPassword() {
         return password.getPassword();
     }
 
     public String getPhoneNumber() {
         return this.phone.getNumber();
-    }
-
-    public void registerAsMentor() {
-        if (this.role != MemberRole.ADMIN) {
-            this.role = MemberRole.MENTOR;
-        }
     }
 }

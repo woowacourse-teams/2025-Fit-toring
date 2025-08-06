@@ -2,22 +2,24 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CertificateNotFoundException;
+import fittoring.mentoring.business.exception.ForbiddenMemberException;
 import fittoring.mentoring.business.exception.ImageNotFoundException;
+import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Certificate;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CertificateRepository;
+import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateInfo;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class CertificateService {
 
+    private final MemberRepository memberRepository;
     private final CertificateRepository certificateRepository;
     private final ImageService imageService;
 
@@ -62,18 +65,31 @@ public class CertificateService {
         imageService.uploadImageToS3(certificateImageFile, "certificate-image", ImageType.CERTIFICATE, certificateId);
     }
 
-    public Page<CertificateResponse> getAllCertificates(Status status, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Certificate> certificates;
-        if (status == null) {
-            certificates = certificateRepository.findAll(pageable);
-        } else {
-            certificates = certificateRepository.findByVerificationStatus(status, pageable);
-        }
-        return certificates.map(CertificateResponse::from);
+    public List<CertificateResponse> getAllCertificates(Long memberId, Status status) {
+        checkAdminAuthority(memberId);
+        List<Certificate> certificates = findCertificates(status);
+        return certificates.stream()
+                .map(CertificateResponse::from)
+                .toList();
     }
 
-    public CertificateDetailResponse getCertificate(Long certificateId) {
+    private List<Certificate> findCertificates(Status status) {
+        if (status == null) {
+            return certificateRepository.findAll();
+        }
+        return certificateRepository.findByVerificationStatus(status);
+    }
+
+    private void checkAdminAuthority(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        if (MemberRole.isNotAdmin(member.getRole())) {
+            throw new ForbiddenMemberException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+        }
+    }
+
+    public CertificateDetailResponse getCertificate(Long memberId, Long certificateId) {
+        checkAdminAuthority(memberId);
         Certificate certificate = getCertificateOne(certificateId);
         Image certificateImage = imageService.findByImageTypeAndRelationId(ImageType.CERTIFICATE, certificateId)
                 .orElseThrow(() -> new ImageNotFoundException(
@@ -83,13 +99,15 @@ public class CertificateService {
     }
 
     @Transactional
-    public void approveCertificate(Long certificateId) {
+    public void approveCertificate(Long memberId, Long certificateId) {
+        checkAdminAuthority(memberId);
         Certificate certificate = getCertificateOne(certificateId);
         certificate.approve();
     }
 
     @Transactional
-    public void rejectCertificate(Long certificateId) {
+    public void rejectCertificate(Long memberId, Long certificateId) {
+        checkAdminAuthority(memberId);
         Certificate certificate = getCertificateOne(certificateId);
         certificate.reject();
     }

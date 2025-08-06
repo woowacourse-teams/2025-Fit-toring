@@ -25,6 +25,7 @@ public enum BusinessErrorMessage {
     MEMBER_NOT_FOUND("존재하지 않는 회원입니다."),
     REVIEWING_RESERVATION_NOT_FOUND("신청 이력이 있는 멘토링에만 리뷰를 남길 수 있습니다."),
     DUPLICATED_REVIEW("한 번의 예약당 한 번만 리뷰를 남길 수 있습니다."),
+    FORBIDDEN_MEMBER("접근 권한이 없습니다."),
     ;
 
     private final String message;
