@@ -34,7 +34,7 @@ const useNameInput = () => {
     name,
     handleNameChange,
     errorMessage,
-    isValid: name !== '' && errorMessage === '',
+    validated: name !== '' && errorMessage === '',
   };
 };
 

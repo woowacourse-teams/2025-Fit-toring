@@ -1,10 +1,10 @@
 -- MEMBER
 INSERT INTO member (login_id, gender, name, phone, password, role)
-VALUES ('logan', 'MALE', '로건', '010-5360-9558', 'logan123', 'USER'),
-       ('dogi', 'MALE', '도기', '010-5483-0455', 'dogi1234', 'USER'),
-       ('bumtae', 'MALE', '범태', '010-9390-1250', 'bt2024', 'USER'),
-       ('ttyong', 'MALE', '띠용', '010-3378-9048', 'tt0904', 'USER'),
-       ('daisy', 'FEMALE', '데이지', '010-2542-4986', 'daisy12', 'USER'),
+VALUES ('logan', 'MALE', '로건', '010-5360-9558', 'logan123', 'MENTOR'),
+       ('dogi', 'MALE', '도기', '010-5483-0455', 'dogi1234', 'MENTOR'),
+       ('bumtae', 'MALE', '범태', '010-9390-1250', 'bt2024', 'MENTOR'),
+       ('ttyong', 'MALE', '띠용', '010-3378-9048', 'tt0904', 'MENTOR'),
+       ('daisy', 'FEMALE', '데이지', '010-2542-4986', 'daisy12', 'MENTOR'),
        ('admin', 'FEMALE', '관리자', '010-4736-7769', 'admin123', 'ADMIN');
 
 -- MENTORING

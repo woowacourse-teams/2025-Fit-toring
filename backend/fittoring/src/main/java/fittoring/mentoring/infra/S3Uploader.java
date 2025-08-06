@@ -27,7 +27,6 @@ public class S3Uploader {
                 .bucket(bucketName)
                 .key(key)
                 .contentType(file.getContentType())
-                .acl("public-read")
                 .build();
 
         s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
