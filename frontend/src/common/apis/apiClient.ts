@@ -67,6 +67,7 @@ class ApiClient {
     };
 
     const response = await fetch(url, options);
+
     if (!response.ok) {
       throw new Error('데이터를 POST하는 데 실패했습니다.');
     }

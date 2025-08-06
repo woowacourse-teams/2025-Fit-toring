@@ -78,7 +78,6 @@ function LoginForm() {
         customStyle={css`
           height: 4.3rem;
           box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
-
           font-size: 1.6rem;
         `}
       >
@@ -118,20 +117,15 @@ const StyledInput = styled.input<{ errored?: boolean }>`
       errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
     0.1rem solid;
   border-radius: 0.7rem;
-
   background-color: ${({ theme }) => theme.BG.WHITE};
-
   :focus {
     outline: none;
     border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN600};
   }
-
   ::placeholder {
     color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
-
   color: ${({ theme }) => theme.FONT.B01};
-
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
@@ -139,10 +133,8 @@ const StyledImg = styled.img`
   position: absolute;
   right: 0;
   bottom: 50%;
-
   width: 2rem;
   transform: translateY(50%);
   cursor: pointer;
-
   margin-right: 1rem;
 `;
