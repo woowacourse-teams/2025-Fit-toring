@@ -20,48 +20,35 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "reservation")
+@Table(name = "review")
 @Entity
-public class Reservation {
+public class Review {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Getter
-    private String context;
+    @Column(columnDefinition = "TINYINT", nullable = false)
+    private int rating;
+
+    @Getter
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
 
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private Mentoring mentoring;
+    @JoinColumn(nullable = false, unique = true)
+    private Reservation reservation;
 
-    @Getter
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, unique = true)
     private Member mentee;
 
-    public Reservation(String context, Mentoring mentoring, Member mentee) {
-        this(null, context, null, mentoring, mentee);
-    }
-
-    public String getMenteeName() {
-        return mentee.getName();
-    }
-
-    public String getMenteePhone() {
-        return mentee.getPhoneNumber();
-    }
-
-    public String getMentorName() {
-        return mentoring.getMentorName();
-    }
-
-    public String getMentorPhone() {
-        return mentoring.getMentorPhone();
+    public Review(int rating, String content, Reservation reservation, Member mentee) {
+        this(null, rating, content, null, reservation, mentee);
     }
 }

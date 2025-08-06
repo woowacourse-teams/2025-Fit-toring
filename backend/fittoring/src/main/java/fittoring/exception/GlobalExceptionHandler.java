@@ -4,7 +4,11 @@ import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.exception.InvalidTokenException;
+import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.exception.ReservationNotFoundException;
+import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
+import fittoring.mentoring.infra.exception.S3UploadException;
 import fittoring.mentoring.business.exception.MisMatchPasswordException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.exception.PasswordEncryptionException;
@@ -24,6 +28,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MentoringNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(MentoringNotFoundException e) {
+        return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
+    }
+
+    @ExceptionHandler(ReservationNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ReservationNotFoundException e) {
+        return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(MemberNotFoundException e) {
         return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
     }
 
@@ -52,11 +66,16 @@ public class GlobalExceptionHandler {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
 
+    @ExceptionHandler(ReviewAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handle(ReviewAlreadyExistsException e) {
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
+    }
+
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidTokenException e) {
         return ErrorResponse.of(HttpStatus.UNAUTHORIZED, e.getMessage()).toResponseEntity();
     }
-
+  
     @ExceptionHandler(InvalidPhoneVerificationException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidPhoneVerificationException e) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
