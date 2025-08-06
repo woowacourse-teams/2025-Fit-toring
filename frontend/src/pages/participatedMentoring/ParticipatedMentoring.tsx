@@ -1,5 +1,8 @@
 import styled from '@emotion/styled';
 
+import MentoringItem from './MentoringItem/MentoringItem';
+import MentoringList from './MentoringList/MentoringList';
+
 import type { ParticipatedMentoringType } from './types/participatedMentoring';
 
 const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
@@ -40,6 +43,11 @@ function ParticipatedMentoring() {
           </StyledDescription>
         </StyledInfoWrapper>
         <StyledLine />
+        <MentoringList>
+          {PARTICIPATED_MENTORING_LIST.map((item) => (
+            <MentoringItem key={item.mentorName} mentoring={item} />
+          ))}
+        </MentoringList>
       </StyledWrapper>
     </StyledContainer>
   );
