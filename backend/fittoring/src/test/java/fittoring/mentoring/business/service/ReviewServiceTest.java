@@ -59,7 +59,7 @@ class ReviewServiceTest {
             new Phone("010-2222-3333"),
             password
         ));
-        Member reviewer = entityManager.persist(new Member(
+        Member mentee = entityManager.persist(new Member(
             "loginId",
             "MALE",
             "name",
@@ -76,12 +76,12 @@ class ReviewServiceTest {
         entityManager.persist(new Reservation(
             "예약 신청합니다.",
             mentoring,
-            reviewer
+            mentee
         ));
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            reviewer.getId(),
+            mentee.getId(),
             mentoring.getId(),
             rating,
             content
@@ -134,7 +134,7 @@ class ReviewServiceTest {
     void createReservationFail2() {
         // given
         Password password = Password.from("password");
-        Member reviewer = entityManager.persist(new Member(
+        Member mentee = entityManager.persist(new Member(
             "loginId",
             "MALE",
             "name",
@@ -142,7 +142,7 @@ class ReviewServiceTest {
             password
         ));
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            reviewer.getId(),
+            mentee.getId(),
             999L,
             5,
             "최고의 멘토링이었습니다."
@@ -167,7 +167,7 @@ class ReviewServiceTest {
             new Phone("010-2222-3333"),
             password
         ));
-        Member reviewer = entityManager.persist(new Member(
+        Member mentee = entityManager.persist(new Member(
             "loginId",
             "MALE",
             "name",
@@ -184,7 +184,7 @@ class ReviewServiceTest {
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            reviewer.getId(),
+            mentee.getId(),
             mentoring.getId(),
             rating,
             content
@@ -209,7 +209,7 @@ class ReviewServiceTest {
             new Phone("010-2222-3333"),
             password
         ));
-        Member reviewer = entityManager.persist(new Member(
+        Member mentee = entityManager.persist(new Member(
             "loginId",
             "MALE",
             "name",
@@ -226,12 +226,12 @@ class ReviewServiceTest {
         entityManager.persist(new Reservation(
             "예약 신청합니다.",
             mentoring,
-            reviewer
+            mentee
         ));
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            reviewer.getId(),
+            mentee.getId(),
             mentoring.getId(),
             rating,
             content

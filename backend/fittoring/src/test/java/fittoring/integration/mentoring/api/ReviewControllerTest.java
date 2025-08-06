@@ -64,14 +64,14 @@ class ReviewControllerTest {
             new Phone("010-2222-3333"),
             password
         ));
-        Member reviewer = memberRepository.save(new Member(
+        Member mentee = memberRepository.save(new Member(
             "loginId",
             "MALE",
             "name",
             new Phone("010-1234-5678"),
             password
         ));
-        String accessToken = jwtProvider.createAccessToken(reviewer.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
             mentor,
             5000,
@@ -82,7 +82,7 @@ class ReviewControllerTest {
         reservationRepository.save(new Reservation(
             "예약 신청합니다.",
             mentoring,
-            reviewer
+            mentee
         ));
         int rating = 4;
         String content = "전반적으로 좋았습니다.";
@@ -120,14 +120,14 @@ class ReviewControllerTest {
             new Phone("010-2222-3333"),
             password
         ));
-        Member reviewer = memberRepository.save(new Member(
+        Member mentee = memberRepository.save(new Member(
             "loginId",
             "MALE",
             "name",
             new Phone("010-1234-5678"),
             password
         ));
-        String accessToken = jwtProvider.createAccessToken(reviewer.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId());
         int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
@@ -159,7 +159,7 @@ class ReviewControllerTest {
             new Phone("010-2222-3333"),
             Password.from("password")
         ));
-        Member reviewer = memberRepository.save(new Member(
+        Member mentee = memberRepository.save(new Member(
             "loginId",
             "MALE",
             "name",
@@ -206,7 +206,7 @@ class ReviewControllerTest {
             new Phone("010-2222-3333"),
             password
         ));
-        Member reviewer = memberRepository.save(new Member(
+        Member mentee = memberRepository.save(new Member(
             "loginId",
             "MALE",
             "name",
@@ -260,14 +260,14 @@ class ReviewControllerTest {
             new Phone("010-2222-3333"),
             password
         ));
-        Member reviewer = memberRepository.save(new Member(
+        Member mentee = memberRepository.save(new Member(
             "loginId",
             "MALE",
             "name",
             new Phone("010-1234-5678"),
             password
         ));
-        String accessToken = jwtProvider.createAccessToken(reviewer.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
             mentor,
             5000,
@@ -278,7 +278,7 @@ class ReviewControllerTest {
         reservationRepository.save(new Reservation(
             "예약 신청합니다.",
             mentoring,
-            reviewer
+            mentee
         ));
         int rating = 4;
         String content = "전반적으로 좋았습니다.";

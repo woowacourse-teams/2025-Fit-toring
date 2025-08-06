@@ -46,9 +46,9 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
-    private Member reviewer;
+    private Member mentee;
 
-    public Review(int rating, String content, Mentoring mentoring, Member reviewer) {
-        this(null, rating, content, null, mentoring, reviewer);
+    public Review(int rating, String content, Mentoring mentoring, Member mentee) {
+        this(null, rating, content, null, mentoring, mentee);
     }
 }
