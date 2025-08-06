@@ -3,15 +3,27 @@ package fittoring.integration.mentoring.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.PhoneVerification;
+import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.business.repository.PhoneVerificationRepository;
+import fittoring.mentoring.business.repository.RefreshTokenRepository;
+import fittoring.mentoring.business.service.JwtProvider;
+import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +41,15 @@ class AuthControllerTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    @Autowired
+    private PhoneVerificationRepository phoneVerificationRepository;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -88,6 +109,157 @@ class AuthControllerTest {
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
+    @DisplayName("사용자는 유효하지 않은 아이디로 로그인을 할 수 없고, 쿠키에 토큰이 저장되지 않는다.")
+    @Test
+    void login() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("invalidLoginId", "password");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/login");
+        //then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(400);
+                    assertThat(response.getHeaders().hasHeaderWithName("Set-Cookie")).isFalse();
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
+    }
+
+    @DisplayName("사용자는 유효하지 않은 비밀번호로 로그인을 할 수 없고, 쿠키에 토큰이 저장되지 않는다.")
+    @Test
+    void login2() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("loginId", "invalidPassword");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/login");
+
+        //then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(400);
+                    assertThat(response.getHeaders().hasHeaderWithName("Set-Cookie")).isFalse();
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).noneMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
+    }
+
+    @DisplayName("사용자가 로그인에 성공하면 상태코드 200을 응답하고, accessToken과 refreshToken을 쿠키에 저장한다.")
+    @Test
+    void login3() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        SignInRequest request = new SignInRequest("loginId", "password");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/login");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(response.statusCode()).isEqualTo(200);
+                    assertThat(cookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
+                    assertThat(cookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
+                }
+        );
+    }
+
+    @DisplayName("토큰을 재발급 하면 상태코드 200을 응답하고, 새로운 accessToken과 refreshToken을 쿠키에 저장한다.")
+    @Test
+    void reissue() {
+        //given
+        String accessToken = jwtProvider.createAccessToken(1L);
+        String refreshToken = jwtProvider.createRefreshToken();
+
+        refreshTokenRepository.save(new RefreshToken(1L, refreshToken, LocalDateTime.now()));
+
+        //when
+        Response reissueResponse = RestAssured
+                .given()
+                .log().all()
+                .cookie("accessToken", accessToken)
+                .cookie("refreshToken", refreshToken)
+                .when()
+                .post("/reissue");
+
+        //then
+        List<String> reissueCookies = reissueResponse.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(reissueResponse.statusCode()).isEqualTo(200);
+            softly.assertThat(reissueCookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
+            softly.assertThat(reissueCookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
+        });
+    }
+
+    @DisplayName("토큰을 재발급 할 때, 유효하지 않은(존재하지 않는) refreshToken을 제공하면 401 상태코드를 받는다.")
+    @Test
+    void reissue2() {
+        //given
+        String accessToken = jwtProvider.createAccessToken(1L);
+        String refreshToken = jwtProvider.createRefreshToken();
+
+        //when
+        Response reissueResponse = RestAssured
+                .given()
+                .log().all()
+                .cookie("accessToken", accessToken)
+                .cookie("refreshToken", refreshToken)
+                .when()
+                .post("/reissue");
+
+        //then
+        assertThat(reissueResponse.statusCode()).isEqualTo(401);
+    }
+
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")
     @Test
     void signUp3() {
@@ -96,7 +268,7 @@ class AuthControllerTest {
                 "loginId",
                 "이름",
                 "남",
-                "010-1234-5678",
+                new Phone("010-1234-5678"),
                 Password.from("password")
         );
 
@@ -148,7 +320,7 @@ class AuthControllerTest {
                         "uniqueLoginId",
                         "이름",
                         "남",
-                        "010-1234-5678",
+                        new Phone("010-1234-5678"),
                         Password.from("password")
                 )
         );
@@ -158,7 +330,7 @@ class AuthControllerTest {
                         "LoginId",
                         "이름",
                         "남",
-                        "010-5678-9123",
+                        new Phone("010-5678-9123"),
                         Password.from("password")
                 )
         );
@@ -195,5 +367,75 @@ class AuthControllerTest {
                 .then()
                 .log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("사용자는 잘못된 코드로 인증을 요청하면 400 응답을 받는다.")
+    @Test
+    void invalidCodeVerification() {
+        // given
+        Phone phone = new Phone("010-1234-5678");
+        String code = "123456";
+        PhoneVerification phoneVerification = new PhoneVerification(phone, code, LocalDateTime.now().plusMinutes(3));
+        phoneVerificationRepository.save(phoneVerification);
+        VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), "invalidCode");
+
+        // when
+        // then
+        RestAssured.given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .when()
+                .post("/auth-code/verify")
+                .then()
+                .log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("사용자는 만료된 코드로 인증을 요청하면 400 응답을 받는다.")
+    @Test
+    void expiredCodeVerification() {
+        // given
+        Phone phone = new Phone("010-1234-5678");
+        String code = "123456";
+        PhoneVerification phoneVerification = new PhoneVerification(phone, code, LocalDateTime.now().minusMinutes(3));
+        phoneVerificationRepository.save(phoneVerification);
+        VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), code);
+
+        // when
+        // then
+        RestAssured.given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .when()
+                .post("/auth-code/verify")
+                .then()
+                .log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("사용자는 유효한 인증을 요청하면 200 응답을 받는다.")
+    @Test
+    void validCodeVerification() {
+        // given
+        Phone phone = new Phone("010-1234-5678");
+        String code = "123456";
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        PhoneVerification phoneVerification = new PhoneVerification(phone, code, now.plusMinutes(3));
+        phoneVerificationRepository.save(phoneVerification);
+        VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), code);
+
+        // when
+        // then
+        RestAssured.given()
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .when()
+                .post("/auth-code/verify")
+                .then()
+                .log().all()
+                .statusCode(200);
     }
 }

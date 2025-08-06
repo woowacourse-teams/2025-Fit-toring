@@ -7,6 +7,10 @@ plugins {
 group = 'com.fittoring'
 version = '0.0.1-SNAPSHOT'
 
+ext {
+    jjwtVersion = '0.11.5'
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -27,16 +31,26 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // health-check api
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // AWS S3
+    implementation 'software.amazon.awssdk:s3:2.32.14'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    /* -- web mock server --*/
+    // web mock server
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
-
-    //rest-assured
+    // rest-assured
     testImplementation("io.rest-assured:rest-assured:5.5.5")
+
+    //jwt
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 }
 
 tasks.named('test') {

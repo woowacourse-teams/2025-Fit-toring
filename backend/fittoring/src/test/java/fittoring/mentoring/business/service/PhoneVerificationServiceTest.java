@@ -1,11 +1,17 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
+import fittoring.mentoring.business.repository.PhoneVerificationRepository;
 import fittoring.mentoring.infra.CodeGeneratorStub;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.util.DbCleaner;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +36,9 @@ class PhoneVerificationServiceTest {
 
     @Autowired
     private TestEntityManager em;
+
+    @Autowired
+    private PhoneVerificationRepository phoneVerificationRepository;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -60,7 +69,7 @@ class PhoneVerificationServiceTest {
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(phoneVerifications).hasSize(1);
-                softAssertions.assertThat(phoneVerifications.get(0).getPhone()).isEqualTo(phoneNumber);
+                softAssertions.assertThat(phoneVerifications.get(0).getPhoneNumber()).isEqualTo(phoneNumber);
                 softAssertions.assertThat(phoneVerifications.get(0).getCode()).isEqualTo(phoneVerificationCode);
             });
         }
@@ -77,7 +86,7 @@ class PhoneVerificationServiceTest {
                     "123456",
                     expireTime
             );
-            em.persist(expectedExpireVerification);
+            phoneVerificationRepository.save(expectedExpireVerification);
 
             // when
             String phoneVerificationCode = phoneVerificationService.createPhoneVerification(phone);
@@ -89,9 +98,82 @@ class PhoneVerificationServiceTest {
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(phoneVerifications).hasSize(1);
-                softAssertions.assertThat(phoneVerifications.get(0).getPhone()).isEqualTo(phoneNumber);
+                softAssertions.assertThat(phoneVerifications.get(0).getPhoneNumber()).isEqualTo(phoneNumber);
                 softAssertions.assertThat(phoneVerifications.get(0).getCode()).isEqualTo(phoneVerificationCode);
             });
+        }
+    }
+
+    @DisplayName("전화번호 인증번호 확인")
+    @Nested
+    class VerifyCode {
+
+        @DisplayName("전화번호 인증번호가 올바르고 유효시간 이내이면 예외가 발생하지 않는다.")
+        @Test
+        void validVerificationCode() {
+            // given
+            Phone phone = new Phone("010-1234-5678");
+            PhoneVerification phoneVerification = new PhoneVerification(
+                    phone,
+                    "123456",
+                    LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusMinutes(5)
+            );
+            em.persist(phoneVerification);
+            VerificationCodeRequest request = new VerificationCodeRequest(
+                    phone.getNumber(),
+                    phoneVerification.getCode()
+            );
+
+            // when
+            // then
+            Assertions.assertThatCode(() -> phoneVerificationService.verifyCode(request))
+                    .doesNotThrowAnyException();
+        }
+
+        @DisplayName("전화번호 인증번호가 올바르지 않으면 예외가 발생한다.")
+        @Test
+        void invalidVerificationCode() {
+            // given
+            Phone phone = new Phone("010-1234-5678");
+            PhoneVerification phoneVerification = new PhoneVerification(
+                    phone,
+                    "123456",
+                    LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusMinutes(5)
+            );
+            em.persist(phoneVerification);
+            VerificationCodeRequest request = new VerificationCodeRequest(
+                    phone.getNumber(),
+                    "invalidCode"
+            );
+
+            // when
+            // then
+            Assertions.assertThatThrownBy(() -> phoneVerificationService.verifyCode(request))
+                    .isInstanceOf(InvalidPhoneVerificationException.class)
+                    .hasMessage(BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage());
+        }
+
+        @DisplayName("전화번호 인증번호가 올바르고 유효시간 이후이면 예외가 발생한다.")
+        @Test
+        void validVerificationCodeButExpireTime() {
+            // given
+            Phone phone = new Phone("010-1234-5678");
+            PhoneVerification phoneVerification = new PhoneVerification(
+                    phone,
+                    "123456",
+                    LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusMinutes(5)
+            );
+            em.persist(phoneVerification);
+            VerificationCodeRequest request = new VerificationCodeRequest(
+                    phone.getNumber(),
+                    phoneVerification.getCode()
+            );
+
+            // when
+            // then
+            Assertions.assertThatThrownBy(() -> phoneVerificationService.verifyCode(request))
+                    .isInstanceOf(InvalidPhoneVerificationException.class)
+                    .hasMessage(BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage());
         }
     }
 }
