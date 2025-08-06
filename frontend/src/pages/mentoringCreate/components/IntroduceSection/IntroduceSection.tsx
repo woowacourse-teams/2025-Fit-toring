@@ -10,20 +10,25 @@ interface IntroduceSectionProps {
   onIntroduceChange: (
     newData: Partial<Pick<mentoringCreateFormData, 'introduction' | 'career'>>,
   ) => void;
+  introduceErrorMessage: string;
 }
 
-function IntroduceSection({ onIntroduceChange }: IntroduceSectionProps) {
+function IntroduceSection({
+  onIntroduceChange,
+  introduceErrorMessage,
+}: IntroduceSectionProps) {
   return (
     <section>
       <TitleSeparator>소개 및 경력</TitleSeparator>
       <StyledFormFieldWrapper>
-        <FormField label="한줄 소개">
+        <FormField label="한줄 소개" errorMessage={introduceErrorMessage}>
           <Input
             placeholder="간단한 소개를 한 줄로 작성해주세요"
             id="introduce"
             onChange={(event) =>
               onIntroduceChange({ introduction: event.target.value })
             }
+            errored={introduceErrorMessage !== ''}
           />
         </FormField>
         <FormField label="경력">

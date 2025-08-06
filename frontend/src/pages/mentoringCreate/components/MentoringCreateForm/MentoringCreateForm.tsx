@@ -3,6 +3,7 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
+import { useIntroduceError } from '../../hooks/useIntroduceError';
 import { usePriceError } from '../../hooks/usePriceError';
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
 import ButtonSection from '../ButtonSection/ButtonSection';
@@ -38,6 +39,9 @@ function MentoringCreateForm() {
   );
 
   const { priceErrorMessage } = usePriceError(mentoringData.price);
+  const { introduceErrorMessage } = useIntroduceError(
+    mentoringData.introduction,
+  );
 
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,
@@ -82,7 +86,10 @@ function MentoringCreateForm() {
       />
       <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
-      <IntroduceSection onIntroduceChange={handleMentoringDataChange} />
+      <IntroduceSection
+        onIntroduceChange={handleMentoringDataChange}
+        introduceErrorMessage={introduceErrorMessage}
+      />
       <CertificateSection
         onCertificateChange={handleMentoringDataChange}
         handleCertificateImageFilesChange={handleCertificateImageFilesChange}
