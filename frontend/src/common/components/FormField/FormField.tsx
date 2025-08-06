@@ -41,7 +41,6 @@ const StyledLabel = styled.label`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-
-  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   color: ${({ theme }) => theme.FONT.B02};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
