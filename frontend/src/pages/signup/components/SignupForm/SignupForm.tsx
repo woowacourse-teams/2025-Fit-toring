@@ -8,7 +8,7 @@ import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneN
 import useNameInput from '../../../../common/hooks/useNameInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postSignup } from '../../apis/postSignup';
-import usePasswordInput from '../../hooks/usePasswordInput';
+import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput';
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
 import useUserIdInput from '../../hooks/useUserIdInput';
 import useVerificationCodeConfirm from '../../hooks/useVerificationCodeConfirm';
@@ -69,7 +69,7 @@ function SignupForm() {
     handlePasswordConfirmChange,
     passwordValidated,
     passwordConfrimValidated,
-  } = usePasswordInput();
+  } = usePasswordWithConfirmInput();
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
     useFormattedPhoneNumber();
