@@ -3,11 +3,11 @@ import { http, HttpResponse } from 'msw';
 import { MENTORINGS } from './data';
 
 export const testStateStore = {
-  shouldFailCart: false,
-  customCartError: null as string | null,
+  shouldFailRequest: false,
+  customRequestError: null as string | null,
   reset() {
-    this.shouldFailCart = false;
-    this.customCartError = null;
+    this.shouldFailRequest = false;
+    this.customRequestError = null;
   },
 };
 
@@ -32,7 +32,7 @@ const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
       categoryValues.every((category) => mentor.categories.includes(category)),
     );
 
-    if (testStateStore.shouldFailCart) {
+    if (testStateStore.shouldFailRequest) {
       return new HttpResponse(null, {
         status: 500,
         statusText: 'filtered mentorings fetch Failed',
@@ -43,7 +43,7 @@ const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
   } else {
     const response = [...MENTORINGS];
 
-    if (testStateStore.shouldFailCart) {
+    if (testStateStore.shouldFailRequest) {
       return new HttpResponse(null, {
         status: 500,
         statusText: 'mentorings fetch Failed',
