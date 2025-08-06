@@ -220,7 +220,7 @@ class ReservationControllerTest {
                 new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
         );
         Reservation savedReservation4 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVED)
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVE)
         );
 
         //when
@@ -297,10 +297,10 @@ class ReservationControllerTest {
                 new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
         );
         Reservation savedReservation3 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.REJECT)
         );
         Reservation savedReservation4 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee, Status.APPROVED)
+                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee, Status.APPROVE)
         );
 
         //mentee2의 예약
