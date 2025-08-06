@@ -64,7 +64,7 @@ function CertificateInput({
         />
       </StyledContentWrapper>
 
-      <StyledImageInputLabel htmlFor={id}>
+      <StyledImageInputLabel>
         <StyledHiddenInput
           type="file"
           accept="image/*"
