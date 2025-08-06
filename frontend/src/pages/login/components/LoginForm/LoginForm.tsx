@@ -68,7 +68,7 @@ const StyledInputWrapper = styled.div`
   height: 4rem;
 `;
 
-const StyledInputWithIconWrapper = styled.div<{ errored?: boolean }>`
+const StyledInputWithIconWrapper = styled.div`
   position: relative;
 `;
 
