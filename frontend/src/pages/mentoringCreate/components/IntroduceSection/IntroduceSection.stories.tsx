@@ -1,3 +1,5 @@
+import { ERROR_MESSAGE } from '../../constants/errorMessage';
+
 import IntroduceSection from './IntroduceSection';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -15,12 +17,29 @@ type Story = StoryObj<typeof meta>;
 export const DefaultIntroduceSection: Story = {
   args: {
     onIntroduceChange: () => {},
+    introduceErrorMessage: '',
+    careerErrorMessage: '',
   },
   parameters: {
     docs: {
       description: {
         story:
           '멘토링 생성 페이지의 자기소개 섹션입니다. 멘토가 자신의 소개 및 경력을 작성할 수 있습니다.',
+      },
+    },
+  },
+};
+
+export const ErrorIntroduceSection: Story = {
+  args: {
+    onIntroduceChange: () => {},
+    introduceErrorMessage: ERROR_MESSAGE.INTRODUCE_MAX_LENGTH,
+    careerErrorMessage: ERROR_MESSAGE.CAREER_INVALID,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: '에러 상태의 IntroduceSection 컴포넌트입니다.',
       },
     },
   },
