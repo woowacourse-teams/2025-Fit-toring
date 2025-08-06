@@ -21,3 +21,7 @@ sms:
   timeout:
     connect: 1
     read: 1
+jwt:
+  secret-key: my/test/secret/key/my/test/secret/key
+  access-token-expiration-millis: 10000
+  refresh-token-expiration-millis: 20000000
