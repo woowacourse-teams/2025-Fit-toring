@@ -14,13 +14,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Table(name = "member")
 @Entity
 public class Member {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,7 +31,6 @@ public class Member {
     @Column(nullable = false)
     private String gender;
 
-    @Getter
     @Column(nullable = false)
     private String name;
 
@@ -47,7 +46,7 @@ public class Member {
     private MemberRole role;
 
     public Member(String loginId, String gender, String name, Phone phone, Password password) {
-        this(null, loginId, gender, name, phone, password, MemberRole.USER);
+        this(null, loginId, gender, name, phone, password, MemberRole.MENTEE);
     }
 
     public void matchPassword(String password) {
@@ -59,6 +58,12 @@ public class Member {
     }
 
     public String getPhoneNumber() {
-        return phone.getNumber();
+        return this.phone.getNumber();
+    }
+
+    public void registerAsMentor() {
+        if (this.role != MemberRole.ADMIN) {
+            this.role = MemberRole.MENTOR;
+        }
     }
 }
