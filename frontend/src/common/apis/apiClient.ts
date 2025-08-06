@@ -5,7 +5,8 @@ interface ApiClientGetType {
 
 interface ApiClientPostType {
   endpoint: string;
-  body: Record<string, string | number> | FormData;
+  body: Record<string, string | number>;
+  withCredentials?: boolean;
 }
 
 interface ApiClientDeleteType {
@@ -16,6 +17,8 @@ interface ApiClientPatchType {
   endpoint: string;
   searchParams: Record<string, string | number>;
 }
+
+type RequestCredentials = 'omit' | 'same-origin' | 'include';
 
 class ApiClient {
   #baseUrl: string;
@@ -49,7 +52,7 @@ class ApiClient {
     return response.json();
   }
 
-  async post({ endpoint, body }: ApiClientPostType) {
+  async post({ endpoint, body, withCredentials }: ApiClientPostType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
     const isFormData = body instanceof FormData;
 
@@ -57,9 +60,13 @@ class ApiClient {
       method: 'POST',
       headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
       body: isFormData ? body : JSON.stringify(body),
+      credentials: withCredentials
+        ? 'include'
+        : ('same-origin' as RequestCredentials),
     };
 
     const response = await fetch(url, options);
+
     if (!response.ok) {
       throw new Error('데이터를 POST하는 데 실패했습니다.');
     }
