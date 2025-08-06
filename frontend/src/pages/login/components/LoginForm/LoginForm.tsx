@@ -41,6 +41,8 @@ function LoginForm() {
     fetchLogin();
   };
 
+  const loginFormValidated = userId !== '' && password !== '';
+
   return (
     <StyledContainer onSubmit={handleSubmit}>
       <StyledFields>
@@ -80,6 +82,7 @@ function LoginForm() {
           box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
           font-size: 1.6rem;
         `}
+        variant={loginFormValidated ? 'primary' : 'disabled'}
       >
         로그인
       </Button>
