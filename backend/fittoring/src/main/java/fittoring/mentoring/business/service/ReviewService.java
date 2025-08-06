@@ -16,6 +16,7 @@ import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -26,6 +27,7 @@ public class ReviewService {
     private final MentoringRepository mentoringRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public ReviewCreateResponse createReview(ReviewCreateDto dto) {
         Long mentoringId = dto.mentoringId();
         Long reviewerId = dto.reviewerId();
