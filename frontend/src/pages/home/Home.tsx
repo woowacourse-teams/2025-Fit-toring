@@ -81,7 +81,6 @@ function Home() {
           handleCloseModal={handleCloseModal}
           selectedSpecialties={selectedSpecialties}
           handleApplyFinalSpecialties={handleApply}
-          key={selectedSpecialties.join(',')}
         />
         <StyledCheckboxWrapper>
           {selectedSpecialties.map((specialty) => (
