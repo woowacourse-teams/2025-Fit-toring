@@ -8,4 +8,5 @@ export const API_ENDPOINTS = {
   AUTH_CODE_VERIFY: '/auth-code/verify',
   LOGIN: '/login',
   CREATED_MENTORING: '/mentorings/mine/reservations',
+  MEMBERS: '/members/summary',
 } as const;

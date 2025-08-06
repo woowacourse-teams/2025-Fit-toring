@@ -7,19 +7,27 @@ import SpecialtyTag from '../SpecialtyTag/SpecialtyTag';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { Specialty } from '../../../../common/types/Specialty';
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
 
 const MAX_SPECIALTIES = 3;
 
-function SpecialtySection() {
+interface SpecialtySectionProps {
+  onSpecialtyChange: (
+    newData: Pick<mentoringCreateFormData, 'category'>,
+  ) => void;
+}
+
+function SpecialtySection({ onSpecialtyChange }: SpecialtySectionProps) {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
 
-
   const handleToggleSpecialtyTagChange = (title: string) => {
     setSelectedSpecialties((prev) => {
-      return prev.includes(title)
+      const next = prev.includes(title)
         ? prev.filter((item) => item !== title)
         : [...prev, title];
+      onSpecialtyChange({ category: next });
+      return next;
     });
   };
 
@@ -48,7 +56,6 @@ function SpecialtySection() {
           <SpecialtyTag
             key={specialty.id}
             title={specialty.title}
-
             onChange={() => handleToggleSpecialtyTagChange(specialty.title)}
             disabled={
               selectedSpecialties.length >= MAX_SPECIALTIES &&

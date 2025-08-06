@@ -5,7 +5,7 @@ interface ApiClientGetType {
 
 interface ApiClientPostType {
   endpoint: string;
-  body: Record<string, string | number>;
+  body: Record<string, string | number> | FormData;
   withCredentials?: boolean;
 }
 
@@ -54,13 +54,12 @@ class ApiClient {
 
   async post({ endpoint, body, withCredentials }: ApiClientPostType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
+    const isFormData = body instanceof FormData;
 
     const options = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
+      headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
+      body: isFormData ? body : JSON.stringify(body),
       credentials: withCredentials
         ? 'include'
         : ('same-origin' as RequestCredentials),
