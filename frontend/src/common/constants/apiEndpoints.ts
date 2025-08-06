@@ -6,5 +6,6 @@ export const API_ENDPOINTS = {
   SIGNUP: '/signup',
   AUTH_CODE: '/auth-code',
   AUTH_CODE_VERIFY: '/auth-code/verify',
+
   MEMBERS: '/members/summary',
 } as const;
