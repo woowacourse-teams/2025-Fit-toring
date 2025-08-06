@@ -4,7 +4,6 @@ import defaultImage from '../../../common/assets/images/profileImg.svg';
 import MentoringApplicationStatus from '../../CreatedMentoring/components/MentoringApplicationStatus/MentoringApplicationStatus';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
-
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
 }
@@ -49,6 +48,7 @@ function MentoringItem({
         <StyledApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
         </StyledApplicationPrice>
+        {!isReviewed && <StyledReviewButton>리뷰 작성</StyledReviewButton>}
       </StyledApplicationInfoWrapper>
     </StyledContainer>
   );
@@ -133,5 +133,30 @@ const StyledApplicationDate = styled.p`
 
 const StyledApplicationPrice = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledReviewButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  margin-left: auto;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
+
+  color: ${({ theme }) => theme.FONT.W01};
+
+  transition: all 0.2s ease;
+
+  :hover {
+    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  }
+
+  cursor: pointer;
+
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
