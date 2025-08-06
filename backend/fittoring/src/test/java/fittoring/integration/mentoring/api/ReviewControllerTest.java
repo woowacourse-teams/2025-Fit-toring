@@ -79,7 +79,7 @@ class ReviewControllerTest {
             "content",
             "introduction"
         ));
-        reservationRepository.save(new Reservation(
+        Reservation reservation = reservationRepository.save(new Reservation(
             "예약 신청합니다.",
             mentoring,
             mentee
@@ -87,6 +87,7 @@ class ReviewControllerTest {
         int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
+            reservation.getId(),
             rating,
             content
         );
@@ -113,13 +114,6 @@ class ReviewControllerTest {
     void createReviewFail1() {
         // given
         Password password = Password.from("password");
-        Member mentor = memberRepository.save(new Member(
-            "mentor",
-            "MALE",
-            "김트레이너",
-            new Phone("010-2222-3333"),
-            password
-        ));
         Member mentee = memberRepository.save(new Member(
             "loginId",
             "MALE",
@@ -131,6 +125,7 @@ class ReviewControllerTest {
         int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
+            999L,
             rating,
             content
         );
@@ -173,9 +168,15 @@ class ReviewControllerTest {
             "content",
             "introduction"
         ));
+        Reservation reservation = reservationRepository.save(new Reservation(
+            "예약 신청합니다.",
+            mentoring,
+            mentee
+        ));
         int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
+            reservation.getId(),
             rating,
             content
         );
@@ -220,9 +221,15 @@ class ReviewControllerTest {
             "content",
             "introduction"
         ));
+        Reservation reservation = reservationRepository.save(new Reservation(
+            "예약 신청합니다.",
+            mentoring,
+            mentee
+        ));
         int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
+            reservation.getId(),
             rating,
             content
         );
@@ -275,7 +282,7 @@ class ReviewControllerTest {
             "content",
             "introduction"
         ));
-        reservationRepository.save(new Reservation(
+        Reservation reservation = reservationRepository.save(new Reservation(
             "예약 신청합니다.",
             mentoring,
             mentee
@@ -283,6 +290,7 @@ class ReviewControllerTest {
         int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
+            reservation.getId(),
             rating,
             content
         );

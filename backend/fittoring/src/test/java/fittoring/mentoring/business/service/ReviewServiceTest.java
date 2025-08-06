@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
@@ -29,7 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, ReviewService.class})
+@Import({DbCleaner.class, ReviewService.class, JpaConfiguration.class})
 @DataJpaTest
 class ReviewServiceTest {
 
@@ -73,7 +74,7 @@ class ReviewServiceTest {
             "content",
             "introduction"
         ));
-        entityManager.persist(new Reservation(
+        Reservation reservation = entityManager.persist(new Reservation(
             "예약 신청합니다.",
             mentoring,
             mentee
@@ -83,6 +84,7 @@ class ReviewServiceTest {
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             mentee.getId(),
             mentoring.getId(),
+            reservation.getId(),
             rating,
             content
         );
@@ -97,7 +99,7 @@ class ReviewServiceTest {
         });
     }
 
-    @DisplayName("존재하지 않는 멘토링이라면 예외가 발생한다.")
+    @DisplayName("존재하지 않는 멤버의 요청이라면 예외가 발생한다.")
     @Test
     void createReservationFail1() {
         // given
@@ -118,6 +120,7 @@ class ReviewServiceTest {
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             999L,
             mentoring.getId(),
+            1L,
             5,
             "최고의 멘토링이었습니다."
         );
@@ -129,11 +132,18 @@ class ReviewServiceTest {
             .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }
 
-    @DisplayName("존재하지 않는 멤버의 요청이라면 예외가 발생한다.")
+    @DisplayName("존재하지 않는 멘토링이라면 예외가 발생한다.")
     @Test
     void createReservationFail2() {
         // given
         Password password = Password.from("password");
+        Member mentor = entityManager.persist(new Member(
+            "mentor",
+            "MALE",
+            "김트레이너",
+            new Phone("010-2222-3333"),
+            password
+        ));
         Member mentee = entityManager.persist(new Member(
             "loginId",
             "MALE",
@@ -141,9 +151,22 @@ class ReviewServiceTest {
             new Phone("010-1234-5678"),
             password
         ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+            "예약 신청합니다.",
+            mentoring,
+            mentee
+        ));
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             mentee.getId(),
             999L,
+            reservation.getId(),
             5,
             "최고의 멘토링이었습니다."
         );
@@ -186,6 +209,7 @@ class ReviewServiceTest {
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             mentee.getId(),
             mentoring.getId(),
+            999L,
             rating,
             content
         );
@@ -223,7 +247,7 @@ class ReviewServiceTest {
             "content",
             "introduction"
         ));
-        entityManager.persist(new Reservation(
+        Reservation reservation = entityManager.persist(new Reservation(
             "예약 신청합니다.",
             mentoring,
             mentee
@@ -233,6 +257,7 @@ class ReviewServiceTest {
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
             mentee.getId(),
             mentoring.getId(),
+            reservation.getId(),
             rating,
             content
         );

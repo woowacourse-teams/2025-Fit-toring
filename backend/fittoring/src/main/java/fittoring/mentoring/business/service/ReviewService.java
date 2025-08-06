@@ -31,25 +31,26 @@ public class ReviewService {
     public ReviewCreateResponse createReview(ReviewCreateDto dto) {
         Long mentoringId = dto.mentoringId();
         Long menteeId = dto.menteeId();
+        Long reservationId = dto.reservationId();
         Mentoring mentoring = mentoringRepository.findById(mentoringId)
             .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
         Member mentee = memberRepository.findById(menteeId)
             .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        validateReserved(mentoringId, menteeId);
-        validateDuplicated(mentoringId, menteeId);
-        Review savedReview = reviewRepository.save(new Review(dto.rating(), dto.content(), mentoring, mentee));
+        validateReserved(reservationId, menteeId);
+        validateDuplicated(reservationId, menteeId);
+        Review savedReview = reviewRepository.save(new Review(dto.rating(), dto.content(), reservationId, mentoring, mentee));
         return ReviewCreateResponse.of(savedReview);
     }
 
-    private void validateReserved(Long mentoringId, Long menteeId) {
-        if (reservationRepository.existsByMentoringIdAndMenteeId(mentoringId, menteeId)) {
+    private void validateReserved(Long reservationId, Long menteeId) {
+        if (reservationRepository.existsByIdAndMenteeId(reservationId, menteeId)) {
             return;
         }
         throw new ReservationNotFoundException(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());
     }
 
-    private void validateDuplicated(Long mentoringId, Long menteeId) {
-        if (reviewRepository.existsByMentoringIdAndMenteeId(mentoringId, menteeId)) {
+    private void validateDuplicated(Long reservationId, Long menteeId) {
+        if (reviewRepository.existsByReservationIdAndMenteeId(reservationId, menteeId)) {
             throw new ReviewAlreadyExistsException(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
         }
     }
