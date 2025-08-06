@@ -3,6 +3,8 @@ package fittoring.mentoring.business.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,8 +45,12 @@ public class Reservation {
     @JoinColumn(nullable = false)
     private Member mentee;
 
-    public Reservation(String context, Mentoring mentoring, Member mentee) {
-        this(null, context, null, mentoring, mentee);
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    public Reservation(String context, Mentoring mentoring, Member mentee, Status status) {
+        this(null, context, null, mentoring, mentee, status);
     }
 
     public String getMenteeName() {
@@ -59,7 +65,7 @@ public class Reservation {
         return mentoring.getMentorName();
     }
 
-    public String getMentorPhone() {
-        return mentoring.getMentorPhone();
+    public String getStatus() {
+        return status.name();
     }
 }
