@@ -2,8 +2,15 @@ package fittoring.mentoring.business.model;
 
 public enum Status {
 
-    APPROVED,
-    PENDING,
-    REJECTED,
+    APPROVED("승인"),
+    PENDING("대기"),
+    REJECTED("거부"),
+    COMPLETE("완료"),
     ;
+
+    private final String value;
+
+    Status(String name) {
+        this.value = name;
+    }
 }
