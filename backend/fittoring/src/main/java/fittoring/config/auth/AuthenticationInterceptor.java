@@ -21,12 +21,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+        if (!request.getMethod().equalsIgnoreCase("POST")) {
+            return true;
+        }
+
         Cookie[] cookies = request.getCookies();
         if (cookies == null || cookies.length == 0) {
             responseUnauthorized(response, BusinessErrorMessage.EMPTY_COOKIE.getMessage());
             return false;
         }
-
         try {
             String accessToken = jwtExtractor.extractTokenFromCookie("accessToken", cookies);
             jwtProvider.validateToken(accessToken);
@@ -37,7 +40,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             responseUnauthorized(response, BusinessErrorMessage.INVALID_TOKEN.getMessage());
             return false;
         }
-
         return true;
     }
 
