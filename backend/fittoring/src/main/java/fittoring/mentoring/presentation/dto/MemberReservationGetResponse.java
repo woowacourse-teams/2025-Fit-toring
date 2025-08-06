@@ -7,6 +7,7 @@ import java.util.List;
 
 public record MemberReservationGetResponse(
     String mentorName,
+    String mentorProfileImage,
     int price,
     LocalDateTime mentoringAt,
     LocalDate reservedAt,

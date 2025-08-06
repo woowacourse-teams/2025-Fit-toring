@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
@@ -43,10 +44,12 @@ public class ReservationService {
         return memberReservations.stream()
             .map(reservation -> {
                 Mentoring mentoring = reservation.getMentoring();
+                String mentorProfileImage = imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
                 List<String> categories = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
                 boolean isReviewed = reviewRepository.existsByMentoringIdAndReviewerId(mentoring.getId(), memberId);
                 return new MemberReservationGetResponse(
-                    mentoring.getMentorName(),
+                    mentoring.getMentor().getName(),
+                    mentorProfileImage,
                     mentoring.getPrice(),
                     mentoring.getCreatedAt(),
                     reservation.getCreatedAt(),
