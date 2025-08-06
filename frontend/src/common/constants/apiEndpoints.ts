@@ -6,4 +6,6 @@ export const API_ENDPOINTS = {
   VALIDATE_ID: '/validate-id',
   AUTH_CODE: '/auth-code',
   AUTH_CODE_VERIFY: '/auth-code/verify',
+  LOGIN: '/login',
+  CREATED_MENTORING: '/mentorings/mine/reservations',
 } as const;

@@ -151,6 +151,7 @@ public class MentoringService {
         Image profileImage = saveProfileImage(dto.profileImage(), savedMentoring);
 
         certificateService.certificateMapping(dto, savedMentoring);
+        member.registerAsMentor();
         return MentoringResponse.from(savedMentoring, categoryTitles, profileImage);
     }
 

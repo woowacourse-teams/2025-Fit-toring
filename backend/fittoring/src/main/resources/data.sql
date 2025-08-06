@@ -5,7 +5,7 @@ VALUES ('logan', 'MALE', '로건', '010-5360-9558', 'logan123', 'MENTOR'),
        ('bumtae', 'MALE', '범태', '010-9390-1250', 'bt2024', 'MENTOR'),
        ('ttyong', 'MALE', '띠용', '010-3378-9048', 'tt0904', 'MENTOR'),
        ('daisy', 'FEMALE', '데이지', '010-2542-4986', 'daisy12', 'MENTOR'),
-       ('admin', 'FEMALE', '관리자', '010-4736-7769', 'admin123', 'MENTOR');
+       ('admin', 'FEMALE', '관리자', '010-4736-7769', 'admin123', 'ADMIN');
 
 -- MENTORING
 INSERT INTO mentoring (price, career, content, introduction, mentor_id)
@@ -42,12 +42,12 @@ VALUES (1, 1),
        (5, 5);
 
 -- -- CERTIFICATE (멘토당 하나씩 자격증)
-INSERT INTO certificate (mentoring_id, type, title, verification_status, created_at)
-VALUES (1, 'LICENSE', 'NASM CPT', 'PENDING', '2025-08-04 00:00:00'),
-       (2, 'LICENSE', '생활스포츠지도사 2급', 'PENDING', '2025-08-04 00:00:00'),
-       (3, 'LICENSE', '건강운동관리사', 'PENDING', '2025-08-04 00:00:00'),
-       (4, 'LICENSE', '홈트레이너 자격증', 'PENDING', '2025-08-04 00:00:00'),
-       (5, 'LICENSE', 'NSCA CSCS', 'PENDING', '2025-08-04 00:00:00');
+INSERT INTO certificate (mentoring_id, type, title, verification_status)
+VALUES (1, 'LICENSE', 'NASM CPT', 'PENDING'),
+       (2, 'LICENSE', '생활스포츠지도사 2급', 'PENDING'),
+       (3, 'LICENSE', '건강운동관리사', 'PENDING'),
+       (4, 'LICENSE', '홈트레이너 자격증', 'PENDING'),
+       (5, 'LICENSE', 'NSCA CSCS', 'PENDING');
 
 -- OFFERING (멘토링 제공 서비스 설명)
 INSERT INTO offering (mentoring_id, content)
