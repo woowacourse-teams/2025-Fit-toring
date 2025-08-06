@@ -18,7 +18,7 @@ function Checkbox({ checked, onChange, label, errored, id }: CheckboxProps) {
         id={id}
       />
       <CustomCheckbox errored={errored}>{checked && '✔'}</CustomCheckbox>
-      {label && label}
+      {label}
     </StyledContainer>
   );
 }
