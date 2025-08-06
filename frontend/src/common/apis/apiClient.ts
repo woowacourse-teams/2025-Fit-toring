@@ -5,7 +5,7 @@ interface ApiClientGetType {
 
 interface ApiClientPostType {
   endpoint: string;
-  searchParams: Record<string, string | number>;
+  body: Record<string, string | number>;
 }
 
 interface ApiClientDeleteType {
@@ -49,7 +49,7 @@ class ApiClient {
     return response.json();
   }
 
-  async post({ endpoint, searchParams }: ApiClientPostType) {
+  async post({ endpoint, body }: ApiClientPostType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
 
     const options = {
@@ -57,15 +57,16 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(searchParams),
+      body: JSON.stringify(body),
     };
 
     const response = await fetch(url, options);
+
     if (!response.ok) {
       throw new Error('데이터를 POST하는 데 실패했습니다.');
     }
 
-    return response.json();
+    return response;
   }
 
   async delete({ endpoint }: ApiClientDeleteType) {
