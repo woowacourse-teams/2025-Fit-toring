@@ -23,9 +23,9 @@ public class ReviewController {
 
     @PostMapping("mentorings/{mentoringId}/review")
     public ResponseEntity<ReviewCreateResponse> createReview(
+        @Login LoginInfo loginInfo,
         @PathVariable("mentoringId") Long mentoringId,
-        @Valid  @RequestBody ReviewCreateRequest requestBody,
-        @Login LoginInfo loginInfo
+        @Valid  @RequestBody ReviewCreateRequest requestBody
     ) {
         ReviewCreateDto reviewCreateDto = ReviewCreateDto.of(
             loginInfo.memberId(),
