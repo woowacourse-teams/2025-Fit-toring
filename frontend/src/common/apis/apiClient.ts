@@ -5,7 +5,7 @@ interface ApiClientGetType {
 
 interface ApiClientPostType {
   endpoint: string;
-  searchParams: Record<string, string | number> | FormData;
+  body: Record<string, string | number> | FormData;
 }
 
 interface ApiClientDeleteType {
@@ -49,14 +49,14 @@ class ApiClient {
     return response.json();
   }
 
-  async post({ endpoint, searchParams }: ApiClientPostType) {
+  async post({ endpoint, body }: ApiClientPostType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
-    const isFormData = searchParams instanceof FormData;
+    const isFormData = body instanceof FormData;
 
     const options = {
       method: 'POST',
       headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
-      body: isFormData ? searchParams : JSON.stringify(searchParams),
+      body: isFormData ? body : JSON.stringify(body),
     };
 
     const response = await fetch(url, options);

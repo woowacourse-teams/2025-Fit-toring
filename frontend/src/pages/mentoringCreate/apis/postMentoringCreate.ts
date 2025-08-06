@@ -19,6 +19,6 @@ export const postMentoringCreate = async (
 
   return await apiClient.post({
     endpoint: API_ENDPOINTS.MENTORINGS,
-    searchParams: formData,
+    body: formData,
   });
 };
