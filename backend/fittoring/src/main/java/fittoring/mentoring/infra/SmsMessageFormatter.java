@@ -15,8 +15,8 @@ public class SmsMessageFormatter {
                         신청자 전화번호: %s\n
                         상담 내용: %s
                         """,
-                response.menteeName(),
-                response.menteePhone(),
+                response.mentorName(),
+                response.mentorPhone(),
                 response.content()
         );
     }

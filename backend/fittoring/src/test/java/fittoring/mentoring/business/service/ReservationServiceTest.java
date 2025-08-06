@@ -3,7 +3,10 @@ package fittoring.mentoring.business.service;
 import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.util.DbCleaner;
@@ -44,14 +47,12 @@ class ReservationServiceTest {
     @Test
     void createReservation() {
         // given
-        String mentorName = "멘토";
-        String menteeName = "멘티";
-        String mentorPhone = "010-1234-5678";
-        String menteePhone = "010-0123-9876";
-
+        Member mentee = new Member("id1", "남", "멘티남", new Phone("010-1234-5678"), Password.from("pw"));
+        Member mentor = new Member("id2", "녀", "멘토녀", new Phone("010-1234-5679"), Password.from("pw2"));
+        entityManager.persist(mentee);
+        entityManager.persist(mentor);
         Mentoring mentoring = new Mentoring(
-                mentorName,
-                mentorPhone,
+                mentor,
                 5000,
                 5,
                 "구구절절한 내용",
@@ -59,9 +60,8 @@ class ReservationServiceTest {
         );
         entityManager.persist(mentoring);
         ReservationCreateDto dto = new ReservationCreateDto(
+                mentee.getId(),
                 mentoring.getId(),
-                menteeName,
-                menteePhone,
                 "운동을 배우고 싶어요."
         );
 
@@ -70,10 +70,10 @@ class ReservationServiceTest {
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-                    softAssertions.assertThat(reservationResponse.menteeName()).isEqualTo(menteeName);
-                    softAssertions.assertThat(reservationResponse.menteePhone()).isEqualTo(menteePhone);
-                    softAssertions.assertThat(reservationResponse.mentorName()).isEqualTo(mentorName);
-                    softAssertions.assertThat(reservationResponse.mentorPhone()).isEqualTo(mentorPhone);
+                    softAssertions.assertThat(reservationResponse.menteeName()).isEqualTo(mentee.getName());
+                    softAssertions.assertThat(reservationResponse.menteePhone()).isEqualTo(mentee.getPhoneNumber());
+                    softAssertions.assertThat(reservationResponse.mentorName()).isEqualTo(mentor.getName());
+                    softAssertions.assertThat(reservationResponse.mentorPhone()).isEqualTo(mentor.getPhoneNumber());
                 }
         );
     }
@@ -82,11 +82,12 @@ class ReservationServiceTest {
     @Test
     void createReservationFail() {
         // given
-        long mentoringId = 1L;
+        Member mentee = new Member("id1", "남", "멘티남", new Phone("010-1234-5678"), Password.from("pw"));
+        entityManager.persist(mentee);
+        long invalidMentoringId = 100L;
         ReservationCreateDto dto = new ReservationCreateDto(
-                mentoringId,
-                "mentee",
-                "010-1234-5678",
+                mentee.getId(),
+                invalidMentoringId,
                 "운동을 배우고 싶어요."
         );
 

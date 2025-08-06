@@ -16,27 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PhoneVerificationService {
 
-    private static final int EXPIRE_TIME_MINUTE = 3;
-
     private final PhoneVerificationRepository phoneVerificationRepository;
     private final CodeGenerator verificationCodeGenerator;
 
+    private static final int EXPIRE_TIME_MINUTE = 3;
+
     @Transactional
     public String createPhoneVerification(Phone phone) {
-        deleteExpiredVerification(phone);
-        String code = verificationCodeGenerator.generate();
-        LocalDateTime expiredDateTime = calculateExpiredTime();
-        PhoneVerification phoneVerification = new PhoneVerification(
-                phone,
-                code,
-                expiredDateTime
-        );
+        PhoneVerification phoneVerification = phoneVerificationRepository.findByPhone(phone)
+                .orElse(new PhoneVerification(phone, null, null));
+        String generatedCode = verificationCodeGenerator.generate();
+        phoneVerification.refresh(phone, generatedCode, calculateExpiredTime());
         phoneVerificationRepository.save(phoneVerification);
-        return code;
-    }
-
-    private void deleteExpiredVerification(Phone phone) {
-        phoneVerificationRepository.deleteByPhone(phone);
+        return generatedCode;
     }
 
     private LocalDateTime calculateExpiredTime() {

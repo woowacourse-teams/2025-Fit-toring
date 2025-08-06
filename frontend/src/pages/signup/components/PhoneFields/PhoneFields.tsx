@@ -9,23 +9,29 @@ interface PhoneFieldsProps {
   phoneNumber: string;
   verificationCode: string;
   inputRef: React.RefObject<HTMLInputElement | null>;
-  handlePhoneNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleVerificationCodeChange: (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
+  onPhoneNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onVerificationCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAuthCodeVerifyClick: (phoneNumber: string) => void;
+  onAuthCodeClick: (phoneNumber: string) => void;
   phoneNumberErrorMessage: string;
   verificationCodeErrorMessage: string;
+  isVerificationButtonEnabled: boolean;
 }
 
 function PhoneFields({
   phoneNumber,
   verificationCode,
   inputRef,
-  handlePhoneNumberChange,
-  handleVerificationCodeChange,
+  onPhoneNumberChange,
+  onVerificationCodeChange,
+  onAuthCodeClick,
+  onAuthCodeVerifyClick,
   phoneNumberErrorMessage,
   verificationCodeErrorMessage,
+  isVerificationButtonEnabled,
 }: PhoneFieldsProps) {
+  const isVerificationRequestButtonEnabled =
+    phoneNumber !== '' && phoneNumberErrorMessage === '';
   return (
     <>
       <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
@@ -38,11 +44,18 @@ function PhoneFields({
               type="tel"
               value={phoneNumber}
               ref={inputRef}
-              onChange={handlePhoneNumberChange}
+              onChange={onPhoneNumberChange}
               errored={phoneNumberErrorMessage !== ''}
             />
           </div>
-          <Button type="button" customStyle={buttonCustomStyle}>
+          <Button
+            type="button"
+            customStyle={buttonCustomStyle}
+            onClick={() => onAuthCodeClick(phoneNumber)}
+            variant={
+              isVerificationRequestButtonEnabled ? 'primary' : 'disabled'
+            }
+          >
             인증요청
           </Button>
         </StyledInputAndBtnWrapper>
@@ -59,12 +72,17 @@ function PhoneFields({
               placeholder="123456"
               type="tel"
               value={verificationCode}
-              onChange={handleVerificationCodeChange}
+              onChange={onVerificationCodeChange}
               errored={verificationCodeErrorMessage !== ''}
               maxLength={6}
             />
           </div>
-          <Button type="button" customStyle={buttonCustomStyle}>
+          <Button
+            type="button"
+            customStyle={buttonCustomStyle}
+            onClick={() => onAuthCodeVerifyClick(phoneNumber)}
+            variant={isVerificationButtonEnabled ? 'primary' : 'disabled'}
+          >
             인증하기
           </Button>
         </StyledInputAndBtnWrapper>

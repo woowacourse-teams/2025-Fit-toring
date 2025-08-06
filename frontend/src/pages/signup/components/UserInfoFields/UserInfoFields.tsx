@@ -6,17 +6,17 @@ import Input from '../../../../common/components/Input/Input';
 interface UserInfoFields {
   name: string;
   nameErrorMessage: string;
-  handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   gender: string;
-  handleGenderChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onGenderChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function UserInfoFields({
   name,
   nameErrorMessage,
-  handleNameChange,
+  onNameChange,
   gender,
-  handleGenderChange,
+  onGenderChange,
 }: UserInfoFields) {
   return (
     <StyledContainer>
@@ -24,9 +24,10 @@ function UserInfoFields({
         <StyledNameInputWrapper>
           <Input
             id="name"
+            name="name"
             placeholder="홍길동"
             value={name}
-            onChange={handleNameChange}
+            onChange={onNameChange}
             errored={nameErrorMessage !== ''}
           />
         </StyledNameInputWrapper>
@@ -38,12 +39,12 @@ function UserInfoFields({
             <StyledLabel>
               남
               <StyledRadio
-                onChange={handleGenderChange}
+                onChange={onGenderChange}
                 type="radio"
                 name="gender"
-                value="male"
+                value="남"
                 id="male"
-                checked={gender === 'male'}
+                checked={gender === '남'}
               />
             </StyledLabel>
           </StyledRadioWrapper>
@@ -51,12 +52,12 @@ function UserInfoFields({
             <StyledLabel>
               여
               <StyledRadio
-                onChange={handleGenderChange}
+                onChange={onGenderChange}
                 type="radio"
                 name="gender"
-                value="female"
+                value="여"
                 id="female"
-                checked={gender === 'female'}
+                checked={gender === '여'}
               />
             </StyledLabel>
           </StyledRadioWrapper>

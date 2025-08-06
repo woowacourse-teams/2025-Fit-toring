@@ -21,6 +21,7 @@ public enum BusinessErrorMessage {
     IMAGE_NOT_FOUND("존재하지 않는 이미지입니다."),
     CERTIFICATE_NOT_FOUND("존재하지 않는 자격증명입니다."),
     ALREADY_PROCESSED_CERTIFICATE("이미 처리된 자격증명입니다."),
+    MEMBER_NOT_FOUND("존재하지 않는 회원입니다."),
     ;
 
     private final String message;
