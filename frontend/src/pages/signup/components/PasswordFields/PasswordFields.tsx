@@ -80,8 +80,8 @@ const StyledInput = styled.input<{ errored?: boolean }>`
   padding-right: 4rem;
   border: ${({ theme, errored }) =>
       errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
-    0.1rem solid;
-  border-radius: 0.7rem;
+    1px solid;
+  border-radius: 7px;
 
   background-color: transparent;
 
