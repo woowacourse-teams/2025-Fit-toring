@@ -1,5 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
+import { API_ENDPOINTS } from '../../constants/apiEndpoints';
+
 import { MEMBER_SUMMARY } from './data';
 
 export const testStateStore = {
@@ -12,7 +14,7 @@ export const testStateStore = {
 };
 
 const BASE_URL = process.env.BASE_URL;
-const MEMBER_SUMMARY_URL = `${BASE_URL}/members/summary`;
+const MEMBER_SUMMARY_URL = `${BASE_URL}${API_ENDPOINTS.MEMBERS}`;
 const getMemberSummary = http.get(MEMBER_SUMMARY_URL, () => {
   const response = { ...MEMBER_SUMMARY };
 
