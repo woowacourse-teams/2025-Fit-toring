@@ -19,12 +19,11 @@ const getMemberSummary = http.get(MEMBER_SUMMARY_URL, () => {
   const response = { ...MEMBER_SUMMARY };
 
   if (testStateStore.shouldFailCart) {
-    return new HttpResponse(null, {
-      status: 500,
-      statusText: 'members fetch Failed',
-    });
+    return HttpResponse.json(
+      { message: 'members fetch Failed' },
+      { status: 500 },
+    );
   }
-
   return HttpResponse.json(response);
 });
 
