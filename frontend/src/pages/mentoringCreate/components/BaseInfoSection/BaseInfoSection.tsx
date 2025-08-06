@@ -37,12 +37,12 @@ function BaseInfoSection({ onPriceChange }: BaseInfoSectionProps) {
     <section>
       <TitleSeparator>기본 정보</TitleSeparator>
       <StyledFormFieldWrapper>
-        <FormField label="이름 *" htmlFor="name">
+        <FormField label="이름 *">
           <Input value={userInfo.name} id="name" readOnly />
         </FormField>
-        <FormField label="15분 상담료 (원) *" htmlFor="price">
+        <FormField label="15분 상담료 (원) *">
           <Input
-            placeholder="5,000"
+            placeholder="5000"
             id="price"
             required
             onChange={(event) =>
@@ -50,7 +50,7 @@ function BaseInfoSection({ onPriceChange }: BaseInfoSectionProps) {
             }
           />
         </FormField>
-        <FormField label="전화번호 *" htmlFor="phone">
+        <FormField label="전화번호 *">
           <Input value={userInfo.phoneNumber} id="phone" readOnly />
         </FormField>
       </StyledFormFieldWrapper>
