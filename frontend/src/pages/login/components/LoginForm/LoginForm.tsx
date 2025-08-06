@@ -115,16 +115,19 @@ const StyledInput = styled.input<{ errored?: boolean }>`
   padding-right: 4rem;
   border: ${({ theme, errored }) =>
       errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
-    0.1rem solid;
+    1px solid;
   border-radius: 0.7rem;
   background-color: ${({ theme }) => theme.BG.WHITE};
+
   :focus {
     outline: none;
     border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN600};
   }
+
   ::placeholder {
     color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
+
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
