@@ -11,10 +11,14 @@ import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
 import type { UserInfoResponse } from '../types/userInfoResponse';
 
 interface BaseInfoSectionProps {
+  priceErrorMessage: string;
   onPriceChange: (newData: Pick<mentoringCreateFormData, 'price'>) => void;
 }
 
-function BaseInfoSection({ onPriceChange }: BaseInfoSectionProps) {
+function BaseInfoSection({
+  onPriceChange,
+  priceErrorMessage,
+}: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
     phoneNumber: '',
@@ -44,12 +48,13 @@ function BaseInfoSection({ onPriceChange }: BaseInfoSectionProps) {
         <FormField label="이름 *">
           <Input value={userInfo.name} id="name" readOnly />
         </FormField>
-        <FormField label="15분 상담료 (원) *">
+        <FormField label="15분 상담료 (원) *" errorMessage={priceErrorMessage}>
           <Input
             placeholder="5000"
             id="price"
             required
             onChange={handlePriceChange}
+            errored={priceErrorMessage !== ''}
           />
         </FormField>
         <FormField label="전화번호 *">
