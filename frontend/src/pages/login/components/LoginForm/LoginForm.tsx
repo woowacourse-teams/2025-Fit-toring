@@ -54,7 +54,7 @@ function LoginForm() {
             />
           </StyledInputWrapper>
         </FormField>
-        <FormField label="비밀번호 *" errorMessage={''}>
+        <FormField label="비밀번호" errorMessage={''}>
           <StyledInputWithIconWrapper>
             <StyledInput
               id="password"
