@@ -11,6 +11,7 @@ const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-10',
     categories: ['근력 증진', '다이어트'],
     isReviewed: true,
+    status: '완료됨',
   },
   {
     mentorName: '박코치',
@@ -20,6 +21,7 @@ const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-12',
     categories: ['요가', '필라테스'],
     isReviewed: false,
+    status: '승인됨',
   },
 ];
 
