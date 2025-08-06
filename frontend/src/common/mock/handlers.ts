@@ -1,6 +1,7 @@
 import { authCodeHandler } from './authCode/authCode';
 import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
 import { specialtiesHandler } from './common/handlers';
+import { createdMentoringHandler } from './createdMentoring/handlers';
 import { loginHandler } from './login/handler';
 import { mentoringHandler } from './mentoring/handlers';
 import { myProfileHandler } from './myProfile/handlers';
@@ -17,4 +18,5 @@ export const handlers = [
   ...myProfileHandler,
   ...specialtiesHandler,
   ...loginHandler,
+  ...createdMentoringHandler,
 ];
