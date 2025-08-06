@@ -5,18 +5,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import fittoring.config.JpaConfiguration;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.model.Category;
+import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.Category;
-import fittoring.mentoring.business.model.CategoryMentoring;
-import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
-import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.infra.S3Uploader;
@@ -181,6 +179,12 @@ class ReservationServiceTest {
             mentoring2,
             mentee
             ));
+        entityManager.persist(new Review(
+            4,
+            "좋았습니다.",
+            reservation2,
+            mentee
+        ));
         List<MemberReservationGetResponse> expected = List.of(
             new MemberReservationGetResponse(
                 mentoring1.getMentorName(),
@@ -196,7 +200,7 @@ class ReservationServiceTest {
                 mentoring2.getPrice(),
                 reservation2.getCreatedAt().toLocalDate(),
                 List.of(category1OfMentoring2.getCategoryTitle()),
-                false
+                true
             )
         );
 

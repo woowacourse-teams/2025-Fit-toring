@@ -6,4 +6,6 @@ import org.springframework.data.repository.ListCrudRepository;
 public interface ReviewRepository extends ListCrudRepository<Review, Long> {
 
     boolean existsByReservationId(Long reservationId);
+
+    boolean existsByReservationIdAndMenteeId(Long reservationId, Long menteeId);
 }

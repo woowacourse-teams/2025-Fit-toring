@@ -37,7 +37,7 @@ public class ReviewService {
         Member mentee = memberRepository.findById(menteeId)
             .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         validateReservationOwnership(reservation, menteeId);
-        validateReviewNotDuplicated(reservation);
+        validateReviewNotDuplicated(reservation, menteeId);
         return new Review(rating, content, reservation, mentee);
     }
 
@@ -48,8 +48,8 @@ public class ReviewService {
         throw new ReservationNotFoundException(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());
     }
 
-    private void validateReviewNotDuplicated(Reservation reservation) {
-        if (reviewRepository.existsByReservationId(reservation.getId())) {
+    private void validateReviewNotDuplicated(Reservation reservation, Long menteeId) {
+        if (reviewRepository.existsByReservationIdAndMenteeId(reservation.getId(), menteeId)) {
             throw new ReviewAlreadyExistsException(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
         }
     }

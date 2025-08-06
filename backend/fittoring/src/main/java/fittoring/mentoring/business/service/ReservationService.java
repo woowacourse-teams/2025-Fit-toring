@@ -58,7 +58,7 @@ public class ReservationService {
         Mentoring mentoring = reservation.getMentoring();
         String mentorProfileImage = imageService.findUrlByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
         List<String> categories = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
-        boolean isReviewed = reviewRepository.existsByReservationId(mentoring.getId());
+        boolean isReviewed = reviewRepository.existsByReservationId(reservation.getId());
         return new MemberReservationGetResponse(
             mentoring.getMentor().getName(),
             mentorProfileImage,
