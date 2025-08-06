@@ -40,7 +40,11 @@ function LoginForm() {
     fetchLogin();
   };
 
-  const loginFormValidated = userId !== '' && password !== '';
+  const loginFormValidated =
+    userId !== '' &&
+    password !== '' &&
+    userIdErrorMessage === '' &&
+    passwordErrorMessage === '';
 
   return (
     <StyledContainer onSubmit={handleSubmit}>
