@@ -29,7 +29,14 @@ function MentoringItem({
             e.currentTarget.src = defaultImage;
           }}
         />
-        <StyledName>{mentorName} 멘토</StyledName>
+        <StyledMentoringInfo>
+          <StyledName>{mentorName} 멘토</StyledName>
+          <StyledCategoryWrapper>
+            {categories.map((category) => (
+              <StyledCategory key={category}>{category}</StyledCategory>
+            ))}
+          </StyledCategoryWrapper>
+        </StyledMentoringInfo>
       </StyledMentorInfoWrapper>
     </StyledContainer>
   );
@@ -72,5 +79,28 @@ const StyledProfileImage = styled.img`
 
 const StyledName = styled.h4`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_R}
+  ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
+`;
+
+const StyledMentoringInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 1rem;
+`;
+
+const StyledCategoryWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+`;
+
+const StyledCategory = styled.span`
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN100};
+
+  color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
