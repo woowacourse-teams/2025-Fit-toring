@@ -41,7 +41,7 @@ class MemberControllerTest {
 
     @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수 있다.")
     @Test
-    void loginGetMeInfoForMentee() {
+    void loginGetMyInfoForMentee() {
         // given
         Member mentee = memberRepository.save(
                 new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
@@ -63,7 +63,7 @@ class MemberControllerTest {
 
     @DisplayName("로그인 중에 멘토는 내 정보를 조회할 수 있다.")
     @Test
-    void loginGetMeInfoForMentor() {
+    void loginGetMyInfoForMentor() {
         // given
         Member mentor = memberRepository.save(
                 new Member("id", "MALE", "멘토1", new Phone("010-1231-1231"), Password.from("pw")));
@@ -86,7 +86,7 @@ class MemberControllerTest {
 
     @DisplayName("비로그인 중에 멘티는 내 정보를 조회할 수 없다.")
     @Test
-    void nonLoginGetMeInfo() {
+    void nonLoginGetMyInfo() {
         // given
         // when
         // then

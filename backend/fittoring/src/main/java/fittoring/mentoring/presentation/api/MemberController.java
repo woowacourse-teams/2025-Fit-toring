@@ -16,8 +16,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/members/me")
-    public ResponseEntity<MyInfoResponse> getMeInfo(@Login LoginInfo loginInfo) {
-        MyInfoResponse memberInfo = memberService.getMeInfo(loginInfo.memberId());
+    public ResponseEntity<MyInfoResponse> getMyInfo(@Login LoginInfo loginInfo) {
+        MyInfoResponse memberInfo = memberService.getMemberInfo(loginInfo.memberId());
         return ResponseEntity.ok(memberInfo);
     }
 }

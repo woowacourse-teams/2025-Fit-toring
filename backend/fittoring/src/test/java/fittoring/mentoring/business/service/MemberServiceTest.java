@@ -60,7 +60,7 @@ class MemberServiceTest {
         Member savedMember = em.persist(member);
 
         // when
-        MyInfoResponse memberInfo = memberService.getMeInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -99,7 +99,7 @@ class MemberServiceTest {
         em.persist(mentoring);
 
         // when
-        MyInfoResponse memberInfo = memberService.getMeInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -144,7 +144,7 @@ class MemberServiceTest {
         em.persist(image);
 
         // when
-        MyInfoResponse memberInfo = memberService.getMeInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {

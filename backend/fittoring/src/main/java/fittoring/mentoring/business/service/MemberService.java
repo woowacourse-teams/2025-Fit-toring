@@ -21,7 +21,7 @@ public class MemberService {
     private final ImageService imageService;
     private final MentoringRepository mentoringRepository;
 
-    public MyInfoResponse getMeInfo(Long memberId) {
+    public MyInfoResponse getMemberInfo(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
         if (MemberRole.isMentee(member.getRole())) {
