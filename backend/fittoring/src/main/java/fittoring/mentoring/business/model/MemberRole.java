@@ -6,4 +6,8 @@ public enum MemberRole {
     MENTOR,
     ADMIN,
     ;
+
+    public static boolean isMentee(MemberRole role) {
+        return role == MENTEE;
+    }
 }
