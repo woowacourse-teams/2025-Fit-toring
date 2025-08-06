@@ -23,7 +23,7 @@ public class AdminCertificateController {
 
     private final CertificateService certificateService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<CertificateResponse>> getAllCertificates(
             @Login LoginInfo loginInfo,
             @RequestParam(value = "type", required = false) Status status
