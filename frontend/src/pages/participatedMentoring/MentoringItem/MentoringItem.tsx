@@ -20,6 +20,8 @@ function MentoringItem({
     status,
   },
 }: MentoringItemProps) {
+  const TIME = '15';
+
   return (
     <StyledContainer key={mentorName}>
       <StyledMentorInfoWrapper>
@@ -42,6 +44,12 @@ function MentoringItem({
           <MentoringApplicationStatus status={status} />
         </StyledStatusWrapper>
       </StyledMentorInfoWrapper>
+      <StyledApplicationInfoWrapper>
+        <StyledApplicationDate>⏰ {reservedAt}</StyledApplicationDate>
+        <StyledApplicationPrice>
+          💰 {TIME}분 {price.toLocaleString()}원
+        </StyledApplicationPrice>
+      </StyledApplicationInfoWrapper>
     </StyledContainer>
   );
 }
@@ -109,4 +117,21 @@ const StyledCategory = styled.span`
 
 const StyledStatusWrapper = styled.div`
   height: auto;
+`;
+
+const StyledApplicationInfoWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const StyledApplicationDate = styled.p`
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledApplicationPrice = styled.p`
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
