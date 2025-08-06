@@ -33,10 +33,12 @@ const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
     );
 
     if (testStateStore.shouldFailRequest) {
-      return new HttpResponse(null, {
-        status: 500,
-        statusText: 'filtered mentorings fetch Failed',
-      });
+      return new HttpResponse(
+        { message: 'filtered mentorings fetch Failed' },
+        {
+          status: 500,
+        },
+      );
     }
 
     return HttpResponse.json(response);
@@ -44,10 +46,12 @@ const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
     const response = [...MENTORINGS];
 
     if (testStateStore.shouldFailRequest) {
-      return new HttpResponse(null, {
-        status: 500,
-        statusText: 'mentorings fetch Failed',
-      });
+      return new HttpResponse(
+        { message: 'mentorings fetch Failed' },
+        {
+          status: 500,
+        },
+      );
     }
 
     return HttpResponse.json(response);
