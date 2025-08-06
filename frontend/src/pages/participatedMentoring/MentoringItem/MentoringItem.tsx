@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 
 import defaultImage from '../../../common/assets/images/profileImg.svg';
+import MentoringApplicationStatus from '../../CreatedMentoring/components/MentoringApplicationStatus/MentoringApplicationStatus';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
 
@@ -37,6 +38,9 @@ function MentoringItem({
             ))}
           </StyledCategoryWrapper>
         </StyledMentoringInfo>
+        <StyledStatusWrapper>
+          <MentoringApplicationStatus status={status} />
+        </StyledStatusWrapper>
       </StyledMentorInfoWrapper>
     </StyledContainer>
   );
@@ -65,8 +69,6 @@ const StyledContainer = styled.li`
 
 const StyledMentorInfoWrapper = styled.div`
   display: flex;
-
-  /* align-items: center; */
   gap: 1.2rem;
 `;
 
@@ -103,4 +105,8 @@ const StyledCategory = styled.span`
 
   color: ${({ theme }) => theme.SYSTEM.MAIN600};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledStatusWrapper = styled.div`
+  height: auto;
 `;
