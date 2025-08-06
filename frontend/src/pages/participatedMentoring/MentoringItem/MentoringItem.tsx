@@ -21,13 +21,16 @@ function MentoringItem({
 }: MentoringItemProps) {
   return (
     <StyledContainer key={mentorName}>
-      <StyledProfileImage
-        src={mentorProfileImage || defaultImage}
-        alt={`${mentorName} 멘토`}
-        onError={(e) => {
-          e.currentTarget.src = defaultImage;
-        }}
-      />
+      <StyledMentorInfoWrapper>
+        <StyledProfileImage
+          src={mentorProfileImage || defaultImage}
+          alt={`${mentorName} 멘토`}
+          onError={(e) => {
+            e.currentTarget.src = defaultImage;
+          }}
+        />
+        <StyledName>{mentorName} 멘토</StyledName>
+      </StyledMentorInfoWrapper>
     </StyledContainer>
   );
 }
@@ -53,9 +56,21 @@ const StyledContainer = styled.li`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
+const StyledMentorInfoWrapper = styled.div`
+  display: flex;
+
+  /* align-items: center; */
+  gap: 1.2rem;
+`;
+
 const StyledProfileImage = styled.img`
   width: 4.8rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 50%;
   aspect-ratio: 1 / 1;
+`;
+
+const StyledName = styled.h4`
+  color: ${({ theme }) => theme.FONT.B01};
+  ${({ theme }) => theme.TYPOGRAPHY.B1_R}
 `;
