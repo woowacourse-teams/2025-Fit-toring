@@ -25,8 +25,8 @@ function Checkbox({ checked, onChange, label, errored, id }: CheckboxProps) {
 
 const StyledContainer = styled.label`
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.7rem;
   cursor: pointer;
 `;
 
