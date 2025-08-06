@@ -77,6 +77,10 @@ function MentoringCreateForm() {
 
   const handleSubmitButtonClick = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (priceErrorMessage || introduceErrorMessage || careerErrorMessage) {
+      alert('입력값을 확인해주세요.');
+      return;
+    }
     submitMentoringForm();
   };
 
