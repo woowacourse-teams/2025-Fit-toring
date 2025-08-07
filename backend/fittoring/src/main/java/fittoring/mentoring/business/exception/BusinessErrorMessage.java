@@ -24,6 +24,7 @@ public enum BusinessErrorMessage {
     DUPLICATED_REVIEW("한 번의 예약당 한 번만 리뷰를 남길 수 있습니다."),
     RESERVATION_STATUS_ALREADY_UPDATE("이미 처리된 예약은 상태 변경이 불가합니다."),
     RESERVATION_STATUS_ALREADY_EQUAL("동일한 상태로는 변경할 수 없습니다."),
+    STATUS_NOT_FOUND("존재하지 않는 상태입니다."),
     ;
 
     private final String message;
