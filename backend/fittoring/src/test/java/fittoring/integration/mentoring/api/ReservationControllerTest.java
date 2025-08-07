@@ -379,10 +379,18 @@ class ReservationControllerTest {
         assertThat(response).isEmpty();
     }
 
-    @DisplayName("예약의 상태를 변경할 수 있다.")
+    @DisplayName("예약의 상태가 대기(PENDING)에서 승인(APPROVE)으로 변경되면 sms를 전송하고, 200 OK를 반환한다.")
     @Test
     void updateStatus() {
         //given
+        doNothing()
+                .when(smsRestClientService)
+                .sendSms(
+                        ArgumentMatchers.any(Phone.class),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString()
+                );
+
         Member mentor = memberRepository.save(
                 new Member("id1",
                         "MALE",

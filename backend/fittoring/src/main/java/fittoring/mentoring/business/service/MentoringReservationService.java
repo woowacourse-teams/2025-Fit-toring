@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.business.service.dto.SmsReservationMessageDto;
 import fittoring.mentoring.infra.SmsMessageFormatter;
@@ -30,4 +31,34 @@ public class MentoringReservationService {
         );
         return ReservationCreateResponse.from(reservation);
     }
+
+    public void updateStatusAndSendSms(Long reservationId, String status) {
+        Reservation reservation = reservationService.updateStatus(reservationId, status);
+        sendSms(reservation, status);
+    }
+
+    private void sendSms(Reservation reservation, String updateStatus) {
+        Status status = Status.of(updateStatus);
+        String mentorName = reservation.getMentorName();
+        String context = reservation.getContext();
+        String mentorPhoneNumber = reservation.getMentorPhone();
+
+        if (status.isNotifiable()) {
+            String message = createMessage(status, mentorName, context, mentorPhoneNumber);
+            Phone menteePhone = reservation.getMentee().getPhone();
+            smsRestClientService.sendSms(menteePhone, message, RESERVATION_SUBJECT);
+        }
+    }
+
+    private String createMessage(Status status, String mentorName, String context, String mentorPhoneNumber) {
+        if (status.isApprove()) {
+            return smsMessageFormatter.createApproveReservationMessage(
+                    mentorName,
+                    context,
+                    mentorPhoneNumber
+            );
+        }
+        return smsMessageFormatter.createRejectReservationMessage(mentorName, context);
+    }
+
 }

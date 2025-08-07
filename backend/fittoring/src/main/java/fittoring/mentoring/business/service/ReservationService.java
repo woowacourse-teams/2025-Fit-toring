@@ -6,7 +6,6 @@ import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.exception.NotFoundReservationException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.MemberRepository;
@@ -15,8 +14,6 @@ import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
-import fittoring.mentoring.infra.SmsMessageFormatter;
-import fittoring.mentoring.infra.SmsRestClientService;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReservationService {
 
-    private static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
-
-    private final SmsRestClientService restClientService;
-    private final SmsMessageFormatter smsMessageFormatter;
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
@@ -88,11 +81,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public void updateStatus(Long reservationId, String updateStatus) {
+    public Reservation updateStatus(Long reservationId, String updateStatus) {
         Reservation reservation = getReservation(reservationId);
         Status status = Status.of(updateStatus);
         reservation.changeStatus(status);
-        sendSms(reservation, status);
+        return reservation;
     }
 
     private Reservation getReservation(Long reservationId) {
@@ -101,29 +94,6 @@ public class ReservationService {
                         () -> new NotFoundReservationException(
                                 BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage())
                 );
-    }
-
-    private void sendSms(Reservation reservation, Status status) {
-        String mentorName = reservation.getMentorName();
-        String context = reservation.getContext();
-        String mentorPhoneNumber = reservation.getMentorPhone();
-
-        if (status.isNotifiable()) {
-            String message = createMessage(status, mentorName, context, mentorPhoneNumber);
-            Phone menteePhone = reservation.getMentee().getPhone();
-            restClientService.sendSms(menteePhone, message, RESERVATION_SUBJECT);
-        }
-    }
-
-    private String createMessage(Status status, String mentorName, String context, String mentorPhoneNumber) {
-        if (status.isApprove()) {
-            return smsMessageFormatter.createApproveReservationMessage(
-                    mentorName,
-                    context,
-                    mentorPhoneNumber
-            );
-        }
-        return smsMessageFormatter.createRejectReservationMessage(mentorName, context);
     }
 
     @Transactional(readOnly = true)
