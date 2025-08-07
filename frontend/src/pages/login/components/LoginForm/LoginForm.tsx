@@ -15,13 +15,8 @@ import { postLogin } from '../../apis/postLogin';
 function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const {
-    userId,
-    handleUserIdChange,
-    errorMessage: userIdErrorMessage,
-  } = useUserIdInput();
-  const { password, handlePasswordChange, passwordErrorMessage } =
-    usePasswordInput();
+  const { userId, handleUserIdChange } = useUserIdInput();
+  const { password, handlePasswordChange } = usePasswordInput();
 
   const fetchLogin = async () => {
     try {
@@ -40,27 +35,22 @@ function LoginForm() {
     fetchLogin();
   };
 
-  const loginFormValidated =
-    userId !== '' &&
-    password !== '' &&
-    userIdErrorMessage === '' &&
-    passwordErrorMessage === '';
+  const loginFormValidated = userId !== '' && password !== '';
 
   return (
     <StyledContainer onSubmit={handleSubmit}>
       <StyledFields>
-        <FormField label="아이디" errorMessage={userIdErrorMessage}>
+        <FormField label="아이디">
           <StyledInputWrapper>
             <Input
               placeholder="fittoring"
               value={userId}
               onChange={handleUserIdChange}
               required
-              errored={userIdErrorMessage !== ''}
             />
           </StyledInputWrapper>
         </FormField>
-        <FormField label="비밀번호" errorMessage={passwordErrorMessage}>
+        <FormField label="비밀번호">
           <StyledInputWithIconWrapper>
             <StyledInput
               id="password"
@@ -70,7 +60,6 @@ function LoginForm() {
               value={password}
               onChange={handlePasswordChange}
               required
-              errored={passwordErrorMessage !== ''}
             />
             <StyledImg
               src={passwordVisible ? blind : notBlind}
