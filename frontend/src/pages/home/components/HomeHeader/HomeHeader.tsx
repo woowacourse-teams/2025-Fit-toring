@@ -2,11 +2,15 @@ import styled from '@emotion/styled';
 import { Link, useNavigate } from 'react-router-dom';
 
 import logo from '../../../../common/assets/images/logo.svg';
+import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import Header from '../../../../common/components/Header/Header';
 import { PAGE_URL } from '../../../../common/constants/url';
+import MenuDropDown from '../../../myPage/components/MenuDropDown/MenuDropDown';
 
 function HomeHeader() {
+  const { authenticated } = useAuth();
+
   const navigate = useNavigate();
 
   const handleLoginClick = () => {
@@ -22,7 +26,11 @@ function HomeHeader() {
           </StyledLogoLink>
           <StyledTitle>핏토링</StyledTitle>
         </StyledTitleIconWrapper>
-        <Button onClick={handleLoginClick}>로그인</Button>
+        {authenticated ? (
+          <MenuDropDown />
+        ) : (
+          <Button onClick={handleLoginClick}>로그인</Button>
+        )}
       </StyledHeaderWrapper>
     </Header>
   );
