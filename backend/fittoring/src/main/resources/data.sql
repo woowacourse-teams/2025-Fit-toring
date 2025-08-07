@@ -1,5 +1,5 @@
 -- MEMBER
-INSERT INTO member (login_id, gender, name, phone, password, role)
+INSERT INTO member (login_id, gender, name, phone_number, password, role)
 VALUES ('logan', 'MALE', '로건', '010-5360-9558', 'logan123', 'MENTOR'),
        ('dogi', 'MALE', '도기', '010-5483-0455', 'dogi1234', 'MENTOR'),
        ('bumtae', 'MALE', '범태', '010-9390-1250', 'bt2024', 'MENTOR'),
