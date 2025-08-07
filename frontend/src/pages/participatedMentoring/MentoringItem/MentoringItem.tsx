@@ -9,6 +9,8 @@ interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
 }
 
+const TIME = '15';
+
 function MentoringItem({
   mentoring: {
     mentorName,
@@ -20,8 +22,6 @@ function MentoringItem({
     status,
   },
 }: MentoringItemProps) {
-  const TIME = '15';
-
   const canWriteReview = !isReviewed && status === StatusTypeEnum.completed;
 
   return (
