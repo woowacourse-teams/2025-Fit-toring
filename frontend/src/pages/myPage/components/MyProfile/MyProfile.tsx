@@ -2,26 +2,18 @@ import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
+import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import defaultProfile from '../../../../common/assets/images/profileImg.svg';
-import { getMyProfile } from '../../apis/getMyProfile';
 
-import type { MyProfileType } from '../../types/myProfile';
-
-const INITIAL_PROFILE: MyProfileType = {
-  name: '',
-  phoneNumber: '',
-  loginId: '',
-  imageUrl: '',
-} as const;
+import type { UserInfo } from '../../../../common/types/userInfo';
 
 function MyProfile() {
-  const [myProfile, setMyProfile] = useState<MyProfileType>(INITIAL_PROFILE);
-  const { name, phoneNumber, loginId, imageUrl } = myProfile;
+  const [myProfile, setMyProfile] = useState<UserInfo | null>(null);
 
   useEffect(() => {
     const fetchMyProfile = async () => {
       try {
-        const response = await getMyProfile();
+        const response = await getUserInfo();
         setMyProfile(response);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
@@ -30,16 +22,22 @@ function MyProfile() {
     fetchMyProfile();
   }, []);
 
+  if (!myProfile) {
+    return null;
+  }
+
+  const { loginId, name, phone, image } = myProfile;
+
   return (
     <StyledContainer>
       <StyledIntro>
         멘토링 활동 내역을 확인하고 개인정보를 관리하세요.
       </StyledIntro>
       <StyledWrapper>
-        <StyledImage src={imageUrl || defaultProfile} alt="내 프로필 이미지" />
+        <StyledImage src={image || defaultProfile} alt="내 프로필 이미지" />
         <StyledName>{name}</StyledName>
         <StyledId>아이디: {loginId}</StyledId>
-        <StyledPhone>전화번호: {phoneNumber}</StyledPhone>
+        <StyledPhone>전화번호: {phone}</StyledPhone>
       </StyledWrapper>
     </StyledContainer>
   );
