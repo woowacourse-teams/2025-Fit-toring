@@ -38,7 +38,7 @@ function Detail() {
       <DetailHeader />
       <StyledContainer>
         <Profile
-          profileImg={data.imageUrl}
+          profileImg={data.profileImageUrl}
           mentorName={data.mentorName}
           categories={data.categories}
         />

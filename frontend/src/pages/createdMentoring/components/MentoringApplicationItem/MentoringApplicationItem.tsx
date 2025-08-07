@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
+import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import ActionButtons from '../ActionButtons/ActionButtons';
-import MentoringApplicationStatus from '../MentoringApplicationStatus/MentoringApplicationStatus';
 import PhoneNumber from '../PhoneNumber/PhoneNumber';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';
@@ -9,6 +9,7 @@ import type { MentoringApplication } from '../../types/mentoringApplication';
 interface MentoringApplicationItemProps {
   mentoringApplication: MentoringApplication;
 }
+
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -61,7 +62,7 @@ const StyledContainer = styled.li`
   transition: all 0.2s ease;
 
   :hover {
-    box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}

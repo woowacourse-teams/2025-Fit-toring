@@ -67,6 +67,7 @@
     "@emotion/styled": "^11.14.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-ga4": "^2.1.0",
     "react-router-dom": "^7.6.3"
   },
   "msw": {
