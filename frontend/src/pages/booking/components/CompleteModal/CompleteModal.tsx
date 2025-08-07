@@ -43,7 +43,6 @@ function CompleteModal({
         <StyledInfoWrapper>
           <p>신청자: {bookedInfo?.menteeName}</p>
           <p>연락처: {bookedInfo?.menteePhone}</p>
-          <p>멘토 연락처: {bookedInfo?.mentorPhone}</p>
         </StyledInfoWrapper>
         <StyledCompleteGuide>
           <div>

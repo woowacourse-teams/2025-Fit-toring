@@ -42,7 +42,7 @@ function CreatedMentoring() {
         <MentoringApplicationList>
           {mentoringApplicationList.map((item) => (
             <MentoringApplicationItem
-              key={item.id}
+              key={item.reservationId}
               mentoringApplication={item}
             />
           ))}

@@ -3,8 +3,20 @@ import styled from '@emotion/styled';
 import uploadIcon from '../../../../common/assets/images/uploadIcon.svg';
 import usePreviewImage from '../../../../common/hooks/usePreviewImage';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
-function ProfileSection() {
+
+interface ProfileSectionProps {
+  onProfileImageChange: (file: File | null) => void;
+}
+
+function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
+
+  const handleProfileImageInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    handleImageChange(e);
+    onProfileImageChange(e.target.files?.[0] || null);
+  };
 
   return (
     <section>
@@ -16,7 +28,7 @@ function ProfileSection() {
               type="file"
               accept="image/*"
               id="profileImage"
-              onChange={handleImageChange}
+              onChange={handleProfileImageInputChange}
             />
             <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
           </>
@@ -26,7 +38,7 @@ function ProfileSection() {
               type="file"
               accept="image/*"
               id="profileImage"
-              onChange={handleImageChange}
+              onChange={handleProfileImageInputChange}
             />
 
             <StyledContentWrapper>

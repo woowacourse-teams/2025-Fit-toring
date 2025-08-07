@@ -8,7 +8,7 @@ public record MyInfoResponse(
         String loginId,
         String name,
         String gender,
-        String phone
+        String phoneNumber
 ) {
 
     public static MyInfoResponse from(Member member) {
