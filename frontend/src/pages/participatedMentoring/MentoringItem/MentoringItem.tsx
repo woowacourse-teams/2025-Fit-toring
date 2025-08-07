@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 import defaultImage from '../../../common/assets/images/profileImg.svg';
 import MentoringApplicationStatus from '../../createdMentoring/components/MentoringApplicationStatus/MentoringApplicationStatus';
-import { StatusTypeEnum } from '../../createdMentoring/types/statusType';
+import ReviewButton from '../ReviewButton/ReviewButton';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
 interface MentoringItemProps {
@@ -22,8 +22,6 @@ function MentoringItem({
     status,
   },
 }: MentoringItemProps) {
-  const canWriteReview = !isReviewed && status === StatusTypeEnum.completed;
-
   return (
     <StyledContainer key={mentorName}>
       <StyledMentorInfoWrapper>
@@ -51,7 +49,7 @@ function MentoringItem({
         <StyledApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
         </StyledApplicationPrice>
-        {canWriteReview && <StyledReviewButton>리뷰 작성</StyledReviewButton>}
+        <ReviewButton isReviewed={isReviewed} status={status} />
       </StyledApplicationInfoWrapper>
     </StyledContainer>
   );
@@ -85,9 +83,9 @@ const StyledMentorInfoWrapper = styled.div`
 
 const StyledProfileImage = styled.img`
   width: 4.8rem;
+  height: 4.8rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 50%;
-  aspect-ratio: 1 / 1;
 `;
 
 const StyledName = styled.h4`
@@ -136,30 +134,5 @@ const StyledApplicationDate = styled.p`
 
 const StyledApplicationPrice = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
-`;
-
-const StyledReviewButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-
-  margin-left: auto;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 6px;
-
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
-
-  color: ${({ theme }) => theme.FONT.W01};
-
-  transition: all 0.2s ease;
-
-  :hover {
-    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  }
-
-  cursor: pointer;
-
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
