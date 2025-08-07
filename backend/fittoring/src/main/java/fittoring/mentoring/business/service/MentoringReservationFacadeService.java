@@ -50,8 +50,8 @@ public class MentoringReservationFacadeService {
         }
     }
 
-    private String createMessage(Status status, String mentorName, String context, String mentorPhoneNumber) {
-        if (status.isApprove()) {
+    private String createMessage(Status updateStatus, String mentorName, String context, String mentorPhoneNumber) {
+        if (updateStatus.isApprove()) {
             return smsMessageFormatter.createApproveReservationMessage(
                     mentorName,
                     context,
