@@ -1,8 +1,8 @@
 export interface mentoringCreateFormData {
-  price: number | null;
+  price: number;
   category: string[];
   introduction: string;
-  career: number | null;
+  career: number;
   content: string;
   certificate: {
     type: string;
