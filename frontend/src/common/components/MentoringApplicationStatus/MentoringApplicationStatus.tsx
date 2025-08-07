@@ -65,7 +65,7 @@ const statusStyles: Record<
   },
   거절됨: {
     border: (theme) => theme.FONT.ERROR,
-    background: (theme) => theme.BG.GRAY,
+    background: (theme) => theme.BG.RED,
     color: (theme) => theme.FONT.W01,
   },
 } as const;

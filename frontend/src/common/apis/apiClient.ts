@@ -17,6 +17,7 @@ interface ApiClientDeleteType {
 interface ApiClientPatchType {
   endpoint: string;
   searchParams: Record<string, string | number>;
+  withCredentials?: boolean;
 }
 
 type RequestCredentials = 'omit' | 'same-origin' | 'include';
@@ -101,7 +102,7 @@ class ApiClient {
     }
   }
 
-  async patch({ endpoint, searchParams }: ApiClientPatchType) {
+  async patch({ endpoint, searchParams, withCredentials }: ApiClientPatchType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
 
     const options = {
@@ -110,12 +111,16 @@ class ApiClient {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(searchParams),
+      credentials: withCredentials
+        ? 'include'
+        : ('same-origin' as RequestCredentials),
     };
 
     const response = await fetch(url, options);
     if (!response.ok) {
       throw new Error('데이터를 PATCH하는 데 실패했습니다.');
     }
+    return response;
   }
 }
 
