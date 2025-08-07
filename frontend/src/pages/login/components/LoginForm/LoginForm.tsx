@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
 import notBlind from '../../../../common/assets/images/notBlind.svg';
@@ -18,11 +19,14 @@ function LoginForm() {
   const { userId, handleUserIdChange } = useUserIdInput();
   const { password, handlePasswordChange } = usePasswordInput();
 
+  const navigate = useNavigate();
+
   const fetchLogin = async () => {
     try {
       const response = await postLogin(userId, password);
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
+        navigate('/');
       }
     } catch (error) {
       console.error('로그인 실패', error);
