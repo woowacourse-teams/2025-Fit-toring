@@ -65,8 +65,8 @@ function SpecialtyFilterModal({
     handleApplyFinalSpecialties(temporarySelectedSpecialties);
     ReactGA.event({
       category: 'Specialty Filter',
-      action: 'Open Specialty Filter Modal',
-      label: '전문 분야 필터',
+      action: 'Apply Specialty Filter',
+      label: '전문 분야 필터 적용',
     });
   };
 
@@ -74,8 +74,8 @@ function SpecialtyFilterModal({
     setTemporarySelectedSpecialties([]);
     ReactGA.event({
       category: 'Specialty Filter',
-      action: 'Open Specialty Filter Modal',
-      label: '전문 분야 필터',
+      action: 'Reset Specialty Filter',
+      label: '전문 분야 필터 초기화',
     });
   };
 
