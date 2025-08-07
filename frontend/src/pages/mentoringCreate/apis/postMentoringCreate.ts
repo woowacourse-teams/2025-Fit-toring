@@ -10,7 +10,11 @@ export const postMentoringCreate = async (
 ) => {
   const formData = new FormData();
 
-  formData.append('data', JSON.stringify(mentoringData));
+  const jsonBlob = new Blob([JSON.stringify(mentoringData)], {
+    type: 'application/json',
+  });
+  formData.append('data', jsonBlob);
+
   if (profileImageFile) {
     formData.append('image', profileImageFile);
   }
