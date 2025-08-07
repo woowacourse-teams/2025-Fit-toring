@@ -4,6 +4,7 @@ import {
   StatusTypeEnum,
   type StatusType,
 } from '../../../../common/types/statusType';
+import { getMenteePhoneNumber } from '../../apis/getMenteePhoneNumber';
 import { patchReservationStatus } from '../../apis/patchReservationStatus';
 import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
 
@@ -16,6 +17,16 @@ interface ActionButtonsProps {
 }
 
 function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
+  const fetchPhoneNumber = async (status: StatusType) => {
+    try {
+      const { phoneNumber } = await getMenteePhoneNumber(reservationId);
+
+      onClick(status, phoneNumber);
+    } catch (error) {
+      console.error(`Error fetching mentee phone number:`, error);
+    }
+  };
+
   const handleActionButtonClick = async (
     newStatus: MENTORING_APPLICATION_STATUS,
   ) => {
@@ -24,13 +35,14 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         status: newStatus,
       });
 
-      if (response.status === 200) {
-        const updatedStatus =
-          newStatus === MENTORING_APPLICATION_STATUS_ENUM.APPROVE
-            ? StatusTypeEnum.approved
-            : StatusTypeEnum.rejected;
+      if (response.status !== 200) {
+        throw new Error(`Failed to update reservation status to ${newStatus}.`);
+      }
 
-        onClick(updatedStatus, '010-1111-2222');
+      if (newStatus === MENTORING_APPLICATION_STATUS_ENUM.APPROVE) {
+        await fetchPhoneNumber(StatusTypeEnum.approved);
+      } else {
+        onClick(StatusTypeEnum.rejected, '');
       }
     } catch (error) {
       console.error(`Error ${newStatus} reservation:`, error);
