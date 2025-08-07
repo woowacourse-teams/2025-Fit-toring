@@ -79,6 +79,7 @@ public class ReviewService {
             .map(review -> new MentoringReviewGetResponse(
                 review.getId(),
                 review.getMentee().getName(),
+                review.getCreatedAt().toLocalDate(),
                 review.getRating(),
                 review.getContent()
             ))

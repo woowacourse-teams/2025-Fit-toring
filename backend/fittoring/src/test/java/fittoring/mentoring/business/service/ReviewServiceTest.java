@@ -401,12 +401,14 @@ class ReviewServiceTest {
             new MentoringReviewGetResponse(
                 review1.getId(),
                 review1.getMentee().getName(),
+                review1.getCreatedAt().toLocalDate(),
                 review1.getRating(),
                 review1.getContent()
             ),
             new MentoringReviewGetResponse(
                 review2.getId(),
-                review1.getMentee().getName(),
+                review2.getMentee().getName(),
+                review2.getCreatedAt().toLocalDate(),
                 review2.getRating(),
                 review2.getContent()
             )
