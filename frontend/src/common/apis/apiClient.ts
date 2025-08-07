@@ -1,6 +1,7 @@
 interface ApiClientGetType {
   endpoint: string;
   searchParams?: Record<string, string>;
+  withCredentials?: boolean;
 }
 
 interface ApiClientPostType {
@@ -35,7 +36,11 @@ class ApiClient {
     this.#baseUrl = process.env.API_BASE_URL;
   }
 
-  async get<T>({ endpoint, searchParams }: ApiClientGetType): Promise<T> {
+  async get<T>({
+    endpoint,
+    searchParams,
+    withCredentials,
+  }: ApiClientGetType): Promise<T> {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
     url.search = new URLSearchParams(searchParams).toString();
 
@@ -45,6 +50,9 @@ class ApiClient {
         accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      credentials: withCredentials
+        ? 'include'
+        : ('same-origin' as RequestCredentials),
     };
 
     const response = await fetch(url, options);
