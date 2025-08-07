@@ -1,5 +1,4 @@
-import { CAREER } from '../constants/career';
-import { ERROR_MESSAGE } from '../constants/errorMessage';
+import { CAREER, ERROR_MESSAGE } from '../constants/career';
 
 export const careerValidator = (career: number | null): string => {
   if (career === null) {

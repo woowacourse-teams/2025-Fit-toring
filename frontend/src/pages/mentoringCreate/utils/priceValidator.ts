@@ -1,5 +1,4 @@
-import { ERROR_MESSAGE } from '../constants/errorMessage';
-import { PRICE } from '../constants/price';
+import { ERROR_MESSAGE, PRICE } from '../constants/price';
 
 export const priceValidator = (price: number | null): string => {
   if (price === null || price < PRICE.MIN) {
