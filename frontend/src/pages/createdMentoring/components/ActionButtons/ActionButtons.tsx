@@ -1,6 +1,9 @@
 import styled from '@emotion/styled';
 
-import { StatusTypeEnum, type StatusType } from '../../types/statusType';
+
+import { StatusTypeEnum } from '../../types/statusType';
+
+import type { StatusType } from '../../types/statusType';
 
 interface ActionButtonsProps {
   status: StatusType;

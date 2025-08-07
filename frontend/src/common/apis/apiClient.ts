@@ -5,7 +5,7 @@ interface ApiClientGetType {
 
 interface ApiClientPostType {
   endpoint: string;
-  body: Record<string, string | number>;
+  body: Record<string, string | number> | FormData;
   withCredentials?: boolean;
 }
 
@@ -24,12 +24,15 @@ class ApiClient {
   #baseUrl: string;
 
   constructor() {
-    if (typeof process.env.BASE_URL === 'undefined' || !process.env.BASE_URL) {
+    if (
+      typeof process.env.API_BASE_URL === 'undefined' ||
+      !process.env.API_BASE_URL
+    ) {
       throw new Error(
         '환경 변수 BASE_URL이 설정되지 않았습니다. .env 파일을 확인해주세요.',
       );
     }
-    this.#baseUrl = process.env.BASE_URL;
+    this.#baseUrl = process.env.API_BASE_URL;
   }
 
   async get<T>({ endpoint, searchParams }: ApiClientGetType): Promise<T> {
@@ -54,13 +57,12 @@ class ApiClient {
 
   async post({ endpoint, body, withCredentials }: ApiClientPostType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
+    const isFormData = body instanceof FormData;
 
     const options = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
+      headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
+      body: isFormData ? body : JSON.stringify(body),
       credentials: withCredentials
         ? 'include'
         : ('same-origin' as RequestCredentials),

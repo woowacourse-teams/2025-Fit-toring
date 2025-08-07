@@ -11,7 +11,7 @@ export const testStateStore = {
   },
 };
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 const MENTORING_URL = `${BASE_URL}/mentorings`;
 const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
   const url = new URL(request.url);
@@ -58,4 +58,18 @@ const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
   }
 });
 
-export const mentoringHandler = [getMentoringItems];
+const postMentoringCreate = http.post(MENTORING_URL, async ({ request }) => {
+  const formData = await request.formData();
+
+  const dataJson = formData.get('data');
+
+  const parsedData = JSON.parse(dataJson as string);
+
+  if (!parsedData) {
+    return HttpResponse.json({ message: 'Bad Request' }, { status: 400 });
+  }
+
+  return HttpResponse.json({ message: true }, { status: 201 });
+});
+
+export const mentoringHandler = [getMentoringItems, postMentoringCreate];

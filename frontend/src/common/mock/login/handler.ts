@@ -7,7 +7,7 @@ interface LoginBody {
   password: string;
 }
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 const LOGIN_URL = `${BASE_URL}${API_ENDPOINTS.LOGIN}`;
 
 const DUMMY_USER_ID = 'test1234';

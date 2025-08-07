@@ -10,6 +10,7 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.presentation.dto.MyInfoResponse;
+import fittoring.mentoring.presentation.dto.MyInfoSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -43,5 +44,11 @@ public class MemberService {
     private Image findMentoringImage(Mentoring mentoring) {
         return imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
                 .orElse(null);
+    }
+
+    public MyInfoSummaryResponse getMemberInfoSummary(Long memberId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        return MyInfoSummaryResponse.of(member);
     }
 }
