@@ -11,4 +11,5 @@ export const API_ENDPOINTS = {
   CREATED_MENTORING: '/mentorings/mine/reservations',
   MEMBERS: '/members/summary',
   PATCH_MENTORING_STATUS: '/status',
+  MENTEE_PHONE_NUMBER: '/phone',
 } as const;
