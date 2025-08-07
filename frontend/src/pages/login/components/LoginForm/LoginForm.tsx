@@ -28,7 +28,7 @@ function LoginForm() {
       const response = await postLogin(userId, password);
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
-        navigate('/');
+        navigate(-1);
         setAuthenticated(true);
       }
     } catch (error) {
