@@ -1,4 +1,4 @@
-export interface MyProfile {
+export interface MyProfileType {
   name: string;
   phoneNumber: string;
   loginId: string;
@@ -6,5 +6,5 @@ export interface MyProfile {
 }
 
 export interface MyProfileResponse {
-  data: MyProfile;
+  data: MyProfileType;
 }

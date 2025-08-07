@@ -39,7 +39,7 @@ function BookingForm({
     try {
       const response = await apiClient.post({
         endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.RESERVATION}`,
-        searchParams: {
+        body: {
           content: counselContent,
         },
       });

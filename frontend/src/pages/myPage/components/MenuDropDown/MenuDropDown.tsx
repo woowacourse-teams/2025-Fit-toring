@@ -1,14 +1,16 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 const MENU_ITEMS = [
-  '개설한 멘토링',
-  '참여한 멘토링',
-  '회원 정보',
-  '로그아웃',
+  { name: '개설한 멘토링', path: PAGE_URL.CREATED_MENTORING },
+  { name: '참여한 멘토링', path: 'participated-mentoring' },
+  { name: '회원 정보', path: 'my-profile' },
+  { name: '로그아웃', path: 'logout' },
 ] as const;
 
 function MenuDropDown() {
@@ -18,14 +20,17 @@ function MenuDropDown() {
     setOpened((prev) => !prev);
   };
 
-  const [selectedMenu, setSelectedMenu] = useState<(typeof MENU_ITEMS)[number]>(
-    MENU_ITEMS[0],
-  );
+  const [selectedMenu, setSelectedMenu] = useState<
+    (typeof MENU_ITEMS)[number]['name']
+  >(MENU_ITEMS[0].name);
 
   const handleSelectMenu = (item: (typeof MENU_ITEMS)[number]) => {
-    setSelectedMenu(item);
+    setSelectedMenu(item.name);
     setOpened((prev) => !prev);
+    navigate(item.path);
   };
+
+  const navigate = useNavigate();
 
   return (
     <StyledContainer>
@@ -36,11 +41,11 @@ function MenuDropDown() {
       <StyledMenuList opened={opened}>
         {MENU_ITEMS.map((item) => (
           <StyledMenuItem
-            key={item}
+            key={item.name}
             onClick={() => handleSelectMenu(item)}
-            selected={selectedMenu === item}
+            selected={selectedMenu === item.name}
           >
-            {item}
+            {item.name}
           </StyledMenuItem>
         ))}
       </StyledMenuList>

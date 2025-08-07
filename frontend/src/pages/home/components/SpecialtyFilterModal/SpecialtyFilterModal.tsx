@@ -43,6 +43,10 @@ function SpecialtyFilterModal({
   const [temporarySelectedSpecialties, setTemporarySelectedSpecialties] =
     useState<string[]>(selectedSpecialties);
 
+  useEffect(() => {
+    setTemporarySelectedSpecialties(selectedSpecialties);
+  }, [selectedSpecialties]);
+
   if (!opened) {
     return null;
   }

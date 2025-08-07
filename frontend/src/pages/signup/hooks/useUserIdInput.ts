@@ -41,7 +41,7 @@ const useUserIdInput = () => {
     userId,
     errorMessage,
     handleUserIdChange,
-    isValid: userId !== '' && errorMessage === '',
+    validated: userId !== '' && errorMessage === '',
   };
 };
 

@@ -15,6 +15,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultSpecialtySection: Story = {
+  args: {
+    onSpecialtyChange: () => {},
+  },
   parameters: {
     msw: {
       handlers: [...commonHandler],

@@ -1,22 +1,59 @@
+import { useEffect, useState } from 'react';
+
 import styled from '@emotion/styled';
 
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
+import { getUserInfo } from '../../apis/getUserInfo';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-function BaseInfoSection() {
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+import type { UserInfoResponse } from '../types/userInfoResponse';
+
+interface BaseInfoSectionProps {
+  onPriceChange: (newData: Pick<mentoringCreateFormData, 'price'>) => void;
+}
+
+function BaseInfoSection({ onPriceChange }: BaseInfoSectionProps) {
+  const [userInfo, setUserInfo] = useState<UserInfoResponse>({
+    name: '',
+    phoneNumber: '',
+  });
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await getUserInfo();
+        setUserInfo(response);
+      } catch (error) {
+        console.error('사용자 정보 조회 실패:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onPriceChange({ price: Number(event.target.value) });
+  };
+
   return (
     <section>
       <TitleSeparator>기본 정보</TitleSeparator>
       <StyledFormFieldWrapper>
-        <FormField label="이름 *" htmlFor="name">
-          <Input placeholder="홍길동" id="name" required />
+        <FormField label="이름 *">
+          <Input value={userInfo.name} id="name" readOnly />
         </FormField>
-        <FormField label="15분 상담료 (원) *" htmlFor="price">
-          <Input placeholder="5,000" id="price" required />
+        <FormField label="15분 상담료 (원) *">
+          <Input
+            placeholder="5000"
+            id="price"
+            required
+            onChange={handlePriceChange}
+          />
         </FormField>
-        <FormField label="전화번호 *" htmlFor="phone">
-          <Input placeholder="010-1234-5678" type="tel" id="phone" required />
+        <FormField label="전화번호 *">
+          <Input value={userInfo.phoneNumber} id="phone" readOnly />
         </FormField>
       </StyledFormFieldWrapper>
     </section>

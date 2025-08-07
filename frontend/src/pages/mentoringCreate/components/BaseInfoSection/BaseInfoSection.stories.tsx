@@ -13,6 +13,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultBaseInfoSection: Story = {
+  args: {
+    onPriceChange: () => {},
+  },
   parameters: {
     docs: {
       description: {

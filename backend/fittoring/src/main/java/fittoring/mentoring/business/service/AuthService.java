@@ -5,6 +5,7 @@ import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.InvalidTokenException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
@@ -80,7 +81,7 @@ public class AuthService {
                 request.loginId(),
                 request.gender(),
                 request.name(),
-                request.phone(),
+                new Phone(request.phone()),
                 Password.from(request.password())
         );
     }
