@@ -9,7 +9,7 @@ const config: StorybookConfig = {
   },
   env: (config) => ({
     ...config,
-    BASE_URL: process.env.API_BASE_URL || 'http://localhost:6006',
+    API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:6006',
   }),
 };
 export default config;

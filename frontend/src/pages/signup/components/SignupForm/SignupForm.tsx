@@ -7,11 +7,11 @@ import * as Sentry from '@sentry/react';
 import Button from '../../../../common/components/Button/Button';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
+import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postSignup } from '../../apis/postSignup';
-import usePasswordInput from '../../hooks/usePasswordInput';
+import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput';
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
-import useUserIdInput from '../../hooks/useUserIdInput';
 import useVerificationCodeConfirm from '../../hooks/useVerificationCodeConfirm';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
 import useVerificationCodeRequest from '../../hooks/useVerificationCodeRequest';
@@ -70,7 +70,7 @@ function SignupForm() {
     handlePasswordConfirmChange,
     passwordValidated,
     passwordConfrimValidated,
-  } = usePasswordInput();
+  } = usePasswordWithConfirmInput();
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
     useFormattedPhoneNumber();
