@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const DotenvWebpackPlugin = require('dotenv-webpack');
 
@@ -55,13 +54,6 @@ module.exports = {
     historyApiFallback: true,
     client: {
       overlay: true,
-    },
-    server: {
-      type: 'https',
-      options: {
-        key: fs.readFileSync(path.resolve(__dirname, 'ssl', 'key.pem')),
-        cert: fs.readFileSync(path.resolve(__dirname, 'ssl', 'cert.pem')),
-      },
     },
   },
   plugins: [
