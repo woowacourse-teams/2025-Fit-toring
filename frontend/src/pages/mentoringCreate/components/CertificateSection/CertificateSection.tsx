@@ -10,7 +10,7 @@ import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
 
 interface CertificateSectionProps {
   onCertificateChange: (
-    newData: Pick<mentoringCreateFormData, 'certificate'>,
+    newData: Pick<mentoringCreateFormData, 'certificateInfos'>,
   ) => void;
   handleCertificateImageFilesChange: (files: File[]) => void;
 }
@@ -26,7 +26,7 @@ function CertificateSection({
       {
         id: crypto.randomUUID(),
         title: '',
-        type: '자격증',
+        type: 'LICENSE',
         file: undefined,
       },
     ]);
@@ -34,7 +34,7 @@ function CertificateSection({
   const handleDeleteButtonClick = (id: string) => {
     const updated = certificates.filter((item) => item.id !== id);
     setCertificates(updated);
-    onCertificateChange({ certificate: updated });
+    onCertificateChange({ certificateInfos: updated });
   };
 
   const handleCertificateChangeById = (
@@ -50,7 +50,7 @@ function CertificateSection({
       title,
       type,
     }));
-    onCertificateChange({ certificate: finalCertificates });
+    onCertificateChange({ certificateInfos: finalCertificates });
 
     const files = updated
       .map((item) => item.file)
