@@ -2,7 +2,7 @@ package fittoring.mentoring.presentation.api;
 
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.mentoring.business.service.MentoringReservationService;
+import fittoring.mentoring.business.service.MentoringReservationFacadeService;
 import fittoring.mentoring.business.service.ReservationService;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ReservationController {
 
-    private final MentoringReservationService mentoringReservationService;
+    private final MentoringReservationFacadeService mentoringReservationFacadeService;
     private final ReservationService reservationService;
 
     @PostMapping("/mentorings/{mentoringId}/reservation")
@@ -40,7 +40,7 @@ public class ReservationController {
                 mentoringId,
                 requestBody
         );
-        ReservationCreateResponse responseBody = mentoringReservationService.reserveMentoring(
+        ReservationCreateResponse responseBody = mentoringReservationFacadeService.reserveMentoring(
                 reservationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseBody);
@@ -61,7 +61,7 @@ public class ReservationController {
             @PathVariable Long reservationId,
             @RequestBody @Valid ReservationStatusUpdateRequest request
     ) {
-        mentoringReservationService.updateStatusAndSendSms(reservationId, request.status());
+        mentoringReservationFacadeService.updateStatusAndSendSms(reservationId, request.status());
         return ResponseEntity.ok().build();
     }
 

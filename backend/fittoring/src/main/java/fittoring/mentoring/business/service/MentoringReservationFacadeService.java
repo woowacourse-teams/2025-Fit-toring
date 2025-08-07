@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class MentoringReservationService {
+public class MentoringReservationFacadeService {
 
     private static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
 
