@@ -5,6 +5,7 @@ import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringReservationService;
 import fittoring.mentoring.business.service.ReservationService;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
+import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
@@ -64,4 +65,9 @@ public class ReservationController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/reservations/{reservationId}/phone")
+    public ResponseEntity<PhoneNumberResponse> getPhone(@PathVariable Long reservationId) {
+        PhoneNumberResponse response = reservationService.getPhone(reservationId);
+        return ResponseEntity.ok(response);
+    }
 }

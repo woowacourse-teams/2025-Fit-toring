@@ -21,6 +21,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
+import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
@@ -403,7 +404,6 @@ class ReservationControllerTest {
                         Password.from("pw"))
         );
         Member savedMentee = memberRepository.save(mentee);
-
         Reservation savedReservation = reservationRepository.save(
                 new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
         );
@@ -526,6 +526,57 @@ class ReservationControllerTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @DisplayName("예약자의 전화번호 요청하면 200 OK와 전화번호를 반환한다.")
+    @Test
+    void getPhone() {
+        //given
+        Member mentor = memberRepository.save(
+                new Member("id1",
+                        "MALE",
+                        "박멘토",
+                        new Phone("010-1234-5679"),
+                        Password.from("pw"))
+        );
+        Member savedMentor = memberRepository.save(mentor);
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+
+        //멘토링 생성
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring savedMentoring = mentoringRepository.save(mentoring);
+
+        //멘티 생성
+        Member mentee = memberRepository.save(
+                new Member("id2",
+                        "MALE",
+                        "김멘티",
+                        new Phone("010-5678-9123"),
+                        Password.from("pw"))
+        );
+        Member savedMentee = memberRepository.save(mentee);
+
+        Reservation savedReservation = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVE)
+        );
+
+        //when
+        PhoneNumberResponse response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/reservations/" + savedReservation.getId() + "/phone")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(PhoneNumberResponse.class);
+
+        //then
+        assertThat(response.phoneNumber()).isEqualTo(savedMentee.getPhoneNumber());
+
     }
 }
 

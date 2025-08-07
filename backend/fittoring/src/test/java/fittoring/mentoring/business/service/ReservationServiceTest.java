@@ -12,6 +12,7 @@ import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
+import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.util.DbCleaner;
 import java.util.List;
@@ -223,5 +224,35 @@ class ReservationServiceTest {
         //then
         Reservation actual = entityManager.find(Reservation.class, savedReservation.getId());
         assertThat(actual.getStatus()).isEqualTo(expectedStatusValue);
+    }
+
+    @DisplayName("예약자(멘티)의 전화번호를 반환할 수 있다.")
+    @Test
+    void getPhone() {
+        //given
+        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+        Member savedMentor = entityManager.persist(mentor);
+
+        Mentoring mentoring = new Mentoring(
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
+        );
+        entityManager.persist(mentoring);
+
+        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
+        Member savedMentee = entityManager.persist(mentee);
+
+        Reservation reservation = new Reservation("context", mentoring, savedMentee, Status.PENDING);
+        Reservation savedReservation = entityManager.persist(reservation);
+        entityManager.clear();
+
+        //when
+        PhoneNumberResponse actual = reservationService.getPhone(savedReservation.getId());
+
+        //then
+        assertThat(actual.phoneNumber()).isEqualTo(savedMentee.getPhoneNumber());
     }
 }

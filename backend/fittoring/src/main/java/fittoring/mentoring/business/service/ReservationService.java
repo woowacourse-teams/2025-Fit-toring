@@ -93,4 +93,10 @@ public class ReservationService {
                                 BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage())
                 );
     }
+
+    @Transactional(readOnly = true)
+    public PhoneNumberResponse getPhone(Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        return new PhoneNumberResponse(reservation.getMenteePhone());
+    }
 }
