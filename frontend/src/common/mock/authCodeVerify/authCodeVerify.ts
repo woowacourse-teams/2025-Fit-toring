@@ -6,7 +6,7 @@ interface AuthCodeVerifyBody {
   code: string;
 }
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 
 const DUMMY_AUTH_CODE = '123456';
 

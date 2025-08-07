@@ -13,7 +13,7 @@ export const testStateStore = {
   },
 };
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 const MEMBER_SUMMARY_URL = `${BASE_URL}${API_ENDPOINTS.MEMBERS}`;
 const getMemberSummary = http.get(MEMBER_SUMMARY_URL, () => {
   const response = { ...MEMBER_SUMMARY };

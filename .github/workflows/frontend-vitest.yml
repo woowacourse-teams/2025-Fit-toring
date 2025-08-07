@@ -1,11 +1,11 @@
-name: "frontend-vitest test"
+name: 'frontend-vitest test'
 
 on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - "frontend/**/*.test.ts"
-      - "frontend/**/*.test.tsx"
+      - 'frontend/**/*.test.ts'
+      - 'frontend/**/*.test.tsx'
 
 jobs:
   Vitest:
@@ -23,6 +23,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci # package-lock.json 기반으로 설치 (CI 환경에 권장)
+        working-directory: ./frontend # frontend 디렉토리에서 실행
+
+      - name: Generate environment variables
+        run: |
+          echo "API_BASE_URL=${{ secrets.FE_API_BASE_URL }}" >> .env
+        env:
+          API_BASE_URL: ${{ secrets.FE_API_BASE_URL }}
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Run Vitest
