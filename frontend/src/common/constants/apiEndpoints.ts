@@ -10,4 +10,5 @@ export const API_ENDPOINTS = {
   LOGIN: '/login',
   CREATED_MENTORING: '/mentorings/mine/reservations',
   MEMBERS: '/members/summary',
+  REISSUE: '/reissue',
 } as const;
