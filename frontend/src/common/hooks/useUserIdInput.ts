@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import { validateLength } from '../../../common/utils/validateLength';
 import { ERROR_MESSAGE } from '../constants/errorMessage';
 import { ID } from '../constants/id';
+import { validateLength } from '../utils/validateLength';
 
 const useUserIdInput = () => {
   const [userId, setUserId] = useState('');

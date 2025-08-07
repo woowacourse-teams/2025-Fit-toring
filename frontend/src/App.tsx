@@ -9,6 +9,7 @@ import Home from './pages/home/Home';
 import Login from './pages/login/Login';
 import MentoringCreate from './pages/mentoringCreate/MentoringCreate';
 import MyPage from './pages/myPage/MyPage';
+import ParticipatedMentoring from './pages/participatedMentoring/ParticipatedMentoring';
 import Signup from './pages/signup/Signup';
 
 const router = createBrowserRouter([
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: PAGE_URL.CREATED_MENTORING,
         element: <CreatedMentoring />,
+      },
+      {
+        path: PAGE_URL.PARTICIPATED_MENTORING,
+        element: <ParticipatedMentoring />,
       },
     ],
   }, // TODO: `${PAGE_URL.MY_PAGE}/:userId`로 변경 예정

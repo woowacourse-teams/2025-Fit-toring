@@ -9,13 +9,15 @@ import notBlind from '../../../../common/assets/images/notBlind.svg';
 import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
+import usePasswordInput from '../../../../common/hooks/usePasswordInput';
+import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import { postLogin } from '../../apis/postLogin';
 
 function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const [userId, setUserId] = useState('');
-  const [password, setPassword] = useState('');
+  const { userId, handleUserIdChange } = useUserIdInput();
+  const { password, handlePasswordChange } = usePasswordInput();
 
   const fetchLogin = async () => {
     try {
@@ -29,19 +31,13 @@ function LoginForm() {
     }
   };
 
-  const handleUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserId(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     fetchLogin();
   };
+
+  const loginFormValidated = userId !== '' && password !== '';
 
   return (
     <StyledContainer onSubmit={handleSubmit}>
@@ -56,12 +52,12 @@ function LoginForm() {
             />
           </StyledInputWrapper>
         </FormField>
-        <FormField label="비밀번호" errorMessage={''}>
+        <FormField label="비밀번호">
           <StyledInputWithIconWrapper>
             <StyledInput
               id="password"
               name="password"
-              placeholder="5자이상 15자이하 입력하세요"
+              placeholder="••••••••"
               type={passwordVisible ? 'text' : 'password'}
               value={password}
               onChange={handlePasswordChange}
@@ -81,7 +77,10 @@ function LoginForm() {
           height: 4.3rem;
           box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
           font-size: 1.6rem;
+          box-shadow: 0 4px 12px 0
+            ${loginFormValidated ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
         `}
+        variant={loginFormValidated ? 'primary' : 'disabled'}
       >
         로그인
       </Button>
