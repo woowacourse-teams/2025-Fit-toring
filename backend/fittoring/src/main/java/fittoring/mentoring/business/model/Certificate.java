@@ -40,10 +40,6 @@ public class Certificate {
     @Column(nullable = false)
     private String title;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Mentoring mentoring;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status verificationStatus;
@@ -52,8 +48,12 @@ public class Certificate {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Mentoring mentoring;
+
     public Certificate(CertificateType type, String title, Mentoring mentoring) {
-        this(null, type, title, mentoring, Status.PENDING, null);
+        this(null, type, title, Status.PENDING, null, mentoring);
     }
 
     public void approve() {
