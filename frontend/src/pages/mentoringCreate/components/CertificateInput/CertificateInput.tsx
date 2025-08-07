@@ -61,6 +61,7 @@ function CertificateInput({
           type="text"
           placeholder="생활체육지도자 자격증 1급"
           onChange={handleCertificateTitleChange}
+          required
         />
       </StyledContentWrapper>
 
