@@ -20,8 +20,8 @@ function DetailIntroduce({ onDetailIntroduceChange }: DetailIntroduceProps) {
           <StyledTextarea
             placeholder="멘토링 경험, 전문성, 제공하는 서비스 등을 자세히 소개해주세요"
             id="content"
-            onChange={(event) =>
-              onDetailIntroduceChange({ content: event.target.value })
+            onChange={(e) =>
+              onDetailIntroduceChange({ content: e.target.value })
             }
             required
           />

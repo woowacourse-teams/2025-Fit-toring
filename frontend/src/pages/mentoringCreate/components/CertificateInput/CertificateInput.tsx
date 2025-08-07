@@ -23,15 +23,15 @@ function CertificateInput({
   const { previewUrl, handleImageChange } = usePreviewImage();
 
   const handleCertificateIdChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
-    onCertificateChange(id, { type: event.target.value });
+    onCertificateChange(id, { type: e.target.value });
   };
 
   const handleCertificateTitleChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    onCertificateChange(id, { title: event.target.value });
+    onCertificateChange(id, { title: e.target.value });
   };
 
   return (
@@ -61,6 +61,7 @@ function CertificateInput({
           type="text"
           placeholder="생활체육지도자 자격증 1급"
           onChange={handleCertificateTitleChange}
+          required
         />
       </StyledContentWrapper>
 
@@ -70,9 +71,9 @@ function CertificateInput({
           accept="image/*"
           id={id}
           name="certificateImage"
-          onChange={(event) => {
-            handleImageChange(event);
-            const file = event.target.files?.[0];
+          onChange={(e) => {
+            handleImageChange(e);
+            const file = e.target.files?.[0];
             if (file) {
               onCertificateImageFileChange(file);
             }
@@ -171,6 +172,10 @@ const StyledContentWrapper = styled.div`
       outline: none;
       box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
       border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+    }
+
+    ::placeholder {
+      color: ${({ theme }) => theme.SYSTEM.GRAY200};
     }
   }
 `;
