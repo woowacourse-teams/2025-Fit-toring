@@ -11,8 +11,8 @@ import type { StatusType } from '../../common/types/statusType';
 
 function CreatedMentoring() {
   const [mentoringApplicationList, setMentoringApplicationList] = useState<
-    MentoringApplication[] | null
-  >(null);
+    MentoringApplication[]
+  >([]);
 
   useEffect(() => {
     const fetchMentoringApplicationList = async () => {
@@ -23,7 +23,7 @@ function CreatedMentoring() {
     fetchMentoringApplicationList();
   }, []);
 
-  if (!mentoringApplicationList) {
+  if (!mentoringApplicationList.length) {
     return null;
   }
 
@@ -37,10 +37,6 @@ function CreatedMentoring() {
     phoneNumber: string;
   }) => {
     setMentoringApplicationList((prevList) => {
-      if (!prevList) {
-        return null;
-      }
-
       return prevList.map((item) => {
         if (item.reservationId !== reservationId) {
           return item;
