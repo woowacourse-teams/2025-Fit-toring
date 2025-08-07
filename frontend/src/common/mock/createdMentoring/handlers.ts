@@ -60,7 +60,38 @@ const patchReservationStatus = http.patch(
   },
 );
 
+const MENTEE_PHONE_NUMBER_URL = `${BASE_URL}${API_ENDPOINTS.RESERVATION}/:reservationId${API_ENDPOINTS.MENTEE_PHONE_NUMBER}`;
+const getMenteePhoneNumber = http.get(MENTEE_PHONE_NUMBER_URL, ({ params }) => {
+  const { reservationId } = params;
+
+  if (testStateStore.shouldFail) {
+    return new HttpResponse(
+      { message: testStateStore.customError || 'Fetch failed' },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  const target = MENTORING_APPLICATIONS.find(
+    (item) => item.reservationId === Number(reservationId),
+  );
+  if (!target) {
+    return new HttpResponse(
+      { message: 'Reservation not found' },
+      {
+        status: 404,
+      },
+    );
+  }
+
+  const { phoneNumber } = target;
+
+  return HttpResponse.json({ phoneNumber });
+});
+
 export const createdMentoringHandler = [
   getCreatedMentoringList,
   patchReservationStatus,
+  getMenteePhoneNumber,
 ];
