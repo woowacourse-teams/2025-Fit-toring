@@ -1,7 +1,7 @@
 import { MemoryRouter } from 'react-router-dom';
 
 import { PAGE_URL } from '../../../../common/constants/url';
-import { StatusTypeEnum } from '../../types/statusType';
+import { StatusTypeEnum } from '../../../../common/types/statusType';
 
 import MentoringApplicationStatus from './MentoringApplicationStatus';
 

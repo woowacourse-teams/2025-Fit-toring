@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 
-import { StatusTypeEnum } from '../../createdMentoring/types/statusType';
+import { StatusTypeEnum } from '../../../common/types/statusType';
 
-import type { StatusType } from '../../createdMentoring/types/statusType';
+import type { StatusType } from '../../../common/types/statusType';
 
 interface ReviewWriteButtonProps {
   onClick: () => void;
