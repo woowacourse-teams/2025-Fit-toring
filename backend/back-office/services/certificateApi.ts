@@ -47,7 +47,7 @@ const getCookie = (name: string): string | null => {
 };
 
 // API 기본 설정
-const API_BASE_URL = '/';
+const API_BASE_URL = '';
 
 // 헤더 생성
 const getApiHeaders = (additionalHeaders?: Record<string, string>): HeadersInit => ({

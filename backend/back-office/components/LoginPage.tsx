@@ -12,7 +12,7 @@ import {Alert, AlertDescription} from "./ui/alert";
 import {ImageWithFallback} from "./figma/ImageWithFallback";
 import {useAuth} from "./AuthContext";
 
-const API_BASE_URL = '/';
+const API_BASE_URL = '';
 
 // 쿠키 유틸리티 함수들
 const setCookie = (
