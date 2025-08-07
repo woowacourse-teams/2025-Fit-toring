@@ -29,7 +29,7 @@ const StyledContainer = styled.section`
   gap: 1.5rem;
 
   width: 100%;
-  padding: 1rem;
+  padding: 0;
 `;
 const StyledSelfIntroduction = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_B}
