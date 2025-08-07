@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
   VALIDATE_ID: '/validate-id',
   AUTH_CODE: '/auth-code',
   AUTH_CODE_VERIFY: '/auth-code/verify',
+  MEMBERS_ME: '/members/me',
   LOGIN: '/login',
   CREATED_MENTORING: '/mentorings/mine/reservations',
   MEMBERS: '/members/summary',

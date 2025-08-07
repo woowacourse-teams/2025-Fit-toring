@@ -1,15 +1,13 @@
-import type { StatusType } from './statusType';
+import type { StatusType } from '../../../common/types/statusType';
 
 export interface MentoringApplication {
-  id: number;
-  name: string;
+  reservationId: number;
+  menteeName: string;
   phoneNumber: string | null;
   price: number;
   content: string;
   status: StatusType;
-  applicationDate: string;
-  scheduledDate: string | null;
-  completionDate: string | null;
+  createdAt: string;
 }
 
 export interface MentoringApplicationResponse {

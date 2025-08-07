@@ -16,7 +16,7 @@ public class S3Uploader {
 
     private final S3Client s3Client;
 
-    private final String bucketName = "techcourse-project-2025";
+    private final String bucketName = "techcourse-project-2025/fit-toring";
 
     public String upload(MultipartFile file, String dir) throws IOException {
         String originalName = file.getOriginalFilename();

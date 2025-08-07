@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
+import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import ActionButtons from '../ActionButtons/ActionButtons';
-import MentoringApplicationStatus from '../MentoringApplicationStatus/MentoringApplicationStatus';
 import PhoneNumber from '../PhoneNumber/PhoneNumber';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';
@@ -10,23 +10,31 @@ interface MentoringApplicationItemProps {
   mentoringApplication: MentoringApplication;
 }
 
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const fullDate = date.toISOString().split('T')[0];
+
+  return fullDate;
+};
+
 function MentoringApplicationItem({
   mentoringApplication: {
-    id,
-    name,
+    reservationId,
+    menteeName,
     phoneNumber,
     price,
     content,
     status,
-    applicationDate,
+    createdAt,
   },
 }: MentoringApplicationItemProps) {
   const TIME = '15';
   return (
-    <StyledContainer key={id}>
-      <StyledName>{name}님의 상담 신청</StyledName>
+    <StyledContainer key={reservationId}>
+      <StyledName>{menteeName}님의 상담 신청</StyledName>
       <StyledApplicationInfoWrapper>
-        <StyledApplicationDate>⏰ {applicationDate}</StyledApplicationDate>
+        <StyledCreatedAt>⏰ {formatDate(createdAt)}</StyledCreatedAt>
         <StyledApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
         </StyledApplicationPrice>
@@ -54,7 +62,7 @@ const StyledContainer = styled.li`
   transition: all 0.2s ease;
 
   :hover {
-    box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
@@ -72,7 +80,7 @@ const StyledApplicationInfoWrapper = styled.div`
   gap: 1rem;
 `;
 
-const StyledApplicationDate = styled.p`
+const StyledCreatedAt = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;

@@ -42,7 +42,7 @@ function CreatedMentoring() {
         <MentoringApplicationList>
           {mentoringApplicationList.map((item) => (
             <MentoringApplicationItem
-              key={item.id}
+              key={item.reservationId}
               mentoringApplication={item}
             />
           ))}
@@ -77,7 +77,8 @@ const StyledWrapper = styled.div`
   height: 100%;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 16px;
-  box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
+
 `;
 
 const StyledInfoWrapper = styled.div`

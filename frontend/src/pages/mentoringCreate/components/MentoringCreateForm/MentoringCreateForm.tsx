@@ -3,6 +3,9 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
+import { careerValidator } from '../../utils/careerValidator';
+import { introduceValidator } from '../../utils/introduceValidator';
+import { priceValidator } from '../../utils/priceValidator';
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
 import ButtonSection from '../ButtonSection/ButtonSection';
 import CertificateSection from '../CertificateSection/CertificateSection';
@@ -15,10 +18,10 @@ import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
 
 function MentoringCreateForm() {
   const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
-    price: null,
+    price: 0,
     category: [],
     introduction: '',
-    career: null,
+    career: 0,
     content: '',
     certificate: [
       {
@@ -35,6 +38,10 @@ function MentoringCreateForm() {
   const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
     [],
   );
+
+  const priceErrorMessage = priceValidator(mentoringData.price);
+  const introduceErrorMessage = introduceValidator(mentoringData.introduction);
+  const careerErrorMessage = careerValidator(mentoringData.career);
 
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,
@@ -66,17 +73,28 @@ function MentoringCreateForm() {
     }
   };
 
-  const handleSubmitButtonClick = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmitButtonClick = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (priceErrorMessage || introduceErrorMessage || careerErrorMessage) {
+      alert('입력값을 확인해주세요.');
+      return;
+    }
     submitMentoringForm();
   };
 
   return (
     <StyledContainer onSubmit={handleSubmitButtonClick}>
-      <BaseInfoSection onPriceChange={handleMentoringDataChange} />
+      <BaseInfoSection
+        onPriceChange={handleMentoringDataChange}
+        priceErrorMessage={priceErrorMessage}
+      />
       <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
-      <IntroduceSection onIntroduceChange={handleMentoringDataChange} />
+      <IntroduceSection
+        onIntroduceChange={handleMentoringDataChange}
+        introduceErrorMessage={introduceErrorMessage}
+        careerErrorMessage={careerErrorMessage}
+      />
       <CertificateSection
         onCertificateChange={handleMentoringDataChange}
         handleCertificateImageFilesChange={handleCertificateImageFilesChange}
