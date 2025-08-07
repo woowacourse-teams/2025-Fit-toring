@@ -11,8 +11,8 @@ interface PasswordFieldsProps {
   passwordConfirm: string;
   passwordErrorMessage: string;
   passwordConfirmErrorMessage: string;
-  handlePasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handlePasswordConfirmChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPasswordConfirmChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function PasswordFields({
@@ -20,8 +20,8 @@ function PasswordFields({
   passwordConfirm,
   passwordErrorMessage,
   passwordConfirmErrorMessage,
-  handlePasswordChange,
-  handlePasswordConfirmChange,
+  onPasswordChange,
+  onPasswordConfirmChange,
 }: PasswordFieldsProps) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordConfrimVisible, setPasswordConfrimVisible] = useState(false);
@@ -36,7 +36,7 @@ function PasswordFields({
             placeholder="5자이상 15자이하 입력하세요"
             type={passwordVisible ? 'text' : 'password'}
             value={password}
-            onChange={handlePasswordChange}
+            onChange={onPasswordChange}
           />
           <StyledImg
             src={passwordVisible ? blind : notBlind}
@@ -55,7 +55,7 @@ function PasswordFields({
             placeholder="비밀번호를 다시 입력하세요"
             type={passwordConfrimVisible ? 'text' : 'password'}
             value={passwordConfirm}
-            onChange={handlePasswordConfirmChange}
+            onChange={onPasswordConfirmChange}
           />
           <StyledImg
             src={passwordConfrimVisible ? blind : notBlind}
@@ -80,8 +80,8 @@ const StyledInput = styled.input<{ errored?: boolean }>`
   padding-right: 4rem;
   border: ${({ theme, errored }) =>
       errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
-    0.1rem solid;
-  border-radius: 0.7rem;
+    1px solid;
+  border-radius: 7px;
 
   background-color: transparent;
 

@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservationRepository extends ListCrudRepository<Reservation, Long> {
 
+    boolean existsByIdAndMenteeId(Long id, Long memberId);
+
     List<Reservation> findAllByMentoringId(Long id);
 }

@@ -1,7 +1,9 @@
 package fittoring.mentoring.business.repository;
 
+import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MentoringRepository extends ListCrudRepository<Mentoring, Long> {
+
+    Optional<Mentoring> findByMentor(Member mentor);
 
     @Query("""
             SELECT m

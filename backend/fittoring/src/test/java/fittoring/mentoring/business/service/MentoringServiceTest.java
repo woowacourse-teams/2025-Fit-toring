@@ -14,6 +14,7 @@ import fittoring.mentoring.business.model.CertificateType;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
@@ -377,7 +378,7 @@ class MentoringServiceTest {
         void registerMentoring() throws IOException {
             //given
             Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
-            memberRepository.save(member1);
+            Member savedMentor = memberRepository.save(member1);
 
             MentoringRequest request = new MentoringRequest(
                     5000,
@@ -397,7 +398,8 @@ class MentoringServiceTest {
             when(s3Uploader.upload(any(), any())).thenReturn(null);
 
             // when
-            MentoringResponse actual = mentoringService.registerMentoring(RegisterMentoringDto.of(member1.getId(), request, null, null));
+            MentoringResponse actual = mentoringService.registerMentoring(
+                    RegisterMentoringDto.of(savedMentor.getId(), request, null, null));
 
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
@@ -407,6 +409,7 @@ class MentoringServiceTest {
                 softAssertions.assertThat(actual.career()).isEqualTo(request.career());
                 softAssertions.assertThat(actual.content()).isEqualTo(request.content());
                 softAssertions.assertThat(actual.profileImageUrl()).isNull();
+                softAssertions.assertThat(savedMentor.getRole()).isEqualTo(MemberRole.MENTOR);
             });
         }
 
