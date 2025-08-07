@@ -3,9 +3,9 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
-import { useCareerError } from '../../hooks/useCareerError';
-import { useIntroduceError } from '../../hooks/useIntroduceError';
-import { usePriceError } from '../../hooks/usePriceError';
+import { careerValidator } from '../../utils/careerValidator';
+import { introduceValidator } from '../../utils/introduceValidator';
+import { priceValidator } from '../../utils/priceValidator';
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
 import ButtonSection from '../ButtonSection/ButtonSection';
 import CertificateSection from '../CertificateSection/CertificateSection';
@@ -39,11 +39,9 @@ function MentoringCreateForm() {
     [],
   );
 
-  const { priceErrorMessage } = usePriceError(mentoringData.price);
-  const { introduceErrorMessage } = useIntroduceError(
-    mentoringData.introduction,
-  );
-  const { careerErrorMessage } = useCareerError(mentoringData.career);
+  const priceErrorMessage = priceValidator(mentoringData.price);
+  const introduceErrorMessage = introduceValidator(mentoringData.introduction);
+  const careerErrorMessage = careerValidator(mentoringData.career);
 
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,

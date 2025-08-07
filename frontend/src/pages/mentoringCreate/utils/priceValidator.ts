@@ -1,7 +1,7 @@
 import { ERROR_MESSAGE, PRICE } from '../constants/price';
 
-export const priceValidator = (price: number | null): string => {
-  if (price === null || price < PRICE.MIN) {
+export const priceValidator = (price: number): string => {
+  if (price < PRICE.MIN) {
     return ERROR_MESSAGE.PRICE_INVALID;
   }
   if (!Number.isInteger(price)) {
