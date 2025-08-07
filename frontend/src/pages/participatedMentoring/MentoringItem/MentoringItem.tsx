@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 import defaultImage from '../../../common/assets/images/profileImg.svg';
-import MentoringApplicationStatus from '../../createdMentoring/components/MentoringApplicationStatus/MentoringApplicationStatus';
+import MentoringApplicationStatus from '../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import ReviewButton from '../ReviewButton/ReviewButton';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';

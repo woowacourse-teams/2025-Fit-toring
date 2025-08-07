@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
+import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import ActionButtons from '../ActionButtons/ActionButtons';
-import MentoringApplicationStatus from '../MentoringApplicationStatus/MentoringApplicationStatus';
 import PhoneNumber from '../PhoneNumber/PhoneNumber';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';

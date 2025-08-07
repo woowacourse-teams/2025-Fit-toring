@@ -1,11 +1,8 @@
 import styled from '@emotion/styled';
 
-import {
-  StatusTypeEnum,
-  type StatusType,
-} from '../../../../common/types/statusType';
+import { StatusTypeEnum, type StatusType } from '../../types/statusType';
 
-import type { myTheme } from '../../../../common/types/theme';
+import type { myTheme } from '../../types/theme';
 
 interface MentoringApplicationStatusProps {
   status: StatusType;
