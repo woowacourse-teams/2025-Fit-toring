@@ -8,6 +8,7 @@ export const getMyProfile = async () => {
   // TODO: mock/myProfile/handlers 및 data도 수정
   const { data } = await apiClient.get<MyProfileResponse>({
     endpoint: PAGE_URL.MY_PAGE,
+    withCredentials: true,
   });
 
   return data;
