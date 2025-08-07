@@ -1,10 +1,10 @@
-name: "frontend-build test"
+name: 'frontend-build test'
 
 on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - "frontend/**"
+      - 'frontend/**'
 jobs:
   Build-test:
     runs-on: ubuntu-latest
@@ -25,9 +25,9 @@ jobs:
 
       - name: Generate environment variables
         run: |
-          echo "BASE_URL=${{ secrets.FE_BASE_URL }}" >> .env
+          echo "API_BASE_URL=${{ secrets.FE_API_BASE_URL }}" >> .env
         env:
-          BASE_URL: ${{ secrets.FE_BASE_URL }}
+          API_BASE_URL: ${{ secrets.FE_API_BASE_URL }}
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Build
