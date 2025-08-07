@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../../common/components/Button/Button';
+import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
@@ -164,7 +165,7 @@ function SignupForm() {
       const response = await postSignup(signupInfo);
       if (response.status === 201) {
         alert('가입에 성공했습니다.');
-        navigate('/login');
+        navigate(PAGE_URL.LOGIN);
       }
     } catch (error) {
       console.error('회원가입 실패', error);

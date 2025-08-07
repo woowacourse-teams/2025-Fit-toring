@@ -10,7 +10,7 @@ function HomeHeader() {
   const navigate = useNavigate();
 
   const handleLoginClick = () => {
-    navigate('/login');
+    navigate(PAGE_URL.LOGIN);
   };
 
   return (
