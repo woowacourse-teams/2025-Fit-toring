@@ -23,7 +23,7 @@ function MentoringCreateForm() {
     introduction: '',
     career: 0,
     content: '',
-    certificate: [
+    certificateInfos: [
       {
         type: '',
         title: '',
