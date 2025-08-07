@@ -1,18 +1,28 @@
 import styled from '@emotion/styled';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import logo from '../../../../common/assets/images/logo.svg';
+import Button from '../../../../common/components/Button/Button';
 import Header from '../../../../common/components/Header/Header';
 import { PAGE_URL } from '../../../../common/constants/url';
 
 function HomeHeader() {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   return (
     <Header>
       <StyledHeaderWrapper>
-        <StyledLogoLink to={PAGE_URL.HOME}>
-          <StyledImg src={logo} alt="홈으로 돌아가기" />
-        </StyledLogoLink>
-        <StyledTitle>핏토링</StyledTitle>
+        <StyledTitleIconWrapper>
+          <StyledLogoLink to={PAGE_URL.HOME}>
+            <StyledImg src={logo} alt="홈으로 돌아가기" />
+          </StyledLogoLink>
+          <StyledTitle>핏토링</StyledTitle>
+        </StyledTitleIconWrapper>
+        <Button onClick={handleLoginClick}>로그인</Button>
       </StyledHeaderWrapper>
     </Header>
   );
@@ -27,6 +37,13 @@ const StyledHeaderWrapper = styled.div`
 
   height: 100%;
   padding: 1.4rem 1.1rem;
+  justify-content: space-between;
+`;
+
+const StyledTitleIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.05rem;
 `;
 
 const StyledLogoLink = styled(Link)`
