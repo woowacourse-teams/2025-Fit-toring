@@ -173,6 +173,10 @@ const StyledContentWrapper = styled.div`
       box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
       border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
     }
+
+    ::placeholder {
+      color: ${({ theme }) => theme.SYSTEM.GRAY200};
+    }
   }
 `;
 
