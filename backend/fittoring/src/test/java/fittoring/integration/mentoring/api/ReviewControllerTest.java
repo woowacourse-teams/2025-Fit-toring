@@ -363,4 +363,72 @@ class ReviewControllerTest {
             .statusCode(200)
             .body("", hasSize(2));
     }
+
+    @DisplayName("특정 멘토링에 달린 리뷰 조회 성공 시 200 OK를 반환한다")
+    @Test
+    void findMentoringReviews() {
+        // given
+        Member mentor = memberRepository.save(new Member(
+            "mentorId",
+            "MALE",
+            "김트레이너",
+            new Phone("010-1111-2222"),
+            Password.from("password")
+        ));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "한 줄 소개",
+            "긴 글 소개"
+        ));
+        Member mentee1 = memberRepository.save(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Member mentee2 = memberRepository.save(new Member(
+            "loginId2",
+            "MALE",
+            "name",
+            new Phone("010-1234-5670"),
+            Password.from("password")
+        ));
+        Reservation reservation1 = reservationRepository.save(new Reservation(
+            "예약합니다.",
+            mentoring,
+            mentee1
+        ));
+        Reservation reservation2 = reservationRepository.save(new Reservation(
+            "예약합니다.",
+            mentoring,
+            mentee2
+        ));
+        reviewRepository.save(new Review(
+            4,
+            "전반적으로 좋았습니다.",
+            reservation1,
+            mentee1
+        ));
+        reviewRepository.save(new Review(
+            4,
+            "전반적으로 좋았습니다.",
+            reservation2,
+            mentee2
+        ));
+        String accessToken = jwtProvider.createAccessToken(mentee1.getId());
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            .cookie("accessToken", accessToken)
+            .when()
+            .get("/mentorings/" + mentoring.getId() + "/reviews")
+            .then().log().all()
+            .statusCode(200)
+            .body("", hasSize(2));
+    }
 }
