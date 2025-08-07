@@ -3,7 +3,7 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
-import fittoring.mentoring.business.exception.NotFoundReservationException;
+import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
@@ -89,7 +89,7 @@ public class ReservationService {
     private Reservation getReservation(Long reservationId) {
         return reservationRepository.findById(reservationId)
                 .orElseThrow(
-                        () -> new NotFoundReservationException(
+                        () -> new ReservationNotFoundException(
                                 BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage())
                 );
     }
