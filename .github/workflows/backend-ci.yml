@@ -74,6 +74,13 @@ jobs:
       - name: Build & Run tests
         run: ./gradlew clean build
 
+      - name: Upload Test Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-test-report
+          path: backend/fittoring/build/reports/tests/test/
+
       - name: Stop Docker containers
         if: always()
         run: docker compose -f ./docker-compose.yml down
