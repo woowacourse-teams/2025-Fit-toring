@@ -3,13 +3,13 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
 import Booking from './pages/booking/Booking';
-import CreatedMentoring from './pages/CreatedMentoring/CreatedMentoring';
+import CreatedMentoring from './pages/createdMentoring/CreatedMentoring';
 import Detail from './pages/detail/Detail';
 import Home from './pages/home/Home';
-import Signup from './pages/signup/Signup';
+import Login from './pages/login/Login';
 import MentoringCreate from './pages/mentoringCreate/MentoringCreate';
 import MyPage from './pages/myPage/MyPage';
-import Login from './pages/login/Login';
+import Signup from './pages/signup/Signup';
 
 const router = createBrowserRouter([
   { path: PAGE_URL.HOME, element: <Home /> },
