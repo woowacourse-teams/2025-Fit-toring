@@ -62,7 +62,6 @@ const StyledContainer = styled.li`
   flex-direction: column;
   gap: 1rem;
 
-  height: auto;
   padding: 1.5rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 16px;
@@ -98,6 +97,8 @@ const StyledMentoringInfo = styled.div`
   flex-direction: column;
   flex-grow: 1;
   gap: 1rem;
+
+  height: 12rem;
 `;
 
 const StyledCategoryWrapper = styled.div`
@@ -107,6 +108,11 @@ const StyledCategoryWrapper = styled.div`
 `;
 
 const StyledCategory = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 7rem;
   padding: 0.2rem 0.4rem;
   border-radius: 6px;
 
