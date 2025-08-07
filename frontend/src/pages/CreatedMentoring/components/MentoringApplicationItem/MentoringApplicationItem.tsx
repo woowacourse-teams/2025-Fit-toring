@@ -10,6 +10,13 @@ interface MentoringApplicationItemProps {
   mentoringApplication: MentoringApplication;
 }
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const fullDate = date.toISOString().split('T')[0];
+
+  return fullDate;
+};
+
 function MentoringApplicationItem({
   mentoringApplication: {
     reservationId,
@@ -26,7 +33,7 @@ function MentoringApplicationItem({
     <StyledContainer key={reservationId}>
       <StyledName>{menteeName}님의 상담 신청</StyledName>
       <StyledApplicationInfoWrapper>
-        <StyledCreatedAt>⏰ {createdAt}</StyledCreatedAt>
+        <StyledCreatedAt>⏰ {formatDate(createdAt)}</StyledCreatedAt>
         <StyledApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
         </StyledApplicationPrice>
