@@ -1,4 +1,4 @@
-import type { StatusType } from '../../CreatedMentoring/types/statusType';
+import type { StatusType } from '../../createdMentoring/types/statusType';
 
 export interface ParticipatedMentoringType {
   mentorName: string;

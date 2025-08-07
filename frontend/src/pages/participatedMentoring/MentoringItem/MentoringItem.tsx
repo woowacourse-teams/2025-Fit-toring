@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 
 import defaultImage from '../../../common/assets/images/profileImg.svg';
-import MentoringApplicationStatus from '../../CreatedMentoring/components/MentoringApplicationStatus/MentoringApplicationStatus';
-import { StatusTypeEnum } from '../../CreatedMentoring/types/statusType';
+import MentoringApplicationStatus from '../../createdMentoring/components/MentoringApplicationStatus/MentoringApplicationStatus';
+import { StatusTypeEnum } from '../../createdMentoring/types/statusType';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
 interface MentoringItemProps {

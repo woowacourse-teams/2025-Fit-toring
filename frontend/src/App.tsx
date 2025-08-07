@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
 import Booking from './pages/booking/Booking';
-import CreatedMentoring from './pages/CreatedMentoring/CreatedMentoring';
+import CreatedMentoring from './pages/createdMentoring/CreatedMentoring';
 import Detail from './pages/detail/Detail';
 import Home from './pages/home/Home';
 import Login from './pages/login/Login';

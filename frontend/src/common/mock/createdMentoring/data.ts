@@ -1,4 +1,4 @@
-import type { MentoringApplication } from '../../../pages/CreatedMentoring/types/mentoringApplication';
+import type { MentoringApplication } from '../../../pages/createdMentoring/types/mentoringApplication';
 
 export const MENTORING_APPLICATIONS: MentoringApplication[] = [
   {
