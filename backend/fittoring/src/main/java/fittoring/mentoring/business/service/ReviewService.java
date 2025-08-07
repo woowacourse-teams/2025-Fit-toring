@@ -10,8 +10,11 @@ import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
+import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,5 +55,17 @@ public class ReviewService {
         if (reviewRepository.existsByReservationIdAndMenteeId(reservation.getId(), menteeId)) {
             throw new ReviewAlreadyExistsException(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
         }
+    }
+
+    public List<MemberReviewGetResponse> findMemberReviews(MemberReviewGetDto dto) {
+        List<Review> reviews = reviewRepository.findAlLByMenteeId(dto.memberId());
+        return reviews.stream()
+            .map(review -> new MemberReviewGetResponse(
+                review.getId(),
+                review.getCreatedAt().toLocalDate(),
+                review.getRating(),
+                review.getContent()
+            ))
+            .toList();
     }
 }
