@@ -11,7 +11,7 @@ export const testStateStore = {
   },
 };
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 const MENTORING_URL = `${BASE_URL}/mentorings`;
 const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
   const url = new URL(request.url);
