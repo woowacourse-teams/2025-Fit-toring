@@ -23,15 +23,6 @@ public class ImageService {
         return imageRepository.findByImageTypeAndRelationId(imageType, relationId);
     }
 
-    public String findUrlByImageTypeAndRelationId(ImageType imageType, Long relationId) {
-        Image image = imageRepository.findByImageTypeAndRelationId(imageType, relationId)
-            .orElse(null);
-        if (image == null) {
-            return null;
-        }
-        return image.getUrl();
-    }
-
     public Image uploadImageToS3(MultipartFile certificateImageFile, String dir, ImageType type, Long id) {
         try {
             String s3Url = s3Uploader.upload(certificateImageFile, dir);

@@ -3,11 +3,13 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
+import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
+import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
@@ -16,6 +18,7 @@ import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.MemberReservationGetResponse;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +32,7 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final ReviewRepository reviewRepository;
-    private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @Transactional
     public ReservationCreateResponse createReservation(ReservationCreateDto dto) {
@@ -56,7 +59,7 @@ public class ReservationService {
 
     private MemberReservationGetResponse generateMemberReservationGetResponse(Reservation reservation) {
         Mentoring mentoring = reservation.getMentoring();
-        String mentorProfileImage = imageService.findUrlByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
+        String mentorProfileImage = findProfileImageUrl(ImageType.MENTORING_PROFILE, mentoring.getId());
         List<String> categories = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
         boolean isReviewed = reviewRepository.existsByReservationId(reservation.getId());
         return new MemberReservationGetResponse(
@@ -69,5 +72,11 @@ public class ReservationService {
             categories,
             isReviewed
         );
+    }
+
+    public String findProfileImageUrl(ImageType imageType, Long relationId) {
+        Optional<Image> image = imageRepository.findByImageTypeAndRelationId(imageType, relationId);
+        return image.map(Image::getUrl)
+            .orElse(null);
     }
 }
