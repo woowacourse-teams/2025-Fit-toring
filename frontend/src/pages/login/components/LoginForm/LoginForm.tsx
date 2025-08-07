@@ -25,7 +25,13 @@ function LoginForm() {
       }
     } catch (error) {
       console.error('로그인 실패', error);
-      Sentry.captureException(error);
+      Sentry.captureException(error, {
+        level: 'warning',
+        tags: {
+          feature: 'login',
+          step: 'login',
+        },
+      });
     }
   };
 

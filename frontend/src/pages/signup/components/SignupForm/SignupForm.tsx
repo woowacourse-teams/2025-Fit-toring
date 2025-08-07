@@ -165,7 +165,13 @@ function SignupForm() {
       }
     } catch (error) {
       console.error('회원가입 실패', error);
-      Sentry.captureException(error);
+      Sentry.captureException(error, {
+        level: 'warning',
+        tags: {
+          feature: 'signup',
+          step: 'signup',
+        },
+      });
     }
   };
 

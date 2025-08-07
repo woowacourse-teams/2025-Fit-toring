@@ -47,7 +47,14 @@ function BookingForm({
       handleBookingButtonClick(response);
     } catch (error) {
       console.error('예약 중 에러 발생', error);
-      Sentry.captureException(error);
+
+      Sentry.captureException(error, {
+        level: 'warning',
+        tags: {
+          feature: 'reservation',
+          step: 'reservation-apply',
+        },
+      });
     }
   };
 
