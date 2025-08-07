@@ -74,6 +74,7 @@ jobs:
       - name: Build & Run tests
         run: ./gradlew clean build
 
+	### 테스트 실패 시 리포트 업로드
       - name: Upload Test Report
         if: failure()
         uses: actions/upload-artifact@v4
