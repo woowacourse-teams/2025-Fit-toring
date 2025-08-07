@@ -8,6 +8,7 @@ import fittoring.mentoring.business.service.dto.MentorMentoringReservationRespon
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
+import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -54,10 +55,13 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/reservations/{reservationId}/approve")
-    public ResponseEntity<Void> approve(@Login LoginInfo loginInfo, @PathVariable Long reservationId) {
-        reservationService.updateStatus(loginInfo.memberId(), reservationId);
-        return ResponseEntity.ok(null);
+    @PatchMapping("/reservations/{reservationId}/status")
+    public ResponseEntity<Void> updateStatus(
+            @PathVariable Long reservationId,
+            @RequestBody @Valid ReservationStatusUpdateRequest request
+    ) {
+        reservationService.updateStatus(reservationId, request.status());
+        return ResponseEntity.ok().build();
     }
 
 }

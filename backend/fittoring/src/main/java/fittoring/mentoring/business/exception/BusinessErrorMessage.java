@@ -19,6 +19,9 @@ public enum BusinessErrorMessage {
     EMPTY_COOKIE("쿠키가 존재하지 않습니다."),
     PHONE_VERIFICATION_INVALID("만료 혹은 인증되지 않은 요청입니다."),
     MEMBER_NOT_FOUND("존재하지 않는 회원입니다."),
+    RESERVATION_NOT_FOUND("존재하지 않은 예약입니다."),
+    RESERVATION_STATUS_ALREADY_UPDATE("이미 처리된 예약은 상태 변경이 불가합니다."),
+    RESERVATION_STATUS_ALREADY_EQUAL("동일한 상태로는 변경할 수 없습니다."),
     ;
 
     private final String message;

@@ -1,5 +1,7 @@
 package fittoring.mentoring.business.model;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.InvalidStatusException;
 import lombok.Getter;
 
 @Getter
@@ -17,13 +19,12 @@ public enum Status {
         this.value = value;
     }
 
-
-    public void validateTransition(String newStatus) {
-        if (this == APPROVE || this == REJECT) {
-            throw new IllegalStateException("이미 처리된 예약은 상태 변경이 불가합니다.");
+    public void validate(Status updateStatus) {
+        if (this == APPROVE || this == REJECT || this == COMPLETE) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
-        if (this.value.equals(newStatus)) {
-            throw new IllegalStateException("동일한 상태로는 변경할 수 없습니다.");
+        if (this.equals(updateStatus)) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
         }
     }
 

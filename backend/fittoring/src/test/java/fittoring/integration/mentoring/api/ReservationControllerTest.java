@@ -24,6 +24,7 @@ import fittoring.mentoring.business.service.dto.MentorMentoringReservationRespon
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
+import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
@@ -339,7 +340,7 @@ class ReservationControllerTest {
     @Test
     void getReservationsByMentor3() {
         //given
-        //멘티 생성
+        //멘토 생성
         Member mentor = memberRepository.save(
                 new Member("id1",
                         "MALE",
@@ -372,4 +373,159 @@ class ReservationControllerTest {
         //then
         assertThat(response).isEmpty();
     }
+
+    @DisplayName("예약의 상태를 변경할 수 있다.")
+    @Test
+    void updateStatus() {
+        //given
+        Member mentor = memberRepository.save(
+                new Member("id1",
+                        "MALE",
+                        "박멘토",
+                        new Phone("010-1234-5679"),
+                        Password.from("pw"))
+        );
+        Member savedMentor = memberRepository.save(mentor);
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+
+        //멘토링 생성
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring savedMentoring = mentoringRepository.save(mentoring);
+
+        //멘티 생성
+        Member mentee = memberRepository.save(
+                new Member("id2",
+                        "MALE",
+                        "김멘티",
+                        new Phone("010-5678-9123"),
+                        Password.from("pw"))
+        );
+        Member savedMentee = memberRepository.save(mentee);
+
+        Reservation savedReservation = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
+        );
+
+        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVE");
+
+        //when
+        RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .body(request)
+                .patch("/reservations/" + savedReservation.getId() + "/status")
+                .then().log().all()
+                .statusCode(200);
+
+        //then
+        assertThat(reservationRepository.findById(savedReservation.getId()))
+                .isPresent()
+                .hasValueSatisfying(
+                        reservation ->
+                                assertThat(reservation.getStatus()).isEqualTo(Status.APPROVE.getValue())
+                );
+    }
+
+    @DisplayName("이미 처리(완료, 승인, 거절)된 예약의 상태를 변경하면 400 Bad Request가 발생한다.")
+    @Test
+    void updateStatus2() {
+        //given
+        Member mentor = memberRepository.save(
+                new Member("id1",
+                        "MALE",
+                        "박멘토",
+                        new Phone("010-1234-5679"),
+                        Password.from("pw"))
+        );
+        Member savedMentor = memberRepository.save(mentor);
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+
+        //멘토링 생성
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring savedMentoring = mentoringRepository.save(mentoring);
+
+        //멘티 생성
+        Member mentee = memberRepository.save(
+                new Member("id2",
+                        "MALE",
+                        "김멘티",
+                        new Phone("010-5678-9123"),
+                        Password.from("pw"))
+        );
+        Member savedMentee = memberRepository.save(mentee);
+
+        Reservation savedReservation = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.COMPLETE)
+        );
+
+        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVE");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .body(request)
+                .patch("/reservations/" + savedReservation.getId() + "/status");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @DisplayName("예약의 상태를 현재 상태와 동일한 상태로 변경하면 400 Bad Request가 발생한다.")
+    @Test
+    void updateStatus3() {
+        //given
+        Member mentor = memberRepository.save(
+                new Member("id1",
+                        "MALE",
+                        "박멘토",
+                        new Phone("010-1234-5679"),
+                        Password.from("pw"))
+        );
+        Member savedMentor = memberRepository.save(mentor);
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+
+        //멘토링 생성
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring savedMentoring = mentoringRepository.save(mentoring);
+
+        //멘티 생성
+        Member mentee = memberRepository.save(
+                new Member("id2",
+                        "MALE",
+                        "김멘티",
+                        new Phone("010-5678-9123"),
+                        Password.from("pw"))
+        );
+        Member savedMentee = memberRepository.save(mentee);
+
+        Reservation savedReservation = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVE)
+        );
+
+        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVE");
+
+        //when
+        Response response = RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .body(request)
+                .patch("/reservations/" + savedReservation.getId() + "/status");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
 }
+

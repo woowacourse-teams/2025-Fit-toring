@@ -20,6 +20,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -184,5 +186,42 @@ class ReservationServiceTest {
 
         //then
         assertThat(actual).isEmpty();
+    }
+
+    @DisplayName("예약의 상태를 변경할 수 있다.")
+    @ParameterizedTest
+    @CsvSource({
+            "APPROVE, 승인",
+            "REJECT, 거절",
+            "COMPLETE, 완료"
+    })
+    void updateStatus(String requestStatus, String expectedStatusValue) {
+        //given
+        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+        Member savedMentor = entityManager.persist(mentor);
+
+        Mentoring mentoring = new Mentoring(
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
+        );
+        entityManager.persist(mentoring);
+
+        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
+        Member savedMentee = entityManager.persist(mentee);
+
+        Reservation reservation = new Reservation("context", mentoring, savedMentee, Status.PENDING);
+        Reservation savedReservation = entityManager.persist(reservation);
+
+        //when
+        reservationService.updateStatus(reservation.getId(), requestStatus);
+        entityManager.flush();
+        entityManager.clear();
+
+        //then
+        Reservation actual = entityManager.find(Reservation.class, savedReservation.getId());
+        assertThat(actual.getStatus()).isEqualTo(expectedStatusValue);
     }
 }

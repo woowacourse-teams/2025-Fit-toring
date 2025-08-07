@@ -57,6 +57,11 @@ public class Reservation {
         this(null, context, null, mentoring, mentee, status);
     }
 
+    public void changeStatus(Status updateStatus) {
+        this.status.validate(updateStatus);
+        this.status = updateStatus;
+    }
+
     public boolean isPending() {
         return this.status.isPending();
     }
