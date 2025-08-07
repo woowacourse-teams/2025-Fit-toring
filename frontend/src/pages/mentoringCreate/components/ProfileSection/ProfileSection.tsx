@@ -12,10 +12,10 @@ function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
   const { previewUrl, handleImageChange } = usePreviewImage();
 
   const handleProfileImageInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    handleImageChange(event);
-    onProfileImageChange(event.target.files?.[0] || null);
+    handleImageChange(e);
+    onProfileImageChange(e.target.files?.[0] || null);
   };
 
   return (
@@ -28,9 +28,7 @@ function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
               type="file"
               accept="image/*"
               id="profileImage"
-              onChange={(event) => {
-                handleProfileImageInputChange(event);
-              }}
+              onChange={handleProfileImageInputChange}
             />
             <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
           </>
@@ -40,9 +38,7 @@ function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
               type="file"
               accept="image/*"
               id="profileImage"
-              onChange={(event) => {
-                handleProfileImageInputChange(event);
-              }}
+              onChange={handleProfileImageInputChange}
             />
 
             <StyledContentWrapper>

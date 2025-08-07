@@ -27,8 +27,8 @@ function IntroduceSection({
           <Input
             placeholder="간단한 소개를 한 줄로 작성해주세요"
             id="introduce"
-            onChange={(event) =>
-              onIntroduceChange({ introduction: event.target.value })
+            onChange={(e) =>
+              onIntroduceChange({ introduction: e.target.value })
             }
             errored={introduceErrorMessage !== ''}
           />
@@ -38,8 +38,8 @@ function IntroduceSection({
             placeholder="숫자만 입력해주세요."
             type="tel"
             id="career"
-            onChange={(event) =>
-              onIntroduceChange({ career: Number(event.target.value) })
+            onChange={(e) =>
+              onIntroduceChange({ career: Number(e.target.value) })
             }
             errored={careerErrorMessage !== ''}
           />

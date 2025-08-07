@@ -37,8 +37,8 @@ function BaseInfoSection({
     fetchUserInfo();
   }, []);
 
-  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onPriceChange({ price: Number(event.target.value) });
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onPriceChange({ price: Number(e.target.value) });
   };
 
   return (
