@@ -13,7 +13,7 @@ export const testStateStore = {
   },
 };
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 const MENTORING_DETAIL_URL = `${BASE_URL}${API_ENDPOINTS.MENTORINGS}/:id`;
 
 const getMentoringDetail = http.get(MENTORING_DETAIL_URL, () => {
