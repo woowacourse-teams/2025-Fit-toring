@@ -98,6 +98,13 @@ public class CertificateService {
         return CertificateDetailResponse.of(certificate, certificateImage);
     }
 
+    private Certificate getCertificateOne(Long certificateId) {
+        return certificateRepository.findById(certificateId)
+                .orElseThrow(() -> new CertificateNotFoundException(
+                        BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage()
+                ));
+    }
+
     @Transactional
     public void approveCertificate(Long memberId, Long certificateId) {
         checkAdminAuthority(memberId);
@@ -110,12 +117,5 @@ public class CertificateService {
         checkAdminAuthority(memberId);
         Certificate certificate = getCertificateOne(certificateId);
         certificate.reject();
-    }
-
-    private Certificate getCertificateOne(Long certificateId) {
-        return certificateRepository.findById(certificateId).orElseThrow(
-                () -> new CertificateNotFoundException(
-                        BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage()
-                ));
     }
 }
