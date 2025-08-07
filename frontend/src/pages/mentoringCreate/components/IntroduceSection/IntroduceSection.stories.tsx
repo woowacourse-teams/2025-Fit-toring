@@ -1,4 +1,5 @@
-import { ERROR_MESSAGE } from '../../constants/errorMessage';
+import { CAREER_ERROR_MESSAGE } from '../../constants/career';
+import { INTRODUCE_ERROR_MESSAGE } from '../../constants/introduce';
 
 import IntroduceSection from './IntroduceSection';
 
@@ -33,8 +34,8 @@ export const DefaultIntroduceSection: Story = {
 export const ErrorIntroduceSection: Story = {
   args: {
     onIntroduceChange: () => {},
-    introduceErrorMessage: ERROR_MESSAGE.INTRODUCE_MAX_LENGTH,
-    careerErrorMessage: ERROR_MESSAGE.CAREER_INVALID,
+    introduceErrorMessage: INTRODUCE_ERROR_MESSAGE.INTRODUCE_MAX_LENGTH,
+    careerErrorMessage: CAREER_ERROR_MESSAGE.CAREER_INVALID,
   },
   parameters: {
     docs: {

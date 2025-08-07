@@ -1,4 +1,4 @@
-import { ERROR_MESSAGE } from '../../constants/errorMessage';
+import { PRICE_ERROR_MESSAGE } from '../../constants/price';
 
 import BaseInfoSection from './BaseInfoSection';
 
@@ -32,7 +32,7 @@ export const DefaultBaseInfoSection: Story = {
 export const ErrorBaseInfoSection: Story = {
   args: {
     onPriceChange: () => {},
-    priceErrorMessage: ERROR_MESSAGE.PRICE_INVALID,
+    priceErrorMessage: PRICE_ERROR_MESSAGE.PRICE_INVALID,
   },
   parameters: {
     docs: {
