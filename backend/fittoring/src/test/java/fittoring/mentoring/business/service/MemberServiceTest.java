@@ -68,7 +68,7 @@ class MemberServiceTest {
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
             softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
             softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phone()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
         });
     }
 
@@ -107,7 +107,7 @@ class MemberServiceTest {
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
             softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
             softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phone()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
         });
     }
 
@@ -152,7 +152,7 @@ class MemberServiceTest {
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
             softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
             softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phone()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
         });
     }
 }
