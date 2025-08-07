@@ -1,15 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
+import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
-import Input from '../../../../common/components/Input/Input';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
-import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
-import useNameInput from '../../../../common/hooks/useNameInput';
-import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
+import Checkbox from '../Checkbox/Checkbox';
 
 import type { BookingResponse } from '../../types/BookingResponse';
 
@@ -22,17 +20,14 @@ function BookingForm({
   handleBookingButtonClick,
   mentoringId,
 }: BookingFormProps) {
-  const {
-    name,
-    handleNameChange,
-    errorMessage: menteeNameErrorMessage,
-  } = useNameInput();
-
-  const { phoneNumber, inputRef, handlePhoneNumberChange } =
-    useFormattedPhoneNumber();
   const [counselContent, setCounselContent] = useState('');
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    phone: '',
+  });
+  const [sharingAgreed, setSharingAgreed] = useState(false);
 
-  const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
+  const [errored, setErrored] = useState(false);
 
   const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -44,9 +39,7 @@ function BookingForm({
     try {
       const response = await apiClient.post({
         endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.RESERVATION}`,
-        searchParams: {
-          name,
-          menteePhone: phoneNumber,
+        body: {
           content: counselContent,
         },
       });
@@ -59,43 +52,43 @@ function BookingForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    handleBooking();
+    if (!sharingAgreed) {
+      setErrored(true);
+      return;
+    }
 
-    // 이때 입력하지 않은 것들에 대한 유효성검사 돌아가고 errorMessage 화면에 노출
-    // 유효성검사를 트리거 시켜야함.
+    handleBooking();
   };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setErrored(false);
+    setSharingAgreed(e.target.checked);
+  };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const response = await getUserInfo();
+
+      setUserInfo(response);
+    };
+
+    fetchUserInfo();
+  }, []);
 
   return (
     <StyledContainer onSubmit={handleSubmit}>
       <StyledInfoText>
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
       </StyledInfoText>
-      <StyledFieldWrapper>
-        <FormField label="상담자명 *" errorMessage={menteeNameErrorMessage}>
-          <Input
-            placeholder="홍길동"
-            id="name"
-            value={name}
-            onChange={handleNameChange}
-            errored={menteeNameErrorMessage !== ''}
-            data-testid="mentee-name-input"
-            required
-          />
-        </FormField>
-        <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
-          <Input
-            placeholder="010-1234-4986"
-            id="phone"
-            value={phoneNumber}
-            onChange={handlePhoneNumberChange}
-            errored={phoneNumberErrorMessage !== ''}
-            ref={inputRef}
-            maxLength={13}
-            type="tel"
-            data-testid="phone-number-input"
-            required
-          />
-        </FormField>
+      <StyledUserInfoWrapper>
+        <StyledInfoRow>
+          <StyledUserInfoLabel>상담자명</StyledUserInfoLabel>
+          <StyledUserInfoText>{userInfo.name}</StyledUserInfoText>
+        </StyledInfoRow>
+        <StyledInfoRow>
+          <StyledUserInfoLabel>전화번호</StyledUserInfoLabel>
+          <StyledUserInfoText>{userInfo.phone}</StyledUserInfoText>
+        </StyledInfoRow>
         <FormField label="상담 내용(선택사항)" errorMessage={''}>
           <StyledTextarea
             id="details"
@@ -106,7 +99,27 @@ function BookingForm({
             value={counselContent}
           />
         </FormField>
-      </StyledFieldWrapper>
+      </StyledUserInfoWrapper>
+      <StyledLabelWrapper>
+        <Checkbox
+          id="sharingAgreed"
+          checked={sharingAgreed}
+          onChange={handleCheckboxChange}
+          errored={errored}
+          label={
+            <StyledCheckboxLabelText>
+              전화번호 제공 동의
+            </StyledCheckboxLabelText>
+          }
+        />
+        <StyledCheckboxSubText>
+          멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
+        </StyledCheckboxSubText>
+        {errored && (
+          <StyledErrorText>전화번호 제공 동의를 해주세요.</StyledErrorText>
+        )}
+      </StyledLabelWrapper>
+
       <BookingSummarySection />
     </StyledContainer>
   );
@@ -131,13 +144,28 @@ const StyledInfoText = styled.p`
   color: ${({ theme }) => theme.FONT.B03};
 `;
 
-const StyledFieldWrapper = styled.div`
+const StyledUserInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.1rem;
 
   margin-top: 3.3rem;
-  margin-bottom: 3.2rem;
+`;
+
+const StyledInfoRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const StyledUserInfoLabel = styled.p`
+  color: ${({ theme }) => theme.FONT.B02};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+`;
+
+const StyledUserInfoText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  color: ${({ theme }) => theme.FONT.B01};
 `;
 
 const StyledTextarea = styled.textarea<{ errored: boolean }>`
@@ -156,5 +184,29 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
     outline: none;
   }
 
-  color: ${({ theme }) => theme.FONT.B04};
+  color: ${({ theme }) => theme.FONT.B01};
+`;
+
+const StyledLabelWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  margin: 2rem 0;
+`;
+
+const StyledCheckboxLabelText = styled.strong`
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  font-weight: bold;
+  color: ${({ theme }) => theme.FONT.B03};
+`;
+
+const StyledCheckboxSubText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  color: ${({ theme }) => theme.FONT.B03};
+`;
+
+const StyledErrorText = styled.span`
+  color: ${({ theme }) => theme.FONT.ERROR};
+  ${({ theme }) => theme.TYPOGRAPHY.C3_R};
 `;

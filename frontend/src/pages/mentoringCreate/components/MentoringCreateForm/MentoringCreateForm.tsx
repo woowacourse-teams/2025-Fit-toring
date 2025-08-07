@@ -1,5 +1,11 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
+import { postMentoringCreate } from '../../apis/postMentoringCreate';
+import { careerValidator } from '../../utils/careerValidator';
+import { introduceValidator } from '../../utils/introduceValidator';
+import { priceValidator } from '../../utils/priceValidator';
 import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
 import ButtonSection from '../ButtonSection/ButtonSection';
 import CertificateSection from '../CertificateSection/CertificateSection';
@@ -8,15 +14,92 @@ import IntroduceSection from '../IntroduceSection/IntroduceSection';
 import ProfileSection from '../ProfileSection/ProfileSection';
 import SpecialtySection from '../SpecialtySection/SpecialtySection';
 
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+
 function MentoringCreateForm() {
+  const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
+    price: 0,
+    category: [],
+    introduction: '',
+    career: 0,
+    content: '',
+    certificate: [
+      {
+        type: '',
+        title: '',
+      },
+      {
+        type: '',
+        title: '',
+      },
+    ],
+  });
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
+    [],
+  );
+
+  const priceErrorMessage = priceValidator(mentoringData.price);
+  const introduceErrorMessage = introduceValidator(mentoringData.introduction);
+  const careerErrorMessage = careerValidator(mentoringData.career);
+
+  const handleMentoringDataChange = (
+    newData: Partial<mentoringCreateFormData>,
+  ) => {
+    setMentoringData((prevData) => ({
+      ...prevData,
+      ...newData,
+    }));
+  };
+
+  const handleProfileImageChange = (file: File | null) => {
+    setProfileImageFile(file);
+  };
+
+  const handleCertificateImageFilesChange = (files: File[]) => {
+    setCertificateImageFiles(files);
+  };
+
+  const submitMentoringForm = async () => {
+    const response = await postMentoringCreate(
+      mentoringData,
+      profileImageFile,
+      certificateImageFiles,
+    );
+    if (response.status === 201) {
+      alert('멘토링 등록 성공');
+    } else {
+      console.error('멘토링 등록 실패');
+    }
+  };
+
+  const handleSubmitButtonClick = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (priceErrorMessage || introduceErrorMessage || careerErrorMessage) {
+      alert('입력값을 확인해주세요.');
+      return;
+    }
+    submitMentoringForm();
+  };
+
   return (
-    <StyledContainer>
-      <BaseInfoSection />
-      <ProfileSection />
-      <SpecialtySection />
-      <IntroduceSection />
-      <CertificateSection />
-      <DetailIntroduce />
+    <StyledContainer onSubmit={handleSubmitButtonClick}>
+      <BaseInfoSection
+        onPriceChange={handleMentoringDataChange}
+        priceErrorMessage={priceErrorMessage}
+      />
+      <ProfileSection onProfileImageChange={handleProfileImageChange} />
+      <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
+      <IntroduceSection
+        onIntroduceChange={handleMentoringDataChange}
+        introduceErrorMessage={introduceErrorMessage}
+        careerErrorMessage={careerErrorMessage}
+      />
+      <CertificateSection
+        onCertificateChange={handleMentoringDataChange}
+        handleCertificateImageFilesChange={handleCertificateImageFilesChange}
+      />
+      <DetailIntroduce onDetailIntroduceChange={handleMentoringDataChange} />
       <StyledSeparator />
       <ButtonSection />
     </StyledContainer>

@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Reservation {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,6 +40,7 @@ public class Reservation {
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
 
+    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Member mentee;

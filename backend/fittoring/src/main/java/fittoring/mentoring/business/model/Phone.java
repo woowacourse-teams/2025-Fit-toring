@@ -12,7 +12,7 @@ import lombok.Getter;
 @Embeddable
 public class Phone {
 
-    @Column(name = "phone", nullable = false, unique = true)
+    @Column(name = "phoneNumber", nullable = false, unique = true)
     final private String number;
 
     protected Phone() {

@@ -13,6 +13,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultProfileSection: Story = {
+  args: {
+    onProfileImageChange: () => {},
+  },
   parameters: {
     docs: {
       description: {

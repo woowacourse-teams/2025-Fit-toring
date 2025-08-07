@@ -33,7 +33,6 @@ export const DefaultModal: Story = {
       mentorName: '김트레이너',
       menteeName: '홍길동',
       menteePhone: '010-1111-1111',
-      mentorPhone: '010-1234-5768',
     },
     opened: true,
     onCloseClick: fn(),

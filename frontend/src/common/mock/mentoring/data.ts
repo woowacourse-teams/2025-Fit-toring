@@ -4,7 +4,7 @@ export const MENTORINGS: MentorInformation[] = [
   {
     id: 1,
     mentorName: '김트레이너',
-    categories: ['근력 증진', '다이어트', '체형 교정'],
+    categories: ['근력 운동', '다이어트', '체형 교정'],
     price: 5000,
     career: 5,
     imageUrl: '',
