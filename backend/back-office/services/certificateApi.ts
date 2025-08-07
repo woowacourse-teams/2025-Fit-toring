@@ -47,7 +47,7 @@ const getCookie = (name: string): string | null => {
 };
 
 // API 기본 설정
-const API_BASE_URL = '';
+const API_BASE_URL = '/';
 
 // 헤더 생성
 const getApiHeaders = (additionalHeaders?: Record<string, string>): HeadersInit => ({
@@ -191,8 +191,13 @@ export const fetchCertificates = async (statusFilter?: string): Promise<Certific
 
         const apiData: CertificateListResponse[] = await response.json();
 
+        const statusOrder: Record<string, number> = {
+            PENDING: 0,
+            REJECTED: 1,
+            APPROVED: 2
+        };
+
         apiData.sort((a, b) => {
-            const statusOrder = {'PENDING': 0, 'REJECT': 1, 'VERIFIED': 2};
             return statusOrder[a.certificateStatus] - statusOrder[b.certificateStatus];
         });
 
@@ -261,7 +266,6 @@ export const rejectCertificate = async (id: number): Promise<void> => {
 export const updateCertificateStatus = async (
     id: number,
     status: 'APPROVED' | 'REJECTED',
-    rejectionReason?: string
 ): Promise<void> => {
     if (status === 'REJECTED') {
         return rejectCertificate(id);

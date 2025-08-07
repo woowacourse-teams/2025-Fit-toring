@@ -1,12 +1,10 @@
 import {useState} from "react";
-import {Navigate, useLocation} from "react-router-dom";
 import {Button} from "./ui/button";
 import {Input} from "./ui/input";
 import {Label} from "./ui/label";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "./ui/card";
@@ -14,7 +12,7 @@ import {Alert, AlertDescription} from "./ui/alert";
 import {ImageWithFallback} from "./figma/ImageWithFallback";
 import {useAuth} from "./AuthContext";
 
-const API_BASE_URL = '';
+const API_BASE_URL = '/';
 
 // 쿠키 유틸리티 함수들
 const setCookie = (
@@ -38,7 +36,7 @@ const setCookie = (
     console.log(`🍪 Cookie string:`, cookieString);
 };
 
-const getCookie = (name: string): string | null => {
+export const getCookie = (name: string): string | null => {
     if (typeof document === 'undefined') {
         return null;
     }
@@ -131,7 +129,6 @@ export function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const {login} = useAuth();
-    const location = useLocation();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

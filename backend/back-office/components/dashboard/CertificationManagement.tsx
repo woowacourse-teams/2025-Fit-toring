@@ -415,7 +415,7 @@ export function CertificationManagement() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {certifications.map((cert, index) => (
+                  {certifications.map((cert) => (
                     <TableRow
                       key={cert.id}
                       className="h-12"

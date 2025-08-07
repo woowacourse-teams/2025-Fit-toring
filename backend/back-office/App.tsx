@@ -8,7 +8,7 @@ import { Toaster } from './components/ui/sonner';
 
 export default function App() {
   return (
-    <Router>
+    <Router basename="/web-admin">
       <AuthProvider>
         <Routes>
           {/* 로그인 페이지 */}

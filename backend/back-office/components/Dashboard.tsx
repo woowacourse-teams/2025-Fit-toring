@@ -18,7 +18,6 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "./ui/sidebar";
-import { Button } from "./ui/button";
 import {
   Collapsible,
   CollapsibleContent,
@@ -40,7 +39,7 @@ import { useAuth } from "./AuthContext";
 
 export function Dashboard() {
   const [activeMenu, setActiveMenu] = useState("certifications");
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
