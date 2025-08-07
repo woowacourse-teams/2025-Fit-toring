@@ -1,13 +1,13 @@
-name: "frontend-chromatic"
+name: 'frontend-chromatic'
 
 on:
   pull_request:
     types: [opened, synchronize]
     # PR에 아래 파일들이 변경될 경우에만 워크플로우 실행
     paths:
-      - "frontend/**/*.stories.ts"
-      - "frontend/**/*.stories.tsx"
-      - "frontend/.storybook/**"
+      - 'frontend/**/*.stories.ts'
+      - 'frontend/**/*.stories.tsx'
+      - 'frontend/.storybook/**'
 
 jobs:
   chromatic:
@@ -30,9 +30,9 @@ jobs:
 
       - name: Generate environment variables
         run: |
-          echo "BASE_URL=${{ secrets.FE_BASE_URL }}" >> .env
+          echo "API_BASE_URL=${{ secrets.FE_API_BASE_URL }}" >> .env
         env:
-          BASE_URL: ${{ secrets.FE_BASE_URL }}
+          API_BASE_URL: ${{ secrets.FE_API_BASE_URL }}
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Build Storybook
@@ -52,4 +52,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # PR에 댓글을 달기 위한 GitHub 인증 토큰
         with:
-          message: "🚀storybook: ${{ steps.chromatic.outputs.storybookUrl }}" # Chromatic에서 생성된 Storybook 배포 링크를 코멘트로 남김
+          message: '🚀storybook: ${{ steps.chromatic.outputs.storybookUrl }}' # Chromatic에서 생성된 Storybook 배포 링크를 코멘트로 남김

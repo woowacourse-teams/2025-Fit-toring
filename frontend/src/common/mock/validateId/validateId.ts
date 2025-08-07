@@ -6,7 +6,7 @@ interface AuthCodeBody {
   loginId: string;
 }
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 const AUTH_CODE_URL = `${BASE_URL}${API_ENDPOINTS.VALIDATE_ID}`;
 
 const DUMMY_DUPLICATE_USER_ID = 'test1234';

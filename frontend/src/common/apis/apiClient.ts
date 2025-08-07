@@ -24,12 +24,15 @@ class ApiClient {
   #baseUrl: string;
 
   constructor() {
-    if (typeof process.env.BASE_URL === 'undefined' || !process.env.BASE_URL) {
+    if (
+      typeof process.env.API_BASE_URL === 'undefined' ||
+      !process.env.API_BASE_URL
+    ) {
       throw new Error(
         '환경 변수 BASE_URL이 설정되지 않았습니다. .env 파일을 확인해주세요.',
       );
     }
-    this.#baseUrl = process.env.BASE_URL;
+    this.#baseUrl = process.env.API_BASE_URL;
   }
 
   async get<T>({ endpoint, searchParams }: ApiClientGetType): Promise<T> {

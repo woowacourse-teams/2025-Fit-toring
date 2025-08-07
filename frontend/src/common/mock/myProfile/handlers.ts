@@ -11,7 +11,7 @@ export const testStateStore = {
   },
 };
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 const MY_PROFILE_URL = `${BASE_URL}/my-page`;
 const getMyProfile = http.get(MY_PROFILE_URL, () => {
   const response = { data: PROFILE };
