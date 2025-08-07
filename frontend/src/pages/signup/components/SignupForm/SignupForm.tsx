@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import * as Sentry from '@sentry/react';
 
 import Button from '../../../../common/components/Button/Button';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
@@ -164,6 +165,7 @@ function SignupForm() {
       }
     } catch (error) {
       console.error('회원가입 실패', error);
+      Sentry.captureException(error);
     }
   };
 

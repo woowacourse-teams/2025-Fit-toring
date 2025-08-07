@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
+import * as Sentry from '@sentry/react';
 
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
 import { careerValidator } from '../../utils/careerValidator';
@@ -61,15 +62,18 @@ function MentoringCreateForm() {
   };
 
   const submitMentoringForm = async () => {
-    const response = await postMentoringCreate(
-      mentoringData,
-      profileImageFile,
-      certificateImageFiles,
-    );
-    if (response.status === 201) {
-      alert('멘토링 등록 성공');
-    } else {
+    try {
+      const response = await postMentoringCreate(
+        mentoringData,
+        profileImageFile,
+        certificateImageFiles,
+      );
+      if (response.status === 201) {
+        alert('멘토링 등록 성공');
+      }
+    } catch (error) {
       console.error('멘토링 등록 실패');
+      Sentry.captureException(error);
     }
   };
 
