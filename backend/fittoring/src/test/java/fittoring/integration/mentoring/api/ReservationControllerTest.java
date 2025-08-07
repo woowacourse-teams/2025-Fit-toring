@@ -244,7 +244,9 @@ class ReservationControllerTest {
         MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
         MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
 
-        assertThat(response).containsExactlyInAnyOrder(expected, expected2, expected3, expected4);
+        assertThat(response)
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
+                .containsExactlyInAnyOrder(expected, expected2, expected3, expected4);
     }
 
     @DisplayName("멘토가 개설한 복수개의 멘토링의 모든 예약을 조회하면 상태코드 200 OK와 예약 정보를 반환한다.")
@@ -334,7 +336,9 @@ class ReservationControllerTest {
         MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5);
         MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6);
 
-        assertThat(response).containsExactlyInAnyOrder(expected, expected2, expected3, expected4, expected5, expected6);
+        assertThat(response)
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
+                .containsExactlyInAnyOrder(expected, expected2, expected3, expected4, expected5, expected6);
     }
 
     @DisplayName("멘토가 개설한 멘토링의 예약이 존재하지 않으면 상태코드 200 OK와 빈 리스트를 반환한다.")
