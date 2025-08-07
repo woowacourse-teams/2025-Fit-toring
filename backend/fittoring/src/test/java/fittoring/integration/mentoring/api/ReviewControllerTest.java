@@ -1,15 +1,18 @@
 package fittoring.integration.mentoring.api;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.util.DbCleaner;
@@ -30,6 +33,9 @@ class ReviewControllerTest {
 
     @LocalServerPort
     private int port;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private MentoringRepository mentoringRepository;
@@ -281,5 +287,80 @@ class ReviewControllerTest {
             .post("/mentorings/" + mentoring.getId() + "/review")
             .then().log().all()
             .statusCode(404);
+    }
+
+    @DisplayName("특정 멤버의 리뷰를 모두 조회 성공 시 200 OK를 반환한다")
+    @Test
+    void findMemberReviews() {
+        // given
+        Member mentee = memberRepository.save(new Member(
+            "loginId",
+            "남",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Member mentor1 = memberRepository.save(new Member(
+            "mentor1Id",
+            "MALE",
+            "김트레이너",
+            new Phone("010-1111-2222"),
+            Password.from("password")
+        ));
+        Member mentor2 = memberRepository.save(new Member(
+            "mentor2Id",
+            "MALE",
+            "박멘토",
+            new Phone("010-2222-3333"),
+            Password.from("password")
+        ));
+        Mentoring mentoring1 = mentoringRepository.save(new Mentoring(
+            mentor1,
+            5000,
+            5,
+            "한 줄 소개",
+            "긴 글 소개"
+        ));
+        Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
+            mentor2,
+            5000,
+            5,
+            "한 줄 소개",
+            "긴 글 소개"
+        ));
+        Reservation reservation1 = reservationRepository.save(new Reservation(
+            "예약합니다.",
+            mentoring1,
+            mentee
+        ));
+        Reservation reservation2 = reservationRepository.save(new Reservation(
+            "예약합니다.",
+            mentoring2,
+            mentee
+        ));
+        reviewRepository.save(new Review(
+            4,
+            "전반적으로 좋았습니다.",
+            reservation1,
+            mentee
+        ));
+        reviewRepository.save(new Review(
+            4,
+            "전반적으로 좋았습니다.",
+            reservation2,
+            mentee
+        ));
+        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+
+        // when
+        // then
+        RestAssured
+            .given().log().all().contentType(ContentType.JSON)
+            .cookie("accessToken", accessToken)
+            .when()
+            .get("/reviews/mine")
+            .then().log().all()
+            .statusCode(200)
+            .body("", hasSize(2));
     }
 }
