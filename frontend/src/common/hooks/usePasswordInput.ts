@@ -1,21 +1,14 @@
 import { useState } from 'react';
 
-import { validateLength } from '../../../common/utils/validateLength';
 import { ERROR_MESSAGE } from '../constants/errorMessage';
 import { PASSWORD } from '../constants/password';
+import { validateLength } from '../utils/validateLength';
 
 const usePasswordInput = () => {
   const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-  };
-
-  const handlePasswordConfirmChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setPasswordConfirm(e.target.value);
   };
 
   const getPasswordErrorMessage = () => {
@@ -36,31 +29,13 @@ const usePasswordInput = () => {
     return '';
   };
 
-  const getPasswordConfirmError = () => {
-    if (password.length === 0 || passwordConfirm.length === 0) {
-      return '';
-    }
-
-    if (password !== passwordConfirm) {
-      return ERROR_MESSAGE.NOT_MATCH;
-    }
-
-    return '';
-  };
-
   const passwordErrorMessage = getPasswordErrorMessage();
-  const passwordConfirmErrorMessage = getPasswordConfirmError();
 
   return {
     password,
-    passwordConfirm,
     handlePasswordChange,
-    handlePasswordConfirmChange,
     passwordErrorMessage,
-    passwordConfirmErrorMessage,
     passwordValidated: password !== '' && passwordErrorMessage === '',
-    passwordConfrimValidated:
-      passwordConfirm !== '' && passwordConfirmErrorMessage === '',
   };
 };
 

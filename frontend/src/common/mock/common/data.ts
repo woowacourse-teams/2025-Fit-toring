@@ -14,6 +14,6 @@ export const USER_INFO: UserInfo = {
   loginId: 1,
   name: '홍길동',
   gender: '남',
-  phone: '010-1234-5678',
+  phoneNumber: '010-1234-5678',
   image: null,
 };

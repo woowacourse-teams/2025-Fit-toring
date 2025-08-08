@@ -1,13 +1,19 @@
 import styled from '@emotion/styled';
 
+import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
+import { type StatusType } from '../../../../common/types/statusType';
 import ActionButtons from '../ActionButtons/ActionButtons';
-import MentoringApplicationStatus from '../MentoringApplicationStatus/MentoringApplicationStatus';
 import PhoneNumber from '../PhoneNumber/PhoneNumber';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';
 
 interface MentoringApplicationItemProps {
   mentoringApplication: MentoringApplication;
+  onActionButtonsClick: (params: {
+    reservationId: number;
+    status: StatusType;
+    phoneNumber: string;
+  }) => void;
 }
 
 const formatDate = (dateString: string) => {
@@ -16,6 +22,8 @@ const formatDate = (dateString: string) => {
 
   return fullDate;
 };
+
+const TIME = '15';
 
 function MentoringApplicationItem({
   mentoringApplication: {
@@ -27,8 +35,19 @@ function MentoringApplicationItem({
     status,
     createdAt,
   },
+  onActionButtonsClick,
 }: MentoringApplicationItemProps) {
-  const TIME = '15';
+  const handleActionButtonsComplete = (
+    updatedStatus: StatusType,
+    phoneNumber: string,
+  ) => {
+    onActionButtonsClick({
+      reservationId,
+      status: updatedStatus,
+      phoneNumber,
+    });
+  };
+
   return (
     <StyledContainer key={reservationId}>
       <StyledName>{menteeName}님의 상담 신청</StyledName>
@@ -41,7 +60,11 @@ function MentoringApplicationItem({
       </StyledApplicationInfoWrapper>
       <PhoneNumber status={status} phoneNumber={phoneNumber} />
       <StyledApplicationContent>{content}</StyledApplicationContent>
-      <ActionButtons status={status} />
+      <ActionButtons
+        reservationId={reservationId}
+        status={status}
+        onClick={handleActionButtonsComplete}
+      />
     </StyledContainer>
   );
 }
@@ -61,7 +84,7 @@ const StyledContainer = styled.li`
   transition: all 0.2s ease;
 
   :hover {
-    box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}

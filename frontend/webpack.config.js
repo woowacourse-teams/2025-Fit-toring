@@ -61,6 +61,9 @@ module.exports = {
       template: './index.html',
       filename: 'index.html',
       inject: true,
+      templateParameters: {
+        GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID,
+      },
     }),
     new DotenvWebpackPlugin({
       path: path.resolve(__dirname, '.env'),

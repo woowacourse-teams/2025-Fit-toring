@@ -42,12 +42,12 @@ VALUES (1, 1),
        (5, 5);
 
 -- -- CERTIFICATE (멘토당 하나씩 자격증)
-INSERT INTO certificate (mentoring_id, type, title, verification_status, created_at)
-VALUES (1, 'LICENSE', 'NASM CPT', 'PENDING', '2025-08-07 21:45:00'),
-       (2, 'LICENSE', '생활스포츠지도사 2급', 'PENDING', '2025-08-07 21:45:00'),
-       (3, 'LICENSE', '건강운동관리사', 'PENDING', '2025-08-07 21:45:00'),
-       (4, 'LICENSE', '홈트레이너 자격증', 'PENDING', '2025-08-07 21:45:00'),
-       (5, 'LICENSE', 'NSCA CSCS', 'PENDING', '2025-08-07 21:45:00');
+INSERT INTO certificate (mentoring_id, type, title, verification_status)
+VALUES (1, 'LICENSE', 'NASM CPT', 'PENDING'),
+       (2, 'LICENSE', '생활스포츠지도사 2급', 'PENDING'),
+       (3, 'LICENSE', '건강운동관리사', 'PENDING'),
+       (4, 'LICENSE', '홈트레이너 자격증', 'PENDING'),
+       (5, 'LICENSE', 'NSCA CSCS', 'PENDING');
 
 -- OFFERING (멘토링 제공 서비스 설명)
 INSERT INTO offering (mentoring_id, content)
@@ -59,4 +59,14 @@ VALUES (1, '체형 분석 및 1:1 맞춤 운동'),
 
 INSERT INTO image (url, image_type, relation_id)
 VALUES ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
-       , 'MENTORING_PROFILE', 1);
+       , 'MENTORING_PROFILE', 1),
+       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
+       , 'CERTIFICATE', 1),
+       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
+       , 'CERTIFICATE', 2),
+       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
+       , 'CERTIFICATE', 3),
+       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
+       , 'CERTIFICATE', 4),
+       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
+       , 'CERTIFICATE', 5);

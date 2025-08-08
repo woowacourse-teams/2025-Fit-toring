@@ -4,7 +4,7 @@ export interface mentoringCreateFormData {
   introduction: string;
   career: number;
   content: string;
-  certificate: {
+  certificateInfos: {
     type: string;
     title: string;
   }[];

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
+import ReactGA from 'react-ga4';
 
 import Footer from '../../common/components/Footer/Footer';
 
@@ -31,6 +32,11 @@ function Home() {
   const [modalOpened, setModalOpened] = useState(false);
   const handleOpenModal = () => {
     setModalOpened(true);
+    ReactGA.event({
+      category: 'Specialty Filter',
+      action: 'Open Specialty Filter Modal',
+      label: '전문 분야 필터',
+    });
   };
   const handleCloseModal = () => {
     setModalOpened(false);

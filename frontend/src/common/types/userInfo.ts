@@ -2,6 +2,6 @@ export interface UserInfo {
   loginId: number;
   name: string;
   gender: string;
-  phone: string;
+  phoneNumber: string;
   image: string | null;
 }

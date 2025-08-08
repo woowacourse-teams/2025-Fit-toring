@@ -1,4 +1,4 @@
-import type { StatusType } from './statusType';
+import type { StatusType } from '../../../common/types/statusType';
 
 export interface MentoringApplication {
   reservationId: number;
