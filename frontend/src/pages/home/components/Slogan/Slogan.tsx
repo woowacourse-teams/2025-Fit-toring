@@ -1,12 +1,30 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
+
+import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
+import Button from '../../../../common/components/Button/Button';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 function Slogan() {
+  const { authenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleMentoringCreation = () => {
+    if (authenticated) {
+      navigate(PAGE_URL.MENTORING_CREATE);
+    } else {
+      navigate(PAGE_URL.LOGIN);
+    }
+  };
+
   return (
     <StyledContainer>
       <StyledTitle>
         내가 알고 싶은 운동 & 식단, <StyledStrong>온라인</StyledStrong>으로
         편하게 물어봐요!
       </StyledTitle>
+
+      <Button onClick={handleMentoringCreation}>멘토링 개설하기</Button>
     </StyledContainer>
   );
 }
