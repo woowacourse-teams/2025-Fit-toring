@@ -32,7 +32,7 @@ public class Reservation {
     private Long id;
 
     @Getter
-    private String context;
+    private String content;
 
     @Getter
     @CreatedDate
@@ -53,8 +53,8 @@ public class Reservation {
     @Column(nullable = false)
     private Status status;
 
-    public Reservation(String context, Mentoring mentoring, Member mentee, Status status) {
-        this(null, context, null, mentoring, mentee, status);
+    public Reservation(String content, Mentoring mentoring, Member mentee, Status status) {
+        this(null, content, null, mentoring, mentee, status);
     }
 
     public void changeStatus(Status updateStatus) {

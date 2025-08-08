@@ -21,7 +21,7 @@ public class MentoringReservationService {
 
     public ReservationCreateResponse reserveMentoring(ReservationCreateDto request) {
         Reservation reservation = reservationService.createReservation(request);
-        String smsMessage = createSmsMessageForMentor(reservation.getMenteeName(), reservation.getContext());
+        String smsMessage = createSmsMessageForMentor(reservation.getMenteeName(), reservation.getContent());
 
         sendSms(getMentorPhoneNumber(reservation), smsMessage);
 

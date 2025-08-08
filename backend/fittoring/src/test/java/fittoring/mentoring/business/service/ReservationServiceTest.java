@@ -81,7 +81,7 @@ class ReservationServiceTest {
                     softAssertions.assertThat(actual.getMentorName()).isEqualTo(mentor.getName());
                     softAssertions.assertThat(actual.getMenteeName()).isEqualTo(mentee.getName());
                     softAssertions.assertThat(actual.getMenteePhone()).isEqualTo(mentee.getPhoneNumber());
-                    softAssertions.assertThat(actual.getContext()).isEqualTo(dto.content());
+                    softAssertions.assertThat(actual.getContent()).isEqualTo(dto.content());
                     softAssertions.assertThat(actual.getStatus()).isEqualTo(Status.PENDING.getValue());
                 }
         );
