@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
 
 import blind from '../../../../common/assets/images/blind.svg';
 import notBlind from '../../../../common/assets/images/notBlind.svg';
@@ -33,6 +34,13 @@ function LoginForm() {
       }
     } catch (error) {
       console.error('로그인 실패', error);
+      Sentry.captureException(error, {
+        level: 'warning',
+        tags: {
+          feature: 'login',
+          step: 'login',
+        },
+      });
     }
   };
 
