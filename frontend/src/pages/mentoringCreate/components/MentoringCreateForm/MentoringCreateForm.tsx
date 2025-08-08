@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 import styled from '@emotion/styled';
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 
+import { PAGE_URL } from '../../../../common/constants/url';
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
 import { careerValidator } from '../../utils/careerValidator';
 import { introduceValidator } from '../../utils/introduceValidator';
@@ -83,6 +85,8 @@ function MentoringCreateForm() {
     }
   };
 
+  const navigate = useNavigate();
+
   const handleSubmitButtonClick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (priceErrorMessage || introduceErrorMessage || careerErrorMessage) {
@@ -90,6 +94,13 @@ function MentoringCreateForm() {
       return;
     }
     submitMentoringForm();
+    navigate(PAGE_URL.HOME);
+  };
+
+  const handleCancelButtonClick = () => {
+    if (window.confirm('멘토링 등록을 취소하시겠습니까?')) {
+      navigate(PAGE_URL.HOME);
+    }
   };
 
   return (
@@ -111,7 +122,7 @@ function MentoringCreateForm() {
       />
       <DetailIntroduce onDetailIntroduceChange={handleMentoringDataChange} />
       <StyledSeparator />
-      <ButtonSection />
+      <ButtonSection onCancelButtonClick={handleCancelButtonClick} />
     </StyledContainer>
   );
 }

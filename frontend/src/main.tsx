@@ -3,13 +3,13 @@ import React from 'react';
 import { ThemeProvider, Global } from '@emotion/react';
 import * as Sentry from '@sentry/react';
 import { createRoot } from 'react-dom/client';
+import ReactGA from 'react-ga4';
 
 import App from './App';
 import AuthProvider from './common/components/AuthProvider/AuthProvider';
 import { fonts } from './common/styles/fonts';
 import { resetCss } from './common/styles/reset';
 import { THEME } from './common/styles/theme';
-import ReactGA from 'react-ga4';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,

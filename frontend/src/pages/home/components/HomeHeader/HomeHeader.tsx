@@ -41,11 +41,11 @@ export default HomeHeader;
 const StyledHeaderWrapper = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1.05rem;
 
   height: 100%;
   padding: 1.4rem 1.1rem;
-  justify-content: space-between;
 `;
 
 const StyledTitleIconWrapper = styled.div`
