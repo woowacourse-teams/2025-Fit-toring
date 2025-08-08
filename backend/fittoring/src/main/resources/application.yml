@@ -5,6 +5,9 @@ spring:
     url: jdbc:mysql://${PROD_DATABASE_HOST}:${PROD_DATABASE_PORT}/${PROD_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${PROD_DATABASE_USER}
     password: ${PROD_DATABASE_PASSWORD}
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   sql:
     init:
       mode: always
