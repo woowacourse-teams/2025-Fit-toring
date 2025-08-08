@@ -37,6 +37,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/members/**")
                 .addPathPatterns("/reviews/**")
                 .addPathPatterns("/admin/**")
+                .addPathPatterns("/reservations/**")
         ;
     }
 

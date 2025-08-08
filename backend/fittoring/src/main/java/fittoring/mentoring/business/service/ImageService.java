@@ -36,5 +36,4 @@ public class ImageService {
     private Image saveImage(Image image){
         return imageRepository.save(image);
     }
-
 }
