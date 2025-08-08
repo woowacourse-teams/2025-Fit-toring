@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
+import * as Sentry from '@sentry/react';
 
 import { apiClient } from '../../../../common/apis/apiClient';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
@@ -23,7 +24,7 @@ function BookingForm({
   const [counselContent, setCounselContent] = useState('');
   const [userInfo, setUserInfo] = useState({
     name: '',
-    phone: '',
+    phoneNumber: '',
   });
   const [sharingAgreed, setSharingAgreed] = useState(false);
 
@@ -42,10 +43,21 @@ function BookingForm({
         body: {
           content: counselContent,
         },
+        withCredentials: true,
       });
-      handleBookingButtonClick(response);
+      const data = await response.json();
+
+      handleBookingButtonClick(data);
     } catch (error) {
       console.error('예약 중 에러 발생', error);
+
+      Sentry.captureException(error, {
+        level: 'warning',
+        tags: {
+          feature: 'reservation',
+          step: 'reservation-apply',
+        },
+      });
     }
   };
 
@@ -67,9 +79,9 @@ function BookingForm({
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const response = await getUserInfo();
+      const { name, phoneNumber } = await getUserInfo();
 
-      setUserInfo(response);
+      setUserInfo({ name, phoneNumber });
     };
 
     fetchUserInfo();
@@ -87,7 +99,7 @@ function BookingForm({
         </StyledInfoRow>
         <StyledInfoRow>
           <StyledUserInfoLabel>전화번호</StyledUserInfoLabel>
-          <StyledUserInfoText>{userInfo.phone}</StyledUserInfoText>
+          <StyledUserInfoText>{userInfo.phoneNumber}</StyledUserInfoText>
         </StyledInfoRow>
         <FormField label="상담 내용(선택사항)" errorMessage={''}>
           <StyledTextarea
@@ -196,9 +208,9 @@ const StyledLabelWrapper = styled.div`
 `;
 
 const StyledCheckboxLabelText = styled.strong`
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
-  font-weight: bold;
   color: ${({ theme }) => theme.FONT.B03};
+  font-weight: bold;
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
 const StyledCheckboxSubText = styled.p`

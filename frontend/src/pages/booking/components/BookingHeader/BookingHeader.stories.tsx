@@ -1,7 +1,6 @@
-import { ThemeProvider } from '@emotion/react';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
-import { THEME } from '../../../../common/styles/theme';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 import BookingHeader from './BookingHeader';
 
@@ -14,11 +13,9 @@ const meta = {
 
   decorators: [
     (Story) => (
-      <BrowserRouter>
-        <ThemeProvider theme={THEME}>
-          <Story />
-        </ThemeProvider>
-      </BrowserRouter>
+      <MemoryRouter initialEntries={[PAGE_URL.BOOKING]}>
+        <Story />
+      </MemoryRouter>
     ),
   ],
 } satisfies Meta<typeof BookingHeader>;

@@ -26,25 +26,31 @@ export default AuthFooter;
 
 const StyledContainer = styled.div`
   display: flow-root;
+
   text-align: center;
 `;
 
 const StyledDivider = styled.div`
   display: flex;
   align-items: center;
+
   margin: 3rem 0;
 
   &::before,
   &::after {
     content: '';
+
     flex: 1;
+
     height: 1px;
+
     background-color: ${({ theme }) => theme.OUTLINE.REGULAR};
   }
 `;
 
 const StyledText = styled.span`
   padding: 0 1.6rem;
+
   color: ${({ theme }) => theme.FONT.G01};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
@@ -56,10 +62,11 @@ const StyledInfoText = styled.p`
 
 const StyledLink = styled(Link)`
   all: unset;
-  color: ${({ theme }) => theme.SYSTEM.MAIN600};
-  cursor: pointer;
 
   margin-left: 0.4rem;
+
+  color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  cursor: pointer;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_B};
 `;

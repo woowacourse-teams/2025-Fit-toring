@@ -11,4 +11,6 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
     boolean existsByIdAndMenteeId(Long id, Long memberId);
 
     List<Reservation> findAllByMentoringId(Long id);
+
+    List<Reservation> findAllByMenteeId(Long menteeId);
 }

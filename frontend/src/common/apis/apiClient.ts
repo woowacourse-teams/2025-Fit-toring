@@ -1,6 +1,7 @@
 interface ApiClientGetType {
   endpoint: string;
   searchParams?: Record<string, string>;
+  withCredentials?: boolean;
 }
 
 interface ApiClientPostType {
@@ -16,6 +17,7 @@ interface ApiClientDeleteType {
 interface ApiClientPatchType {
   endpoint: string;
   searchParams: Record<string, string | number>;
+  withCredentials?: boolean;
 }
 
 type RequestCredentials = 'omit' | 'same-origin' | 'include';
@@ -24,15 +26,22 @@ class ApiClient {
   #baseUrl: string;
 
   constructor() {
-    if (typeof process.env.BASE_URL === 'undefined' || !process.env.BASE_URL) {
+    if (
+      typeof process.env.API_BASE_URL === 'undefined' ||
+      !process.env.API_BASE_URL
+    ) {
       throw new Error(
         '환경 변수 BASE_URL이 설정되지 않았습니다. .env 파일을 확인해주세요.',
       );
     }
-    this.#baseUrl = process.env.BASE_URL;
+    this.#baseUrl = process.env.API_BASE_URL;
   }
 
-  async get<T>({ endpoint, searchParams }: ApiClientGetType): Promise<T> {
+  async get<T>({
+    endpoint,
+    searchParams,
+    withCredentials,
+  }: ApiClientGetType): Promise<T> {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
     url.search = new URLSearchParams(searchParams).toString();
 
@@ -42,6 +51,9 @@ class ApiClient {
         accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      credentials: withCredentials
+        ? 'include'
+        : ('same-origin' as RequestCredentials),
     };
 
     const response = await fetch(url, options);
@@ -90,7 +102,7 @@ class ApiClient {
     }
   }
 
-  async patch({ endpoint, searchParams }: ApiClientPatchType) {
+  async patch({ endpoint, searchParams, withCredentials }: ApiClientPatchType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
 
     const options = {
@@ -99,12 +111,16 @@ class ApiClient {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(searchParams),
+      credentials: withCredentials
+        ? 'include'
+        : ('same-origin' as RequestCredentials),
     };
 
     const response = await fetch(url, options);
     if (!response.ok) {
       throw new Error('데이터를 PATCH하는 데 실패했습니다.');
     }
+    return response;
   }
 }
 

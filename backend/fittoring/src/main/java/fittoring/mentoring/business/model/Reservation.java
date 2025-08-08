@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,25 +27,20 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Reservation {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     private String content;
 
-    @Getter
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
 
-    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Member mentee;

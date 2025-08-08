@@ -7,6 +7,7 @@ import fittoring.mentoring.business.service.ReservationService;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
+import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
@@ -43,6 +44,16 @@ public class ReservationController {
         ReservationCreateResponse responseBody = mentoringReservationService.reserveMentoring(
                 reservationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
+                .body(responseBody);
+    }
+
+    @GetMapping("/reservations/participated")
+    public ResponseEntity<List<ParticipatedReservationResponse>> findParticipatedReservation(
+            @Login LoginInfo loginInfo
+    ) {
+        List<ParticipatedReservationResponse> responseBody = reservationService.findMemberReservations(
+                loginInfo.memberId());
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(responseBody);
     }
 

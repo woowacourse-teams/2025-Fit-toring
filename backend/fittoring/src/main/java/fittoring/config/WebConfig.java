@@ -22,8 +22,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:3000",
-                        "https://dab0meo43dsq7.cloudfront.net",
-                        "https://6ef3f711d6d7.ngrok-free.app"
+                        "https://localhost:3000",
+                        "https://dab0meo43dsq7.cloudfront.net"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")

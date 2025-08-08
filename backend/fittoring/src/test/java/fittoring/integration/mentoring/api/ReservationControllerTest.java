@@ -1,6 +1,7 @@
 package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doNothing;
 
 import fittoring.mentoring.business.model.Category;
@@ -66,13 +67,13 @@ class ReservationControllerTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private ImageRepository imageRepository;
 
     @Autowired
     private DbCleaner dbCleaner;
-
-    @Autowired
-    private MemberRepository memberRepository;
 
     @Autowired
     private JwtProvider jwtProvider;
@@ -178,6 +179,84 @@ class ReservationControllerTest {
         assertThat(response.statusCode()).isEqualTo(404);
     }
 
+    @DisplayName("내가 작성한 예약 조회에 성공하면 200 OK를 반환한다")
+    @Test
+    void findParticipatedReservation() {
+        // given
+        Member mentor1 = memberRepository.save(new Member(
+                "mentorId1",
+                "남",
+                "김멘토",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        ));
+        Member mentor2 = memberRepository.save(new Member(
+                "mentorId2",
+                "남",
+                "김멘토",
+                new Phone("010-1234-5679"),
+                Password.from("password")
+        ));
+        Mentoring mentoring1 = mentoringRepository.save(new Mentoring(
+                mentor1,
+                5_000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
+        ));
+        Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
+                mentor2,
+                5_000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
+        ));
+        Category category1 = categoryRepository.save(new Category("근육 증진"));
+        Category category2 = categoryRepository.save(new Category("다이어트"));
+        Category category3 = categoryRepository.save(new Category("보디 빌딩"));
+        categoryMentoringRepository.save(new CategoryMentoring(
+                category1, mentoring1
+        ));
+        categoryMentoringRepository.save(new CategoryMentoring(
+                category2, mentoring1
+        ));
+        categoryMentoringRepository.save(new CategoryMentoring(
+                category3, mentoring2
+        ));
+        Member mentee = memberRepository.save(new Member(
+                "menteeId",
+                "남",
+                "김멘티",
+                new Phone("010-5678-1234"),
+                Password.from("password")
+        ));
+        reservationRepository.save(new Reservation(
+                "신청 내용1",
+                mentoring1,
+                mentee,
+                Status.PENDING
+        ));
+        reservationRepository.save(new Reservation(
+                "신청 내용2",
+                mentoring2,
+                mentee,
+                Status.PENDING
+
+        ));
+
+        // when
+        // then
+        RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .when()
+                .get("/reservations/participated")
+                .then()
+                .statusCode(200)
+                .body("", hasSize(2));
+    }
+
     @DisplayName("멘토가 개설한 단일 멘토링의 모든 예약을 조회하면 상태코드 200 OK와 예약 정보를 반환한다.")
     @Test
     void getReservationsByMentor() {
@@ -220,7 +299,7 @@ class ReservationControllerTest {
                 new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
         );
         Reservation savedReservation4 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVE)
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVED)
         );
 
         //when
@@ -298,10 +377,10 @@ class ReservationControllerTest {
                 new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
         );
         Reservation savedReservation3 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.REJECT)
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.REJECTED)
         );
         Reservation savedReservation4 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee, Status.APPROVE)
+                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee, Status.APPROVED)
         );
 
         //mentee2의 예약
@@ -309,7 +388,7 @@ class ReservationControllerTest {
                 new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee2, Status.PENDING)
         );
         Reservation savedReservation6 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee2, Status.COMPLETE)
+                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee2, Status.COMPLETED)
         );
 
         //when
@@ -426,7 +505,7 @@ class ReservationControllerTest {
                 .isPresent()
                 .hasValueSatisfying(
                         reservation ->
-                                assertThat(reservation.getStatus()).isEqualTo(Status.APPROVE.getValue())
+                                assertThat(reservation.getStatus()).isEqualTo(Status.APPROVED.getValue())
                 );
     }
 
@@ -461,7 +540,7 @@ class ReservationControllerTest {
         Member savedMentee = memberRepository.save(mentee);
 
         Reservation savedReservation = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.COMPLETE)
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.COMPLETED)
         );
 
         ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVE");
@@ -510,7 +589,7 @@ class ReservationControllerTest {
         Member savedMentee = memberRepository.save(mentee);
 
         Reservation savedReservation = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVE)
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVED)
         );
 
         ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVE");
@@ -559,7 +638,7 @@ class ReservationControllerTest {
         Member savedMentee = memberRepository.save(mentee);
 
         Reservation savedReservation = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVE)
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVED)
         );
 
         //when

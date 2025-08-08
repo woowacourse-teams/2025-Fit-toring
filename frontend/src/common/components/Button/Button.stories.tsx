@@ -1,7 +1,4 @@
-import { ThemeProvider } from '@emotion/react';
 import { fn } from 'storybook/test';
-
-import { THEME } from '../../styles/theme';
 
 import Button from './Button';
 
@@ -13,13 +10,7 @@ const meta = {
   parameters: {},
 
   args: { onClick: fn() },
-  decorators: [
-    (Story) => (
-      <ThemeProvider theme={THEME}>
-        <Story />
-      </ThemeProvider>
-    ),
-  ],
+  decorators: [(Story) => <Story />],
 } satisfies Meta<typeof Button>;
 
 export default meta;

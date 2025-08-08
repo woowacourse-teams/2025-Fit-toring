@@ -5,7 +5,7 @@ VALUES ('logan', 'MALE', '로건', '010-5360-9558', 'logan123', 'MENTOR'),
        ('bumtae', 'MALE', '범태', '010-9390-1250', 'bt2024', 'MENTOR'),
        ('ttyong', 'MALE', '띠용', '010-3378-9048', 'tt0904', 'MENTOR'),
        ('daisy', 'FEMALE', '데이지', '010-2542-4986', 'daisy12', 'MENTOR'),
-       ('admin', 'FEMALE', '관리자', '010-4736-7769', 'admin123', 'ADMIN');
+       ('admin', 'FEMALE', '관리자', '010-0000-0000', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN');
 
 -- MENTORING
 INSERT INTO mentoring (price, career, content, introduction, mentor_id)

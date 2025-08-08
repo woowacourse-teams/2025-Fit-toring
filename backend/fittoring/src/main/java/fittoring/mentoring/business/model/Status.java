@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 public enum Status {
 
-    APPROVE("승인"),
+    APPROVED("승인"),
     PENDING("대기"),
-    REJECT("거절"),
-    COMPLETE("완료"),
+    REJECTED("거절"),
+    COMPLETED("완료"),
     ;
 
     private final String value;
@@ -20,7 +20,7 @@ public enum Status {
     }
 
     public void validate(Status updateStatus) {
-        if (this == APPROVE || this == REJECT || this == COMPLETE) {
+        if (this == APPROVED || this == REJECTED || this == COMPLETED) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
         if (this.equals(updateStatus)) {

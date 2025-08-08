@@ -1,3 +1,7 @@
+import { MemoryRouter } from 'react-router-dom';
+
+import { PAGE_URL } from '../../../../common/constants/url';
+
 import MentoringCreateForm from './MentoringCreateForm';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -6,7 +10,13 @@ const meta = {
   title: 'mentoringCreate/MentoringCreateForm',
   component: MentoringCreateForm,
 
-  decorators: [(Story) => <Story />],
+  decorators: [
+    (Story) => (
+      <MemoryRouter initialEntries={[PAGE_URL.MENTORING_CREATE]}>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta<typeof MentoringCreateForm>;
 
 export default meta;
