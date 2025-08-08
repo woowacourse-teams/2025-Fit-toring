@@ -54,4 +54,8 @@ public class Mentoring {
     public String getMentorName() {
         return this.mentor.getName();
     }
+
+    public String getMentorPhoneNumber() {
+        return this.mentor.getPhoneNumber();
+    }
 }
