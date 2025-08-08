@@ -50,6 +50,7 @@ public class ReservationService {
         return ReservationCreateResponse.from(savedReservation);
     }
 
+    @Transactional(readOnly = true)
     public List<MemberReservationGetResponse> findMemberReservations(Long memberId) {
         List<Reservation> memberReservations = reservationRepository.findAllByMenteeId(memberId);
         return memberReservations.stream()
@@ -59,7 +60,7 @@ public class ReservationService {
 
     private MemberReservationGetResponse generateMemberReservationGetResponse(Reservation reservation) {
         Mentoring mentoring = reservation.getMentoring();
-        String mentorProfileImage = findProfileImageUrl(ImageType.MENTORING_PROFILE, mentoring.getId());
+        String mentorProfileImage = findProfileImageUrl(mentoring.getId());
         List<String> categories = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
         boolean isReviewed = reviewRepository.existsByReservationId(reservation.getId());
         return new MemberReservationGetResponse(
@@ -74,8 +75,9 @@ public class ReservationService {
         );
     }
 
-    public String findProfileImageUrl(ImageType imageType, Long relationId) {
-        Optional<Image> image = imageRepository.findByImageTypeAndRelationId(imageType, relationId);
+    private String findProfileImageUrl(Long relationId) {
+        Optional<Image> image = imageRepository.findByImageTypeAndRelationId(
+            ImageType.MENTORING_PROFILE, relationId);
         return image.map(Image::getUrl)
             .orElse(null);
     }

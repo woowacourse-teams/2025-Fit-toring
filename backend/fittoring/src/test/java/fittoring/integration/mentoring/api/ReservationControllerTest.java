@@ -181,14 +181,6 @@ class ReservationControllerTest {
     @Test
     void findParticipatedReservation() {
         // given
-        doNothing()
-            .when(smsRestClientService)
-            .sendSms(
-                ArgumentMatchers.any(Phone.class),
-                ArgumentMatchers.anyString(),
-                ArgumentMatchers.anyString()
-            );
-
         Member mentor1 = memberRepository.save(new Member(
             "mentorId1",
             "남",
