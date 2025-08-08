@@ -43,6 +43,7 @@ function BookingForm({
         body: {
           content: counselContent,
         },
+        withCredentials: true,
       });
       const data = await response.json();
 
