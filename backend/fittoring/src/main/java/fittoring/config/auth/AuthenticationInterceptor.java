@@ -21,8 +21,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+
+        if(request.getMethod().equalsIgnoreCase("OPTIONS")){
+            return true;
+        }
+
         if (request.getMethod().equalsIgnoreCase("GET") &&
-                request.getRequestURL().toString().endsWith("/mentorings")) {
+                request.getRequestURL().toString().contains("/mentorings")) {
             return true;
         }
 

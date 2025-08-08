@@ -21,17 +21,27 @@ public class S3Uploader {
     public String upload(MultipartFile file, String dir) throws IOException {
         String originalName = file.getOriginalFilename();
         String extension = originalName.substring(originalName.lastIndexOf('.'));
-        String key = dir + "/" + UUID.randomUUID() + extension;
+        String key = "fit-toring/" + dir + "/" + UUID.randomUUID() + extension;
+
+        String contentType = getContentType(file);
 
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
-                .contentType(file.getContentType())
+                .contentType(contentType)
                 .build();
 
         s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
         return getUrl(key);
+    }
+
+    private static String getContentType(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || contentType.isBlank()) {
+            contentType = "application/octet-stream";
+        }
+        return contentType;
     }
 
     private String getUrl(String key) {

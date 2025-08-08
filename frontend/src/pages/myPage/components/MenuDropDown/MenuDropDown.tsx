@@ -8,9 +8,9 @@ import { PAGE_URL } from '../../../../common/constants/url';
 
 const MENU_ITEMS = [
   { name: '개설한 멘토링', path: PAGE_URL.CREATED_MENTORING },
-  { name: '참여한 멘토링', path: 'participated-mentoring' },
-  { name: '회원 정보', path: 'my-profile' },
-  { name: '로그아웃', path: 'logout' },
+  { name: '참여한 멘토링', path: PAGE_URL.PARTICIPATED_MENTORING },
+  // { name: '회원 정보', path: 'my-profile' },
+  // { name: '로그아웃', path: 'logout' },
 ] as const;
 
 function MenuDropDown() {
@@ -96,7 +96,7 @@ const StyledMenuList = styled.ul<{ opened: boolean }>`
   margin-top: 0.4rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 16px;
-  box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
 
   background-color: ${({ theme }) => theme.BG.WHITE};
   opacity: ${({ opened }) => (opened ? 1 : 0)};

@@ -8,6 +8,8 @@ import SpecialtyCheckbox from '../SpecialtyCheckbox/SpecialtyCheckbox';
 
 import type { Specialty } from '../../../../common/types/Specialty';
 
+import ReactGA from 'react-ga4';
+
 const MAX_SPECIALTIES = 3;
 
 interface SpecialtyFilterModalProps {
@@ -43,6 +45,10 @@ function SpecialtyFilterModal({
   const [temporarySelectedSpecialties, setTemporarySelectedSpecialties] =
     useState<string[]>(selectedSpecialties);
 
+  useEffect(() => {
+    setTemporarySelectedSpecialties(selectedSpecialties);
+  }, [selectedSpecialties]);
+
   if (!opened) {
     return null;
   }
@@ -57,10 +63,20 @@ function SpecialtyFilterModal({
 
   const handleApplySpecialties = () => {
     handleApplyFinalSpecialties(temporarySelectedSpecialties);
+    ReactGA.event({
+      category: 'Specialty Filter',
+      action: 'Apply Specialty Filter',
+      label: '전문 분야 필터 적용',
+    });
   };
 
   const handleResetTemporarySpecialties = () => {
     setTemporarySelectedSpecialties([]);
+    ReactGA.event({
+      category: 'Specialty Filter',
+      action: 'Reset Specialty Filter',
+      label: '전문 분야 필터 초기화',
+    });
   };
 
   const handleRollbackTemporarySpecialties = () => {
