@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
-import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
@@ -54,38 +54,41 @@ class ReviewServiceTest {
         // given
         Password password = Password.from("password");
         Member mentor = entityManager.persist(new Member(
-            "mentor",
-            "MALE",
-            "김트레이너",
-            new Phone("010-2222-3333"),
-            password
+                "mentor",
+                "MALE",
+                "김트레이너",
+                new Phone("010-2222-3333"),
+                password
         ));
         Member mentee = entityManager.persist(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            password
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                password
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "content",
-            "introduction"
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
-            "예약 신청합니다.",
-            mentoring,
-            mentee
-        ));
+        Reservation reservation = entityManager.persist(
+                new Reservation(
+                        "예약 신청합니다.",
+                        mentoring,
+                        mentee,
+                        Status.PENDING
+                )
+        );
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            mentee.getId(),
-            reservation.getId(),
-            rating,
-            content
+                mentee.getId(),
+                reservation.getId(),
+                rating,
+                content
         );
 
         // when
@@ -103,43 +106,46 @@ class ReviewServiceTest {
     void createReservationFail1() {
         // given
         Member mentor = entityManager.persist(new Member(
-            "mentor",
-            "MALE",
-            "김트레이너",
-            new Phone("010-2222-3333"),
-            Password.from("password")
+                "mentor",
+                "MALE",
+                "김트레이너",
+                new Phone("010-2222-3333"),
+                Password.from("password")
         ));
         Member mentee = entityManager.persist(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "content",
-            "introduction"
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
         ));
-        entityManager.persist(new Reservation(
-            "예약 신청합니다.",
-            mentoring,
-            mentee
-        ));
+        entityManager.persist(
+                new Reservation(
+                        "예약 신청합니다.",
+                        mentoring,
+                        mentee,
+                        Status.PENDING
+                )
+        );
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            999L,
-            1L,
-            5,
-            "최고의 멘토링이었습니다."
+                999L,
+                1L,
+                5,
+                "최고의 멘토링이었습니다."
         );
 
         // when
         // then
         assertThatThrownBy(() -> reviewService.createReview(reviewCreateDto))
-            .isInstanceOf(MemberNotFoundException.class)
-            .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
+                .isInstanceOf(MemberNotFoundException.class)
+                .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }
 
     @DisplayName("신청하지 않았던 멘토링에 리뷰 작성을 요청하면 예외가 발생한다")
@@ -148,52 +154,55 @@ class ReviewServiceTest {
         // given
         Password password = Password.from("password");
         Member mentor = entityManager.persist(new Member(
-            "mentor",
-            "MALE",
-            "김트레이너",
-            new Phone("010-2222-3333"),
-            password
+                "mentor",
+                "MALE",
+                "김트레이너",
+                new Phone("010-2222-3333"),
+                password
         ));
         Member mentee = entityManager.persist(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            password
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                password
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "content",
-            "introduction"
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
-            "예약 신청합니다.",
-            mentoring,
-            mentee
-        ));
+        Reservation reservation = entityManager.persist(
+                new Reservation(
+                        "예약 신청합니다.",
+                        mentoring,
+                        mentee,
+                        Status.PENDING
+                )
+        );
         Member anotherMember = entityManager.persist(new Member(
-            "anotherMember",
-            "MALE",
-            "김멘티",
-            new Phone("010-2222-3334"),
-            password
+                "anotherMember",
+                "MALE",
+                "김멘티",
+                new Phone("010-2222-3334"),
+                password
         ));
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            anotherMember.getId(),
-            reservation.getId(),
-            rating,
-            content
+                anotherMember.getId(),
+                reservation.getId(),
+                rating,
+                content
         );
 
         // when
         // then
         assertThatThrownBy(() -> reviewService.createReview(reviewCreateDto))
-            .isInstanceOf(ReservationNotFoundException.class)
-            .hasMessage(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());
+                .isInstanceOf(ReservationNotFoundException.class)
+                .hasMessage(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());
     }
 
     @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 예외가 발생한다")
@@ -202,45 +211,48 @@ class ReviewServiceTest {
         // given
         Password password = Password.from("password");
         Member mentor = entityManager.persist(new Member(
-            "mentor",
-            "MALE",
-            "김트레이너",
-            new Phone("010-2222-3333"),
-            password
+                "mentor",
+                "MALE",
+                "김트레이너",
+                new Phone("010-2222-3333"),
+                password
         ));
         Member mentee = entityManager.persist(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            password
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                password
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "content",
-            "introduction"
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
-            "예약 신청합니다.",
-            mentoring,
-            mentee
-        ));
+        Reservation reservation = entityManager.persist(
+                new Reservation(
+                        "예약 신청합니다.",
+                        mentoring,
+                        mentee,
+                        Status.PENDING
+                )
+        );
         int rating = 5;
         String content = "최고의 멘토링이었습니다.";
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
-            mentee.getId(),
-            reservation.getId(),
-            rating,
-            content
+                mentee.getId(),
+                reservation.getId(),
+                rating,
+                content
         );
         reviewService.createReview(reviewCreateDto);
 
         // when
         // then
         assertThatThrownBy(() -> reviewService.createReview(reviewCreateDto))
-            .isInstanceOf(ReviewAlreadyExistsException.class)
-            .hasMessage(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
+                .isInstanceOf(ReviewAlreadyExistsException.class)
+                .hasMessage(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
     }
 }

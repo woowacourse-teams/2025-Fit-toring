@@ -25,6 +25,7 @@ public class Mentoring {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @Column(nullable = false)
     private int price;
 
@@ -54,7 +55,7 @@ public class Mentoring {
         return this.mentor.getName();
     }
 
-    public String getMentorPhone() {
+    public String getMentorPhoneNumber() {
         return this.mentor.getPhoneNumber();
     }
 }

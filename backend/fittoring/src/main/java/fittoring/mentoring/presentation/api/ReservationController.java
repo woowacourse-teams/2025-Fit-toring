@@ -4,16 +4,20 @@ import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringReservationService;
 import fittoring.mentoring.business.service.ReservationService;
+import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
+import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
+import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,17 +41,44 @@ public class ReservationController {
                 mentoringId,
                 requestBody
         );
-        ReservationCreateResponse responseBody = mentoringReservationService.reserveMentoring(reservationCreateDto);
+        ReservationCreateResponse responseBody = mentoringReservationService.reserveMentoring(
+                reservationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseBody);
     }
 
     @GetMapping("/reservations/participated")
     public ResponseEntity<List<ParticipatedReservationResponse>> findParticipatedReservation(
-        @Login LoginInfo loginInfo
+            @Login LoginInfo loginInfo
     ) {
-        List<ParticipatedReservationResponse> responseBody = reservationService.findMemberReservations(loginInfo.memberId());
+        List<ParticipatedReservationResponse> responseBody = reservationService.findMemberReservations(
+                loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(responseBody);
+                .body(responseBody);
+    }
+
+    @GetMapping("/mentorings/mine/reservations")
+    public ResponseEntity<List<MentorMentoringReservationResponse>> getReservationsByMentor(
+            @Login LoginInfo loginInfo
+    ) {
+        List<MentorMentoringReservationResponse> response = reservationService.getReservationsByMentor(
+                loginInfo.memberId()
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/reservations/{reservationId}/status")
+    public ResponseEntity<Void> updateStatus(
+            @PathVariable Long reservationId,
+            @RequestBody @Valid ReservationStatusUpdateRequest request
+    ) {
+        reservationService.updateStatus(reservationId, request.status());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/reservations/{reservationId}/phone")
+    public ResponseEntity<PhoneNumberResponse> getPhone(@PathVariable Long reservationId) {
+        PhoneNumberResponse response = reservationService.getPhone(reservationId);
+        return ResponseEntity.ok(response);
     }
 }

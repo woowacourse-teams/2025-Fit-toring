@@ -34,4 +34,6 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
             @Param("title2") String categoryTitle2,
             @Param("title3") String categoryTitle3
     );
+
+    List<Mentoring> findAllByMentorId(Long mentorId);
 }
