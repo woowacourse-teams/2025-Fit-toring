@@ -138,9 +138,7 @@ class ReservationControllerTest {
         ReservationCreateResponse expected = new ReservationCreateResponse(
                 mentor.getName(),
                 mentee.getName(),
-                mentee.getPhoneNumber(),
-                request.content(),
-                Status.PENDING.getValue()
+                mentee.getPhoneNumber()
         );
 
         assertThat(response).isEqualTo(expected);
