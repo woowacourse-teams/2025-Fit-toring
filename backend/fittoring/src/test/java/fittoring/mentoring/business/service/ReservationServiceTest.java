@@ -145,13 +145,13 @@ class ReservationServiceTest {
         entityManager.persist(mentoring);
 
         //예약 생성
-        Reservation reservation = new Reservation("context", mentoring, savedMentee, Status.PENDING);
+        Reservation reservation = new Reservation("content", mentoring, savedMentee, Status.PENDING);
         entityManager.persist(reservation);
 
-        Reservation reservation2 = new Reservation("context", mentoring, savedMentee2, Status.PENDING);
+        Reservation reservation2 = new Reservation("content", mentoring, savedMentee2, Status.PENDING);
         entityManager.persist(reservation2);
 
-        Reservation reservation3 = new Reservation("context", mentoring, savedMentee3, Status.PENDING);
+        Reservation reservation3 = new Reservation("content", mentoring, savedMentee3, Status.PENDING);
         entityManager.persist(reservation3);
 
         //when
@@ -201,8 +201,8 @@ class ReservationServiceTest {
     @DisplayName("예약의 상태를 변경할 수 있다.")
     @ParameterizedTest
     @CsvSource({
-            "APPROVE, 승인",
-            "REJECT, 거절",
+            "APPROVED, 승인",
+            "REJECTED, 거절",
             "COMPLETE, 완료"
     })
     void updateStatus(String requestStatus, String expectedStatusValue) {
@@ -222,7 +222,7 @@ class ReservationServiceTest {
         Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
         Member savedMentee = entityManager.persist(mentee);
 
-        Reservation reservation = new Reservation("context", mentoring, savedMentee, Status.PENDING);
+        Reservation reservation = new Reservation("content", mentoring, savedMentee, Status.PENDING);
         Reservation savedReservation = entityManager.persist(reservation);
 
         //when
@@ -254,7 +254,7 @@ class ReservationServiceTest {
         Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
         Member savedMentee = entityManager.persist(mentee);
 
-        Reservation reservation = new Reservation("context", mentoring, savedMentee, Status.PENDING);
+        Reservation reservation = new Reservation("content", mentoring, savedMentee, Status.PENDING);
         Reservation savedReservation = entityManager.persist(reservation);
         entityManager.clear();
 
