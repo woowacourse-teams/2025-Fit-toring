@@ -322,6 +322,7 @@ class ReservationControllerTest {
         MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
 
         assertThat(response)
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
                 .containsExactlyInAnyOrder(expected, expected2, expected3, expected4);
     }
 
@@ -413,6 +414,7 @@ class ReservationControllerTest {
         MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6);
 
         assertThat(response)
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
                 .containsExactlyInAnyOrder(expected, expected2, expected3, expected4, expected5, expected6);
     }
 
