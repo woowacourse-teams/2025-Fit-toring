@@ -1,7 +1,3 @@
-import { ThemeProvider } from '@emotion/react';
-
-import { THEME } from '../../../../common/styles/theme';
-
 import MentoInfoCard from './MentorInfoCard';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -10,13 +6,7 @@ const meta = {
   title: 'booking/MentoInfoCard',
   component: MentoInfoCard,
 
-  decorators: [
-    (Story) => (
-      <ThemeProvider theme={THEME}>
-        <Story />
-      </ThemeProvider>
-    ),
-  ],
+  decorators: [(Story) => <Story />],
 } satisfies Meta<typeof MentoInfoCard>;
 
 export default meta;
