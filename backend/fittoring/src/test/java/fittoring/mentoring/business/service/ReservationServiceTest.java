@@ -18,7 +18,7 @@ import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.infra.S3Uploader;
-import fittoring.mentoring.presentation.dto.MemberReservationGetResponse;
+import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
@@ -185,8 +185,8 @@ class ReservationServiceTest {
             reservation2,
             mentee
         ));
-        List<MemberReservationGetResponse> expected = List.of(
-            new MemberReservationGetResponse(
+        List<ParticipatedReservationResponse> expected = List.of(
+            new ParticipatedReservationResponse(
                 reservation1.getId(),
                 mentoring1.getId(),
                 mentoring1.getMentorName(),
@@ -196,7 +196,7 @@ class ReservationServiceTest {
                 List.of(category1OfMentoring1.getCategoryTitle(), category2OfMentoring1.getCategoryTitle()),
                 false
             ),
-            new MemberReservationGetResponse(
+            new ParticipatedReservationResponse(
                 reservation2.getId(),
                 mentoring2.getId(),
                 mentoring2.getMentorName(),

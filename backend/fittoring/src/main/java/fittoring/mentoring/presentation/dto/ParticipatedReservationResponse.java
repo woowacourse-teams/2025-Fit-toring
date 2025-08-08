@@ -3,7 +3,7 @@ package fittoring.mentoring.presentation.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-public record MemberReservationGetResponse(
+public record ParticipatedReservationResponse(
     Long reservationId,
     Long mentoringId,
     String mentorName,

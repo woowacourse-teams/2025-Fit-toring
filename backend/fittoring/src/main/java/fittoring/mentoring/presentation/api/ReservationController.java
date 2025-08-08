@@ -5,7 +5,7 @@ import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringReservationService;
 import fittoring.mentoring.business.service.ReservationService;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
-import fittoring.mentoring.presentation.dto.MemberReservationGetResponse;
+import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import jakarta.validation.Valid;
@@ -43,10 +43,10 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/participated")
-    public ResponseEntity<List<MemberReservationGetResponse>> findParticipatedReservation(
+    public ResponseEntity<List<ParticipatedReservationResponse>> findParticipatedReservation(
         @Login LoginInfo loginInfo
     ) {
-        List<MemberReservationGetResponse> responseBody = reservationService.findMemberReservations(loginInfo.memberId());
+        List<ParticipatedReservationResponse> responseBody = reservationService.findMemberReservations(loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
             .body(responseBody);
     }
