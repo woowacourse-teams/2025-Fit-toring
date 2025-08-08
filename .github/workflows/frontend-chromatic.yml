@@ -31,8 +31,10 @@ jobs:
       - name: Generate environment variables
         run: |
           echo "API_BASE_URL=${{ secrets.FE_API_BASE_URL }}" >> .env
+          echo "SENTRY_DSN=${{ secrets.FE_SENTRY_DSN }}" >> .env
         env:
           API_BASE_URL: ${{ secrets.FE_API_BASE_URL }}
+          SENTRY_DSN: ${{ secrets.FE_SENTRY_DSN }}
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Build Storybook

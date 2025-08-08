@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import * as Sentry from '@sentry/react';
+
 import { postAuthCode } from '../apis/postAuthCode';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
@@ -31,6 +33,13 @@ const useVerificationCodeRequest = ({
       }
     } catch (error) {
       console.error('인증요청 실패', error);
+      Sentry.captureException(error, {
+        level: 'error',
+        tags: {
+          feature: 'sms',
+          step: 'send-code',
+        },
+      });
     }
   };
 
