@@ -3,12 +3,17 @@ import styled from '@emotion/styled';
 
 import Button from '../../../../common/components/Button/Button';
 
-function ButtonSection() {
+interface ButtonSectionProps {
+  onCancelButtonClick: () => void;
+}
+
+function ButtonSection({ onCancelButtonClick }: ButtonSectionProps) {
   return (
     <StyledContainer>
       <Button
         type="button"
         variant="secondary"
+        onClick={onCancelButtonClick}
         size="full"
         customStyle={buttonStyle}
       >

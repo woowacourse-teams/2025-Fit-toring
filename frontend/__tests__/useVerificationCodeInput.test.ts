@@ -36,7 +36,7 @@ describe('인증번호 길이 유효성 검사', () => {
     });
 
     expect(result.current.errorMessage).toBe(
-      ERROR_MESSAGE.INVALID_PASSWORD_LENGTH,
+      ERROR_MESSAGE.INVALID_VERIFICATION_CODE,
     );
   });
 

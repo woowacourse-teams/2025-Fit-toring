@@ -5,14 +5,59 @@ import styled from '@emotion/styled';
 import CertificateInput from '../CertificateInput/CertificateInput';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-function CertificateSection() {
-  const [certificates, setCertificates] = useState<string[]>([]);
+import type { CertificateItem } from '../types/certificateItem';
+import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+
+interface CertificateSectionProps {
+  onCertificateChange: (
+    newData: Pick<mentoringCreateFormData, 'certificateInfos'>,
+  ) => void;
+  handleCertificateImageFilesChange: (files: File[]) => void;
+}
+
+function CertificateSection({
+  onCertificateChange,
+  handleCertificateImageFilesChange,
+}: CertificateSectionProps) {
+  const [certificates, setCertificates] = useState<CertificateItem[]>([]);
   const handleAddButtonClick = () => {
-    setCertificates((prev) => [...prev, crypto.randomUUID()]);
+    setCertificates((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        title: '',
+        type: 'LICENSE',
+        file: undefined,
+      },
+    ]);
   };
   const handleDeleteButtonClick = (id: string) => {
-    setCertificates((prev) => prev.filter((item) => item !== id));
+    const updated = certificates.filter((item) => item.id !== id);
+    setCertificates(updated);
+    onCertificateChange({ certificateInfos: updated });
   };
+
+  const handleCertificateChangeById = (
+    id: string,
+    changed: Partial<CertificateItem>,
+  ) => {
+    const updated = certificates.map((item) =>
+      item.id === id ? { ...item, ...changed } : item,
+    );
+    setCertificates(updated);
+
+    const finalCertificates = updated.map(({ title, type }) => ({
+      title,
+      type,
+    }));
+    onCertificateChange({ certificateInfos: finalCertificates });
+
+    const files = updated
+      .map((item) => item.file)
+      .filter((file): file is File => !!file);
+    handleCertificateImageFilesChange(files);
+  };
+
   return (
     <section>
       <TitleSeparator>검증된 자격 사항</TitleSeparator>
@@ -25,10 +70,15 @@ function CertificateSection() {
         </p>
         <p>멘토 페이지에는 항목 형식에 따라 순서대로 보여집니다.</p>
       </StyledDescriptionWrapper>
-      {certificates.map((id) => (
+      {certificates.map((item) => (
         <CertificateInput
-          key={id}
-          onDeleteButtonClick={() => handleDeleteButtonClick(id)}
+          key={item.id}
+          id={item.id}
+          onDeleteButtonClick={() => handleDeleteButtonClick(item.id)}
+          onCertificateChange={handleCertificateChangeById}
+          onCertificateImageFileChange={(file) =>
+            handleCertificateChangeById(item.id, { file })
+          }
         />
       ))}
 

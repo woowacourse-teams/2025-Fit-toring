@@ -60,6 +60,10 @@ export const resetCss = css`
     display: block;
   }
 
+  html {
+    scrollbar-gutter: stable;
+  }
+
   html,
   * {
     font-family: Pretendard, sans-serif;
