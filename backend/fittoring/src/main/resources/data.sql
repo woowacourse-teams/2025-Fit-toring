@@ -41,13 +41,14 @@ VALUES (1, 1),
        (4, 4),
        (5, 5);
 
--- -- CERTIFICATE (멘토당 하나씩 자격증)
-INSERT INTO certificate (mentoring_id, type, title, verification_status)
-VALUES (1, 'LICENSE', 'NASM CPT', 'PENDING'),
-       (2, 'LICENSE', '생활스포츠지도사 2급', 'PENDING'),
-       (3, 'LICENSE', '건강운동관리사', 'PENDING'),
-       (4, 'LICENSE', '홈트레이너 자격증', 'PENDING'),
-       (5, 'LICENSE', 'NSCA CSCS', 'PENDING');
+-- CERTIFICATE (멘토당 하나씩 자격증)
+INSERT INTO certificate (mentoring_id, type, title, verification_status, created_at)
+VALUES
+    (1, 'LICENSE', 'NASM CPT', 'PENDING', NOW()),
+    (2, 'LICENSE', '생활스포츠지도사 2급', 'PENDING', NOW()),
+    (3, 'LICENSE', '건강운동관리사', 'PENDING', NOW()),
+    (4, 'LICENSE', '홈트레이너 자격증', 'PENDING', NOW()),
+    (5, 'LICENSE', 'NSCA CSCS', 'PENDING', NOW());
 
 -- OFFERING (멘토링 제공 서비스 설명)
 INSERT INTO offering (mentoring_id, content)
