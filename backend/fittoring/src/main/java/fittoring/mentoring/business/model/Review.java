@@ -24,6 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Review {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,6 +37,7 @@ public class Review {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Getter
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -44,8 +46,9 @@ public class Review {
     @JoinColumn(nullable = false, unique = true)
     private Reservation reservation;
 
+    @Getter
     @ManyToOne
-    @JoinColumn(nullable = false, unique = true)
+    @JoinColumn(nullable = false)
     private Member mentee;
 
     public Review(int rating, String content, Reservation reservation, Member mentee) {
