@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
 import notBlind from '../../../../common/assets/images/notBlind.svg';
@@ -11,6 +11,7 @@ import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider
 import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
+import { PAGE_URL } from '../../../../common/constants/url';
 import usePasswordInput from '../../../../common/hooks/usePasswordInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import { postLogin } from '../../apis/postLogin';
@@ -29,7 +30,7 @@ function LoginForm() {
       const response = await postLogin(userId, password);
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
-        navigate(-1);
+        navigate(PAGE_URL.HOME);
         setAuthenticated(true);
       }
     } catch (error) {
@@ -89,9 +90,10 @@ function LoginForm() {
         customStyle={css`
           height: 4.3rem;
           box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
-          font-size: 1.6rem;
           box-shadow: 0 4px 12px 0
             ${loginFormValidated ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
+
+          font-size: 1.6rem;
         `}
         variant={loginFormValidated ? 'primary' : 'disabled'}
       >
@@ -131,6 +133,7 @@ const StyledInput = styled.input<{ errored?: boolean }>`
       errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
     1px solid;
   border-radius: 0.7rem;
+
   background-color: ${({ theme }) => theme.BG.WHITE};
 
   :focus {
@@ -150,8 +153,10 @@ const StyledImg = styled.img`
   position: absolute;
   right: 0;
   bottom: 50%;
+
   width: 2rem;
   transform: translateY(50%);
   cursor: pointer;
+
   margin-right: 1rem;
 `;
