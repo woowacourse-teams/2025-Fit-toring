@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
