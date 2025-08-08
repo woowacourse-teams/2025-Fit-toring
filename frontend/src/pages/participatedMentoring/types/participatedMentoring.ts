@@ -1,6 +1,7 @@
 import type { StatusType } from '../../../common/types/statusType';
 
 export interface ParticipatedMentoringType {
+  reservationId: number;
   mentorName: string;
   mentorProfileImage: string;
   price: string;

@@ -1,3 +1,7 @@
+import { MemoryRouter } from 'react-router-dom';
+
+import { PAGE_URL } from '../../../../common/constants/url';
+
 import Slogan from './Slogan';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -6,7 +10,13 @@ const meta = {
   title: 'Home/Slogan',
   component: Slogan,
 
-  decorators: [(Story) => <Story />],
+  decorators: [
+    (Story) => (
+      <MemoryRouter initialEntries={[PAGE_URL.HOME]}>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 } satisfies Meta<typeof Slogan>;
 
 export default meta;

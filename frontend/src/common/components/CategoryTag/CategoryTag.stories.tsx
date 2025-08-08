@@ -1,7 +1,3 @@
-import { ThemeProvider } from '@emotion/react';
-
-import { THEME } from '../../styles/theme';
-
 import CategoryTag from './CategoryTag';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -9,13 +5,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 const meta = {
   title: 'booking/CategoryTag',
   component: CategoryTag,
-  decorators: [
-    (Story) => (
-      <ThemeProvider theme={THEME}>
-        <Story />
-      </ThemeProvider>
-    ),
-  ],
+  decorators: [(Story) => <Story />],
 } satisfies Meta<typeof CategoryTag>;
 
 export default meta;

@@ -1,7 +1,3 @@
-import { ThemeProvider } from '@emotion/react';
-
-import { THEME } from '../../../../common/styles/theme';
-
 import BookingSummarySection from './BookingSummarySection';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -10,13 +6,7 @@ const meta = {
   title: 'booking/BookingSummarySection',
   component: BookingSummarySection,
 
-  decorators: [
-    (Story) => (
-      <ThemeProvider theme={THEME}>
-        <Story />
-      </ThemeProvider>
-    ),
-  ],
+  decorators: [(Story) => <Story />],
 } satisfies Meta<typeof BookingSummarySection>;
 
 export default meta;

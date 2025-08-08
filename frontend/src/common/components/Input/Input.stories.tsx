@@ -1,7 +1,3 @@
-import { ThemeProvider } from '@emotion/react';
-
-import { THEME } from '../../styles/theme';
-
 import Input from './Input';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -11,13 +7,7 @@ const meta = {
   component: Input,
   parameters: {},
 
-  decorators: [
-    (Story) => (
-      <ThemeProvider theme={THEME}>
-        <Story />
-      </ThemeProvider>
-    ),
-  ],
+  decorators: [(Story) => <Story />],
 } satisfies Meta<typeof Input>;
 
 export default meta;
