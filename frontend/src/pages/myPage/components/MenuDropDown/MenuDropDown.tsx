@@ -8,9 +8,9 @@ import { PAGE_URL } from '../../../../common/constants/url';
 
 const MENU_ITEMS = [
   { name: '개설한 멘토링', path: PAGE_URL.CREATED_MENTORING },
-  { name: '참여한 멘토링', path: 'participated-mentoring' },
-  { name: '회원 정보', path: 'my-profile' },
-  { name: '로그아웃', path: 'logout' },
+  { name: '참여한 멘토링', path: PAGE_URL.PARTICIPATED_MENTORING },
+  // { name: '회원 정보', path: 'my-profile' },
+  // { name: '로그아웃', path: 'logout' },
 ] as const;
 
 function MenuDropDown() {

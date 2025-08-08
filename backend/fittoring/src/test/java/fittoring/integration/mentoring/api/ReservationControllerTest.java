@@ -1,6 +1,7 @@
 package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doNothing;
 
 import fittoring.mentoring.business.model.Category;
@@ -10,12 +11,16 @@ import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
@@ -46,6 +51,9 @@ class ReservationControllerTest {
     private SmsRestClientService smsRestClientService;
 
     @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
 
     @Autowired
@@ -55,17 +63,16 @@ class ReservationControllerTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private ImageRepository imageRepository;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Autowired
     private JwtProvider jwtProvider;
 
+    @Autowired
+    private DbCleaner dbCleaner;
 
     @BeforeEach
     void setUp() {
@@ -168,5 +175,80 @@ class ReservationControllerTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(404);
+    }
+
+    @DisplayName("내가 작성한 예약 조회에 성공하면 200 OK를 반환한다")
+    @Test
+    void findParticipatedReservation() {
+        // given
+        Member mentor1 = memberRepository.save(new Member(
+            "mentorId1",
+            "남",
+            "김멘토",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Member mentor2 = memberRepository.save(new Member(
+            "mentorId2",
+            "남",
+            "김멘토",
+            new Phone("010-1234-5679"),
+            Password.from("password")
+        ));
+        Mentoring mentoring1 = mentoringRepository.save(new Mentoring(
+            mentor1,
+            5_000,
+            5,
+            "한 줄 소개",
+            "긴 글 소개"
+        ));
+        Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
+            mentor2,
+            5_000,
+            5,
+            "한 줄 소개",
+            "긴 글 소개"
+        ));
+        Category category1 = categoryRepository.save(new Category("근육 증진"));
+        Category category2 = categoryRepository.save(new Category("다이어트"));
+        Category category3 = categoryRepository.save(new Category("보디 빌딩"));
+        categoryMentoringRepository.save(new CategoryMentoring(
+            category1, mentoring1
+        ));
+        categoryMentoringRepository.save(new CategoryMentoring(
+            category2, mentoring1
+        ));
+        categoryMentoringRepository.save(new CategoryMentoring(
+            category3, mentoring2
+        ));
+        Member mentee = memberRepository.save(new Member(
+            "menteeId",
+            "남",
+            "김멘티",
+            new Phone("010-5678-1234"),
+            Password.from("password")
+        ));
+        reservationRepository.save(new Reservation(
+            "신청 내용1",
+            mentoring1,
+            mentee
+        ));
+        reservationRepository.save(new Reservation(
+            "신청 내용2",
+            mentoring2,
+            mentee
+        ));
+
+        // when
+        // then
+        RestAssured
+            .given()
+            .log().all().contentType(ContentType.JSON)
+            .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+            .when()
+            .get("/reservations/participated")
+            .then()
+            .statusCode(200)
+            .body("", hasSize(2));
     }
 }

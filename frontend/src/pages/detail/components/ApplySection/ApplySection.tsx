@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
 
@@ -13,8 +14,14 @@ interface ApplySectionProps {
 function ApplySection({ price, mentoringId }: ApplySectionProps) {
   const navigate = useNavigate();
 
+  const { authenticated } = useAuth();
+
   const handleMoveToBookingPage = () => {
-    navigate(`${PAGE_URL.BOOKING}/${mentoringId}`);
+    if (authenticated) {
+      navigate(`${PAGE_URL.BOOKING}/${mentoringId}`);
+    } else {
+      navigate(PAGE_URL.LOGIN);
+    }
   };
   return (
     <StyledContainer>

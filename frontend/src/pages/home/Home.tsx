@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
+import ReactGA from 'react-ga4';
 
 import Footer from '../../common/components/Footer/Footer';
 
@@ -15,7 +16,6 @@ import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFil
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 import type { MentorInformation } from './types/MentorInformation';
-import ReactGA from 'react-ga4';
 
 const convertSelectedSpecialtiesToParams = (
   selectedSpecialties: string[],

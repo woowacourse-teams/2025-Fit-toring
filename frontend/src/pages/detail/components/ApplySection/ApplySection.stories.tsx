@@ -1,7 +1,4 @@
-import { ThemeProvider } from '@emotion/react';
 import { BrowserRouter } from 'react-router-dom';
-
-import { THEME } from '../../../../common/styles/theme';
 
 import ApplySection from './ApplySection';
 
@@ -14,9 +11,7 @@ const meta = {
   decorators: [
     (Story) => (
       <BrowserRouter>
-        <ThemeProvider theme={THEME}>
-          <Story />
-        </ThemeProvider>
+        <Story />
       </BrowserRouter>
     ),
   ],
@@ -28,6 +23,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     price: 5000,
+    mentoringId: '1',
   },
   parameters: {
     docs: {

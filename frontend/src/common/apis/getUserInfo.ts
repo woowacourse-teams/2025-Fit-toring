@@ -7,5 +7,6 @@ import type { UserInfo } from '../types/userInfo';
 export const getUserInfo = async () => {
   return await apiClient.get<UserInfo>({
     endpoint: API_ENDPOINTS.MEMBERS_ME,
+    withCredentials: true,
   });
 };

@@ -1,8 +1,6 @@
-import { ThemeProvider } from '@emotion/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { PAGE_URL } from '../../../../common/constants/url';
-import { THEME } from '../../../../common/styles/theme';
 
 import HomeHeader from './HomeHeader';
 
@@ -14,11 +12,9 @@ const meta = {
 
   decorators: [
     (Story) => (
-      <ThemeProvider theme={THEME}>
-        <MemoryRouter initialEntries={[PAGE_URL.HOME]}>
-          <Story />
-        </MemoryRouter>
-      </ThemeProvider>
+      <MemoryRouter initialEntries={[PAGE_URL.HOME]}>
+        <Story />
+      </MemoryRouter>
     ),
   ],
 } satisfies Meta<typeof HomeHeader>;

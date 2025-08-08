@@ -26,7 +26,7 @@ function MyProfile() {
     return null;
   }
 
-  const { loginId, name, phone, image } = myProfile;
+  const { loginId, name, phoneNumber, image } = myProfile;
 
   return (
     <StyledContainer>
@@ -37,7 +37,7 @@ function MyProfile() {
         <StyledImage src={image || defaultProfile} alt="내 프로필 이미지" />
         <StyledName>{name}</StyledName>
         <StyledId>아이디: {loginId}</StyledId>
-        <StyledPhone>전화번호: {phone}</StyledPhone>
+        <StyledPhone>전화번호: {phoneNumber}</StyledPhone>
       </StyledWrapper>
     </StyledContainer>
   );

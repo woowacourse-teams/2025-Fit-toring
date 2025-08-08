@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
+import ReactGA from 'react-ga4';
 
 import { getSpecialties } from '../../../../common/apis/getSpecialties';
 import Modal from '../../../../common/components/Modal/Modal';
@@ -8,7 +9,6 @@ import SpecialtyCheckbox from '../SpecialtyCheckbox/SpecialtyCheckbox';
 
 import type { Specialty } from '../../../../common/types/Specialty';
 
-import ReactGA from 'react-ga4';
 
 const MAX_SPECIALTIES = 3;
 
@@ -65,8 +65,8 @@ function SpecialtyFilterModal({
     handleApplyFinalSpecialties(temporarySelectedSpecialties);
     ReactGA.event({
       category: 'Specialty Filter',
-      action: 'Open Specialty Filter Modal',
-      label: '전문 분야 필터',
+      action: 'Apply Specialty Filter',
+      label: '전문 분야 필터 적용',
     });
   };
 
@@ -74,8 +74,8 @@ function SpecialtyFilterModal({
     setTemporarySelectedSpecialties([]);
     ReactGA.event({
       category: 'Specialty Filter',
-      action: 'Open Specialty Filter Modal',
-      label: '전문 분야 필터',
+      action: 'Reset Specialty Filter',
+      label: '전문 분야 필터 초기화',
     });
   };
 
