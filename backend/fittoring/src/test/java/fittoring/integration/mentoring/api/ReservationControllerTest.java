@@ -388,7 +388,7 @@ class ReservationControllerTest {
                 new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee2, Status.PENDING)
         );
         Reservation savedReservation6 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee2, Status.COMPLETED)
+                new Reservation("멘토링 예약 내용", savedMentoring2, savedMentee2, Status.COMPLETE)
         );
 
         //when
@@ -487,7 +487,7 @@ class ReservationControllerTest {
                 new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.PENDING)
         );
 
-        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVE");
+        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVED");
 
         //when
         RestAssured
@@ -540,10 +540,10 @@ class ReservationControllerTest {
         Member savedMentee = memberRepository.save(mentee);
 
         Reservation savedReservation = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.COMPLETED)
+                new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.COMPLETE)
         );
 
-        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVE");
+        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVED");
 
         //when
         Response response = RestAssured
@@ -592,7 +592,7 @@ class ReservationControllerTest {
                 new Reservation("멘토링 예약 내용", savedMentoring, savedMentee, Status.APPROVED)
         );
 
-        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVE");
+        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVED");
 
         //when
         Response response = RestAssured
