@@ -96,7 +96,7 @@ const StyledMenuList = styled.ul<{ opened: boolean }>`
   margin-top: 0.4rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 16px;
-  box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
 
   background-color: ${({ theme }) => theme.BG.WHITE};
   opacity: ${({ opened }) => (opened ? 1 : 0)};

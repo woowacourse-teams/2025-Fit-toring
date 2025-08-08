@@ -7,11 +7,12 @@ import MentoringApplicationItem from './components/MentoringApplicationItem/Ment
 import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
 
 import type { MentoringApplication } from './types/mentoringApplication';
+import type { StatusType } from '../../common/types/statusType';
 
 function CreatedMentoring() {
   const [mentoringApplicationList, setMentoringApplicationList] = useState<
-    MentoringApplication[] | null
-  >(null);
+    MentoringApplication[]
+  >([]);
 
   useEffect(() => {
     const fetchMentoringApplicationList = async () => {
@@ -22,9 +23,32 @@ function CreatedMentoring() {
     fetchMentoringApplicationList();
   }, []);
 
-  if (!mentoringApplicationList) {
+  if (!mentoringApplicationList.length) {
     return null;
   }
+
+  const handleActionButtonsClick = ({
+    reservationId,
+    status,
+    phoneNumber,
+  }: {
+    reservationId: number;
+    status: StatusType;
+    phoneNumber: string;
+  }) => {
+    setMentoringApplicationList((prevList) => {
+      return prevList.map((item) => {
+        if (item.reservationId !== reservationId) {
+          return item;
+        }
+        return {
+          ...item,
+          status,
+          phoneNumber,
+        };
+      });
+    });
+  };
 
   return (
     <StyledContainer>
@@ -44,6 +68,7 @@ function CreatedMentoring() {
             <MentoringApplicationItem
               key={item.reservationId}
               mentoringApplication={item}
+              onActionButtonsClick={handleActionButtonsClick}
             />
           ))}
         </MentoringApplicationList>
@@ -77,7 +102,7 @@ const StyledWrapper = styled.div`
   height: 100%;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 16px;
-  box-shadow: 0 0.4rem 1.6rem rgb(0 0 0 / 10%);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
 `;
 
 const StyledInfoWrapper = styled.div`

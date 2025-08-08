@@ -8,6 +8,7 @@ import App from './App';
 import { fonts } from './common/styles/fonts';
 import { resetCss } from './common/styles/reset';
 import { THEME } from './common/styles/theme';
+import ReactGA from 'react-ga4';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -31,6 +32,8 @@ async function enableMocking() {
   // }
   // return worker.start();
 }
+
+ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
 
 enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(

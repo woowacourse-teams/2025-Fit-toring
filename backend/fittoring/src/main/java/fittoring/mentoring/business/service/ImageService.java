@@ -23,9 +23,9 @@ public class ImageService {
         return imageRepository.findByImageTypeAndRelationId(imageType, relationId);
     }
 
-    public Image uploadImageToS3(MultipartFile certificateImageFile, String dir, ImageType type, Long id) {
+    public Image uploadImageToS3(MultipartFile imageFile, String dir, ImageType type, Long id) {
         try {
-            String s3Url = s3Uploader.upload(certificateImageFile, dir);
+            String s3Url = s3Uploader.upload(imageFile, dir);
             Image image = new Image(s3Url, type, id);
             return saveImage(image);
         } catch (IOException e) {

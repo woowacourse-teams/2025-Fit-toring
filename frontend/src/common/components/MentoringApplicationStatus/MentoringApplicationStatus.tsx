@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 import { StatusTypeEnum, type StatusType } from '../../types/statusType';
 
-import type { myTheme } from '../../../../common/types/theme';
+import type { myTheme } from '../../types/theme';
 
 interface MentoringApplicationStatusProps {
   status: StatusType;
@@ -65,7 +65,7 @@ const statusStyles: Record<
   },
   거절됨: {
     border: (theme) => theme.FONT.ERROR,
-    background: (theme) => theme.BG.GRAY,
+    background: (theme) => theme.BG.RED,
     color: (theme) => theme.FONT.W01,
   },
 } as const;
@@ -76,7 +76,7 @@ const StyledContainer = styled.p<MentoringApplicationStatusProps>`
   justify-content: center;
   gap: 0.5rem;
 
-  width: fit-content;
+  width: 8.2rem;
   padding: 0.3rem 0.6rem;
   border: 1px solid ${({ theme, status }) => statusStyles[status].border(theme)};
   border-radius: 8px;

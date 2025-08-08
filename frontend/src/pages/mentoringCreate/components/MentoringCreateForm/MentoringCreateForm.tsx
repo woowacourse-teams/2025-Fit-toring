@@ -24,7 +24,7 @@ function MentoringCreateForm() {
     introduction: '',
     career: 0,
     content: '',
-    certificate: [
+    certificateInfos: [
       {
         type: '',
         title: '',
@@ -73,7 +73,13 @@ function MentoringCreateForm() {
       }
     } catch (error) {
       console.error('멘토링 등록 실패');
-      Sentry.captureException(error);
+      Sentry.captureException(error, {
+        level: 'warning',
+        tags: {
+          feature: 'mentoring',
+          step: 'mentoring-create',
+        },
+      });
     }
   };
 

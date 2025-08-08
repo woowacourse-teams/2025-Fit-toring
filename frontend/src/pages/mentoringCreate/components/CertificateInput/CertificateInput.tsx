@@ -45,14 +45,14 @@ function CertificateInput({
       <StyledContentWrapper>
         <p>유형</p>
         <StyledSelect
-          defaultValue="자격증"
+          defaultValue="LICENSE"
           name="certificateType"
           onChange={handleCertificateIdChange}
         >
-          <option value="자격증">자격증</option>
-          <option value="학력">학력</option>
-          <option value="수상 경력">수상 경력</option>
-          <option value="기타">기타</option>
+          <option value="LICENSE">자격증</option>
+          <option value="EDUCATION">학력</option>
+          <option value="AWARD">수상 경력</option>
+          <option value="ETC">기타</option>
         </StyledSelect>
       </StyledContentWrapper>
       <StyledContentWrapper>
