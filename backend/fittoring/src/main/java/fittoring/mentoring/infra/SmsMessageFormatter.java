@@ -9,7 +9,7 @@ public class SmsMessageFormatter {
     private static final String VERIFICATION_MESSAGE_PREFIX = "핏토링 인증번호는 [";
     private static final String VERIFICATION_MESSAGE_SUFFIX = "] 입니다.";
 
-    public String createApproveReservationMessage(String mentorName, String context, String mentorPhone) {
+    public String approvedReservationMessage(String mentorName, String context, String mentorPhone) {
         return String.format("""
                         [핏토링] 멘토링 예약이 승인되었습니다.
                         
@@ -26,7 +26,7 @@ public class SmsMessageFormatter {
         );
     }
 
-    public String createRejectReservationMessage(String mentorName, String context) {
+    public String rejectedReservationMessage(String mentorName, String context) {
         return String.format("""
                         [핏토링] 멘토링 예약이 거절되었습니다.
                         
