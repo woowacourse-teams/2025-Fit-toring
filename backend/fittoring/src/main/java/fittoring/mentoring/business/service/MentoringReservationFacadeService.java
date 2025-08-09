@@ -32,7 +32,7 @@ public class MentoringReservationFacadeService {
         return ReservationCreateResponse.from(reservation);
     }
 
-    public void updateStatusAndSendSms(Long reservationId, String status) {
+    public void updateReservationStatusAndSendSms(Long reservationId, String status) {
         Reservation reservation = reservationService.updateStatus(reservationId, status);
         sendSms(reservation, status);
     }

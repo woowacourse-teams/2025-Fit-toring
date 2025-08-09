@@ -61,7 +61,7 @@ public class ReservationController {
             @PathVariable Long reservationId,
             @RequestBody @Valid ReservationStatusUpdateRequest request
     ) {
-        mentoringReservationFacadeService.updateStatusAndSendSms(reservationId, request.status());
+        mentoringReservationFacadeService.updateReservationStatusAndSendSms(reservationId, request.status());
         return ResponseEntity.ok().build();
     }
 
