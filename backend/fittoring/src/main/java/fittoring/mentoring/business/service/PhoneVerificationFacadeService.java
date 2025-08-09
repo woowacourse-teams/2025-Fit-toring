@@ -17,7 +17,7 @@ public class PhoneVerificationFacadeService {
     public void sendPhoneVerificationCode(String phoneNumber) {
         Phone phone = new Phone(phoneNumber);
         String code = phoneVerificationService.createPhoneVerification(phone);
-        String text = smsMessageFormatter.createSmsVerificationCodeMessage(code);
+        String text = smsMessageFormatter.verificationCodeMessage(code);
         smsRestClientService.sendSms(phone, text);
     }
 }

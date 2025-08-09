@@ -42,7 +42,7 @@ class PhoneVerificationFacadeServiceTest {
 
         BDDMockito.given(phoneVerificationService.createPhoneVerification(ArgumentMatchers.any(Phone.class)))
                 .willReturn(code);
-        BDDMockito.given(smsMessageFormatter.createSmsVerificationCodeMessage(code))
+        BDDMockito.given(smsMessageFormatter.verificationCodeMessage(code))
                 .willReturn(smsMessage);
 
         // when
@@ -52,7 +52,7 @@ class PhoneVerificationFacadeServiceTest {
         ArgumentCaptor<Phone> phoneCaptor = ArgumentCaptor.forClass(Phone.class);
         SoftAssertions.assertSoftly(softAssertions -> {
             Mockito.verify(phoneVerificationService).createPhoneVerification(phoneCaptor.capture());
-            Mockito.verify(smsMessageFormatter).createSmsVerificationCodeMessage(code);
+            Mockito.verify(smsMessageFormatter).verificationCodeMessage(code);
             Mockito.verify(smsRestClientService).sendSms(phoneCaptor.getValue(), smsMessage);
             assertThat(phoneCaptor.getValue().getNumber()).isEqualTo(phoneNumber);
         });
