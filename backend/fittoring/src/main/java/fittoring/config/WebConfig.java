@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:3000",
-                        "https://dab0meo43dsq7.cloudfront.net",
-                        "https://6ef3f711d6d7.ngrok-free.app"
+                        "https://localhost:3000",
+                        "https://dab0meo43dsq7.cloudfront.net"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
@@ -36,6 +37,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/mentorings/**")
                 .addPathPatterns("/members/**")
                 .addPathPatterns("/reviews/**")
+                .addPathPatterns("/admin/**")
                 .addPathPatterns("/reservations/**")
         ;
     }
@@ -43,5 +45,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(authenticationArgumentResolver);
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/web-admin/**")
+                .addResourceLocations("classpath:/static/web-admin/");
     }
 }

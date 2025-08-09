@@ -1,6 +1,7 @@
 import { Global, ThemeProvider } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import AuthProvider from '../src/common/components/AuthProvider/AuthProvider';
 import { fonts } from '../src/common/styles/fonts';
 import { resetCss } from '../src/common/styles/reset';
 import { THEME } from '../src/common/styles/theme';
@@ -22,12 +23,14 @@ const preview: Preview = {
     (Story) => {
       return (
         <ThemeProvider theme={THEME}>
-          <Global styles={[resetCss, fonts]} />
-          <StyledContainer>
-            <StyledContents>
-              <Story />
-            </StyledContents>
-          </StyledContainer>
+          <AuthProvider>
+            <Global styles={[resetCss, fonts]} />
+            <StyledContainer>
+              <StyledContents>
+                <Story />
+              </StyledContents>
+            </StyledContainer>
+          </AuthProvider>
         </ThemeProvider>
       );
     },

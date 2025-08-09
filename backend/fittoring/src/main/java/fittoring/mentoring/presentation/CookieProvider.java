@@ -9,7 +9,7 @@ public class CookieProvider {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 }

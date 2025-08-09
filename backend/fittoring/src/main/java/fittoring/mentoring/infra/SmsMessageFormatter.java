@@ -1,6 +1,5 @@
 package fittoring.mentoring.infra;
 
-import fittoring.mentoring.business.service.dto.SmsReservationMessageDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,13 +35,15 @@ public class SmsMessageFormatter {
         );
     }
 
-    public String reservationMessage(SmsReservationMessageDto response) {
+    public String reservationMessage(String menteeName, String content) {
         return String.format("""
                         멘토링 신청자: %s
                         상담 내용: %s
+                        
+                        마이페이지에서 예약을 승인 또는 거절해주세요.
                         """,
-                response.mentorName(),
-                response.content()
+                menteeName,
+                content
         );
     }
 

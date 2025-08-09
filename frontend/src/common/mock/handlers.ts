@@ -5,7 +5,7 @@ import { createdMentoringHandler } from './createdMentoring/handlers';
 import { loginHandler } from './login/handler';
 import { membersHandler } from './members/handlers';
 import { mentoringHandler } from './mentoring/handlers';
-import { myProfileHandler } from './myProfile/handlers';
+import { participatedMentoringHandler } from './participatedMentoring/handler';
 import { signupHandler } from './signup/signup';
 import { validateIdHandler } from './validateId/validateId';
 
@@ -16,9 +16,9 @@ export const handlers = [
   ...authCodeVerifyHandler,
   ...signupHandler,
   ...mentoringHandler,
-  ...myProfileHandler,
   ...commonHandler,
   ...membersHandler,
   ...loginHandler,
   ...createdMentoringHandler,
+  ...participatedMentoringHandler,
 ];

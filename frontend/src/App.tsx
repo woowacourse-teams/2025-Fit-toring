@@ -3,13 +3,14 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
 import Booking from './pages/booking/Booking';
-import CreatedMentoring from './pages/CreatedMentoring/CreatedMentoring';
+import CreatedMentoring from './pages/createdMentoring/CreatedMentoring';
 import Detail from './pages/detail/Detail';
 import Home from './pages/home/Home';
-import Signup from './pages/signup/Signup';
+import Login from './pages/login/Login';
 import MentoringCreate from './pages/mentoringCreate/MentoringCreate';
 import MyPage from './pages/myPage/MyPage';
-import Login from './pages/login/Login';
+import ParticipatedMentoring from './pages/participatedMentoring/ParticipatedMentoring';
+import Signup from './pages/signup/Signup';
 
 const router = createBrowserRouter([
   { path: PAGE_URL.HOME, element: <Home /> },
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: PAGE_URL.CREATED_MENTORING,
         element: <CreatedMentoring />,
+      },
+      {
+        path: PAGE_URL.PARTICIPATED_MENTORING,
+        element: <ParticipatedMentoring />,
       },
     ],
   }, // TODO: `${PAGE_URL.MY_PAGE}/:userId`로 변경 예정

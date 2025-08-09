@@ -19,32 +19,28 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@EntityListeners(AuditingEntityListener.class)
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "reservation")
 @Entity
 public class Reservation {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
-    private String context;
+    private String content;
 
-    @Getter
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Mentoring mentoring;
 
-    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Member mentee;
@@ -53,8 +49,8 @@ public class Reservation {
     @Column(nullable = false)
     private Status status;
 
-    public Reservation(String context, Mentoring mentoring, Member mentee, Status status) {
-        this(null, context, null, mentoring, mentee, status);
+    public Reservation(String content, Mentoring mentoring, Member mentee, Status status) {
+        this(null, content, null, mentoring, mentee, status);
     }
 
     public void changeStatus(Status updateStatus) {

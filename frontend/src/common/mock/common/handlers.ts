@@ -1,7 +1,8 @@
 import { http, HttpResponse } from 'msw';
 
-import { SPECIALTIES, USER_INFO } from './data';
 import { API_ENDPOINTS } from '../../constants/apiEndpoints';
+
+import { SPECIALTIES, USER_INFO } from './data';
 
 export const testStateStore = {
   shouldFail: false,
@@ -12,7 +13,7 @@ export const testStateStore = {
   },
 };
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.API_BASE_URL;
 const SPECIALTIES_URL = `${BASE_URL}/categories`;
 
 const getSpecialties = http.get(SPECIALTIES_URL, () => {

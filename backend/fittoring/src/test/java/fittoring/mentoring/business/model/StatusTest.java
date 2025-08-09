@@ -15,8 +15,8 @@ class StatusTest {
     @DisplayName("변경하려는 상태가 이미 처리된 상태인 경우 예외가 발생한다.")
     @ParameterizedTest
     @CsvSource({
-            "APPROVE, APPROVE",
-            "REJECT, APPROVE"
+            "APPROVED, APPROVED",
+            "REJECTED, APPROVED"
     })
     void validate(Status currentStatus, String updateStatus) {
         //given
@@ -58,7 +58,7 @@ class StatusTest {
     @Test
     void of2() {
         //given
-        String inputStatus = "APPROVE";
+        String inputStatus = "APPROVED";
 
         //when
         //then

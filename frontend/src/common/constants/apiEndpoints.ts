@@ -9,5 +9,9 @@ export const API_ENDPOINTS = {
   MEMBERS_ME: '/members/me',
   LOGIN: '/login',
   CREATED_MENTORING: '/mentorings/mine/reservations',
+  PARTICIPATED_MENTORING: '/reservations/participated',
   MEMBERS: '/members/summary',
+  REISSUE: '/reissue',
+  PATCH_MENTORING_STATUS: '/status',
+  MENTEE_PHONE_NUMBER: '/phone',
 } as const;

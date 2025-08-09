@@ -3,7 +3,6 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
-import fittoring.mentoring.business.service.dto.SmsReservationMessageDto;
 import fittoring.mentoring.infra.SmsMessageFormatter;
 import fittoring.mentoring.infra.SmsRestClientService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,10 @@ public class ReservationNotificationService {
     private final SmsMessageFormatter smsMessageFormatter;
 
     public void sendReservationSmsMessage(Reservation reservation) {
-        String smsMessage = smsMessageFormatter.reservationMessage(SmsReservationMessageDto.of(reservation));
+        String smsMessage = smsMessageFormatter.reservationMessage(
+                reservation.getMenteeName(),
+                reservation.getContent()
+        );
         smsRestClientService.sendSms(
                 new Phone(reservation.getMentee().getPhoneNumber()),
                 smsMessage,
@@ -30,7 +32,7 @@ public class ReservationNotificationService {
     public void sendReservationStatusUpdateSmsMessage(Reservation reservation, String updateStatus) {
         Status status = Status.of(updateStatus);
         String mentorName = reservation.getMentorName();
-        String context = reservation.getContext();
+        String context = reservation.getContent();
         String mentorPhoneNumber = reservation.getMentorPhone();
 
         if (status.isNotifiable()) {

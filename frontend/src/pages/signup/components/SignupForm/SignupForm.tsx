@@ -2,15 +2,18 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import * as Sentry from '@sentry/react';
+import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../../common/components/Button/Button';
+import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
+import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postSignup } from '../../apis/postSignup';
-import usePasswordInput from '../../hooks/usePasswordInput';
+import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput';
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
-import useUserIdInput from '../../hooks/useUserIdInput';
 import useVerificationCodeConfirm from '../../hooks/useVerificationCodeConfirm';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
 import useVerificationCodeRequest from '../../hooks/useVerificationCodeRequest';
@@ -22,6 +25,8 @@ import UserInfoFields from '../UserInfoFields/UserInfoFields';
 import type { Gender, SignupInfo } from '../../types/signupInfo';
 
 function SignupForm() {
+  const navigate = useNavigate();
+
   const {
     name,
     handleNameChange,
@@ -69,7 +74,7 @@ function SignupForm() {
     handlePasswordConfirmChange,
     passwordValidated,
     passwordConfrimValidated,
-  } = usePasswordInput();
+  } = usePasswordWithConfirmInput();
 
   const { phoneNumber, inputRef, handlePhoneNumberChange } =
     useFormattedPhoneNumber();
@@ -161,9 +166,17 @@ function SignupForm() {
       const response = await postSignup(signupInfo);
       if (response.status === 201) {
         alert('가입에 성공했습니다.');
+        navigate(PAGE_URL.LOGIN);
       }
     } catch (error) {
       console.error('회원가입 실패', error);
+      Sentry.captureException(error, {
+        level: 'warning',
+        tags: {
+          feature: 'signup',
+          step: 'signup',
+        },
+      });
     }
   };
 

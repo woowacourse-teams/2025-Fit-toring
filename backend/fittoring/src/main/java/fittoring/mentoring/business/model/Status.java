@@ -8,9 +8,9 @@ import lombok.Getter;
 @Getter
 public enum Status {
 
-    APPROVE("승인"),
+    APPROVED("승인"),
     PENDING("대기"),
-    REJECT("거절"),
+    REJECTED("거절"),
     COMPLETE("완료"),
     ;
 
@@ -31,7 +31,7 @@ public enum Status {
     }
 
     public void validate(Status updateStatus) {
-        if (this == APPROVE || this == REJECT || this == COMPLETE) {
+        if (this == APPROVED || this == REJECTED || this == COMPLETE) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
         if (this.equals(updateStatus)) {
@@ -44,11 +44,11 @@ public enum Status {
     }
 
     public boolean isApprove() {
-        return this.equals(APPROVE);
+        return this.equals(APPROVED);
     }
 
     public boolean isReject() {
-        return this.equals(REJECT);
+        return this.equals(REJECTED);
     }
 
     public boolean isPending() {
