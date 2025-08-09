@@ -36,7 +36,7 @@ public class SmsMessageFormatter {
         );
     }
 
-    public String createSmsReservationMessage(SmsReservationMessageDto response) {
+    public String reservationMessage(SmsReservationMessageDto response) {
         return String.format("""
                         멘토링 신청자: %s
                         상담 내용: %s
@@ -46,7 +46,7 @@ public class SmsMessageFormatter {
         );
     }
 
-    public String createSmsVerificationCodeMessage(String code) {
+    public String verificationCodeMessage(String code) {
         return String.format("%s%s%s",
                 VERIFICATION_MESSAGE_PREFIX,
                 code,
