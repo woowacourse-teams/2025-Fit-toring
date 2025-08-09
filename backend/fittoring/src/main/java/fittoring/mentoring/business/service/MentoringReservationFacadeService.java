@@ -58,7 +58,7 @@ public class MentoringReservationFacadeService {
                     mentorPhoneNumber
             );
         }
-        return smsMessageFormatter.rejectedReservationMessage(mentorName, context);
+        return smsMessageFormatter.rejectedReservationMessage(mentorName);
     }
 
 }

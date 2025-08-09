@@ -26,18 +26,13 @@ public class SmsMessageFormatter {
         );
     }
 
-    public String rejectedReservationMessage(String mentorName, String context) {
+    public String rejectedReservationMessage(String mentorName) {
         return String.format("""
-                        [핏토링] 멘토링 예약이 거절되었습니다.
+                        [핏토링] %s님 과의 멘토링이 취소되었습니다.
                         
-                        멘토: %s
-                        상담 내용: %s
-                        
-                        아쉽게도 이번 예약은 진행되지 않게 되었어요.
-                        다른 멘토링을 신청해 보시는 건 어떨까요?
+                        마이페이지에서 자세한 내용을 확인하실 수 있습니다.
                         """,
-                mentorName,
-                context
+                mentorName
         );
     }
 
