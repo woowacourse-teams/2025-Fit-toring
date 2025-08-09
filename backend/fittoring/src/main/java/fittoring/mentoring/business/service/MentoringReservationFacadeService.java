@@ -19,8 +19,8 @@ public class MentoringReservationFacadeService {
         return ReservationCreateResponse.from(reservation);
     }
 
-    public void updateReservationStatusAndSendSms(Long reservationId, String status) {
-        Reservation reservation = reservationService.updateStatus(reservationId, status);
-        reservationNotificationService.sendReservationStatusUpdateSmsMessage(reservation, status);
+    public void updateReservationStatusAndSendSms(Long reservationId, String updatedStatus) {
+        Reservation reservation = reservationService.updateStatus(reservationId, updatedStatus);
+        reservationNotificationService.sendReservationStatusUpdateSmsMessage(reservation, updatedStatus);
     }
 }
