@@ -91,9 +91,11 @@ public class ReservationService {
     }
 
     @Transactional
-    public void updateStatus(Long reservationId, String updateStatus) {
+    public Reservation updateStatus(Long reservationId, String updateStatus) {
         Reservation reservation = getReservation(reservationId);
-        reservation.changeStatus(Status.valueOf(updateStatus));
+        Status status = Status.of(updateStatus);
+        reservation.changeStatus(status);
+        return reservation;
     }
 
     private Reservation getReservation(Long reservationId) {

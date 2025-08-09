@@ -66,12 +66,16 @@ public class Reservation {
         return mentee.getName();
     }
 
+    public String getMentorName() {
+        return mentoring.getMentorName();
+    }
+
     public String getMenteePhone() {
         return mentee.getPhoneNumber();
     }
 
-    public String getMentorName() {
-        return mentoring.getMentorName();
+    public String getMentorPhone() {
+        return mentoring.getMentor().getPhoneNumber();
     }
 
     public String getStatus() {
