@@ -153,6 +153,11 @@ jobs:
         run: |
           sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
 
+      - name: Write .env for docker-compose
+        run: |
+          echo "IMAGE=${{ env.IMAGE }}" > .env
+          echo "TAG=${{ env.TAG }}" >> .env
+
       - name: Run deploy script
         run: |
           cd /home/ubuntu
