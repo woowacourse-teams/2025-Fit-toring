@@ -16,6 +16,7 @@ import { introduceValidator } from '../../../../common/utils/introduceValidator'
 import { priceValidator } from '../../../../common/utils/priceValidator';
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
 
+import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { mentoringCreateFormData } from '../../../../common/types/mentoringCreateFormData';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
@@ -103,6 +104,62 @@ function MentoringCreateForm() {
     }
   };
 
+  const [certificates, setCertificates] = useState<CertificateItem[]>([]);
+
+  const onAddButtonClick = () => {
+    setCertificates((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        title: null,
+        type: 'LICENSE',
+        file: undefined,
+      },
+    ]);
+  };
+
+  const onDeleteButtonClick = (id: string) => {
+    const updated = certificates.filter((item) => item.id !== id);
+
+    setCertificates(updated);
+
+    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
+      id,
+      title,
+      type,
+      imageUrl,
+    }));
+    handleMentoringDataChange({ certificateInfos: finalCertificates });
+
+    const files = updated
+      .map((item) => item.file)
+      .filter((file): file is File => !!file);
+    handleCertificateImageFilesChange(files);
+  };
+
+  const onCertificateChangeById = (
+    id: string,
+    changed: Partial<CertificateItem>,
+  ) => {
+    const updated = certificates.map((item) =>
+      item.id === id ? { ...item, ...changed } : item,
+    );
+    setCertificates(updated);
+
+    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
+      id,
+      title,
+      type,
+      imageUrl,
+    }));
+    handleMentoringDataChange({ certificateInfos: finalCertificates });
+
+    const files = updated
+      .map((item) => item.file)
+      .filter((file): file is File => !!file);
+    handleCertificateImageFilesChange(files);
+  };
+
   return (
     <StyledContainer onSubmit={handleSubmitButtonClick}>
       <BaseInfoSection
@@ -120,15 +177,20 @@ function MentoringCreateForm() {
         careerErrorMessage={careerErrorMessage}
       />
       <CertificateSection
-        onCertificateChange={handleMentoringDataChange}
-        handleCertificateImageFilesChange={handleCertificateImageFilesChange}
+        certificates={certificates}
+        onAddButtonClick={onAddButtonClick}
+        onCertificateChangeById={onCertificateChangeById}
+        onDeleteButtonClick={onDeleteButtonClick}
       />
       <DetailIntroduce
         detailIntroduce={mentoringData.content}
         onDetailIntroduceChange={handleMentoringDataChange}
       />
       <StyledSeparator />
-      <ButtonSection onCancelButtonClick={handleCancelButtonClick} />
+      <ButtonSection
+        onCancelButtonClick={handleCancelButtonClick}
+        submitButtonName="register"
+      />
     </StyledContainer>
   );
 }

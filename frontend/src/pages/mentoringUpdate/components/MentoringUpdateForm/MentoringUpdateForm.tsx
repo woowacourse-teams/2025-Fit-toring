@@ -16,12 +16,14 @@ import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
 import { getMentoringDetail } from '../../../detail/apis/getMentoringDetail';
+import { deleteCertificate } from '../../apis/deleteCertificate';
 import { putMentoring } from '../../apis/putMentoring';
 import {
   INITIAL_UPDATE_MENTORING_DATA,
   isInitialMentoringData,
 } from '../../utils/isInitialMentoringData';
 
+import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
@@ -31,6 +33,9 @@ function MentoringUpdateForm() {
   );
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
+    [],
+  );
+  const [deletedCertificateIds, setDeletedCertificateIds] = useState<string[]>(
     [],
   );
   const initialCertificatesIdRef = useRef<string[]>([]);
@@ -67,6 +72,14 @@ function MentoringUpdateForm() {
     const addedCertifications = mentoringData.certificateInfos.filter(
       (e) => !initialCertificatesIdRef.current.includes(e.id),
     );
+
+    try {
+      await Promise.all(
+        deletedCertificateIds.map((id) => deleteCertificate(id)),
+      );
+    } catch (error) {
+      console.error('자격증 삭제 실패', error);
+    }
 
     try {
       const response = await putMentoring({
@@ -117,6 +130,64 @@ function MentoringUpdateForm() {
     }
   };
 
+  const [certificates, setCertificates] = useState<CertificateItem[]>([]);
+
+  const onAddButtonClick = () => {
+    setCertificates((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        title: null,
+        type: 'LICENSE',
+        file: undefined,
+      },
+    ]);
+  };
+
+  const onDeleteButtonClick = (id: string) => {
+    const updated = certificates.filter((item) => item.id !== id);
+
+    setCertificates(updated);
+
+    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
+      id,
+      title,
+      type,
+      imageUrl,
+    }));
+    handleMentoringDataChange({ certificateInfos: finalCertificates });
+
+    const files = updated
+      .map((item) => item.file)
+      .filter((file): file is File => !!file);
+    handleCertificateImageFilesChange(files);
+
+    setDeletedCertificateIds((prev) => [...prev, id]);
+  };
+
+  const onCertificateChangeById = (
+    id: string,
+    changed: Partial<CertificateItem>,
+  ) => {
+    const updated = certificates.map((item) =>
+      item.id === id ? { ...item, ...changed } : item,
+    );
+    setCertificates(updated);
+
+    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
+      id,
+      title,
+      type,
+      imageUrl,
+    }));
+    handleMentoringDataChange({ certificateInfos: finalCertificates });
+
+    const files = updated
+      .map((item) => item.file)
+      .filter((file): file is File => !!file);
+    handleCertificateImageFilesChange(files);
+  };
+
   useEffect(() => {
     const fetchMentoring = async () => {
       if (mentoringId) {
@@ -140,6 +211,7 @@ function MentoringUpdateForm() {
           certificateInfos: certificateInfosData,
           profileImageUrl,
         });
+        setCertificates(certificateInfosData);
 
         initialCertificatesIdRef.current = certificates.map(
           (e) => e.certificateId,
@@ -175,18 +247,20 @@ function MentoringUpdateForm() {
             careerErrorMessage={careerErrorMessage}
           />
           <CertificateSection
-            initialCertificates={mentoringData.certificateInfos}
-            onCertificateChange={handleMentoringDataChange}
-            handleCertificateImageFilesChange={
-              handleCertificateImageFilesChange
-            }
+            certificates={certificates}
+            onAddButtonClick={onAddButtonClick}
+            onCertificateChangeById={onCertificateChangeById}
+            onDeleteButtonClick={onDeleteButtonClick}
           />
           <DetailIntroduce
             detailIntroduce={mentoringData.content}
             onDetailIntroduceChange={handleMentoringDataChange}
           />
           <StyledSeparator />
-          <ButtonSection onCancelButtonClick={handleCancelButtonClick} />
+          <ButtonSection
+            submitButtonName="update"
+            onCancelButtonClick={handleCancelButtonClick}
+          />
         </>
       ) : (
         <div>로딩중</div>
