@@ -14,6 +14,7 @@ import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 import { smoothScrollTo } from './utils/smoothScrollTo';
 
 import type { BookingResponse } from './types/BookingResponse';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 function Booking() {
   const [opened, setOpened] = useState(false);
@@ -44,6 +45,12 @@ function Booking() {
         setMentorDetail(response);
       } catch (error) {
         console.error('멘토링 정보 조회 실패:', error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'mentoring',
+          step: 'mentoring-detail-fetch',
+        });
       }
     };
 

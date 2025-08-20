@@ -60,7 +60,7 @@ class ReviewServiceTest {
         dbCleaner.clean();
     }
 
-    @DisplayName("리뷰 작성을 성공하면 별점과 리뷰 내용을 반환한다")
+    @DisplayName("리뷰 작성을 성공하면 별점과 리뷰 내용, 리뷰를 작성한 멘토링의 id을 반환한다")
     @Test
     void createReservation() {
         // given
@@ -108,6 +108,7 @@ class ReviewServiceTest {
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(reviewCreateResponse.mentoringId()).isEqualTo(mentoring.getId());
             softAssertions.assertThat(reviewCreateResponse.rating()).isEqualTo(rating);
             softAssertions.assertThat(reviewCreateResponse.content()).isEqualTo(content);
         });

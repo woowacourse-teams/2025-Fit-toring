@@ -1,8 +1,7 @@
-import * as Sentry from '@sentry/react';
-
 import { postAuthCode } from '../apis/postAuthCode';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface useVerificationCodeRequestParams {
   phoneNumber: string;
@@ -31,12 +30,12 @@ const useVerificationCodeRequest = ({
       }
     } catch (error) {
       console.error('인증요청 실패', error);
-      Sentry.captureException(error, {
+
+      captureSentryError({
+        error,
         level: 'error',
-        tags: {
-          feature: 'sms',
-          step: 'send-code',
-        },
+        feature: 'sms',
+        step: 'send-code',
       });
     }
   };

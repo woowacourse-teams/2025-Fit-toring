@@ -45,11 +45,9 @@ import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -624,19 +622,23 @@ class MentoringServiceTest {
         Review review = new Review(1, "리뷰내용", reservation, mentee);
         reviewRepository.save(review);
 
+        Certificate certificate = new Certificate(CertificateType.LICENSE, "자격증1", mentoring);
+        certificateRepository.save(certificate);
+
         // when
         mentoringService.deleteMentoringByAdmin(adminLoginId, mentoringId);
 
         // then
         SoftAssertions.assertSoftly(softly -> {
-                    assertThatThrownBy(() -> mentoringService.getMentoringWithRelations(mentoringId))   // 멘토링 삭제
+                    assertThatThrownBy(() -> mentoringService.getMentoringWithRelations(mentoringId))
                             .isInstanceOf(MentoringNotFoundException.class);
                     assertThat(categoryMentoringRepository.findTitlesByMentoringId(
-                            mentoringId)).isEmpty(); // 연관된 카테고리 중간 테이블 요소 삭제
-                    assertThat(categoryRepository.existsByTitle("카테고리1")).isEqualTo(true);  // 카테고리 유지
-                    assertThat(categoryRepository.existsByTitle("카테고리2")).isEqualTo(true);  // 카테고리 유지
-                    assertThat(reservationRepository.findAll()).isEmpty();  // 멘토링의 예약 삭제됨
-                    assertThat(reviewRepository.findAll()).isEmpty();   // 예약의 리뷰 삭제됨
+                            mentoringId)).isEmpty();
+                    assertThat(categoryRepository.existsByTitle("카테고리1")).isEqualTo(true);
+                    assertThat(categoryRepository.existsByTitle("카테고리2")).isEqualTo(true);
+                    assertThat(reservationRepository.findAll()).isEmpty();
+                    assertThat(reviewRepository.findAll()).isEmpty();
+                    assertThat(certificateRepository.existsById(certificate.getId())).isEqualTo(false);
                 }
         );
     }

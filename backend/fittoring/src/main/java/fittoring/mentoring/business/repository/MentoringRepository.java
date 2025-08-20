@@ -14,6 +14,15 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
 
     @Query("""
             SELECT m
+            FROM Review rv
+                JOIN rv.reservation res
+                JOIN res.mentoring m
+            WHERE rv.id = :reviewId
+    """)
+    Optional<Mentoring> findByReviewId(Long reviewId);
+
+    @Query("""
+            SELECT m
               FROM CategoryMentoring cm
               JOIN cm.mentoring m
              WHERE cm.category.title IN (

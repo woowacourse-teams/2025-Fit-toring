@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
@@ -24,6 +23,7 @@ import {
 } from '../../utils/isInitialMentoringData';
 
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(
@@ -88,12 +88,12 @@ function MentoringUpdateForm() {
       }
     } catch (error) {
       console.error('멘토링 수정 실패');
-      Sentry.captureException(error, {
+
+      captureSentryError({
+        error,
         level: 'warning',
-        tags: {
-          feature: 'mentoring',
-          step: 'mentoring-update',
-        },
+        feature: 'mentoring',
+        step: 'mentoring-update',
       });
     }
   };

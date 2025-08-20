@@ -10,6 +10,7 @@ import { MAX_RATING_COUNT } from '../constants/starRating';
 import StarRating from '../StarRating/StarRating';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface ReviewModalProps {
   reservationId: number;
@@ -56,6 +57,12 @@ function ReviewModal({
       });
     } catch (error) {
       console.error('리뷰 등록 실패', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'participatedMentoring',
+        step: 'review-create',
+      });
     }
   };
 

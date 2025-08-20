@@ -4,6 +4,7 @@ import ReviewItem from '../ReviewItem/ReviewItem';
 import { getReviews } from '../../apis/getReviews';
 import { useEffect, useState } from 'react';
 import { ReviewResponse } from '../../types/ReviewResponse';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 interface DetailReviewProps {
   mentoringId: number;
@@ -26,6 +27,12 @@ function DetailReview({
       setTotalReviewInfo(response);
     } catch (error) {
       console.error('Error fetching reviews:', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'detail',
+        step: 'mentoring-review-fetch',
+      });
     }
   };
 
