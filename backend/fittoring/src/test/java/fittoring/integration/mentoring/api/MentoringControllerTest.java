@@ -27,9 +27,9 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
+import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.DbCleaner;
@@ -188,7 +188,7 @@ class MentoringControllerTest {
 
             //then
             RatingStatsDto ratingStatsDto = new RatingStatsDto(savedMentoring.getId(), 5.0, 1);
-            RatingStatsDto ratingStatsDto2 = new RatingStatsDto(savedMentoring.getId(), 2.0, 1);
+            RatingStatsDto ratingStatsDto2 = new RatingStatsDto(savedMentoring2.getId(), 2.0, 1);
 
             MentoringSummaryResponse expected = new MentoringSummaryResponse(
                     savedMentoring.getId(),
@@ -822,12 +822,12 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
@@ -863,12 +863,12 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
@@ -919,12 +919,12 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(invalidMember.getId());
 
