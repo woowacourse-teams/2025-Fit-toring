@@ -153,11 +153,11 @@ jobs:
         run: |
           sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
 
-      - name: Write .env for docker-compose
+      - name: Write .env for for deploy
         run: |
           cd /home/ubuntu/fittoring
-          sudo sh -c 'echo "IMAGE=${{ env.IMAGE }}" > .env'
-          sudo sh -c 'echo "TAG=${{ env.TAG }}" >> .env'
+          sudo sh -c 'echo "IMAGE=${{ env.IMAGE }}" > .env.deploy'
+          sudo sh -c 'echo "TAG=${{ env.TAG }}" >> .env.deploy'
 
       - name: Run deploy script
         run: |
