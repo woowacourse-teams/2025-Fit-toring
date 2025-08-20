@@ -51,7 +51,7 @@ function ReviewModal({
       onReviewSubmitButtonClick(reservationId);
       onCloseClick();
       alert('리뷰가 등록되었습니다.');
-      navigate(`${API_ENDPOINTS.MENTORINGS}/${data.mentoringId}`, {
+      navigate(`${API_ENDPOINTS.DETAIL}/${data.mentoringId}`, {
         state: { tab: 'review' },
       });
     } catch (error) {
