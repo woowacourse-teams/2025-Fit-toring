@@ -155,6 +155,7 @@ jobs:
 
       - name: Write .env for docker-compose
         run: |
+          cd /home/ubuntu/fittoring
           echo "IMAGE=${{ env.IMAGE }}" > .env
           echo "TAG=${{ env.TAG }}" >> .env
 
