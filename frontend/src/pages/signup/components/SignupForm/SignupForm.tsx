@@ -65,7 +65,17 @@ function SignupForm() {
     handleDuplicateConfirmClick,
     shouldBlockSubmitByUserId,
     getFinalUserIdErrorMessage,
+    resetDuplicateCheck,
+    duplicateChecked,
   } = useUserIdDuplicateCheck({ userId, userIdErrorMessage });
+
+  const onUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleUserIdChange(e);
+
+    if (duplicateChecked) {
+      resetDuplicateCheck();
+    }
+  };
 
   const {
     password,
@@ -235,10 +245,11 @@ function SignupForm() {
         />
         <UserIdField
           userId={userId}
-          onUserIdChange={handleUserIdChange}
+          onUserIdChange={onUserIdChange}
           onDuplicateConfrimClick={handleDuplicateConfirmClick}
           errorMessage={getFinalUserIdErrorMessage()}
           isUserIdInputValid={userIdErrorMessage === ''}
+          duplicateChecked={duplicateChecked}
         />
         <PasswordFields
           password={password}

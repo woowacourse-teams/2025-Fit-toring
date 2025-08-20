@@ -15,6 +15,7 @@ const useUserIdDuplicateCheck = ({
   userIdErrorMessage,
 }: useUserIdDuplicateCheckParams) => {
   const [duplicateError, setDuplicateError] = useState(false);
+  const [duplicateChecked, setDuplicateChecked] = useState(false);
 
   const {
     confirm: confirmUserId,
@@ -30,7 +31,7 @@ const useUserIdDuplicateCheck = ({
 
       if (response.status === 200) {
         confirmUserId();
-        alert('사용 가능한 아이디입니다.');
+        setDuplicateChecked(true);
       }
     } catch (error) {
       console.error('아이디 중복 확인 에러:', error);
@@ -43,6 +44,11 @@ const useUserIdDuplicateCheck = ({
         step: 'userId-duplicate-validate',
       });
     }
+  };
+
+  const resetDuplicateCheck = () => {
+    setDuplicateChecked(false);
+    setDuplicateError(false);
   };
 
   const getFinalUserIdErrorMessage = () => {
@@ -66,6 +72,8 @@ const useUserIdDuplicateCheck = ({
     handleDuplicateConfirmClick,
     shouldBlockSubmitByUserId,
     getFinalUserIdErrorMessage,
+    resetDuplicateCheck,
+    duplicateChecked,
   };
 };
 
