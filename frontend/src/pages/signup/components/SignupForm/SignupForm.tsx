@@ -71,7 +71,10 @@ function SignupForm() {
 
   const onUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleUserIdChange(e);
-    resetDuplicateCheck();
+
+    if (duplicateChecked) {
+      resetDuplicateCheck();
+    }
   };
 
   const {
