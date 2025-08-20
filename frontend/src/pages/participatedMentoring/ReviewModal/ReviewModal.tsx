@@ -8,6 +8,7 @@ import Modal from '../../../common/components/Modal/Modal';
 import { postReview } from '../apis/postReview';
 import { MAX_RATING_COUNT } from '../constants/starRating';
 import StarRating from '../StarRating/StarRating';
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface ReviewModalProps {
   reservationId: number;
@@ -47,6 +48,12 @@ function ReviewModal({
       onCloseClick();
     } catch (error) {
       console.error('리뷰 등록 실패', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'participatedMentoring',
+        step: 'review-create',
+      });
     }
   };
 

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
 import BaseInfoSection from '../../../../common/components/mentoringForm/BaseInfoSection/BaseInfoSection';
@@ -18,6 +17,7 @@ import { priceValidator } from '../../../../common/utils/priceValidator';
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
 
 import type { mentoringCreateFormData } from '../../../../common/types/mentoringCreateFormData';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function MentoringCreateForm() {
   const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
@@ -73,12 +73,12 @@ function MentoringCreateForm() {
       }
     } catch (error) {
       console.error('멘토링 등록 실패');
-      Sentry.captureException(error, {
+
+      captureSentryError({
+        error,
         level: 'warning',
-        tags: {
-          feature: 'mentoring',
-          step: 'mentoring-create',
-        },
+        feature: 'mentoring',
+        step: 'mentoring-create',
       });
     }
   };

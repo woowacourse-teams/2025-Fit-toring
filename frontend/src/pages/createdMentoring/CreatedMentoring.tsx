@@ -15,6 +15,7 @@ import MentoringApplicationList from './components/MentoringApplicationList/Ment
 import type { MentoringApplication } from './types/mentoringApplication';
 import type { StatusType } from '../../common/types/statusType';
 import type { MentoringResponse } from '../detail/types/MentoringResponse';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 function CreatedMentoring() {
   const [mentoringApplicationList, setMentoringApplicationList] = useState<
@@ -30,6 +31,12 @@ function CreatedMentoring() {
         setMentoringApplicationList(response);
       } catch (error) {
         console.error(error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'createdMentoring',
+          step: 'mentoring-application-fetch',
+        });
       }
     };
 
@@ -55,6 +62,12 @@ function CreatedMentoring() {
         setMineMentoring(mentoring);
       } catch (error) {
         console.error(error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'createdMentoring',
+          step: 'mine-mentoring-fetch',
+        });
       }
     };
 

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 
-import * as Sentry from '@sentry/react';
-
 import { postValidateId } from '../apis/postValidateId';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface useUserIdDuplicateCheckParams {
   userId: string;
@@ -36,12 +35,12 @@ const useUserIdDuplicateCheck = ({
     } catch (error) {
       console.error('아이디 중복 확인 에러:', error);
       setDuplicateError(true);
-      Sentry.captureException(error, {
+
+      captureSentryError({
+        error,
         level: 'warning',
-        tags: {
-          feature: 'signup',
-          step: 'userId-duplicate-validate',
-        },
+        feature: 'signup',
+        step: 'userId-duplicate-validate',
       });
     }
   };

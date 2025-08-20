@@ -7,6 +7,7 @@ import { postLogout } from '../../../../common/apis/postLogout';
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 type MenuItemName =
   | '개설한 멘토링'
@@ -59,6 +60,12 @@ function MenuDropDown() {
       navigate(url);
     } catch (error) {
       console.error('Logout failed', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'myPage',
+        step: 'logout',
+      });
     }
   };
 
