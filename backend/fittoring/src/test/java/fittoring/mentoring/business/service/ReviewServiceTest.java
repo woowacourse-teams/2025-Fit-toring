@@ -60,7 +60,7 @@ class ReviewServiceTest {
         dbCleaner.clean();
     }
 
-    @DisplayName("리뷰 작성을 성공하면 별점과 리뷰 내용, 리뷰를 작성한 멘토링의 id을 반환한다")
+    @DisplayName("리뷰 작성을 성공하면 별점과 리뷰 내용, 리뷰를 작성한 멘토링의 id를 반환한다")
     @Test
     void createReservation() {
         // given
@@ -804,8 +804,8 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
-            .isInstanceOf(ForbiddenException.class)
-            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 
     @DisplayName("존재하지 않는 리뷰 삭제 요청 시 예외가 발생한다")
@@ -880,7 +880,7 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
-            .isInstanceOf(ForbiddenException.class)
-            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 }
