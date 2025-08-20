@@ -156,8 +156,8 @@ jobs:
       - name: Write .env for docker-compose
         run: |
           cd /home/ubuntu/fittoring
-          echo "IMAGE=${{ env.IMAGE }}" > .env
-          echo "TAG=${{ env.TAG }}" >> .env
+          sudo sh -c 'echo "IMAGE=${{ env.IMAGE }}" > .env'
+          sudo sh -c 'echo "TAG=${{ env.TAG }}" >> .env'
 
       - name: Run deploy script
         run: |
