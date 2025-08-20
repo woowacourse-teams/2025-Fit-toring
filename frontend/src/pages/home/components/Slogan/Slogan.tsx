@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
+
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import { getMineMentoring } from '../../../../common/apis/getMineMentoring';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
@@ -8,14 +11,33 @@ import { PAGE_URL } from '../../../../common/constants/url';
 function Slogan() {
   const { authenticated } = useAuth();
   const navigate = useNavigate();
+  const [myMentoringId, setMyMentoringId] = useState<null | number>(null);
 
   const handleMentoringCreation = () => {
     if (authenticated) {
+      if (myMentoringId !== null) {
+        navigate(PAGE_URL.CREATED_MENTORING);
+        return;
+      }
       navigate(PAGE_URL.MENTORING_CREATE);
     } else {
       navigate(PAGE_URL.LOGIN);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getMineMentoring();
+        setMyMentoringId(response.id);
+      } catch (error) {
+        console.error(error);
+        setMyMentoringId(null);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <StyledContainer>
@@ -24,7 +46,9 @@ function Slogan() {
         편하게 물어봐요!
       </StyledTitle>
 
-      <Button onClick={handleMentoringCreation}>멘토링 개설하기</Button>
+      <Button onClick={handleMentoringCreation}>
+        {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
+      </Button>
     </StyledContainer>
   );
 }
