@@ -1,7 +1,13 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.config.auth.LoginInfo;
-import fittoring.mentoring.business.exception.*;
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.CategoryNotFoundException;
+import fittoring.mentoring.business.exception.ForbiddenException;
+import fittoring.mentoring.business.exception.ImageNotFoundException;
+import fittoring.mentoring.business.exception.MemberNotFoundException;
+import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
+import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Certificate;
@@ -38,7 +44,6 @@ public class MentoringService {
 
     private final ImageService imageService;
     private final CertificateService certificateService;
-
     private final MentoringRepository mentoringRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
@@ -280,9 +285,9 @@ public class MentoringService {
     }
 
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {
-        if (dto.profileImageFile() != null){
+        if (dto.profileImageFile() != null) {
             saveProfileImage(dto.profileImageFile(), mentoring);
-        } else if (dto.profileImageUrl() == null){
+        } else if (dto.profileImageUrl() == null) {
             imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
         } else {
             validateProfileImageUrlMatches(mentoring.getId(), dto.profileImageUrl());
