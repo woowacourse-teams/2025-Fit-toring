@@ -62,7 +62,7 @@ class ReviewServiceTest {
 
     @DisplayName("리뷰 작성을 성공하면 별점과 리뷰 내용, 리뷰를 작성한 멘토링의 id를 반환한다")
     @Test
-    void createReservation() {
+    void createReview() {
         // given
         Password password = Password.from("password");
         Member mentor = entityManager.persist(new Member(
