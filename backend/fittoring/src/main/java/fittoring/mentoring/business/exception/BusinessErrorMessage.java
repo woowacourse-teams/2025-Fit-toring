@@ -17,7 +17,7 @@ public enum BusinessErrorMessage {
     EXPIRED_TOKEN("유효시간이 만료된 토큰입니다."),
     INVALID_TOKEN("유효하지 않은 토큰입니다."),
     EMPTY_TOKEN("토큰이 비어있습니다."),
-    NOT_FOUND_TOKEN("토큰을 찾을 수 없습니다."),
+    TOKEN_NOT_FOUND("토큰을 찾을 수 없습니다."),
     EMPTY_COOKIE("쿠키가 존재하지 않습니다."),
     PHONE_VERIFICATION_INVALID("만료 혹은 인증되지 않은 요청입니다."),
     IMAGE_NOT_FOUND("존재하지 않는 이미지입니다."),
@@ -40,6 +40,7 @@ public enum BusinessErrorMessage {
     RESERVATION_NOT_COMPLETED("멘토링이 완료된 후에만 리뷰를 남길 수 있습니다."),
     FORBIDDEN_URL("권한이 없는 URL 입니다"),
     NOT_CERTIFICATE_OWNER("자신의 자격사항이 아닙니다."),
+
     ;
 
     private final String message;

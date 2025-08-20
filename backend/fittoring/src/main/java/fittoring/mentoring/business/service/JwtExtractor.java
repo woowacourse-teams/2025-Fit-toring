@@ -14,6 +14,6 @@ public class JwtExtractor {
                 .filter(cookie -> cookie.getName().equals(name))
                 .map(Cookie::getValue)
                 .findFirst()
-                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.NOT_FOUND_TOKEN.getMessage()));
+                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage()));
     }
 }
