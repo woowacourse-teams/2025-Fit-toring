@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - release-test
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} # GitHub Actions Secrets에서 토큰을 사용합니다.
+          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # npm 배포 시 필요한 경우 주석 해제
+        run: npm run release
