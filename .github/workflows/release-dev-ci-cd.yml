@@ -109,6 +109,16 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('./**/*.gradle*', './**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Build jar
         run: |
           chmod +x ./gradlew
@@ -139,6 +149,8 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_tag }}
             ${{ env.IMAGE }}:${{ steps.tags.outputs.sha_tag }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:cache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:cache,mode=max
 
   deploy-dev:
     needs: build-and-push
@@ -153,7 +165,7 @@ jobs:
         run: |
           sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
 
-      - name: Write .env for for deploy
+      - name: Write .env for deploy
         run: |
           cd /home/ubuntu/fittoring
           sudo sh -c 'echo "IMAGE=${{ env.IMAGE }}" > .env.deploy'
