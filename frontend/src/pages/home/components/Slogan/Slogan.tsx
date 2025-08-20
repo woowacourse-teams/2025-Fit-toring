@@ -39,6 +39,12 @@ function Slogan() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (!authenticated) {
+      setMyMentoringId(null);
+    }
+  }, [authenticated]);
+
   return (
     <StyledContainer>
       <StyledTitle>
