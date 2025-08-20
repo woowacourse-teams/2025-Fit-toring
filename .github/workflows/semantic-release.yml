@@ -1,4 +1,4 @@
-name: Frontend Release CI
+name: SemanticRelease CI
 
 on:
   push:
