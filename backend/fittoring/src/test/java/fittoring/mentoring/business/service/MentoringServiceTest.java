@@ -638,7 +638,7 @@ class MentoringServiceTest {
                     assertThat(categoryRepository.existsByTitle("카테고리2")).isEqualTo(true);
                     assertThat(reservationRepository.findAll()).isEmpty();
                     assertThat(reviewRepository.findAll()).isEmpty();
-                    assertThat(certificateRepository.existsById(certificate.getId())).isEqualTo(false);
+                    assertThat(certificateRepository.existsById(certificate.getId())).isFalse();
                 }
         );
     }
