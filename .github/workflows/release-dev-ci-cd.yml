@@ -148,7 +148,7 @@ jobs:
       IMAGE: fittoring/fittoring   
       TAG: ${{ needs.build-and-push.outputs.image_tag }}
     steps:
-      - name: Docker login
+      - name: Docker login (root)
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         
       - name: Run deploy script   
