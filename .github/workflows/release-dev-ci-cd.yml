@@ -135,7 +135,7 @@ jobs:
           context: backend/fittoring
           file: backend/fittoring/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: |
             ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_tag }}
             ${{ env.IMAGE }}:${{ steps.tags.outputs.sha_tag }}
