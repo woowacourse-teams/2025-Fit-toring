@@ -147,10 +147,12 @@ jobs:
     env:
       IMAGE: fittoring/fittoring   
       TAG: ${{ needs.build-and-push.outputs.image_tag }}
+
     steps:
-      - name: Docker login (root)
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        
+      - name: Docker hub login
+	run: |
+	 sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+
       - name: Run deploy script   
         run: |
           cd /home/ubuntu
