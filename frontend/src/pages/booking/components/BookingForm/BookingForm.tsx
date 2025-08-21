@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
-import * as Sentry from '@sentry/react';
 
 import { apiClient } from '../../../../common/apis/apiClient';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
@@ -11,6 +10,7 @@ import BookingSummarySection from '../BookingSummarySection/BookingSummarySectio
 import Checkbox from '../Checkbox/Checkbox';
 
 import type { BookingResponse } from '../../types/BookingResponse';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 interface BookingFormProps {
   handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
@@ -51,12 +51,11 @@ function BookingForm({
     } catch (error) {
       console.error('예약 중 에러 발생', error);
 
-      Sentry.captureException(error, {
+      captureSentryError({
+        error,
         level: 'warning',
-        tags: {
-          feature: 'reservation',
-          step: 'reservation-apply',
-        },
+        feature: 'reservation',
+        step: 'reservation-apply',
       });
     }
   };

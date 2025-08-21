@@ -17,6 +17,7 @@ import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFil
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 import type { MentorInformation } from './types/MentorInformation';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 const convertSelectedSpecialtiesToParams = (
   selectedSpecialties: string[],
@@ -68,6 +69,12 @@ function Home() {
       setMentorList(data);
     } catch (error) {
       console.error('멘토 데이터 가져오기 실패:', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'home',
+        step: 'mentor-data-fetch',
+      });
     }
   }, [selectedSpecialties]);
 
@@ -124,10 +131,9 @@ const StyledContainer = styled.div`
 const StyledContents = styled.main`
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   align-items: center;
   gap: 2rem;
-
-  flex-grow: 1;
 `;
 
 const StyledCheckboxWrapper = styled.div`

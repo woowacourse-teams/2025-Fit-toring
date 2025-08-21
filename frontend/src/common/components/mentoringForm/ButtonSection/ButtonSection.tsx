@@ -5,9 +5,13 @@ import Button from '../../Button/Button';
 
 interface ButtonSectionProps {
   onCancelButtonClick: () => void;
+  submitButtonName: 'register' | 'update';
 }
 
-function ButtonSection({ onCancelButtonClick }: ButtonSectionProps) {
+function ButtonSection({
+  onCancelButtonClick,
+  submitButtonName,
+}: ButtonSectionProps) {
   return (
     <StyledContainer>
       <Button
@@ -20,7 +24,7 @@ function ButtonSection({ onCancelButtonClick }: ButtonSectionProps) {
         취소
       </Button>
       <Button type="submit" size="full" customStyle={buttonStyle}>
-        등록하기
+        {submitButtonName === 'register' ? '등록하기' : '수정하기'}
       </Button>
     </StyledContainer>
   );

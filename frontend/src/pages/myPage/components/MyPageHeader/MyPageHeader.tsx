@@ -1,25 +1,18 @@
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import backIcon from '../../../../common/assets/images/backIcon.svg';
+import logo from '../../../../common/assets/images/logo.svg';
 import Header from '../../../../common/components/Header/Header';
+import { PAGE_URL } from '../../../../common/constants/url';
 import MenuDropDown from '../MenuDropDown/MenuDropDown';
 
 function MyPageHeader() {
-  const navigate = useNavigate();
-
-  const handleBackButtonClick = () => {
-    navigate(-1);
-  };
-
   return (
     <Header>
       <StyledWrapper>
-        <StyledButtonWrapper>
-          <StyledBackButton onClick={handleBackButtonClick} type="button">
-            <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
-          </StyledBackButton>
-        </StyledButtonWrapper>
+        <StyledLogoLink to={PAGE_URL.HOME}>
+          <StyledImg src={logo} alt="홈으로 돌아가기" />
+        </StyledLogoLink>
         <StyledTitle>마이 페이지</StyledTitle>
 
         <MenuDropDown />
@@ -35,26 +28,26 @@ const StyledWrapper = styled.div`
   align-items: center;
 
   height: 100%;
+  padding: 1.4rem 1.1rem;
 `;
 
-const StyledButtonWrapper = styled.div`
+const StyledLogoLink = styled(Link)`
   display: flex;
-  align-items: center;
-  justify-content: center;
 
-  width: 5rem;
-`;
-
-const StyledBackButton = styled.button`
+  height: auto;
   padding: 0;
   border: none;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 30%;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
 
-  background-color: transparent;
+  background: none;
   cursor: pointer;
 `;
 
-const StyledBackIcon = styled.img`
-  width: 3.4rem;
+const StyledImg = styled.img`
+  width: 3.5rem;
+  aspect-ratio: 1 / 1;
 `;
 
 const StyledTitle = styled.h1`

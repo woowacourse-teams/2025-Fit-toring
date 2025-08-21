@@ -1,10 +1,9 @@
 import { useState } from 'react';
 
-import * as Sentry from '@sentry/react';
-
 import { postValidateId } from '../apis/postValidateId';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface useUserIdDuplicateCheckParams {
   userId: string;
@@ -16,6 +15,7 @@ const useUserIdDuplicateCheck = ({
   userIdErrorMessage,
 }: useUserIdDuplicateCheckParams) => {
   const [duplicateError, setDuplicateError] = useState(false);
+  const [duplicateChecked, setDuplicateChecked] = useState(false);
 
   const {
     confirm: confirmUserId,
@@ -31,19 +31,24 @@ const useUserIdDuplicateCheck = ({
 
       if (response.status === 200) {
         confirmUserId();
-        alert('사용 가능한 아이디입니다.');
+        setDuplicateChecked(true);
       }
     } catch (error) {
       console.error('아이디 중복 확인 에러:', error);
       setDuplicateError(true);
-      Sentry.captureException(error, {
+
+      captureSentryError({
+        error,
         level: 'warning',
-        tags: {
-          feature: 'signup',
-          step: 'userId-duplicate-validate',
-        },
+        feature: 'signup',
+        step: 'userId-duplicate-validate',
       });
     }
+  };
+
+  const resetDuplicateCheck = () => {
+    setDuplicateChecked(false);
+    setDuplicateError(false);
   };
 
   const getFinalUserIdErrorMessage = () => {
@@ -67,6 +72,8 @@ const useUserIdDuplicateCheck = ({
     handleDuplicateConfirmClick,
     shouldBlockSubmitByUserId,
     getFinalUserIdErrorMessage,
+    resetDuplicateCheck,
+    duplicateChecked,
   };
 };
 

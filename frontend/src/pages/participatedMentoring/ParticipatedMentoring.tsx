@@ -8,6 +8,7 @@ import MentoringList from './MentoringList/MentoringList';
 
 import type { ParticipatedMentoringType } from './types/participatedMentoring';
 import { StatusTypeEnum } from '../../common/types/statusType';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 function ParticipatedMentoring() {
   const [participatedMentoringList, setParticipatedMentoringList] = useState<
@@ -31,6 +32,12 @@ function ParticipatedMentoring() {
         setParticipatedMentoringList(data);
       } catch (error) {
         console.error('참여한 멘토링 목록 불러오기 실패:', error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'participatedMentoring',
+          step: 'fetch-participated-mentoring-list',
+        });
       }
     };
     fetchParticipatedMentoringList();

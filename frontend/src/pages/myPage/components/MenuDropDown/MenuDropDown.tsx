@@ -7,6 +7,7 @@ import { postLogout } from '../../../../common/apis/postLogout';
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 type MenuItemName =
   | '개설한 멘토링'
@@ -59,6 +60,12 @@ function MenuDropDown() {
       navigate(url);
     } catch (error) {
       console.error('Logout failed', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'myPage',
+        step: 'logout',
+      });
     }
   };
 
@@ -90,8 +97,6 @@ const StyledContainer = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
-
-  width: 5rem;
 `;
 
 const StyledMenuButton = styled.button`
@@ -99,8 +104,6 @@ const StyledMenuButton = styled.button`
   align-items: center;
   justify-content: center;
 
-  width: 3.8rem;
-  height: 3.8rem;
   padding: 0;
   border: none;
 
@@ -113,6 +116,8 @@ const StyledMenuButton = styled.button`
 
 const StyledMenuIcon = styled.img`
   width: 2.4rem;
+  height: 2.4rem;
+  aspect-ratio: 1 / 1;
 `;
 
 const StyledMenuList = styled.ul<{ opened: boolean }>`

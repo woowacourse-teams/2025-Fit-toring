@@ -17,6 +17,7 @@ interface ApiClientPostType {
 
 interface ApiClientDeleteType {
   endpoint: string;
+  withCredentials?: boolean;
 }
 
 interface ApiClientPatchType {
@@ -158,7 +159,7 @@ class ApiClient {
     return this.requestWithRefresh(sendRequest, endpoint);
   }
 
-  async delete({ endpoint }: ApiClientDeleteType) {
+  async delete({ endpoint, withCredentials }: ApiClientDeleteType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
 
     const options = {
@@ -166,6 +167,9 @@ class ApiClient {
       headers: {
         accept: 'application/json',
       },
+      credentials: withCredentials
+        ? 'include'
+        : ('same-origin' as RequestCredentials),
     };
 
     const sendRequest = async () => {

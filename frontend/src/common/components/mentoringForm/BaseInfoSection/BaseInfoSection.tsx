@@ -9,6 +9,7 @@ import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
 import type { UserInfoResponse } from '../../../types/userInfoResponse';
+import { captureSentryError } from '../../../utils/captureSentryError';
 
 interface BaseInfoSectionProps {
   priceErrorMessage: string;
@@ -33,6 +34,12 @@ function BaseInfoSection({
         setUserInfo(response);
       } catch (error) {
         console.error('사용자 정보 조회 실패:', error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'mentoring',
+          step: 'base-info-fetch',
+        });
       }
     };
 

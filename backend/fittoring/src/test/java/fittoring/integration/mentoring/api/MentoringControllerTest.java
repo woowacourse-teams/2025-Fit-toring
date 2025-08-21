@@ -248,7 +248,6 @@ class MentoringControllerTest {
             Member mentee = memberRepository.save(
                     new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
             String accessToken = jwtProvider.createAccessToken(mentee.getId());
-
             Member mentor1 = memberRepository.save(
                     new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
             Member mentor2 = memberRepository.save(

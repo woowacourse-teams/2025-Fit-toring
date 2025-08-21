@@ -6,6 +6,7 @@ import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import defaultProfile from '../../../../common/assets/images/profileImg.svg';
 
 import type { UserInfo } from '../../../../common/types/userInfo';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function MyProfile() {
   const [myProfile, setMyProfile] = useState<UserInfo | null>(null);
@@ -17,6 +18,12 @@ function MyProfile() {
         setMyProfile(response);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'myPage',
+          step: 'fetch-profile',
+        });
       }
     };
     fetchMyProfile();
