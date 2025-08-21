@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.3.0...v1.3.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* 멘토링 예약의 내용 수정 ([9d15401](https://github.com/woowacourse-teams/2025-Fit-toring/commit/9d1540122df9527b5b3679b9f78d3db50f581b90))
+
 # [1.3.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.2.0...v1.3.0) (2025-08-21)
 
 
