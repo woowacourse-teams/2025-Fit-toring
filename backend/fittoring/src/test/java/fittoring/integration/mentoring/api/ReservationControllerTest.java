@@ -167,7 +167,7 @@ class ReservationControllerTest {
             5000,
             5,
             "모던 타임즈",
-            "또 봐요 미스터 채플린~"
+            "또 봐요 미스터 채플린~~"
         ));
 
         String mentorAccessToken = jwtProvider.createAccessToken(mentor.getId());
