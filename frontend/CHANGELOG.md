@@ -1,3 +1,21 @@
+# [1.2.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.1.0...v1.2.0) (2025-08-21)
+
+
+### Bug Fixes
+
+* ci/cd에 platforms 설정 추가 ([ac89ca9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ac89ca9b8c43d077277e62352605b277806bb9af))
+* DB클리너 flyway history 지우지 않도록 수정 [#506](https://github.com/woowacourse-teams/2025-Fit-toring/issues/506) ([233feab](https://github.com/woowacourse-teams/2025-Fit-toring/commit/233feab55f1dfa894472e5e0a82b05ad43508cfb))
+* 태그 설정 수정 ([3e57bee](https://github.com/woowacourse-teams/2025-Fit-toring/commit/3e57bee6034c4ef31fa5d597389d16a42c9e5d1e))
+
+
+### Features
+
+* flyway 의존성 [#506](https://github.com/woowacourse-teams/2025-Fit-toring/issues/506) ([46b1423](https://github.com/woowacourse-teams/2025-Fit-toring/commit/46b14232a7024eb81467522e70b5370536cce327))
+* flyway 의존성 추가 [#506](https://github.com/woowacourse-teams/2025-Fit-toring/issues/506) ([9a1c0fc](https://github.com/woowacourse-teams/2025-Fit-toring/commit/9a1c0fc3bf9e8b897a5320d087521501d9f7951c))
+* 개발 환경 flyway 설정 추가 [#506](https://github.com/woowacourse-teams/2025-Fit-toring/issues/506) ([023046e](https://github.com/woowacourse-teams/2025-Fit-toring/commit/023046e4f02bfc7df00dab7fbaa05e80b7cae062))
+* 테스트 환경 flyway 설정 추가 [#506](https://github.com/woowacourse-teams/2025-Fit-toring/issues/506) ([5c659ad](https://github.com/woowacourse-teams/2025-Fit-toring/commit/5c659adae3f456de39b9d8e1f07cfc35f7323712))
+* 토큰 없이 리프레시 토큰 재발급 요청 시 예외 처리 ([210cd1b](https://github.com/woowacourse-teams/2025-Fit-toring/commit/210cd1ba8fc2173a4615ba4d1a8d4fd808ae6a5a))
+
 # [1.1.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.0.0...v1.1.0) (2025-08-21)
 
 
