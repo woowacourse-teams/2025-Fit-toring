@@ -18,5 +18,4 @@ export const API_ENDPOINTS = {
   PATCH_MENTORING_STATUS: '/status',
   MENTEE_PHONE_NUMBER: '/phone',
   REVIEWS: '/reviews',
-  DETAIL: '/detail',
 } as const;

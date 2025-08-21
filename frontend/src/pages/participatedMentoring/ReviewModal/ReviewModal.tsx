@@ -11,6 +11,7 @@ import StarRating from '../StarRating/StarRating';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 import { captureSentryError } from '../../../common/utils/captureSentryError';
+import { PAGE_URL } from '../../../common/constants/url';
 
 interface ReviewModalProps {
   reservationId: number;
@@ -52,7 +53,7 @@ function ReviewModal({
       onReviewSubmitButtonClick(reservationId);
       onCloseClick();
       alert('리뷰가 등록되었습니다.');
-      navigate(`${API_ENDPOINTS.DETAIL}/${data.mentoringId}`, {
+      navigate(`${PAGE_URL.DETAIL}/${data.mentoringId}`, {
         state: { tab: 'review' },
       });
     } catch (error) {
