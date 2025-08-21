@@ -11,12 +11,15 @@ phases:
   build:
     commands:
       - |
-        if [ "$CODEBUILD_WEBHOOK_HEAD_REF" = "refs/heads/release" ]; then
-          echo "Building for production (release branch)..."
+        if [ "$APP_ENV" = "production" ]; then
+          echo "✅ Building for PRODUCTION..."
           npm run build:prod
-        elif [ "$CODEBUILD_WEBHOOK_HEAD_REF" = "refs/heads/develop" ]; then
-          echo "Building for development (develop branch)..."
+        elif [ "$APP_ENV" = "development" ]; then
+          echo "✅ Building for DEVELOPMENT..."
           npm run build:dev
+        else
+          echo "❌ Unknown APP_ENV. Halting build."
+          exit 1
         fi
 
 artifacts:
