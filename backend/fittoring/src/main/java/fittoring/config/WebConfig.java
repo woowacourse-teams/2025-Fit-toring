@@ -24,13 +24,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:3000",
                         "https://localhost:3000",
-                        "https://dab0meo43dsq7.cloudfront.net",
                         "http://fittoring.store",
-                        "https://www.fittoring.store",
                         "https://www.fittoring.com",
                         "https://fittoring.com",
                         "https://www.dev.fittoring.com",
-                        "https://dev.fittoring.com"
+                        "https://dev.fittoring.com",
+                        "https://www.fittoring.store",
+                        "https://dev.fittoring.store"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
