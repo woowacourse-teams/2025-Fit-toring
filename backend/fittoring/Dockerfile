@@ -1,13 +1,3 @@
-FROM gradle:8.7-jdk21 AS build
-WORKDIR /app
-
-COPY build.gradle settings.gradle ./
-COPY gradle gradle
-RUN gradle dependencies --no-daemon || true
-COPY . .
-RUN gradle clean bootJar -x test --no-daemon
-
-
 FROM openjdk:21-jdk-slim AS runtime
 WORKDIR /app
 
@@ -15,6 +5,6 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends curl ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /app/build/libs/*SNAPSHOT.jar app.jar
+COPY build/libs/*SNAPSHOT.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
