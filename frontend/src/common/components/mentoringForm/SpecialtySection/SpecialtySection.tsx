@@ -8,6 +8,7 @@ import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
 import type { Specialty } from '../../../types/Specialty';
+import { captureSentryError } from '../../../utils/captureSentryError';
 
 const MAX_SPECIALTIES = 3;
 
@@ -44,6 +45,12 @@ function SpecialtySection({
         setSpecialties(data);
       } catch (error) {
         console.error('전문 분야 가져오기 실패:', error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'mentoring',
+          step: 'specialty-fetch',
+        });
       }
     };
 

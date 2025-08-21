@@ -8,9 +8,11 @@ import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
@@ -33,12 +35,19 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
+    private final MentoringRepository mentoringRepository;
 
     @Transactional
     public ReviewCreateResponse createReview(ReviewCreateDto dto) {
         Review review = createNewReview(dto.reservationId(), dto.menteeId(), dto.rating(), dto.content());
         Review savedReview = reviewRepository.save(review);
-        return ReviewCreateResponse.of(savedReview);
+        Mentoring mentoring = mentoringRepository.findByReviewId(savedReview.getId())
+            .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
+        return new ReviewCreateResponse(
+            mentoring.getId(),
+            savedReview.getRating(),
+            savedReview.getContent()
+        );
     }
 
     private Review createNewReview(Long reservationId, Long menteeId, int rating, String content) {

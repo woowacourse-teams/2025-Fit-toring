@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../../common/components/Button/Button';
@@ -23,6 +22,7 @@ import UserIdField from '../UserIdField/UserIdField';
 import UserInfoFields from '../UserInfoFields/UserInfoFields';
 
 import type { Gender, SignupInfo } from '../../types/signupInfo';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 
@@ -65,7 +65,17 @@ function SignupForm() {
     handleDuplicateConfirmClick,
     shouldBlockSubmitByUserId,
     getFinalUserIdErrorMessage,
+    resetDuplicateCheck,
+    duplicateChecked,
   } = useUserIdDuplicateCheck({ userId, userIdErrorMessage });
+
+  const onUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleUserIdChange(e);
+
+    if (duplicateChecked) {
+      resetDuplicateCheck();
+    }
+  };
 
   const {
     password,
@@ -213,12 +223,12 @@ function SignupForm() {
       }
     } catch (error) {
       console.error('회원가입 실패', error);
-      Sentry.captureException(error, {
+
+      captureSentryError({
+        error,
         level: 'warning',
-        tags: {
-          feature: 'signup',
-          step: 'signup',
-        },
+        feature: 'signup',
+        step: 'signup',
       });
     }
   };
@@ -235,10 +245,11 @@ function SignupForm() {
         />
         <UserIdField
           userId={userId}
-          onUserIdChange={handleUserIdChange}
+          onUserIdChange={onUserIdChange}
           onDuplicateConfrimClick={handleDuplicateConfirmClick}
           errorMessage={getFinalUserIdErrorMessage()}
           isUserIdInputValid={userIdErrorMessage === ''}
+          duplicateChecked={duplicateChecked}
         />
         <PasswordFields
           password={password}

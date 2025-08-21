@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
@@ -15,6 +14,7 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import usePasswordInput from '../../../../common/hooks/usePasswordInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import { postLogin } from '../../apis/postLogin';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -41,12 +41,11 @@ function LoginForm() {
         setErrorMessage(error.message);
       }
 
-      Sentry.captureException(error, {
+      captureSentryError({
+        error,
         level: 'warning',
-        tags: {
-          feature: 'login',
-          step: 'login',
-        },
+        feature: 'login',
+        step: 'login',
       });
     }
   };

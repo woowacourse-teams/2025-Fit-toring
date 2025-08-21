@@ -13,6 +13,15 @@ import org.springframework.stereotype.Repository;
 public interface MentoringRepository extends ListCrudRepository<Mentoring, Long> {
 
     @Query("""
+                    SELECT m
+                    FROM Review rv
+                        JOIN rv.reservation res
+                        JOIN res.mentoring m
+                    WHERE rv.id = :reviewId
+            """)
+    Optional<Mentoring> findByReviewId(@Param("reviewId") Long reviewId);
+
+    @Query("""
             SELECT m
               FROM CategoryMentoring cm
               JOIN cm.mentoring m

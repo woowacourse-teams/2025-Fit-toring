@@ -10,6 +10,7 @@ import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
 
 import type { MentoringResponse } from '../../types/MentoringResponse';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 interface ApplySectionProps {
   price: number;
@@ -47,6 +48,12 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
         setMineMentoring(mentoring);
       } catch (error) {
         console.error(error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'detail',
+          step: 'mine-mentoring-fetch',
+        });
       }
     };
 

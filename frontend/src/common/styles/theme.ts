@@ -33,6 +33,7 @@ export const THEME = {
     W01: '#FFFFFF',
     G01: '#A7A7A7',
     ERROR: '#fa5252',
+    SUCCESS: '#51CF70',
     Y01: '#92400E',
   },
 

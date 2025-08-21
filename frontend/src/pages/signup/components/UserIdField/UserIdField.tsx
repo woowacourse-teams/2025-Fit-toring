@@ -13,6 +13,7 @@ interface UserIdFieldProps {
   onUserIdChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDuplicateConfrimClick: () => void;
   isUserIdInputValid: boolean;
+  duplicateChecked: boolean;
 }
 
 function UserIdField({
@@ -21,6 +22,7 @@ function UserIdField({
   onUserIdChange,
   onDuplicateConfrimClick,
   isUserIdInputValid,
+  duplicateChecked,
 }: UserIdFieldProps) {
   const isUserIdDuplicateButtonEnabled = userId !== '' && isUserIdInputValid;
 
@@ -46,6 +48,9 @@ function UserIdField({
           중복확인
         </Button>
       </StyledInputAndBtnWrapper>
+      {duplicateChecked ? (
+        <StyledSuccessText>사용 가능한 아이디입니다.</StyledSuccessText>
+      ) : null}
     </FormField>
   );
 }
@@ -59,6 +64,12 @@ const StyledInputAndBtnWrapper = styled.div`
   & > .input-wrapper {
     flex-grow: 1;
   }
+`;
+
+const StyledSuccessText = styled.p`
+  color: ${({ theme }) => theme.FONT.SUCCESS};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
 
 const buttonCustomStyle = css`

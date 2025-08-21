@@ -9,6 +9,7 @@ import { patchReservationStatus } from '../../apis/patchReservationStatus';
 import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
 
 import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -24,6 +25,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
       onClick(status, phoneNumber);
     } catch (error) {
       console.error(`Error fetching mentee phone number:`, error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'createdMentoring',
+        step: 'mentee-phone-number-fetch',
+      });
     }
   };
 
@@ -36,6 +43,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
       if (response.status !== 200) throw new Error('status update failed');
     } catch (error) {
       console.error(`Error updating reservation status:`, error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'createdMentoring',
+        step: 'patch-reservation-status',
+      });
     }
   };
 
@@ -45,6 +58,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
       await fetchPhoneNumber(StatusTypeEnum.APPROVED);
     } catch (error) {
       console.error(`Error handling approve button click:`, error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'createdMentoring',
+        step: 'approve-button-click',
+      });
     }
   };
 
@@ -54,6 +73,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
       onClick(StatusTypeEnum.REJECTED, '');
     } catch (error) {
       console.error(`Error handling reject button click:`, error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'createdMentoring',
+        step: 'reject-button-click',
+      });
     }
   };
 
@@ -63,6 +88,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
       onClick(StatusTypeEnum.COMPLETE, '');
     } catch (error) {
       console.error(`Error handling complete button click:`, error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'createdMentoring',
+        step: 'complete-button-click',
+      });
     }
   };
 

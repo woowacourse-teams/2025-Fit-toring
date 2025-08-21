@@ -13,13 +13,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import java.time.LocalDateTime;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -52,6 +52,7 @@ public class Certificate {
 
     @ManyToOne
     @JoinColumn(nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Mentoring mentoring;
 
     public Certificate(CertificateType type, String title, Mentoring mentoring) {

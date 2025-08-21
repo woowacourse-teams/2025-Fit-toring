@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { postReissue } from '../../apis/postReissue';
+import { captureSentryError } from '../../utils/captureSentryError';
 
 interface AuthContextValue {
   authenticated: boolean;
@@ -22,6 +23,12 @@ function AuthProvider({ children }: PropsWithChildren) {
       } catch (error) {
         console.error(error);
         setAuthenticated(false);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'auth',
+          step: 'auth-check',
+        });
       }
     };
 

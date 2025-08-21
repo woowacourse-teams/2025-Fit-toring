@@ -13,6 +13,7 @@ import MentorSummary from './components/MentorSummary/MentorSummary';
 import Profile from './components/Profile/Profile';
 
 import type { MentoringResponse } from './types/MentoringResponse';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 type TapType = 'detail' | 'review';
 
@@ -28,6 +29,12 @@ function Detail() {
         setData(response);
       } catch (error) {
         console.error('fetchData 실패', error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'detail',
+          step: 'mentoring-detail-fetch',
+        });
       }
     };
     fetchData();

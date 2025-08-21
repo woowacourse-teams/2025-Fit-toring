@@ -1,0 +1,177 @@
+name: Backend CI/CD
+
+on:
+  pull_request:
+    branches: [ release-dev ]
+    paths: [ 'backend/**' ]
+  push:
+    branches: [ release-dev ]
+    paths: [ 'backend/**' ]
+  workflow_dispatch:
+
+jobs:
+  backend-ci:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/fittoring
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          if ! docker compose version; then
+            sudo apt-get update
+            sudo apt-get install -y docker-compose-plugin
+          fi
+
+      - name: Start MySQL containers with Docker Compose
+        run: docker compose -f ./docker-compose.yml up -d db-test
+
+      - name: Wait for Test MySQL
+        run: |
+          echo "Waiting for Test MySQL..."
+          for i in {30..0}; do
+            nc -z localhost 3307 && echo "Test MySQL is up!" && break
+            echo "Still waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Create .env file
+        run: |
+          echo "ACTIVE_PROFILE=test" >> .env
+          echo "TEST_DATABASE_HOST=localhost" >> .env
+          echo "TEST_DATABASE_PORT=3307" >> .env
+          echo "TEST_DATABASE_NAME=fittoring-test" >> .env
+          echo "TEST_DATABASE_USER=root" >> .env
+          echo "TEST_DATABASE_PASSWORD=1234" >> .env
+          echo "COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}" >> .env
+          echo "COOL_SMS_HMAC_HEADER=HMAC-SHA256" >> .env
+          echo "COOL_SMS_HMAC_HASH=HmacSHA256" >> .env
+          echo "COOL_SMS_API_KEY=${{ secrets.COOL_SMS_API_KEY }}" >> .env
+          echo "COOL_SMS_SECRET_KEY=${{ secrets.COOL_SMS_SECRET_KEY }}" >> .env
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo "ACCESS_TOKEN_EXPIRATION_MILLIS=${{ secrets.ACCESS_TOKEN_EXPIRATION_MILLIS }}" >> .env
+          echo "REFRESH_TOKEN_EXPIRATION_MILLIS=${{ secrets.REFRESH_TOKEN_EXPIRATION_MILLIS }}" >> .env
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('./**/*.gradle*', './**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build & Run tests
+        run: ./gradlew clean build
+
+      - name: Upload Test Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-test-report
+          path: backend/fittoring/build/reports/tests/test/
+
+      - name: Stop Docker containers
+        if: always()
+        run: docker compose -f ./docker-compose.yml down
+
+  build-and-push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: fittoring/fittoring
+    defaults:
+      run:
+        working-directory: backend/fittoring
+    outputs:
+      image_tag: ${{ steps.tags.outputs.dev_tag }}
+      sha_tag: ${{ steps.tags.outputs.sha_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('./**/*.gradle*', './**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build jar
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean bootJar -x test
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Setup Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set tags
+        id: tags
+        run: |
+          echo "dev_tag=dev" >> $GITHUB_OUTPUT
+          echo "sha_tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Build & Push
+        uses: docker/build-push-action@v6
+        with:
+          context: backend/fittoring
+          file: backend/fittoring/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_tag }}
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.sha_tag }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:cache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:cache,mode=max
+
+  deploy-dev:
+    needs: build-and-push
+    runs-on:
+      - self-hosted
+      - dev
+    env:
+      IMAGE: fittoring/fittoring
+      TAG: ${{ needs.build-and-push.outputs.image_tag }}
+    steps:
+      - name: Docker hub login
+        run: |
+          sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+
+      - name: Write .env for deploy
+        run: |
+          cd /home/ubuntu/fittoring
+          sudo sh -c 'echo "IMAGE=${{ env.IMAGE }}" > .env.deploy'
+          sudo sh -c 'echo "TAG=${{ env.TAG }}" >> .env.deploy'
+
+      - name: Run deploy script
+        run: |
+          cd /home/ubuntu
+          ./deploy-be.sh

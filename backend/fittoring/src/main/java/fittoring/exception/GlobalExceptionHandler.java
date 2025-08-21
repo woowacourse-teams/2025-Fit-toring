@@ -5,6 +5,7 @@ import fittoring.aspect.dto.ErrorLog;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.CertificateNotFoundException;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
+import fittoring.mentoring.business.exception.DuplicatePhoneException;
 import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.InvalidCertificateException;
 import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
@@ -77,6 +78,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidStatusException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidStatusException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicatePhoneException.class)
+    public ResponseEntity<ErrorResponse> handle(DuplicatePhoneException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 

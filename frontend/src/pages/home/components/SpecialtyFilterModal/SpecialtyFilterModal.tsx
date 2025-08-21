@@ -8,7 +8,7 @@ import Modal from '../../../../common/components/Modal/Modal';
 import SpecialtyCheckbox from '../SpecialtyCheckbox/SpecialtyCheckbox';
 
 import type { Specialty } from '../../../../common/types/Specialty';
-
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 const MAX_SPECIALTIES = 3;
 
@@ -36,6 +36,12 @@ function SpecialtyFilterModal({
         setSpecialties(data);
       } catch (error) {
         console.error('전문 분야 가져오기 실패:', error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'home',
+          step: 'specialty-fetch',
+        });
       }
     };
 

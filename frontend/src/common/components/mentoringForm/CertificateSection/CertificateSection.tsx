@@ -1,83 +1,26 @@
-import { useState } from 'react';
-
 import styled from '@emotion/styled';
 
 import CertificateInput from '../CertificateInput/CertificateInput';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-import type { MentoringUpdateFormData } from '../../../../pages/mentoringUpdate/types/mentoringUpdateForm';
 import type { CertificateItem } from '../../../types/certificateItem';
 
 interface CertificateSectionProps {
-  onCertificateChange: (
-    newData: Pick<MentoringUpdateFormData, 'certificateInfos'>,
+  onAddButtonClick: () => void;
+  onDeleteButtonClick: (id: string) => void;
+  onCertificateChangeById: (
+    id: string,
+    changed: Partial<CertificateItem>,
   ) => void;
-  handleCertificateImageFilesChange: (files: File[]) => void;
-  initialCertificates?: CertificateItem[];
+  certificates: CertificateItem[];
 }
 
 function CertificateSection({
-  onCertificateChange,
-  handleCertificateImageFilesChange,
-  initialCertificates = [],
+  certificates,
+  onAddButtonClick,
+  onDeleteButtonClick,
+  onCertificateChangeById,
 }: CertificateSectionProps) {
-  const [certificates, setCertificates] =
-    useState<CertificateItem[]>(initialCertificates);
-
-  const handleAddButtonClick = () => {
-    setCertificates((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        title: null,
-        type: 'LICENSE',
-        file: undefined,
-      },
-    ]);
-  };
-
-  const handleDeleteButtonClick = (id: string) => {
-    const updated = certificates.filter((item) => item.id !== id);
-
-    setCertificates(updated);
-
-    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
-      id,
-      title,
-      type,
-      imageUrl,
-    }));
-    onCertificateChange({ certificateInfos: finalCertificates });
-
-    const files = updated
-      .map((item) => item.file)
-      .filter((file): file is File => !!file);
-    handleCertificateImageFilesChange(files);
-  };
-
-  const handleCertificateChangeById = (
-    id: string,
-    changed: Partial<CertificateItem>,
-  ) => {
-    const updated = certificates.map((item) =>
-      item.id === id ? { ...item, ...changed } : item,
-    );
-    setCertificates(updated);
-
-    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
-      id,
-      title,
-      type,
-      imageUrl,
-    }));
-    onCertificateChange({ certificateInfos: finalCertificates });
-
-    const files = updated
-      .map((item) => item.file)
-      .filter((file): file is File => !!file);
-    handleCertificateImageFilesChange(files);
-  };
-
   return (
     <section>
       <TitleSeparator>검증된 자격 사항</TitleSeparator>
@@ -94,10 +37,10 @@ function CertificateSection({
         <CertificateInput
           key={item.id}
           id={item.id}
-          onDeleteButtonClick={() => handleDeleteButtonClick(item.id)}
-          onCertificateChange={handleCertificateChangeById}
+          onDeleteButtonClick={() => onDeleteButtonClick(item.id)}
+          onCertificateChange={onCertificateChangeById}
           onCertificateImageFileChange={(file) =>
-            handleCertificateChangeById(item.id, {
+            onCertificateChangeById(item.id, {
               file,
               imageUrl: item.imageUrl,
             })
@@ -106,7 +49,7 @@ function CertificateSection({
         />
       ))}
 
-      <StyledAddButton type="button" onClick={handleAddButtonClick}>
+      <StyledAddButton type="button" onClick={onAddButtonClick}>
         + 자격 항목 추가하기
       </StyledAddButton>
     </section>
