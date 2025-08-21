@@ -135,9 +135,11 @@ jobs:
           context: backend/fittoring
           file: backend/fittoring/Dockerfile
           push: true
+          platforms: linux/arm64
           tags: |
-            ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_tag }}
-            ${{ env.IMAGE }}:${{ steps.tags.outputs.sha_tag }}
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.prod_tag }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:cache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:cache,mode=max
 
   deploy-dev:
     if: github.event_name == 'push'
