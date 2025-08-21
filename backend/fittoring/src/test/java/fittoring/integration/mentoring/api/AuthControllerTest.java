@@ -316,6 +316,22 @@ class AuthControllerTest {
         assertThat(reissueResponse.statusCode()).isEqualTo(401);
     }
 
+    @DisplayName("토큰 없이 재발급을 요청할 경우")
+    @Test
+    void reissue3() {
+        //given
+        //when
+        Response reissueResponse = RestAssured
+                .given()
+                .log().all()
+                .when()
+                .post("/reissue");
+
+        //then
+        assertThat(reissueResponse.statusCode())
+                .isEqualTo(401);
+    }
+
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")
     @Test
     void signUp3() {

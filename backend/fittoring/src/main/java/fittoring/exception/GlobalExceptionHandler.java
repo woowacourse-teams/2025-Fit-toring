@@ -2,6 +2,7 @@ package fittoring.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.aspect.dto.ErrorLog;
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.CertificateNotFoundException;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
@@ -33,6 +34,7 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -180,6 +182,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CertificateNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(CertificateNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(MissingRequestCookieException.class)
+    public ResponseEntity<ErrorResponse> handle(MissingRequestCookieException e) {
+        return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {
