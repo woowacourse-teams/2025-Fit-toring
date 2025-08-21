@@ -6,9 +6,9 @@ import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
 import { defineConfig, globalIgnores } from 'eslint/config';
-import reactPlugin from 'eslint-plugin-react';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
+import reactPlugin from 'eslint-plugin-react';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import storybook from 'eslint-plugin-storybook';
 import unusedImportPlugin from 'eslint-plugin-unused-imports';
@@ -23,7 +23,7 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([
-  globalIgnores(['**/dist', '**/.eslintrc.cjs', '**/webpack.config.js']),
+  globalIgnores(['**/dist', '**/.eslintrc.cjs', '**/webpack.*.js']),
   {
     extends: fixupConfigRules(
       compat.extends(

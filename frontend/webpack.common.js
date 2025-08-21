@@ -1,15 +1,16 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const DotenvWebpackPlugin = require('dotenv-webpack');
+
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const DotenvWebpackPlugin = require('dotenv-webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
   entry: './src/main.tsx',
   output: {
-    filename: 'bundle.js',
+    filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
+    clean: true,
   },
   module: {
     rules: [
@@ -44,18 +45,6 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-  },
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'),
-    },
-    port: 3000,
-    open: true,
-    hot: true,
-    historyApiFallback: true,
-    client: {
-      overlay: true,
-    },
   },
   plugins: [
     new HtmlWebpackPlugin({
