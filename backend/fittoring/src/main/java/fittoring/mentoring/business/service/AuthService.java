@@ -54,7 +54,7 @@ public class AuthService {
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken saveRefreshToken = new RefreshToken(
-                member.getId(),
+                member,
                 refreshToken,
                 LocalDateTime.now()
         );
@@ -67,7 +67,7 @@ public class AuthService {
     public AuthTokenResponse reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMemberId());
+        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMember().getId());
         String newRefreshToken = jwtProvider.createRefreshToken();
         findRefreshToken.update(newRefreshToken, LocalDateTime.now());
 

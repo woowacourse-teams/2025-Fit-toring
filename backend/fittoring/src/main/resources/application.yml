@@ -10,15 +10,21 @@ spring:
       matching-strategy: ant_path_matcher
   sql:
     init:
-      mode: always
+      mode: never
   jpa:
-    show-sql: true
+    hibernate:
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
-    hibernate:
-      ddl-auto: update
-    defer-datasource-initialization: true
+    show-sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    url: jdbc:mysql://${PROD_DATABASE_HOST}:${PROD_DATABASE_PORT}/${PROD_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    user: ${PROD_DATABASE_USER}
+    password: ${PROD_DATABASE_PASSWORD}
+    baseline-on-migrate: true
   web:
     resources:
       add-mappings: false

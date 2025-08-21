@@ -177,12 +177,12 @@ class AuthServiceTest {
         AuthTokenResponse actual = authService.login(loginId, password);
 
         //then
-        RefreshToken refreshToken = em.find(RefreshToken.class, 1L);
+        RefreshToken refreshToken = em.find(RefreshToken.class, savedMember.getId());
         SoftAssertions.assertSoftly(softly -> {
                     assertThat(actual.accessToken()).isNotNull();
                     assertThat(actual.refreshToken()).isNotNull();
                     assertThat(refreshToken).isNotNull();
-                    assertThat(refreshToken.getMemberId()).isEqualTo(savedMember.getId());
+                    assertThat(refreshToken.getMember().getId()).isEqualTo(savedMember.getId());
                     assertThat(refreshToken.getTokenValue()).isEqualTo(actual.refreshToken());
                 }
         );
@@ -192,11 +192,20 @@ class AuthServiceTest {
     @Test
     void reissue() {
         //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        );
+        Member savedMember = em.persist(member);
+        em.flush();
         String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken savedRefreshToken = new RefreshToken(
-                1L,
+                savedMember,
                 refreshToken,
                 LocalDateTime.now().minusDays(1)
         );
@@ -215,7 +224,7 @@ class AuthServiceTest {
                     assertThat(actual.accessToken()).isNotEqualTo(accessToken);
                     assertThat(actual.refreshToken()).isNotEqualTo(refreshToken);
                     assertThat(newRefreshToken.getTokenValue()).isEqualTo(actual.refreshToken());
-                    assertThat(newRefreshToken.getMemberId()).isEqualTo(savedRefreshToken.getMemberId());
+                    assertThat(newRefreshToken.getMember()).isEqualTo(savedRefreshToken.getMember());
                     assertThat(newRefreshToken.getCreateAt()).isAfterOrEqualTo(savedRefreshToken.getCreateAt());
                 }
         );
@@ -236,7 +245,7 @@ class AuthServiceTest {
 
         String refreshToken = jwtProvider.createRefreshToken();
         RefreshToken savedRefreshToken = em.persist(
-                new RefreshToken(savedMember.getId(), refreshToken, LocalDateTime.now())
+                new RefreshToken(savedMember, refreshToken, LocalDateTime.now())
         );
 
         //when

@@ -5,12 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,8 +27,10 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Member member;
 
     @Column(nullable = false)
     private String tokenValue;
@@ -32,8 +38,8 @@ public class RefreshToken {
     @Column(nullable = false)
     private LocalDateTime createAt;
 
-    public RefreshToken(Long memberId, String tokenValue, LocalDateTime createAt) {
-        this(null, memberId, tokenValue, createAt);
+    public RefreshToken(Member member, String tokenValue, LocalDateTime createAt) {
+        this(null, member, tokenValue, createAt);
     }
 
     public void update(String tokenValue, LocalDateTime createAt) {
