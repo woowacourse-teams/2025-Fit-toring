@@ -14,15 +14,16 @@ function Slogan() {
   const [myMentoringId, setMyMentoringId] = useState<null | number>(null);
 
   const handleMentoringCreation = () => {
-    if (authenticated) {
-      if (myMentoringId !== null) {
-        navigate(PAGE_URL.CREATED_MENTORING);
-        return;
-      }
-      navigate(PAGE_URL.MENTORING_CREATE);
-    } else {
+    if (!authenticated) {
       navigate(PAGE_URL.LOGIN);
+      return;
     }
+    if (myMentoringId !== null) {
+      navigate(PAGE_URL.CREATED_MENTORING);
+      return;
+    }
+
+    navigate(PAGE_URL.MENTORING_CREATE);
   };
 
   useEffect(() => {
@@ -36,7 +37,7 @@ function Slogan() {
       }
     };
 
-    fetchData();
+    // fetchData();
   }, []);
 
   useEffect(() => {
