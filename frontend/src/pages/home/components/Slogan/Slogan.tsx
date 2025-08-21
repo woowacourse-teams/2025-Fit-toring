@@ -37,7 +37,7 @@ function Slogan() {
       }
     };
 
-    // fetchData();
+    fetchData();
   }, []);
 
   useEffect(() => {
