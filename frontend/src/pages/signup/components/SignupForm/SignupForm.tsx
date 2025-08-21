@@ -9,6 +9,7 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postSignup } from '../../apis/postSignup';
 import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput';
@@ -22,7 +23,6 @@ import UserIdField from '../UserIdField/UserIdField';
 import UserInfoFields from '../UserInfoFields/UserInfoFields';
 
 import type { Gender, SignupInfo } from '../../types/signupInfo';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 
@@ -145,11 +145,13 @@ function SignupForm() {
   });
 
   const getDisplayedVerificationErrorMessage = () => {
-    if (verificationStep === 'verified') {
-      return getFinalVerificationCodeErrorMessage();
+    const errorMessage = getFinalVerificationCodeErrorMessage();
+
+    if (verificationStep !== 'verified') {
+      return errorMessage;
     }
 
-    return submitVerificationErrorMessage;
+    return errorMessage === '' ? submitVerificationErrorMessage : errorMessage;
   };
 
   const validateForm = () => {

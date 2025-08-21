@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postAuthCodeVerify } from '../apis/postAuthCodeVerify';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
-import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface useVerificationCodeConfirmParams {
   verificationCode: string;
@@ -30,8 +30,6 @@ const useVerificationCodeConfirm = ({
       const response = await postAuthCodeVerify(phoneNumber, verificationCode);
       if (response.status === 200) {
         alert('인증 성공');
-        confrimVerificationCode();
-        completeVerification();
       }
     } catch (error) {
       setVerificationCodeError(true);
@@ -43,19 +41,26 @@ const useVerificationCodeConfirm = ({
         feature: 'sms',
         step: 'verify-code',
       });
+    } finally {
+      completeVerification();
+      confrimVerificationCode();
     }
   };
 
   const getFinalVerificationCodeErrorMessage = () => {
+    if (verificationCodeErrorMessage) {
+      return verificationCodeErrorMessage;
+    }
+
+    if (verificationCodeMatchConfirmed && verificationCodeError) {
+      return '인증 실패';
+    }
+
     if (!verificationCodeMatchConfirmed) {
       return '인증을 해주세요';
     }
 
-    if (verificationCodeError) {
-      return '인증 실패';
-    }
-
-    return verificationCodeErrorMessage;
+    return '';
   };
 
   return {
