@@ -26,7 +26,7 @@ public record MentorMentoringReservationResponse(
                 reservation.getMenteeName(),
                 null,
                 reservation.getMentoring().getPrice(),
-                reservation.getMentoring().getContent(),
+                reservation.getContent(),
                 reservation.getStatus(),
                 reservation.getCreatedAt()
         );
@@ -38,7 +38,7 @@ public record MentorMentoringReservationResponse(
                 reservation.getMenteeName(),
                 reservation.getMenteePhone(),
                 reservation.getMentoring().getPrice(),
-                reservation.getMentoring().getContent(),
+                reservation.getContent(),
                 reservation.getStatus(),
                 reservation.getCreatedAt()
         );
