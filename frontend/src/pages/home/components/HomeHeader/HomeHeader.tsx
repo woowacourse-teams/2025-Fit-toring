@@ -21,7 +21,7 @@ function HomeHeader() {
     <Header>
       <StyledHeaderWrapper>
         <StyledTitleIconWrapper>
-          <StyledLogoLink to={PAGE_URL.HOME}>
+          <StyledLogoLink to={PAGE_URL.HOME} reloadDocument>
             <StyledImg src={logo} alt="홈으로 돌아가기" />
           </StyledLogoLink>
           <StyledTitle>핏토링</StyledTitle>

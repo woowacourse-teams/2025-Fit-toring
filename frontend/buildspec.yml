@@ -10,7 +10,14 @@ phases:
 
   build:
     commands:
-      - npm run build
+      - |
+        if [ "$CODEBUILD_WEBHOOK_HEAD_REF" = "refs/heads/release" ]; then
+          echo "Building for production (release branch)..."
+          npm run build:prod
+        elif [ "$CODEBUILD_WEBHOOK_HEAD_REF" = "refs/heads/develop" ]; then
+          echo "Building for development (develop branch)..."
+          npm run build:dev
+        fi
 
 artifacts:
   base-directory: frontend/dist
