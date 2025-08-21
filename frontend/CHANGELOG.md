@@ -1,3 +1,16 @@
+# [1.3.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.2.0...v1.3.0) (2025-08-21)
+
+
+### Bug Fixes
+
+* 빌드 스크립트에서 환경 변수(APP_ENV) 사용으로 변경 [#566](https://github.com/woowacourse-teams/2025-Fit-toring/issues/566) ([e8c33ea](https://github.com/woowacourse-teams/2025-Fit-toring/commit/e8c33eaf25b24bcf31dd527647909d6e83b9d20c))
+* 인증확인 유효성 검사 로직 문제 해결 [#549](https://github.com/woowacourse-teams/2025-Fit-toring/issues/549) ([45a5346](https://github.com/woowacourse-teams/2025-Fit-toring/commit/45a53468b27bf23d55215c3be205d4c356568649))
+
+
+### Features
+
+* 개발 서버 주소 CORS 허용 추가 ([2e7dd89](https://github.com/woowacourse-teams/2025-Fit-toring/commit/2e7dd89e7ed8de074bb710f8905e4dd8e9e012f7))
+
 # [1.2.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.1.0...v1.2.0) (2025-08-21)
 
 
