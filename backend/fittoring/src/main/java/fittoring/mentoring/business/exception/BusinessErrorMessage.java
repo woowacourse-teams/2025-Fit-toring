@@ -40,7 +40,6 @@ public enum BusinessErrorMessage {
     RESERVATION_NOT_COMPLETED("멘토링이 완료된 후에만 리뷰를 남길 수 있습니다."),
     FORBIDDEN_URL("권한이 없는 URL 입니다"),
     NOT_CERTIFICATE_OWNER("자신의 자격사항이 아닙니다."),
-
     ;
 
     private final String message;
