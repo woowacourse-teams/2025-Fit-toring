@@ -54,7 +54,7 @@ public class AuthService {
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken saveRefreshToken = new RefreshToken(
-                member.getId(),
+                member,
                 refreshToken,
                 LocalDateTime.now()
         );
@@ -67,7 +67,7 @@ public class AuthService {
     public AuthTokenResponse reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMemberId());
+        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMember().getId());
         String newRefreshToken = jwtProvider.createRefreshToken();
         findRefreshToken.update(newRefreshToken, LocalDateTime.now());
 
@@ -76,7 +76,7 @@ public class AuthService {
 
     private RefreshToken getRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByTokenValue(refreshToken)
-                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.NOT_FOUND_TOKEN.getMessage()));
+                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage()));
     }
 
     private Member getMemberByLoginId(String loginId) {

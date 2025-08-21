@@ -11,11 +11,17 @@ spring:
       mode: never
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    url: jdbc:mysql://${TEST_DATABASE_HOST}:${TEST_DATABASE_PORT}/${TEST_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    user: ${TEST_DATABASE_USER}
+    password: ${TEST_DATABASE_PASSWORD}
+    baseline-on-migrate: true
 sms:
   base-url: http://localhost:8089
   timeout:

@@ -47,10 +47,14 @@ dependencies {
     // rest-assured
     testImplementation("io.rest-assured:rest-assured:5.5.5")
 
-    //jwt
+    // jwt
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+    // flyway
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
 }
 
 tasks.named('test') {
