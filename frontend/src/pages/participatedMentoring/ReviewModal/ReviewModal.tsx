@@ -8,7 +8,10 @@ import Modal from '../../../common/components/Modal/Modal';
 import { postReview } from '../apis/postReview';
 import { MAX_RATING_COUNT } from '../constants/starRating';
 import StarRating from '../StarRating/StarRating';
+import { useNavigate } from 'react-router-dom';
+import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 import { captureSentryError } from '../../../common/utils/captureSentryError';
+import { PAGE_URL } from '../../../common/constants/url';
 
 interface ReviewModalProps {
   reservationId: number;
@@ -25,6 +28,8 @@ function ReviewModal({
   onCloseClick,
   onReviewSubmitButtonClick,
 }: ReviewModalProps) {
+  const navigate = useNavigate();
+
   const [rating, setRating] = useState(MAX_RATING_COUNT);
   const [content, setContent] = useState('');
 
@@ -39,13 +44,18 @@ function ReviewModal({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await postReview({
+      const response = await postReview({
         reservationId,
         rating,
         content,
       });
+      const data = await response.json();
       onReviewSubmitButtonClick(reservationId);
       onCloseClick();
+      alert('리뷰가 등록되었습니다.');
+      navigate(`${PAGE_URL.DETAIL}/${data.mentoringId}`, {
+        state: { tab: 'review' },
+      });
     } catch (error) {
       console.error('리뷰 등록 실패', error);
       captureSentryError({
