@@ -2,14 +2,11 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.asciidoctor.jvm.convert' version '4.0.5'
 }
 
 group = 'com.fittoring'
 version = '0.0.1-SNAPSHOT'
-
-ext {
-    jjwtVersion = '0.11.5'
-}
 
 java {
     toolchain {
@@ -17,7 +14,42 @@ java {
     }
 }
 
+ext {
+    jjwtVersion = '0.11.5'
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    outputs.dir snippetsDir
+}
+
+asciidoctor {
+    configurations 'asciidoctorExt'
+    baseDirFollowsSourceFile()
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+tasks.register('createDocument', Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static")
+}
+
+bootJar {
+    dependsOn createDocument
+    from("${asciidoctor.outputDir}") {
+        -> into 'static/docs'
+    }
+}
+
 configurations {
+    asciidoctorExt
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -55,8 +87,9 @@ dependencies {
     // flyway
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
-}
 
-tasks.named('test') {
-    useJUnitPlatform()
+    // restdocs
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
 }
