@@ -1,6 +1,8 @@
 package fittoring.integration.mentoring.api.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
@@ -15,24 +17,32 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class AdminReservationControllerTest {
+
+    private RequestSpecification spec;
 
     @LocalServerPort
     private int port;
@@ -56,9 +66,16 @@ class AdminReservationControllerTest {
     private DbCleaner dbCleaner;
 
     @BeforeEach
-    void setUp() {
+    void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
         dbCleaner.clean();
+        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
+        restAssuredConfig.operationPreprocessors()
+                .withRequestDefaults(prettyPrint())
+                .withResponseDefaults(prettyPrint());
+        spec = new RequestSpecBuilder()
+                .addFilter(restAssuredConfig)
+                .build();
     }
 
     @DisplayName("관리자는 특정 멘토링에 달린 모든 예약을 조회 성공하면 200 OK를 반환한다")
@@ -121,7 +138,9 @@ class AdminReservationControllerTest {
         // when
         // then
         RestAssured
-            .given()
+            .given(spec)
+            .accept("application/json")
+            .filter(document("admin/get-admin-mentorings-id-reservation-success"))
             .log().all().contentType(ContentType.JSON)
             .cookie("accessToken", adminAccessToken)
             .when()
@@ -157,44 +176,14 @@ class AdminReservationControllerTest {
             "Last Fantasy",
             "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
-        Member mentee1 = memberRepository.save(new Member(
-            "menteeId1",
-            "MALE",
-            "김멘티",
-            new Phone("010-1234-5679"),
-            Password.from("password"),
-            MemberRole.MENTEE
-        ));
-        Member mentee2 = memberRepository.save(new Member(
-            "menteeId2",
-            "MALE",
-            "박멘티",
-            new Phone("010-1234-5670"),
-            Password.from("password"),
-            MemberRole.MENTEE
-        ));
-        Reservation reservation1 = reservationRepository.save(new Reservation(
-            "아득한 건 언제나 늘 아름답게 보이죠",
-            Status.PENDING,
-            mentoring,
-            mentee1
-        ));
-        Reservation reservation2 = reservationRepository.save(new Reservation(
-            "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
-            Status.COMPLETE,
-            mentoring,
-            mentee1
-        ));
-        MentoringReservationGetDto mentoringReservationGetDto = new MentoringReservationGetDto(
-            normalMember.getId(),
-            mentoring.getId()
-        );
         String normalAccessToken = jwtProvider.createAccessToken(normalMember.getId());
 
         // when
         // then
         RestAssured
-            .given()
+            .given(spec)
+            .accept("application/json")
+            .filter(document("admin/get-admin-mentorings-id-reservation-unauthorized"))
             .log().all().contentType(ContentType.JSON)
             .cookie("accessToken", normalAccessToken)
             .when()
@@ -252,7 +241,9 @@ class AdminReservationControllerTest {
         // when
         // then
         RestAssured
-            .given()
+            .given(spec)
+            .accept("application/json")
+            .filter(document("admin/patch-admin-reservations-id-status-success"))
             .log().all().contentType(ContentType.JSON)
             .cookie("accessToken", adminAccessToken)
             .body(reservationStatusUpdateRequest)
@@ -314,7 +305,9 @@ class AdminReservationControllerTest {
         // when
         // then
         RestAssured
-            .given()
+            .given(spec)
+            .accept("application/json")
+            .filter(document("admin/delete-admin-reservations-id-success"))
             .log().all().contentType(ContentType.JSON)
             .cookie("accessToken", adminAccessToken)
             .when()
