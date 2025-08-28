@@ -1,6 +1,9 @@
 package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
@@ -18,8 +21,10 @@ import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -27,14 +32,21 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthControllerTest {
+
+    private RequestSpecification spec;
 
     @LocalServerPort
     public int port;
@@ -55,9 +67,16 @@ class AuthControllerTest {
     private DbCleaner dbCleaner;
 
     @BeforeEach
-    void setUp() {
+    void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
         dbCleaner.clean();
+        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
+        restAssuredConfig.operationPreprocessors()
+                .withRequestDefaults(prettyPrint())
+                .withResponseDefaults(prettyPrint());
+        spec = new RequestSpecBuilder()
+                .addFilter(restAssuredConfig)
+                .build();
     }
 
     @DisplayName("사용자는 회원가입을 할 수 있다.")
@@ -73,7 +92,9 @@ class AuthControllerTest {
 
         //when
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-signup-success"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -99,7 +120,9 @@ class AuthControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-signup-invalid-info"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -160,7 +183,9 @@ class AuthControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-login-invalid-password"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -195,7 +220,9 @@ class AuthControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-login-success"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -231,7 +258,9 @@ class AuthControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-logout-success"))
                 .cookie("accessToken", accessToken)
                 .cookie("refreshToken", refreshToken)
                 .log().all().contentType(ContentType.JSON)
@@ -279,7 +308,9 @@ class AuthControllerTest {
 
         //when
         Response reissueResponse = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-reissue-success"))
                 .log().all()
                 .cookie("accessToken", accessToken)
                 .cookie("refreshToken", refreshToken)
@@ -305,7 +336,9 @@ class AuthControllerTest {
 
         //when
         Response reissueResponse = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-reissue-invalid-token"))
                 .log().all()
                 .cookie("accessToken", accessToken)
                 .cookie("refreshToken", refreshToken)
@@ -316,7 +349,7 @@ class AuthControllerTest {
         assertThat(reissueResponse.statusCode()).isEqualTo(401);
     }
 
-    @DisplayName("토큰 없이 재발급을 요청할 경우")
+    @DisplayName("토큰 없이 재발급을 요청할 경우 401 상태코드를 받는다.")
     @Test
     void reissue3() {
         //given
@@ -355,7 +388,9 @@ class AuthControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-signup-duplicated-login-id"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -373,7 +408,9 @@ class AuthControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-validate-id-success"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -411,7 +448,9 @@ class AuthControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-validate-id-duplicated"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -453,7 +492,10 @@ class AuthControllerTest {
 
         // when
         // then
-        RestAssured.given()
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-auth-code-verify-invalid-code"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -476,7 +518,10 @@ class AuthControllerTest {
 
         // when
         // then
-        RestAssured.given()
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-auth-code-verify-expired-code"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -500,7 +545,10 @@ class AuthControllerTest {
 
         // when
         // then
-        RestAssured.given()
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(document("auth/post-auth-code-verify-success"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
