@@ -1,12 +1,12 @@
 package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
-import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
@@ -27,31 +27,39 @@ import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
-import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
+
+    private RequestSpecification spec;
 
     @LocalServerPort
     public int port;
@@ -84,9 +92,16 @@ class ReservationControllerTest {
     private JwtProvider jwtProvider;
 
     @BeforeEach
-    void setUp() {
+    void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
         dbCleaner.clean();
+        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
+        restAssuredConfig.operationPreprocessors()
+                .withRequestDefaults(prettyPrint())
+                .withResponseDefaults(prettyPrint());
+        spec = new RequestSpecBuilder()
+                .addFilter(restAssuredConfig)
+                .build();
     }
 
     @DisplayName("멘토링 예약에 성공하면 201 Created 상태코드와 예약 정보를 반환한다.")
@@ -129,7 +144,9 @@ class ReservationControllerTest {
 
         //when
         ReservationCreateResponse response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/post-mentorings-id-reservation-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -155,37 +172,39 @@ class ReservationControllerTest {
     void createReservationFail1() {
         // given
         Member mentor = memberRepository.save(new Member(
-            "mentorLoginId",
-            "MALE",
-            "아이유",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorLoginId",
+                "MALE",
+                "아이유",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "모던 타임즈",
-            "또 봐요 미스터 채플린~~"
+                mentor,
+                5000,
+                5,
+                "모던 타임즈",
+                "또 봐요 미스터 채플린~~"
         ));
 
         String mentorAccessToken = jwtProvider.createAccessToken(mentor.getId());
         ReservationCreateRequest requestBody = new ReservationCreateRequest(
-            "그 이름도 내겐 사랑스런 채플린~"
+                "그 이름도 내겐 사랑스런 채플린~"
         );
 
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", mentorAccessToken)
-            .body(requestBody)
-            .when()
-            .post("/mentorings/" + mentoring.getId() + "/reservation")
-            .then()
-            .statusCode(400);
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/post-mentorings-id-reservation-mentoring-is-mine"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", mentorAccessToken)
+                .body(requestBody)
+                .when()
+                .post("/mentorings/" + mentoring.getId() + "/reservation")
+                .then()
+                .statusCode(400);
     }
 
     @DisplayName("존재하지 않는 멘토링에 예약을 시도하면 상태코드 404 Not Found를 반환한다.")
@@ -211,7 +230,9 @@ class ReservationControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/post-mentorings-id-reservation-not-found"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -290,7 +311,9 @@ class ReservationControllerTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/get-reservations-participated-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
                 .when()
@@ -347,7 +370,9 @@ class ReservationControllerTest {
 
         //when
         List<MentorMentoringReservationResponse> response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/get-mentorings-mine-reservation-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -484,7 +509,9 @@ class ReservationControllerTest {
 
         //when
         List<MentorMentoringReservationResponse> response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/get-mentorings-mine-reservation-empty-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -544,7 +571,9 @@ class ReservationControllerTest {
 
         //when
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/patch-reservations-id-status-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -600,7 +629,9 @@ class ReservationControllerTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/patch-reservations-id-status-already-patched"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -696,7 +727,9 @@ class ReservationControllerTest {
 
         //when
         PhoneNumberResponse response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("reservation/get-reservations-id-phone-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -708,7 +741,6 @@ class ReservationControllerTest {
 
         //then
         assertThat(response.phoneNumber()).isEqualTo(savedMentee.getPhoneNumber());
-
     }
 }
 
