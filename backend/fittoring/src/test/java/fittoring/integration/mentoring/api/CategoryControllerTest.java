@@ -1,27 +1,39 @@
 package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.presentation.dto.CategoryResponse;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.restassured.RestAssuredOperationPreprocessorsConfigurer;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class CategoryControllerTest {
+
+    private RequestSpecification spec;
 
     @LocalServerPort
     public int port;
@@ -33,9 +45,16 @@ class CategoryControllerTest {
     private DbCleaner dbCleaner;
 
     @BeforeEach
-    void setUp() {
+    void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
         dbCleaner.clean();
+        RestAssuredOperationPreprocessorsConfigurer restAssuredConfig = documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(prettyPrint())
+                .withResponseDefaults(prettyPrint());
+        spec = new RequestSpecBuilder()
+                .addFilter(restAssuredConfig)
+                .build();
     }
 
     @DisplayName("카테고리 목록 조회가 성공하면, 200 OK 상태코드와 카테고리 목록을 반환한다.")
@@ -48,7 +67,9 @@ class CategoryControllerTest {
 
         //when
         List<CategoryResponse> response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("category/get-categories-success"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/categories")
@@ -72,7 +93,9 @@ class CategoryControllerTest {
         //given
         //when
         List<CategoryResponse> response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("category/get-categories-empty"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/categories")
