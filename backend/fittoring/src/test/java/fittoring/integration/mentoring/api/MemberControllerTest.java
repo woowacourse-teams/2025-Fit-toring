@@ -24,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.restassured.RestAssuredOperationPreprocessorsConfigurer;
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
@@ -50,8 +50,8 @@ class MemberControllerTest {
     void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
         dbCleaner.clean();
-        RestAssuredOperationPreprocessorsConfigurer restAssuredConfig = documentationConfiguration(restDocumentation)
-                .operationPreprocessors()
+        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
+        restAssuredConfig.operationPreprocessors()
                 .withRequestDefaults(prettyPrint())
                 .withResponseDefaults(prettyPrint());
         spec = new RequestSpecBuilder()
