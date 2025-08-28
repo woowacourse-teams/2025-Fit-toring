@@ -1,5 +1,9 @@
 package fittoring.integration.mentoring.api;
 
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
+
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
@@ -7,19 +11,28 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.specification.RequestSpecification;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.restassured.RestAssuredOperationPreprocessorsConfigurer;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MemberControllerTest {
+
+    private RequestSpecification spec;
 
     @LocalServerPort
     private int port;
@@ -34,9 +47,16 @@ class MemberControllerTest {
     private DbCleaner dbCleaner;
 
     @BeforeEach
-    void setUp() {
+    void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
         dbCleaner.clean();
+        RestAssuredOperationPreprocessorsConfigurer restAssuredConfig = documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(prettyPrint())
+                .withResponseDefaults(prettyPrint());
+        spec = new RequestSpecBuilder()
+                .addFilter(restAssuredConfig)
+                .build();
     }
 
     @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수 있다.")
@@ -50,7 +70,9 @@ class MemberControllerTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("member/get-members-me-success"))
                 .cookie("accessToken", accessToken)
                 .log().all().then()
                 .when()
@@ -91,7 +113,9 @@ class MemberControllerTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(document("member/get-members-me-unauthorized"))
                 .cookie("accessToken", null)
                 .when()
                 .get("/members/me")
