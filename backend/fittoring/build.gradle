@@ -112,3 +112,10 @@ tasks.matching { it.name == "openapi3" }.configureEach {
         delete file("build/api-spec/openapi3.yaml")
     }
 }
+
+tasks.register('copyOasToSwagger', Copy) {
+    delete "src/main/resources/static/swagger-ui/openapi3.yaml"
+    from "build/api-spec/openapi3.yaml"
+    into "src/main/resources/static/swagger-ui/"
+    dependsOn "openapi3"
+}
