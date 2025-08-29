@@ -1,10 +1,6 @@
 package fittoring.integration.mentoring.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
+import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.presentation.dto.CategoryResponse;
@@ -14,7 +10,6 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +21,16 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
+
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
@@ -34,6 +38,11 @@ import org.springframework.test.context.ActiveProfiles;
 class CategoryControllerTest {
 
     private RequestSpecification spec;
+
+    private RestDocumentationFilter documentWithTag(String id) {
+        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
+        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
+    }
 
     @LocalServerPort
     public int port;
@@ -69,7 +78,7 @@ class CategoryControllerTest {
         List<CategoryResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("category/get-categories-success"))
+                .filter(documentWithTag("category/get-categories-success"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/categories")
@@ -95,7 +104,7 @@ class CategoryControllerTest {
         List<CategoryResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("category/get-categories-empty"))
+                .filter(documentWithTag("category/get-categories-empty"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/categories")

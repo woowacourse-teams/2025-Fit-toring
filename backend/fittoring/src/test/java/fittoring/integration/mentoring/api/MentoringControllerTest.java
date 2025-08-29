@@ -1,34 +1,11 @@
 package fittoring.integration.mentoring.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
+import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.model.Category;
-import fittoring.mentoring.business.model.CategoryMentoring;
-import fittoring.mentoring.business.model.Certificate;
-import fittoring.mentoring.business.model.CertificateType;
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.ImageType;
-import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.model.Phone;
-import fittoring.mentoring.business.model.Reservation;
-import fittoring.mentoring.business.model.Review;
-import fittoring.mentoring.business.model.Status;
+import fittoring.mentoring.business.model.*;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.repository.CategoryMentoringRepository;
-import fittoring.mentoring.business.repository.CategoryRepository;
-import fittoring.mentoring.business.repository.CertificateRepository;
-import fittoring.mentoring.business.repository.ImageRepository;
-import fittoring.mentoring.business.repository.MemberRepository;
-import fittoring.mentoring.business.repository.MentoringRepository;
-import fittoring.mentoring.business.repository.ReservationRepository;
-import fittoring.mentoring.business.repository.ReviewRepository;
+import fittoring.mentoring.business.repository.*;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
@@ -42,10 +19,6 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -58,7 +31,20 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
@@ -66,6 +52,11 @@ import org.springframework.test.context.ActiveProfiles;
 class MentoringControllerTest {
 
     private RequestSpecification spec;
+
+    private RestDocumentationFilter documentWithTag(String id) {
+        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
+        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
+    }
 
     @LocalServerPort
     public int port;
@@ -196,7 +187,7 @@ class MentoringControllerTest {
             List<MentoringSummaryResponse> response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("mentoring/get-mentorings-no-filter-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-no-filter-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .when()
@@ -249,7 +240,7 @@ class MentoringControllerTest {
             List<MentoringResponse> response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("mentoring/get-mentorings-empty-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-empty-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .when()
@@ -348,7 +339,7 @@ class MentoringControllerTest {
             List<MentoringSummaryResponse> response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("mentoring/get-mentorings-with-filter-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-with-filter-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
@@ -483,7 +474,7 @@ class MentoringControllerTest {
             List<MentoringResponse> response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("mentoring/get-mentorings-with-filter-empty-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-with-filter-empty-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory4.getTitle())
@@ -546,7 +537,7 @@ class MentoringControllerTest {
             Response response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("mentoring/get-mentorings-category-not-found"))
+                    .filter(documentWithTag("mentoring/get-mentorings-category-not-found"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", "존재하지 않는 카테고리")
@@ -631,7 +622,7 @@ class MentoringControllerTest {
             MentoringResponse response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("mentoring/get-mentorings-mine-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-mine-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .when()
@@ -718,7 +709,7 @@ class MentoringControllerTest {
             MentoringResponse response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("mentoring/get-mentorings-id-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-id-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
@@ -795,7 +786,7 @@ class MentoringControllerTest {
             Response response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("mentoring/get-mentorings-id-not-found"))
+                    .filter(documentWithTag("mentoring/get-mentorings-id-not-found"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
@@ -870,7 +861,7 @@ class MentoringControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("mentoring/put-mentorings-id-success"))
+                .filter(documentWithTag("mentoring/put-mentorings-id-success"))
                 .log().all().contentType(ContentType.MULTIPART)
                 .cookie("accessToken", accessToken)
                 .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
@@ -912,7 +903,7 @@ class MentoringControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("mentoring/put-mentorings-id-not-found"))
+                .filter(documentWithTag("mentoring/put-mentorings-id-not-found"))
                 .log().all().contentType(ContentType.MULTIPART)
                 .cookie("accessToken", accessToken)
                 .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
@@ -969,7 +960,7 @@ class MentoringControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("mentoring/put-mentorings-id-forbidden"))
+                .filter(documentWithTag("mentoring/put-mentorings-id-forbidden"))
                 .log().all().contentType(ContentType.MULTIPART)
                 .cookie("accessToken", accessToken)
                 .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")

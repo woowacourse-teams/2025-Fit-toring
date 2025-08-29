@@ -1,23 +1,13 @@
 package fittoring.integration.mentoring.api.admin;
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
-import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.MemberRole;
-import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.model.Phone;
-import fittoring.mentoring.business.model.Reservation;
-import fittoring.mentoring.business.model.Review;
-import fittoring.mentoring.business.model.Status;
+import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import fittoring.mentoring.business.model.*;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
@@ -35,7 +25,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.ActiveProfiles;
+
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
@@ -43,6 +39,11 @@ import org.springframework.test.context.ActiveProfiles;
 class AdminReservationControllerTest {
 
     private RequestSpecification spec;
+
+    private RestDocumentationFilter documentWithTag(String id) {
+        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
+        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
+    }
 
     @LocalServerPort
     private int port;
@@ -140,7 +141,7 @@ class AdminReservationControllerTest {
         RestAssured
             .given(spec)
             .accept("application/json")
-            .filter(document("admin/get-admin-mentorings-id-reservation-success"))
+            .filter(documentWithTag("admin/get-admin-mentorings-id-reservation-success"))
             .log().all().contentType(ContentType.JSON)
             .cookie("accessToken", adminAccessToken)
             .when()
@@ -183,7 +184,7 @@ class AdminReservationControllerTest {
         RestAssured
             .given(spec)
             .accept("application/json")
-            .filter(document("admin/get-admin-mentorings-id-reservation-unauthorized"))
+            .filter(documentWithTag("admin/get-admin-mentorings-id-reservation-unauthorized"))
             .log().all().contentType(ContentType.JSON)
             .cookie("accessToken", normalAccessToken)
             .when()
@@ -243,7 +244,7 @@ class AdminReservationControllerTest {
         RestAssured
             .given(spec)
             .accept("application/json")
-            .filter(document("admin/patch-admin-reservations-id-status-success"))
+            .filter(documentWithTag("admin/patch-admin-reservations-id-status-success"))
             .log().all().contentType(ContentType.JSON)
             .cookie("accessToken", adminAccessToken)
             .body(reservationStatusUpdateRequest)
@@ -307,7 +308,7 @@ class AdminReservationControllerTest {
         RestAssured
             .given(spec)
             .accept("application/json")
-            .filter(document("admin/delete-admin-reservations-id-success"))
+            .filter(documentWithTag("admin/delete-admin-reservations-id-success"))
             .log().all().contentType(ContentType.JSON)
             .cookie("accessToken", adminAccessToken)
             .when()

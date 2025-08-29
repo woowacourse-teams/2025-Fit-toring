@@ -1,17 +1,7 @@
 package fittoring.integration.mentoring.api;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
-import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.model.Phone;
-import fittoring.mentoring.business.model.Reservation;
-import fittoring.mentoring.business.model.Review;
-import fittoring.mentoring.business.model.Status;
+import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import fittoring.mentoring.business.model.*;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
@@ -36,7 +26,15 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.ActiveProfiles;
+
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
@@ -44,6 +42,11 @@ import org.springframework.test.context.ActiveProfiles;
 class ReviewControllerTest {
 
     private RequestSpecification spec;
+
+    private RestDocumentationFilter documentWithTag(String id) {
+        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
+        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
+    }
 
     @LocalServerPort
     private int port;
@@ -127,7 +130,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/post-reviews-success"))
+                .filter(documentWithTag("review/post-reviews-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -251,7 +254,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/post-mentorings-id-review-have-not-reserved"))
+                .filter(documentWithTag("review/post-mentorings-id-review-have-not-reserved"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessTokenWithAnotherMember)
                 .body(requestBody)
@@ -318,7 +321,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/post-mentorings-id-review-already-reviewed"))
+                .filter(documentWithTag("review/post-mentorings-id-review-already-reviewed"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -376,7 +379,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/post-reviews-mentoring-not-completed"))
+                .filter(documentWithTag("review/post-reviews-mentoring-not-completed"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -456,7 +459,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/get-reviews-mine-success"))
+                .filter(documentWithTag("review/get-reviews-mine-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -529,7 +532,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/get-mentorings-id-reviews-success"))
+                .filter(documentWithTag("review/get-mentorings-id-reviews-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -705,7 +708,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/patch-reviews-id-success"))
+                .filter(documentWithTag("review/patch-reviews-id-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
                 .body(requestBody)
@@ -769,7 +772,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/patch-reviews-id-not-mine"))
+                .filter(documentWithTag("review/patch-reviews-id-not-mine"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
                 .body(requestBody)
@@ -822,7 +825,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/delete-reviews-id-success"))
+                .filter(documentWithTag("review/delete-reviews-id-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
                 .when()
@@ -904,7 +907,7 @@ class ReviewControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("review/delete-reviews-id-not-mine"))
+                .filter(documentWithTag("review/delete-reviews-id-not-mine"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
                 .when()

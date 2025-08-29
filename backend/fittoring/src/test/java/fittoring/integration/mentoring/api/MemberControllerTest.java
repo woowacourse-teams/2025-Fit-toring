@@ -1,9 +1,6 @@
 package fittoring.integration.mentoring.api;
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
+import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
@@ -25,7 +22,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.ActiveProfiles;
+
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
@@ -33,6 +36,11 @@ import org.springframework.test.context.ActiveProfiles;
 class MemberControllerTest {
 
     private RequestSpecification spec;
+
+    private RestDocumentationFilter documentWithTag(String id) {
+        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
+        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
+    }
 
     @LocalServerPort
     private int port;
@@ -72,7 +80,7 @@ class MemberControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("member/get-members-me-success"))
+                .filter(documentWithTag("member/get-members-me-success"))
                 .cookie("accessToken", accessToken)
                 .log().all().then()
                 .when()
@@ -115,7 +123,7 @@ class MemberControllerTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(document("member/get-members-me-unauthorized"))
+                .filter(documentWithTag("member/get-members-me-unauthorized"))
                 .cookie("accessToken", null)
                 .when()
                 .get("/members/me")

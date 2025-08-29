@@ -1,17 +1,7 @@
 package fittoring.integration.mentoring.api.admin;
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
-import fittoring.mentoring.business.model.Certificate;
-import fittoring.mentoring.business.model.CertificateType;
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.ImageType;
-import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.MemberRole;
-import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.model.Phone;
+import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import fittoring.mentoring.business.model.*;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
@@ -34,7 +24,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.ActiveProfiles;
+
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
@@ -42,6 +38,11 @@ import org.springframework.test.context.ActiveProfiles;
 class AdminCertificateControllerTest {
 
     private RequestSpecification spec;
+
+    private RestDocumentationFilter documentWithTag(String id) {
+        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
+        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
+    }
 
     private Member admin;
     private Member user;
@@ -112,7 +113,7 @@ class AdminCertificateControllerTest {
             RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("admin/get-admin-certificates-success"))
+                    .filter(documentWithTag("admin/get-admin-certificates-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
@@ -130,7 +131,7 @@ class AdminCertificateControllerTest {
             RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("admin/get-admin-certificates-unauthorized"))
+                    .filter(documentWithTag("admin/get-admin-certificates-unauthorized"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
@@ -170,7 +171,7 @@ class AdminCertificateControllerTest {
             RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("admin/get-admin-certificates-id-success"))
+                    .filter(documentWithTag("admin/get-admin-certificates-id-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
@@ -206,7 +207,7 @@ class AdminCertificateControllerTest {
             RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("admin/get-admin-certificates-id-unauthorized"))
+                    .filter(documentWithTag("admin/get-admin-certificates-id-unauthorized"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
@@ -247,7 +248,7 @@ class AdminCertificateControllerTest {
             RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("admin/post-admin-certificates-id-approve-success"))
+                    .filter(documentWithTag("admin/post-admin-certificates-id-approve-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
@@ -283,7 +284,7 @@ class AdminCertificateControllerTest {
             RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("admin/post-admin-certificates-id-approve-unauthorized"))
+                    .filter(documentWithTag("admin/post-admin-certificates-id-approve-unauthorized"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
@@ -324,7 +325,7 @@ class AdminCertificateControllerTest {
             RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("admin/post-admin-certificates-id-reject-success"))
+                    .filter(documentWithTag("admin/post-admin-certificates-id-reject-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
@@ -360,7 +361,7 @@ class AdminCertificateControllerTest {
             RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(document("admin/post-admin-certificates-id-reject-unauthorized"))
+                    .filter(documentWithTag("admin/post-admin-certificates-id-reject-unauthorized"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
