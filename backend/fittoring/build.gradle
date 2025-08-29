@@ -103,3 +103,12 @@ openapi3 {
     version = "0.0.1"
     format = "yaml"
 }
+
+tasks.register("cleanOpenapiSpec", Delete) {
+    delete layout.buildDirectory.dir("api-spec")
+}
+tasks.matching { it.name == "openapi3" }.configureEach {
+    doFirst {
+        delete file("build/api-spec/openapi3.yaml")
+    }
+}
