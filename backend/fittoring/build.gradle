@@ -107,15 +107,24 @@ openapi3 {
 tasks.register("cleanOpenapiSpec", Delete) {
     delete layout.buildDirectory.dir("api-spec")
 }
-tasks.matching { it.name == "openapi3" }.configureEach {
-    doFirst {
-        delete file("build/api-spec/openapi3.yaml")
-    }
+
+tasks.register("cleanSwaggerStatic", Delete) {
+    delete "src/main/resources/static/swagger-ui/openapi3.yaml"
 }
 
-tasks.register('copyOasToSwagger', Copy) {
-    delete "src/main/resources/static/swagger-ui/openapi3.yaml"
-    from "build/api-spec/openapi3.yaml"
-    into "src/main/resources/static/swagger-ui/"
-    dependsOn "openapi3"
+tasks.matching { it.name == "openapi3" }.configureEach {
+    dependsOn("cleanOpenapiSpec")
+    finalizedBy("copyOasToSwagger")
+}
+
+tasks.register("copyOasToSwagger", Copy) {
+    dependsOn("openapi3")
+    dependsOn("cleanSwaggerStatic")
+    from("build/api-spec/openapi3.yaml")
+    into("src/main/resources/static/swagger-ui/")
+    mustRunAfter("openapi3")
+}
+
+tasks.register("generateApiDocs") {
+    dependsOn("openapi3", "copyOasToSwagger")
 }
