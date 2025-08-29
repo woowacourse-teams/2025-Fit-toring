@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.asciidoctor.jvm.convert' version '4.0.5'
+    id 'com.epages.restdocs-api-spec' version '0.18.2'
 }
 
 group = 'com.fittoring'
@@ -90,6 +91,15 @@ dependencies {
 
     // restdocs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+    testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
+}
+
+openapi3 {
+    setServer("http://localhost:8080")
+    title = "restdocs-swagger API 문서"
+    description = "Spring Rest Docs with SwaggerUI"
+    version = "0.0.1"
+    format = "yaml"
 }
