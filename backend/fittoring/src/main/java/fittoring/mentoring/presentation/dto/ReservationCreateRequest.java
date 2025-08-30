@@ -1,6 +1,4 @@
 package fittoring.mentoring.presentation.dto;
 
-public record ReservationCreateRequest(
-        String content
-) {
+public record ReservationCreateRequest(String content) {
 }

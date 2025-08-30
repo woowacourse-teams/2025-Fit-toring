@@ -31,8 +31,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Certificate {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
     @Enumerated(EnumType.STRING)

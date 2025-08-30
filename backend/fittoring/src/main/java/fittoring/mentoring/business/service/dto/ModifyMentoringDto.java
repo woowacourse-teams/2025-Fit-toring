@@ -19,6 +19,7 @@ public record ModifyMentoringDto(
         List<CertificateInfo> certificateInfos,
         List<MultipartFile> certificateImages
 ) {
+
     public static ModifyMentoringDto of(
             Long mentoringId,
             Long mentorId,

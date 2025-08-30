@@ -6,9 +6,9 @@ import org.springframework.data.repository.ListCrudRepository;
 
 public interface MemberRepository extends ListCrudRepository<Member, Long> {
 
+    Optional<Member> findByLoginId(String loginId);
+
     boolean existsByLoginId(String loginId);
 
     boolean existsByPhone_Number(String phone);
-
-    Optional<Member> findByLoginId(String loginId);
 }

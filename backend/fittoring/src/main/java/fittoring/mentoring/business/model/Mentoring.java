@@ -21,11 +21,10 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Mentoring {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
-    @Getter
     @Column(nullable = false)
     private int price;
 
@@ -51,12 +50,7 @@ public class Mentoring {
         this(null, price, career, content, introduction, member);
     }
 
-    public void modify(
-        int price,
-        Integer career,
-        String content,
-        String introduction
-    ) {
+    public void modify(int price, Integer career, String content, String introduction) {
         this.price = price;
         this.career = career;
         this.content = content;

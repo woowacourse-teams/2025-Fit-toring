@@ -28,8 +28,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Review {
 
     @Getter
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
     @Getter
@@ -45,9 +45,9 @@ public class Review {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Reservation reservation;
 
     @ManyToOne

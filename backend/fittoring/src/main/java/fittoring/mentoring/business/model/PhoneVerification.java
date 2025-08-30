@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class PhoneVerification {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
     @Embedded

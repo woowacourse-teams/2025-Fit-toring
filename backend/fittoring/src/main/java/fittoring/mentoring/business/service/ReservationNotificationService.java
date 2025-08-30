@@ -29,7 +29,10 @@ public class ReservationNotificationService {
         );
     }
 
-    public void sendReservationStatusUpdateSmsMessage(Reservation reservation, String updateStatus) {
+    public void sendReservationStatusUpdateSmsMessage(
+        Reservation reservation,
+        String updateStatus
+    ) {
         Status status = Status.of(updateStatus);
         String mentorName = reservation.getMentorName();
         String context = reservation.getContent();
@@ -42,7 +45,12 @@ public class ReservationNotificationService {
         }
     }
 
-    private String createMessage(Status updateStatus, String mentorName, String context, String mentorPhoneNumber) {
+    private String createMessage(
+        Status updateStatus,
+        String mentorName,
+        String context,
+        String mentorPhoneNumber
+    ) {
         if (updateStatus.isApprove()) {
             return smsMessageFormatter.approvedReservationMessage(
                     mentorName,

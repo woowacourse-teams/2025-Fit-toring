@@ -19,17 +19,17 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 public class CategoryMentoring {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
     @ManyToOne
     @JoinColumn(nullable = false)
     private Category category;
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne
     @JoinColumn(nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Mentoring mentoring;
 
     public CategoryMentoring(Category category, Mentoring mentoring) {
