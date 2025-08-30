@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -45,6 +44,13 @@ public class Review {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Getter
+    @Column(nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    private LocalDateTime deletedAt;
+
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -55,7 +61,7 @@ public class Review {
     private Member mentee;
 
     public Review(int rating, String content, Reservation reservation, Member mentee) {
-        this(null, rating, content, null, reservation, mentee);
+        this(null, rating, content, null, false, null, reservation, mentee);
     }
 
     public void modify(Integer rating, String content) {
