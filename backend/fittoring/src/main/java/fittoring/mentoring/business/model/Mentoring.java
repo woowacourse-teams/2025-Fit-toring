@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,6 +38,13 @@ public class Mentoring {
     @Column(nullable = false)
     private String introduction;
 
+    @Getter
+    @Column(nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    private LocalDateTime deletedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Member mentor;
@@ -48,14 +56,14 @@ public class Mentoring {
             String content,
             String introduction
     ) {
-        this(null, price, career, content, introduction, member);
+        this(null, price, career, content, introduction, false, null, member);
     }
 
     public void modify(
-        int price,
-        Integer career,
-        String content,
-        String introduction
+            int price,
+            Integer career,
+            String content,
+            String introduction
     ) {
         this.price = price;
         this.career = career;
