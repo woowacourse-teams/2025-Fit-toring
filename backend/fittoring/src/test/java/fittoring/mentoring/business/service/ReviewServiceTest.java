@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
@@ -25,8 +26,9 @@ import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.mentoring.presentation.dto.ReviewGetResponse;
 import fittoring.util.DbCleaner;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,7 +109,7 @@ class ReviewServiceTest {
         ReviewCreateResponse reviewCreateResponse = reviewService.createReview(reviewCreateDto);
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(reviewCreateResponse.mentoringId()).isEqualTo(mentoring.getId());
             softAssertions.assertThat(reviewCreateResponse.rating()).isEqualTo(rating);
             softAssertions.assertThat(reviewCreateResponse.content()).isEqualTo(content);
@@ -467,7 +469,7 @@ class ReviewServiceTest {
                 = reviewService.findMentoringReviews(mentoring.getId());
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             assertThat(responseBody).containsExactlyInAnyOrder(
                     new ReviewGetResponse(
                             review1.getId(),
@@ -540,7 +542,7 @@ class ReviewServiceTest {
         entityManager.clear();
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
             softAssertions.assertThat(review.getContent()).isEqualTo(originalContent);
         });
@@ -600,7 +602,7 @@ class ReviewServiceTest {
         entityManager.clear();
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
             softAssertions.assertThat(review.getContent()).isEqualTo(originalContent);
         });
@@ -659,7 +661,7 @@ class ReviewServiceTest {
         entityManager.clear();
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(review.getRating()).isEqualTo(originalRating);
             softAssertions.assertThat(review.getContent()).isEqualTo(newContent);
         });
@@ -719,7 +721,7 @@ class ReviewServiceTest {
         entityManager.clear();
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
             softAssertions.assertThat(review.getContent()).isEqualTo(newContent);
         });
@@ -804,8 +806,8 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
-            .isInstanceOf(ForbiddenException.class)
-            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 
     @DisplayName("존재하지 않는 리뷰 삭제 요청 시 예외가 발생한다")
@@ -880,7 +882,72 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
-            .isInstanceOf(ForbiddenException.class)
-            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+    }
+
+    @DisplayName("리뷰를 삭제하면 삭제가 일어난 시간과 함께 삭제상태로 변경된다.")
+    @Test
+    void deleteReview() {
+        //given
+        Member mentee = entityManager.persist(new Member(
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        ));
+        Member mentor = entityManager.persist(new Member(
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+                mentor,
+                5000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee
+        ));
+        Review review = entityManager.persist(new Review(
+                5,
+                "최고의 멘토링이었습니다.",
+                reservation,
+                mentee
+        ));
+        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(
+                mentee.getId(),
+                review.getId()
+        );
+
+        LocalDateTime beforeDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+
+        //when
+        reviewService.deleteReview(reviewDeleteDto);
+
+        LocalDateTime afterDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        entityManager.flush();
+        entityManager.clear();
+
+        //then
+        Review deletedReview = (Review) entityManager.getEntityManager().createNativeQuery(
+                        "SELECT * FROM review WHERE id = ?", Review.class)
+                .setParameter(1, review.getId())
+                .getSingleResult();
+
+        assertSoftly(softly -> {
+            softly.assertThat(deletedReview.isDeleted()).isTrue();
+            softly.assertThat(deletedReview.getDeletedAt())
+                    .isBeforeOrEqualTo(afterDelete)
+                    .isAfterOrEqualTo(beforeDelete);
+        });
     }
 }
