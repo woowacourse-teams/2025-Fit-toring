@@ -50,13 +50,20 @@ public class Certificate {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Getter
+    @Column(nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    private LocalDateTime deletedAt;
+
     @ManyToOne
     @JoinColumn(nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Mentoring mentoring;
 
     public Certificate(CertificateType type, String title, Mentoring mentoring) {
-        this(null, type, title, Status.PENDING, null, mentoring);
+        this(null, type, title, Status.PENDING, null, false, null, mentoring);
     }
 
     public void approve() {
