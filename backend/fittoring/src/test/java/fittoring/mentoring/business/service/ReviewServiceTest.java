@@ -1,6 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.config.JpaConfiguration;
@@ -12,12 +13,17 @@ import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
@@ -50,10 +56,19 @@ class ReviewServiceTest {
     private ReviewService reviewService;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
     private DbCleaner dbCleaner;
+    @Autowired
+    private MentoringRepository mentoringRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @BeforeEach
     void setUp() {
@@ -804,8 +819,8 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
-            .isInstanceOf(ForbiddenException.class)
-            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 
     @DisplayName("존재하지 않는 리뷰 삭제 요청 시 예외가 발생한다")
@@ -880,7 +895,93 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
-            .isInstanceOf(ForbiddenException.class)
-            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+    }
+
+    @DisplayName("존재하지 않는 리뷰에 대해 삭제를 요청하면 예외가 발생한다.")
+    @Test
+    void failNotFoundReviewDelete() {
+        // given
+        Member admin = memberRepository.save(new Member(
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
+        ));
+        Member savedAdmin = memberRepository.save(admin);
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.deleteForAdmin(savedAdmin.getId(), 1L))
+                .isInstanceOf(ReviewNotFoundException.class)
+                .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("관리자 권한 없이 리뷰 삭제를 요청하면 예외가 발생한다.")
+    @Test
+    void failReviewDeleteWithoutAdmin() {
+        // given
+        Member user = memberRepository.save(new Member(
+                "adminId",
+                "MALE",
+                "위장관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.MENTEE
+        ));
+        Member savedUser = memberRepository.save(user);
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.deleteForAdmin(savedUser.getId(), 1L))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+    }
+
+    @DisplayName("관리자가 존재하는 리뷰에 대해 삭제를 요청하면 정상적으로 삭제한다.")
+    @Test
+    void successReviewDelete() {
+        // given
+        Member admin = memberRepository.save(new Member(
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
+        ));
+        Member user = memberRepository.save(new Member(
+                "userId",
+                "MALE",
+                "유저",
+                new Phone("010-1111-3333"),
+                Password.from("password"),
+                MemberRole.MENTEE
+        ));
+        Member savedAdmin = memberRepository.save(admin);
+        Member savedUser = memberRepository.save(user);
+        Mentoring savedMentoring = mentoringRepository.save(
+                new Mentoring(savedAdmin,
+                        1000,
+                        1,
+                        "content",
+                        "introduction"
+                ));
+        Reservation savedReservation = reservationRepository.save(
+                new Reservation(
+                        "content",
+                        Status.COMPLETE,
+                        savedMentoring,
+                        savedUser
+                ));
+        Review savedReview = reviewRepository.save(new Review(5, "좋았어요", savedReservation, savedUser));
+
+        // when
+        // then
+        assertThatCode(() -> reviewService.deleteForAdmin(savedAdmin.getId(), savedReview.getId()))
+                .doesNotThrowAnyException();
     }
 }
