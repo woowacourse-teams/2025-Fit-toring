@@ -41,6 +41,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useAuth } from "./AuthContext";
 import { logout as apiLogout } from "../services/authApi";
 import { ROUTES } from "../constants/routes";
+import { MenteeManagement } from "./dashboard/MenteeManagement";
 
 export function Dashboard() {
   const [activeMenu, setActiveMenu] = useState("certifications");
@@ -88,7 +89,7 @@ export function Dashboard() {
       case "certifications":
         return <CertificationManagement />;
       case "mentees":
-        return <ComingSoon />;
+        return <MenteeManagement />;
       case "mentoring":
         return <MentoringManagement />;
       case "mentoring-detail":
