@@ -29,7 +29,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { Plus, Upload, X, FileImage, User, Camera, Loader2 } from "lucide-react";
-import { fetchMentorings, MentoringSummary, getUserList, getCategoryList, createMentoring } from "../../services/mentoringApi";
+import { fetchMentorings, MentoringSummary, getUserList, getCategoryList, createMentoring, CreateMentoringRequest } from "../../services/mentoringApi";
 
 // 멘토링 목록 타입
 interface MentoringItem {
@@ -73,14 +73,14 @@ interface MentoringFormData {
 
 // 카테고리 더미 데이터
 const mockCategories: Category[] = [
-  { id: 1, name: "체형 교정" },
-  { id: 2, name: "다이어트" },
-  { id: 3, name: "벌크업" },
-  { id: 4, name: "근력 강화" },
-  { id: 5, name: "유연성·스트레칭" },
-  { id: 6, name: "홈 트레이닝" },
-  { id: 7, name: "재활 운동" },
-  { id: 8, name: "식단 관리" },
+  { id: 1, title: "체형 교정" },
+  { id: 2, title: "다이어트" },
+  { id: 3, title: "벌크업" },
+  { id: 4, title: "근력 강화" },
+  { id: 5, title: "유연성·스트레칭" },
+  { id: 6, title: "홈 트레이닝" },
+  { id: 7, title: "재활 운동" },
+  { id: 8, title: "식단 관리" },
 ];
 
 // 사용자 더미 데이터
@@ -331,15 +331,11 @@ export function MentoringManagement() {
         // 목록 새로고침
         await loadMentorings();
       } else {
-        toast.error(
-          response.message || "멘토링 등록에 실패했습니다.",
-        );
+        toast.error("멘토링 등록에 실패했습니다.");
       }
     } catch (error: any) {
       console.error("멘토링 등록 실패:", error);
-      toast.error(
-        error.message || "멘토링 등록 중 오류가 발생했습니다.",
-      );
+      toast.error("멘토링 등록 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }

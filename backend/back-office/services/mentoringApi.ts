@@ -76,7 +76,7 @@ export interface User {
 
 // 멘토링 등록 요청 데이터 타입
 export interface CreateMentoringRequest {
-  authorId: string;
+  mentorId: string;
   profileImage?: File;
   price: number;
   categoryIds: number[];
@@ -263,11 +263,11 @@ export const deleteMentoring = async (mentoringId: number): Promise<void> => {
 /**
  * 멘토링 등록
  */
- export const createMentoring = async (data: CreateMentoringRequest): Promise<CreateMentoringResponse> => {
+ export const createMentoring = async (data: CreateMentoringRequest) => {
   const formData = new FormData();
   
   // 기본 데이터 추가
-  formData.append('mentorId', data.authorId);
+  formData.append('mentorId', data.mentorId);
   formData.append('price', data.price.toString());
   formData.append('introduction', data.introduction);
   formData.append('career', data.career.toString());
