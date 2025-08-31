@@ -426,10 +426,6 @@ export function MentoringDetail() {
           {reservations.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-4">예약된 멘토링이 없습니다.</p>
-              <Button onClick={handleAddReservation} variant="outline">
-                <Plus className="h-4 w-4 mr-2" />
-                첫 번째 예약 추가하기
-              </Button>
             </div>
           ) : (
             <div className="rounded-md border">
