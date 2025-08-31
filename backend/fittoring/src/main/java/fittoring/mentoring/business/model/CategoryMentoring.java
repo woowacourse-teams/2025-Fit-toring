@@ -15,9 +15,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE category_mentoring SET is_deleted=true, deleted_at=now() WHERE id=?")
+@SQLRestriction("is_deleted = false")
 @Table(name = "category_mentoring")
 @Entity
 public class CategoryMentoring {
