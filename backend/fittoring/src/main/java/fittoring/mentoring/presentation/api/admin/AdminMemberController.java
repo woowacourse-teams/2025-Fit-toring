@@ -6,16 +6,18 @@ import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MemberService;
 import fittoring.mentoring.presentation.dto.AdminMemberResponse;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/admin/members")
 public class AdminMemberController {
 
-    private MemberService memberService;
+    private final MemberService memberService;
 
     @AuthRequired
     @GetMapping
