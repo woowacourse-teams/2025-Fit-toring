@@ -135,7 +135,7 @@ export function DashboardLayout({ children, pageTitle, activeMenu = "certificati
                             >
                               <div className="flex items-center cursor-pointer">
                                 <Award className="h-4 w-4" />
-                                <span>자격증 관리</span>
+                                <span>자격증명 관리</span>
                               </div>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>

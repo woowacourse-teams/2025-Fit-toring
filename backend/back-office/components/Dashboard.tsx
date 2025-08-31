@@ -135,7 +135,7 @@ export function Dashboard() {
       case "category":
         return "카테고리 관리";
       default:
-        return "자격증 관리";
+        return "자격증명 관리";
     }
   };
 
@@ -193,7 +193,7 @@ export function Dashboard() {
                               >
                                 <div className="flex items-center cursor-pointer">
                                   <Award className="h-4 w-4" />
-                                  <span>자격증 관리</span>
+                                  <span>자격증명 관리</span>
                                 </div>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
