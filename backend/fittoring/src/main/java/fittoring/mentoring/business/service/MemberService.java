@@ -66,7 +66,7 @@ public class MemberService {
 
     public List<AdminMemberResponse> findAllForAdmin(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
