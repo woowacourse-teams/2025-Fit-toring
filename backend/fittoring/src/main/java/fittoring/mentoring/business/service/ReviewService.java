@@ -123,11 +123,7 @@ public class ReviewService {
     }
 
     public AdminReviewInfoResponse findAllByMentoringForAdmin(Long memberId, Long mentoringId) {
-        Member admin = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        if (admin.isNotAdmin()) {
-            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-        }
+        validateAdmin(memberId);
         validateMentoring(mentoringId);
         List<AdminReviewResponse> reviewResponses = findAdminReviewResponses(mentoringId);
         Optional<RatingStatsDto> reviewInfo = reviewRepository.findRatingStatsByMentoringId(mentoringId);
@@ -136,6 +132,14 @@ public class ReviewService {
             ratingStats = reviewInfo.get();
         }
         return AdminReviewInfoResponse.of(reviewResponses, ratingStats);
+    }
+
+    private void validateAdmin(Long memberId) {
+        Member admin = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        if (admin.isNotAdmin()) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+        }
     }
 
     private void validateMentoring(Long mentoringId) {
@@ -172,5 +176,18 @@ public class ReviewService {
                 .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
         validateReviewOwner(review, reviewDeleteDto.menteeId());
         reviewRepository.delete(review);
+    }
+
+    @Transactional
+    public void deleteForAdmin(Long memberId, Long reviewId) {
+        validateAdmin(memberId);
+        validateReview(reviewId);
+        reviewRepository.deleteById(reviewId);
+    }
+
+    private void validateReview(Long reviewId) {
+        if (!reviewRepository.existsById(reviewId)) {
+            throw new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
+        }
     }
 }
