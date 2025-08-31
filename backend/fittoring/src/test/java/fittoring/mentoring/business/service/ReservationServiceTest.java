@@ -721,4 +721,64 @@ class ReservationServiceTest {
                     .isAfterOrEqualTo(beforeDelete);
         });
     }
+
+    @DisplayName("존재하지 않는 예약을 삭제하는 경우 예외가 발생한다.")
+    @Test
+    void deleteReservationWithAdminAuthorization2() {
+        // given
+        Member admin = entityManager.persist(new Member(
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
+        ));
+        Member mentor = entityManager.persist(new Member(
+                "mentorId",
+                "MALE",
+                "최유리",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+                mentor,
+                5000,
+                5,
+                "잘 지내자, 우리",
+                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~"
+        ));
+        Member mentee = entityManager.persist(new Member(
+                "menteeId1",
+                "MALE",
+                "김멘티",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTEE
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+                "최선을 다한 넌 받아들이겠지만",
+                Status.COMPLETE,
+                mentoring,
+                mentee
+        ));
+
+        Review review = entityManager.persist(new Review(
+                4,
+                "서툴렀던 난 아직도 기적을 꿈꾼다",
+                reservation,
+                mentee
+        ));
+
+        Long invalidReservationId = 100L;
+
+        AdminReservationDeleteDto adminReservationDeleteDto
+                = new AdminReservationDeleteDto(admin.getId(), invalidReservationId);
+
+        // when // then
+        assertThatThrownBy(() -> reservationService.deleteReservationWithAdminAuthorization(adminReservationDeleteDto))
+                .isInstanceOf(ReservationNotFoundException.class)
+                .hasMessage(BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage());
+    }
 }
