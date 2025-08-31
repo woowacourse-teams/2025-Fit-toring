@@ -10,8 +10,10 @@ import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.presentation.dto.AdminMemberResponse;
 import fittoring.mentoring.presentation.dto.MyInfoResponse;
 import fittoring.mentoring.presentation.dto.MyInfoSummaryResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -60,5 +62,17 @@ public class MemberService {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
         return true;
+    }
+
+    public List<AdminMemberResponse> findAllForAdmin(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        if (MemberRole.isNotAdmin(member.getRole())) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+        }
+        List<Member> members = memberRepository.findAllByOrderByRoleAsc();
+        return members.stream()
+                .map(AdminMemberResponse::from)
+                .toList();
     }
 }
