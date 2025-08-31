@@ -17,7 +17,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { ArrowLeft, Edit, Trash2, FileText, Tag, Clock, Plus } from "lucide-react";
+import { ArrowLeft, Edit, Trash2, FileText, Tag, Clock, Plus, MessageSquare, Star } from "lucide-react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { fetchMentoringDetail, MentoringDetail as MentoringDetailDTO, deleteMentoring } from "@/services/mentoringApi";
 import {
@@ -36,12 +36,64 @@ const categoryColors = [
   "bg-indigo-100 text-indigo-800",
 ];
 
+// 리뷰 데이터 타입
+interface ReviewData {
+  id: number;
+  menteeId: number;
+  menteeName: string;
+  rating: number;
+  content: string;
+  createdAt: string;
+}
+
+// 리뷰 목록 데이터 타입
+interface ReviewListData {
+  ratingAverage: string;
+  ratingCount: number;
+  reviewData: ReviewData[];
+}
+
+// 리뷰 더미 데이터 맵
+const mockReviewData: Record<string, ReviewListData> = {
+  1: {
+    ratingAverage: "4.3",
+    ratingCount: 3,
+    reviewData: [
+      {
+        id: 1,
+        menteeId: 1,
+        menteeName: "이민수",
+        rating: 4,
+        content: "운동은 잘 알려주시는데 식단 봐주거나 그런건 없었어요. 하지만 체형 교정에는 도움이 많이 되었습니다.",
+        createdAt: "2024-01-20T14:30:00Z",
+      },
+      {
+        id: 2,
+        menteeId: 2,
+        menteeName: "김현주",
+        rating: 5,
+        content: "정말 만족스러운 멘토링이었습니다! 자세 교정도 꼼꼼히 봐주시고 운동 설명도 자세히 해주셔서 좋았어요.",
+        createdAt: "2024-01-18T16:45:00Z",
+      },
+      {
+        id: 3,
+        menteeId: 3,
+        menteeName: "박철수",
+        rating: 4,
+        content: "체형 교정 효과가 확실히 있었습니다. 다만 시간이 조금 짧게 느껴졌어요.",
+        createdAt: "2024-01-15T11:20:00Z",
+      },
+    ],
+  }
+};
+  
 export function MentoringDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const [mentoringData, setMentoringData] = useState<MentoringDetailDTO | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [reviews, setReviews] = useState<ReviewListData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tempStatus, setTempStatus] = useState<Record<number, Reservation["status"]>>({});
@@ -75,6 +127,7 @@ export function MentoringDetail() {
         // 예약 목록 (숫자 ID로 호출)
         const reservationData = await fetchReservations(numericId);
         setReservations(reservationData);
+        setReviews(mockReviewData[String(numericId)] ?? null);
       } catch (e) {
         setError("멘토링 데이터를 불러오지 못했습니다.");
         setMentoringData(null);
@@ -149,6 +202,44 @@ export function MentoringDetail() {
 
   const handleStatusChange = (reservationId: number, newStatus: Reservation["status"]) => {
     setTempStatus((prev) => ({ ...prev, [reservationId]: newStatus }));
+  };
+
+  const handleDeleteReview = (reviewId: number) => {
+    if (reviews) {
+      const updatedReviewData = reviews.reviewData.filter(
+        (review) => review.id !== reviewId,
+      );
+      const newRatingCount = updatedReviewData.length;
+      
+      // 평균 평점 재계산
+      let newRatingAverage = "0";
+      if (newRatingCount > 0) {
+        const totalRating = updatedReviewData.reduce(
+          (sum, review) => sum + review.rating,
+          0,
+        );
+        newRatingAverage = (totalRating / newRatingCount).toFixed(1);
+      }
+
+      setReviews({
+        ratingAverage: newRatingAverage,
+        ratingCount: newRatingCount,
+        reviewData: updatedReviewData,
+      });
+    }
+  };
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, index) => (
+      <Star
+        key={index}
+        className={`h-4 w-4 ${
+          index < rating
+            ? "text-yellow-400 fill-yellow-400"
+            : "text-gray-300"
+        }`}
+      />
+    ));
   };
 
   const formatPrice = (price: number) => new Intl.NumberFormat("ko-KR").format(price) + "원";
@@ -439,6 +530,141 @@ export function MentoringDetail() {
           )}
         </CardContent>
       </Card>
+
+      {/* 리뷰 목록 */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                리뷰 목록
+              </CardTitle>
+              <CardDescription>
+                {reviews ? (
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-1">
+                      {renderStars(Math.round(parseFloat(reviews.ratingAverage)))}
+                      <span className="ml-2 font-medium">
+                        {reviews.ratingAverage}
+                      </span>
+                    </div>
+                    <span className="text-muted-foreground">
+                      ({reviews.ratingCount}개의 리뷰)
+                    </span>
+                  </div>
+                ) : (
+                  "아직 리뷰가 없습니다."
+                )}
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {!reviews || reviews.reviewData.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground mb-4">
+                등록된 리뷰가 없습니다.
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="pl-8">
+                      리뷰 ID
+                    </TableHead>
+                    <TableHead>멘티 이름</TableHead>
+                    <TableHead>평점</TableHead>
+                    <TableHead>리뷰 내용</TableHead>
+                    <TableHead>작성일</TableHead>
+                    <TableHead className="text-right pr-8">
+                      삭제
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {reviews.reviewData.map((review) => (
+                    <TableRow key={review.id}>
+                      <TableCell className="font-medium pl-8 py-6">
+                        {review.id}
+                      </TableCell>
+                      <TableCell className="py-3">
+                        {review.menteeName}({review.menteeId})
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <div className="flex items-center gap-1">
+                          {renderStars(review.rating)}
+                          <span className="ml-2 font-medium text-sm">
+                            {review.rating}/5
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <div className="w-80 overflow-x-auto scrollbar-thin px-3 py-2 bg-muted/30 rounded-md border">
+                          <p className="text-sm text-muted-foreground whitespace-nowrap leading-relaxed min-w-0">
+                            {review.content}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-3">
+                        {formatDateTime(review.createdAt)}
+                      </TableCell>
+                      <TableCell className="py-3 pr-8">
+                        <div className="flex justify-end">
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                삭제
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  리뷰 삭제 확인
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  정말로 이 리뷰를 삭제하시겠습니까?
+                                  <br />
+                                  <strong>
+                                    {review.menteeName}({review.menteeName})
+                                  </strong>
+                                  님의 리뷰가 영구적으로 삭제됩니다.
+                                  <br />
+                                  이 작업은 되돌릴 수 없습니다.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                  취소
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() =>
+                                    handleDeleteReview(review.id)
+                                  }
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  삭제
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>                   
     </div>
   );
 }
