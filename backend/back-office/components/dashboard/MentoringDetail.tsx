@@ -584,7 +584,7 @@ export function MentoringDetail() {
                         <div className="flex items-center gap-1">
                           {renderStars(review.rating)}
                           <span className="ml-2 font-medium text-sm">
-                            {review.rating}/5
+                           ({review.rating}점)
                           </span>
                         </div>
                       </TableCell>
