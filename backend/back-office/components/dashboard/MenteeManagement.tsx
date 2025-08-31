@@ -164,7 +164,7 @@ export function MenteeManagement() {
         {/* 검색 결과가 없을 때 */}
         {filteredUsers.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            해당 조건에 맞는 사용자가 없습니다.
+            표시할 사용자가 없습니다.
           </div>
         )}
       </div>
