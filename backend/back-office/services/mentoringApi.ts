@@ -54,6 +54,59 @@ export interface MentoringDetail extends MentoringSummary {
   }>;
 }
 
+// 자격증 정보 타입
+export interface CertificateInfo {
+  type: "LICENSE" | "AWARD" | "EDUCATION" | "ETC";
+  title: string;
+  image: File | null;
+}
+
+// 카테고리 타입
+export interface Category {
+  id: number;
+  title: string;
+}
+
+// 사용자 타입
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// 멘토링 등록 요청 데이터 타입
+export interface CreateMentoringRequest {
+  authorId: string;
+  profileImage?: File;
+  price: number;
+  categoryIds: number[];
+  introduction: string;
+  career: number;
+  content: string;
+  certificateInfos: {
+    type: "LICENSE" | "EDUCATION" | "AWARD" | "ETC";
+    title: string;
+    image?: File;
+  }[];
+}
+
+// 사용자 목록 조회 응답 타입
+export interface UserListResponse {
+  data: {
+    id: string;
+    name: string;
+    phoneNumber: string;
+  }[];
+}
+
+// 카테고리 목록 조회 응답 타입
+export interface CategoryListResponse {
+  data: {
+    id: number;
+    title: string;
+  }[];
+}
+
 // -----------------------------
 // 정규화 & 변환
 // -----------------------------
@@ -111,6 +164,14 @@ const toDetail = (src: MentoringDetailResponse): MentoringDetail => ({
     imageUrl: c.imageUrl,
   })),
 });
+
+const handleApiError = async (response: Response) => {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+  }
+  return response;
+};
 
 // -----------------------------
 // API 함수
@@ -196,5 +257,90 @@ export const deleteMentoring = async (mentoringId: number): Promise<void> => {
   } catch (e) {
     console.error("멘토링 삭제 실패:", e);
     throw e;
+  }
+};
+
+/**
+ * 멘토링 등록
+ */
+ export const createMentoring = async (data: CreateMentoringRequest): Promise<CreateMentoringResponse> => {
+  const formData = new FormData();
+  
+  // 기본 데이터 추가
+  formData.append('mentorId', data.authorId);
+  formData.append('price', data.price.toString());
+  formData.append('introduction', data.introduction);
+  formData.append('career', data.career.toString());
+  formData.append('content', data.content);
+  
+  // 카테고리 ID 배열 추가
+  data.categoryIds.forEach((categoryId, index) => {
+    formData.append(`categoryIds[${index}]`, categoryId.toString());
+  });
+  
+  // 프로필 이미지 추가
+  if (data.profileImage) {
+    formData.append('profileImage', data.profileImage);
+  }
+  
+  // 자격증 정보 추가
+  data.certificateInfos.forEach((cert, index) => {
+    formData.append(`certificateInfos[${index}].type`, cert.type);
+    formData.append(`certificateInfos[${index}].title`, cert.title);
+    if (cert.image) {
+      formData.append(`certificateInfos[${index}].image`, cert.image);
+    }
+  });
+
+  try {
+    const base = API_ENDPOINTS.MENTORING_CREATE;
+    const response = await fetch(base, {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: formData,
+    });
+    await handleApiError(response);
+    return await response.json();
+  } catch (error) {
+    console.error('멘토링 등록 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 사용자 목록 조회 (멘토링 작성자 선택용)
+ */
+ export const getUserList = async (): Promise<UserListResponse> => {
+  try {
+    const baseUrl = API_ENDPOINTS.MEMBER_MENTORING_CANDIDATES
+    const response = await fetch(baseUrl, {
+      method: 'GET',
+      headers: getApiHeaders(),
+    });
+
+    await handleApiError(response);
+    return await response.json();
+  } catch (error) {
+    console.error('사용자 목록 조회 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 카테고리 목록 조회
+ */
+export const getCategoryList = async (): Promise<CategoryListResponse> => {
+  try {
+    const base = API_ENDPOINTS.CATEGORIES
+    const response = await fetch(base, {
+      method: 'GET',
+      headers: getApiHeaders(),
+    });
+
+    await handleApiError(response);
+    return await response.json();
+  } catch (error) {
+    console.error('카테고리 목록 조회 실패:', error);
+    throw error;
   }
 };
