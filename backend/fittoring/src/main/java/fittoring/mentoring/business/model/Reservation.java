@@ -40,6 +40,13 @@ public class Reservation {
     @Column(nullable = false)
     private Status status;
 
+    @Getter
+    @Column(nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    private LocalDateTime deletedAt;
+
     @ManyToOne
     @JoinColumn(nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -50,7 +57,7 @@ public class Reservation {
     private Member mentee;
 
     public Reservation(String content, Status status, Mentoring mentoring, Member mentee) {
-        this(null, content, null, status, mentoring, mentee);
+        this(null, content, null, status, false, null, mentoring, mentee);
     }
 
     public boolean isComplete() {
