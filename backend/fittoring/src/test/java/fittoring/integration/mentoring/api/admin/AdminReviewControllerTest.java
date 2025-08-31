@@ -192,4 +192,96 @@ class AdminReviewControllerTest {
             });
         }
     }
+
+    @DisplayName("관리자 리뷰 삭제")
+    @Nested
+    class ReviewsDeleteForAdmin {
+
+        @DisplayName("관리자 권한 없이 리뷰 삭제를 요청하면 403을 반환한다.")
+        @Test
+        void failReviewDeleteWithoutAdmin() {
+            // given
+            // when
+            // then
+            RestAssured.given()
+                    .log()
+                    .all()
+                    .contentType(ContentType.JSON)
+                    .cookie("accessToken", userAccessToken)
+                    .when()
+                    .delete("/admin/reviews/1")
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(403);
+        }
+
+        @DisplayName("관리자가 존재하지 않는 리뷰 삭제를 요청하면 404을 반환한다.")
+        @Test
+        void failReviewDeleteWithoutReview() {
+            // given
+            // when
+            // then
+            RestAssured.given()
+                    .log()
+                    .all()
+                    .contentType(ContentType.JSON)
+                    .cookie("accessToken", adminAccessToken)
+                    .when()
+                    .delete("/admin/reviews/1")
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(404);
+        }
+
+        @DisplayName("관리자가 존재하는 리뷰 삭제를 요청하면 204를 반환하고 리뷰를 삭제한다.")
+        @Test
+        void successReviewDelete() {
+            // given
+            Mentoring savedMentoring = mentoringRepository.save(
+                    new Mentoring(admin,
+                            1000,
+                            1,
+                            "content",
+                            "introduction"
+                    ));
+            Reservation savedReservation = reservationRepository.save(
+                    new Reservation(
+                            "content",
+                            Status.COMPLETE,
+                            savedMentoring,
+                            user
+                    ));
+            Review savedReview = reviewRepository.save(new Review(5, "좋았어요", savedReservation, user));
+
+            // when
+            // then
+            RestAssured.given()
+                    .log()
+                    .all()
+                    .contentType(ContentType.JSON)
+                    .cookie("accessToken", adminAccessToken)
+                    .when()
+                    .delete("/admin/reviews/" + savedReview.getId())
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(204);
+            AdminReviewInfoResponse afterActual = RestAssured.given()
+                    .log().all().contentType(ContentType.JSON)
+                    .cookie("accessToken", adminAccessToken)
+                    .when()
+                    .get("/admin/mentorings/" + savedMentoring.getId() + "/reviews")
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .as(AdminReviewInfoResponse.class);
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(afterActual.ratingAverage()).isEqualTo("0.0");
+                softAssertions.assertThat(afterActual.ratingCount()).isZero();
+                softAssertions.assertThat(afterActual.reviewData()).isEmpty();
+            });
+        }
+    }
 }
