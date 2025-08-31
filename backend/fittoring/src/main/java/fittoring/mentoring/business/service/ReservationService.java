@@ -195,7 +195,7 @@ public class ReservationService {
     public void deleteReservationWithAdminAuthorization(AdminReservationDeleteDto adminReservationDeleteDto) {
         checkAdminAuthority(adminReservationDeleteDto.memberId());
         Reservation reservation = getReservation(adminReservationDeleteDto.reservationId());
-        reviewRepository.deleteByReservationId(reservation.getId());
+        reviewRepository.deleteByReservation(reservation);
         reservationRepository.delete(reservation);
     }
 }
