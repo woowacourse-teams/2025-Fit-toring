@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "../ui/badge";
 import { toast } from "sonner";
-
+import { formatDateTime } from "@/utils/Formatter";
 import {
   Table,
   TableBody,
@@ -547,7 +547,7 @@ export function CertificationManagement() {
                   <div className="space-y-2">
                     <Label>제출일</Label>
                     <p className="text-sm text-[15px]">
-                      {selectedCert.submittedAt}
+                    {formatDateTime(selectedCert.submittedAt)}
                     </p>
                   </div>
 

@@ -20,6 +20,7 @@ import {
 import { ArrowLeft, Edit, Trash2, FileText, Tag, Clock, Plus, MessageSquare, Star } from "lucide-react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { fetchMentoringDetail, MentoringDetail as MentoringDetailDTO, deleteMentoring } from "@/services/mentoringApi";
+import { formatPrice, formatDateTime} from "@/utils/Formatter";
 import {
   fetchReservations,
   Reservation,
@@ -241,16 +242,6 @@ export function MentoringDetail() {
       />
     ));
   };
-
-  const formatPrice = (price: number) => new Intl.NumberFormat("ko-KR").format(price) + "원";
-  const formatDateTime = (dateString: string) =>
-    new Date(dateString).toLocaleString("ko-KR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
 
   const getStatusBadge = (status: Reservation["status"]) => {
     switch (status) {
@@ -546,7 +537,7 @@ export function MentoringDetail() {
                       </span>
                     </div>
                     <span className="text-muted-foreground">
-                      ({reviews.ratingCount}개의 리뷰)
+                      (총 {reviews.ratingCount}건)
                     </span>
                   </div>
                 ) : (
