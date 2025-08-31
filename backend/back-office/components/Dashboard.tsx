@@ -125,7 +125,7 @@ export function Dashboard() {
   const getPageTitle = () => {
     switch (activeMenu) {
       case "certifications":
-        return "자격증 관리";
+        return "자격증명 관리";
       case "mentees":
         return "멘티 관리";
       case "mentoring":

@@ -331,7 +331,7 @@ export function CertificationManagement() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <div>
             <h1 className="text-2xl font-semibold">
-              자격증 관리
+              자격증명 관리
             </h1>
             <p className="text-muted-foreground mt-1">
               멘토들의 자격증명 정보를 관리하고 검증합니다.
