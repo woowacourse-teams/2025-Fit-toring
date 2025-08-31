@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.config.S3Configuration;
@@ -9,6 +10,7 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
@@ -21,8 +23,6 @@ import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.repository.ReservationRepository;
-import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
@@ -33,6 +33,8 @@ import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
 import fittoring.mentoring.presentation.dto.AdminReservationResponse;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
 import fittoring.util.DbCleaner;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
@@ -64,12 +66,6 @@ class ReservationServiceTest {
 
     @Autowired
     private DbCleaner dbCleaner;
-
-    @Autowired
-    private ReservationRepository reservationRepository;
-
-    @Autowired
-    private ReviewRepository reviewRepository;
 
     @BeforeEach
     void setUp() {
@@ -117,31 +113,31 @@ class ReservationServiceTest {
     void createReservationFail1() {
         // given
         Member mentor = entityManager.persist(new Member(
-            "mentorLoginId",
-            "MALE",
-            "아이유",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorLoginId",
+                "MALE",
+                "아이유",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "모던 타임즈",
-            "또 봐요 미스터 채플린~"
+                mentor,
+                5000,
+                5,
+                "모던 타임즈",
+                "또 봐요 미스터 채플린~"
         ));
         ReservationCreateDto dto = new ReservationCreateDto(
-            mentor.getId(),
-            mentoring.getId(),
-            "그 이름도 내겐 사랑스런 채플린~"
+                mentor.getId(),
+                mentoring.getId(),
+                "그 이름도 내겐 사랑스런 채플린~"
         );
 
         // when
         // then
         assertThatThrownBy(() -> reservationService.createReservation(dto))
-            .isInstanceOf(MentorAndMenteeIsSameException.class)
-            .hasMessage(BusinessErrorMessage.MENTOR_AND_MENTEE_IS_SAME.getMessage());
+                .isInstanceOf(MentorAndMenteeIsSameException.class)
+                .hasMessage(BusinessErrorMessage.MENTOR_AND_MENTEE_IS_SAME.getMessage());
     }
 
     @DisplayName("존재하지 않는 멘토링이라면 예외가 발생한다.")
@@ -421,87 +417,87 @@ class ReservationServiceTest {
         // then
         assertThat(reservationService.findMemberReservations(mentee.getId())).isEqualTo(expected);
     }
-    
+
     @DisplayName("관리자는 특정 멘토링에 달린 모든 예약을 조회할 수 있다")
     @Test
     void findMentoringReservationsWithAdminAuthorization() {
         // given
         Member admin = entityManager.persist(new Member(
-            "adminId",
-            "MALE",
-            "관리자",
-            new Phone("010-1111-2222"),
-            Password.from("password"),
-            MemberRole.ADMIN
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
         ));
         Member mentor = entityManager.persist(new Member(
-            "mentorId",
-            "MALE",
-            "아이유",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorId",
+                "MALE",
+                "아이유",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "Last Fantasy",
-            "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
+                mentor,
+                5000,
+                5,
+                "Last Fantasy",
+                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
         Member mentee1 = entityManager.persist(new Member(
-            "menteeId1",
-            "MALE",
-            "김멘티",
-            new Phone("010-1234-5679"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId1",
+                "MALE",
+                "김멘티",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Member mentee2 = entityManager.persist(new Member(
-            "menteeId2",
-            "MALE",
-            "박멘티",
-            new Phone("010-1234-5670"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId2",
+                "MALE",
+                "박멘티",
+                new Phone("010-1234-5670"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Reservation reservation1 = entityManager.persist(new Reservation(
-            "아득한 건 언제나 늘 아름답게 보이죠",
-            Status.PENDING,
-            mentoring,
-            mentee1
+                "아득한 건 언제나 늘 아름답게 보이죠",
+                Status.PENDING,
+                mentoring,
+                mentee1
         ));
         Reservation reservation2 = entityManager.persist(new Reservation(
-            "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
-            Status.COMPLETE,
-            mentoring,
-            mentee2
+                "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
+                Status.COMPLETE,
+                mentoring,
+                mentee2
         ));
         MentoringReservationGetDto mentoringReservationGetDto = new MentoringReservationGetDto(
-            admin.getId(),
-            mentoring.getId()
+                admin.getId(),
+                mentoring.getId()
         );
-        
+
         // when
         List<AdminReservationResponse> responseBody = reservationService.findMentoringReservationsWithAdminAuthorization(
-            mentoringReservationGetDto);
+                mentoringReservationGetDto);
 
         // then
         assertThat(responseBody).containsExactlyInAnyOrder(
-            new AdminReservationResponse(
-                reservation1.getId(),
-                reservation1.getMenteeName(),
-                reservation1.getCreatedAt().toLocalDate(),
-                reservation1.getStatus(),
-                reservation1.getContent()
-            ),
-            new AdminReservationResponse(
-                reservation2.getId(),
-                reservation2.getMenteeName(),
-                reservation2.getCreatedAt().toLocalDate(),
-                reservation2.getStatus(),
-                reservation2.getContent()
-            )
+                new AdminReservationResponse(
+                        reservation1.getId(),
+                        reservation1.getMenteeName(),
+                        reservation1.getCreatedAt().toLocalDate(),
+                        reservation1.getStatus(),
+                        reservation1.getContent()
+                ),
+                new AdminReservationResponse(
+                        reservation2.getId(),
+                        reservation2.getMenteeName(),
+                        reservation2.getCreatedAt().toLocalDate(),
+                        reservation2.getStatus(),
+                        reservation2.getContent()
+                )
         );
     }
 
@@ -510,126 +506,126 @@ class ReservationServiceTest {
     void findMentoringReservationsWithAdminAuthorizationFail() {
         // given
         Member normalMember = entityManager.persist(new Member(
-            "adminId",
-            "MALE",
-            "관리자",
-            new Phone("010-1111-2222"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Member mentor = entityManager.persist(new Member(
-            "mentorId",
-            "MALE",
-            "아이유",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorId",
+                "MALE",
+                "아이유",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "Last Fantasy",
-            "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
+                mentor,
+                5000,
+                5,
+                "Last Fantasy",
+                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
         Member mentee1 = entityManager.persist(new Member(
-            "menteeId1",
-            "MALE",
-            "김멘티",
-            new Phone("010-1234-5679"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId1",
+                "MALE",
+                "김멘티",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Member mentee2 = entityManager.persist(new Member(
-            "menteeId2",
-            "MALE",
-            "박멘티",
-            new Phone("010-1234-5670"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId2",
+                "MALE",
+                "박멘티",
+                new Phone("010-1234-5670"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Reservation reservation1 = entityManager.persist(new Reservation(
-            "아득한 건 언제나 늘 아름답게 보이죠",
-            Status.PENDING,
-            mentoring,
-            mentee1
+                "아득한 건 언제나 늘 아름답게 보이죠",
+                Status.PENDING,
+                mentoring,
+                mentee1
         ));
         Reservation reservation2 = entityManager.persist(new Reservation(
-            "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
-            Status.COMPLETE,
-            mentoring,
-            mentee2
+                "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
+                Status.COMPLETE,
+                mentoring,
+                mentee2
         ));
         MentoringReservationGetDto mentoringReservationGetDto = new MentoringReservationGetDto(
-            normalMember.getId(),
-            mentoring.getId()
+                normalMember.getId(),
+                mentoring.getId()
         );
 
         // when
         // that
         assertThatThrownBy(() -> reservationService.findMentoringReservationsWithAdminAuthorization(
-            mentoringReservationGetDto))
-            .isInstanceOf(ForbiddenException.class)
-            .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+                mentoringReservationGetDto))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
     @DisplayName("관리자는 예약의 상태를 변경할 수 있다")
     @CsvSource({
-        "PENDING, APPROVED",
-        "PENDING, REJECTED",
-        "PENDING, COMPLETE",
-        "APPROVED, PENDING",
-        "APPROVED, REJECTED",
-        "APPROVED, COMPLETE",
-        "REJECTED, PENDING",
-        "REJECTED, APPROVED",
-        "REJECTED, COMPLETE",
-        "COMPLETE, PENDING",
-        "COMPLETE, APPROVED",
-        "COMPLETE, REJECTED"
+            "PENDING, APPROVED",
+            "PENDING, REJECTED",
+            "PENDING, COMPLETE",
+            "APPROVED, PENDING",
+            "APPROVED, REJECTED",
+            "APPROVED, COMPLETE",
+            "REJECTED, PENDING",
+            "REJECTED, APPROVED",
+            "REJECTED, COMPLETE",
+            "COMPLETE, PENDING",
+            "COMPLETE, APPROVED",
+            "COMPLETE, REJECTED"
     })
     @ParameterizedTest
     void updateStatusWithAdminAuthorization(Status originalStatus, String newStatus) {
         // given
         Member admin = entityManager.persist(new Member(
-            "adminId",
-            "MALE",
-            "관리자",
-            new Phone("010-1111-2222"),
-            Password.from("password"),
-            MemberRole.ADMIN
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
         ));
         Member mentor = entityManager.persist(new Member(
-            "mentorId",
-            "MALE",
-            "고윤하",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorId",
+                "MALE",
+                "고윤하",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "살별",
-            "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게"
+                mentor,
+                5000,
+                5,
+                "살별",
+                "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게"
         ));
         Member mentee = entityManager.persist(new Member(
-            "menteeId1",
-            "MALE",
-            "김멘티",
-            new Phone("010-1234-5679"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId1",
+                "MALE",
+                "김멘티",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Reservation reservation = entityManager.persist(new Reservation(
-            "아득한 건 언제나 늘 아름답게 보이죠",
-            originalStatus,
-            mentoring,
-            mentee
+                "아득한 건 언제나 늘 아름답게 보이죠",
+                originalStatus,
+                mentoring,
+                mentee
         ));
         AdminReservationStatusUpdateDto adminReservationStatusUpdateDto
-            = new AdminReservationStatusUpdateDto(admin.getId(), reservation.getId(), newStatus);
+                = new AdminReservationStatusUpdateDto(admin.getId(), reservation.getId(), newStatus);
 
         // when
         reservationService.updateStatusWithAdminAuthorization(adminReservationStatusUpdateDto);
@@ -640,63 +636,89 @@ class ReservationServiceTest {
         assertThat(reservation.getStatus()).isEqualTo(newStatus);
     }
 
-    @DisplayName("관리자는 등록되어 있는 예약을 삭제할 수 있다")
+    @DisplayName("관리자는 등록되어 있는 예약을 삭제하면 삭제 상태로 변경되고, 연관된 리뷰도 함께 삭제 상태가 된다.")
     @Test
     void deleteReservationWithAdminAuthorization() {
         // given
         Member admin = entityManager.persist(new Member(
-            "adminId",
-            "MALE",
-            "관리자",
-            new Phone("010-1111-2222"),
-            Password.from("password"),
-            MemberRole.ADMIN
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
         ));
         Member mentor = entityManager.persist(new Member(
-            "mentorId",
-            "MALE",
-            "최유리",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorId",
+                "MALE",
+                "최유리",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = entityManager.persist(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "잘 지내자, 우리",
-            "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~"
+                mentor,
+                5000,
+                5,
+                "잘 지내자, 우리",
+                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~"
         ));
         Member mentee = entityManager.persist(new Member(
-            "menteeId1",
-            "MALE",
-            "김멘티",
-            new Phone("010-1234-5679"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId1",
+                "MALE",
+                "김멘티",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Reservation reservation = entityManager.persist(new Reservation(
-            "최선을 다한 넌 받아들이겠지만",
-            Status.COMPLETE,
-            mentoring,
-            mentee
+                "최선을 다한 넌 받아들이겠지만",
+                Status.COMPLETE,
+                mentoring,
+                mentee
         ));
+
         Review review = entityManager.persist(new Review(
-            4,
-            "서툴렀던 난 아직도 기적을 꿈꾼다",
-            reservation,
-            mentee
+                4,
+                "서툴렀던 난 아직도 기적을 꿈꾼다",
+                reservation,
+                mentee
         ));
+
         AdminReservationDeleteDto adminReservationDeleteDto
-            = new AdminReservationDeleteDto(admin.getId(), reservation.getId());
+                = new AdminReservationDeleteDto(admin.getId(), reservation.getId());
+
+        LocalDateTime beforeDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         // when
         reservationService.deleteReservationWithAdminAuthorization(adminReservationDeleteDto);
 
+        entityManager.flush();
+        entityManager.clear();
+        LocalDateTime afterDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(reservationRepository.existsById(reservation.getId())).isFalse();
-            softAssertions.assertThat(reviewRepository.existsByReservationId(reservation.getId())).isFalse();
+        Reservation deletedReservation = (Reservation) entityManager.getEntityManager().createNativeQuery(
+                        "SELECT * FROM reservation WHERE id = ?", Reservation.class)
+                .setParameter(1, reservation.getId())
+                .getSingleResult();
+
+        Review deletedReview = (Review) entityManager.getEntityManager().createNativeQuery(
+                        "SELECT * FROM review WHERE id = ?", Review.class)
+                .setParameter(1, review.getId())
+                .getSingleResult();
+
+        assertSoftly(softly -> {
+            softly.assertThat(deletedReview.isDeleted()).isTrue();
+            softly.assertThat(deletedReservation.isDeleted()).isTrue();
+
+            softly.assertThat(deletedReservation.getDeletedAt())
+                    .isBeforeOrEqualTo(afterDelete)
+                    .isAfterOrEqualTo(beforeDelete);
+
+            softly.assertThat(deletedReview.getDeletedAt())
+                    .isBeforeOrEqualTo(afterDelete)
+                    .isAfterOrEqualTo(beforeDelete);
         });
     }
 }
