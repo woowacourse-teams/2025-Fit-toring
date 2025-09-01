@@ -14,10 +14,14 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE member SET is_deleted=true, deleted_at=now() WHERE id=?")
+@SQLRestriction("is_deleted = false")
 @Table(name = "member")
 @Entity
 public class Member {
