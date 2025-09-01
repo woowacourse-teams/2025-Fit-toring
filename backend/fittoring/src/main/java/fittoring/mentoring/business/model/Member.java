@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,12 +46,19 @@ public class Member {
     @Column(nullable = false)
     private MemberRole role;
 
+    @Getter
+    @Column(nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    private LocalDateTime deletedAt;
+
     public Member(String loginId, String gender, String name, Phone phone, Password password) {
-        this(null, loginId, gender, name, phone, password, MemberRole.MENTEE);
+        this(null, loginId, gender, name, phone, password, MemberRole.MENTEE, false, null);
     }
 
     public Member(String loginId, String gender, String name, Phone phone, Password password, MemberRole role) {
-        this(null, loginId, gender, name, phone, password, role);
+        this(null, loginId, gender, name, phone, password, role, false, null);
     }
 
     public void matchPassword(String password) {
