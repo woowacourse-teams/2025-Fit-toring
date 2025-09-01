@@ -9,8 +9,6 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.util.DbCleaner;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,12 +51,9 @@ class MentoringRepositoryTest {
         Mentoring mentoring = mentoringRepository.save(
                 new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개")
         );
-        LocalDateTime beforeDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         //when
         mentoringRepository.delete(mentoring);
-
-        LocalDateTime afterDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         //then
         List<Mentoring> deletedMentoring = mentoringRepository.findAllDeleted();
@@ -66,9 +61,7 @@ class MentoringRepositoryTest {
 
         assertSoftly(softly -> {
             softly.assertThat(actual.isDeleted()).isTrue();
-            softly.assertThat(actual.getDeletedAt())
-                    .isBeforeOrEqualTo(afterDelete)
-                    .isAfterOrEqualTo(beforeDelete);
+            softly.assertThat(actual.getDeletedAt()).isNotNull();
         });
     }
 

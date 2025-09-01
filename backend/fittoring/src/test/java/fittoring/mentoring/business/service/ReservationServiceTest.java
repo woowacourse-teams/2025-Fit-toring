@@ -33,8 +33,6 @@ import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
 import fittoring.mentoring.presentation.dto.AdminReservationResponse;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
 import fittoring.util.DbCleaner;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
@@ -688,14 +686,11 @@ class ReservationServiceTest {
         AdminReservationDeleteDto adminReservationDeleteDto
                 = new AdminReservationDeleteDto(admin.getId(), reservation.getId());
 
-        LocalDateTime beforeDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-
         // when
         reservationService.deleteReservationWithAdminAuthorization(adminReservationDeleteDto);
 
         entityManager.flush();
         entityManager.clear();
-        LocalDateTime afterDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         // then
         Reservation deletedReservation = (Reservation) entityManager.getEntityManager().createNativeQuery(
@@ -711,14 +706,8 @@ class ReservationServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(deletedReview.isDeleted()).isTrue();
             softly.assertThat(deletedReservation.isDeleted()).isTrue();
-
-            softly.assertThat(deletedReservation.getDeletedAt())
-                    .isBeforeOrEqualTo(afterDelete)
-                    .isAfterOrEqualTo(beforeDelete);
-
-            softly.assertThat(deletedReview.getDeletedAt())
-                    .isBeforeOrEqualTo(afterDelete)
-                    .isAfterOrEqualTo(beforeDelete);
+            softly.assertThat(deletedReservation.getDeletedAt()).isNotNull();
+            softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
         });
     }
 

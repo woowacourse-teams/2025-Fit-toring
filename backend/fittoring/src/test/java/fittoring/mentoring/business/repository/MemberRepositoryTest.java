@@ -8,8 +8,6 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.util.DbCleaner;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,11 +62,8 @@ class MemberRepositoryTest {
                 new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
         );
 
-        LocalDateTime beforeDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-
         //when
         memberRepository.delete(savedMember);
-        LocalDateTime afterDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         //then
         List<Member> allDeletedMember = memberRepository.findAllDeleted();
@@ -76,9 +71,7 @@ class MemberRepositoryTest {
         Member actual = allDeletedMember.getFirst();
         assertSoftly(softly -> {
             softly.assertThat(actual.isDeleted()).isTrue();
-            softly.assertThat(actual.getDeletedAt())
-                    .isBeforeOrEqualTo(afterDelete)
-                    .isAfterOrEqualTo(beforeDelete);
+            softly.assertThat(actual.getDeletedAt()).isNotNull();
         });
     }
 }

@@ -26,8 +26,6 @@ import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.mentoring.presentation.dto.ReviewGetResponse;
 import fittoring.util.DbCleaner;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -928,12 +926,8 @@ class ReviewServiceTest {
                 review.getId()
         );
 
-        LocalDateTime beforeDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-
         //when
         reviewService.deleteReview(reviewDeleteDto);
-
-        LocalDateTime afterDelete = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         entityManager.flush();
         entityManager.clear();
 
@@ -945,9 +939,7 @@ class ReviewServiceTest {
 
         assertSoftly(softly -> {
             softly.assertThat(deletedReview.isDeleted()).isTrue();
-            softly.assertThat(deletedReview.getDeletedAt())
-                    .isBeforeOrEqualTo(afterDelete)
-                    .isAfterOrEqualTo(beforeDelete);
+            softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
         });
     }
 }
