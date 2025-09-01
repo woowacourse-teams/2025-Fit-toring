@@ -586,7 +586,7 @@ class MentoringServiceTest {
         }
     }
 
-    @DisplayName("관리자가 멘토링을 삭제할 수 있다.")
+    @DisplayName("관리자가 멘토링을 삭제하면 연관된 객체도 함께 삭제 상태가 된다.")
     @Test
     void deleteByAdmin() {
         // given
@@ -617,6 +617,9 @@ class MentoringServiceTest {
         Reservation reservation = new Reservation("예약내용", Status.PENDING, mentoring, mentor);
         reservationRepository.save(reservation);
 
+        Reservation reservation2 = new Reservation("예약내용", Status.PENDING, mentoring, mentor);
+        reservationRepository.save(reservation2);
+
         Member mentee = new Member("멘티id", "MALE", "김멘티", new Phone("010-1234-1234"), Password.from("password"));
         memberRepository.save(mentee);
         Review review = new Review(1, "리뷰내용", reservation, mentee);
@@ -629,6 +632,31 @@ class MentoringServiceTest {
         mentoringService.deleteMentoringByAdmin(adminLoginId, mentoringId);
 
         // then
+        Review deletedReview = (Review) em.createNativeQuery(
+                        "SELECT * FROM review WHERE id = ?", Review.class)
+                .setParameter(1, review.getId())
+                .getSingleResult();
+
+        Reservation deletedReservation = (Reservation) em.createNativeQuery(
+                        "SELECT * FROM reservation WHERE id = ?", Reservation.class)
+                .setParameter(1, reservation.getId())
+                .getSingleResult();
+
+        Certificate deletedCertificate = (Certificate) em.createNativeQuery(
+                        "SELECT * FROM certificate WHERE id = ?", Certificate.class)
+                .setParameter(1, certificate.getId())
+                .getSingleResult();
+
+        CategoryMentoring deletedCategoryMentoring = (CategoryMentoring) em.createNativeQuery(
+                        "SELECT * FROM category_mentoring WHERE id = ?", CategoryMentoring.class)
+                .setParameter(1, categoryMentoring1_1.getId())
+                .getSingleResult();
+
+        Mentoring deltedMentoring = (Mentoring) em.createNativeQuery(
+                        "SELECT * FROM mentoring WHERE id = ?", Mentoring.class)
+                .setParameter(1, mentoring.getId())
+                .getSingleResult();
+
         SoftAssertions.assertSoftly(softly -> {
                     assertThatThrownBy(() -> mentoringService.getMentoringWithRelations(mentoringId))
                             .isInstanceOf(MentoringNotFoundException.class);
@@ -639,6 +667,11 @@ class MentoringServiceTest {
                     assertThat(reservationRepository.findAll()).isEmpty();
                     assertThat(reviewRepository.findAll()).isEmpty();
                     assertThat(certificateRepository.existsById(certificate.getId())).isEqualTo(false);
+                    assertThat(deletedReview.isDeleted()).isTrue();
+                    assertThat(deletedReservation.isDeleted()).isTrue();
+                    assertThat(deletedCertificate.isDeleted()).isTrue();
+                    assertThat(deletedCategoryMentoring.isDeleted()).isTrue();
+                    assertThat(deltedMentoring.isDeleted()).isTrue();
                 }
         );
     }
