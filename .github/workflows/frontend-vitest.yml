@@ -1,11 +1,10 @@
-name: 'frontend-vitest test'
+name: "frontend-vitest test"
 
 on:
   pull_request:
     types: [opened, synchronize]
     paths:
-      - 'frontend/**/*.test.ts'
-      - 'frontend/**/*.test.tsx'
+      - "frontend/**"
 
 jobs:
   Vitest:
