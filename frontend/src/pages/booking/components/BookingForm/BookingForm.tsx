@@ -6,20 +6,22 @@ import { apiClient } from '../../../../common/apis/apiClient';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import Checkbox from '../Checkbox/Checkbox';
 
 import type { BookingResponse } from '../../types/BookingResponse';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 interface BookingFormProps {
   handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
   mentoringId: number;
+  mentoringPrice: number;
 }
 
 function BookingForm({
   handleBookingButtonClick,
   mentoringId,
+  mentoringPrice,
 }: BookingFormProps) {
   const [counselContent, setCounselContent] = useState('');
   const [userInfo, setUserInfo] = useState({
@@ -131,7 +133,7 @@ function BookingForm({
         )}
       </StyledLabelWrapper>
 
-      <BookingSummarySection />
+      <BookingSummarySection price={mentoringPrice} />
     </StyledContainer>
   );
 }
