@@ -7,15 +7,15 @@ import { useNavigate } from 'react-router-dom';
 import { getMineMentoring } from '../../common/apis/getMineMentoring';
 import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import { getMentoringApplicationList } from './apis/getMentoringApplicationList';
 import MentoringApplicationItem from './components/MentoringApplicationItem/MentoringApplicationItem';
 import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
 
 import type { MentoringApplication } from './types/mentoringApplication';
+import type { MentoringResponse } from '../../common/types/MentoringResponse';
 import type { StatusType } from '../../common/types/statusType';
-import type { MentoringResponse } from '../detail/types/MentoringResponse';
-import { captureSentryError } from '../../common/utils/captureSentryError';
 
 function CreatedMentoring() {
   const [mentoringApplicationList, setMentoringApplicationList] = useState<

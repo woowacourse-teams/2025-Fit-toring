@@ -1,9 +1,9 @@
-import type { MentoringResponse } from '../../../pages/detail/types/MentoringResponse';
+import type { MentoringResponse } from '../../types/MentoringResponse';
 
 export const MENTORING_DETAIL: MentoringResponse = {
   id: 1,
   mentorName: '김트레이너',
-  ratingAverage: 3.7,
+  ratingAverage: ' 3.7',
   ratingCount: 10,
   categories: ['근력 증진', '다이어트', '체형 교정'],
   price: 5000,

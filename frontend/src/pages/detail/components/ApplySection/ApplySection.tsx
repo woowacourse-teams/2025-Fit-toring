@@ -8,9 +8,9 @@ import { getMineMentoring } from '../../../../common/apis/getMineMentoring';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
-
-import type { MentoringResponse } from '../../types/MentoringResponse';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+
+import type { MentoringResponse } from '../../../../common/types/MentoringResponse';
 
 interface ApplySectionProps {
   price: number;
