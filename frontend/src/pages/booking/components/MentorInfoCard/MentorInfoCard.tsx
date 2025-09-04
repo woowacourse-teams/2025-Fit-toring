@@ -28,7 +28,7 @@ function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
             <StyledInfoWrapper>
               <TextWithIcon
                 iconSrc={startIcon}
-                text="4.5 (127)"
+                text={`${mentorDetail.ratingAverage} (${mentorDetail.ratingCount})`}
                 iconName="별점"
               />
               <TextWithIcon
