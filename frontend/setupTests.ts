@@ -2,10 +2,8 @@
 import '@testing-library/jest-dom/vitest';
 
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { config } from 'dotenv';
 import dotenv from 'dotenv';
 import { expect, afterEach, beforeAll, afterAll } from 'vitest';
-config();
 
 let envFile = '.env.dev';
 
