@@ -7,10 +7,10 @@ import CategoryTags from '../../../../common/components/CategoryTags/CategoryTag
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import ProfileImg from '../ProfileImg/ProfileImg';
 
-import type { MentoringDetail } from '../../apis/getMentoringDetail';
+import type { MentoringResponse } from '../../../../common/types/MentoringResponse';
 
 interface MentoInfoCardProps {
-  mentorDetail: MentoringDetail | null;
+  mentorDetail: MentoringResponse | null;
 }
 
 function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
@@ -19,7 +19,9 @@ function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
       {mentorDetail ? (
         <>
           <StyledMentoProfileWrapper>
-            <ProfileImg src={mentorDetail.profileImageUrl} />
+            <ProfileImg
+              src={mentorDetail ? mentorDetail.profileImageUrl : null}
+            />
             <StyledMetoNameText>{mentorDetail.mentorName}</StyledMetoNameText>
           </StyledMentoProfileWrapper>
           <StyledInfoWithTags>
