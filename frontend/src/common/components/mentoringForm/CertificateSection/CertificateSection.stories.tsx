@@ -34,3 +34,26 @@ export const DefaultCertificateSection: Story = {
     },
   },
 };
+
+export const WithOneCertificateSection: Story = {
+  args: {
+    certificates: [
+      {
+        id: '0',
+        title: '',
+        type: 'LICENSE',
+      },
+    ],
+    onAddButtonClick: () => {},
+    onDeleteButtonClick: () => {},
+    onCertificateChangeById: () => {},
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '자격증 입력 폼이 이미 하나 열려 있는 상태를 보여줍니다. certificates prop에 데이터가 존재하면 해당 개수만큼의 입력 폼이 렌더링됩니다.',
+      },
+    },
+  },
+};
