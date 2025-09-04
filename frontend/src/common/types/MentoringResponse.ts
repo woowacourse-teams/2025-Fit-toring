@@ -1,5 +1,3 @@
-import type { CertificateResponse } from './CertificatesResponse';
-
 export interface MentoringResponse {
   id: number;
   mentorName: string;
@@ -12,4 +10,11 @@ export interface MentoringResponse {
   introduction: string;
   content: string;
   certificates: CertificateResponse[];
+}
+
+export interface CertificateResponse {
+  certificateId: string;
+  title: string;
+  type: string;
+  imageUrl: string;
 }

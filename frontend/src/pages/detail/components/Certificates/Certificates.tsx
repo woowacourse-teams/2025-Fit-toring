@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 
 import CertificatesImageModal from '../CertificatesImageModal/CertificatesImageModal';
 
-import type { CertificateResponse } from '../../types/CertificatesResponse';
+import type { CertificateResponse } from '../../../../common/types/MentoringResponse';
 
 interface CertificatesProps {
   certificates: CertificateResponse[];

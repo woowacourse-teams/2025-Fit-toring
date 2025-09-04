@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useLocation, useParams } from 'react-router-dom';
 
-import { getMentoringDetail } from './apis/getMentoringDetail';
+import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
+import { captureSentryError } from '../../common/utils/captureSentryError';
+
 import ApplySection from './components/ApplySection/ApplySection';
 import Certificates from './components/Certificates/Certificates';
 import DetailHeader from './components/DetailHeader/DetailHeader';
@@ -12,8 +14,7 @@ import Introduction from './components/Introduction/Introduction';
 import MentorSummary from './components/MentorSummary/MentorSummary';
 import Profile from './components/Profile/Profile';
 
-import type { MentoringResponse } from './types/MentoringResponse';
-import { captureSentryError } from '../../common/utils/captureSentryError';
+import type { MentoringResponse } from '../../common/types/MentoringResponse';
 
 type TapType = 'detail' | 'review';
 

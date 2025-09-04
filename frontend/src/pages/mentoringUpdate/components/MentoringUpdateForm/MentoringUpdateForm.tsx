@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
+import { getMentoringDetail } from '../../../../common/apis/getMentoringDetail';
 import BaseInfoSection from '../../../../common/components/mentoringForm/BaseInfoSection/BaseInfoSection';
 import ButtonSection from '../../../../common/components/mentoringForm/ButtonSection/ButtonSection';
 import CertificateSection from '../../../../common/components/mentoringForm/CertificateSection/CertificateSection';
@@ -12,10 +13,10 @@ import IntroduceSection from '../../../../common/components/mentoringForm/Introd
 import ProfileSection from '../../../../common/components/mentoringForm/ProfileSection/ProfileSection';
 import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
-import { getMentoringDetail } from '../../../detail/apis/getMentoringDetail';
 import { deleteCertificate } from '../../apis/deleteCertificate';
 import { putMentoring } from '../../apis/putMentoring';
 import {
@@ -25,7 +26,6 @@ import {
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(

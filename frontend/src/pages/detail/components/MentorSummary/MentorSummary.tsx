@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-import type { CertificateResponse } from '../../types/CertificatesResponse';
+import type { CertificateResponse } from '../../../../common/types/MentoringResponse';
 
 interface MentorSummaryProps {
   introduction: string;
