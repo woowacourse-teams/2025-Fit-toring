@@ -13,11 +13,11 @@ import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 import { smoothScrollTo } from './utils/smoothScrollTo';
 
 import type { BookingResponse } from './types/BookingResponse';
-import type { MentoringResponse } from '../../common/types/MentoringResponse';
+import type { MentoringDetail } from '../../common/types/MentoringDetail';
 
 function Booking() {
   const [opened, setOpened] = useState(false);
-  const [mentorDetail, setMentorDetail] = useState<MentoringResponse | null>(
+  const [mentorDetail, setMentorDetail] = useState<MentoringDetail | null>(
     null,
   );
 

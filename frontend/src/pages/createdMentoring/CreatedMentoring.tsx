@@ -14,7 +14,7 @@ import MentoringApplicationItem from './components/MentoringApplicationItem/Ment
 import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
 
 import type { MentoringApplication } from './types/mentoringApplication';
-import type { MentoringResponse } from '../../common/types/MentoringResponse';
+import type { MentoringDetail } from '../../common/types/MentoringDetail';
 import type { StatusType } from '../../common/types/statusType';
 
 function CreatedMentoring() {
@@ -43,7 +43,7 @@ function CreatedMentoring() {
     fetchMentoringApplicationList();
   }, []);
 
-  const [mineMentoring, setMineMentoring] = useState<MentoringResponse | null>(
+  const [mineMentoring, setMineMentoring] = useState<MentoringDetail | null>(
     null,
   );
 

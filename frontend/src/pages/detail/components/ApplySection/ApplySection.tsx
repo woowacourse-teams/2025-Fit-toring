@@ -10,7 +10,7 @@ import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
-import type { MentoringResponse } from '../../../../common/types/MentoringResponse';
+import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
 interface ApplySectionProps {
   price: number;
@@ -22,7 +22,7 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
 
   const { authenticated } = useAuth();
 
-  const [mineMentoring, setMineMentoring] = useState<MentoringResponse | null>(
+  const [mineMentoring, setMineMentoring] = useState<MentoringDetail | null>(
     null,
   );
 

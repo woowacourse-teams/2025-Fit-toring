@@ -1,4 +1,4 @@
-export interface MentoringResponse {
+export interface MentoringDetail {
   id: number;
   mentorName: string;
   ratingAverage: string;
@@ -9,10 +9,10 @@ export interface MentoringResponse {
   profileImageUrl: string | null;
   introduction: string;
   content: string;
-  certificates: CertificateResponse[];
+  certificates: Certificates[];
 }
 
-export interface CertificateResponse {
+export interface Certificates {
   certificateId: string;
   title: string;
   type: string;

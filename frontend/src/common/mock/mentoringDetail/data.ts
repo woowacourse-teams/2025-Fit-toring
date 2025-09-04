@@ -1,6 +1,6 @@
-import type { MentoringResponse } from '../../types/MentoringResponse';
+import type { MentoringDetail } from '../../types/MentoringDetail';
 
-export const MENTORING_DETAIL: MentoringResponse = {
+export const MENTORING_DETAIL: MentoringDetail = {
   id: 1,
   mentorName: '김트레이너',
   ratingAverage: ' 3.7',

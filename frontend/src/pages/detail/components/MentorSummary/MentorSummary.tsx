@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 
-import type { CertificateResponse } from '../../../../common/types/MentoringResponse';
+import type { Certificates } from '../../../../common/types/MentoringDetail';
 
 interface MentorSummaryProps {
   introduction: string;
   career: number;
-  certificates: CertificateResponse[];
+  certificates: Certificates[];
 }
 
 function MentorSummary({

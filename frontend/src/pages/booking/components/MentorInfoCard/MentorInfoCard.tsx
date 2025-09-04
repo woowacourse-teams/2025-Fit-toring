@@ -7,10 +7,10 @@ import CategoryTags from '../../../../common/components/CategoryTags/CategoryTag
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import ProfileImg from '../ProfileImg/ProfileImg';
 
-import type { MentoringResponse } from '../../../../common/types/MentoringResponse';
+import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
 interface MentoInfoCardProps {
-  mentorDetail: MentoringResponse | null;
+  mentorDetail: MentoringDetail | null;
 }
 
 function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
