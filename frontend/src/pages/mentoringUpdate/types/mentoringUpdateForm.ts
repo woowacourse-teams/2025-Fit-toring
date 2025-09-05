@@ -5,6 +5,7 @@ export interface MentoringUpdateFormData {
   career: number;
   content: string;
   profileImageUrl: string | null;
+  kakaoOpenChatUrl: string;
   certificateInfos: {
     id: string;
     type: string | null;

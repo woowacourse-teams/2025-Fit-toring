@@ -200,14 +200,21 @@ function MentoringUpdateForm() {
           type: e.type,
           imageUrl: e.imageUrl,
         }));
-        const { price, career, introduction, content, profileImageUrl } =
-          mentoring;
+        const {
+          price,
+          career,
+          introduction,
+          content,
+          profileImageUrl,
+          kakaoOpenChatUrl,
+        } = mentoring;
         setMentoringData({
           price,
           career,
           introduction,
           content,
           category: categories,
+          kakaoOpenChatUrl: kakaoOpenChatUrl,
           certificateInfos: certificateInfosData,
           profileImageUrl,
         });
@@ -227,9 +234,10 @@ function MentoringUpdateForm() {
       {!isInitialMentoringData(mentoringData) ? (
         <>
           <BaseInfoSection
-            onPriceChange={handleMentoringDataChange}
+            onBaseInfoChange={handleMentoringDataChange}
             priceErrorMessage={priceErrorMessage}
             price={mentoringData.price}
+            kakaoOpenChatUrl={mentoringData.kakaoOpenChatUrl}
           />
           <ProfileSection
             profileImageUrl={mentoringData.profileImageUrl}
