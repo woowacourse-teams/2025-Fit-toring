@@ -60,13 +60,13 @@ function MentoringApplicationItem({
       </StyledApplicationInfoWrapper>
       <PhoneNumber status={status} phoneNumber={phoneNumber} />
       <StyledApplicationContent>{content}</StyledApplicationContent>
-      <StyledButton>
+      <StyledButtonWrapper>
         <ActionButtons
           reservationId={reservationId}
           status={status}
           onClick={handleActionButtonsComplete}
         />
-      </StyledButton>
+      </StyledButtonWrapper>
     </StyledContainer>
   );
 }
@@ -119,7 +119,7 @@ const StyledApplicationContent = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledButton = styled.div`
+const StyledButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
