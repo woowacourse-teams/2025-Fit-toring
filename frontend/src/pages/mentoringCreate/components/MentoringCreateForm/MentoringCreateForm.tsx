@@ -27,6 +27,7 @@ function MentoringCreateForm() {
     introduction: '',
     career: 0,
     content: '',
+    kakaoOpenChatUrl: '',
     certificateInfos: [],
   });
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
@@ -163,9 +164,10 @@ function MentoringCreateForm() {
   return (
     <StyledContainer onSubmit={handleSubmitButtonClick}>
       <BaseInfoSection
-        onPriceChange={handleMentoringDataChange}
+        onBaseInfoChange={handleMentoringDataChange}
         priceErrorMessage={priceErrorMessage}
         price={mentoringData.price}
+        kakaoOpenChatUrl={mentoringData.kakaoOpenChatUrl}
       />
       <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
