@@ -126,12 +126,9 @@ public class ReviewService {
         validateAdmin(memberId);
         validateMentoring(mentoringId);
         List<AdminReviewResponse> reviewResponses = findAdminReviewResponses(mentoringId);
-        Optional<RatingStatsDto> reviewInfo = reviewRepository.findRatingStatsByMentoringId(mentoringId);
-        RatingStatsDto ratingStats = new RatingStatsDto(mentoringId, 0.0, 0);
-        if (reviewInfo.isPresent()) {
-            ratingStats = reviewInfo.get();
-        }
-        return AdminReviewInfoResponse.of(reviewResponses, ratingStats);
+        RatingStatsDto reviewInfo = reviewRepository.findRatingStatsByMentoringId(mentoringId)
+                .orElse(new RatingStatsDto(mentoringId, 0.0, 0));
+        return AdminReviewInfoResponse.of(reviewResponses, reviewInfo);
     }
 
     private void validateAdmin(Long memberId) {
