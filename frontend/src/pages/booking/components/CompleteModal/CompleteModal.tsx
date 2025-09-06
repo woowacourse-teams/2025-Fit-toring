@@ -25,9 +25,14 @@ function CompleteModal({
 }: CompleteModalProps) {
   const navigate = useNavigate();
 
-  const handleGoHome = () => {
+  const handleMentorSearchClick = () => {
     onCloseClick();
     navigate(PAGE_URL.HOME);
+  };
+
+  const handleGoReservationClick = () => {
+    onCloseClick();
+    navigate(PAGE_URL.PARTICIPATED_MENTORING);
   };
 
   return (
@@ -50,7 +55,7 @@ function CompleteModal({
           <p>전문분야: {mentorInfo?.categories.join(' / ')}</p>
         </StyledMetorInfoBox>
         <Button
-          onClick={handleGoHome}
+          onClick={handleGoReservationClick}
           size="full"
           customStyle={css`
             padding: 0.8rem;
@@ -58,10 +63,10 @@ function CompleteModal({
             font-size: 1.2rem;
           `}
         >
-          홈으로 돌아가기
+          예약 내역 보러가기
         </Button>
         <Button
-          onClick={handleGoHome}
+          onClick={handleMentorSearchClick}
           size="full"
           customStyle={css`
             padding: 0.8rem;
