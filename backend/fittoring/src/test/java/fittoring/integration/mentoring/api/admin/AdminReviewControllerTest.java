@@ -21,6 +21,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -188,7 +189,10 @@ class AdminReviewControllerTest {
                 softAssertions.assertThat(actual.ratingCount())
                         .isEqualTo(expected.ratingCount());
                 softAssertions.assertThat(actual.reviewData())
+                        .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
                         .containsExactlyInAnyOrderElementsOf(expected.reviewData());
+                softAssertions.assertThat(actual.reviewData().get(0).createdAt())
+                        .isCloseTo(expected.reviewData().get(0).createdAt(), Assertions.within(1, ChronoUnit.SECONDS));
             });
         }
     }
