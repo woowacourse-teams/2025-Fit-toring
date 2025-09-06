@@ -34,7 +34,14 @@ public interface ReviewRepository extends ListCrudRepository<Review, Long> {
             """)
     List<RatingStatsDto> findReviewStatsByMentoringIds(@Param("mentoringIds") List<Long> mentoringIds);
 
-    List<Review> findAllByReservationMentoringIdOrderByCreatedAtDesc(Long mentoringId);
+    @Query("""
+            SELECT r
+              FROM Review r
+              JOIN FETCH r.mentee
+            WHERE r.reservation.mentoring.id = :mentoringId
+            order by r.createdAt DESC
+            """)
+    List<Review> findAllByReservationMentoringIdOrderByCreatedAtDesc(@Param("mentoringId") Long mentoringId);
 
     boolean existsByReservationId(Long reservationId);
 
