@@ -96,7 +96,7 @@ const StyledText = styled.span<{ step: 'before' | 'current' | 'after' }>`
   margin-top: 3.2rem;
 
   color: ${({ step, theme }) =>
-    step === 'after' ? theme.SYSTEM.GRAY100 : theme.SYSTEM.MAIN600};
+    step === 'after' ? theme.SYSTEM.GRAY200 : theme.SYSTEM.MAIN600};
   white-space: nowrap;
   transform: translate(-50%, -50%);
 `;
