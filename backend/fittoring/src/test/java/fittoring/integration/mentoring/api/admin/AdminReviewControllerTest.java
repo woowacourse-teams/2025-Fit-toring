@@ -105,15 +105,12 @@ class AdminReviewControllerTest {
             // when
             // then
             RestAssured.given()
-                    .log()
-                    .all()
-                    .contentType(ContentType.JSON)
+                    .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
                     .get("/admin/mentorings/" + savedMentoring.getId() + "/reviews")
                     .then()
-                    .log()
-                    .all()
+                    .log().all()
                     .statusCode(403);
         }
 
@@ -124,15 +121,12 @@ class AdminReviewControllerTest {
             // when
             // then
             RestAssured.given()
-                    .log()
-                    .all()
-                    .contentType(ContentType.JSON)
+                    .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
                     .get("/admin/mentorings/1/reviews")
                     .then()
-                    .log()
-                    .all()
+                    .log().all()
                     .statusCode(404);
         }
 
@@ -159,15 +153,12 @@ class AdminReviewControllerTest {
             // when
             // then
             var actual = RestAssured.given()
-                    .log()
-                    .all()
-                    .contentType(ContentType.JSON)
+                    .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
                     .get("/admin/mentorings/" + savedMentoring.getId() + "/reviews")
                     .then()
-                    .log()
-                    .all()
+                    .log().all()
                     .statusCode(200)
                     .extract()
                     .as(new TypeRef<AdminReviewInfoResponse>() {
@@ -227,15 +218,12 @@ class AdminReviewControllerTest {
             // when
             // then
             RestAssured.given()
-                    .log()
-                    .all()
-                    .contentType(ContentType.JSON)
+                    .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
                     .delete("/admin/reviews/1")
                     .then()
-                    .log()
-                    .all()
+                    .log().all()
                     .statusCode(404);
         }
 
@@ -262,15 +250,12 @@ class AdminReviewControllerTest {
             // when
             // then
             RestAssured.given()
-                    .log()
-                    .all()
-                    .contentType(ContentType.JSON)
+                    .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
                     .delete("/admin/reviews/" + savedReview.getId())
                     .then()
-                    .log()
-                    .all()
+                    .log().all()
                     .statusCode(204);
             AdminReviewInfoResponse afterActual = RestAssured.given()
                     .log().all().contentType(ContentType.JSON)
