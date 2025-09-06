@@ -74,7 +74,7 @@ const StyledStepCircle = styled.div<{ step: 'before' | 'after' }>`
   height: 2rem;
   border: 2px solid
     ${({ step, theme }) =>
-      step === 'before' ? theme.FONT.SUCCESS : theme.SYSTEM.GRAY100};
+      step === 'before' ? theme.SYSTEM.MAIN500 : theme.SYSTEM.GRAY100};
   border-radius: 50%;
 
   background-color: ${({ step, theme }) =>
@@ -91,7 +91,7 @@ const StyledCurrentCircle = styled.div`
   height: 4rem;
   border-radius: 50%;
 
-  background-color: ${({ theme }) => theme.FONT.SUCCESS};
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 `;
 
 const StyledIcon = styled.img`

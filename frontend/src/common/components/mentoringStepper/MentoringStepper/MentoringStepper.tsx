@@ -14,10 +14,10 @@ const statusTextMap = Object.values(MentoringReservationStatusTypeEnum).reduce(
   (acc, key) => {
     switch (key) {
       case 'PENDING':
-        acc[key] = '승인 대기';
+        acc[key] = '예약 신청';
         break;
       case 'APPROVED':
-        acc[key] = '승인 완료';
+        acc[key] = '신청 확정';
         break;
       case 'COMPLETE':
         acc[key] = '멘토링 완료';
@@ -96,7 +96,7 @@ const StyledText = styled.span<{ step: 'before' | 'current' | 'after' }>`
   margin-top: 3.2rem;
 
   color: ${({ step, theme }) =>
-    step === 'after' ? theme.SYSTEM.GRAY100 : theme.FONT.SUCCESS};
+    step === 'after' ? theme.SYSTEM.GRAY100 : theme.SYSTEM.MAIN500};
   white-space: nowrap;
   transform: translate(-50%, -50%);
 `;
