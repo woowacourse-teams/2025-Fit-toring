@@ -125,7 +125,7 @@ public class ReviewService {
     public AdminReviewInfoResponse findAllByMentoringForAdmin(Long memberId, Long mentoringId) {
         validateAdmin(memberId);
         validateMentoringExists(mentoringId);
-        List<AdminReviewResponse> reviewResponses = findAdminReviewResponses(mentoringId);
+        List<AdminReviewResponse> reviewResponses = findReviewResponsesForAdmin(mentoringId);
         RatingStatsDto reviewInfo = reviewRepository.findRatingStatsByMentoringId(mentoringId)
                 .orElse(new RatingStatsDto(mentoringId, 0.0, 0));
         return AdminReviewInfoResponse.of(reviewResponses, reviewInfo);
@@ -145,7 +145,7 @@ public class ReviewService {
         }
     }
 
-    private List<AdminReviewResponse> findAdminReviewResponses(Long mentoringId) {
+    private List<AdminReviewResponse> findReviewResponsesForAdmin(Long mentoringId) {
         List<Review> reviews = reviewRepository.findAllByReservationMentoringIdOrderByCreatedAtDesc(mentoringId);
         return reviews.stream()
                 .map(review -> AdminReviewResponse.of(review, review.getMentee()))
