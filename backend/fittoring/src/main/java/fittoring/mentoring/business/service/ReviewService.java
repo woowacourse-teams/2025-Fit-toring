@@ -124,7 +124,7 @@ public class ReviewService {
 
     public AdminReviewInfoResponse findAllByMentoringForAdmin(Long memberId, Long mentoringId) {
         validateAdmin(memberId);
-        validateMentoring(mentoringId);
+        validateMentoringExists(mentoringId);
         List<AdminReviewResponse> reviewResponses = findAdminReviewResponses(mentoringId);
         RatingStatsDto reviewInfo = reviewRepository.findRatingStatsByMentoringId(mentoringId)
                 .orElse(new RatingStatsDto(mentoringId, 0.0, 0));
@@ -139,7 +139,7 @@ public class ReviewService {
         }
     }
 
-    private void validateMentoring(Long mentoringId) {
+    private void validateMentoringExists(Long mentoringId) {
         if (!mentoringRepository.existsById(mentoringId)) {
             throw new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
         }
@@ -178,11 +178,11 @@ public class ReviewService {
     @Transactional
     public void deleteForAdmin(Long memberId, Long reviewId) {
         validateAdmin(memberId);
-        validateReview(reviewId);
+        validateReviewExists(reviewId);
         reviewRepository.deleteById(reviewId);
     }
 
-    private void validateReview(Long reviewId) {
+    private void validateReviewExists(Long reviewId) {
         if (!reviewRepository.existsById(reviewId)) {
             throw new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
         }
