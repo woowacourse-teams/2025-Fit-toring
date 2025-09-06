@@ -26,10 +26,15 @@ type Story = StoryObj<typeof meta>;
 
 export const DefaultModal: Story = {
   args: {
-    bookedInfo: {
+    mentorInfo: {
+      id: 10,
       mentorName: '김트레이너',
-      menteeName: '홍길동',
-      menteePhone: '010-1111-1111',
+      categories: ['근력 강화', '다이어트', '벌크업'],
+      price: 0,
+      career: 2,
+      profileImageUrl: '',
+      introduction:
+        '안녕하세요. 김트레이너입니다. 현재 이벤트로 무료 상담하고 있습니다.',
     },
     opened: true,
     onCloseClick: fn(),
