@@ -1,3 +1,5 @@
+import type { PropsWithChildren } from 'react';
+
 import styled from '@emotion/styled';
 
 import approvedIcon from '../../../assets/images/approved.svg';
@@ -17,36 +19,57 @@ const ICON_MAP: Record<MentoringReservationStatusType, string> = {
   COMPLETE: completedIcon,
 };
 
-function Step({ type, status }: StepProps) {
+function Step({ type, status, children }: PropsWithChildren<StepProps>) {
   const iconSrc = ICON_MAP[status];
 
   switch (type) {
     case 'before':
       return (
-        <>
-          <StyledStepCircle step="before" />
-          <StyledLine step="before" />
-        </>
+        <StyledWrapper step="notCurrent">
+          <StyledStepCircleWrapper>
+            <StyledStepCircle step="before">{children}</StyledStepCircle>
+            <StyledLine step="before" />
+          </StyledStepCircleWrapper>
+        </StyledWrapper>
       );
     case 'current':
       return (
-        <StyledCurrentCircle>
-          <StyledIcon src={iconSrc} alt={`${status} Icon`} />
-        </StyledCurrentCircle>
+        <StyledWrapper step="current">
+          <StyledCurrentCircle>
+            <StyledIcon src={iconSrc} alt={`${status} Icon`} />
+            {children}
+          </StyledCurrentCircle>
+        </StyledWrapper>
       );
     case 'after':
       return (
-        <>
-          <StyledLine step="after" />
-          <StyledStepCircle step="after" />
-        </>
+        <StyledWrapper step="notCurrent">
+          <StyledStepCircleWrapper>
+            <StyledLine step="after" />
+            <StyledStepCircle step="after">{children}</StyledStepCircle>
+          </StyledStepCircleWrapper>
+        </StyledWrapper>
       );
   }
 }
 
 export default Step;
 
+const StyledWrapper = styled.div<{ step: 'current' | 'notCurrent' }>`
+  display: flex;
+  flex-direction: column;
+  flex-grow: ${({ step }) => (step === 'notCurrent' ? 1 : 0)};
+  gap: 2rem;
+`;
+
+const StyledStepCircleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 const StyledStepCircle = styled.div<{ step: 'before' | 'after' }>`
+  position: relative;
+
   width: 2rem;
   height: 2rem;
   border: 2px solid
@@ -62,6 +85,7 @@ const StyledCurrentCircle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 
   width: 4rem;
   height: 4rem;
