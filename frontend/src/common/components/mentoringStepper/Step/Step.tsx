@@ -95,8 +95,11 @@ const StyledCurrentCircle = styled.div`
 `;
 
 const StyledIcon = styled.img`
-  width: 2.2rem;
+  display: block;
+
+  width: auto;
   height: 2.2rem;
+  aspect-ratio: 1 / 1;
 `;
 
 const StyledLine = styled.div<{ step: 'before' | 'after' }>`
