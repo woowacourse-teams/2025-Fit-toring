@@ -3,6 +3,8 @@ import { useRef, useState, useLayoutEffect, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
 
+import { captureSentryError } from '../../common/utils/captureSentryError';
+
 import {
   getMentoringDetail,
   type MentoringDetail,
@@ -13,9 +15,6 @@ import CompleteModal from './components/CompleteModal/CompleteModal';
 import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 import { smoothScrollTo } from './utils/smoothScrollTo';
 
-import type { BookingResponse } from './types/BookingResponse';
-import { captureSentryError } from '../../common/utils/captureSentryError';
-
 function Booking() {
   const [opened, setOpened] = useState(false);
   const [mentorDetail, setMentorDetail] = useState<MentoringDetail | null>(
@@ -23,10 +22,8 @@ function Booking() {
   );
 
   const { mentoringId } = useParams();
-  const [bookedInfo, setBookedInfo] = useState<BookingResponse | null>(null);
 
-  const handleBookingButtonClick = (bookingResponse: BookingResponse) => {
-    setBookedInfo(bookingResponse);
+  const handleBookingButtonClick = () => {
     setOpened(true);
   };
 
@@ -87,7 +84,7 @@ function Booking() {
         </div>
       </StyledContentWrapper>
       <CompleteModal
-        bookedInfo={bookedInfo}
+        mentorInfo={mentorDetail}
         opened={opened}
         onCloseClick={handleCloseClick}
       />

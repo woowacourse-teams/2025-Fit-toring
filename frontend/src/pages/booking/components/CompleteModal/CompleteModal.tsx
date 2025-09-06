@@ -10,18 +10,18 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import { THEME } from '../../../../common/styles/theme';
 import { StatusTypeEnum } from '../../../../common/types/statusType';
 
-import type { BookingResponse } from '../../types/BookingResponse';
+import type { MentoringDetail } from '../../apis/getMentoringDetail';
 
 interface CompleteModalProps {
-  bookedInfo: BookingResponse | null;
   opened: boolean;
   onCloseClick: () => void;
+  mentorInfo: MentoringDetail | null;
 }
 
 function CompleteModal({
-  bookedInfo,
   opened,
   onCloseClick,
+  mentorInfo,
 }: CompleteModalProps) {
   const navigate = useNavigate();
 
@@ -46,8 +46,8 @@ function CompleteModal({
             <StyledIcon src={humanIcon} alt="사람 아이콘" />
             <span>멘토 정보</span>
           </StyledInfoTextWithIcon>
-          <p>이름: {bookedInfo?.mentorName}</p>
-          <p>전문분야: 보디빌딩 / 근력 증진 / 대회 준비</p>
+          <p>이름: {mentorInfo?.mentorName}</p>
+          <p>전문분야: {mentorInfo?.categories.join(' / ')}</p>
         </StyledMetorInfoBox>
         <Button
           onClick={handleGoHome}
