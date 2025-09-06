@@ -85,7 +85,7 @@ const StyledSteps = styled.div`
   display: flex;
   align-items: center;
 
-  width: 95%;
+  width: 100%;
 `;
 
 const StyledText = styled.span<{ step: 'before' | 'current' | 'after' }>`
