@@ -35,6 +35,12 @@ function CompleteModal({
       <StyledContainer>
         <StyledColoredBackground />
         <StyledTitle>멘토링 신청이 완료되었습니다.</StyledTitle>
+        <StyledStepperWrapper>
+          <StyeldReservationInfoText>
+            확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
+          </StyeldReservationInfoText>
+          <MentoringStepper status={StatusTypeEnum.PENDING} />
+        </StyledStepperWrapper>
         <StyledMetorInfoBox>
           <StyledInfoTextWithIcon>
             <StyledIcon src={humanIcon} alt="사람 아이콘" />
@@ -43,12 +49,6 @@ function CompleteModal({
           <p>이름: {bookedInfo?.mentorName}</p>
           <p>전문분야: 보디빌딩 / 근력 증진 / 대회 준비</p>
         </StyledMetorInfoBox>
-        <StyledStepperWrapper>
-          <StyeldReservationInfoText>
-            확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
-          </StyeldReservationInfoText>
-          <MentoringStepper status={StatusTypeEnum.PENDING} />
-        </StyledStepperWrapper>
         <Button
           onClick={handleGoHome}
           size="full"
@@ -96,7 +96,7 @@ const StyledColoredBackground = styled.div`
   z-index: -1;
 
   width: 100%;
-  height: 60%;
+  height: 30%;
   border-radius: 5px 5px 0 0;
 
   background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
@@ -112,14 +112,11 @@ const StyledMetorInfoBox = styled.div`
   flex-direction: column;
   gap: 0.4rem;
 
-  padding: 1rem 1.1rem;
-  border-radius: 9px;
-
   background-color: rgb(255 255 255 / 10%);
 
   & > p {
     ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-    color: ${({ theme }) => theme.FONT.W01};
+    color: ${({ theme }) => theme.FONT.B01};
   }
 `;
 
@@ -129,7 +126,7 @@ const StyledInfoTextWithIcon = styled.div`
 
   & > span {
     ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-    color: ${({ theme }) => theme.FONT.W01};
+    color: ${({ theme }) => theme.FONT.B01};
   }
 `;
 
