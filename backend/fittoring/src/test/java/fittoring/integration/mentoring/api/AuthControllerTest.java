@@ -1,6 +1,7 @@
 package fittoring.integration.mentoring.api;
 
-import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
@@ -10,51 +11,23 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.PhoneVerificationRepository;
 import fittoring.mentoring.business.repository.RefreshTokenRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.presentation.dto.*;
-import fittoring.util.DbCleaner;
+import fittoring.mentoring.presentation.dto.SignInRequest;
+import fittoring.mentoring.presentation.dto.SignUpRequest;
+import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
+import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
-import org.springframework.restdocs.restassured.RestDocumentationFilter;
-import org.springframework.test.context.ActiveProfiles;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
-@ActiveProfiles("test")
-@ExtendWith(RestDocumentationExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AuthControllerTest {
-
-    private RequestSpecification spec;
-
-    private RestDocumentationFilter documentWithTag(String id) {
-        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
-        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
-    }
-
-    @LocalServerPort
-    public int port;
+class AuthControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private MemberRepository memberRepository;
@@ -67,22 +40,6 @@ class AuthControllerTest {
 
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp(RestDocumentationContextProvider restDocumentation) {
-        RestAssured.port = port;
-        dbCleaner.clean();
-        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
-        restAssuredConfig.operationPreprocessors()
-                .withRequestDefaults(prettyPrint())
-                .withResponseDefaults(prettyPrint());
-        spec = new RequestSpecBuilder()
-                .addFilter(restAssuredConfig)
-                .build();
-    }
 
     @DisplayName("사용자는 회원가입을 할 수 있다.")
     @Test

@@ -1,7 +1,13 @@
 package fittoring.integration.mentoring.api.admin;
 
-import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
-import fittoring.mentoring.business.model.*;
+import fittoring.integration.mentoring.api.AbstractApiDocumentationTest;
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
+import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
@@ -9,44 +15,13 @@ import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
-import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
-import org.springframework.restdocs.restassured.RestDocumentationFilter;
-import org.springframework.test.context.ActiveProfiles;
 
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
-@ActiveProfiles("test")
-@ExtendWith(RestDocumentationExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class AdminReservationControllerTest {
-
-    private RequestSpecification spec;
-
-    private RestDocumentationFilter documentWithTag(String id) {
-        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
-        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
-    }
-
-    @LocalServerPort
-    private int port;
+class AdminReservationControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private MemberRepository memberRepository;
@@ -63,91 +38,75 @@ class AdminReservationControllerTest {
     @Autowired
     private JwtProvider jwtProvider;
 
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp(RestDocumentationContextProvider restDocumentation) {
-        RestAssured.port = port;
-        dbCleaner.clean();
-        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
-        restAssuredConfig.operationPreprocessors()
-                .withRequestDefaults(prettyPrint())
-                .withResponseDefaults(prettyPrint());
-        spec = new RequestSpecBuilder()
-                .addFilter(restAssuredConfig)
-                .build();
-    }
-
     @DisplayName("관리자는 특정 멘토링에 달린 모든 예약을 조회 성공하면 200 OK를 반환한다")
     @Test
     void findMentoringReservations() {
         // given
         Member admin = memberRepository.save(new Member(
-            "adminId",
-            "MALE",
-            "관리자",
-            new Phone("010-1111-2222"),
-            Password.from("password"),
-            MemberRole.ADMIN
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
         ));
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "아이유",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorId",
+                "MALE",
+                "아이유",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "Last Fantasy",
-            "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
+                mentor,
+                5000,
+                5,
+                "Last Fantasy",
+                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
         Member mentee1 = memberRepository.save(new Member(
-            "menteeId1",
-            "MALE",
-            "김멘티",
-            new Phone("010-1234-5679"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId1",
+                "MALE",
+                "김멘티",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Member mentee2 = memberRepository.save(new Member(
-            "menteeId2",
-            "MALE",
-            "박멘티",
-            new Phone("010-1234-5670"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId2",
+                "MALE",
+                "박멘티",
+                new Phone("010-1234-5670"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Reservation reservation1 = reservationRepository.save(new Reservation(
-            "아득한 건 언제나 늘 아름답게 보이죠",
-            Status.PENDING,
-            mentoring,
-            mentee1
+                "아득한 건 언제나 늘 아름답게 보이죠",
+                Status.PENDING,
+                mentoring,
+                mentee1
         ));
         Reservation reservation2 = reservationRepository.save(new Reservation(
-            "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
-            Status.COMPLETE,
-            mentoring,
-            mentee1
+                "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
+                Status.COMPLETE,
+                mentoring,
+                mentee1
         ));
         String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
 
         // when
         // then
         RestAssured
-            .given(spec)
-            .accept("application/json")
-            .filter(documentWithTag("admin/get-admin-mentorings-id-reservation-success"))
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", adminAccessToken)
-            .when()
-            .get("/admin/mentorings/"+ mentoring.getId() +"/reservations")
-            .then().log().all()
-            .statusCode(200);
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("admin/get-admin-mentorings-id-reservation-success"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", adminAccessToken)
+                .when()
+                .get("/admin/mentorings/" + mentoring.getId() + "/reservations")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("관리자가 아닌 회원은 관리자용 예약 조회 기능을 요청 시 403 Forbidden이 반환된다")
@@ -155,42 +114,42 @@ class AdminReservationControllerTest {
     void findMentoringReservationsFail() {
         // given
         Member normalMember = memberRepository.save(new Member(
-            "adminId",
-            "MALE",
-            "관리자",
-            new Phone("010-1111-2222"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "아이유",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorId",
+                "MALE",
+                "아이유",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "Last Fantasy",
-            "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
+                mentor,
+                5000,
+                5,
+                "Last Fantasy",
+                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
         String normalAccessToken = jwtProvider.createAccessToken(normalMember.getId());
 
         // when
         // then
         RestAssured
-            .given(spec)
-            .accept("application/json")
-            .filter(documentWithTag("admin/get-admin-mentorings-id-reservation-unauthorized"))
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", normalAccessToken)
-            .when()
-            .get("/admin/mentorings/"+ mentoring.getId() +"/reservations")
-            .then().log().all()
-            .statusCode(403);
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("admin/get-admin-mentorings-id-reservation-unauthorized"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", normalAccessToken)
+                .when()
+                .get("/admin/mentorings/" + mentoring.getId() + "/reservations")
+                .then().log().all()
+                .statusCode(403);
     }
 
     @DisplayName("관리자는 예약의 상태를 변경할 수 있다")
@@ -198,60 +157,60 @@ class AdminReservationControllerTest {
     void updateStatusWithAdminAuthorization() {
         // given
         Member admin = memberRepository.save(new Member(
-            "adminId",
-            "MALE",
-            "관리자",
-            new Phone("010-1111-2222"),
-            Password.from("password"),
-            MemberRole.ADMIN
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
         ));
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "고윤하",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorId",
+                "MALE",
+                "고윤하",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "살별",
-            "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게"
+                mentor,
+                5000,
+                5,
+                "살별",
+                "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게"
         ));
         Member mentee = memberRepository.save(new Member(
-            "menteeId1",
-            "MALE",
-            "김멘티",
-            new Phone("010-1234-5679"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId1",
+                "MALE",
+                "김멘티",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
-            "아득한 건 언제나 늘 아름답게 보이죠",
-            Status.PENDING,
-            mentoring,
-            mentee
+                "아득한 건 언제나 늘 아름답게 보이죠",
+                Status.PENDING,
+                mentoring,
+                mentee
         ));
         String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
 
         ReservationStatusUpdateRequest reservationStatusUpdateRequest
-            = new ReservationStatusUpdateRequest(Status.COMPLETE.name());
+                = new ReservationStatusUpdateRequest(Status.COMPLETE.name());
 
         // when
         // then
         RestAssured
-            .given(spec)
-            .accept("application/json")
-            .filter(documentWithTag("admin/patch-admin-reservations-id-status-success"))
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", adminAccessToken)
-            .body(reservationStatusUpdateRequest)
-            .when()
-            .patch("/admin/reservations/"+ reservation.getId() +"/status")
-            .then().log().all()
-            .statusCode(200);
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("admin/patch-admin-reservations-id-status-success"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", adminAccessToken)
+                .body(reservationStatusUpdateRequest)
+                .when()
+                .patch("/admin/reservations/" + reservation.getId() + "/status")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("관리자가 등록되어 있는 예약을 삭제하면 204 No Content를 반환한다")
@@ -259,61 +218,61 @@ class AdminReservationControllerTest {
     void deleteReservationWithAdminAuthorization() {
         // given
         Member admin = memberRepository.save(new Member(
-            "adminId",
-            "MALE",
-            "관리자",
-            new Phone("010-1111-2222"),
-            Password.from("password"),
-            MemberRole.ADMIN
+                "adminId",
+                "MALE",
+                "관리자",
+                new Phone("010-1111-2222"),
+                Password.from("password"),
+                MemberRole.ADMIN
         ));
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "최유리",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorId",
+                "MALE",
+                "최유리",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "잘 지내자, 우리",
-            "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~"
+                mentor,
+                5000,
+                5,
+                "잘 지내자, 우리",
+                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~"
         ));
         Member mentee = memberRepository.save(new Member(
-            "menteeId1",
-            "MALE",
-            "김멘티",
-            new Phone("010-1234-5679"),
-            Password.from("password"),
-            MemberRole.MENTEE
+                "menteeId1",
+                "MALE",
+                "김멘티",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTEE
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
-            "최선을 다한 넌 받아들이겠지만",
-            Status.COMPLETE,
-            mentoring,
-            mentee
+                "최선을 다한 넌 받아들이겠지만",
+                Status.COMPLETE,
+                mentoring,
+                mentee
         ));
         Review review = reviewRepository.save(new Review(
-            4,
-            "서툴렀던 난 아직도 기적을 꿈꾼다",
-            reservation,
-            mentee
+                4,
+                "서툴렀던 난 아직도 기적을 꿈꾼다",
+                reservation,
+                mentee
         ));
         String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
 
         // when
         // then
         RestAssured
-            .given(spec)
-            .accept("application/json")
-            .filter(documentWithTag("admin/delete-admin-reservations-id-success"))
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", adminAccessToken)
-            .when()
-            .delete("/admin/reservations/"+ mentoring.getId())
-            .then().log().all()
-            .statusCode(204);
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("admin/delete-admin-reservations-id-success"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", adminAccessToken)
+                .when()
+                .delete("/admin/reservations/" + mentoring.getId())
+                .then().log().all()
+                .statusCode(204);
     }
 }

@@ -1,9 +1,26 @@
 package fittoring.integration.mentoring.api;
 
-import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
-import fittoring.mentoring.business.model.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.doNothing;
+
+import fittoring.mentoring.business.model.Category;
+import fittoring.mentoring.business.model.CategoryMentoring;
+import fittoring.mentoring.business.model.Image;
+import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
+import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.repository.*;
+import fittoring.mentoring.business.repository.CategoryMentoringRepository;
+import fittoring.mentoring.business.repository.CategoryRepository;
+import fittoring.mentoring.business.repository.ImageRepository;
+import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
@@ -11,53 +28,18 @@ import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
-import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
-import org.springframework.restdocs.restassured.RestDocumentationFilter;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.util.List;
-
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.doNothing;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
-@ActiveProfiles("test")
-@ExtendWith(RestDocumentationExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ReservationControllerTest {
-
-    private RequestSpecification spec;
-
-    private RestDocumentationFilter documentWithTag(String id) {
-        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
-        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
-    }
-
-    @LocalServerPort
-    public int port;
+class ReservationControllerTest extends AbstractApiDocumentationTest {
 
     @MockitoBean
     private SmsRestClientService smsRestClientService;
@@ -81,23 +63,7 @@ class ReservationControllerTest {
     private ImageRepository imageRepository;
 
     @Autowired
-    private DbCleaner dbCleaner;
-
-    @Autowired
     private JwtProvider jwtProvider;
-
-    @BeforeEach
-    void setUp(RestDocumentationContextProvider restDocumentation) {
-        RestAssured.port = port;
-        dbCleaner.clean();
-        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
-        restAssuredConfig.operationPreprocessors()
-                .withRequestDefaults(prettyPrint())
-                .withResponseDefaults(prettyPrint());
-        spec = new RequestSpecBuilder()
-                .addFilter(restAssuredConfig)
-                .build();
-    }
 
     @DisplayName("멘토링 예약에 성공하면 201 Created 상태코드와 예약 정보를 반환한다.")
     @Test

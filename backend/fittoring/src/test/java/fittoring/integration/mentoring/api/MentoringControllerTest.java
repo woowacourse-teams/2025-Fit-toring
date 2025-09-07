@@ -1,65 +1,51 @@
 package fittoring.integration.mentoring.api;
 
-import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.model.*;
+import fittoring.mentoring.business.model.Category;
+import fittoring.mentoring.business.model.CategoryMentoring;
+import fittoring.mentoring.business.model.Certificate;
+import fittoring.mentoring.business.model.CertificateType;
+import fittoring.mentoring.business.model.Image;
+import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.repository.*;
+import fittoring.mentoring.business.repository.CategoryMentoringRepository;
+import fittoring.mentoring.business.repository.CategoryRepository;
+import fittoring.mentoring.business.repository.CertificateRepository;
+import fittoring.mentoring.business.repository.ImageRepository;
+import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
-import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
-import org.springframework.restdocs.restassured.RestDocumentationFilter;
-import org.springframework.test.context.ActiveProfiles;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
-@ActiveProfiles("test")
-@ExtendWith(RestDocumentationExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class MentoringControllerTest {
-
-    private RequestSpecification spec;
-
-    private RestDocumentationFilter documentWithTag(String id) {
-        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
-        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
-    }
-
-    @LocalServerPort
-    public int port;
+class MentoringControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private MemberRepository memberRepository;
@@ -80,30 +66,16 @@ class MentoringControllerTest {
     private ImageRepository imageRepository;
 
     @Autowired
-    private DbCleaner dbCleaner;
-
-    @Autowired
     private JwtProvider jwtProvider;
 
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private ReservationRepository reservationRepository;
+
     @Autowired
     private ReviewRepository reviewRepository;
-
-    @BeforeEach
-    void setUp(RestDocumentationContextProvider restDocumentation) {
-        RestAssured.port = port;
-        dbCleaner.clean();
-        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
-         restAssuredConfig.operationPreprocessors()
-                .withRequestDefaults(prettyPrint())
-                .withResponseDefaults(prettyPrint());
-        spec = new RequestSpecBuilder()
-                .addFilter(restAssuredConfig)
-                .build();
-    }
 
     @DisplayName("멘토링 목록 조회 API 테스트")
     @Nested
@@ -847,12 +819,12 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
@@ -889,12 +861,12 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
@@ -946,12 +918,12 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(invalidMember.getId());
 

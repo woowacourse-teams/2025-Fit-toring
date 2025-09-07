@@ -1,7 +1,14 @@
 package fittoring.integration.mentoring.api;
 
-import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
-import fittoring.mentoring.business.model.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
@@ -10,46 +17,13 @@ import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
-import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
-import org.springframework.restdocs.restassured.RestDocumentationFilter;
-import org.springframework.test.context.ActiveProfiles;
 
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
-
-@ActiveProfiles("test")
-@ExtendWith(RestDocumentationExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ReviewControllerTest {
-
-    private RequestSpecification spec;
-
-    private RestDocumentationFilter documentWithTag(String id) {
-        String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
-        return RestAssuredRestDocumentationWrapper.document(id, resource(builder().tag(tag).build()));
-    }
-
-    @LocalServerPort
-    private int port;
+class ReviewControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -65,22 +39,6 @@ class ReviewControllerTest {
 
     @Autowired
     private JwtProvider jwtProvider;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp(RestDocumentationContextProvider restDocumentation) {
-        RestAssured.port = port;
-        dbCleaner.clean();
-        RestAssuredRestDocumentationConfigurer restAssuredConfig = documentationConfiguration(restDocumentation);
-        restAssuredConfig.operationPreprocessors()
-                .withRequestDefaults(prettyPrint())
-                .withResponseDefaults(prettyPrint());
-        spec = new RequestSpecBuilder()
-                .addFilter(restAssuredConfig)
-                .build();
-    }
 
     @DisplayName("리뷰 작성에 성공하면 201 Created 상태코드와 별점, 리뷰 내용을 반환한다")
     @Test
