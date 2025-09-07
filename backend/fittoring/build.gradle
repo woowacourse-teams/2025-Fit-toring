@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.asciidoctor.jvm.convert' version '4.0.5'
     id 'com.epages.restdocs-api-spec' version '0.18.2'
 }
 
@@ -23,37 +22,6 @@ ext {
 tasks.named('test') {
     useJUnitPlatform()
     outputs.dir snippetsDir
-}
-
-asciidoctor {
-    configurations 'asciidoctorExt'
-    baseDirFollowsSourceFile()
-    inputs.dir snippetsDir
-    dependsOn test
-}
-
-asciidoctor.doFirst {
-    delete file('src/main/resources/static/docs')
-}
-
-tasks.register('createDocument', Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static")
-}
-
-bootJar {
-    dependsOn createDocument
-    from("${asciidoctor.outputDir}") {
-        -> into 'static/docs'
-    }
-}
-
-configurations {
-    asciidoctorExt
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
 }
 
 repositories {
@@ -90,7 +58,6 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql'
 
     // restdocs
-    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
     testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
     testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
@@ -98,8 +65,8 @@ dependencies {
 
 openapi3 {
     setServer("http://localhost:8080")
-    title = "restdocs-swagger API 문서"
-    description = "Spring Rest Docs with SwaggerUI"
+    title = "Fittoring API"
+    description = "This is the API document provided by the Fittoring server."
     version = "0.0.1"
     format = "yaml"
 }
@@ -113,6 +80,7 @@ tasks.register("cleanSwaggerStatic", Delete) {
 }
 
 tasks.matching { it.name == "openapi3" }.configureEach {
+    dependsOn("test")
     dependsOn("cleanOpenapiSpec")
     finalizedBy("copyOasToSwagger")
 }
