@@ -51,10 +51,11 @@ public class Member {
     private MemberRole role;
 
     @Getter
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
     @Getter
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     public Member(String loginId, String gender, String name, Phone phone, Password password) {
