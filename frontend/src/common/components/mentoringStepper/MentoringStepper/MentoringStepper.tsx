@@ -75,10 +75,18 @@ function MentoringStepper({ status }: MentoringStepperProps) {
 export default MentoringStepper;
 
 const StyledContainer = styled.div`
+  --circle-size: 2rem;
+  --offset: 3.2rem;
+  --text-height: 1rem;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+
+  padding-bottom: calc(
+    var(--circle-size) / 2 + var(--offset) - var(--circle-size)
+  );
 `;
 
 const StyledSteps = styled.div`
