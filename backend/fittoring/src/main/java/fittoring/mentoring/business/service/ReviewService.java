@@ -122,6 +122,7 @@ public class ReviewService {
         return reviews;
     }
 
+    @Transactional(readOnly = true)
     public AdminReviewInfoResponse findAllByMentoringForAdmin(Long memberId, Long mentoringId) {
         validateAdmin(memberId);
         validateMentoringExists(mentoringId);
