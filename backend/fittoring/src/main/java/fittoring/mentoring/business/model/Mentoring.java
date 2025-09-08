@@ -20,7 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE mentoring SET is_deleted=true, deleted_at=now() WHERE id=?")
+@SQLDelete(sql = "UPDATE mentoring SET is_deleted = true, deleted_at = now() WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "mentoring")
 @Entity
