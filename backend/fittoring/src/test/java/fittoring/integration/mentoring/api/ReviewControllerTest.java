@@ -85,7 +85,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -143,7 +144,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -199,7 +201,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -263,7 +266,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -328,7 +332,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -389,14 +394,16 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
                 mentor2,
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation1 = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -452,7 +459,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Member mentee1 = memberRepository.save(new Member(
                 "loginId",
@@ -529,7 +537,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "길 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -586,7 +595,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "길 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -643,7 +653,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "길 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -701,7 +712,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -762,7 +774,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -834,7 +847,8 @@ class ReviewControllerTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",

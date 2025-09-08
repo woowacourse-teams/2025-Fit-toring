@@ -21,7 +21,7 @@ spring:
     url: jdbc:mysql://${TEST_DATABASE_HOST}:${TEST_DATABASE_PORT}/${TEST_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     user: ${TEST_DATABASE_USER}
     password: ${TEST_DATABASE_PASSWORD}
-    baseline-on-migrate: false
+    baseline-on-migrate: true
     connect-retries: 10
 sms:
   base-url: http://localhost:8089

@@ -30,29 +30,22 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AdminCertificateControllerTest {
 
+    @LocalServerPort
+    public int port;
     private Member admin;
     private Member user;
     private String adminAccessToken;
     private String userAccessToken;
-
     @Autowired
     private MentoringRepository mentoringRepository;
-
     @Autowired
     private CertificateRepository certificateRepository;
-
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private ImageRepository imageRepository;
-
     @Autowired
     private JwtProvider jwtProvider;
-
-    @LocalServerPort
-    public int port;
-
     @Autowired
     private DbCleaner dbCleaner;
 
@@ -128,7 +121,8 @@ class AdminCertificateControllerTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -162,7 +156,8 @@ class AdminCertificateControllerTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -201,7 +196,8 @@ class AdminCertificateControllerTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -235,7 +231,8 @@ class AdminCertificateControllerTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -274,7 +271,8 @@ class AdminCertificateControllerTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -308,7 +306,8 @@ class AdminCertificateControllerTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,

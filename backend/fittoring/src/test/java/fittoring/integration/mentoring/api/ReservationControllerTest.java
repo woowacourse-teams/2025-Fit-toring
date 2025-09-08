@@ -1,12 +1,9 @@
 package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doNothing;
 
-import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
@@ -27,7 +24,6 @@ import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
-import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
@@ -112,7 +108,8 @@ class ReservationControllerTest {
                         1000,
                         3,
                         "멘토링 내용",
-                        "멘토링 자기소개"
+                        "멘토링 자기소개",
+                        "가상의카카오오픈채팅"
                 )
         );
 
@@ -155,37 +152,38 @@ class ReservationControllerTest {
     void createReservationFail1() {
         // given
         Member mentor = memberRepository.save(new Member(
-            "mentorLoginId",
-            "MALE",
-            "아이유",
-            new Phone("010-1234-5678"),
-            Password.from("password"),
-            MemberRole.MENTOR
+                "mentorLoginId",
+                "MALE",
+                "아이유",
+                new Phone("010-1234-5678"),
+                Password.from("password"),
+                MemberRole.MENTOR
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "모던 타임즈",
-            "또 봐요 미스터 채플린~~"
+                mentor,
+                5000,
+                5,
+                "모던 타임즈",
+                "또 봐요 미스터 채플린~~",
+                "가상의카카오오픈채팅"
         ));
 
         String mentorAccessToken = jwtProvider.createAccessToken(mentor.getId());
         ReservationCreateRequest requestBody = new ReservationCreateRequest(
-            "그 이름도 내겐 사랑스런 채플린~"
+                "그 이름도 내겐 사랑스런 채플린~"
         );
 
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", mentorAccessToken)
-            .body(requestBody)
-            .when()
-            .post("/mentorings/" + mentoring.getId() + "/reservation")
-            .then()
-            .statusCode(400);
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", mentorAccessToken)
+                .body(requestBody)
+                .when()
+                .post("/mentorings/" + mentoring.getId() + "/reservation")
+                .then()
+                .statusCode(400);
     }
 
     @DisplayName("존재하지 않는 멘토링에 예약을 시도하면 상태코드 404 Not Found를 반환한다.")
@@ -245,14 +243,16 @@ class ReservationControllerTest {
                 5_000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
                 mentor2,
                 5_000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Category category1 = categoryRepository.save(new Category("근육 증진"));
         Category category2 = categoryRepository.save(new Category("다이어트"));
@@ -318,7 +318,8 @@ class ReservationControllerTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
@@ -387,10 +388,12 @@ class ReservationControllerTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
-        Mentoring mentoring2 = new Mentoring(mentor, 1500, 3, "멘토링 내용2", "멘토링 자기소개2");
+        Mentoring mentoring2 = new Mentoring(mentor, 1500, 3, "멘토링 내용2", "멘토링 자기소개2",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring2 = mentoringRepository.save(mentoring2);
 
         //멘티 생성
@@ -479,7 +482,8 @@ class ReservationControllerTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //when
@@ -524,7 +528,8 @@ class ReservationControllerTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
@@ -579,7 +584,8 @@ class ReservationControllerTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
@@ -628,7 +634,8 @@ class ReservationControllerTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
@@ -677,7 +684,8 @@ class ReservationControllerTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
