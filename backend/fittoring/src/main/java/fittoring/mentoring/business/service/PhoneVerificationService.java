@@ -46,7 +46,7 @@ public class PhoneVerificationService {
                 .orElseThrow(() -> new InvalidPhoneVerificationException(
                         BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage()
                 ));
-        if (phoneVerification.expiredStatus(requestTime)) {
+        if (phoneVerification.isExpired(requestTime)) {
             throw new InvalidPhoneVerificationException(BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage());
         }
     }

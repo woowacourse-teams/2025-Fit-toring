@@ -38,17 +38,17 @@ public class PhoneVerification {
         this(null, phone, code, expireAt);
     }
 
-    public boolean expiredStatus(LocalDateTime requestTime) {
+    public void refresh(Phone phone, String code, LocalDateTime expireAt){
+        this.phone = phone;
+        this.code = code;
+        this.expireAt = expireAt;
+    }
+
+    public boolean isExpired(LocalDateTime requestTime) {
         return requestTime.isAfter(this.expireAt);
     }
 
     public String getPhoneNumber() {
         return this.phone.getNumber();
-    }
-
-    public void refresh(Phone phone, String code, LocalDateTime expireAt){
-        this.phone = phone;
-        this.code = code;
-        this.expireAt = expireAt;
     }
 }
