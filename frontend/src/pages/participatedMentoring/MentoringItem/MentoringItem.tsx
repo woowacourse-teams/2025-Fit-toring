@@ -92,7 +92,7 @@ export default MentoringItem;
 const StyledContainer = styled.li`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.3rem;
 
   padding: 1.5rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
