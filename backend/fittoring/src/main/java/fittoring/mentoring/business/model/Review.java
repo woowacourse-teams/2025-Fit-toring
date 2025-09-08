@@ -50,6 +50,7 @@ public class Review {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Reservation reservation;
 
+    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Member mentee;
