@@ -3,7 +3,7 @@
  * 
  * 서버 URL이 변경될 수 있으므로 상수로 분리하여 관리합니다.
  */
-export const BASE_URL = '';
+ export const BASE_URL = '';
 
 /**
  * API 엔드포인트 상수
@@ -17,6 +17,11 @@ export const API_ENDPOINTS = {
   // 사용자 정보
   AUTH_ME: `${BASE_URL}/members/me`,
   AUTH_STATUS: `${BASE_URL}/members/status`,
+  MEMBER: `${BASE_URL}/admin/members`,
+  MEMBER_MENTORING_CANDIDATES: `${BASE_URL}/members/mentor-candidates`,
+
+  // 카테고리
+  CATEGORIES: `${BASE_URL}/categories`,
   
   // 자격증명
   ADMIN_CERTIFICATES: `${BASE_URL}/admin/certificates`,
@@ -27,9 +32,14 @@ export const API_ENDPOINTS = {
   MENTORING: `${BASE_URL}/mentorings`,
   MENTORING_DETAIL: `${BASE_URL}/mentorings/`,
   MENTORING_DELETE: `${BASE_URL}/admin/mentorings/`,
+  MENTORING_CREATE: `${BASE_URL}/admin/mentorings`,
 
   // 멘토링 예약
   MENTORING_RESERVATION_PREFIX: `${BASE_URL}/admin/reservations/`,
+
+  // 멘토링 리뷰
+  MENTORING_REVIEW_PREFIX: `${BASE_URL}/admin/mentoring/`,
+  MENTORING_REVIEW_POSTFIX: `reviews`,
 } as const;
 
 /**

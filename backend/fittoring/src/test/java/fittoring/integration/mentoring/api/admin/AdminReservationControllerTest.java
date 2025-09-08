@@ -1,7 +1,5 @@
 package fittoring.integration.mentoring.api.admin;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
@@ -15,7 +13,6 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.presentation.dto.ReservationStatusUpdateRequest;
 import fittoring.util.DbCleaner;

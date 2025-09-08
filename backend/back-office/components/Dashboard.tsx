@@ -25,6 +25,8 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import {
+  Settings,
+  Tag,
   Users,
   LogOut,
   Menu,
@@ -41,6 +43,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useAuth } from "./AuthContext";
 import { logout as apiLogout } from "../services/authApi";
 import { ROUTES } from "../constants/routes";
+import { MenteeManagement } from "./dashboard/MenteeManagement";
 
 export function Dashboard() {
   const [activeMenu, setActiveMenu] = useState("certifications");
@@ -56,13 +59,32 @@ export function Dashboard() {
       setActiveMenu('mentoring-detail');
     } else if (location.pathname === '/' || location.pathname === '/dashboard') {
       // 해시가 있으면 해당 메뉴로 이동
-      if (location.hash === '#mentoring') {
-        setActiveMenu('mentoring');
-      } else {
-        setActiveMenu('certifications');
-      }
+      if (location.hash === '#mentoring') setActiveMenu('mentoring');
+      else if (location.hash === '#category') setActiveMenu('category');
+      else setActiveMenu('certifications');
     }
   }, [location.pathname, location.hash]);
+
+  const handleMenuClick = (menu: 'certifications'|'mentees'|'mentoring'|'category') => {
+        switch (menu) {
+          case 'certifications':
+            setActiveMenu('certifications');
+            navigate(ROUTES.ROOT);
+            break;
+          case 'mentees':
+            setActiveMenu('mentees');
+            navigate(ROUTES.ROOT);
+            break;
+          case 'mentoring':
+            setActiveMenu('mentoring');
+            navigate(`${ROUTES.ROOT}#mentoring`);
+            break;
+          case 'category':
+            setActiveMenu('category');
+            navigate(`${ROUTES.ROOT}#category`);
+            break;
+        }
+      };
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -88,11 +110,13 @@ export function Dashboard() {
       case "certifications":
         return <CertificationManagement />;
       case "mentees":
-        return <ComingSoon />;
+        return <MenteeManagement />;
       case "mentoring":
         return <MentoringManagement />;
       case "mentoring-detail":
         return <MentoringDetail />;
+      case "category":
+        return <ComingSoon />;
       default:
         return <CertificationManagement />;
     }
@@ -101,15 +125,17 @@ export function Dashboard() {
   const getPageTitle = () => {
     switch (activeMenu) {
       case "certifications":
-        return "자격증 관리";
+        return "자격증명 관리";
       case "mentees":
         return "멘티 관리";
       case "mentoring":
         return "멘토링 관리";
       case "mentoring-detail":
         return "멘토링 상세";
+      case "category":
+        return "카테고리 관리";
       default:
-        return "자격증 관리";
+        return "자격증명 관리";
     }
   };
 
@@ -167,7 +193,7 @@ export function Dashboard() {
                               >
                                 <div className="flex items-center cursor-pointer">
                                   <Award className="h-4 w-4" />
-                                  <span>자격증 관리</span>
+                                  <span>자격증명 관리</span>
                                 </div>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -189,16 +215,48 @@ export function Dashboard() {
                     </SidebarMenuItem>
 
                     {/* 멘토링 관리 */}
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        tooltip="멘토링 관리"
-                        isActive={activeMenu === "mentoring"}
-                        onClick={() => setActiveMenu("mentoring")}
-                      >
-                        <BookOpen className="h-4 w-4" />
-                        <span>멘토링 관리</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    <Collapsible
+                    defaultOpen
+                    className="group/collapsible"
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton tooltip="멘토링 관리">
+                            <BookOpen className="h-4 w-4" />
+                            <span>멘토링 관리</span>
+                            <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            <SidebarMenuSubItem>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={activeMenu === "mentoring" || activeMenu === "mentoring-detail"}
+                                onClick={() => handleMenuClick("mentoring")}
+                              >
+                                <div className="flex items-center cursor-pointer">
+                                  <Settings className="h-4 w-4" />
+                                  <span>멘토링 상세 관리</span>
+                                </div>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                            <SidebarMenuSubItem>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={activeMenu === "category"}
+                                onClick={() => handleMenuClick("category")}
+                              >
+                                <div className="flex items-center cursor-pointer">
+                                  <Tag className="h-4 w-4" />
+                                  <span>카테고리 관리</span>
+                                </div>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>

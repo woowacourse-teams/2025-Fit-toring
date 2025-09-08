@@ -16,4 +16,6 @@ public interface MemberRepository extends ListCrudRepository<Member, Long> {
 
     @Query(value = "SELECT * FROM member WHERE is_deleted = true", nativeQuery = true)
     List<Member> findAllDeleted();
+
+    List<Member> findAllByOrderByRoleAsc();
 }

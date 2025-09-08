@@ -59,6 +59,7 @@ public class Review {
     @JoinColumn(nullable = false, unique = true)
     private Reservation reservation;
 
+    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Member mentee;
