@@ -50,7 +50,12 @@ public class Mentoring {
         this(null, price, career, content, introduction, member);
     }
 
-    public void modify(int price, Integer career, String content, String introduction) {
+    public void modify(
+        int price,
+        Integer career,
+        String content,
+        String introduction
+    ) {
         this.price = price;
         this.career = career;
         this.content = content;
