@@ -26,11 +26,18 @@ jobs:
 
       - name: Generate environment variables
         run: |
-          echo "API_BASE_URL=${{ secrets.FE_API_BASE_URL }}" >> .env
+          if [[ "${{ github.base_ref }}" == "develop" ]]; then
+            echo "✅ Environment: DEVELOPMENT"
+            echo "API_BASE_URL=${{ secrets.FE_DEV_API_BASE_URL }}" >> .env.dev
+          elif [[ "${{ github.base_ref }}" == "release_dev" || "${{ github.base_ref }}" == "release_prod" ]]; then
+            echo "✅ Environment: PRODUCTION"
+            echo "API_BASE_URL=${{ secrets.FE_PROD_API_BASE_URL }}" >> .env.prod
+          else
+            echo "❌ Error: Unsupported target branch for CI."
+            exit 1
+          fi
+
           echo "SENTRY_DSN=${{ secrets.FE_SENTRY_DSN }}" >> .env
-        env:
-          API_BASE_URL: ${{ secrets.FE_API_BASE_URL }}
-          SENTRY_DSN: ${{ secrets.FE_SENTRY_DSN }}
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Run Vitest
