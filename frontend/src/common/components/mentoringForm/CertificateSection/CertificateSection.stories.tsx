@@ -14,8 +14,10 @@ type Story = StoryObj<typeof meta>;
 
 export const DefaultCertificateSection: Story = {
   args: {
-    handleCertificateChange: () => {},
-    handleCertificateImageFilesChange: () => {},
+    onAddButtonClick: () => {},
+    onDeleteButtonClick: () => {},
+    onCertificateChangeById: () => {},
+    certificates: [],
   },
   parameters: {
     docs: {
