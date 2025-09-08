@@ -1,6 +1,0 @@
-ALTER TABLE certificate
-ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
-
-ALTER TABLE certificate
-ADD COLUMN deleted_at DATETIME NULL
-
