@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import uploadIcon from '../../../../common/assets/images/uploadIcon.svg';
 import usePreviewImage from '../../../hooks/usePreviewImage';
+import { convertHeicToJpegIfNeeded } from '../../../utils/heicFile/convertHeicToJpegIfNeeded';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 interface ProfileSectionProps {
@@ -17,11 +18,16 @@ function ProfileSection({
   const { previewUrl, handleImageChange, updatePreviewUrl } =
     usePreviewImage(profileImageUrl);
 
-  const handleProfileImageInputChange = (
+  const handleProfileImageInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    handleImageChange(e);
-    onProfileImageChange(e.target.files?.[0] || null);
+    const file = e.target.files?.[0];
+    if (file) {
+      const convertedFile = await convertHeicToJpegIfNeeded(file);
+
+      handleImageChange(convertedFile);
+      onProfileImageChange(convertedFile);
+    }
   };
 
   const handleDeleteProfileImageClick = () => {

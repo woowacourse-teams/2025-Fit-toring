@@ -4,6 +4,7 @@ import certificateUploadIcon from '../../../../common/assets/images/certificateU
 import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import downIcon from '../../../../common/assets/images/downIcon.svg';
 import usePreviewImage from '../../../hooks/usePreviewImage';
+import { convertHeicToJpegIfNeeded } from '../../../utils/heicFile/convertHeicToJpegIfNeeded';
 
 import type { CertificateItem } from '../../../types/certificateItem';
 
@@ -39,6 +40,18 @@ function CertificateInput({
   };
 
   const disabled = certificateInfo.imageUrl !== undefined;
+
+  const handleCertificateImageInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const convertedFile = await convertHeicToJpegIfNeeded(file);
+
+      handleImageChange(convertedFile);
+      onCertificateImageFileChange(convertedFile);
+    }
+  };
 
   return (
     <StyledContainer>
@@ -85,13 +98,7 @@ function CertificateInput({
           accept="image/*"
           id={id}
           name="certificateImage"
-          onChange={(e) => {
-            handleImageChange(e);
-            const file = e.target.files?.[0];
-            if (file) {
-              onCertificateImageFileChange(file);
-            }
-          }}
+          onChange={handleCertificateImageInputChange}
           required={!previewUrl}
           disabled={disabled}
         />
