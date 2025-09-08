@@ -1,12 +1,14 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
 import defaultImage from '../../../common/assets/images/profileImg.svg';
 import MentoringApplicationStatus from '../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
+import MentoringStepper from '../../../common/components/mentoringStepper/MentoringStepper/MentoringStepper';
 import ReviewButton from '../ReviewButton/ReviewButton';
+import ReviewModal from '../ReviewModal/ReviewModal';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
-import ReviewModal from '../ReviewModal/ReviewModal';
-import { useState } from 'react';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
   handleReviewSubmitButtonClick: (reservationId: number) => void;
@@ -55,6 +57,14 @@ function MentoringItem({
           <MentoringApplicationStatus status={status} />
         </StyledStatusWrapper>
       </StyledMentorInfoWrapper>
+      <StyeldReservationInfoText>
+        확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
+      </StyeldReservationInfoText>
+      {status !== 'REJECTED' ? (
+        <StyledStepperWrapper>
+          <MentoringStepper status={status} />
+        </StyledStepperWrapper>
+      ) : null}
       <StyledApplicationInfoWrapper>
         <StyledApplicationDate>⏰ {reservedAt}</StyledApplicationDate>
         <StyledApplicationPrice>
@@ -119,11 +129,9 @@ const StyledName = styled.h4`
 
 const StyledMentoringInfo = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-flow: column wrap;
   flex-grow: 1;
   gap: 1rem;
-
-  height: 12rem;
 `;
 
 const StyledCategoryWrapper = styled.div`
@@ -148,6 +156,17 @@ const StyledCategory = styled.span`
 
 const StyledStatusWrapper = styled.div`
   height: auto;
+`;
+
+const StyeldReservationInfoText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B4_B};
+  color: ${({ theme }) => theme.FONT.B02};
+  text-align: center;
+`;
+
+const StyledStepperWrapper = styled.div`
+  width: 90%;
+  margin: 0 auto;
 `;
 
 const StyledApplicationInfoWrapper = styled.div`
