@@ -127,7 +127,7 @@ public class ReviewService {
         validateMentoringExists(mentoringId);
         List<AdminReviewResponse> reviewResponses = findReviewResponsesForAdmin(mentoringId);
         RatingStatsDto reviewInfo = reviewRepository.findRatingStatsByMentoringId(mentoringId)
-                .orElse(new RatingStatsDto(mentoringId, 0.0, 0));
+                .orElse(RatingStatsDto.defaultOf(mentoringId));
         return AdminReviewInfoResponse.of(reviewResponses, reviewInfo);
     }
 
