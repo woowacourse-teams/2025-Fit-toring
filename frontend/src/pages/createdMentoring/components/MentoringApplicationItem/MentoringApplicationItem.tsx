@@ -60,11 +60,13 @@ function MentoringApplicationItem({
       </StyledApplicationInfoWrapper>
       <PhoneNumber status={status} phoneNumber={phoneNumber} />
       <StyledApplicationContent>{content}</StyledApplicationContent>
-      <ActionButtons
-        reservationId={reservationId}
-        status={status}
-        onClick={handleActionButtonsComplete}
-      />
+      <StyledButtonWrapper>
+        <ActionButtons
+          reservationId={reservationId}
+          status={status}
+          onClick={handleActionButtonsComplete}
+        />
+      </StyledButtonWrapper>
     </StyledContainer>
   );
 }
@@ -115,4 +117,9 @@ const StyledApplicationPrice = styled.p`
 const StyledApplicationContent = styled.p`
   color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const StyledButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;
