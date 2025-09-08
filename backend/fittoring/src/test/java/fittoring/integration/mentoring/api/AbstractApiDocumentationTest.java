@@ -38,7 +38,8 @@ public abstract class AbstractApiDocumentationTest {
         String tag = id.contains("/") ? id.substring(0, id.indexOf('/')) : id;
         return RestAssuredRestDocumentationWrapper.document(
                 id,
-                resource(builder().tag(tag).build()));
+                resource(builder().tag(tag).build())
+        );
     }
 
     @BeforeEach
