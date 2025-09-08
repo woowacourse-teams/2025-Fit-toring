@@ -36,8 +36,8 @@ public class Mentoring {
     @Column(nullable = false)
     private String introduction;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member mentor;
 
     public Mentoring(

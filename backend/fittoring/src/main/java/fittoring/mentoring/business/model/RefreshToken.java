@@ -28,8 +28,8 @@ public class RefreshToken {
     private Long id;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @ManyToOne
     @JoinColumn(nullable = false)
+    @ManyToOne
     private Member member;
 
     @Column(nullable = false)

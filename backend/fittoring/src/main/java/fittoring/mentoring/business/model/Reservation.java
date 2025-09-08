@@ -41,12 +41,12 @@ public class Reservation {
     private Status status;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @ManyToOne
     @JoinColumn(nullable = false)
+    @ManyToOne
     private Mentoring mentoring;
 
-    @ManyToOne
     @JoinColumn(nullable = false)
+    @ManyToOne
     private Member mentee;
 
     public Reservation(String content, Status status, Mentoring mentoring, Member mentee) {

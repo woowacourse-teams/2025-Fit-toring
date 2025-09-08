@@ -46,12 +46,12 @@ public class Review {
     private LocalDateTime createdAt;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @ManyToOne
     @JoinColumn(nullable = false, unique = true)
+    @ManyToOne
     private Reservation reservation;
 
-    @ManyToOne
     @JoinColumn(nullable = false)
+    @ManyToOne
     private Member mentee;
 
     public Review(int rating, String content, Reservation reservation, Member mentee) {

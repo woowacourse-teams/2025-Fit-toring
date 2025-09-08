@@ -23,13 +23,13 @@ public class CategoryMentoring {
     @Id
     private Long id;
 
-    @ManyToOne
     @JoinColumn(nullable = false)
+    @ManyToOne
     private Category category;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @ManyToOne
     @JoinColumn(nullable = false)
+    @ManyToOne
     private Mentoring mentoring;
 
     public CategoryMentoring(Category category, Mentoring mentoring) {

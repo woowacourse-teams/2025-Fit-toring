@@ -50,9 +50,9 @@ public class Certificate {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(nullable = false)
+    @ManyToOne
     private Mentoring mentoring;
 
     public Certificate(CertificateType type, String title, Mentoring mentoring) {
