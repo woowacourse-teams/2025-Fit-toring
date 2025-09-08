@@ -119,23 +119,24 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<AdminReservationResponse> findMentoringReservationsWithAdminAuthorization(MentoringReservationGetDto dto) {
+    public List<AdminReservationResponse> findMentoringReservationsWithAdminAuthorization(
+            MentoringReservationGetDto dto) {
         checkAdminAuthority(dto.memberId());
         List<Reservation> reservations = reservationRepository.findAllByMentoringId(dto.mentoringId());
         return reservations.stream()
-            .map(reservation -> new AdminReservationResponse(
-                reservation.getId(),
-                reservation.getMenteeName(),
-                reservation.getCreatedAt().toLocalDate(),
-                reservation.getStatus(),
-                reservation.getContent()
-            ))
-            .toList();
+                .map(reservation -> new AdminReservationResponse(
+                        reservation.getId(),
+                        reservation.getMenteeName(),
+                        reservation.getCreatedAt().toLocalDate(),
+                        reservation.getStatus(),
+                        reservation.getContent()
+                ))
+                .toList();
     }
 
     private void checkAdminAuthority(Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
@@ -176,10 +177,10 @@ public class ReservationService {
 
     private Reservation getReservation(Long reservationId) {
         return reservationRepository.findById(reservationId)
-            .orElseThrow(
-                () -> new ReservationNotFoundException(
-                    BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage())
-            );
+                .orElseThrow(
+                        () -> new ReservationNotFoundException(
+                                BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage())
+                );
     }
 
     @Transactional
@@ -193,8 +194,8 @@ public class ReservationService {
     @Transactional
     public void deleteReservationWithAdminAuthorization(AdminReservationDeleteDto adminReservationDeleteDto) {
         checkAdminAuthority(adminReservationDeleteDto.memberId());
-        Long reservationId = adminReservationDeleteDto.reservationId();
-        reviewRepository.deleteByReservationId(reservationId);
-        reservationRepository.deleteById(reservationId);
+        Reservation reservation = getReservation(adminReservationDeleteDto.reservationId());
+        reviewRepository.deleteByReservation(reservation);
+        reservationRepository.delete(reservation);
     }
 }

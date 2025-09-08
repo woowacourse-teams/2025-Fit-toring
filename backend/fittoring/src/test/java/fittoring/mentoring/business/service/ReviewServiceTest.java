@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
@@ -121,7 +122,7 @@ class ReviewServiceTest {
         ReviewCreateResponse reviewCreateResponse = reviewService.createReview(reviewCreateDto);
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(reviewCreateResponse.mentoringId()).isEqualTo(mentoring.getId());
             softAssertions.assertThat(reviewCreateResponse.rating()).isEqualTo(rating);
             softAssertions.assertThat(reviewCreateResponse.content()).isEqualTo(content);
@@ -481,7 +482,7 @@ class ReviewServiceTest {
                 = reviewService.findMentoringReviews(mentoring.getId());
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             assertThat(responseBody).containsExactlyInAnyOrder(
                     new ReviewGetResponse(
                             review1.getId(),
@@ -554,7 +555,7 @@ class ReviewServiceTest {
         em.clear();
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
             softAssertions.assertThat(review.getContent()).isEqualTo(originalContent);
         });
@@ -614,7 +615,7 @@ class ReviewServiceTest {
         em.clear();
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
             softAssertions.assertThat(review.getContent()).isEqualTo(originalContent);
         });
@@ -673,7 +674,7 @@ class ReviewServiceTest {
         em.clear();
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(review.getRating()).isEqualTo(originalRating);
             softAssertions.assertThat(review.getContent()).isEqualTo(newContent);
         });
@@ -733,7 +734,7 @@ class ReviewServiceTest {
         em.clear();
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
             softAssertions.assertThat(review.getContent()).isEqualTo(newContent);
         });
@@ -894,8 +895,8 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+            .isInstanceOf(ForbiddenException.class)
+            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 
     @DisplayName("존재하지 않는 리뷰에 대해 삭제를 요청하면 예외가 발생한다.")
@@ -984,8 +985,67 @@ class ReviewServiceTest {
         reviewService.deleteForAdmin(savedAdmin.getId(), savedReview.getId());
         em.flush();
         em.clear();
-        
+
         // then
         assertThat(reviewRepository.findById(savedReview.getId())).isEmpty();
+    }
+
+    @DisplayName("리뷰를 삭제하면 삭제가 일어난 시간과 함께 삭제상태로 변경된다.")
+    @Test
+    void deleteReview() {
+        //given
+        Member mentee = em.persist(new Member(
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        ));
+        Member mentor = em.persist(new Member(
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
+        ));
+        Mentoring mentoring = em.persist(new Mentoring(
+                mentor,
+                5000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
+        ));
+        Reservation reservation = em.persist(new Reservation(
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee
+        ));
+        Review review = em.persist(new Review(
+                5,
+                "최고의 멘토링이었습니다.",
+                reservation,
+                mentee
+        ));
+        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(
+                mentee.getId(),
+                review.getId()
+        );
+
+        //when
+        reviewService.deleteReview(reviewDeleteDto);
+        em.flush();
+        em.clear();
+
+        //then
+        Review deletedReview = (Review) em.getEntityManager().createNativeQuery(
+                        "SELECT * FROM review WHERE id = ?", Review.class)
+                .setParameter(1, review.getId())
+                .getSingleResult();
+
+        assertSoftly(softly -> {
+            softly.assertThat(deletedReview.isDeleted()).isTrue();
+            softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
+        });
     }
 }
