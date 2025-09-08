@@ -8,7 +8,7 @@ export interface MentoringResponse {
   categories: string[];
   price: number;
   career: number;
-  kakaoOpenChatUrl: string;
+  chatUrl: string;
   profileImageUrl: string | null;
   introduction: string;
   content: string;

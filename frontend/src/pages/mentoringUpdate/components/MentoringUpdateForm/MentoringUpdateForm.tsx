@@ -206,7 +206,7 @@ function MentoringUpdateForm() {
           introduction,
           content,
           profileImageUrl,
-          kakaoOpenChatUrl,
+          chatUrl,
         } = mentoring;
         setMentoringData({
           price,
@@ -214,7 +214,7 @@ function MentoringUpdateForm() {
           introduction,
           content,
           category: categories,
-          kakaoOpenChatUrl: kakaoOpenChatUrl,
+          chatUrl: chatUrl,
           certificateInfos: certificateInfosData,
           profileImageUrl,
         });
@@ -237,7 +237,7 @@ function MentoringUpdateForm() {
             onBaseInfoChange={handleMentoringDataChange}
             priceErrorMessage={priceErrorMessage}
             price={mentoringData.price}
-            kakaoOpenChatUrl={mentoringData.kakaoOpenChatUrl}
+            chatUrl={mentoringData.chatUrl}
           />
           <ProfileSection
             profileImageUrl={mentoringData.profileImageUrl}

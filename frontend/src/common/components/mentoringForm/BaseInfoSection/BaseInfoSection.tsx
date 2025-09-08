@@ -14,19 +14,17 @@ import { captureSentryError } from '../../../utils/captureSentryError';
 interface BaseInfoSectionProps {
   priceErrorMessage: string;
   onBaseInfoChange: (
-    newData: Partial<
-      Pick<mentoringCreateFormData, 'price' | 'kakaoOpenChatUrl'>
-    >,
+    newData: Partial<Pick<mentoringCreateFormData, 'price' | 'chatUrl'>>,
   ) => void;
   price: number;
-  kakaoOpenChatUrl: string;
+  chatUrl: string;
 }
 
 function BaseInfoSection({
   onBaseInfoChange,
   priceErrorMessage,
   price,
-  kakaoOpenChatUrl,
+  chatUrl,
 }: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
@@ -59,7 +57,7 @@ function BaseInfoSection({
   const handleKakaoOpenChatUrlChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    onBaseInfoChange({ kakaoOpenChatUrl: e.target.value });
+    onBaseInfoChange({ chatUrl: e.target.value });
   };
 
   return (
@@ -75,10 +73,10 @@ function BaseInfoSection({
         <FormField label="카카오톡 오픈 채팅 주소 *">
           <Input
             placeholder="https://open.kakao.com/o/xxxxxx"
-            id="kakaoOpenChatUrl"
+            id="chatUrl"
             required
             onChange={handleKakaoOpenChatUrlChange}
-            value={kakaoOpenChatUrl}
+            value={chatUrl}
           />
         </FormField>
         <FormField label="15분 상담료 (원) *" errorMessage={priceErrorMessage}>

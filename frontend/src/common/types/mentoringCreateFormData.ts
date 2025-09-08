@@ -4,7 +4,7 @@ export interface mentoringCreateFormData {
   introduction: string;
   career: number;
   content: string;
-  kakaoOpenChatUrl: string;
+  chatUrl: string;
   certificateInfos: {
     type: string | null;
     title: string | null;
