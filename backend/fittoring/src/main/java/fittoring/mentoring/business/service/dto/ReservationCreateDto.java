@@ -2,7 +2,11 @@ package fittoring.mentoring.business.service.dto;
 
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 
-public record ReservationCreateDto(Long menteeId, Long mentoringId, String content) {
+public record ReservationCreateDto(
+    Long menteeId,
+    Long mentoringId,
+    String content
+) {
 
     public static ReservationCreateDto of(
         Long menteeId,

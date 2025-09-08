@@ -9,4 +9,5 @@ public record AdminReservationResponse(
     String status,
     String content
 ) {
+
 }

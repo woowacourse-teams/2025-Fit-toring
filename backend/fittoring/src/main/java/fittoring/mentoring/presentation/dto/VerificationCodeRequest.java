@@ -7,8 +7,8 @@ public record VerificationCodeRequest(
         @PhoneNumber
         @NotBlank
         String phone,
-
         @NotBlank
         String code
 ) {
+
 }

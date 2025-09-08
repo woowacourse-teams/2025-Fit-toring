@@ -1,4 +1,8 @@
 package fittoring.mentoring.presentation.dto;
 
-public record AdminReservationDeleteDto(Long memberId, Long reservationId) {
+public record AdminReservationDeleteDto(
+    Long memberId,
+    Long reservationId
+) {
+
 }

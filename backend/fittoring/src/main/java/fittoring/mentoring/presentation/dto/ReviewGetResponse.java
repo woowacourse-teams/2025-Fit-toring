@@ -9,4 +9,5 @@ public record ReviewGetResponse(
     int rating,
     String content
 ) {
+
 }

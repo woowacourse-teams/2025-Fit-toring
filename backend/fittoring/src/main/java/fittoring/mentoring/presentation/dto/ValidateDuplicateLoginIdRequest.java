@@ -6,4 +6,5 @@ public record ValidateDuplicateLoginIdRequest(
         @NotBlank
         String loginId
 ) {
+
 }

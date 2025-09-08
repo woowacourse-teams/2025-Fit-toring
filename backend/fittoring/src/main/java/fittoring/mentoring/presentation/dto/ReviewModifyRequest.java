@@ -7,7 +7,7 @@ public record ReviewModifyRequest(
     @Min(1)
     @Max(5)
     Integer rating,
-
     String content
 ) {
+
 }

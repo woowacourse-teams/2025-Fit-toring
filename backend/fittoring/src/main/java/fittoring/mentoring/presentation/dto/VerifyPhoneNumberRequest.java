@@ -6,4 +6,5 @@ public record VerifyPhoneNumberRequest(
         @PhoneNumber
         String phone
 ) {
+
 }

@@ -14,4 +14,5 @@ public record ParticipatedReservationResponse(
     String status,
     boolean isReviewed
 ) {
+
 }
