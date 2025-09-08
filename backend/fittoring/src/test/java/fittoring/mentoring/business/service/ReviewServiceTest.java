@@ -1,7 +1,6 @@
 package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.config.JpaConfiguration;
@@ -59,7 +58,7 @@ class ReviewServiceTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private TestEntityManager entityManager;
+    private TestEntityManager em;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -80,28 +79,28 @@ class ReviewServiceTest {
     void createReservation() {
         // given
         Password password = Password.from("password");
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentor",
                 "MALE",
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 password
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "content",
                 "introduction"
         ));
-        Reservation reservation = entityManager.persist(
+        Reservation reservation = em.persist(
                 new Reservation(
                         "예약 신청합니다.",
                         Status.COMPLETE,
@@ -133,28 +132,28 @@ class ReviewServiceTest {
     @Test
     void createReservationFail1() {
         // given
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentor",
                 "MALE",
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 Password.from("password")
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "content",
                 "introduction"
         ));
-        entityManager.persist(
+        em.persist(
                 new Reservation(
                         "예약 신청합니다.",
                         Status.COMPLETE,
@@ -181,28 +180,28 @@ class ReviewServiceTest {
     void createReservationFail2() {
         // given
         Password password = Password.from("password");
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentor",
                 "MALE",
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 password
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "content",
                 "introduction"
         ));
-        Reservation reservation = entityManager.persist(
+        Reservation reservation = em.persist(
                 new Reservation(
                         "예약 신청합니다.",
                         Status.COMPLETE,
@@ -210,7 +209,7 @@ class ReviewServiceTest {
                         mentee
                 )
         );
-        Member anotherMember = entityManager.persist(new Member(
+        Member anotherMember = em.persist(new Member(
                 "anotherMember",
                 "MALE",
                 "김멘티",
@@ -238,28 +237,28 @@ class ReviewServiceTest {
     void createReservationFail3() {
         // given
         Password password = Password.from("password");
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentor",
                 "MALE",
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 password
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "content",
                 "introduction"
         ));
-        Reservation reservation = entityManager.persist(
+        Reservation reservation = em.persist(
                 new Reservation(
                         "예약 신청합니다.",
                         Status.COMPLETE,
@@ -289,28 +288,28 @@ class ReviewServiceTest {
     void createReservationFail4() {
         // given
         Password password = Password.from("password");
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentor",
                 "MALE",
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 password
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "content",
                 "introduction"
         ));
-        Reservation reservation = entityManager.persist(
+        Reservation reservation = em.persist(
                 new Reservation(
                         "예약 신청합니다.",
                         Status.PENDING,
@@ -338,60 +337,60 @@ class ReviewServiceTest {
     @Test
     void findMemberReviews() {
         // given
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Member mentor1 = entityManager.persist(new Member(
+        Member mentor1 = em.persist(new Member(
                 "mentor1Id",
                 "MALE",
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
-        Member mentor2 = entityManager.persist(new Member(
+        Member mentor2 = em.persist(new Member(
                 "mentor2Id",
                 "MALE",
                 "박멘토",
                 new Phone("010-2222-3333"),
                 Password.from("password")
         ));
-        Mentoring mentoring1 = entityManager.persist(new Mentoring(
+        Mentoring mentoring1 = em.persist(new Mentoring(
                 mentor1,
                 5000,
                 5,
                 "한 줄 소개",
                 "긴 글 소개"
         ));
-        Mentoring mentoring2 = entityManager.persist(new Mentoring(
+        Mentoring mentoring2 = em.persist(new Mentoring(
                 mentor2,
                 5000,
                 5,
                 "한 줄 소개",
                 "긴 글 소개"
         ));
-        Reservation reservation1 = entityManager.persist(new Reservation(
+        Reservation reservation1 = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring1,
                 mentee
         ));
-        Reservation reservation2 = entityManager.persist(new Reservation(
+        Reservation reservation2 = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring2,
                 mentee
         ));
-        Review review1 = entityManager.persist(new Review(
+        Review review1 = em.persist(new Review(
                 5,
                 "최고의 멘토링이었습니다.",
                 reservation1,
                 mentee
         ));
-        Review review2 = entityManager.persist(new Review(
+        Review review2 = em.persist(new Review(
                 5,
                 "최고의 멘토링이었습니다.",
                 reservation2,
@@ -424,53 +423,53 @@ class ReviewServiceTest {
     @Test
     void findMentoringReviews() {
         // given
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentorId",
                 "MALE",
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "한 줄 소개",
                 "긴 글 소개"
         ));
-        Member mentee1 = entityManager.persist(new Member(
+        Member mentee1 = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "세글자",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Member mentee2 = entityManager.persist(new Member(
+        Member mentee2 = em.persist(new Member(
                 "loginId2",
                 "MALE",
                 "두글",
                 new Phone("010-1234-5679"),
                 Password.from("password")
         ));
-        Reservation reservation1 = entityManager.persist(new Reservation(
+        Reservation reservation1 = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring,
                 mentee1
         ));
-        Reservation reservation2 = entityManager.persist(new Reservation(
+        Reservation reservation2 = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring,
                 mentee2
         ));
-        Review review1 = entityManager.persist(new Review(
+        Review review1 = em.persist(new Review(
                 5,
                 "최고의 멘토링이었습니다.",
                 reservation1,
                 mentee1
         ));
-        Review review2 = entityManager.persist(new Review(
+        Review review2 = em.persist(new Review(
                 2,
                 "최고의 멘토링이었습니다.",
                 reservation2,
@@ -506,28 +505,28 @@ class ReviewServiceTest {
     @Test
     void modifyReview1() {
         // given
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentorId",
                 "MALE",
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "한 줄 소개",
                 "길 글 소개"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
+        Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring,
@@ -535,7 +534,7 @@ class ReviewServiceTest {
         ));
         int originalRating = 5;
         String originalContent = "최고의 멘토링이었습니다.";
-        Review review = entityManager.persist(new Review(
+        Review review = em.persist(new Review(
                 originalRating,
                 originalContent,
                 reservation,
@@ -551,8 +550,8 @@ class ReviewServiceTest {
 
         // when
         reviewService.modifyReview(reviewModifyDto);
-        entityManager.flush();
-        entityManager.clear();
+        em.flush();
+        em.clear();
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -566,28 +565,28 @@ class ReviewServiceTest {
     @ParameterizedTest
     void modifyReview2(String newString) {
         // given
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentorId",
                 "MALE",
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "한 줄 소개",
                 "길 글 소개"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
+        Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring,
@@ -595,7 +594,7 @@ class ReviewServiceTest {
         ));
         int originalRating = 5;
         String originalContent = "최고의 멘토링이었습니다.";
-        Review review = entityManager.persist(new Review(
+        Review review = em.persist(new Review(
                 originalRating,
                 originalContent,
                 reservation,
@@ -611,8 +610,8 @@ class ReviewServiceTest {
 
         // when
         reviewService.modifyReview(reviewModifyDto);
-        entityManager.flush();
-        entityManager.clear();
+        em.flush();
+        em.clear();
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -625,28 +624,28 @@ class ReviewServiceTest {
     @Test
     void modifyReview3() {
         // given
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentorId",
                 "MALE",
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "한 줄 소개",
                 "길 글 소개"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
+        Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring,
@@ -654,7 +653,7 @@ class ReviewServiceTest {
         ));
         int originalRating = 5;
         String originalContent = "최고의 멘토링이었습니다.";
-        Review review = entityManager.persist(new Review(
+        Review review = em.persist(new Review(
                 originalRating,
                 originalContent,
                 reservation,
@@ -670,8 +669,8 @@ class ReviewServiceTest {
 
         // when
         reviewService.modifyReview(reviewModifyDto);
-        entityManager.flush();
-        entityManager.clear();
+        em.flush();
+        em.clear();
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -684,28 +683,28 @@ class ReviewServiceTest {
     @Test
     void modifyReview4() {
         // given
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentorId",
                 "MALE",
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "한 줄 소개",
                 "길 글 소개"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
+        Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring,
@@ -713,7 +712,7 @@ class ReviewServiceTest {
         ));
         int originalRating = 5;
         String originalContent = "최고의 멘토링이었습니다.";
-        Review review = entityManager.persist(new Review(
+        Review review = em.persist(new Review(
                 originalRating,
                 originalContent,
                 reservation,
@@ -730,8 +729,8 @@ class ReviewServiceTest {
 
         // when
         reviewService.modifyReview(reviewModifyDto);
-        entityManager.flush();
-        entityManager.clear();
+        em.flush();
+        em.clear();
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -744,7 +743,7 @@ class ReviewServiceTest {
     @Test
     void modifyReviewFail1() {
         // given
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
@@ -769,40 +768,40 @@ class ReviewServiceTest {
     @Test
     void modifyReviewFail2() {
         // given
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentorId",
                 "MALE",
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "한 줄 소개",
                 "길 글 소개"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
+        Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring,
                 mentee
         ));
-        Review review = entityManager.persist(new Review(
+        Review review = em.persist(new Review(
                 5,
                 "최고의 멘토링이었습니다.",
                 reservation,
                 mentee
         ));
-        Member invalidMember = entityManager.persist(new Member(
+        Member invalidMember = em.persist(new Member(
                 "loginId2",
                 "MALE",
                 "name2",
@@ -827,7 +826,7 @@ class ReviewServiceTest {
     @Test
     void deleteReviewFail1() {
         // given
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
@@ -847,40 +846,40 @@ class ReviewServiceTest {
     @Test
     void deleteReviewFail2() {
         // given
-        Member mentee = entityManager.persist(new Member(
+        Member mentee = em.persist(new Member(
                 "loginId",
                 "MALE",
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Member mentor = entityManager.persist(new Member(
+        Member mentor = em.persist(new Member(
                 "mentorId",
                 "MALE",
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
-        Mentoring mentoring = entityManager.persist(new Mentoring(
+        Mentoring mentoring = em.persist(new Mentoring(
                 mentor,
                 5000,
                 5,
                 "한 줄 소개",
                 "긴 글 소개"
         ));
-        Reservation reservation = entityManager.persist(new Reservation(
+        Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
                 mentoring,
                 mentee
         ));
-        Review review = entityManager.persist(new Review(
+        Review review = em.persist(new Review(
                 5,
                 "최고의 멘토링이었습니다.",
                 reservation,
                 mentee
         ));
-        Member invalidMember = entityManager.persist(new Member(
+        Member invalidMember = em.persist(new Member(
                 "loginId2",
                 "MALE",
                 "name2",
@@ -978,10 +977,15 @@ class ReviewServiceTest {
                         savedUser
                 ));
         Review savedReview = reviewRepository.save(new Review(5, "좋았어요", savedReservation, savedUser));
+        em.flush();
+        em.clear();
 
         // when
+        reviewService.deleteForAdmin(savedAdmin.getId(), savedReview.getId());
+        em.flush();
+        em.clear();
+        
         // then
-        assertThatCode(() -> reviewService.deleteForAdmin(savedAdmin.getId(), savedReview.getId()))
-                .doesNotThrowAnyException();
+        assertThat(reviewRepository.findById(savedReview.getId())).isEmpty();
     }
 }
