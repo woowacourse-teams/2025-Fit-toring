@@ -60,6 +60,8 @@ function CompleteModal({
           customStyle={css`
             padding: 0.8rem;
 
+            background-color: ${THEME.SYSTEM.MAIN500};
+
             font-size: 1.2rem;
           `}
         >
@@ -104,7 +106,7 @@ const StyledColoredBackground = styled.div`
   height: 30%;
   border-radius: 5px 5px 0 0;
 
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 `;
 
 const StyledTitle = styled.p`
