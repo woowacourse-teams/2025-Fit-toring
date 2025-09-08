@@ -57,9 +57,7 @@ function MentoringItem({
           <MentoringApplicationStatus status={status} />
         </StyledStatusWrapper>
       </StyledMentorInfoWrapper>
-      <StyeldReservationInfoText>
-        확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
-      </StyeldReservationInfoText>
+
       {status !== 'REJECTED' ? (
         <StyledStepperWrapper>
           <MentoringStepper status={status} />
