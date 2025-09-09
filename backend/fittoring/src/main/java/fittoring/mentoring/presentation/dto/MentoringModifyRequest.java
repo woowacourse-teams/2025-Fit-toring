@@ -11,4 +11,5 @@ public record MentoringModifyRequest(
         String profileImageUrl,
         List<CertificateInfo> certificateInfos
 ) {
+
 }

@@ -16,6 +16,7 @@ public record RegisterMentoringDto(
         List<CertificateInfo> certificateInfos,
         List<MultipartFile> certificateImages
 ) {
+
     public static RegisterMentoringDto of(
             Long memberId,
             MentoringRegisterRequest request,

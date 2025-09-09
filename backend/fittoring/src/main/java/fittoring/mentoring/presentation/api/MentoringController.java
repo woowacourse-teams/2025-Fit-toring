@@ -59,7 +59,7 @@ public class MentoringController {
                 categoryTitle2,
                 categoryTitle3
         );
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(responseBody);
     }
 
@@ -86,7 +86,7 @@ public class MentoringController {
                 certificateImages
         );
         mentoringService.modifyMentoring(mentoringModifyDto);
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
 
@@ -94,6 +94,7 @@ public class MentoringController {
     @GetMapping("/mentorings/mine")
     public ResponseEntity<MentoringResponse> getMentoringMine(@Login LoginInfo loginInfo) {
         MentoringResponse response = mentoringService.getMentoringByMentorId(loginInfo.memberId());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
     }
 }

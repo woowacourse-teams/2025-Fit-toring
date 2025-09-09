@@ -10,4 +10,5 @@ public record MentoringRegisterRequest(
         String content,
         List<CertificateInfo> certificateInfos
 ) {
+
 }

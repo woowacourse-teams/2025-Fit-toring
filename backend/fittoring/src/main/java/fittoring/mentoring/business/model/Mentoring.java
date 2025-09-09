@@ -26,11 +26,10 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 public class Mentoring {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
-    @Getter
     @Column(nullable = false)
     private int price;
 
@@ -50,8 +49,8 @@ public class Mentoring {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member mentor;
 
     public Mentoring(

@@ -8,6 +8,7 @@ import fittoring.mentoring.presentation.dto.AdminActiveStatusResponse;
 import fittoring.mentoring.presentation.dto.MyInfoResponse;
 import fittoring.mentoring.presentation.dto.MyInfoSummaryResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,20 +23,23 @@ public class MemberController {
     @GetMapping("/members/me")
     public ResponseEntity<MyInfoResponse> getMyInfo(@Login LoginInfo loginInfo) {
         MyInfoResponse memberInfo = memberService.getMemberInfo(loginInfo.memberId());
-        return ResponseEntity.ok(memberInfo);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(memberInfo);
     }
 
     @AuthRequired
     @GetMapping("/members/summary")
     public ResponseEntity<MyInfoSummaryResponse> getMyInfoSummary(@Login LoginInfo loginInfo) {
         MyInfoSummaryResponse memberInfoSummary = memberService.getMemberInfoSummary(loginInfo.memberId());
-        return ResponseEntity.ok(memberInfoSummary);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(memberInfoSummary);
     }
 
     @AuthRequired
     @GetMapping("/members/status")
     public ResponseEntity<AdminActiveStatusResponse> getAdminMemberStatus(@Login LoginInfo loginInfo) {
         boolean isActive = memberService.getAdminMemberActiveStatus(loginInfo.memberId());
-        return ResponseEntity.ok(new AdminActiveStatusResponse(isActive));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(new AdminActiveStatusResponse(isActive));
     }
 }
