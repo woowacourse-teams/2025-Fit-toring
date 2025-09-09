@@ -47,7 +47,7 @@ services:
       - /home/ubuntu/pinpoint-monitoring:/pinpoint:ro
     environment:
       JAVA_TOOL_OPTIONS: >-
-        -javaagent:/pinpoint/pinpoint-bootstrap-3.0.1.jar
+        -javaagent:/pinpoint/pinpoint-agent-3.0.1/pinpoint-bootstrap-3.0.1.jar
         -Dpinpoint.agentId=appDev
         -Dpinpoint.applicationName=app1
         -Dpinpoint.config=/pinpoint/pinpoint-root.config
