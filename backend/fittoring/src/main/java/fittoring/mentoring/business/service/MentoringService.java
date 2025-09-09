@@ -1,7 +1,13 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.config.auth.LoginInfo;
-import fittoring.mentoring.business.exception.*;
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.CategoryNotFoundException;
+import fittoring.mentoring.business.exception.ForbiddenException;
+import fittoring.mentoring.business.exception.ImageNotFoundException;
+import fittoring.mentoring.business.exception.MemberNotFoundException;
+import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
+import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Certificate;
@@ -10,12 +16,14 @@ import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
@@ -23,6 +31,7 @@ import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -45,6 +54,9 @@ public class MentoringService {
     private final MemberRepository memberRepository;
     private final CertificateRepository certificateRepository;
     private final ReviewRepository reviewRepository;
+    private final ReservationRepository reservationRepository;
+
+    private final EntityManager entityManager;
 
     @Transactional
     public void registerMentoring(RegisterMentoringDto dto) {
@@ -280,9 +292,9 @@ public class MentoringService {
     }
 
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {
-        if (dto.profileImageFile() != null){
+        if (dto.profileImageFile() != null) {
             saveProfileImage(dto.profileImageFile(), mentoring);
-        } else if (dto.profileImageUrl() == null){
+        } else if (dto.profileImageUrl() == null) {
             imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
         } else {
             validateProfileImageUrlMatches(mentoring.getId(), dto.profileImageUrl());
@@ -318,6 +330,13 @@ public class MentoringService {
     public void deleteMentoringByAdmin(LoginInfo loginInfo, Long mentoringId) {
         checkAdminAuthority(loginInfo.memberId());
         Mentoring mentoring = getMentoringById(mentoringId);
+        List<Reservation> allReservationByMentoring = reservationRepository.findAllByMentoring(mentoring);
+        for (Reservation reservation : allReservationByMentoring) {
+            reviewRepository.deleteByReservation(reservation);
+        }
+        reservationRepository.deleteAll(allReservationByMentoring);
+        categoryMentoringRepository.deleteByMentoringId(mentoring.getId());
+        certificateRepository.deleteAllByMentoring(mentoring);
         mentoringRepository.delete(mentoring);
     }
 

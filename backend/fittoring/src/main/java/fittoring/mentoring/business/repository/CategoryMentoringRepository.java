@@ -12,11 +12,14 @@ public interface CategoryMentoringRepository extends ListCrudRepository<Category
     List<CategoryMentoring> findAllByMentoringId(Long mentoringId);
 
     @Query("""
-        SELECT c.title
-        FROM CategoryMentoring cm INNER JOIN Category c ON cm.category.id = c.id
-        WHERE cm.mentoring.id = :mentoringId
-    """)
+                SELECT c.title
+                FROM CategoryMentoring cm INNER JOIN Category c ON cm.category.id = c.id
+                WHERE cm.mentoring.id = :mentoringId
+            """)
     List<String> findTitlesByMentoringId(Long mentoringId);
 
     void deleteByMentoringId(Long mentoringId);
+
+    @Query(value = "SELECT * FROM category_mentoring WHERE is_deleted = true", nativeQuery = true)
+    List<CategoryMentoring> findAllDeleted();
 }

@@ -13,12 +13,12 @@ import org.springframework.stereotype.Repository;
 public interface MentoringRepository extends ListCrudRepository<Mentoring, Long> {
 
     @Query("""
-            SELECT m
-            FROM Review rv
-                JOIN rv.reservation res
-                JOIN res.mentoring m
-            WHERE rv.id = :reviewId
-    """)
+                    SELECT m
+                    FROM Review rv
+                        JOIN rv.reservation res
+                        JOIN res.mentoring m
+                    WHERE rv.id = :reviewId
+            """)
     Optional<Mentoring> findByReviewId(Long reviewId);
 
     @Query("""
@@ -47,4 +47,7 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
     List<Mentoring> findAllByMentorId(Long mentorId);
 
     boolean existsByMentor(Member member);
+
+    @Query(value = "SELECT * FROM mentoring WHERE is_deleted = true", nativeQuery = true)
+    List<Mentoring> findAllDeleted();
 }

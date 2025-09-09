@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.repository;
 
+import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import java.util.List;
@@ -34,9 +35,20 @@ public interface ReviewRepository extends ListCrudRepository<Review, Long> {
             """)
     List<RatingStatsDto> findReviewStatsByMentoringIds(@Param("mentoringIds") List<Long> mentoringIds);
 
+    @Query("""
+            SELECT r
+              FROM Review r
+              JOIN FETCH r.reservation rv
+              JOIN FETCH rv.mentoring mt
+              JOIN FETCH r.mentee m
+            WHERE mt.id = :mentoringId
+            ORDER BY r.createdAt desc
+            """)
+    List<Review> findAllByReservationMentoringIdOrderByCreatedAtDesc(@Param("mentoringId") Long mentoringId);
+
     boolean existsByReservationId(Long reservationId);
 
     boolean existsByReservationIdAndMentee_Id(Long reservationId, Long menteeId);
 
-    void deleteByReservationId(Long reservationId);
+    void deleteByReservation(Reservation reservation);
 }
