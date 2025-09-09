@@ -27,19 +27,19 @@ public class RefreshToken {
     @Id
     private Long id;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(nullable = false)
-    @ManyToOne
-    private Member member;
-
     @Column(nullable = false)
     private String tokenValue;
 
     @Column(nullable = false)
     private LocalDateTime createAt;
 
-    public RefreshToken(Member member, String tokenValue, LocalDateTime createAt) {
-        this(null, member, tokenValue, createAt);
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(nullable = false)
+    @ManyToOne
+    private Member member;
+
+    public RefreshToken(String tokenValue, LocalDateTime createAt, Member member) {
+        this(null, tokenValue, createAt, member);
     }
 
     public void update(String tokenValue, LocalDateTime createAt) {

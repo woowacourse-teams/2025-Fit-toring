@@ -41,6 +41,9 @@ public class Mentoring {
     @Column(nullable = false)
     private String introduction;
 
+    @Column(name = "chat_url", columnDefinition = "TEXT", nullable = false)
+    private String chatUrl;
+
     @Getter
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
@@ -53,9 +56,6 @@ public class Mentoring {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member mentor;
 
-    @Column(name = "chat_url", columnDefinition = "TEXT", nullable = false)
-    private String chatUrl;
-
     public Mentoring(
             Member member,
             int price,
@@ -64,7 +64,7 @@ public class Mentoring {
             String introduction,
             String chatUrl
     ) {
-        this(null, price, career, content, introduction, false, null, member, chatUrl);
+        this(null, price, career, content, introduction, chatUrl, false, null, member);
     }
 
     public void modify(
