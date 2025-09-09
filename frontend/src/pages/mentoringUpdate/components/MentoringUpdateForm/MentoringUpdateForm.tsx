@@ -26,6 +26,7 @@ import {
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
 
 function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(
@@ -43,6 +44,7 @@ function MentoringUpdateForm() {
   const priceErrorMessage = priceValidator(mentoringData.price);
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
+  const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
 
   const handleMentoringDataChange = (
     newData: Partial<MentoringUpdateFormData>,
@@ -117,7 +119,12 @@ function MentoringUpdateForm() {
     e: React.FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault();
-    if (priceErrorMessage || introduceErrorMessage || careerErrorMessage) {
+    if (
+      priceErrorMessage ||
+      introduceErrorMessage ||
+      careerErrorMessage ||
+      chatUrlErrorMessage
+    ) {
       alert('입력값을 확인해주세요.');
       return;
     }
@@ -214,7 +221,7 @@ function MentoringUpdateForm() {
           introduction,
           content,
           category: categories,
-          chatUrl: chatUrl,
+          chatUrl,
           certificateInfos: certificateInfosData,
           profileImageUrl,
         });
@@ -237,6 +244,7 @@ function MentoringUpdateForm() {
             onBaseInfoChange={handleMentoringDataChange}
             priceErrorMessage={priceErrorMessage}
             price={mentoringData.price}
+            chatUrlErrorMessage={chatUrlErrorMessage}
             chatUrl={mentoringData.chatUrl}
           />
           <ProfileSection
