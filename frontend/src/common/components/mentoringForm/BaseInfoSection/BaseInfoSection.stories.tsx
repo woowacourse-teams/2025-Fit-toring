@@ -1,3 +1,4 @@
+import { ERROR_MESSAGE } from '../../../constants/errorMessage';
 import { PRICE_ERROR_MESSAGE } from '../../../constants/price';
 
 import BaseInfoSection from './BaseInfoSection';
@@ -16,8 +17,11 @@ type Story = StoryObj<typeof meta>;
 
 export const DefaultBaseInfoSection: Story = {
   args: {
-    onPriceChange: () => {},
+    onBaseInfoChange: () => {},
     priceErrorMessage: '',
+    price: 3000,
+    chatUrlErrorMessage: '',
+    chatUrl: 'https://open.kakao.com/o/xxxxxx',
   },
   parameters: {
     docs: {
@@ -29,15 +33,35 @@ export const DefaultBaseInfoSection: Story = {
   },
 };
 
-export const ErrorBaseInfoSection: Story = {
+export const PriceErrorBaseInfoSection: Story = {
   args: {
-    onPriceChange: () => {},
-    priceErrorMessage: PRICE_ERROR_MESSAGE.PRICE_INVALID,
+    onBaseInfoChange: () => {},
+    priceErrorMessage: PRICE_ERROR_MESSAGE.PRICE_TOO_HIGH,
+    price: 10000,
+    chatUrlErrorMessage: '',
+    chatUrl: 'https://open.kakao.com/o/xxxxxx',
   },
   parameters: {
     docs: {
       description: {
-        story: '에러 상태의 BaseInfoSection 컴포넌트입니다.',
+        story: '가격 에러 상태의 BaseInfoSection 컴포넌트입니다.',
+      },
+    },
+  },
+};
+
+export const ChatUrlErrorBaseInfoSection: Story = {
+  args: {
+    onBaseInfoChange: () => {},
+    priceErrorMessage: '',
+    price: 3000,
+    chatUrlErrorMessage: ERROR_MESSAGE.INVALID_CHAT_URL,
+    chatUrl: '1234',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: '채팅 URL 에러 상태의 BaseInfoSection 컴포넌트입니다.',
       },
     },
   },
