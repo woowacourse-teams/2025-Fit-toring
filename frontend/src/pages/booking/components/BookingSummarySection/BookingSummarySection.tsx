@@ -6,7 +6,7 @@ import Button from '../../../../common/components/Button/Button';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
 interface BookingSummarySectionProps {
-  price?: number;
+  price: number;
 }
 
 function BookingSummarySection({ price }: BookingSummarySectionProps) {
@@ -14,7 +14,7 @@ function BookingSummarySection({ price }: BookingSummarySectionProps) {
     <StyledContainer>
       <StyledWrapper>
         <TextWithIcon iconSrc={timeIcon} iconName="시간 아이콘" text="15분" />
-        <StyledPrice>{price?.toLocaleString()}원</StyledPrice>
+        <StyledPrice>{price.toLocaleString()}원</StyledPrice>
       </StyledWrapper>
       <Button
         customStyle={css`
