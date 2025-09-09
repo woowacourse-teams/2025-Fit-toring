@@ -68,7 +68,6 @@ function CertificateInput({
       <StyledContentWrapper>
         <p>유형</p>
         <StyledSelect
-          defaultValue="LICENSE"
           value={certificateInfo.type ?? 'LICENSE'}
           name="certificateType"
           onChange={handleCertificateIdChange}
