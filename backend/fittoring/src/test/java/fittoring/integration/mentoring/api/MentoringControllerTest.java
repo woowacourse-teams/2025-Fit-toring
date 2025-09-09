@@ -77,6 +77,179 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
+
+    @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
+    @Test
+    void modifyMentoring() throws IOException {
+        //given
+        Member mentor = memberRepository.save(new Member(
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
+        ));
+
+        Category category1 = categoryRepository.save(new Category("category1"));
+        categoryRepository.save(new Category("category2"));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+                mentor,
+                5000,
+                3,
+                "한 줄 소개",
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
+        ));
+        imageRepository.save(new Image(
+                "originalProfileImage",
+                ImageType.MENTORING_PROFILE,
+                mentoring.getId()
+        ));
+        categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
+        Certificate certificate = certificateRepository.save(new Certificate(
+                CertificateType.LICENSE,
+                "운전면허증",
+                mentoring
+        ));
+        imageRepository.save(new Image(
+                "originalCertificateImage",
+                ImageType.CERTIFICATE,
+                certificate.getId()
+        ));
+
+        int newPrice = 1000;
+        String newCategory = "category2";
+        String newIntroduction = "수정된 긴 글 소개";
+        int newCareer = 5;
+        String newContent = "수정된 한 줄 소개";
+        String chatUrl = "가상의카카오오픈채팅";
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                chatUrl,
+                Collections.emptyList()
+        );
+        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+
+        // when
+        // then
+        RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/" + mentoring.getId())
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("존재하지 않는 멘토링을 수정하려고 하면 404 Not Found를 반환한다")
+    @Test
+    void modifyMentoringFail1() throws IOException {
+        // given
+        Member mentor = memberRepository.save(new Member(
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
+        ));
+
+        int newPrice = 1000;
+        String newCategory = "category2";
+        String newIntroduction = "수정된 긴 글 소개";
+        int newCareer = 5;
+        String newContent = "수정된 한 줄 소개";
+        String chatUrl = "가상의카카오오픈채팅";
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                chatUrl,
+                Collections.emptyList()
+        );
+        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+
+        // when
+        // then
+        RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/999")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("본인이 개설하지 않은 멘토링을 수정하려고 하면 403 Forbidden를 반환한다")
+    @Test
+    void modifyMentoringFail2() throws IOException {
+        // given
+        Member mentor = memberRepository.save(new Member(
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
+        ));
+        String chatUrl = "가상의카카오오픈채팅링크";
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+                mentor,
+                5000,
+                3,
+                "한 줄 소개",
+                "긴 글 소개",
+                chatUrl
+        ));
+
+        Member invalidMember = memberRepository.save(new Member(
+                "id2",
+                "MALE",
+                "박트레이너",
+                new Phone("010-1234-9021"),
+                Password.from("pw")
+        ));
+
+        int newPrice = 1000;
+        String newCategory = "category2";
+        String newIntroduction = "수정된 긴 글 소개";
+        int newCareer = 5;
+        String newContent = "수정된 한 줄 소개";
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                chatUrl,
+                Collections.emptyList()
+        );
+        String accessToken = jwtProvider.createAccessToken(invalidMember.getId());
+
+        // when
+        // then
+        RestAssured
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/" + mentoring.getId())
+                .then().log().all()
+                .statusCode(403);
+    }
+
     @DisplayName("멘토링 목록 조회 API 테스트")
     @Nested
     class FindMentoring {
@@ -100,7 +273,9 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
+
                     )
             );
 
@@ -110,7 +285,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             4,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -247,7 +423,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -257,7 +434,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             4,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -267,7 +445,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             5,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -400,7 +579,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -410,7 +590,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             4,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -420,7 +601,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1001,
                             5,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -482,7 +664,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -492,7 +675,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             4,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -526,6 +710,92 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
             });
         }
 
+        @DisplayName("멘토링 Id로 멘토링 조회에 성공하면 200 OK 상태코드와 멘토링 정보를 반환한다.")
+        @Test
+        void getMentoring() {
+            //given
+            Member mentee = memberRepository.save(
+                    new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+            String accessToken = jwtProvider.createAccessToken(mentee.getId());
+
+            Member mentor1 = memberRepository.save(
+                    new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
+            Member mentor2 = memberRepository.save(
+                    new Member("id2", "MALE", "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
+
+            Mentoring savedMentoring = mentoringRepository.save(
+                    new Mentoring(
+                            mentor1,
+                            1000,
+                            3,
+                            "멘토링 내용",
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
+                    )
+            );
+
+            Mentoring savedMentoring2 = mentoringRepository.save(
+                    new Mentoring(
+                            mentor2,
+                            1000,
+                            4,
+                            "멘토링 내용",
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
+                    )
+            );
+
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
+
+            categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
+            categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
+
+            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
+
+            Reservation savedReservation1 = reservationRepository.save(
+                    new Reservation("예약 코멘트1", Status.COMPLETE, savedMentoring, mentee));
+            Reservation savedReservation2 = reservationRepository.save(
+                    new Reservation("예약 코멘트2", Status.COMPLETE, savedMentoring, mentee));
+
+            reviewRepository.save(new Review(4, "리뷰 코멘트", savedReservation1, mentee));
+            reviewRepository.save(new Review(5, "리뷰 코멘트", savedReservation2, mentee));
+
+            Long mentoringId = savedMentoring.getId();
+
+            //when
+            MentoringResponse response = RestAssured
+                    .given()
+                    .log().all().contentType(ContentType.JSON)
+                    .cookie("accessToken", accessToken)
+                    .queryParam("categoryTitle1", savedCategory.getTitle())
+                    .queryParam("categoryTitle2", savedCategory2.getTitle())
+                    .when()
+                    .get("/mentorings/" + mentoringId)
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringResponse.class);
+
+            //then
+            MentoringResponse expected = new MentoringResponse(
+                    savedMentoring.getId(),
+                    savedMentoring.getMentorName(),
+                    List.of(savedCategory.getTitle()),
+                    savedMentoring.getPrice(),
+                    savedMentoring.getCareer(),
+                    "image1.jpg",
+                    savedMentoring.getIntroduction(),
+                    savedMentoring.getContent(),
+                    savedMentoring.getChatUrl(),
+                    new ArrayList<>(),
+                    String.format("%.1f", 4.5),
+                    2
+            );
+            assertThat(response).isNotNull().isEqualTo(expected);
+        }
+
         @DisplayName("현재 로그인한 멘토는 자신이 개설한 멘토링을 조회할 수 있다.")
         @Test
         void getMentoringByMentorId() {
@@ -544,7 +814,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -625,91 +896,6 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
             assertThat(response.profileImageUrl()).isEqualTo(savedImage.getUrl());
         }
 
-        @DisplayName("멘토링 Id로 멘토링 조회에 성공하면 200 OK 상태코드와 멘토링 정보를 반환한다.")
-        @Test
-        void getMentoring() {
-            //given
-            Member mentee = memberRepository.save(
-                    new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
-            String accessToken = jwtProvider.createAccessToken(mentee.getId());
-
-            Member mentor1 = memberRepository.save(
-                    new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
-            Member mentor2 = memberRepository.save(
-                    new Member("id2", "MALE", "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
-
-            Mentoring savedMentoring = mentoringRepository.save(
-                    new Mentoring(
-                            mentor1,
-                            1000,
-                            3,
-                            "멘토링 내용",
-                            "멘토링 자기소개"
-                    )
-            );
-
-            Mentoring savedMentoring2 = mentoringRepository.save(
-                    new Mentoring(
-                            mentor2,
-                            1000,
-                            4,
-                            "멘토링 내용",
-                            "멘토링 자기소개"
-                    )
-            );
-
-            Category savedCategory = categoryRepository.save(new Category("체형교정"));
-            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
-
-            categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
-            categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
-
-            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
-            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
-
-            Reservation savedReservation1 = reservationRepository.save(
-                    new Reservation("예약 코멘트1", Status.COMPLETE, savedMentoring, mentee));
-            Reservation savedReservation2 = reservationRepository.save(
-                    new Reservation("예약 코멘트2", Status.COMPLETE, savedMentoring, mentee));
-
-            reviewRepository.save(new Review(4, "리뷰 코멘트", savedReservation1, mentee));
-            reviewRepository.save(new Review(5, "리뷰 코멘트", savedReservation2, mentee));
-
-            Long mentoringId = savedMentoring.getId();
-
-            //when
-            MentoringResponse response = RestAssured
-                    .given(spec)
-                    .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-id-success"))
-                    .log().all().contentType(ContentType.JSON)
-                    .cookie("accessToken", accessToken)
-                    .queryParam("categoryTitle1", savedCategory.getTitle())
-                    .queryParam("categoryTitle2", savedCategory2.getTitle())
-                    .when()
-                    .get("/mentorings/" + mentoringId)
-                    .then().log().all()
-                    .statusCode(200)
-                    .extract()
-                    .as(MentoringResponse.class);
-
-            //then
-            MentoringResponse expected = new MentoringResponse(
-                    savedMentoring.getId(),
-                    savedMentoring.getMentorName(),
-                    List.of(savedCategory.getTitle()),
-                    savedMentoring.getPrice(),
-                    savedMentoring.getCareer(),
-                    "image1.jpg",
-                    savedMentoring.getIntroduction(),
-                    savedMentoring.getContent(),
-                    new ArrayList<>(),
-                    String.format("%.1f", 4.5),
-                    2
-            );
-            assertThat(response).isNotNull().isEqualTo(expected);
-        }
-
         @DisplayName("존재하지 않는 멘토링 Id로 멘토링 조회에 실패하면 404 Not Found 상태코드를 반환한다.")
         @Test
         void getMentoring2() {
@@ -729,7 +915,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -739,7 +926,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                             1000,
                             4,
                             "멘토링 내용",
-                            "멘토링 자기소개"
+                            "멘토링 자기소개",
+                            "가상의카카오오픈채팅"
                     )
             );
 
@@ -773,173 +961,6 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
             });
         }
-    }
-
-    @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
-    @Test
-    void modifyMentoring() throws IOException {
-        //given
-        Member mentor = memberRepository.save(new Member(
-                "id1",
-                "MALE",
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
-        ));
-
-        Category category1 = categoryRepository.save(new Category("category1"));
-        categoryRepository.save(new Category("category2"));
-        Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                mentor,
-                5000,
-                3,
-                "한 줄 소개",
-                "긴 글 소개"
-        ));
-        imageRepository.save(new Image(
-                "originalProfileImage",
-                ImageType.MENTORING_PROFILE,
-                mentoring.getId()
-        ));
-        categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
-        Certificate certificate = certificateRepository.save(new Certificate(
-                CertificateType.LICENSE,
-                "운전면허증",
-                mentoring
-        ));
-        imageRepository.save(new Image(
-                "originalCertificateImage",
-                ImageType.CERTIFICATE,
-                certificate.getId()
-        ));
-
-        int newPrice = 1000;
-        String newCategory = "category2";
-        String newIntroduction = "수정된 긴 글 소개";
-        int newCareer = 5;
-        String newContent = "수정된 한 줄 소개";
-        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-                newPrice,
-                List.of(newCategory),
-                newIntroduction,
-                newCareer,
-                newContent,
-                Collections.emptyList()
-        );
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
-
-        // when
-        // then
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("mentoring/put-mentorings-id-success"))
-                .log().all().contentType(ContentType.MULTIPART)
-                .cookie("accessToken", accessToken)
-                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-                .when()
-                .put("/mentorings/" + mentoring.getId())
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @DisplayName("존재하지 않는 멘토링을 수정하려고 하면 404 Not Found를 반환한다")
-    @Test
-    void modifyMentoringFail1() throws IOException {
-        // given
-        Member mentor = memberRepository.save(new Member(
-                "id1",
-                "MALE",
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
-        ));
-
-        int newPrice = 1000;
-        String newCategory = "category2";
-        String newIntroduction = "수정된 긴 글 소개";
-        int newCareer = 5;
-        String newContent = "수정된 한 줄 소개";
-        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-                newPrice,
-                List.of(newCategory),
-                newIntroduction,
-                newCareer,
-                newContent,
-                Collections.emptyList()
-        );
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
-
-        // when
-        // then
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("mentoring/put-mentorings-id-not-found"))
-                .log().all().contentType(ContentType.MULTIPART)
-                .cookie("accessToken", accessToken)
-                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-                .when()
-                .put("/mentorings/999")
-                .then().log().all()
-                .statusCode(404);
-    }
-
-    @DisplayName("본인이 개설하지 않은 멘토링을 수정하려고 하면 403 Forbidden를 반환한다")
-    @Test
-    void modifyMentoringFail2() throws IOException {
-        // given
-        Member mentor = memberRepository.save(new Member(
-                "id1",
-                "MALE",
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
-        ));
-        Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                mentor,
-                5000,
-                3,
-                "한 줄 소개",
-                "긴 글 소개"
-        ));
-
-        Member invalidMember = memberRepository.save(new Member(
-                "id2",
-                "MALE",
-                "박트레이너",
-                new Phone("010-1234-9021"),
-                Password.from("pw")
-        ));
-
-        int newPrice = 1000;
-        String newCategory = "category2";
-        String newIntroduction = "수정된 긴 글 소개";
-        int newCareer = 5;
-        String newContent = "수정된 한 줄 소개";
-        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
-                newPrice,
-                List.of(newCategory),
-                newIntroduction,
-                newCareer,
-                newContent,
-                Collections.emptyList()
-        );
-        String accessToken = jwtProvider.createAccessToken(invalidMember.getId());
-
-        // when
-        // then
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("mentoring/put-mentorings-id-forbidden"))
-                .log().all().contentType(ContentType.MULTIPART)
-                .cookie("accessToken", accessToken)
-                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-                .when()
-                .put("/mentorings/" + mentoring.getId())
-                .then().log().all()
-                .statusCode(403);
     }
 }
 

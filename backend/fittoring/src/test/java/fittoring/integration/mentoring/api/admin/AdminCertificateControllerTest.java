@@ -121,7 +121,8 @@ class AdminCertificateControllerTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -157,7 +158,8 @@ class AdminCertificateControllerTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -198,7 +200,8 @@ class AdminCertificateControllerTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -234,7 +237,8 @@ class AdminCertificateControllerTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -275,7 +279,8 @@ class AdminCertificateControllerTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -311,7 +316,8 @@ class AdminCertificateControllerTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,

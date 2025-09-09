@@ -88,7 +88,8 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
                         1000,
                         3,
                         "멘토링 내용",
-                        "멘토링 자기소개"
+                        "멘토링 자기소개",
+                        "가상의카카오오픈채팅"
                 )
         );
 
@@ -145,7 +146,8 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "모던 타임즈",
-                "또 봐요 미스터 채플린~~"
+                "또 봐요 미스터 채플린~~",
+                "가상의카카오오픈채팅"
         ));
 
         String mentorAccessToken = jwtProvider.createAccessToken(mentor.getId());
@@ -227,14 +229,16 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
                 5_000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
                 mentor2,
                 5_000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의카카오오픈채팅"
         ));
         Category category1 = categoryRepository.save(new Category("근육 증진"));
         Category category2 = categoryRepository.save(new Category("다이어트"));
@@ -302,7 +306,8 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
@@ -373,10 +378,12 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
-        Mentoring mentoring2 = new Mentoring(mentor, 1500, 3, "멘토링 내용2", "멘토링 자기소개2");
+        Mentoring mentoring2 = new Mentoring(mentor, 1500, 3, "멘토링 내용2", "멘토링 자기소개2",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring2 = mentoringRepository.save(mentoring2);
 
         //멘티 생성
@@ -465,7 +472,8 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //when
@@ -512,7 +520,8 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
@@ -569,7 +578,8 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
@@ -620,7 +630,8 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
@@ -669,7 +680,8 @@ class ReservationControllerTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
 
         //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개",
+                "가상의카카오오픈채팅");
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성

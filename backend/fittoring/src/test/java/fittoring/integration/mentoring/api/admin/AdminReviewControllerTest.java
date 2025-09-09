@@ -99,7 +99,8 @@ class AdminReviewControllerTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
 
             // when
@@ -139,7 +140,8 @@ class AdminReviewControllerTest {
                     1000,
                     1,
                     "content",
-                    "introduction"
+                    "introduction",
+                    "가상의카카오오픈채팅"
             ));
             Reservation savedReservation = reservationRepository.save(
                     new Reservation(
@@ -236,7 +238,8 @@ class AdminReviewControllerTest {
                             1000,
                             1,
                             "content",
-                            "introduction"
+                            "introduction",
+                            "가상의카카오오픈채팅"
                     ));
             Reservation savedReservation = reservationRepository.save(
                     new Reservation(

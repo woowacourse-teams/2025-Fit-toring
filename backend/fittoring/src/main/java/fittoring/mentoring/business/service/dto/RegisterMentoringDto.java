@@ -12,6 +12,8 @@ public record RegisterMentoringDto(
         String introduction,
         int career,
         String content,
+        String chatUrl,
+
         MultipartFile profileImage,
         List<CertificateInfo> certificateInfos,
         List<MultipartFile> certificateImages
@@ -30,6 +32,7 @@ public record RegisterMentoringDto(
                 request.introduction(),
                 request.career(),
                 request.content(),
+                request.chatUrl(),
                 profileImageFile,
                 request.certificateInfos(),
                 certificateImages);

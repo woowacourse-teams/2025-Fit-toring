@@ -53,26 +53,32 @@ public class Mentoring {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member mentor;
 
+    @Column(name = "chat_url", columnDefinition = "TEXT", nullable = false)
+    private String chatUrl;
+
     public Mentoring(
             Member member,
             int price,
             Integer career,
             String content,
-            String introduction
+            String introduction,
+            String chatUrl
     ) {
-        this(null, price, career, content, introduction, false, null, member);
+        this(null, price, career, content, introduction, false, null, member, chatUrl);
     }
 
     public void modify(
             int price,
             Integer career,
             String content,
-            String introduction
+            String introduction,
+            String chatUrl
     ) {
         this.price = price;
         this.career = career;
         this.content = content;
         this.introduction = introduction;
+        this.chatUrl = chatUrl;
     }
 
     public boolean isCreatedByMember(Long memberId) {

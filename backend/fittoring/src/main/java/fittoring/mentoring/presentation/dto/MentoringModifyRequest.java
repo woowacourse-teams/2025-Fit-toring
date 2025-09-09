@@ -8,6 +8,7 @@ public record MentoringModifyRequest(
         String introduction,
         int career,
         String content,
+        String chatUrl,
         String profileImageUrl,
         List<CertificateInfo> certificateInfos
 ) {

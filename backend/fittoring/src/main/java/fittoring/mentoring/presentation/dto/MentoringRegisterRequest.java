@@ -8,6 +8,8 @@ public record MentoringRegisterRequest(
         String introduction,
         int career,
         String content,
+        String chatUrl,
+
         List<CertificateInfo> certificateInfos
 ) {
 

@@ -83,7 +83,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "구구절절한 내용",
-                "한 줄 소개"
+                "한 줄 소개",
+                "가상의오픈채팅링크"
         );
         entityManager.persist(mentoring);
         ReservationCreateDto dto = new ReservationCreateDto(
@@ -123,7 +124,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "모던 타임즈",
-                "또 봐요 미스터 채플린~"
+                "또 봐요 미스터 채플린~",
+                "가상의오픈채팅링크"
         ));
         ReservationCreateDto dto = new ReservationCreateDto(
                 mentor.getId(),
@@ -182,7 +184,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의오픈채팅링크"
         );
         entityManager.persist(mentoring);
 
@@ -218,7 +221,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의오픈채팅링크"
         );
         entityManager.persist(mentoring);
 
@@ -257,7 +261,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의오픈채팅링크"
         );
         entityManager.persist(mentoring);
 
@@ -289,7 +294,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의오픈채팅링크"
         );
         entityManager.persist(mentoring);
 
@@ -335,14 +341,16 @@ class ReservationServiceTest {
                 5_000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의오픈채팅링크"
         ));
         Mentoring mentoring2 = entityManager.persist(new Mentoring(
                 mentor2,
                 5_000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의오픈채팅링크"
         ));
         Category category1 = entityManager.persist(new Category("근육 증진"));
         Category category2 = entityManager.persist(new Category("다이어트"));
@@ -441,7 +449,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "Last Fantasy",
-                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
+                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록",
+                "가상의오픈채팅링크"
         ));
         Member mentee1 = entityManager.persist(new Member(
                 "menteeId1",
@@ -524,7 +533,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "Last Fantasy",
-                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
+                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록",
+                "가상의오픈채팅링크"
         ));
         Member mentee1 = entityManager.persist(new Member(
                 "menteeId1",
@@ -606,7 +616,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "살별",
-                "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게"
+                "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게",
+                "가상의오픈채팅링크"
         ));
         Member mentee = entityManager.persist(new Member(
                 "menteeId1",
@@ -659,7 +670,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "잘 지내자, 우리",
-                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~"
+                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~",
+                "가상의오픈채팅링크"
         ));
         Member mentee = entityManager.persist(new Member(
                 "menteeId1",
@@ -736,7 +748,8 @@ class ReservationServiceTest {
                 5000,
                 5,
                 "잘 지내자, 우리",
-                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~"
+                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~",
+                "가상의오픈채팅링크"
         ));
         Member mentee = entityManager.persist(new Member(
                 "menteeId1",

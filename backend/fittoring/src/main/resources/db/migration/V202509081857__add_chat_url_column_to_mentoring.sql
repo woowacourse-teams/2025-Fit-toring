@@ -1,0 +1,2 @@
+ALTER TABLE mentoring
+ADD COLUMN chat_url TEXT NOT NULL;
