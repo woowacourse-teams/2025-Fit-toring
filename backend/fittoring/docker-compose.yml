@@ -44,6 +44,13 @@ services:
     env_file: .env
     volumes:
       - /home/ubuntu/2025-Fit-toring/backend/fittoring/logs:/logs
+      - /pinpoint:/pinpoint:ro
+    environment:
+      JAVA_TOOL_OPTIONS: >-
+        -javaagent:/pinpoint/pinpoint-bootstrap-3.0.1.jar
+        -Dpinpoint.agentId=appDev
+        -Dpinpoint.applicationName=app1
+        -Dpinpoint.config=/pinpoint/pinpoint-root.config
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/healthcheck | grep -q '\"status\":\"UP\"'" ]
