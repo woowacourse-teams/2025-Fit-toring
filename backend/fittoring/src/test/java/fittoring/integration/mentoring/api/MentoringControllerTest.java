@@ -32,7 +32,6 @@ import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
-import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -41,22 +40,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class MentoringControllerTest {
-
-    @LocalServerPort
-    public int port;
+class MentoringControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private MemberRepository memberRepository;
@@ -77,23 +66,17 @@ class MentoringControllerTest {
     private ImageRepository imageRepository;
 
     @Autowired
-    private DbCleaner dbCleaner;
-
-    @Autowired
     private JwtProvider jwtProvider;
 
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private ReservationRepository reservationRepository;
+
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        dbCleaner.clean();
-    }
 
     @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
     @Test
@@ -350,7 +333,9 @@ class MentoringControllerTest {
 
             //when
             List<MentoringSummaryResponse> response = RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-no-filter-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .when()
@@ -401,7 +386,9 @@ class MentoringControllerTest {
             String accessToken = jwtProvider.createAccessToken(mentee.getId());
             //when
             List<MentoringResponse> response = RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-empty-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .when()
@@ -501,7 +488,9 @@ class MentoringControllerTest {
 
             //when
             List<MentoringSummaryResponse> response = RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-with-filter-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
@@ -637,7 +626,9 @@ class MentoringControllerTest {
 
             //when
             List<MentoringResponse> response = RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-with-filter-empty-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory4.getTitle())
@@ -700,7 +691,9 @@ class MentoringControllerTest {
 
             //when
             Response response = RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-category-not-found"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", "존재하지 않는 카테고리")
@@ -870,7 +863,9 @@ class MentoringControllerTest {
 
             //when
             MentoringResponse response = RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-mine-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .when()
@@ -949,7 +944,9 @@ class MentoringControllerTest {
 
             //when
             Response response = RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-id-not-found"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
