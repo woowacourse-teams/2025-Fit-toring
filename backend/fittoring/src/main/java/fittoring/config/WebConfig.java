@@ -52,5 +52,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/web-admin/**")
                 .addResourceLocations("classpath:/static/web-admin/");
+        registry.addResourceHandler("/swagger-ui/**")
+                .addResourceLocations("classpath:/static/swagger-ui/");
     }
 }

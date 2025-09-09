@@ -9,14 +9,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE mentoring SET is_deleted = true, deleted_at = now() WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 @Table(name = "mentoring")
 @Entity
 public class Mentoring {
@@ -36,6 +41,14 @@ public class Mentoring {
     @Column(nullable = false)
     private String introduction;
 
+    @Getter
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member mentor;
@@ -47,14 +60,14 @@ public class Mentoring {
             String content,
             String introduction
     ) {
-        this(null, price, career, content, introduction, member);
+        this(null, price, career, content, introduction, false, null, member);
     }
 
     public void modify(
-        int price,
-        Integer career,
-        String content,
-        String introduction
+            int price,
+            Integer career,
+            String content,
+            String introduction
     ) {
         this.price = price;
         this.career = career;

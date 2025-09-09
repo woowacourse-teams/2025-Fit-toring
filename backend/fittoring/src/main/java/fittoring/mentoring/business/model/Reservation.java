@@ -3,6 +3,7 @@ package fittoring.mentoring.business.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,8 +15,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -23,6 +24,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE reservation SET is_deleted = true, deleted_at = now() WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 @Table(name = "reservation")
 @Entity
 public class Reservation {
@@ -40,9 +43,16 @@ public class Reservation {
     @Column(nullable = false)
     private Status status;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @JoinColumn(nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Mentoring mentoring;
 
     @JoinColumn(nullable = false)
@@ -50,7 +60,7 @@ public class Reservation {
     private Member mentee;
 
     public Reservation(String content, Status status, Mentoring mentoring, Member mentee) {
-        this(null, content, null, status, mentoring, mentee);
+        this(null, content, null, status, false, null, mentoring, mentee);
     }
 
     public boolean isComplete() {

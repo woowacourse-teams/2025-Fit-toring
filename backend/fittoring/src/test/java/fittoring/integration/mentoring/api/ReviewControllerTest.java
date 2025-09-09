@@ -17,24 +17,13 @@ import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
-import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ReviewControllerTest {
-
-    @LocalServerPort
-    private int port;
+class ReviewControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -50,15 +39,6 @@ class ReviewControllerTest {
 
     @Autowired
     private JwtProvider jwtProvider;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        dbCleaner.clean();
-    }
 
     @DisplayName("리뷰 작성에 성공하면 201 Created 상태코드와 별점, 리뷰 내용을 반환한다")
     @Test
@@ -106,7 +86,9 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-reviews-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -228,7 +210,9 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-mentorings-id-review-have-not-reserved"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessTokenWithAnotherMember)
                 .body(requestBody)
@@ -293,7 +277,9 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-mentorings-id-review-already-reviewed"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -349,7 +335,9 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-reviews-mentoring-not-completed"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -427,7 +415,10 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/get-reviews-mine-success"))
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
                 .get("/reviews/mine")
@@ -497,7 +488,10 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/get-mentorings-id-reviews-success"))
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
                 .get("/mentorings/" + mentoring.getId() + "/reviews")
@@ -554,7 +548,8 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given()
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
                 .body(requestBody)
                 .when()
@@ -669,7 +664,10 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/patch-reviews-id-success"))
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
                 .body(requestBody)
                 .when()
@@ -730,7 +728,10 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/patch-reviews-id-not-mine"))
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
                 .body(requestBody)
                 .when()
@@ -780,7 +781,10 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/delete-reviews-id-success"))
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
                 .when()
                 .delete("/reviews/" + review.getId())
@@ -859,7 +863,10 @@ class ReviewControllerTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/delete-reviews-id-not-mine"))
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
                 .when()
                 .delete("/reviews/" + review.getId())

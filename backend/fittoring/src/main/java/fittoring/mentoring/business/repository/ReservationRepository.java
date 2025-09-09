@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.repository;
 
+import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import java.util.List;
 import org.springframework.data.repository.ListCrudRepository;
@@ -13,4 +14,6 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
     List<Reservation> findAllByMentoringId(Long id);
 
     List<Reservation> findAllByMenteeId(Long menteeId);
+
+    List<Reservation> findAllByMentoring(Mentoring mentoring);
 }
