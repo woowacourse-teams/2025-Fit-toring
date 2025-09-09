@@ -161,5 +161,3 @@ jobs:
           cd /home/ubuntu
           chmod +x ./deploy-be.sh
           IMAGE="${IMAGE}" TAG="${TAG}" PROFILE="${PROFILE}" ./deploy-be.sh
-
-
