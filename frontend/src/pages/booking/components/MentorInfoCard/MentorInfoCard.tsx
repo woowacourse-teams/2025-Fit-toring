@@ -19,9 +19,7 @@ function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
       {mentorDetail ? (
         <>
           <StyledMentorProfileWrapper>
-            <ProfileImg
-              src={mentorDetail ? mentorDetail.profileImageUrl : null}
-            />
+            <ProfileImg src={mentorDetail.profileImageUrl} />
             <StyledMetorNameText>{mentorDetail.mentorName}</StyledMetorNameText>
           </StyledMentorProfileWrapper>
           <StyledInfoWithTags>
