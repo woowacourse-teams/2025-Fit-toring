@@ -2,18 +2,14 @@
 import '@testing-library/jest-dom/vitest';
 
 import * as matchers from '@testing-library/jest-dom/matchers';
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
 import { expect, afterEach, beforeAll, afterAll } from 'vitest';
 
-let envFile = '.env.dev';
-
 if (process.env.NODE_ENV === 'production') {
-  envFile = '.env.prod';
+  config({ path: '.env.prod' });
 } else if (process.env.NODE_ENV === 'test') {
-  envFile = '.env.dev';
+  config({ path: '.env.dev' });
 }
-
-dotenv.config({ path: envFile });
 
 import { server } from './src/common/mock/server';
 
