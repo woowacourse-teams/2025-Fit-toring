@@ -151,6 +151,7 @@ jobs:
     env:
       IMAGE: fittoring/fittoring   
       TAG: ${{ needs.build-and-push.outputs.image_tag }}
+      PROFILE: dev
     steps:
       - name: Docker login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
@@ -158,6 +159,7 @@ jobs:
       - name: Run deploy script   
         run: |
           cd /home/ubuntu
-          ./deploy-be.sh
+          chmod +x ./deploy-be.sh
+          IMAGE="${IMAGE}" TAG="${TAG}" PROFILE="${PROFILE}" ./deploy-be.sh
 
 
