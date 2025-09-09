@@ -33,7 +33,6 @@ public class RefreshToken {
     @Column(nullable = false)
     private LocalDateTime createAt;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(nullable = false)
     @ManyToOne
     private Member member;
