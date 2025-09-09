@@ -46,34 +46,23 @@ function ProfileSection({
           <img src={deleteIcon} alt="삭제 아이콘" />
         </StyledDeleteButton>
         <StyledProfileInputWrapper>
+          <StyledHiddenInput
+            type="file"
+            accept="image/*"
+            id="profileImage"
+            onChange={handleProfileImageInputChange}
+          />
           {previewUrl ? (
-            <>
-              <StyledHiddenInput
-                type="file"
-                accept="image/*"
-                id="profileImage"
-                onChange={handleProfileImageInputChange}
-              />
-              <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
-            </>
+            <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
           ) : (
-            <>
-              <StyledHiddenInput
-                type="file"
-                accept="image/*"
-                id="profileImage"
-                onChange={handleProfileImageInputChange}
-              />
-
-              <StyledContentWrapper>
-                <StyledUploadIcon src={uploadIcon} alt="업로드 아이콘" />
-                {/* TODO: 드래그를 통한 업로드 기능 추가 */}
-                <StyledGuideText>
-                  <strong>클릭하여 업로드</strong>
-                </StyledGuideText>{' '}
-                <StyledFileTypeText>(최대 30MB)</StyledFileTypeText>
-              </StyledContentWrapper>
-            </>
+            <StyledContentWrapper>
+              <StyledUploadIcon src={uploadIcon} alt="업로드 아이콘" />
+              {/* TODO: 드래그를 통한 업로드 기능 추가 */}
+              <StyledGuideText>
+                <strong>클릭하여 업로드</strong>
+              </StyledGuideText>{' '}
+              <StyledFileTypeText>(최대 30MB)</StyledFileTypeText>
+            </StyledContentWrapper>
           )}
         </StyledProfileInputWrapper>
       </StyledProfileWrapper>
