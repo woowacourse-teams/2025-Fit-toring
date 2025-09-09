@@ -1,5 +1,6 @@
 package fittoring.integration.mentoring.api.admin;
 
+import fittoring.integration.mentoring.api.AbstractApiDocumentationTest;
 import fittoring.mentoring.business.model.Certificate;
 import fittoring.mentoring.business.model.CertificateType;
 import fittoring.mentoring.business.model.Image;
@@ -14,7 +15,6 @@ import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,13 +22,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.restdocs.RestDocumentationContextProvider;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AdminCertificateControllerTest {
+class AdminCertificateControllerTest extends AbstractApiDocumentationTest {
 
     private Member admin;
     private Member user;
@@ -50,16 +46,9 @@ class AdminCertificateControllerTest {
     @Autowired
     private JwtProvider jwtProvider;
 
-    @LocalServerPort
-    public int port;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
     @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        dbCleaner.clean();
+    protected void setUp(RestDocumentationContextProvider restDocumentation) {
+        super.setUp(restDocumentation);
         admin = memberRepository.save(new Member(
                 "adminId",
                 "남",
@@ -90,7 +79,9 @@ class AdminCertificateControllerTest {
             // when
             // then
             RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("admin/get-admin-certificates-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
@@ -106,7 +97,9 @@ class AdminCertificateControllerTest {
             // when
             // then
             RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("admin/get-admin-certificates-unauthorized"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
@@ -144,7 +137,9 @@ class AdminCertificateControllerTest {
             // when
             // then
             RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("admin/get-admin-certificates-id-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
@@ -178,7 +173,9 @@ class AdminCertificateControllerTest {
             // when
             // then
             RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("admin/get-admin-certificates-id-unauthorized"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
@@ -217,7 +214,9 @@ class AdminCertificateControllerTest {
             // when
             // then
             RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("admin/post-admin-certificates-id-approve-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
@@ -251,7 +250,9 @@ class AdminCertificateControllerTest {
             // when
             // then
             RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("admin/post-admin-certificates-id-approve-unauthorized"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
@@ -290,7 +291,9 @@ class AdminCertificateControllerTest {
             // when
             // then
             RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("admin/post-admin-certificates-id-reject-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
@@ -324,7 +327,9 @@ class AdminCertificateControllerTest {
             // when
             // then
             RestAssured
-                    .given()
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("admin/post-admin-certificates-id-reject-unauthorized"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
