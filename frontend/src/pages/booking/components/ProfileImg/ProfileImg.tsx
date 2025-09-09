@@ -6,7 +6,7 @@ interface ProfileImgProps {
   src: string | null;
 }
 
-function ProfileImg({ src = null }: ProfileImgProps) {
+function ProfileImg({ src }: ProfileImgProps) {
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
     target.src = profileImg; // TODO: 임시 기본이미지 추후에 변경해야함
