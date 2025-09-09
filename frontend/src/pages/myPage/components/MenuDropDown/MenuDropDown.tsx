@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +22,23 @@ interface MenuItem {
 
 function MenuDropDown() {
   const [opened, setOpened] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (
+      containerRef.current &&
+      !containerRef.current.contains(event.target as Node)
+    ) {
+      setOpened(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
 
   const handleMenuButtonClick = () => {
     setOpened((prev) => !prev);
@@ -70,7 +87,7 @@ function MenuDropDown() {
   };
 
   return (
-    <StyledContainer>
+    <StyledContainer ref={containerRef}>
       <StyledMenuButton onClick={handleMenuButtonClick}>
         <StyledMenuIcon src={menuIcon} alt="메뉴 열기 아이콘" />
       </StyledMenuButton>
