@@ -2,6 +2,7 @@ package fittoring.config;
 
 import fittoring.config.auth.AuthenticationArgumentResolver;
 import fittoring.config.auth.AuthenticationInterceptor;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -9,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -28,6 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "https://www.fittoring.com",
                         "https://fittoring.com",
                         "https://www.dev.fittoring.com",
+                        "https://devapi.fittoring.com",
+                        "https://api.fittoring.com",
                         "https://dev.fittoring.com",
                         "https://www.fittoring.store",
                         "https://dev.fittoring.store"
@@ -52,5 +54,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/web-admin/**")
                 .addResourceLocations("classpath:/static/web-admin/");
+        registry.addResourceHandler("/swagger-ui/**")
+                .addResourceLocations("classpath:/static/swagger-ui/");
     }
 }

@@ -24,13 +24,15 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import {
-  Users,
-  LogOut,
-  Menu,
-  ChevronRight,
-  Award,
-  UserCheck,
-  BookOpen,
+    Users, 
+    LogOut, 
+    Menu, 
+    ChevronRight, 
+    Award, 
+    UserCheck, 
+    BookOpen, 
+    Tag, 
+    Settings,
 } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useAuth } from "./AuthContext";
@@ -77,6 +79,9 @@ export function DashboardLayout({ children, pageTitle, activeMenu = "certificati
         break;
       case "mentoring":
         navigate(`${ROUTES.ROOT}#mentoring`);
+        break;
+      case "category":
+        navigate(`${ROUTES.ROOT}#category`);
         break;
     }
   };
@@ -130,7 +135,7 @@ export function DashboardLayout({ children, pageTitle, activeMenu = "certificati
                             >
                               <div className="flex items-center cursor-pointer">
                                 <Award className="h-4 w-4" />
-                                <span>자격증 관리</span>
+                                <span>자격증명 관리</span>
                               </div>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
@@ -152,16 +157,46 @@ export function DashboardLayout({ children, pageTitle, activeMenu = "certificati
                   </SidebarMenuItem>
 
                   {/* 멘토링 관리 */}
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      tooltip="멘토링 관리"
-                      isActive={activeMenu === "mentoring" || activeMenu === "mentoring-detail"}
-                      onClick={() => handleMenuClick("mentoring")}
-                    >
-                      <BookOpen className="h-4 w-4" />
-                      <span>멘토링 관리</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  {/* 멘토링 관리 (상위) + 하위 메뉴 */}
+                  <Collapsible defaultOpen className="group/collapsible">
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip="멘토링 관리">
+                          <BookOpen className="h-4 w-4" />
+                          <span>멘토링 관리</span>
+                          <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={activeMenu === "mentoring" || activeMenu === "mentoring-detail"}
+                              onClick={() => handleMenuClick("mentoring")}
+                            >
+                              <div className="flex items-center cursor-pointer">
+                                <Settings className="h-4 w-4" />
+                                <span>멘토링 상세 관리</span>
+                              </div>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={activeMenu === "category"}
+                              onClick={() => handleMenuClick("category")}
+                            >
+                              <div className="flex items-center cursor-pointer">
+                                <Tag className="h-4 w-4" />
+                                <span>카테고리 관리</span>
+                              </div>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

@@ -12,10 +12,13 @@ public record RegisterMentoringDto(
         String introduction,
         int career,
         String content,
+        String chatUrl,
+
         MultipartFile profileImage,
         List<CertificateInfo> certificateInfos,
         List<MultipartFile> certificateImages
 ) {
+
     public static RegisterMentoringDto of(
             Long memberId,
             MentoringRegisterRequest request,
@@ -29,6 +32,7 @@ public record RegisterMentoringDto(
                 request.introduction(),
                 request.career(),
                 request.content(),
+                request.chatUrl(),
                 profileImageFile,
                 request.certificateInfos(),
                 certificateImages);

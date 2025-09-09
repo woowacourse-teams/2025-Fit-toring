@@ -2,14 +2,11 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.epages.restdocs-api-spec' version '0.18.2'
 }
 
 group = 'com.fittoring'
 version = '0.0.1-SNAPSHOT'
-
-ext {
-    jjwtVersion = '0.11.5'
-}
 
 java {
     toolchain {
@@ -17,10 +14,14 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+ext {
+    jjwtVersion = '0.11.5'
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    outputs.dir snippetsDir
 }
 
 repositories {
@@ -55,8 +56,43 @@ dependencies {
     // flyway
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
+
+    // restdocs
+    testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+    testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+openapi3 {
+    setServer("http://localhost:8080")
+    title = "Fittoring API"
+    description = "This is the API document provided by the Fittoring server."
+    version = "0.0.1"
+    format = "yaml"
+}
+
+tasks.register("cleanOpenapiSpec", Delete) {
+    delete layout.buildDirectory.dir("api-spec")
+}
+
+tasks.register("cleanSwaggerStatic", Delete) {
+    delete "src/main/resources/static/swagger-ui/openapi3.yaml"
+}
+
+tasks.matching { it.name == "openapi3" }.configureEach {
+    dependsOn("test")
+    dependsOn("cleanOpenapiSpec")
+    finalizedBy("copyOasToSwagger")
+}
+
+tasks.register("copyOasToSwagger", Copy) {
+    dependsOn("openapi3")
+    dependsOn("cleanSwaggerStatic")
+    from("build/api-spec/openapi3.yaml")
+    into("src/main/resources/static/swagger-ui/")
+    mustRunAfter("openapi3")
+}
+
+tasks.register("generateApiDocs") {
+    dependsOn("openapi3", "copyOasToSwagger")
 }
