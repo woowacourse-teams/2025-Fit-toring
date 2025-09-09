@@ -24,7 +24,7 @@ class PhoneTest {
     @DisplayName("올바른 형식일 때 전화번호를 생성할 수 있다.")
     @Test
     void validPhone() {
-        String phoneNumber = "010-1234-5678";
+        String phoneNumber = "010-1234-5679";
 
         // when
         // then
