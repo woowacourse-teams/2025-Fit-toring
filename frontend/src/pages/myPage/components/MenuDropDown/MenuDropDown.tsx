@@ -24,10 +24,10 @@ function MenuDropDown() {
   const [opened, setOpened] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleOutsideClick = (event: MouseEvent) => {
+  const handleOutsideClick = (e: MouseEvent) => {
     if (
       containerRef.current &&
-      !containerRef.current.contains(event.target as Node)
+      !containerRef.current.contains(e.target as Node)
     ) {
       setOpened(false);
     }
