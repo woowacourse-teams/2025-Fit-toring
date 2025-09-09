@@ -50,7 +50,7 @@ services:
         -javaagent:/pinpoint/pinpoint-bootstrap-3.0.1.jar
         -Dpinpoint.agentId=appDev
         -Dpinpoint.applicationName=app1
-        -Dpinpoint.config=/pinpoint/pinpoint-root.config
+        -Dpinpoint.config=/pinpoint-monitoring/pinpoint-root.config
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/healthcheck | grep -q '\"status\":\"UP\"'" ]
