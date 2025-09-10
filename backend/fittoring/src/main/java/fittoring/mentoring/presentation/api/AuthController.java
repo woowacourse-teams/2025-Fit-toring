@@ -36,14 +36,16 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
         authService.register(request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .build();
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
         AuthTokenResponse response = authService.login(request.loginId(), request.password());
         CookieWriter.write(httpResponse, response);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
     }
 
     @AuthRequired
@@ -51,7 +53,8 @@ public class AuthController {
     public ResponseEntity<Void> logout(@Login LoginInfo loginInfo, HttpServletResponse httpResponse) {
         authService.logout(loginInfo.memberId());
         CookieWriter.clearCookies(httpResponse);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
     }
 
     @PostMapping("/reissue")
@@ -61,24 +64,28 @@ public class AuthController {
     ) {
         AuthTokenResponse response = authService.reissue(refreshToken);
         CookieWriter.write(httpResponse, response);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
     }
 
     @PostMapping("/validate-id")
     public ResponseEntity<Void> validateDuplicateLoginId(@RequestBody @Valid ValidateDuplicateLoginIdRequest request) {
         authService.validateDuplicateLoginId(request.loginId());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
     }
 
     @PostMapping("/auth-code")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
         phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .build();
     }
 
     @PostMapping("/auth-code/verify")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerificationCodeRequest request) {
         phoneVerificationService.verifyCode(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
     }
 }

@@ -16,6 +16,7 @@ export const Default: Story = {
   args: {
     handleBookingButtonClick: () => {},
     mentoringId: 1,
+    mentoringPrice: 5000,
   },
   parameters: {
     docs: {

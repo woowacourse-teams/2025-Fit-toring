@@ -46,10 +46,10 @@ class CategoryServiceTest {
         // when
         // then
         Assertions.assertThat(categoryService.getAllCategories())
-            .containsExactlyInAnyOrder(
-                new CategoryResponse(category1.getId(), category1.getTitle()),
-                new CategoryResponse(category2.getId(), category2.getTitle()),
-                new CategoryResponse(category3.getId(), category3.getTitle())
-            );
+                .containsExactlyInAnyOrder(
+                        new CategoryResponse(category1.getId(), category1.getTitle()),
+                        new CategoryResponse(category2.getId(), category2.getTitle()),
+                        new CategoryResponse(category3.getId(), category3.getTitle())
+                );
     }
 }

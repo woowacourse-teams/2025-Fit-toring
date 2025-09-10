@@ -68,7 +68,8 @@ public class ReservationController {
         List<MentorMentoringReservationResponse> response = reservationService.getReservationsByMentor(
                 loginInfo.memberId()
         );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
     }
 
     @AuthRequired
@@ -78,13 +79,15 @@ public class ReservationController {
             @RequestBody @Valid ReservationStatusUpdateRequest request
     ) {
         mentoringReservationFacadeService.updateReservationStatusAndSendSms(reservationId, request.status());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
     }
 
     @AuthRequired
     @GetMapping("/reservations/{reservationId}/phone")
     public ResponseEntity<PhoneNumberResponse> getPhone(@PathVariable Long reservationId) {
         PhoneNumberResponse response = reservationService.getPhone(reservationId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
     }
 }
