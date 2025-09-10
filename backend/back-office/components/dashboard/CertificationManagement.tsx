@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "../ui/badge";
 import { toast } from "sonner";
-
+import { formatDateTime } from "@/utils/Formatter";
 import {
   Table,
   TableBody,
@@ -63,7 +63,7 @@ export function CertificationManagement() {
   useEffect(() => {
     const loadCertifications = async () => {
       try {
-        console.log('📋 자격증 목록 로드 시작:', { statusFilter });
+        console.log('📋 자격증명 목록 로드 시작:', { statusFilter });
         setIsLoading(true);
         setError(null);
         const data = await fetchCertificates(statusFilter);
@@ -75,11 +75,11 @@ export function CertificationManagement() {
           const filterName = statusFilter === 'PENDING' ? '검토 중' : 
                            statusFilter === 'REJECTED' ? '반려' : 
                            statusFilter === 'APPROVED' ? '인증 완료' : statusFilter;
-          toast.success(`${filterName} 상태 필터가 적용되었습니다. ${data.length}건의 자격증이 조회되었습니다.`);
+          toast.success(`${filterName} 상태 필터가 적용되었습니다. ${data.length}건의 자격증명이 조회되었습니다.`);
         }
       } catch (err) {
-        setError("자격증 데이터를 불러오는데 실패했습니다.");
-        console.error("❌ 자격증 로드 실패:", err);
+        setError("자격증명 데이터를 불러오는데 실패했습니다.");
+        console.error("❌ 자격증명 로드 실패:", err);
       } finally {
         setIsLoading(false);
         if (isInitialLoad) {
@@ -230,11 +230,11 @@ export function CertificationManagement() {
       setSelectedCert(mergedData);
       setIsDetailDialogOpen(true);
     } catch (err) {
-      console.error("자격증 상세 정보 로드 실패:", err);
+      console.error("자격증명 상세 정보 로드 실패:", err);
       // 실패 시 기본 정보 사용
       setSelectedCert(cert);
       setIsDetailDialogOpen(true);
-      toast.error("자격증 상세 정보를 불러오는데 실패했습니다.");
+      toast.error("자격증명 상세 정보를 불러오는데 실패했습니다.");
     }
   };
 
@@ -244,7 +244,7 @@ export function CertificationManagement() {
       const cert = certifications.find((c) => c.id === certId);
       if (!cert || cert.status !== "PENDING") {
         toast.error(
-          "검토 중 상태인 자격증만 반려할 수 있습니다.",
+          "검토 중 상태인 자격증명만 반려할 수 있습니다.",
         );
         return;
       }
@@ -278,10 +278,10 @@ export function CertificationManagement() {
       }
 
       setIsDetailDialogOpen(false);
-      toast.success("자격증이 반려되었습니다.");
+      toast.success("자격증명이 반려되었습니다.");
     } catch (err) {
       console.error("Error rejecting certificate:", err);
-      toast.error("자격증 반료 중 오류가 발생했습니다.");
+      toast.error("자격증명 반료 중 오류가 발생했습니다.");
     }
   };
 
@@ -291,7 +291,7 @@ export function CertificationManagement() {
       const cert = certifications.find((c) => c.id === certId);
       if (!cert || cert.status !== "PENDING") {
         toast.error(
-          "검토 중 상태인 자격증만 승인할 수 있습니다.",
+          "검토 중 상태인 자격증명만 승인할 수 있습니다.",
         );
         return;
       }
@@ -317,10 +317,10 @@ export function CertificationManagement() {
       }
 
       setIsDetailDialogOpen(false);
-      toast.success("자격증이 승인되었습니다.");
+      toast.success("자격증명이 승인되었습니다.");
     } catch (err) {
       console.error("Error approving certificate:", err);
-      toast.error("자격증 승인 중 오류가 발생했습니다.");
+      toast.error("자격증명 승인 중 오류가 발생했습니다.");
     }
   };
 
@@ -331,10 +331,10 @@ export function CertificationManagement() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <div>
             <h1 className="text-2xl font-semibold">
-              자격증 관리
+              자격증명 관리
             </h1>
             <p className="text-muted-foreground mt-1">
-              멘토들의 자격증 정보를 관리하고 검증합니다.
+              멘토들의 자격증명 정보를 관리하고 검증합니다.
               {!isLoading && certifications.length > 0 && (
                 <span className="ml-2 text-primary font-medium">
                   총 {certifications.length}건
@@ -461,7 +461,7 @@ export function CertificationManagement() {
                     <FileText className="h-12 w-12 text-muted-foreground/50" />
                     <div>
                       <p className="font-medium text-muted-foreground">
-                        {statusFilter === 'all' ? '등록된 자격증이 없습니다' : '조건에 맞는 자격증이 없습니다'}
+                        {statusFilter === 'all' ? '등록된 자격증명이 없습니다' : '조건에 맞는 자격증명이 없습니다'}
                       </p>
                       <p className="text-sm text-muted-foreground/80 mt-1">
                         {statusFilter !== 'all' && '다른 필터 조건을 시도해보세요'}
@@ -495,17 +495,17 @@ export function CertificationManagement() {
               <DialogHeader>
                 <DialogTitle className="flex items-center space-x-2">
                   <Award className="h-5 w-5" />
-                  <span>자격증 상세 정보</span>
+                  <span>자격증명 상세 정보</span>
                 </DialogTitle>
                 <DialogDescription>
-                  자격증 이미지를 확인하고 승인 또는 반려 처리를 할 수 있습니다.
+                  자격증명 이미지를 확인하고 승인 또는 반려 처리를 할 수 있습니다.
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6">
-                {/* 자격증 이미지 */}
+                {/* 자격증명 이미지 */}
                 <div className="space-y-2">
-                  <Label>자격증 이미지</Label>
+                  <Label>자격증명 이미지</Label>
                   <div className="border rounded-lg overflow-hidden">
                     <ImageWithFallback
                       src={selectedCert.imageUrl}
@@ -547,7 +547,7 @@ export function CertificationManagement() {
                   <div className="space-y-2">
                     <Label>제출일</Label>
                     <p className="text-sm text-[15px]">
-                      {selectedCert.submittedAt}
+                    {formatDateTime(selectedCert.submittedAt)}
                     </p>
                   </div>
 

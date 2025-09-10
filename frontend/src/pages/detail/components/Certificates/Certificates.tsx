@@ -4,10 +4,10 @@ import styled from '@emotion/styled';
 
 import CertificatesImageModal from '../CertificatesImageModal/CertificatesImageModal';
 
-import type { CertificateResponse } from '../../types/CertificatesResponse';
+import type { Certificates } from '../../../../common/types/MentoringDetail';
 
 interface CertificatesProps {
-  certificates: CertificateResponse[];
+  certificates: Certificates[];
 }
 
 function Certificates({ certificates }: CertificatesProps) {
@@ -18,9 +18,9 @@ function Certificates({ certificates }: CertificatesProps) {
   };
 
   const [selectedCertificate, setSelectedCertificate] =
-    useState<CertificateResponse | null>(null);
+    useState<Certificates | null>(null);
 
-  const handleItemClick = (certificate: CertificateResponse) => {
+  const handleItemClick = (certificate: Certificates) => {
     setSelectedCertificate(certificate);
     setOpened(true);
   };

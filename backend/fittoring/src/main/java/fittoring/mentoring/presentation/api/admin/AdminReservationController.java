@@ -51,7 +51,8 @@ public class AdminReservationController {
         AdminReservationStatusUpdateDto adminReservationStatusUpdateDto
                 = AdminReservationStatusUpdateDto.of(loginInfo.memberId(), reservationId, request.status());
         reservationService.updateStatusWithAdminAuthorization(adminReservationStatusUpdateDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
     }
 
     @AuthRequired

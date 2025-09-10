@@ -40,6 +40,7 @@ public class LogAspect {
 
     @Pointcut("execution(* fittoring..*Controller.*(..))")
     public void controller() {
+
     }
 
     @Before("controller()")

@@ -12,6 +12,7 @@ const renderBookingForm = (handleBookingButtonClick: () => void) => {
       <BookingForm
         handleBookingButtonClick={handleBookingButtonClick}
         mentoringId={1}
+        mentoringPrice={3000}
       />
     </ThemeProvider>,
   );
