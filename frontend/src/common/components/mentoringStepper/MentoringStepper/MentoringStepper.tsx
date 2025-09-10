@@ -30,9 +30,9 @@ const statusTextMap = Object.values(MentoringReservationStatusTypeEnum).reduce(
 );
 
 const statusInfoTextMap: Record<MentoringReservationStatusTypeEnum, string> = {
-  PENDING: '예약 확정 완료 시 문자로 연락용 오픈카톡방 링크가 발송됩니다.',
+  PENDING: '예약 승인 시 문자로 연락용 오픈카톡방 링크가 발송됩니다.',
   APPROVED:
-    '신청이 확정되었습니다. 문자로 발송된 오픈카톡 링크를 통해 멘토와 대화를 시작할 수 있습니다.',
+    '예약이 확정되었습니다. 문자로 발송된 오픈카톡 링크를 통해 멘토와 대화를 시작할 수 있습니다.',
   COMPLETE: '멘토링이 완료되었습니다.',
 };
 
@@ -63,25 +63,23 @@ function MentoringStepper({ status }: MentoringStepperProps) {
     <StyledContainer>
       <StyledSteps>
         {stepOrder.map((stepInfo) => (
-          <>
-            <Step
-              type={getType(stepInfo.step)}
-              status={status}
-              key={stepInfo.status}
-            >
-              <StyledTextWrapper>
-                <StyledText step={getType(stepInfo.step)}>
-                  {statusTextMap[stepInfo.status]}
-                </StyledText>
-                <StyledIconWrapper>
-                  <StyledIcon src={tooltipIcon} alt="툴팁 아이콘" />
-                  <StyledTooltip>
-                    {statusInfoTextMap[stepInfo.status]}
-                  </StyledTooltip>
-                </StyledIconWrapper>
-              </StyledTextWrapper>
-            </Step>
-          </>
+          <Step
+            type={getType(stepInfo.step)}
+            status={status}
+            key={stepInfo.status}
+          >
+            <StyledTextWrapper>
+              <StyledText step={getType(stepInfo.step)}>
+                {statusTextMap[stepInfo.status]}
+              </StyledText>
+              <StyledIconWrapper>
+                <StyledIcon src={tooltipIcon} alt="툴팁 아이콘" />
+                <StyledTooltip>
+                  {statusInfoTextMap[stepInfo.status]}
+                </StyledTooltip>
+              </StyledIconWrapper>
+            </StyledTextWrapper>
+          </Step>
         ))}
       </StyledSteps>
     </StyledContainer>
