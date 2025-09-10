@@ -28,7 +28,7 @@ jobs:
         run: |
           if [[ "${{ github.base_ref }}" == "develop" ]]; then
             echo "✅ Environment: DEVELOPMENT"
-            echo "API_BASE_URL=${{ secrets.FE_DEV_API_BASE_URL }}" >> .env.dev
+            echo "API_BASE_URL=${{ secrets.FE_DEV_API_BASE_URL }}" >> .env.prod
           elif [[ "${{ github.base_ref }}" == "release-dev" || "${{ github.base_ref }}" == "release-prod" ]]; then
             echo "✅ Environment: PRODUCTION"
             echo "API_BASE_URL=${{ secrets.FE_PROD_API_BASE_URL }}" >> .env.prod
