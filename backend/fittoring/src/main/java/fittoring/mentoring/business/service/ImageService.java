@@ -19,7 +19,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final S3Uploader s3Uploader;
 
-    public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId){
+    public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId) {
         return imageRepository.findByImageTypeAndRelationId(imageType, relationId);
     }
 

@@ -1,16 +1,26 @@
 package fittoring.mentoring.business.service;
 
-import fittoring.mentoring.business.exception.*;
-import fittoring.mentoring.business.model.*;
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.CertificateNotFoundException;
+import fittoring.mentoring.business.exception.ForbiddenException;
+import fittoring.mentoring.business.exception.ImageNotFoundException;
+import fittoring.mentoring.business.exception.InvalidCertificateException;
+import fittoring.mentoring.business.exception.NotFoundMemberException;
+import fittoring.mentoring.business.model.Certificate;
+import fittoring.mentoring.business.model.CertificateType;
+import fittoring.mentoring.business.model.Image;
+import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
+import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.service.dto.CertificateDeleteDto;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateInfo;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
-
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +44,10 @@ public class CertificateService {
         }
     }
 
-    private boolean validateCertificateRequestData(List<CertificateInfo> certificateInfos,
-                                                   List<MultipartFile> certificateImageFiles) {
+    private boolean validateCertificateRequestData(
+        List<CertificateInfo> certificateInfos,
+        List<MultipartFile> certificateImageFiles
+    ) {
         if (certificateInfos == null || certificateImageFiles == null) {
             return false;
         }
@@ -46,14 +58,17 @@ public class CertificateService {
             if (info.title().isEmpty() || CertificateType.inValidCertificateType(info.type().name())) {
                 throw new InvalidCertificateException(
                         BusinessErrorMessage.INVALID_CERTIFICATE_INFO.getMessage() + info.type().name() + " "
-                                + info.title());
+                        + info.title());
             }
         }
         return true;
     }
 
-    private void saveAllCertificates(List<CertificateInfo> certificateInfos, List<MultipartFile> certificateImageFiles,
-                                     Mentoring savedMentoring) {
+    private void saveAllCertificates(
+        List<CertificateInfo> certificateInfos,
+        List<MultipartFile> certificateImageFiles,
+        Mentoring savedMentoring
+    ) {
         for (int i = 0; i < certificateInfos.size(); i++) {
             CertificateInfo certificateInfo = certificateInfos.get(i);
             MultipartFile certificateImageFile = certificateImageFiles.get(i);
@@ -62,7 +77,11 @@ public class CertificateService {
         }
     }
 
-    private void saveCertificate(CertificateInfo request, MultipartFile certificateImageFile, Mentoring mentoring) {
+    private void saveCertificate(
+        CertificateInfo request,
+        MultipartFile certificateImageFile,
+        Mentoring mentoring
+    ) {
         final Certificate certificate = new Certificate(request.type(), request.title(), mentoring);
         final Certificate savedCertificate = certificateRepository.save(certificate);
         Long certificateId = savedCertificate.getId();
@@ -131,19 +150,16 @@ public class CertificateService {
     @Transactional
     public void deleteCertificate(CertificateDeleteDto dto) {
         Certificate certificate = certificateRepository.findById(dto.certificateId())
-                .orElseThrow(() -> new CertificateNotFoundException(BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new CertificateNotFoundException(
+                        BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage()));
         validateCertificateOwner(certificate, dto.mentorId());
         certificateRepository.delete(certificate);
     }
 
-    private void validateCertificateOwner(Certificate certificate, Long mentorId){
+    private void validateCertificateOwner(Certificate certificate, Long mentorId) {
         if (certificate.getMentorId().equals(mentorId)) {
             return;
         }
         throw new ForbiddenException(BusinessErrorMessage.NOT_CERTIFICATE_OWNER.getMessage());
-    }
-
-    public void deleteAll(List<Certificate> certificates) {
-        certificateRepository.deleteAll(certificates);
     }
 }

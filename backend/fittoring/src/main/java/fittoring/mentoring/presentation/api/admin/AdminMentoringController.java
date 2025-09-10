@@ -5,6 +5,7 @@ import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ public class AdminMentoringController {
     public ResponseEntity<Void> deleteMentoring(@Login LoginInfo loginInfo,
                                                 @PathVariable("mentoringId") Long mentoringId) {
         mentoringService.deleteMentoringByAdmin(loginInfo, mentoringId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
     }
 }
