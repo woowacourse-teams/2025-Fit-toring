@@ -26,6 +26,7 @@ import {
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
+import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
 
 function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(
@@ -43,6 +44,7 @@ function MentoringUpdateForm() {
   const priceErrorMessage = priceValidator(mentoringData.price);
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
+  const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
 
   const handleMentoringDataChange = (
     newData: Partial<MentoringUpdateFormData>,
@@ -117,7 +119,12 @@ function MentoringUpdateForm() {
     e: React.FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault();
-    if (priceErrorMessage || introduceErrorMessage || careerErrorMessage) {
+    if (
+      priceErrorMessage ||
+      introduceErrorMessage ||
+      careerErrorMessage ||
+      chatUrlErrorMessage
+    ) {
       alert('입력값을 확인해주세요.');
       return;
     }
@@ -200,14 +207,21 @@ function MentoringUpdateForm() {
           type: e.type,
           imageUrl: e.imageUrl,
         }));
-        const { price, career, introduction, content, profileImageUrl } =
-          mentoring;
+        const {
+          price,
+          career,
+          introduction,
+          content,
+          profileImageUrl,
+          chatUrl,
+        } = mentoring;
         setMentoringData({
           price,
           career,
           introduction,
           content,
           category: categories,
+          chatUrl,
           certificateInfos: certificateInfosData,
           profileImageUrl,
         });
@@ -227,9 +241,11 @@ function MentoringUpdateForm() {
       {!isInitialMentoringData(mentoringData) ? (
         <>
           <BaseInfoSection
-            onPriceChange={handleMentoringDataChange}
+            onBaseInfoChange={handleMentoringDataChange}
             priceErrorMessage={priceErrorMessage}
             price={mentoringData.price}
+            chatUrlErrorMessage={chatUrlErrorMessage}
+            chatUrl={mentoringData.chatUrl}
           />
           <ProfileSection
             profileImageUrl={mentoringData.profileImageUrl}
