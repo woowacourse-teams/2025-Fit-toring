@@ -36,10 +36,10 @@ public class ReservationNotificationService {
         Status status = Status.of(updateStatus);
         String mentorName = reservation.getMentorName();
         String context = reservation.getContent();
-        String mentorPhoneNumber = reservation.getMentorPhone();
+        String chatUrl = reservation.getChatUrlOfMentoring();
 
         if (status.isNotifiable()) {
-            String message = createMessage(status, mentorName, context, mentorPhoneNumber);
+            String message = createMessage(status, mentorName, context, chatUrl);
             Phone menteePhone = reservation.getMentee().getPhone();
             smsRestClientService.sendSms(menteePhone, message, RESERVATION_SUBJECT);
         }
@@ -49,13 +49,13 @@ public class ReservationNotificationService {
         Status updateStatus,
         String mentorName,
         String context,
-        String mentorPhoneNumber
+        String chatUrl
     ) {
         if (updateStatus.isApprove()) {
             return smsMessageFormatter.approvedReservationMessage(
                     mentorName,
                     context,
-                    mentorPhoneNumber
+                    chatUrl
             );
         }
         return smsMessageFormatter.rejectedReservationMessage(mentorName);

@@ -84,6 +84,10 @@ public class Reservation {
         return this.status.isPending();
     }
 
+    public String getChatUrlOfMentoring() {
+        return mentoring.getChatUrl();
+    }
+
     public String getMenteeName() {
         return mentee.getName();
     }
