@@ -121,7 +121,7 @@ jobs:
       - name: Build jar
         run: |
           chmod +x ./gradlew
-          ./gradlew clean bootJar -x test
+          ./gradlew clean generateApiDocs bootJar -x test
 
       - name: Docker login
         uses: docker/login-action@v3

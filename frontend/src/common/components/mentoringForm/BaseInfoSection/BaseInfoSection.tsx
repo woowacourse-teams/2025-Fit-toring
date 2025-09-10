@@ -13,14 +13,20 @@ import { captureSentryError } from '../../../utils/captureSentryError';
 
 interface BaseInfoSectionProps {
   priceErrorMessage: string;
-  onPriceChange: (newData: Pick<mentoringCreateFormData, 'price'>) => void;
+  onBaseInfoChange: (
+    newData: Partial<Pick<mentoringCreateFormData, 'price' | 'chatUrl'>>,
+  ) => void;
   price: number;
+  chatUrlErrorMessage: string;
+  chatUrl: string;
 }
 
 function BaseInfoSection({
-  onPriceChange,
+  onBaseInfoChange,
   priceErrorMessage,
   price,
+  chatUrlErrorMessage,
+  chatUrl,
 }: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
@@ -47,7 +53,11 @@ function BaseInfoSection({
   }, []);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onPriceChange({ price: Number(e.target.value) });
+    onBaseInfoChange({ price: Number(e.target.value) });
+  };
+
+  const handleChatUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onBaseInfoChange({ chatUrl: e.target.value });
   };
 
   return (
@@ -56,6 +66,22 @@ function BaseInfoSection({
       <StyledFormFieldWrapper>
         <FormField label="이름 *">
           <Input value={userInfo.name} id="name" disabled />
+        </FormField>
+        <FormField label="전화번호 *">
+          <Input value={userInfo.phoneNumber} id="phone" disabled />
+        </FormField>
+        <FormField
+          label="카카오톡 오픈 채팅 주소 *"
+          errorMessage={chatUrlErrorMessage}
+        >
+          <Input
+            placeholder="https://open.kakao.com/o/xxxxxx"
+            id="chatUrl"
+            required
+            onChange={handleChatUrlChange}
+            value={chatUrl}
+            errored={chatUrlErrorMessage !== ''}
+          />
         </FormField>
         <FormField label="15분 상담료 (원) *" errorMessage={priceErrorMessage}>
           <Input
@@ -66,9 +92,6 @@ function BaseInfoSection({
             errored={priceErrorMessage !== ''}
             value={price}
           />
-        </FormField>
-        <FormField label="전화번호 *">
-          <Input value={userInfo.phoneNumber} id="phone" disabled />
         </FormField>
       </StyledFormFieldWrapper>
     </section>

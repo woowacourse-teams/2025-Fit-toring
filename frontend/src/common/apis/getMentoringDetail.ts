@@ -4,9 +4,9 @@ import { apiClient } from './apiClient';
 
 import type { MentoringDetail } from '../types/MentoringDetail';
 
-export const getMineMentoring = () => {
-  return apiClient.get<MentoringDetail>({
-    endpoint: API_ENDPOINTS.MINE_MENTORING,
+export const getMentoringDetail = async (mentoringId: string) => {
+  return await apiClient.get<MentoringDetail>({
+    endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}`,
     withCredentials: true,
   });
 };
