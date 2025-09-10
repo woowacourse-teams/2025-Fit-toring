@@ -5,11 +5,7 @@ import * as matchers from '@testing-library/jest-dom/matchers';
 import { config } from 'dotenv';
 import { expect, afterEach, beforeAll, afterAll } from 'vitest';
 
-if (process.env.NODE_ENV === 'production') {
-  config({ path: '.env.prod' });
-} else if (process.env.NODE_ENV === 'test') {
-  config({ path: '.env.dev' });
-}
+config({ path: '.env.prod' });
 
 import { server } from './src/common/mock/server';
 
