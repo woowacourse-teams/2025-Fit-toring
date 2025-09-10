@@ -101,11 +101,53 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Docker Compose & nc
+        run: |
+          if ! docker compose version; then
+            sudo apt-get update
+            sudo apt-get install -y docker-compose-plugin
+          fi
+          if ! command -v nc >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y netcat-openbsd
+          fi
+
+      - name: Start MySQL containers with Docker Compose
+        run: docker compose -f ./docker-compose.yml up -d db-test
+
+      - name: Wait for Test MySQL
+        run: |
+          echo "Waiting for Test MySQL..."
+          for i in {30..0}; do
+            nc -z localhost 3307 && echo "Test MySQL is up!" && exit 0
+            echo "Still waiting for MySQL..."
+            sleep 2
+          done
+          echo "MySQL did not become ready in time" >&2
+          exit 1
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Create .env file
+        run: |
+          echo "ACTIVE_PROFILE=test" >> .env
+          echo "TEST_DATABASE_HOST=localhost" >> .env
+          echo "TEST_DATABASE_PORT=3307" >> .env
+          echo "TEST_DATABASE_NAME=fittoring-test" >> .env
+          echo "TEST_DATABASE_USER=root" >> .env
+          echo "TEST_DATABASE_PASSWORD=1234" >> .env
+          echo "COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}" >> .env
+          echo "COOL_SMS_HMAC_HEADER=HMAC-SHA256" >> .env
+          echo "COOL_SMS_HMAC_HASH=HmacSHA256" >> .env
+          echo "COOL_SMS_API_KEY=${{ secrets.COOL_SMS_API_KEY }}" >> .env
+          echo "COOL_SMS_SECRET_KEY=${{ secrets.COOL_SMS_SECRET_KEY }}" >> .env
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo "ACCESS_TOKEN_EXPIRATION_MILLIS=${{ secrets.ACCESS_TOKEN_EXPIRATION_MILLIS }}" >> .env
+          echo "REFRESH_TOKEN_EXPIRATION_MILLIS=${{ secrets.REFRESH_TOKEN_EXPIRATION_MILLIS }}" >> .env
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -117,10 +159,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build jar
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean generateApiDocs bootJar
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      # generateApiDocs가 test 의존 → 여기서 테스트 '1회' 실행됨
+      - name: Build jar + generate API docs
+        run: ./gradlew clean generateApiDocs bootJar
+
+      - name: Stop Docker containers (test DB)
+        if: always()
+        run: docker compose -f ./docker-compose.yml down
 
       - name: Docker login
         uses: docker/login-action@v3
