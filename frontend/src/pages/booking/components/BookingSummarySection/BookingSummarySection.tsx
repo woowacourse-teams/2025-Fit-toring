@@ -5,12 +5,16 @@ import timeIcon from '../../../../common/assets/images/timeIcon.svg';
 import Button from '../../../../common/components/Button/Button';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
-function BookingSummarySection() {
+interface BookingSummarySectionProps {
+  price: number;
+}
+
+function BookingSummarySection({ price }: BookingSummarySectionProps) {
   return (
     <StyledContainer>
       <StyledWrapper>
         <TextWithIcon iconSrc={timeIcon} iconName="시간 아이콘" text="15분" />
-        <StyledPrice>5,000원</StyledPrice>
+        <StyledPrice>{price.toLocaleString()}원</StyledPrice>
       </StyledWrapper>
       <Button
         customStyle={css`
