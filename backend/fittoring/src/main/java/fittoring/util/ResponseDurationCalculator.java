@@ -6,8 +6,7 @@ public class ResponseDurationCalculator {
 
     public static final String START_TIME_NS = "LOG_START_TIME_NS";
 
-    private ResponseDurationCalculator() {
-    }
+    private ResponseDurationCalculator() {}
 
     public static Long calculate(ServletRequestAttributes attrs) {
         if (attrs == null) {

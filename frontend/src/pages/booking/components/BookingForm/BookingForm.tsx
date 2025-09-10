@@ -13,11 +13,13 @@ import Checkbox from '../Checkbox/Checkbox';
 interface BookingFormProps {
   handleBookingButtonClick: () => void;
   mentoringId: number;
+  mentoringPrice: number;
 }
 
 function BookingForm({
   handleBookingButtonClick,
   mentoringId,
+  mentoringPrice,
 }: BookingFormProps) {
   const [counselContent, setCounselContent] = useState('');
   const [userInfo, setUserInfo] = useState({
@@ -128,7 +130,7 @@ function BookingForm({
         )}
       </StyledLabelWrapper>
 
-      <BookingSummarySection />
+      <BookingSummarySection price={mentoringPrice} />
     </StyledContainer>
   );
 }

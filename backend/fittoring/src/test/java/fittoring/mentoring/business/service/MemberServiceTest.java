@@ -95,7 +95,8 @@ class MemberServiceTest {
                 2000,
                 3,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의오픈채팅링크"
         );
         em.persist(mentoring);
 
@@ -134,7 +135,8 @@ class MemberServiceTest {
                 2000,
                 3,
                 "content",
-                "introduction"
+                "introduction",
+                "가상의오픈채팅링크"
         );
         em.persist(mentoring);
         Image image = new Image(

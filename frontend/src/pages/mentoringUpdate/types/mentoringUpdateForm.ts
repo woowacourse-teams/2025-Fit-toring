@@ -5,6 +5,7 @@ export interface MentoringUpdateFormData {
   career: number;
   content: string;
   profileImageUrl: string | null;
+  chatUrl: string;
   certificateInfos: {
     id: string;
     type: string | null;

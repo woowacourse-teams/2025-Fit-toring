@@ -17,8 +17,12 @@ public record MentoringSummaryResponse(
         long ratingCount
 ) {
 
-    public static MentoringSummaryResponse of(Mentoring mentoring, List<String> categories, Image image,
-                                              RatingStatsDto ratingStatsDto) {
+    public static MentoringSummaryResponse of(
+        Mentoring mentoring,
+        List<String> categories,
+        Image image,
+        RatingStatsDto ratingStatsDto
+    ) {
         if (image == null) {
             return MentoringSummaryResponse.of(mentoring, categories, ratingStatsDto);
         }
@@ -35,8 +39,11 @@ public record MentoringSummaryResponse(
         );
     }
 
-    private static MentoringSummaryResponse of(Mentoring mentoring, List<String> categories,
-                                               RatingStatsDto ratingStatsDto) {
+    private static MentoringSummaryResponse of(
+        Mentoring mentoring,
+        List<String> categories,
+        RatingStatsDto ratingStatsDto
+    ) {
         return new MentoringSummaryResponse(
                 mentoring.getId(),
                 mentoring.getMentorName(),

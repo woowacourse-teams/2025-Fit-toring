@@ -5,38 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.presentation.dto.CategoryResponse;
-import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class CategoryControllerTest {
-
-    @LocalServerPort
-    public int port;
+class CategoryControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        dbCleaner.clean();
-    }
 
     @DisplayName("카테고리 목록 조회가 성공하면, 200 OK 상태코드와 카테고리 목록을 반환한다.")
     @Test
@@ -48,7 +28,9 @@ class CategoryControllerTest {
 
         //when
         List<CategoryResponse> response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("category/get-categories-success"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/categories")
@@ -72,7 +54,9 @@ class CategoryControllerTest {
         //given
         //when
         List<CategoryResponse> response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("category/get-categories-empty"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/categories")

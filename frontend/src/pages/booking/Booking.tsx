@@ -3,17 +3,17 @@ import { useRef, useState, useLayoutEffect, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
 
+import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
-import {
-  getMentoringDetail,
-  type MentoringDetail,
-} from './apis/getMentoringDetail';
+
 import BookingForm from './components/BookingForm/BookingForm';
 import BookingHeader from './components/BookingHeader/BookingHeader';
 import CompleteModal from './components/CompleteModal/CompleteModal';
 import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 import { smoothScrollTo } from './utils/smoothScrollTo';
+
+import type { MentoringDetail } from '../../common/types/MentoringDetail';
 
 function Booking() {
   const [opened, setOpened] = useState(false);
@@ -80,6 +80,7 @@ function Booking() {
           <BookingForm
             handleBookingButtonClick={handleBookingButtonClick}
             mentoringId={Number(mentoringId)}
+            mentoringPrice={mentorDetail?.price ?? 0}
           />
         </div>
       </StyledContentWrapper>
