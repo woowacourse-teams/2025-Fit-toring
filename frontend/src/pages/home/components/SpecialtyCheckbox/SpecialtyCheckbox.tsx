@@ -56,13 +56,11 @@ const StyledCheckboxLabel = styled.span<{
   padding: 0.6rem 1.2rem;
   border: 1px solid
     ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN800 : theme.OUTLINE.DARK};
+      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
   border-radius: 16px;
 
-  background-color: ${({ theme, checked }) =>
-    checked ? theme.SYSTEM.MAIN600 : theme.BG.WHITE};
-
-  color: ${({ theme, checked }) => (checked ? theme.BG.WHITE : theme.FONT.B02)};
+  color: ${({ theme, checked }) =>
+    checked ? theme.SYSTEM.MAIN500 : theme.FONT.B02};
 
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 
@@ -74,9 +72,6 @@ const StyledCheckboxLabel = styled.span<{
   &:hover {
     border-color: ${({ theme, disabled }) =>
       disabled ? theme.OUTLINE.DARK : theme.SYSTEM.MAIN500};
-
-    background-color: ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN500 : theme.BG.WHITE};
   }
 
   &:active {
