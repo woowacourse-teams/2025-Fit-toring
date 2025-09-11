@@ -84,9 +84,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # generateApiDocs가 test 의존 → 여기서 테스트 '1회' 실행됨
-      - name: Build jar + generate API docs
-        run: ./gradlew clean generateApiDocs bootJar
+      - name: clean
+        run: ./gradlew clean
+
+      - name: generate API docs
+        run: ./gradlew generateApiDocs
+
+      - name: Build jar
+        run: ./gradlew bootJar
 
       - name: Stop Docker containers (test DB)
         if: always()
