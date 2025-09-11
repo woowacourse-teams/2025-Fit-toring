@@ -10,21 +10,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  backend-ci:
-    if: github.event_name == 'pull_request'
+  build-and-push:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    env:
+      IMAGE: fittoring/fittoring
     defaults:
       run:
         working-directory: backend/fittoring
+    outputs:
+      image_tag: ${{ steps.tags.outputs.prod_tag }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker Compose
+      - name: Set up Docker Compose & nc
         run: |
           if ! docker compose version; then
             sudo apt-get update
             sudo apt-get install -y docker-compose-plugin
+          fi
+          if ! command -v nc >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y netcat-openbsd
           fi
 
       - name: Start MySQL containers with Docker Compose
@@ -34,10 +41,12 @@ jobs:
         run: |
           echo "Waiting for Test MySQL..."
           for i in {30..0}; do
-            nc -z localhost 3307 && echo "Test MySQL is up!" && break
+            nc -z localhost 3307 && echo "Test MySQL is up!" && exit 0
             echo "Still waiting for MySQL..."
             sleep 2
           done
+          echo "MySQL did not become ready in time" >&2
+          exit 1
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -75,53 +84,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build & Run tests
-        run: ./gradlew clean build
+      # generateApiDocs가 test 의존 → 여기서 테스트 '1회' 실행됨
+      - name: Build jar + generate API docs
+        run: ./gradlew clean generateApiDocs bootJar
 
-      - name: Upload Test Report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-test-report
-          path: backend/fittoring/build/reports/tests/test/
-
-      - name: Stop Docker containers
+      - name: Stop Docker containers (test DB)
         if: always()
         run: docker compose -f ./docker-compose.yml down
-
-  build-and-push:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    env:
-      IMAGE: fittoring/fittoring
-    defaults:
-      run:
-        working-directory: backend/fittoring
-    outputs:
-      image_tag: ${{ steps.tags.outputs.prod_tag }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('./**/*.gradle*', './**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Build jar
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean generateApiDocs bootJar -x test
 
       - name: Docker login
         uses: docker/login-action@v3
