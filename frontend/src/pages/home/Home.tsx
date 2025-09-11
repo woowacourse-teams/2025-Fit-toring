@@ -146,9 +146,9 @@ function Home() {
           ))}
         </MentorCardList>
       </StyledContents>
-      <Footer>
+      {/* <Footer>
         <Feedback />
-      </Footer>
+      </Footer> */}
     </StyledContainer>
   );
 }
