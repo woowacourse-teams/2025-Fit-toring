@@ -44,8 +44,7 @@ function MentoringStepper({ status }: MentoringStepperProps) {
     status: value,
   }));
 
-  const matchedStatus = stepOrder.find((item) => item.status === status);
-  const currentStep = matchedStatus ? matchedStatus.step : 0;
+  const currentStep = stepOrder.find((item) => item.status === status)?.step ?? 0;
 
   const getType = (step: number) => {
     if (step > currentStep) {
