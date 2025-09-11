@@ -10,8 +10,6 @@ import Feedback from './components/Feedback/Feedback';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
-import MentorOverview from './components/MentorOverview/MentorOverview';
-import Slogan from './components/Slogan/Slogan';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
@@ -86,8 +84,6 @@ function Home() {
     <StyledContainer>
       <HomeHeader />
       <StyledContents>
-        <Slogan />
-        <MentorOverview mentorCount={mentorList.length} />
         <SpecialtyFilterModalButton handleOpenModal={handleOpenModal} />
         <SpecialtyFilterModal
           opened={modalOpened}
