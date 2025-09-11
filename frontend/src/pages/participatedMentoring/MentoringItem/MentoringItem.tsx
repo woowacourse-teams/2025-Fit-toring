@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import defaultImage from '../../../common/assets/images/profileImg.svg';
 import MentoringApplicationStatus from '../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import MentoringStepper from '../../../common/components/mentoringStepper/MentoringStepper/MentoringStepper';
+import { StatusTypeEnum } from '../../../common/types/statusType';
 import ReviewButton from '../ReviewButton/ReviewButton';
 import ReviewModal from '../ReviewModal/ReviewModal';
 
@@ -58,7 +59,7 @@ function MentoringItem({
         </StyledStatusWrapper>
       </StyledMentorInfoWrapper>
 
-      {status !== 'REJECTED' ? (
+      {status !== StatusTypeEnum.REJECTED ? (
         <StyledStepperWrapper>
           <MentoringStepper status={status} />
         </StyledStepperWrapper>
