@@ -1,10 +1,11 @@
-export enum MentoringReservationStatusTypeEnum {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  COMPLETE = 'COMPLETE',
-}
+import { StatusTypeEnum } from './statusType';
 
-export type MentoringReservationStatusType =
-  | 'APPROVED'
-  | 'PENDING'
-  | 'COMPLETE';
+import type { StatusType } from './statusType';
+
+export type MentoringReservationStatusType = Exclude<StatusType, 'REJECTED'>;
+
+export enum MentoringReservationStatusTypeEnum {
+  PENDING = StatusTypeEnum.PENDING,
+  APPROVED = StatusTypeEnum.APPROVED,
+  COMPLETE = StatusTypeEnum.COMPLETE,
+}
