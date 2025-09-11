@@ -25,15 +25,10 @@ const statusInfoTextMap: Record<MentoringReservationStatusTypeEnum, string> = {
 } as const;
 
 function MentoringStepper({ status }: MentoringStepperProps) {
-  const stepValues = Object.values(MentoringReservationStatusTypeEnum);
-
-  const stepOrder = stepValues.map((value, index) => ({
-    step: index,
-    status: value,
-  }));
-
-  const currentStep =
-    stepOrder.find((item) => item.status === status)?.step ?? 0;
+  const stepValues = Object.values(
+    MentoringReservationStatusTypeEnum,
+  ) as MentoringReservationStatusType[];
+  const currentStep = stepValues.indexOf(status);
 
   const getType = (step: number) => {
     if (step > currentStep) {
@@ -50,21 +45,15 @@ function MentoringStepper({ status }: MentoringStepperProps) {
   return (
     <StyledContainer>
       <StyledSteps>
-        {stepOrder.map((stepInfo) => (
-          <Step
-            type={getType(stepInfo.step)}
-            status={status}
-            key={stepInfo.status}
-          >
+        {stepValues.map((stepInfo, step) => (
+          <Step type={getType(step)} status={status} key={stepInfo}>
             <StyledTextWrapper>
-              <StyledText step={getType(stepInfo.step)}>
-                {statusTextMap[stepInfo.status]}
+              <StyledText step={getType(step)}>
+                {statusTextMap[stepInfo]}
               </StyledText>
               <StyledIconWrapper>
                 <StyledIcon src={tooltipIcon} alt="툴팁 아이콘" />
-                <StyledTooltip>
-                  {statusInfoTextMap[stepInfo.status]}
-                </StyledTooltip>
+                <StyledTooltip>{statusInfoTextMap[stepInfo]}</StyledTooltip>
               </StyledIconWrapper>
             </StyledTextWrapper>
           </Step>
