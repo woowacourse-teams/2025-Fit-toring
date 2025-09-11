@@ -22,7 +22,7 @@ const statusInfoTextMap: Record<MentoringReservationStatusTypeEnum, string> = {
   APPROVED:
     '예약이 확정되었습니다. 문자로 발송된 오픈카톡 링크를 통해 멘토와 대화를 시작할 수 있습니다.',
   COMPLETE: '멘토링이 완료되었습니다.',
-};
+} as const;
 
 function MentoringStepper({ status }: MentoringStepperProps) {
   const stepValues = Object.values(MentoringReservationStatusTypeEnum);
