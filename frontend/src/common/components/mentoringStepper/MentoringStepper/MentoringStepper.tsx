@@ -11,23 +11,11 @@ interface MentoringStepperProps {
   status: MentoringReservationStatusType;
 }
 
-const statusTextMap = Object.values(MentoringReservationStatusTypeEnum).reduce(
-  (acc, key) => {
-    switch (key) {
-      case 'PENDING':
-        acc[key] = '예약신청';
-        break;
-      case 'APPROVED':
-        acc[key] = '신청확정';
-        break;
-      case 'COMPLETE':
-        acc[key] = '멘토링완료';
-        break;
-    }
-    return acc;
-  },
-  {} as Record<string, string>,
-);
+const statusTextMap = {
+  [MentoringReservationStatusTypeEnum.PENDING]: '예약신청',
+  [MentoringReservationStatusTypeEnum.APPROVED]: '신청확정',
+  [MentoringReservationStatusTypeEnum.COMPLETE]: '멘토링완료',
+} as const;
 
 const statusInfoTextMap: Record<MentoringReservationStatusTypeEnum, string> = {
   PENDING: '예약 승인 시 문자로 연락용 오픈카톡방 링크가 발송됩니다.',
@@ -44,7 +32,8 @@ function MentoringStepper({ status }: MentoringStepperProps) {
     status: value,
   }));
 
-  const currentStep = stepOrder.find((item) => item.status === status)?.step ?? 0;
+  const currentStep =
+    stepOrder.find((item) => item.status === status)?.step ?? 0;
 
   const getType = (step: number) => {
     if (step > currentStep) {
