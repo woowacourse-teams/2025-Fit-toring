@@ -156,12 +156,6 @@ const StyledStatusWrapper = styled.div`
   height: auto;
 `;
 
-const StyeldReservationInfoText = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.B4_B};
-  color: ${({ theme }) => theme.FONT.B02};
-  text-align: center;
-`;
-
 const StyledStepperWrapper = styled.div`
   width: 90%;
   margin: 0 auto;
