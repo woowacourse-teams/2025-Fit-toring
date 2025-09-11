@@ -76,6 +76,7 @@ const StyledContainer = styled.li`
   border-radius: 5px;
   background-color: ${({ theme }) => theme.BG.WHITE};
 
+  cursor: pointer;
   /* :hover {
     border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
   } */
