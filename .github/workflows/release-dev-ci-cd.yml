@@ -82,8 +82,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build jar + generate API docs
-        run: ./gradlew clean generateApiDocs bootJar
+      - name: clean
+        run: ./gradlew clean
+
+      - name: generate API docs
+        run: ./gradlew generateApiDocs
+
+      - name: Build jar
+        run: ./gradlew bootJar
 
       - name: Stop Docker containers (test DB)
         if: always()
