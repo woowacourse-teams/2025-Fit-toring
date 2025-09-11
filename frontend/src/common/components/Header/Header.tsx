@@ -6,7 +6,7 @@ function Header({ children }: PropsWithChildren) {
 
   useEffect(() => {
     const handleScroll = () => {
-      setHasScrolled(window.scrollY > 0); // 스크롤이 0보다 크면 true
+      setHasScrolled(window.scrollY > 0);
     };
 
     window.addEventListener('scroll', handleScroll);
