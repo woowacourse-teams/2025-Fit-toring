@@ -10,7 +10,7 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import { THEME } from '../../../../common/styles/theme';
 import { StatusTypeEnum } from '../../../../common/types/statusType';
 
-import type { MentoringDetail } from '../../apis/getMentoringDetail';
+import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
 interface CompleteModalProps {
   opened: boolean;
