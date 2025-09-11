@@ -8,6 +8,8 @@ import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIco
 import MentorDetailInfoButton from '../MentorDetailInfoButton/MentorDetailInfoButton';
 
 import type { MentorInformation } from '../../types/MentorInformation';
+import { useNavigate } from 'react-router-dom';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 interface MentorCardItemProps {
   mentor: MentorInformation;
@@ -26,9 +28,15 @@ function MentorCardItem({
     ratingCount,
   },
 }: MentorCardItemProps) {
+  const navigate = useNavigate();
+
+  const handleDetailInfoButtonClick = () => {
+    navigate(`${PAGE_URL.DETAIL}/${id}`);
+  };
+
   return (
-    <StyledContainer>
-      <StyledWrapper>
+    <StyledContainer onClick={handleDetailInfoButtonClick}>
+      <StyledImageBox>
         <StyledProfileImg
           src={profileImageUrl || profileImg}
           alt="트레이너 이미지"
@@ -36,6 +44,8 @@ function MentorCardItem({
             e.currentTarget.src = profileImg;
           }}
         />
+      </StyledImageBox>
+      <StyledWrapper>
         <StyledInfoWrapper>
           <StyledTitle>{mentorName}</StyledTitle>
           <TextWithIcon
@@ -43,16 +53,14 @@ function MentorCardItem({
             iconSrc={starIcon}
             iconName="별점"
           />
-          <StyledPersonalHistory>경력: {career}년</StyledPersonalHistory>
           <CategoryTags tagNames={categories} />
         </StyledInfoWrapper>
+        <StyledSelfIntroduction>{introduction}</StyledSelfIntroduction>
+        <StyledPriceWrapper>
+          <StyledTime>15분 /</StyledTime>
+          <StyledPrice>{`${price.toLocaleString()}원`}</StyledPrice>
+        </StyledPriceWrapper>
       </StyledWrapper>
-      <StyledSelfIntroduction>{introduction}</StyledSelfIntroduction>
-      <StyledPriceWrapper>
-        <TextWithIcon text="15분" iconSrc={timeIcon} iconName="시간" />
-        <StyledPrice>{price.toLocaleString()}원</StyledPrice>
-      </StyledPriceWrapper>
-      <MentorDetailInfoButton id={id} />
     </StyledContainer>
   );
 }
@@ -61,72 +69,70 @@ export default MentorCardItem;
 
 const StyledContainer = styled.li`
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 
   width: 100%;
-  height: 25.6rem;
-  padding: 2.2rem 2.4rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 12.75px;
-  box-shadow:
-    0 10px 15px -3px rgb(0 0 0 / 10%),
-    0 4px 6px -4px rgb(0 0 0 / 10%);
-
+  height: 21.5rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+  border-radius: 5px;
   background-color: ${({ theme }) => theme.BG.WHITE};
 
-  :hover {
+  /* :hover {
     border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
-  }
+  } */
 `;
 
 const StyledWrapper = styled.div`
   display: flex;
+  flex-direction: column;
+  width: 100%;
   gap: 1rem;
+  padding: 2rem;
+`;
+
+const StyledImageBox = styled.div`
+  width: 18rem;
+  height: 100%;
+  border-radius: 5px 0 0 5px;
+  flex-shrink: 0;
+  overflow: hidden;
 `;
 
 const StyledProfileImg = styled.img`
-  width: 5.6rem;
-  height: 5.6rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 50%;
-
-  :hover {
-    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
-  }
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
 
 const StyledInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.7rem;
 `;
 
 const StyledTitle = styled.h3`
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
-`;
-
-const StyledPersonalHistory = styled.p`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 `;
 
 const StyledSelfIntroduction = styled.p`
   overflow: hidden;
+  height: 100%;
 
   color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.C2_R};
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  white-space: wrap;
 `;
-
 const StyledPriceWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  color: ${({ theme }) => theme.FONT.B01};
+  gap: 0.3rem;
+`;
+
+const StyledTime = styled.span`
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
 const StyledPrice = styled.span`
-  color: ${({ theme }) => theme.SYSTEM.MAIN600};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
+  ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
 `;
