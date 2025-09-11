@@ -16,6 +16,13 @@ import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/
 
 import type { MentorInformation } from './types/MentorInformation';
 import { captureSentryError } from '../../common/utils/captureSentryError';
+import SortButton from './components/SortButton/SortButton';
+import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
+import { useNavigate } from 'react-router-dom';
+import { PAGE_URL } from '../../common/constants/url';
+import Button from '../../common/components/Button/Button';
+import { css } from '@emotion/react';
+import { THEME } from '../../common/styles/theme';
 
 const convertSelectedSpecialtiesToParams = (
   selectedSpecialties: string[],
@@ -30,6 +37,11 @@ const convertSelectedSpecialtiesToParams = (
 
 function Home() {
   const [modalOpened, setModalOpened] = useState(false);
+  const [myMentoringId, setMyMentoringId] = useState<null | number>(null);
+
+  const { authenticated } = useAuth();
+  const navigate = useNavigate();
+
   const handleOpenModal = () => {
     setModalOpened(true);
     ReactGA.event({
@@ -37,6 +49,10 @@ function Home() {
       action: 'Open Specialty Filter Modal',
       label: '전문 분야 필터',
     });
+  };
+
+  const handleSortButtonClick = () => {
+    alert('기능 추가 예정입니다.');
   };
   const handleCloseModal = () => {
     setModalOpened(false);
@@ -55,6 +71,19 @@ function Home() {
         ? prev.filter((prevSpecialty) => prevSpecialty !== specialty)
         : [...prev, specialty],
     );
+  };
+
+  const handleMentoringCreation = () => {
+    if (!authenticated) {
+      navigate(PAGE_URL.LOGIN);
+      return;
+    }
+    if (myMentoringId !== null) {
+      navigate(PAGE_URL.CREATED_MENTORING);
+      return;
+    }
+
+    navigate(PAGE_URL.MENTORING_CREATE);
   };
 
   const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
@@ -83,14 +112,23 @@ function Home() {
   return (
     <StyledContainer>
       <HomeHeader />
+      <StyledActionWrapper>
+        <StyledFilterWrapper>
+          <SpecialtyFilterModalButton handleOpenModal={handleOpenModal} />
+          <SpecialtyFilterModal
+            opened={modalOpened}
+            handleCloseModal={handleCloseModal}
+            selectedSpecialties={selectedSpecialties}
+            handleApplyFinalSpecialties={handleApply}
+          />
+          <SortButton handleSortButtonClick={handleSortButtonClick} />
+        </StyledFilterWrapper>
+        <Button onClick={handleMentoringCreation} customStyle={customSytle}>
+          {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
+        </Button>{' '}
+      </StyledActionWrapper>
+
       <StyledContents>
-        <SpecialtyFilterModalButton handleOpenModal={handleOpenModal} />
-        <SpecialtyFilterModal
-          opened={modalOpened}
-          handleCloseModal={handleCloseModal}
-          selectedSpecialties={selectedSpecialties}
-          handleApplyFinalSpecialties={handleApply}
-        />
         <StyledCheckboxWrapper>
           {selectedSpecialties.map((specialty) => (
             <SpecialtyCheckbox
@@ -117,6 +155,16 @@ function Home() {
 
 export default Home;
 
+const customSytle = css`
+  width: 12.9rem;
+  height: 3.4rem;
+  border-radius: 5px;
+  border: 1px solid ${THEME.SYSTEM.GRAY300};
+  background-color: ${THEME.BG.WHITE};
+  color: ${THEME.SYSTEM.MAIN600};
+  ${THEME.TYPOGRAPHY.B4_B};
+`;
+
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -124,12 +172,23 @@ const StyledContainer = styled.div`
   min-height: 100%;
 `;
 
+const StyledActionWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.4rem;
+`;
+
+const StyledFilterWrapper = styled.div`
+  display: flex;
+  gap: 7px;
+`;
+
 const StyledContents = styled.main`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   align-items: center;
-  gap: 2rem;
 `;
 
 const StyledCheckboxWrapper = styled.div`
