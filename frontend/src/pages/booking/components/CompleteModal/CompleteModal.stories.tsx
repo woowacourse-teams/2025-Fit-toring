@@ -35,6 +35,20 @@ export const DefaultModal: Story = {
       profileImageUrl: '',
       introduction:
         '안녕하세요. 김트레이너입니다. 현재 이벤트로 무료 상담하고 있습니다.',
+      content:
+        '현재 무료 상담 진행하고 있습니다. \n\n언제든 편하게 연락주시면 빠르게 답장하겠습니다.',
+      chatUrl: '',
+      certificates: [
+        {
+          certificateId: 19,
+          title: '핏토링',
+          type: 'LICENSE',
+          imageUrl:
+            'https://techcourse-project-2025.s3.amazonaws.com/fit-toring/certificate-image/d2dab999-8add-4450-91f3-499765d647cb.svg',
+        },
+      ],
+      ratingAverage: '0.0',
+      ratingCount: 0,
     },
     opened: true,
     onCloseClick: fn(),
