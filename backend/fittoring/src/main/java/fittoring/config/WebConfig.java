@@ -24,6 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:3000",
                         "https://localhost:3000",
+                        "http://localhost:8080",
                         "http://fittoring.store",
                         "https://www.fittoring.com",
                         "https://fittoring.com",
