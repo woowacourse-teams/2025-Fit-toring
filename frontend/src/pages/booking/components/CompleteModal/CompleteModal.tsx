@@ -41,19 +41,19 @@ function CompleteModal({
         <StyledColoredBackground />
         <StyledTitle>멘토링 신청이 완료되었습니다.</StyledTitle>
         <StyledStepperWrapper>
-          <StyeldReservationInfoText>
+          <StyledReservationInfoText>
             확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
-          </StyeldReservationInfoText>
+          </StyledReservationInfoText>
           <MentoringStepper status={StatusTypeEnum.PENDING} />
         </StyledStepperWrapper>
-        <StyledMetorInfoBox>
+        <StyledMentorInfoBox>
           <StyledInfoTextWithIcon>
             <StyledIcon src={humanIcon} alt="사람 아이콘" />
             <span>멘토 정보</span>
           </StyledInfoTextWithIcon>
           <p>이름: {mentorInfo?.mentorName}</p>
           <p>전문분야: {mentorInfo?.categories.join(' / ')}</p>
-        </StyledMetorInfoBox>
+        </StyledMentorInfoBox>
         <Button
           onClick={handleGoReservationClick}
           size="full"
@@ -114,7 +114,7 @@ const StyledTitle = styled.p`
   color: ${({ theme }) => theme.FONT.W01};
 `;
 
-const StyledMetorInfoBox = styled.div`
+const StyledMentorInfoBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -154,7 +154,7 @@ const StyledStepperWrapper = styled.div`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyeldReservationInfoText = styled.p`
+const StyledReservationInfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_B};
   color: ${({ theme }) => theme.FONT.B02};
   text-align: center;
