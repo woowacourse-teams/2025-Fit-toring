@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 
 import FitnessQuestionFlow from './components/FitnessQuestionFlow/FitnessQuestionFlow';
+import Footer from './components/Footer/Footer';
 import Introduce from './components/Introduce/Introduce';
 import Slogan from './components/Slogan/Slogan';
 import UserLevelGuide from './components/UserLevelGuide/UserLevelGuide';
@@ -12,52 +13,19 @@ function Landing() {
       <FitnessQuestionFlow />
       <Introduce />
       <UserLevelGuide />
-      {/* <StyledLandingBgWithColor>
-        <StyledImg src={landing1} alt="랜딩1" />
-      </StyledLandingBgWithColor> */}
-      {/* <StyledLandingBg>
-        <StyledImg src={landing2} alt="랜딩2" />
-      </StyledLandingBg>
-      <StyledLandingBg>
-        <StyledImg src={landing3} alt="랜딩3" />
-      </StyledLandingBg>
       <StyledButtonSection>
         <StyledButton>시작하기</StyledButton>
       </StyledButtonSection>
-      <Footer /> */}
+      <Footer />
     </div>
   );
 }
 
 export default Landing;
 
-const StyledLandingBg = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 0 auto;
-  overflow: hidden;
-`;
-
-const StyledLandingBgWithColor = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 0 auto;
-  background: ${({ theme }) => `
-  linear-gradient(
-    180deg,
-    ${theme.SYSTEM.GRAY50} 0%,
-    #fff 100%
-  )
-`};
-  overflow: hidden;
-`;
-
-const StyledImg = styled.img`
-  width: 130%;
-`;
-
 const StyledButtonSection = styled.div`
-  height: 15rem;
+  padding-top: 5rem;
+  padding-bottom: 10rem;
   display: flex;
   justify-content: center;
   align-items: center;
