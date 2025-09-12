@@ -40,7 +40,7 @@ export default Introduce;
 
 const StyledContainer = styled.div`
   line-height: normal;
-  padding: 3rem;
+  padding: 5rem 3rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
