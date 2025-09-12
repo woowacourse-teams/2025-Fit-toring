@@ -1,12 +1,11 @@
-import styled from '@emotion/styled';
-import { Outlet } from 'react-router-dom';
+import type { PropsWithChildren } from 'react';
 
-function MobileLayout() {
+import styled from '@emotion/styled';
+
+function MobileLayout({ children }: PropsWithChildren) {
   return (
     <StyledContainer>
-      <StyledContents>
-        <Outlet />
-      </StyledContents>
+      <StyledContents>{children}</StyledContents>
     </StyledContainer>
   );
 }
@@ -25,7 +24,7 @@ const StyledContainer = styled.main`
 const StyledContents = styled.section`
   width: 48rem;
 
-  background-color: ${({ theme }) => theme.BG.LIGHT};
+  background-color: ${({ theme }) => theme.BG.WHITE};
 
   @media screen and (width <= 480px) {
     width: 100%;
