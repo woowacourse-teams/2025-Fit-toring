@@ -1,20 +1,17 @@
 import styled from '@emotion/styled';
 
-import landing1 from '../../common/assets/images/landing1.png';
-import landing2 from '../../common/assets/images/landing2.png';
-import landing3 from '../../common/assets/images/landing3.png';
-
-import Footer from './components/Footer/Footer';
+import FitnessQuestionFlow from './components/FitnessQuestionFlow/FitnessQuestionFlow';
 import Slogan from './components/Slogan/Slogan';
 
 function Landing() {
   return (
     <div>
       <Slogan />
-      <StyledLandingBgWithColor>
+      <FitnessQuestionFlow />
+      {/* <StyledLandingBgWithColor>
         <StyledImg src={landing1} alt="랜딩1" />
-      </StyledLandingBgWithColor>
-      <StyledLandingBg>
+      </StyledLandingBgWithColor> */}
+      {/* <StyledLandingBg>
         <StyledImg src={landing2} alt="랜딩2" />
       </StyledLandingBg>
       <StyledLandingBg>
@@ -23,7 +20,7 @@ function Landing() {
       <StyledButtonSection>
         <StyledButton>시작하기</StyledButton>
       </StyledButtonSection>
-      <Footer />
+      <Footer /> */}
     </div>
   );
 }
