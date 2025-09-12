@@ -29,9 +29,9 @@ function Introduce() {
           </StyledText>
         </StyledTexts>
       </StyledTextWrapper>
-      <div>
+      <StyledImgWrapper>
         <StyledImg src={mock} alt="목업" />
-      </div>
+      </StyledImgWrapper>
     </StyledContainer>
   );
 }
@@ -43,7 +43,7 @@ const StyledContainer = styled.div`
   padding: 5rem 3rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 3rem;
 `;
 
 const StyledTitle = styled.p`
@@ -55,6 +55,7 @@ const StyledTextWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3rem;
+  text-align: center;
 `;
 
 const StyledTexts = styled.div`
@@ -65,6 +66,11 @@ const StyledTexts = styled.div`
 
 const StyledText = styled.p`
   font-size: 1.6rem;
+`;
+
+const StyledImgWrapper = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
 const StyledImg = styled.img`
