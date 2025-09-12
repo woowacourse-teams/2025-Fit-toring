@@ -1,11 +1,12 @@
-import type { PropsWithChildren } from 'react';
-
 import styled from '@emotion/styled';
+import { Outlet } from 'react-router-dom';
 
-function MobileLayout({ children }: PropsWithChildren) {
+function MobileLayout() {
   return (
     <StyledContainer>
-      <StyledContents>{children}</StyledContents>
+      <StyledContents>
+        <Outlet />
+      </StyledContents>
     </StyledContainer>
   );
 }
