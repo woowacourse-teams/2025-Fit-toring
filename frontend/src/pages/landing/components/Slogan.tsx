@@ -36,7 +36,7 @@ function Slogan() {
 export default Slogan;
 
 const StyledContainer = styled.div`
-  height: 100dvh;
+  height: 50rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -46,7 +46,7 @@ const StyledSloganSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6rem;
+  gap: 3rem;
 `;
 
 const StyledSloganWrapper = styled.div`
@@ -58,7 +58,7 @@ const StyledSloganWrapper = styled.div`
 
 const StyledSloganText = styled.p`
   color: #000;
-  font-size: 6rem;
+  font-size: 3rem;
   font-weight: 700;
 `;
 
@@ -67,7 +67,7 @@ const StyledTextWrapper = styled.div`
 `;
 
 const StyledNameText = styled.span<{ highlight?: boolean }>`
-  font-size: 11.2rem;
+  font-size: 6rem;
   font-weight: 700;
   color: ${({ theme, highlight }) =>
     highlight ? theme.SYSTEM.MAIN500 : '#000}'};
@@ -75,25 +75,25 @@ const StyledNameText = styled.span<{ highlight?: boolean }>`
 
 const StyledTags = styled.div`
   display: flex;
-  gap: 2.2rem;
+  gap: 1rem;
 `;
 
 const StyledTag = styled.span`
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-weight: 500;
 `;
 
 const StyledButton = styled.button`
-  width: 19rem;
-  border-radius: 15px;
-  padding: 2rem 4rem;
+  width: 10rem;
+  border-radius: 7px;
+  padding: 1rem 2rem;
   border: 2px solid #e3e3e3;
   background: ${({ theme }) => theme.SYSTEM.GRAY900};
   color: white;
   border: none;
   text-align: center;
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-weight: 700;
   cursor: pointer;
 `;
