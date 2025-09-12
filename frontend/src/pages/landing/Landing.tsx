@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import FitnessQuestionFlow from './components/FitnessQuestionFlow/FitnessQuestionFlow';
 import Introduce from './components/Introduce/Introduce';
 import Slogan from './components/Slogan/Slogan';
+import UserLevelGuide from './components/UserLevelGuide/UserLevelGuide';
 
 function Landing() {
   return (
@@ -10,6 +11,7 @@ function Landing() {
       <Slogan />
       <FitnessQuestionFlow />
       <Introduce />
+      <UserLevelGuide />
       {/* <StyledLandingBgWithColor>
         <StyledImg src={landing1} alt="랜딩1" />
       </StyledLandingBgWithColor> */}
