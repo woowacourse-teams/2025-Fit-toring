@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 
 import FitnessQuestionFlow from './components/FitnessQuestionFlow/FitnessQuestionFlow';
+import Introduce from './components/Introduce/Introduce';
 import Slogan from './components/Slogan/Slogan';
 
 function Landing() {
@@ -8,6 +9,7 @@ function Landing() {
     <div>
       <Slogan />
       <FitnessQuestionFlow />
+      <Introduce />
       {/* <StyledLandingBgWithColor>
         <StyledImg src={landing1} alt="랜딩1" />
       </StyledLandingBgWithColor> */}
