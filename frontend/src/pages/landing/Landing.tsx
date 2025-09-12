@@ -4,6 +4,7 @@ import landing1 from '../../common/assets/images/landing1.png';
 import landing2 from '../../common/assets/images/landing2.png';
 import landing3 from '../../common/assets/images/landing3.png';
 
+import Footer from './components/Footer/Footer';
 import Slogan from './components/Slogan/Slogan';
 
 function Landing() {
@@ -22,6 +23,7 @@ function Landing() {
       <StyledButtonSection>
         <StyledButton>시작하기</StyledButton>
       </StyledButtonSection>
+      <Footer />
     </div>
   );
 }
