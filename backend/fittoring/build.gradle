@@ -64,7 +64,10 @@ dependencies {
 }
 
 openapi3 {
-    setServer("http://localhost:8080")
+    servers = [
+            { url = "https://devapi.fittoring.com"; description = "Dev Server" },
+            { url = "http://localhost:8080"; description = "localHost" },
+    ]
     title = "Fittoring API"
     description = "This is the API document provided by the Fittoring server."
     version = "0.0.1"
