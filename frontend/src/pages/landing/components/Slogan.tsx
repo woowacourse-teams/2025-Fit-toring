@@ -89,8 +89,9 @@ const StyledButton = styled.button`
   border-radius: 15px;
   padding: 2rem 4rem;
   border: 2px solid #e3e3e3;
-  background: #fff;
-  color: #000;
+  background: ${({ theme }) => theme.SYSTEM.GRAY900};
+  color: white;
+  border: none;
   text-align: center;
   font-size: 2.5rem;
   font-weight: 700;
