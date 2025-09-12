@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-import { PAGE_URL } from '../../../common/constants/url';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 function Slogan() {
   const TAGS = ['다이어트', '홈트레이닝', '체형교정', '벌크업', '재활운동'];
