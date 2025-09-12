@@ -9,6 +9,7 @@ function Slogan() {
   const navigate = useNavigate();
 
   const handleStartButtonClick = () => {
+    sessionStorage.setItem('hasVisited', 'true');
     navigate(PAGE_URL.HOME);
   };
 

@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  redirect,
+  RouterProvider,
+} from 'react-router-dom';
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
@@ -15,7 +19,18 @@ import ParticipatedMentoring from './pages/participatedMentoring/ParticipatedMen
 import Signup from './pages/signup/Signup';
 
 const router = createBrowserRouter([
-  { path: PAGE_URL.HOME, element: <Home /> },
+  {
+    path: PAGE_URL.HOME,
+    element: <Home />,
+    loader: () => {
+      const hasVisited = !sessionStorage.getItem('hasVisited');
+
+      if (hasVisited) {
+        return redirect(PAGE_URL.LANDING);
+      }
+      return null;
+    },
+  },
   { path: PAGE_URL.LANDING, element: <Landing /> },
   { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
   { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },

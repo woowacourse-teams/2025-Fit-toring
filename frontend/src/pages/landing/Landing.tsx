@@ -1,4 +1,7 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
+
+import { PAGE_URL } from '../../common/constants/url';
 
 import FitnessQuestionFlow from './components/FitnessQuestionFlow/FitnessQuestionFlow';
 import Footer from './components/Footer/Footer';
@@ -7,6 +10,13 @@ import Slogan from './components/Slogan/Slogan';
 import UserLevelGuide from './components/UserLevelGuide/UserLevelGuide';
 
 function Landing() {
+  const navigate = useNavigate();
+
+  const handleStartButtonClick = () => {
+    sessionStorage.setItem('hasVisited', 'true');
+    navigate(PAGE_URL.HOME);
+  };
+
   return (
     <div>
       <Slogan />
@@ -14,7 +24,7 @@ function Landing() {
       <Introduce />
       <UserLevelGuide />
       <StyledButtonSection>
-        <StyledButton>시작하기</StyledButton>
+        <StyledButton onClick={handleStartButtonClick}>시작하기</StyledButton>
       </StyledButtonSection>
       <Footer />
     </div>
