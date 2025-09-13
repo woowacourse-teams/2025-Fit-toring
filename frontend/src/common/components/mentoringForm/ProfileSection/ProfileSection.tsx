@@ -2,8 +2,10 @@ import styled from '@emotion/styled';
 
 import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import uploadIcon from '../../../../common/assets/images/uploadIcon.svg';
+import useAsyncLoadingInput from '../../../hooks/useAsyncLoadingInput';
 import usePreviewImage from '../../../hooks/usePreviewImage';
 import { convertHeicToJpegIfNeeded } from '../../../utils/heicFile/convertHeicToJpegIfNeeded';
+import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 interface ProfileSectionProps {
@@ -35,6 +37,12 @@ function ProfileSection({
     onProfileImageChange(null);
   };
 
+  const { isLoading, handleCallback: handleProfileImageInputClick } =
+    useAsyncLoadingInput({
+      callback: handleProfileImageInputChange,
+      errorText: '이미지 업로드에 실패했습니다. 다시 시도해주세요.',
+    });
+
   return (
     <section>
       <TitleSeparator>프로필 사진</TitleSeparator>
@@ -46,23 +54,32 @@ function ProfileSection({
           <img src={deleteIcon} alt="삭제 아이콘" />
         </StyledDeleteButton>
         <StyledProfileInputWrapper>
-          <StyledHiddenInput
-            type="file"
-            accept="image/*"
-            id="profileImage"
-            onChange={handleProfileImageInputChange}
-          />
-          {previewUrl ? (
-            <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
+          {isLoading ? (
+            <LoadingSpinner />
           ) : (
-            <StyledContentWrapper>
-              <StyledUploadIcon src={uploadIcon} alt="업로드 아이콘" />
-              {/* TODO: 드래그를 통한 업로드 기능 추가 */}
-              <StyledGuideText>
-                <strong>클릭하여 업로드</strong>
-              </StyledGuideText>{' '}
-              <StyledFileTypeText>(최대 30MB)</StyledFileTypeText>
-            </StyledContentWrapper>
+            <>
+              <StyledHiddenInput
+                type="file"
+                accept="image/*"
+                id="profileImage"
+                onChange={handleProfileImageInputClick}
+              />
+              {previewUrl ? (
+                <StyledPreviewImage
+                  src={previewUrl}
+                  alt="프로필 사진 미리보기"
+                />
+              ) : (
+                <StyledContentWrapper>
+                  <StyledUploadIcon src={uploadIcon} alt="업로드 아이콘" />
+                  {/* TODO: 드래그를 통한 업로드 기능 추가 */}
+                  <StyledGuideText>
+                    <strong>클릭하여 업로드</strong>
+                  </StyledGuideText>{' '}
+                  <StyledFileTypeText>(최대 30MB)</StyledFileTypeText>
+                </StyledContentWrapper>
+              )}
+            </>
           )}
         </StyledProfileInputWrapper>
       </StyledProfileWrapper>
