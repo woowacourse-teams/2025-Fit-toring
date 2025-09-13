@@ -71,7 +71,8 @@ class ReviewRepositoryTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개",
+                "가상의오픈채팅링크"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",

@@ -34,8 +34,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Certificate {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -61,8 +61,8 @@ public class Certificate {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Mentoring mentoring;
 
     public Certificate(CertificateType type, String title, Mentoring mentoring) {

@@ -26,8 +26,8 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 public class Member {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -62,7 +62,14 @@ public class Member {
         this(null, loginId, gender, name, phone, password, MemberRole.MENTEE, false, null);
     }
 
-    public Member(String loginId, String gender, String name, Phone phone, Password password, MemberRole role) {
+    public Member(
+        String loginId,
+        String gender,
+        String name,
+        Phone phone,
+        Password password,
+        MemberRole role
+    ) {
         this(null, loginId, gender, name, phone, password, role, false, null);
     }
 

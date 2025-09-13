@@ -44,8 +44,10 @@ public class CertificateService {
         }
     }
 
-    private boolean validateCertificateRequestData(List<CertificateInfo> certificateInfos,
-                                                   List<MultipartFile> certificateImageFiles) {
+    private boolean validateCertificateRequestData(
+        List<CertificateInfo> certificateInfos,
+        List<MultipartFile> certificateImageFiles
+    ) {
         if (certificateInfos == null || certificateImageFiles == null) {
             return false;
         }
@@ -62,8 +64,11 @@ public class CertificateService {
         return true;
     }
 
-    private void saveAllCertificates(List<CertificateInfo> certificateInfos, List<MultipartFile> certificateImageFiles,
-                                     Mentoring savedMentoring) {
+    private void saveAllCertificates(
+        List<CertificateInfo> certificateInfos,
+        List<MultipartFile> certificateImageFiles,
+        Mentoring savedMentoring
+    ) {
         for (int i = 0; i < certificateInfos.size(); i++) {
             CertificateInfo certificateInfo = certificateInfos.get(i);
             MultipartFile certificateImageFile = certificateImageFiles.get(i);
@@ -72,7 +77,11 @@ public class CertificateService {
         }
     }
 
-    private void saveCertificate(CertificateInfo request, MultipartFile certificateImageFile, Mentoring mentoring) {
+    private void saveCertificate(
+        CertificateInfo request,
+        MultipartFile certificateImageFile,
+        Mentoring mentoring
+    ) {
         final Certificate certificate = new Certificate(request.type(), request.title(), mentoring);
         final Certificate savedCertificate = certificateRepository.save(certificate);
         Long certificateId = savedCertificate.getId();
@@ -152,9 +161,5 @@ public class CertificateService {
             return;
         }
         throw new ForbiddenException(BusinessErrorMessage.NOT_CERTIFICATE_OWNER.getMessage());
-    }
-
-    public void deleteAll(List<Certificate> certificates) {
-        certificateRepository.deleteAll(certificates);
     }
 }

@@ -8,14 +8,14 @@ import org.springframework.data.repository.ListCrudRepository;
 
 public interface MemberRepository extends ListCrudRepository<Member, Long> {
 
-    boolean existsByLoginId(String loginId);
-
-    boolean existsByPhone_Number(String phone);
-
     Optional<Member> findByLoginId(String loginId);
 
     @Query(value = "SELECT * FROM member WHERE is_deleted = true", nativeQuery = true)
     List<Member> findAllDeleted();
 
     List<Member> findAllByOrderByRoleAsc();
+
+    boolean existsByLoginId(String loginId);
+
+    boolean existsByPhone_Number(String phone);
 }

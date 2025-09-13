@@ -32,7 +32,6 @@ import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.mentoring.presentation.dto.ReviewGetResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,7 +98,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(
                 new Reservation(
@@ -152,7 +151,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction", "가상의카카오오픈채팅"
         ));
         em.persist(
                 new Reservation(
@@ -200,7 +199,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(
                 new Reservation(
@@ -257,7 +256,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(
                 new Reservation(
@@ -308,7 +307,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "content",
-                "introduction"
+                "introduction", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(
                 new Reservation(
@@ -364,14 +363,14 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Mentoring mentoring2 = em.persist(new Mentoring(
                 mentor2,
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Reservation reservation1 = em.persist(new Reservation(
                 "예약합니다.",
@@ -436,7 +435,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Member mentee1 = em.persist(new Member(
                 "loginId",
@@ -525,7 +524,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "길 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
@@ -585,7 +584,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "길 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
@@ -644,7 +643,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "길 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
@@ -703,7 +702,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "길 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
@@ -788,7 +787,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "길 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
@@ -866,7 +865,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
@@ -895,8 +894,8 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
-            .isInstanceOf(ForbiddenException.class)
-            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 
     @DisplayName("존재하지 않는 리뷰에 대해 삭제를 요청하면 예외가 발생한다.")
@@ -968,7 +967,7 @@ class ReviewServiceTest {
                         1000,
                         1,
                         "content",
-                        "introduction"
+                        "introduction", "가상의카카오오픈채팅"
                 ));
         Reservation savedReservation = reservationRepository.save(
                 new Reservation(
@@ -1013,7 +1012,7 @@ class ReviewServiceTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개"
+                "긴 글 소개", "가상의카카오오픈채팅"
         ));
         Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",

@@ -7,26 +7,26 @@ import CategoryTags from '../../../../common/components/CategoryTags/CategoryTag
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import ProfileImg from '../ProfileImg/ProfileImg';
 
-import type { MentoringDetail } from '../../apis/getMentoringDetail';
+import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
-interface MentoInfoCardProps {
+interface MentorInfoCardProps {
   mentorDetail: MentoringDetail | null;
 }
 
-function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
+function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
   return (
     <StyledContainer>
       {mentorDetail ? (
         <>
-          <StyledMentoProfileWrapper>
+          <StyledMentorProfileWrapper>
             <ProfileImg src={mentorDetail.profileImageUrl} />
-            <StyledMetoNameText>{mentorDetail.mentorName}</StyledMetoNameText>
-          </StyledMentoProfileWrapper>
+            <StyledMetorNameText>{mentorDetail.mentorName}</StyledMetorNameText>
+          </StyledMentorProfileWrapper>
           <StyledInfoWithTags>
             <StyledInfoWrapper>
               <TextWithIcon
                 iconSrc={startIcon}
-                text="4.5 (127)"
+                text={`${mentorDetail.ratingAverage} (${mentorDetail.ratingCount})`}
                 iconName="별점"
               />
               <TextWithIcon
@@ -49,7 +49,7 @@ function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
   );
 }
 
-export default MentoInfoCard;
+export default MentorInfoCard;
 
 const StyledContainer = styled.div`
   display: flex;
@@ -66,14 +66,14 @@ const StyledContainer = styled.div`
   background-color: white;
 `;
 
-const StyledMentoProfileWrapper = styled.div`
+const StyledMentorProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.4rem;
 `;
 
-const StyledMetoNameText = styled.span`
+const StyledMetorNameText = styled.span`
   color: ${({ theme }) => theme.FONT.B01};
   font-size: 1.6rem;
 `;

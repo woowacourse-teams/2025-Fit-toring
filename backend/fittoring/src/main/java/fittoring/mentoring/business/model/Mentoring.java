@@ -26,11 +26,10 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 public class Mentoring {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
-    @Getter
     @Column(nullable = false)
     private int price;
 
@@ -50,30 +49,36 @@ public class Mentoring {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member mentor;
+
+    @Column(name = "chat_url", columnDefinition = "TEXT", nullable = false)
+    private String chatUrl;
 
     public Mentoring(
             Member member,
             int price,
             Integer career,
             String content,
-            String introduction
+            String introduction,
+            String chatUrl
     ) {
-        this(null, price, career, content, introduction, false, null, member);
+        this(null, price, career, content, introduction, false, null, member, chatUrl);
     }
 
     public void modify(
             int price,
             Integer career,
             String content,
-            String introduction
+            String introduction,
+            String chatUrl
     ) {
         this.price = price;
         this.career = career;
         this.content = content;
         this.introduction = introduction;
+        this.chatUrl = chatUrl;
     }
 
     public boolean isCreatedByMember(Long memberId) {
