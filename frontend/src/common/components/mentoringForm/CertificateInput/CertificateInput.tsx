@@ -290,10 +290,9 @@ const StyledImageInputLabel = styled.label<{ disabled: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.8rem;
 
   width: 100%;
-  height: fit-content;
+  height: 24rem;
   padding: 4.3rem;
   border: 2px dashed ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 16px;
@@ -305,8 +304,8 @@ const StyledImageInputLabel = styled.label<{ disabled: boolean }>`
 const StyledHiddenInput = styled.input<{ disabled: boolean }>`
   opacity: 0;
 
-  width: 100%;
-  height: 100%;
+  width: 0;
+  height: 0;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
