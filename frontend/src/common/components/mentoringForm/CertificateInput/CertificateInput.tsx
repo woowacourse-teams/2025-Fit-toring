@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
 import certificateUploadIcon from '../../../../common/assets/images/certificateUploadIcon.svg';
@@ -5,6 +7,7 @@ import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import downIcon from '../../../../common/assets/images/downIcon.svg';
 import usePreviewImage from '../../../hooks/usePreviewImage';
 import { convertHeicToJpegIfNeeded } from '../../../utils/heicFile/convertHeicToJpegIfNeeded';
+import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 
 import type { CertificateItem } from '../../../types/certificateItem';
 
@@ -53,6 +56,28 @@ function CertificateInput({
     }
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const asyncImageLoader =
+    <T extends React.ChangeEvent<HTMLInputElement>>(
+      callback: (e: T) => Promise<void>,
+    ) =>
+    async (e: T) => {
+      setIsLoading(true);
+      try {
+        await callback(e);
+      } catch (error) {
+        console.error(error);
+        alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+  const handleCertificateImageInputClick = asyncImageLoader(
+    handleCertificateImageInputChange,
+  );
+
   return (
     <StyledContainer>
       <StyledCertificateHeader>
@@ -92,23 +117,30 @@ function CertificateInput({
       </StyledContentWrapper>
 
       <StyledImageInputLabel disabled={disabled}>
-        <StyledHiddenInput
-          type="file"
-          accept="image/*"
-          id={id}
-          name="certificateImage"
-          onChange={handleCertificateImageInputChange}
-          required={!previewUrl}
-          disabled={disabled}
-        />
-        {previewUrl ? (
-          <StyledPreviewImage src={previewUrl} alt="자격증 사진 미리보기" />
+        {isLoading ? (
+          <LoadingSpinner />
         ) : (
-          <StyledUploadDescription>
-            <img src={certificateUploadIcon} alt="업로드 아이콘" />
-            <p>증명서/사진 업로드 [필수]</p>
-            <p>(최대 30MB)</p>
-          </StyledUploadDescription>
+          <>
+            <StyledHiddenInput
+              type="file"
+              accept="image/*"
+              id={id}
+              name="certificateImage"
+              onChange={handleCertificateImageInputClick}
+              required={!previewUrl}
+              disabled={disabled}
+            />
+
+            {previewUrl ? (
+              <StyledPreviewImage src={previewUrl} alt="자격증 사진 미리보기" />
+            ) : (
+              <StyledUploadDescription>
+                <img src={certificateUploadIcon} alt="업로드 아이콘" />
+                <p>증명서/사진 업로드 [필수]</p>
+                <p>(최대 30MB)</p>
+              </StyledUploadDescription>
+            )}
+          </>
         )}
       </StyledImageInputLabel>
     </StyledContainer>
