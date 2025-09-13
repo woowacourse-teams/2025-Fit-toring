@@ -1,10 +1,9 @@
-import { useState } from 'react';
-
 import styled from '@emotion/styled';
 
 import certificateUploadIcon from '../../../../common/assets/images/certificateUploadIcon.svg';
 import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import downIcon from '../../../../common/assets/images/downIcon.svg';
+import useAsyncLoadingInput from '../../../hooks/useAsyncLoadingInput';
 import usePreviewImage from '../../../hooks/usePreviewImage';
 import { convertHeicToJpegIfNeeded } from '../../../utils/heicFile/convertHeicToJpegIfNeeded';
 import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
@@ -56,27 +55,11 @@ function CertificateInput({
     }
   };
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const asyncImageLoader =
-    <T extends React.ChangeEvent<HTMLInputElement>>(
-      callback: (e: T) => Promise<void>,
-    ) =>
-    async (e: T) => {
-      setIsLoading(true);
-      try {
-        await callback(e);
-      } catch (error) {
-        console.error(error);
-        alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-  const handleCertificateImageInputClick = asyncImageLoader(
-    handleCertificateImageInputChange,
-  );
+  const { isLoading, handleCallback: handleCertificateImageInputClick } =
+    useAsyncLoadingInput({
+      callback: handleCertificateImageInputChange,
+      errorText: '이미지 업로드에 실패했습니다. 다시 시도해주세요.',
+    });
 
   return (
     <StyledContainer>
