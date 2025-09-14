@@ -41,6 +41,7 @@ const StyledContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0 3rem;
 `;
 
 const StyledSloganSection = styled.div`
@@ -59,7 +60,7 @@ const StyledSloganWrapper = styled.div`
 
 const StyledSloganText = styled.p`
   color: #000;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
 `;
 
@@ -68,7 +69,7 @@ const StyledTextWrapper = styled.div`
 `;
 
 const StyledNameText = styled.span<{ highlight?: boolean }>`
-  font-size: 6rem;
+  font-size: 5rem;
   font-weight: 700;
   color: ${({ theme, highlight }) =>
     highlight ? theme.SYSTEM.MAIN500 : '#000}'};
@@ -76,6 +77,8 @@ const StyledNameText = styled.span<{ highlight?: boolean }>`
 
 const StyledTags = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1rem;
 `;
 
