@@ -77,9 +77,6 @@ const StyledContainer = styled.li`
   background-color: ${({ theme }) => theme.BG.WHITE};
 
   cursor: pointer;
-  /* :hover {
-    border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
-  } */
 `;
 
 const StyledWrapper = styled.div`
