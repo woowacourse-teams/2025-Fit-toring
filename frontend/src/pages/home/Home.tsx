@@ -202,7 +202,7 @@ const StyledActionWrapper = styled.div`
 
 const StyledFilterWrapper = styled.div`
   display: flex;
-  gap: 7px;
+  gap: 0.7rem;
 `;
 
 const StyledContents = styled.main`
