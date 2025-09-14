@@ -1,23 +1,20 @@
 import styled from '@emotion/styled';
 
-import goIcon from '../../../../common/assets/images/goIcon.svg';
-
-interface SpecialtyFilterModalButtonProps {
-  handleOpenModal: () => void;
+import downIcon from '../../../../common/assets/images/downIcon.svg';
+interface SortButtonProps {
+  handleSortButtonClick: () => void;
 }
 
-function SpecialtyFilterModalButton({
-  handleOpenModal,
-}: SpecialtyFilterModalButtonProps) {
+function SortButton({ handleSortButtonClick }: SortButtonProps) {
   return (
-    <StyledButton onClick={handleOpenModal} type="button">
-      <StyledGoIcon src={goIcon} alt="카테고리 열기 아이콘" />
-      <StyledText>카테고리</StyledText>
+    <StyledButton onClick={handleSortButtonClick} type="button">
+      <StyledText>기본순</StyledText>
+      <StyledGoIcon src={downIcon} alt="정렬 아이콘" />
     </StyledButton>
   );
 }
 
-export default SpecialtyFilterModalButton;
+export default SortButton;
 
 const StyledButton = styled.button`
   display: flex;

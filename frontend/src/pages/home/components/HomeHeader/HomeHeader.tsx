@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import { Link, useNavigate } from 'react-router-dom';
 
-import logo from '../../../../common/assets/images/logo.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import Header from '../../../../common/components/Header/Header';
@@ -22,9 +21,9 @@ function HomeHeader() {
       <StyledHeaderWrapper>
         <StyledTitleIconWrapper>
           <StyledLogoLink to={PAGE_URL.HOME} reloadDocument>
-            <StyledImg src={logo} alt="홈으로 돌아가기" />
+            <StyledColorTitle>Fit</StyledColorTitle>
+            <StyledTitle>toring</StyledTitle>
           </StyledLogoLink>
-          <StyledTitle>핏토링</StyledTitle>
         </StyledTitleIconWrapper>
         {authenticated ? (
           <MenuDropDown />
@@ -56,24 +55,21 @@ const StyledTitleIconWrapper = styled.div`
 
 const StyledLogoLink = styled(Link)`
   display: flex;
+  text-decoration: none;
 
   height: auto;
   padding: 0;
-  border: none;
-  border-bottom: 1px solid #e2e8f0;
-  border-radius: 30%;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
 
   background: none;
   cursor: pointer;
 `;
 
-const StyledImg = styled.img`
-  width: 3.5rem;
-  aspect-ratio: 1 / 1;
+const StyledColorTitle = styled.h1`
+  ${({ theme }) => theme.TYPOGRAPHY.H1_B}
+  color: ${({ theme }) => theme.SYSTEM.MAIN500};
 `;
 
 const StyledTitle = styled.h3`
-  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
-  color: ${({ theme }) => theme.SYSTEM.MAIN800};
+  ${({ theme }) => theme.TYPOGRAPHY.H1_B}
+  color: ${({ theme }) => theme.SYSTEM.GRAY900};
 `;
