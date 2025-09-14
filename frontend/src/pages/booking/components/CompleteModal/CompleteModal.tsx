@@ -15,7 +15,7 @@ import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 interface CompleteModalProps {
   opened: boolean;
   onCloseClick: () => void;
-  mentorInfo: MentoringDetail | null;
+  mentorInfo: MentoringDetail;
 }
 
 function CompleteModal({
@@ -51,8 +51,8 @@ function CompleteModal({
             <StyledIcon src={humanIcon} alt="사람 아이콘" />
             <span>멘토 정보</span>
           </StyledInfoTextWithIcon>
-          <p>이름: {mentorInfo?.mentorName}</p>
-          <p>전문분야: {mentorInfo?.categories.join(' / ')}</p>
+          <p>이름: {mentorInfo.mentorName}</p>
+          <p>전문분야: {mentorInfo.categories.join(' / ')}</p>
         </StyledMentorInfoBox>
         <Button
           onClick={handleGoReservationClick}

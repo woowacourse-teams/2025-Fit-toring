@@ -6,7 +6,6 @@ import { useParams } from 'react-router-dom';
 import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
-
 import BookingForm from './components/BookingForm/BookingForm';
 import BookingHeader from './components/BookingHeader/BookingHeader';
 import CompleteModal from './components/CompleteModal/CompleteModal';
@@ -84,11 +83,13 @@ function Booking() {
           />
         </div>
       </StyledContentWrapper>
-      <CompleteModal
-        mentorInfo={mentorDetail}
-        opened={opened}
-        onCloseClick={handleCloseClick}
-      />
+      {mentorDetail ? (
+        <CompleteModal
+          mentorInfo={mentorDetail}
+          opened={opened}
+          onCloseClick={handleCloseClick}
+        />
+      ) : null}
     </div>
   );
 }
