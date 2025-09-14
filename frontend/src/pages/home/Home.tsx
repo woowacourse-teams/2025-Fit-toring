@@ -23,6 +23,7 @@ import { PAGE_URL } from '../../common/constants/url';
 import Button from '../../common/components/Button/Button';
 import { css } from '@emotion/react';
 import { THEME } from '../../common/styles/theme';
+import { getMineMentoring } from '../../common/apis/getMineMentoring';
 
 const convertSelectedSpecialtiesToParams = (
   selectedSpecialties: string[],
@@ -109,6 +110,26 @@ function Home() {
     fetchMentorData();
   }, [fetchMentorData]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getMineMentoring();
+        setMyMentoringId(response.id);
+      } catch (error) {
+        console.error(error);
+        setMyMentoringId(null);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!authenticated) {
+      setMyMentoringId(null);
+    }
+  }, [authenticated]);
+
   return (
     <StyledContainer>
       <HomeHeader />
@@ -125,7 +146,7 @@ function Home() {
         </StyledFilterWrapper>
         <Button onClick={handleMentoringCreation} customStyle={customSytle}>
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
-        </Button>{' '}
+        </Button>
       </StyledActionWrapper>
 
       <StyledContents>
