@@ -71,6 +71,7 @@ const StyledContainer = styled.li`
   height: 21.5rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
   border-radius: 5px;
+
   background-color: ${({ theme }) => theme.BG.WHITE};
 
   cursor: pointer;
@@ -79,17 +80,19 @@ const StyledContainer = styled.li`
 const StyledWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
   gap: 1rem;
+
+  width: 100%;
   padding: 2rem;
 `;
 
 const StyledImageBox = styled.div`
+  flex-shrink: 0;
+  overflow: hidden;
+
   width: 18rem;
   height: 100%;
   border-radius: 5px 0 0 5px;
-  flex-shrink: 0;
-  overflow: hidden;
 `;
 
 const StyledProfileImg = styled.img`
@@ -110,6 +113,7 @@ const StyledTitle = styled.h3`
 
 const StyledSelfIntroduction = styled.p`
   overflow: hidden;
+
   height: 100%;
 
   color: ${({ theme }) => theme.FONT.B03};
@@ -120,8 +124,9 @@ const StyledPriceWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  color: ${({ theme }) => theme.FONT.B01};
   gap: 0.3rem;
+
+  color: ${({ theme }) => theme.FONT.B01};
 `;
 
 const StyledTime = styled.span`
