@@ -12,7 +12,10 @@ function Footer() {
         <StyledText>이메일: fittoring@gmail.com</StyledText>
         <StyledText>Ⓒ 2025. fittoring Inc. All right reserved.</StyledText>
       </StyledTextWrapper>
-      <StyledLink to="https://docs.google.com/forms/d/e/1FAIpQLSfQlaSrxUmU-CKnK6jnp8qLTdGMmLYbff2CZSUmKE09OHN11w/viewform">
+      <StyledLink
+        to="https://docs.google.com/forms/d/e/1FAIpQLSfQlaSrxUmU-CKnK6jnp8qLTdGMmLYbff2CZSUmKE09OHN11w/viewform"
+        target="_blank"
+      >
         서비스 문의하기
       </StyledLink>
     </StyledContainer>
