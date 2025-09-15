@@ -23,9 +23,9 @@ const router = createBrowserRouter([
     path: PAGE_URL.HOME,
     element: <Home />,
     loader: () => {
-      const hasVisited = !sessionStorage.getItem('hasVisited');
+      const firstVisited = !sessionStorage.getItem('hasVisited');
 
-      if (hasVisited) {
+      if (firstVisited) {
         return redirect(PAGE_URL.LANDING);
       }
       return null;
