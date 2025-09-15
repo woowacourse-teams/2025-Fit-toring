@@ -71,7 +71,7 @@ const StyledTextWrapper = styled.div`
 
 const StyledNameText = styled.span<{ highlight?: boolean }>`
   color: ${({ theme, highlight }) =>
-    highlight ? theme.SYSTEM.MAIN500 : '#000}'};
+    highlight ? theme.SYSTEM.MAIN500 : '#000'};
   font-weight: 700;
   font-size: 5rem;
 `;
@@ -81,6 +81,8 @@ const StyledTags = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
+
+  width: 24rem;
 `;
 
 const StyledTag = styled.span`
