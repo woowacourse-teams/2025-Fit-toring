@@ -25,7 +25,7 @@ function Slogan() {
         </StyledSloganWrapper>
         <StyledTags>
           {TAGS.map((tag) => (
-            <StyledTag>#{tag}</StyledTag>
+            <StyledTag key={tag}>#{tag}</StyledTag>
           ))}
         </StyledTags>
         <StyledButton onClick={handleStartButtonClick}>시작하기</StyledButton>
