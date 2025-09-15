@@ -16,18 +16,22 @@ export default QuestionBubble;
 
 const StyledBubble = styled.div<{ direction: 'left' | 'right' }>`
   position: relative;
-  background-color: white;
+  z-index: 100;
+
+  width: fit-content;
+  padding: 1rem 3.5rem;
   border: 1px solid #e3e3e3;
   border-radius: 50px;
+
+  background-color: white;
+
   color: black;
-  font-size: 12px;
   font-weight: 500;
-  padding: 1rem 3.5rem;
-  width: fit-content;
-  z-index: 100;
+  font-size: 12px;
 
   &::before {
     content: '';
+
     position: absolute;
     bottom: -8px;
     ${({ direction }) =>
@@ -49,6 +53,7 @@ const StyledBubble = styled.div<{ direction: 'left' | 'right' }>`
 
   &::after {
     content: '';
+
     position: absolute;
     bottom: -6px;
     ${({ direction }) =>
