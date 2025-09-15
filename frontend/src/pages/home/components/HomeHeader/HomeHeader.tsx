@@ -28,7 +28,9 @@ function HomeHeader() {
         {authenticated ? (
           <MenuDropDown />
         ) : (
-          <Button onClick={handleLoginClick}>로그인</Button>
+          <Button onClick={handleLoginClick} variant="newPrimary">
+            로그인
+          </Button>
         )}
       </StyledHeaderWrapper>
     </Header>
