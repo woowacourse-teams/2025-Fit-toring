@@ -13,8 +13,8 @@ import Input from '../../../../common/components/Input/Input';
 import { PAGE_URL } from '../../../../common/constants/url';
 import usePasswordInput from '../../../../common/hooks/usePasswordInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
-import { postLogin } from '../../apis/postLogin';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+import { postLogin } from '../../apis/postLogin';
 
 function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);

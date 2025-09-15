@@ -1,12 +1,15 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
 import defaultImage from '../../../common/assets/images/profileImg.svg';
 import MentoringApplicationStatus from '../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
+import MentoringStepper from '../../../common/components/mentoringStepper/MentoringStepper/MentoringStepper';
+import { StatusTypeEnum } from '../../../common/types/statusType';
 import ReviewButton from '../ReviewButton/ReviewButton';
+import ReviewModal from '../ReviewModal/ReviewModal';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
-import ReviewModal from '../ReviewModal/ReviewModal';
-import { useState } from 'react';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
   handleReviewSubmitButtonClick: (reservationId: number) => void;
@@ -55,6 +58,12 @@ function MentoringItem({
           <MentoringApplicationStatus status={status} />
         </StyledStatusWrapper>
       </StyledMentorInfoWrapper>
+
+      {status !== StatusTypeEnum.REJECTED ? (
+        <StyledStepperWrapper>
+          <MentoringStepper status={status} />
+        </StyledStepperWrapper>
+      ) : null}
       <StyledApplicationInfoWrapper>
         <StyledApplicationDate>⏰ {reservedAt}</StyledApplicationDate>
         <StyledApplicationPrice>
@@ -82,7 +91,7 @@ export default MentoringItem;
 const StyledContainer = styled.li`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.3rem;
 
   padding: 1.5rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
@@ -119,11 +128,9 @@ const StyledName = styled.h4`
 
 const StyledMentoringInfo = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-flow: column wrap;
   flex-grow: 1;
   gap: 1rem;
-
-  height: 12rem;
 `;
 
 const StyledCategoryWrapper = styled.div`
@@ -148,6 +155,11 @@ const StyledCategory = styled.span`
 
 const StyledStatusWrapper = styled.div`
   height: auto;
+`;
+
+const StyledStepperWrapper = styled.div`
+  width: 90%;
+  margin: 0 auto;
 `;
 
 const StyledApplicationInfoWrapper = styled.div`

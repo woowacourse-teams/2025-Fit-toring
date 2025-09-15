@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postValidateId } from '../apis/postValidateId';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
-import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface useUserIdDuplicateCheckParams {
   userId: string;

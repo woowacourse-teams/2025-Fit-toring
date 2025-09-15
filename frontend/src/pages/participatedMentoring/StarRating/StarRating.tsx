@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
-import filledStar from '../../../common/assets/images/starIcon.svg';
+
 import emptyStar from '../../../common/assets/images/emptyStarIcon.svg';
+import filledStar from '../../../common/assets/images/starIcon.svg';
 import { MAX_RATING_COUNT } from '../constants/starRating';
 
 interface StarRatingProps {
@@ -9,11 +10,7 @@ interface StarRatingProps {
   onRatingChange: (rating: number) => void;
 }
 
-function StarRating({
-  rating,
-  onRatingChange,
-  maxRatingCount,
-}: StarRatingProps) {
+function StarRating({ rating, onRatingChange }: StarRatingProps) {
   return (
     <StyledContainer>
       {Array.from({ length: MAX_RATING_COUNT }, (_, index) => {

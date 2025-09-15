@@ -12,7 +12,7 @@ const StyledContainer = styled.ul`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 3rem;
+  gap: 1.4rem;
 
   width: 100%;
   padding: 1rem 1.4rem;

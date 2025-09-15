@@ -23,8 +23,9 @@ const StyledContainer = styled.main`
 
 const StyledContents = styled.section`
   width: 48rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
 
-  background-color: ${({ theme }) => theme.BG.LIGHT};
+  background-color: ${({ theme }) => theme.BG.WHITE};
 
   @media screen and (width <= 480px) {
     width: 100%;

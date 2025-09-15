@@ -10,10 +10,8 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import Checkbox from '../Checkbox/Checkbox';
 
-import type { BookingResponse } from '../../types/BookingResponse';
-
 interface BookingFormProps {
-  handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
+  handleBookingButtonClick: () => void;
   mentoringId: number;
   mentoringPrice: number;
 }
@@ -40,16 +38,15 @@ function BookingForm({
 
   const handleBooking = async () => {
     try {
-      const response = await apiClient.post({
+      await apiClient.post({
         endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.RESERVATION}`,
         body: {
           content: counselContent,
         },
         withCredentials: true,
       });
-      const data = await response.json();
 
-      handleBookingButtonClick(data);
+      handleBookingButtonClick();
     } catch (error) {
       console.error('예약 중 에러 발생', error);
 

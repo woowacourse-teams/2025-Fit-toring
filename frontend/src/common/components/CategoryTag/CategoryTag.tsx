@@ -5,23 +5,15 @@ interface CategoryTagProps {
 }
 
 function CategoryTag({ tagName }: CategoryTagProps) {
-  return (
-    <StyledContainer>
-      <StyledTagName>{tagName}</StyledTagName>
-    </StyledContainer>
-  );
+  return <StyledTagName>{`#${tagName}`}</StyledTagName>;
 }
 
 export default CategoryTag;
 
-const StyledContainer = styled.div`
-  width: fit-content;
-  padding: 0.4rem 0.6rem;
-  border: ${({ theme }) => theme.SYSTEM.MAIN400} 0.1rem solid;
-  border-radius: 0.675rem;
-`;
-
 const StyledTagName = styled.span`
-  color: ${({ theme }) => theme.SYSTEM.MAIN600};
-  ${({ theme }) => theme.TYPOGRAPHY.C2_R}
+  flex-shrink: 0;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY500};
+
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
 `;

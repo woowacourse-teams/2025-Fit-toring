@@ -1,24 +1,35 @@
-import type { PropsWithChildren } from 'react';
+import { useEffect, useState, type PropsWithChildren } from 'react';
 
 import styled from '@emotion/styled';
 
 function Header({ children }: PropsWithChildren) {
-  return <StyledContainer>{children}</StyledContainer>;
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setHasScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <StyledContainer hasScrolled={hasScrolled}>{children}</StyledContainer>
+  );
 }
 
 export default Header;
 
-const StyledContainer = styled.header`
+const StyledContainer = styled.header<{ hasScrolled: boolean }>`
   position: sticky;
   top: 0;
   z-index: 100;
 
-  width: 48rem;
+  width: 100%;
   height: 5.7rem;
-  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 10%),
-    0 1px 2px -1px rgb(0 0 0 / 10%);
+  border-bottom: ${({ hasScrolled, theme }) =>
+    hasScrolled ? `1px solid ${theme.OUTLINE.REGULAR}` : 'none'};
 
   background: ${({ theme }) => theme.BG.WHITE};
 

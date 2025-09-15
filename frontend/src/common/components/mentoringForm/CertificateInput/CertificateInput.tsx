@@ -3,7 +3,10 @@ import styled from '@emotion/styled';
 import certificateUploadIcon from '../../../../common/assets/images/certificateUploadIcon.svg';
 import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import downIcon from '../../../../common/assets/images/downIcon.svg';
+import useAsyncLoadingInput from '../../../hooks/useAsyncLoadingInput';
 import usePreviewImage from '../../../hooks/usePreviewImage';
+import { convertHeicToJpegIfNeeded } from '../../../utils/heicFile/convertHeicToJpegIfNeeded';
+import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 
 import type { CertificateItem } from '../../../types/certificateItem';
 
@@ -40,6 +43,34 @@ function CertificateInput({
 
   const disabled = certificateInfo.imageUrl !== undefined;
 
+  const handleCertificateImageInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const convertedFile = await convertHeicToJpegIfNeeded(file);
+
+      handleImageChange(convertedFile);
+      onCertificateImageFileChange(convertedFile);
+    }
+  };
+
+  const handleError = (error: unknown) => {
+    if (error instanceof Error) {
+      console.error(error.message);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    } else if (typeof error === 'string') {
+      console.error(error);
+      alert('알 수 없는 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const { isLoading, handleCallback: handleCertificateImageInputClick } =
+    useAsyncLoadingInput({
+      callback: handleCertificateImageInputChange,
+      onError: handleError,
+    });
+
   return (
     <StyledContainer>
       <StyledCertificateHeader>
@@ -55,7 +86,6 @@ function CertificateInput({
       <StyledContentWrapper>
         <p>유형</p>
         <StyledSelect
-          defaultValue="LICENSE"
           value={certificateInfo.type ?? 'LICENSE'}
           name="certificateType"
           onChange={handleCertificateIdChange}
@@ -80,29 +110,30 @@ function CertificateInput({
       </StyledContentWrapper>
 
       <StyledImageInputLabel disabled={disabled}>
-        <StyledHiddenInput
-          type="file"
-          accept="image/*"
-          id={id}
-          name="certificateImage"
-          onChange={(e) => {
-            handleImageChange(e);
-            const file = e.target.files?.[0];
-            if (file) {
-              onCertificateImageFileChange(file);
-            }
-          }}
-          required={!previewUrl}
-          disabled={disabled}
-        />
-        {previewUrl ? (
-          <StyledPreviewImage src={previewUrl} alt="자격증 사진 미리보기" />
+        {isLoading ? (
+          <LoadingSpinner />
         ) : (
-          <StyledUploadDescription>
-            <img src={certificateUploadIcon} alt="업로드 아이콘" />
-            <p>증명서/사진 업로드 [필수]</p>
-            <p>(최대 30MB)</p>
-          </StyledUploadDescription>
+          <>
+            <StyledHiddenInput
+              type="file"
+              accept="image/*"
+              id={id}
+              name="certificateImage"
+              onChange={handleCertificateImageInputClick}
+              required={!previewUrl}
+              disabled={disabled}
+            />
+
+            {previewUrl ? (
+              <StyledPreviewImage src={previewUrl} alt="자격증 사진 미리보기" />
+            ) : (
+              <StyledUploadDescription>
+                <img src={certificateUploadIcon} alt="업로드 아이콘" />
+                <p>증명서/사진 업로드 [필수]</p>
+                <p>(최대 30MB)</p>
+              </StyledUploadDescription>
+            )}
+          </>
         )}
       </StyledImageInputLabel>
     </StyledContainer>
@@ -284,10 +315,9 @@ const StyledImageInputLabel = styled.label<{ disabled: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.8rem;
 
   width: 100%;
-  height: fit-content;
+  height: 24rem;
   padding: 4.3rem;
   border: 2px dashed ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 16px;
@@ -299,8 +329,8 @@ const StyledImageInputLabel = styled.label<{ disabled: boolean }>`
 const StyledHiddenInput = styled.input<{ disabled: boolean }>`
   opacity: 0;
 
-  width: 100%;
-  height: 100%;
+  width: 0;
+  height: 0;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
