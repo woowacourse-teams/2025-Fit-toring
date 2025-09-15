@@ -83,14 +83,15 @@ const StyledWrapper = styled.div`
   gap: 1rem;
 
   width: 100%;
-  padding: 2rem;
+  height: 100%;
+  padding: 1.4rem;
 `;
 
 const StyledImageBox = styled.div`
   flex-shrink: 0;
   overflow: hidden;
 
-  width: 18rem;
+  width: 43%;
   height: 100%;
   border-radius: 5px 0 0 5px;
 `;
