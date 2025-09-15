@@ -1,29 +1,27 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import ReactGA from 'react-ga4';
+import { useNavigate } from 'react-router-dom';
 
-import Footer from '../../common/components/Footer/Footer';
+import { getMineMentoring } from '../../common/apis/getMineMentoring';
+import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
+import Button from '../../common/components/Button/Button';
+import { PAGE_URL } from '../../common/constants/url';
+import { THEME } from '../../common/styles/theme';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import { getMentorList } from './apis/getMentorList';
-import Feedback from './components/Feedback/Feedback';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
+import SortButton from './components/SortButton/SortButton';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 import type { MentorInformation } from './types/MentorInformation';
-import { captureSentryError } from '../../common/utils/captureSentryError';
-import SortButton from './components/SortButton/SortButton';
-import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
-import { useNavigate } from 'react-router-dom';
-import { PAGE_URL } from '../../common/constants/url';
-import Button from '../../common/components/Button/Button';
-import { css } from '@emotion/react';
-import { THEME } from '../../common/styles/theme';
-import { getMineMentoring } from '../../common/apis/getMineMentoring';
 
 const convertSelectedSpecialtiesToParams = (
   selectedSpecialties: string[],
@@ -179,9 +177,11 @@ export default Home;
 const customSytle = css`
   width: 12.9rem;
   height: 3.4rem;
-  border-radius: 5px;
   border: 1px solid ${THEME.SYSTEM.GRAY300};
+  border-radius: 5px;
+
   background-color: ${THEME.BG.WHITE};
+
   color: ${THEME.SYSTEM.MAIN600};
   ${THEME.TYPOGRAPHY.B4_B};
 `;
@@ -195,8 +195,9 @@ const StyledContainer = styled.div`
 
 const StyledActionWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
   padding: 1.4rem;
 `;
 

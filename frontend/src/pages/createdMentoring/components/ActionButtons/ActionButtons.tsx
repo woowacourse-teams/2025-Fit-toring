@@ -4,12 +4,12 @@ import {
   StatusTypeEnum,
   type StatusType,
 } from '../../../../common/types/statusType';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getMenteePhoneNumber } from '../../apis/getMenteePhoneNumber';
 import { patchReservationStatus } from '../../apis/patchReservationStatus';
 import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
 
 import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -40,7 +40,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         status: newStatus,
       });
 
-      if (response.status !== 200) throw new Error('status update failed');
+      if (response.status !== 200) {throw new Error('status update failed');}
     } catch (error) {
       console.error(`Error updating reservation status:`, error);
       captureSentryError({

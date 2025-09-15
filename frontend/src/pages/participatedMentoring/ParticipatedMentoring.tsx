@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
+import { StatusTypeEnum } from '../../common/types/statusType';
+import { captureSentryError } from '../../common/utils/captureSentryError';
+
 import { getParticipatedMentoringList } from './apis/getParticipatedMentoring';
 import MentoringItem from './MentoringItem/MentoringItem';
 import MentoringList from './MentoringList/MentoringList';
 
 import type { ParticipatedMentoringType } from './types/participatedMentoring';
-import { StatusTypeEnum } from '../../common/types/statusType';
-import { captureSentryError } from '../../common/utils/captureSentryError';
 
 function ParticipatedMentoring() {
   const [participatedMentoringList, setParticipatedMentoringList] = useState<

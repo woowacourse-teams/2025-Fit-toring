@@ -1,7 +1,7 @@
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postAuthCode } from '../apis/postAuthCode';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
-import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface useVerificationCodeRequestParams {
   phoneNumber: string;

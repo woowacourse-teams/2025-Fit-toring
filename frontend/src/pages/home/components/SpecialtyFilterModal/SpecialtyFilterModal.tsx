@@ -5,10 +5,10 @@ import ReactGA from 'react-ga4';
 
 import { getSpecialties } from '../../../../common/apis/getSpecialties';
 import Modal from '../../../../common/components/Modal/Modal';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import SpecialtyCheckbox from '../SpecialtyCheckbox/SpecialtyCheckbox';
 
 import type { Specialty } from '../../../../common/types/Specialty';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 const MAX_SPECIALTIES = 3;
 

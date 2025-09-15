@@ -4,9 +4,9 @@ import styled from '@emotion/styled';
 
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import defaultProfile from '../../../../common/assets/images/profileImg.svg';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 import type { UserInfo } from '../../../../common/types/userInfo';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function MyProfile() {
   const [myProfile, setMyProfile] = useState<UserInfo | null>(null);
