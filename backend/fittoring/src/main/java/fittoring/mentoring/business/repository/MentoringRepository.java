@@ -19,7 +19,7 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
                         JOIN res.mentoring m
                     WHERE rv.id = :reviewId
             """)
-    Optional<Mentoring> findByReviewId(Long reviewId);
+    Optional<Mentoring> findByReviewId(@Param("reviewId") Long reviewId);
 
     @Query("""
             SELECT m
