@@ -4,7 +4,7 @@ export const convertHeicToJpeg = async (heicFile: File) => {
   const jpegBlob = await heic2any({
     blob: heicFile,
     toType: 'image/jpeg',
-    quality: 0.8,
+    quality: 0.5,
   });
 
   if (Array.isArray(jpegBlob)) {
