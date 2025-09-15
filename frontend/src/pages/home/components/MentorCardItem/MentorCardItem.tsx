@@ -1,15 +1,13 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import profileImg from '../../../../common/assets/images/profileImg.svg';
 import starIcon from '../../../../common/assets/images/starIcon.svg';
-import timeIcon from '../../../../common/assets/images/timeIcon.svg';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
-import MentorDetailInfoButton from '../MentorDetailInfoButton/MentorDetailInfoButton';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 import type { MentorInformation } from '../../types/MentorInformation';
-import { useNavigate } from 'react-router-dom';
-import { PAGE_URL } from '../../../../common/constants/url';
 
 interface MentorCardItemProps {
   mentor: MentorInformation;
@@ -21,7 +19,6 @@ function MentorCardItem({
     mentorName,
     categories,
     price,
-    career,
     profileImageUrl,
     introduction,
     ratingAverage,
