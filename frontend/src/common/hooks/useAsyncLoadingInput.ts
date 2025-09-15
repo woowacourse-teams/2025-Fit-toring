@@ -4,12 +4,12 @@ interface UseAsyncLoadingInputParams {
   callback: <T extends React.ChangeEvent<HTMLInputElement>>(
     e: T,
   ) => Promise<void>;
-  errorText: string;
+  onError: (error: unknown) => void;
 }
 
 const useAsyncLoadingInput = ({
   callback,
-  errorText,
+  onError,
 }: UseAsyncLoadingInputParams) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,13 +20,12 @@ const useAsyncLoadingInput = ({
         try {
           await callback(e);
         } catch (error) {
-          console.error(error);
-          alert(errorText);
+          onError(error);
         } finally {
           setIsLoading(false);
         }
       },
-    [errorText],
+    [onError],
   );
 
   return { isLoading, handleCallback: asyncLoader(callback) };
