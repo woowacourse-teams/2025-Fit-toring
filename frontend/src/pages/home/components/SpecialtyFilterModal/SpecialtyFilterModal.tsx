@@ -179,19 +179,19 @@ const StyledButton = styled.button`
 
   transition: all 0.2s ease;
   cursor: pointer;
+
+  &:hover {
+    scale: 1.05;
+  }
 `;
 
 const StyledPrimaryButton = styled(StyledButton)`
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN600};
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY900};
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
 
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY900};
 
   color: ${({ theme }) => theme.BG.WHITE};
-
-  &:hover {
-    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  }
 `;
 
 const StyledSecondaryButton = styled(StyledButton)`
