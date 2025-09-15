@@ -14,11 +14,13 @@ public record ModifyMentoringDto(
         String introduction,
         int career,
         String content,
+        String chatUrl,
         String profileImageUrl,
         MultipartFile profileImageFile,
         List<CertificateInfo> certificateInfos,
         List<MultipartFile> certificateImages
 ) {
+
     public static ModifyMentoringDto of(
             Long mentoringId,
             Long mentorId,
@@ -34,6 +36,7 @@ public record ModifyMentoringDto(
                 request.introduction(),
                 request.career(),
                 request.content(),
+                request.chatUrl(),
                 request.profileImageUrl(),
                 profileImageFile,
                 request.certificateInfos(),

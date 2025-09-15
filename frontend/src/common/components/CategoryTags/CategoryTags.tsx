@@ -19,5 +19,6 @@ export default CategoryTags;
 
 const StyledContainer = styled.div`
   display: flex;
-  gap: 0.7rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 `;

@@ -11,14 +11,15 @@ import IntroduceSection from '../../../../common/components/mentoringForm/Introd
 import ProfileSection from '../../../../common/components/mentoringForm/ProfileSection/ProfileSection';
 import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
+import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { mentoringCreateFormData } from '../../../../common/types/mentoringCreateFormData';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function MentoringCreateForm() {
   const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
@@ -27,6 +28,7 @@ function MentoringCreateForm() {
     introduction: '',
     career: 0,
     content: '',
+    chatUrl: '',
     certificateInfos: [],
   });
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
@@ -37,6 +39,7 @@ function MentoringCreateForm() {
   const priceErrorMessage = priceValidator(mentoringData.price);
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
+  const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
 
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,
@@ -90,7 +93,12 @@ function MentoringCreateForm() {
     e: React.FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault();
-    if (priceErrorMessage || introduceErrorMessage || careerErrorMessage) {
+    if (
+      priceErrorMessage ||
+      introduceErrorMessage ||
+      careerErrorMessage ||
+      chatUrlErrorMessage
+    ) {
       alert('입력값을 확인해주세요.');
       return;
     }
@@ -163,9 +171,11 @@ function MentoringCreateForm() {
   return (
     <StyledContainer onSubmit={handleSubmitButtonClick}>
       <BaseInfoSection
-        onPriceChange={handleMentoringDataChange}
+        onBaseInfoChange={handleMentoringDataChange}
         priceErrorMessage={priceErrorMessage}
         price={mentoringData.price}
+        chatUrlErrorMessage={chatUrlErrorMessage}
+        chatUrl={mentoringData.chatUrl}
       />
       <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />

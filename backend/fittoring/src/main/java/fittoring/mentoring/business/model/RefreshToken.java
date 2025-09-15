@@ -23,13 +23,13 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 public class RefreshToken {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(nullable = false)
+    @ManyToOne
     private Member member;
 
     @Column(nullable = false)

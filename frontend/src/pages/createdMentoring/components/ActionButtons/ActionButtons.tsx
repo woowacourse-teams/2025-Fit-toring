@@ -4,12 +4,12 @@ import {
   StatusTypeEnum,
   type StatusType,
 } from '../../../../common/types/statusType';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getMenteePhoneNumber } from '../../apis/getMenteePhoneNumber';
 import { patchReservationStatus } from '../../apis/patchReservationStatus';
 import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
 
 import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -40,7 +40,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         status: newStatus,
       });
 
-      if (response.status !== 200) throw new Error('status update failed');
+      if (response.status !== 200) {throw new Error('status update failed');}
     } catch (error) {
       console.error(`Error updating reservation status:`, error);
       captureSentryError({
@@ -54,8 +54,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
 
   const handleApproveButtonClick = async () => {
     try {
-      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
-      await fetchPhoneNumber(StatusTypeEnum.APPROVED);
+      if (
+        confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
+      ) {
+        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
+        await fetchPhoneNumber(StatusTypeEnum.APPROVED);
+      }
     } catch (error) {
       console.error(`Error handling approve button click:`, error);
       captureSentryError({
@@ -69,8 +73,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
 
   const handleRejectedButtonClick = async () => {
     try {
-      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
-      onClick(StatusTypeEnum.REJECTED, '');
+      if (
+        confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
+      ) {
+        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
+        onClick(StatusTypeEnum.REJECTED, '');
+      }
     } catch (error) {
       console.error(`Error handling reject button click:`, error);
       captureSentryError({
@@ -84,8 +92,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
 
   const handleCompleteButtonClick = async () => {
     try {
-      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
-      onClick(StatusTypeEnum.COMPLETE, '');
+      if (
+        confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
+      ) {
+        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
+        onClick(StatusTypeEnum.COMPLETE, '');
+      }
     } catch (error) {
       console.error(`Error handling complete button click:`, error);
       captureSentryError({

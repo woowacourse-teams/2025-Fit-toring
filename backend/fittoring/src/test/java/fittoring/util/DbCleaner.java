@@ -15,12 +15,12 @@ public class DbCleaner {
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
         List<String> tables = jdbcTemplate.queryForList(
                 """
-                SELECT table_name 
-                FROM information_schema.tables 
-                WHERE table_schema = DATABASE()
-                  AND table_type = 'BASE TABLE'
-                  AND table_name <> 'flyway_schema_history'
-                """,
+                        SELECT table_name 
+                        FROM information_schema.tables 
+                        WHERE table_schema = DATABASE()
+                          AND table_type = 'BASE TABLE'
+                          AND table_name <> 'flyway_schema_history'
+                        """,
                 String.class
         );
         tables.forEach(table ->

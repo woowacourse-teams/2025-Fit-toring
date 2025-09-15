@@ -52,7 +52,7 @@ class SmsRestClientIntegrationTest {
         mockWebServer.shutdown();
     }
 
-    @DisplayName("SMS API 타임아웃")
+    @DisplayName("SMS API 타임아웃.")
     @Nested
     class TimeoutTest {
 

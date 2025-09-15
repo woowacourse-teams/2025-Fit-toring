@@ -31,6 +31,6 @@ const StyledImg = styled.img`
 const StyledSpan = styled.span`
   display: flex;
 
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
+  color: ${({ theme }) => theme.SYSTEM.GRAY600};
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
 `;

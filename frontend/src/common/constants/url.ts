@@ -9,4 +9,5 @@ export const PAGE_URL = {
   PARTICIPATED_MENTORING: '/my-page/participated-mentoring',
   SIGNUP: '/signup',
   LOGIN: '/login',
+  LANDING: '/landing',
 } as const;

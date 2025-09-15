@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  redirect,
+  RouterProvider,
+} from 'react-router-dom';
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
@@ -6,6 +10,7 @@ import Booking from './pages/booking/Booking';
 import CreatedMentoring from './pages/createdMentoring/CreatedMentoring';
 import Detail from './pages/detail/Detail';
 import Home from './pages/home/Home';
+import Landing from './pages/landing/Landing';
 import Login from './pages/login/Login';
 import MentoringCreate from './pages/mentoringCreate/MentoringCreate';
 import MentoringUpdate from './pages/mentoringUpdate/MentoringUpdate';
@@ -14,7 +19,19 @@ import ParticipatedMentoring from './pages/participatedMentoring/ParticipatedMen
 import Signup from './pages/signup/Signup';
 
 const router = createBrowserRouter([
-  { path: PAGE_URL.HOME, element: <Home /> },
+  {
+    path: PAGE_URL.HOME,
+    element: <Home />,
+    loader: () => {
+      const firstVisited = !sessionStorage.getItem('hasVisited');
+
+      if (firstVisited) {
+        return redirect(PAGE_URL.LANDING);
+      }
+      return null;
+    },
+  },
+  { path: PAGE_URL.LANDING, element: <Landing /> },
   { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
   { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
   { path: PAGE_URL.SIGNUP, element: <Signup /> },

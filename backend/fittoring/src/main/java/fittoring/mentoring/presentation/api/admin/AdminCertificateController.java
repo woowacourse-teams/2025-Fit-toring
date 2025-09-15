@@ -9,6 +9,7 @@ import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +35,8 @@ public class AdminCertificateController {
                 loginInfo.memberId(),
                 status
         );
-        return ResponseEntity.ok().body(certificates);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(certificates);
     }
 
     @AuthRequired
@@ -47,7 +49,8 @@ public class AdminCertificateController {
                 loginInfo.memberId(),
                 certificateId
         );
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
     }
 
     @AuthRequired
@@ -60,7 +63,8 @@ public class AdminCertificateController {
                 loginInfo.memberId(),
                 certificateId
         );
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
     }
 
     @AuthRequired
@@ -73,6 +77,7 @@ public class AdminCertificateController {
                 loginInfo.memberId(),
                 certificateId
         );
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .build();
     }
 }

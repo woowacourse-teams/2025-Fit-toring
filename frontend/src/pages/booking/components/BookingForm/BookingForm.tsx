@@ -6,20 +6,20 @@ import { apiClient } from '../../../../common/apis/apiClient';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import Checkbox from '../Checkbox/Checkbox';
 
-import type { BookingResponse } from '../../types/BookingResponse';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
-
 interface BookingFormProps {
-  handleBookingButtonClick: (bookingResponse: BookingResponse) => void;
+  handleBookingButtonClick: () => void;
   mentoringId: number;
+  mentoringPrice: number;
 }
 
 function BookingForm({
   handleBookingButtonClick,
   mentoringId,
+  mentoringPrice,
 }: BookingFormProps) {
   const [counselContent, setCounselContent] = useState('');
   const [userInfo, setUserInfo] = useState({
@@ -38,16 +38,15 @@ function BookingForm({
 
   const handleBooking = async () => {
     try {
-      const response = await apiClient.post({
+      await apiClient.post({
         endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.RESERVATION}`,
         body: {
           content: counselContent,
         },
         withCredentials: true,
       });
-      const data = await response.json();
 
-      handleBookingButtonClick(data);
+      handleBookingButtonClick();
     } catch (error) {
       console.error('예약 중 에러 발생', error);
 
@@ -131,7 +130,7 @@ function BookingForm({
         )}
       </StyledLabelWrapper>
 
-      <BookingSummarySection />
+      <BookingSummarySection price={mentoringPrice} />
     </StyledContainer>
   );
 }

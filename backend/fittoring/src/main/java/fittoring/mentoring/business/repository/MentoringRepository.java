@@ -47,4 +47,7 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
     List<Mentoring> findAllByMentorId(Long mentorId);
 
     boolean existsByMentor(Member member);
+
+    @Query(value = "SELECT * FROM mentoring WHERE is_deleted = true", nativeQuery = true)
+    List<Mentoring> findAllDeleted();
 }

@@ -49,15 +49,12 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest
 class CertificateServiceTest {
 
-    private Member admin;
-    private Mentoring mentoring;
-
-    @Autowired
-    private CertificateService certificateService;
-
     @Autowired
     TestEntityManager em;
-
+    private Member admin;
+    private Mentoring mentoring;
+    @Autowired
+    private CertificateService certificateService;
     @Autowired
     private DbCleaner dbCleaner;
 
@@ -78,7 +75,8 @@ class CertificateServiceTest {
                 1000,
                 1,
                 "content",
-                "intro"
+                "intro",
+                "가상의오픈채팅링크"
         );
         em.persist(mentoring);
     }
@@ -357,7 +355,8 @@ class CertificateServiceTest {
                 5000,
                 10,
                 "박트레이너의 멘토링",
-                "박트레이너는 컴퓨터에 빠삭합니다."
+                "박트레이너는 컴퓨터에 빠삭합니다.",
+                "가상의오픈채팅링크"
         ));
         Certificate parkLicense = em.persist(new Certificate(CertificateType.LICENSE, "정보처리기사", parkMentoring));
 

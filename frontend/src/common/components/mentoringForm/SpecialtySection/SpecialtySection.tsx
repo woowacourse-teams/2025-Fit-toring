@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 
 import { getSpecialties } from '../../../apis/getSpecialties';
+import { captureSentryError } from '../../../utils/captureSentryError';
 import SpecialtyTag from '../SpecialtyTag/SpecialtyTag';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
 import type { Specialty } from '../../../types/Specialty';
-import { captureSentryError } from '../../../utils/captureSentryError';
 
 const MAX_SPECIALTIES = 3;
 

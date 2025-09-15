@@ -9,23 +9,27 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE mentoring SET is_deleted = true, deleted_at = now() WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 @Table(name = "mentoring")
 @Entity
 public class Mentoring {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
-    @Getter
     @Column(nullable = false)
     private int price;
 
@@ -37,30 +41,44 @@ public class Mentoring {
     @Column(nullable = false)
     private String introduction;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Getter
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member mentor;
+
+    @Column(name = "chat_url", columnDefinition = "TEXT", nullable = false)
+    private String chatUrl;
 
     public Mentoring(
             Member member,
             int price,
             Integer career,
             String content,
-            String introduction
+            String introduction,
+            String chatUrl
     ) {
-        this(null, price, career, content, introduction, member);
+        this(null, price, career, content, introduction, false, null, member, chatUrl);
     }
 
     public void modify(
-        int price,
-        Integer career,
-        String content,
-        String introduction
+            int price,
+            Integer career,
+            String content,
+            String introduction,
+            String chatUrl
     ) {
         this.price = price;
         this.career = career;
         this.content = content;
         this.introduction = introduction;
+        this.chatUrl = chatUrl;
     }
 
     public boolean isCreatedByMember(Long memberId) {
