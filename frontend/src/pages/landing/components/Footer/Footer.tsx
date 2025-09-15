@@ -9,7 +9,7 @@ function Footer() {
       <StyledTextWrapper>
         <StyledText>상호명: 핏토링</StyledText>
         <StyledText>대표자: 주용은</StyledText>
-        <StyledText>이메일: fittoring@gmail.com</StyledText>
+        <StyledText>이메일: fittoring7@gmail.com</StyledText>
         <StyledText>Ⓒ 2025. fittoring Inc. All right reserved.</StyledText>
       </StyledTextWrapper>
       <StyledLink
