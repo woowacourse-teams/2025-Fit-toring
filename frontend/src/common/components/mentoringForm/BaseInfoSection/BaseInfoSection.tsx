@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 
 import { getUserInfoSummary } from '../../../apis/getUserInfoSummary';
+import { captureSentryError } from '../../../utils/captureSentryError';
 import FormField from '../../FormField/FormField';
 import Input from '../../Input/Input';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
 import type { UserInfoResponse } from '../../../types/userInfoResponse';
-import { captureSentryError } from '../../../utils/captureSentryError';
 
 interface BaseInfoSectionProps {
   priceErrorMessage: string;

@@ -1,4 +1,5 @@
 import { useEffect, useState, type PropsWithChildren } from 'react';
+
 import styled from '@emotion/styled';
 
 function Header({ children }: PropsWithChildren) {
@@ -27,10 +28,10 @@ const StyledContainer = styled.header<{ hasScrolled: boolean }>`
 
   width: 100%;
   height: 5.7rem;
-  background: ${({ theme }) => theme.BG.WHITE};
-
   border-bottom: ${({ hasScrolled, theme }) =>
     hasScrolled ? `1px solid ${theme.OUTLINE.REGULAR}` : 'none'};
+
+  background: ${({ theme }) => theme.BG.WHITE};
 
   @media screen and (width <= 480px) {
     width: 100%;

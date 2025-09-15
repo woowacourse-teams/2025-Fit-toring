@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
-import filledStar from '../../../../common/assets/images/starIcon.svg';
+
 import emptyStar from '../../../../common/assets/images/emptyStarIcon.svg';
-import { ReviewResponse } from '../../types/ReviewResponse';
+import filledStar from '../../../../common/assets/images/starIcon.svg';
+
+import type { ReviewResponse } from '../../types/ReviewResponse';
 
 function ReviewItem({ review }: { review: ReviewResponse }) {
   const { reviewerName, createdAt, rating, content } = review;
@@ -38,9 +40,10 @@ const StyledContainer = styled.li`
 
   width: 100%;
   padding: 2.1rem;
-  background-color: ${({ theme }) => theme.BG.WHITE};
   border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
   border-radius: 8px;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
 
   color: ${({ theme }) => theme.FONT.B04};
 `;

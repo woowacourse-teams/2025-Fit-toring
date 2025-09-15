@@ -1,10 +1,13 @@
+import { useCallback, useEffect, useState } from 'react';
+
 import styled from '@emotion/styled';
+
 import filledStar from '../../../../common/assets/images/starIcon.svg';
-import ReviewItem from '../ReviewItem/ReviewItem';
-import { getReviews } from '../../apis/getReviews';
-import { useEffect, useState } from 'react';
-import { ReviewResponse } from '../../types/ReviewResponse';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+import { getReviews } from '../../apis/getReviews';
+import ReviewItem from '../ReviewItem/ReviewItem';
+
+import type { ReviewResponse } from '../../types/ReviewResponse';
 
 interface DetailReviewProps {
   mentoringId: number;
@@ -21,7 +24,7 @@ function DetailReview({
     ReviewResponse[] | null
   >(null);
 
-  const fetchReview = async () => {
+  const fetchReview = useCallback(async () => {
     try {
       const response = await getReviews(mentoringId);
       setTotalReviewInfo(response);
@@ -34,13 +37,15 @@ function DetailReview({
         step: 'mentoring-review-fetch',
       });
     }
-  };
+  }, [mentoringId]);
 
   useEffect(() => {
     fetchReview();
-  }, []);
+  }, [fetchReview]);
 
-  if (!totalReviewInfo) return null;
+  if (!totalReviewInfo) {
+    return null;
+  }
 
   return (
     <StyledContainer>

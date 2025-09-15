@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../common/components/Button/Button';
 import Modal from '../../../common/components/Modal/Modal';
+import { PAGE_URL } from '../../../common/constants/url';
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postReview } from '../apis/postReview';
 import { MAX_RATING_COUNT } from '../constants/starRating';
 import StarRating from '../StarRating/StarRating';
-import { useNavigate } from 'react-router-dom';
-import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
-import { captureSentryError } from '../../../common/utils/captureSentryError';
-import { PAGE_URL } from '../../../common/constants/url';
 
 interface ReviewModalProps {
   reservationId: number;

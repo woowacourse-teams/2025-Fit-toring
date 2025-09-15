@@ -9,10 +9,6 @@ interface ReviewWriteButtonProps {
   disabled: boolean;
 }
 
-interface ReviewCompleteButtonProps {
-  onClick: () => void;
-}
-
 interface ReviewButtonProps {
   isReviewed: boolean;
   status: StatusType;
