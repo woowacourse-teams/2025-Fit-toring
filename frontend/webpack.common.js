@@ -67,13 +67,12 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'public', to: '.' },
         {
-          from:
-            process.env.NODE_ENV === 'production'
-              ? 'public/robots.prod.txt'
-              : 'public/robots.dev.txt',
-          to: 'robots.txt',
+          from: 'public',
+          to: '.',
+          globOptions: {
+            ignore: ['**/robots.*.txt'],
+          },
         },
       ],
     }),
