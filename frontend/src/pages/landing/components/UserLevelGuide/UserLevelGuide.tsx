@@ -1,5 +1,3 @@
-import React from 'react';
-
 import styled from '@emotion/styled';
 
 import beginner from '../../../../common/assets/images/beginner.png';
@@ -32,18 +30,20 @@ export default UserLevelGuide;
 
 const StyledContainer = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 7rem 3rem;
-  line-height: normal;
+  justify-content: center;
   gap: 3.5rem;
+
+  padding: 7rem 3rem;
+
+  line-height: normal;
 `;
 
 const StyledUserWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
   align-items: center;
+  gap: 2rem;
 `;
 
 const StyledImg = styled.img`
@@ -52,8 +52,8 @@ const StyledImg = styled.img`
 `;
 
 const StyledName = styled.p`
-  font-size: 1.7rem;
   font-weight: bold;
+  font-size: 1.7rem;
 `;
 
 const StyledDescription = styled.p`

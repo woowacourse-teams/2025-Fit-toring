@@ -146,7 +146,6 @@ function Home() {
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
         </Button>
       </StyledActionWrapper>
-
       <StyledContents>
         <StyledCheckboxWrapper>
           {selectedSpecialties.map((specialty) => (

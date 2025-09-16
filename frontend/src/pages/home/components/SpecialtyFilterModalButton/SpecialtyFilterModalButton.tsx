@@ -22,7 +22,8 @@ export default SpecialtyFilterModalButton;
 const StyledButton = styled.button`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 0.6rem;
 
   width: 9.4rem;
   height: 3.4rem;

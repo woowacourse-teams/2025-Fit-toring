@@ -44,6 +44,12 @@ function FitnessQuestionFlow() {
 export default FitnessQuestionFlow;
 
 const StyledContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+
+  padding: 10rem 0;
+
   background: ${({ theme }) => `
   linear-gradient(
     180deg,
@@ -51,16 +57,13 @@ const StyledContainer = styled.div`
     #fff 100%
   )
 `};
-  padding: 10rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
 `;
 
 const StyledQuestionBubbles = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+
   font-size: 1.5rem;
 `;
 
@@ -71,17 +74,18 @@ const StyledWrapper = styled.div<{
   display: flex;
   justify-content: ${({ direction }) =>
     direction === 'left' ? 'flex-start' : 'flex-end'};
-  padding-left: ${({ direction, padding }) =>
-    direction === 'left' ? `${padding ?? 0}rem` : '0'};
+
   padding-right: ${({ direction, padding }) =>
     direction === 'right' ? `${padding ?? 0}rem` : '0'};
+  padding-left: ${({ direction, padding }) =>
+    direction === 'left' ? `${padding ?? 0}rem` : '0'};
 `;
 
 const StyledDots = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
   align-items: center;
+  gap: 0.4rem;
 `;
 
 const StyledDot = styled.p`
@@ -89,6 +93,6 @@ const StyledDot = styled.p`
 `;
 
 const StyledText = styled.p`
-  text-align: center;
   font-size: 1.8rem;
+  text-align: center;
 `;

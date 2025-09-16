@@ -119,8 +119,8 @@ const StyledSelfIntroduction = styled.p`
 
   color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.C2_R};
-  white-space: wrap;
-  word-break: keep-all;
+
+  word-break: break-all;
 `;
 
 const StyledPriceWrapper = styled.div`

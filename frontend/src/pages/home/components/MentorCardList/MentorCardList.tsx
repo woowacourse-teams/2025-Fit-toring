@@ -15,5 +15,5 @@ const StyledContainer = styled.ul`
   gap: 1.4rem;
 
   width: 100%;
-  padding: 1rem 1.4rem;
+  padding: 1rem 1.1rem;
 `;

@@ -34,23 +34,26 @@ function Landing() {
 export default Landing;
 
 const StyledButtonSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   padding-top: 5rem;
   padding-bottom: 10rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 const StyledButton = styled.button`
   width: 13rem;
-  border-radius: 7px;
   padding: 1.5rem 2rem;
   border: 2px solid #e3e3e3;
-  background: ${({ theme }) => theme.SYSTEM.GRAY900};
-  color: white;
   border: none;
-  text-align: center;
-  font-size: 1.7rem;
+  border-radius: 7px;
+
+  background: ${({ theme }) => theme.SYSTEM.GRAY900};
+
+  color: white;
   font-weight: 700;
+  font-size: 1.7rem;
+  text-align: center;
   cursor: pointer;
 `;

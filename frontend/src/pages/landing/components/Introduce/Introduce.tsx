@@ -39,22 +39,25 @@ function Introduce() {
 export default Introduce;
 
 const StyledContainer = styled.div`
-  line-height: normal;
-  padding: 5rem 3rem;
   display: flex;
   flex-direction: column;
   gap: 3rem;
+
+  padding: 5rem 3rem;
+
+  line-height: normal;
 `;
 
 const StyledTitle = styled.p`
-  font-size: 2.5rem;
   font-weight: bold;
+  font-size: 2.5rem;
 `;
 
 const StyledTextWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3rem;
+
   text-align: center;
 `;
 
@@ -74,7 +77,8 @@ const StyledImgWrapper = styled.div`
 `;
 
 const StyledImg = styled.img`
-  width: 289px;
-  aspect-ratio: 484 / 947;
   float: right;
+
+  width: 28.9rem;
+  aspect-ratio: 484 / 947;
 `;
