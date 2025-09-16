@@ -8,29 +8,29 @@ const AUTH_TYPE = {
 
 function AuthFooter({ currentPage }: { currentPage: 'login' | 'signup' }) {
   return (
-    <StyledContainer>
-      <StyledDivider>
-        <StyledText>또는</StyledText>
-      </StyledDivider>
-      <StyledInfoText>
+    <S_Container>
+      <S_Divider>
+        <S_Text>또는</S_Text>
+      </S_Divider>
+      <S_InfoText>
         {AUTH_TYPE[currentPage].text}
-        <StyledLink to={AUTH_TYPE[currentPage].url}>
+        <S_Link to={AUTH_TYPE[currentPage].url}>
           {AUTH_TYPE[currentPage].goPage}
-        </StyledLink>
-      </StyledInfoText>
-    </StyledContainer>
+        </S_Link>
+      </S_InfoText>
+    </S_Container>
   );
 }
 
 export default AuthFooter;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flow-root;
 
   text-align: center;
 `;
 
-const StyledDivider = styled.div`
+const S_Divider = styled.div`
   display: flex;
   align-items: center;
 
@@ -48,19 +48,19 @@ const StyledDivider = styled.div`
   }
 `;
 
-const StyledText = styled.span`
+const S_Text = styled.span`
   padding: 0 1.6rem;
 
   color: ${({ theme }) => theme.FONT.G01};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
-const StyledInfoText = styled.p`
+const S_InfoText = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
-const StyledLink = styled(Link)`
+const S_Link = styled(Link)`
   all: unset;
 
   margin-left: 0.4rem;

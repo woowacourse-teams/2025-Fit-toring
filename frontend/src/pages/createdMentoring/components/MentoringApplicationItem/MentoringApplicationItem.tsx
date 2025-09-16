@@ -49,31 +49,31 @@ function MentoringApplicationItem({
   };
 
   return (
-    <StyledContainer key={reservationId}>
-      <StyledName>{menteeName}님의 상담 신청</StyledName>
-      <StyledApplicationInfoWrapper>
-        <StyledCreatedAt>⏰ {formatDate(createdAt)}</StyledCreatedAt>
-        <StyledApplicationPrice>
+    <S_Container key={reservationId}>
+      <S_Name>{menteeName}님의 상담 신청</S_Name>
+      <S_ApplicationInfoWrapper>
+        <S_CreatedAt>⏰ {formatDate(createdAt)}</S_CreatedAt>
+        <S_ApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
-        </StyledApplicationPrice>
+        </S_ApplicationPrice>
         <MentoringApplicationStatus status={status} />
-      </StyledApplicationInfoWrapper>
+      </S_ApplicationInfoWrapper>
       <PhoneNumber status={status} phoneNumber={phoneNumber} />
-      <StyledApplicationContent>{content}</StyledApplicationContent>
-      <StyledButtonWrapper>
+      <S_ApplicationContent>{content}</S_ApplicationContent>
+      <S_ButtonWrapper>
         <ActionButtons
           reservationId={reservationId}
           status={status}
           onClick={handleActionButtonsComplete}
         />
-      </StyledButtonWrapper>
-    </StyledContainer>
+      </S_ButtonWrapper>
+    </S_Container>
   );
 }
 
 export default MentoringApplicationItem;
 
-const StyledContainer = styled.li`
+const S_Container = styled.li`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -92,34 +92,34 @@ const StyledContainer = styled.li`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledName = styled.h4`
+const S_Name = styled.h4`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B1_R}
 `;
 
-const StyledApplicationInfoWrapper = styled.div`
+const S_ApplicationInfoWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
 `;
 
-const StyledCreatedAt = styled.p`
+const S_CreatedAt = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledApplicationPrice = styled.p`
+const S_ApplicationPrice = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledApplicationContent = styled.p`
+const S_ApplicationContent = styled.p`
   color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledButtonWrapper = styled.div`
+const S_ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `;

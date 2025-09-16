@@ -8,16 +8,16 @@ function Login() {
   return (
     <>
       <LoginHeader />
-      <StyledWrapper>
+      <S_Wrapper>
         <LoginIntro />
         <LoginFormSection />
-      </StyledWrapper>
+      </S_Wrapper>
     </>
   );
 }
 
 export default Login;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   padding: 0 1.9rem;
 `;

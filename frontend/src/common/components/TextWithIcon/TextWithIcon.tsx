@@ -8,27 +8,27 @@ interface TextWithIconProps {
 
 function TextWithIcon({ text, iconSrc, iconName }: TextWithIconProps) {
   return (
-    <StyledContainer>
-      <StyledImg alt={`${iconName} 아이콘`} src={iconSrc} />
-      <StyledSpan>{text}</StyledSpan>
-    </StyledContainer>
+    <S_Container>
+      <S_Img alt={`${iconName} 아이콘`} src={iconSrc} />
+      <S_Span>{text}</S_Span>
+    </S_Container>
   );
 }
 
 export default TextWithIcon;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   align-items: center;
   gap: 0.3rem;
 `;
 
-const StyledImg = styled.img`
+const S_Img = styled.img`
   width: 1.4rem;
   height: 1.4rem;
 `;
 
-const StyledSpan = styled.span`
+const S_Span = styled.span`
   display: flex;
 
   color: ${({ theme }) => theme.SYSTEM.GRAY600};

@@ -19,9 +19,9 @@ function DetailIntroduce({
   return (
     <section>
       <TitleSeparator>상세 소개</TitleSeparator>
-      <StyledFormFieldWrapper>
+      <S_FormFieldWrapper>
         <FormField label="상세 소개 *">
-          <StyledTextarea
+          <S_Textarea
             placeholder="멘토링 경험, 전문성, 제공하는 서비스 등을 자세히 소개해주세요"
             id="content"
             onChange={(e) =>
@@ -31,20 +31,20 @@ function DetailIntroduce({
             required
           />
         </FormField>
-      </StyledFormFieldWrapper>
+      </S_FormFieldWrapper>
     </section>
   );
 }
 
 export default DetailIntroduce;
 
-const StyledFormFieldWrapper = styled.div`
+const S_FormFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
 `;
 
-const StyledTextarea = styled.textarea`
+const S_Textarea = styled.textarea`
   width: 100%;
   height: 25rem;
   padding: 2rem;

@@ -26,16 +26,16 @@ function Modal({
 
   return (
     opened && (
-      <StyledOverlay onClick={handleClick} zIndex={zIndex}>
-        <StyledContent>{children}</StyledContent>
-      </StyledOverlay>
+      <S_Overlay onClick={handleClick} zIndex={zIndex}>
+        <S_Content>{children}</S_Content>
+      </S_Overlay>
     )
   );
 }
 
 export default Modal;
 
-const StyledOverlay = styled.div<Pick<ModalProps, 'zIndex'>>`
+const S_Overlay = styled.div<Pick<ModalProps, 'zIndex'>>`
   position: fixed;
   top: 0;
   left: 0;
@@ -47,7 +47,7 @@ const StyledOverlay = styled.div<Pick<ModalProps, 'zIndex'>>`
   background-color: rgb(0 0 0 / 50%);
 `;
 
-const StyledContent = styled.div`
+const S_Content = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;

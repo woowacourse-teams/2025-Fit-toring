@@ -9,12 +9,12 @@ function QuestionBubble({
   direction,
   children,
 }: PropsWithChildren<QuestionBubbleProps>) {
-  return <StyledBubble direction={direction}>{children}</StyledBubble>;
+  return <S_Bubble direction={direction}>{children}</S_Bubble>;
 }
 
 export default QuestionBubble;
 
-const StyledBubble = styled.div<{ direction: 'left' | 'right' }>`
+const S_Bubble = styled.div<{ direction: 'left' | 'right' }>`
   position: relative;
   z-index: 100;
 

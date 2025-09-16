@@ -61,21 +61,21 @@ function Certificates({ certificates }: CertificatesProps) {
   };
 
   return (
-    <StyledContainer>
-      <StyledTitle>검증된 자격 사항</StyledTitle>
+    <S_Container>
+      <S_Title>검증된 자격 사항</S_Title>
       {certificates.length > 0 ? (
-        <StyledList>
+        <S_List>
           {certificates.map((item) => (
-            <StyledItem
+            <S_Item
               key={item.certificateId}
               onClick={() => handleItemClick(item)}
             >
               {item.title}
-            </StyledItem>
+            </S_Item>
           ))}
-        </StyledList>
+        </S_List>
       ) : (
-        <StyledEmptyDescription>자격증이 없습니다.</StyledEmptyDescription>
+        <S_EmptyDescription>자격증이 없습니다.</S_EmptyDescription>
       )}
       {selectedCertificate && (
         <CertificatesImageModal
@@ -87,13 +87,13 @@ function Certificates({ certificates }: CertificatesProps) {
           onPrevButtonClick={handlePrevButtonClick}
         />
       )}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default Certificates;
 
-const StyledContainer = styled.section`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -101,20 +101,20 @@ const StyledContainer = styled.section`
   width: 100%;
 `;
 
-const StyledTitle = styled.h3`
+const S_Title = styled.h3`
   flex-grow: 1;
 
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.H4_R}
 `;
 
-const StyledList = styled.ul`
+const S_List = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
 `;
 
-const StyledItem = styled.li`
+const S_Item = styled.li`
   display: flex;
   align-items: flex-start;
   gap: 1.2rem;
@@ -136,7 +136,7 @@ const StyledItem = styled.li`
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
-const StyledEmptyDescription = styled.p`
+const S_EmptyDescription = styled.p`
   color: ${({ theme }) => theme.FONT.B02};
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;

@@ -28,7 +28,7 @@ function UserIdField({
 
   return (
     <FormField label="아이디 *" errorMessage={errorMessage}>
-      <StyledInputAndBtnWrapper>
+      <S_InputAndBtnWrapper>
         <div className="input-wrapper">
           <Input
             id="id"
@@ -47,9 +47,9 @@ function UserIdField({
         >
           중복확인
         </Button>
-      </StyledInputAndBtnWrapper>
+      </S_InputAndBtnWrapper>
       {duplicateChecked ? (
-        <StyledSuccessText>사용 가능한 아이디입니다.</StyledSuccessText>
+        <S_SuccessText>사용 가능한 아이디입니다.</S_SuccessText>
       ) : null}
     </FormField>
   );
@@ -57,7 +57,7 @@ function UserIdField({
 
 export default UserIdField;
 
-const StyledInputAndBtnWrapper = styled.div`
+const S_InputAndBtnWrapper = styled.div`
   display: flex;
   gap: 1.4rem;
 
@@ -66,7 +66,7 @@ const StyledInputAndBtnWrapper = styled.div`
   }
 `;
 
-const StyledSuccessText = styled.p`
+const S_SuccessText = styled.p`
   color: ${({ theme }) => theme.FONT.SUCCESS};
 
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};

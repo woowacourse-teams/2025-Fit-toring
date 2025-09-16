@@ -13,7 +13,7 @@ function ProfileImg({ src }: ProfileImgProps) {
   };
 
   return (
-    <StyledContainer
+    <S_Container
       src={src || profileImg}
       alt="프로필 이미지"
       onError={handleImgError}
@@ -23,7 +23,7 @@ function ProfileImg({ src }: ProfileImgProps) {
 
 export default ProfileImg;
 
-const StyledContainer = styled.img`
+const S_Container = styled.img`
   width: 5.6rem;
   height: 5.6rem;
   border: ${({ theme }) => theme.OUTLINE.REGULAR} 0.1rem solid;

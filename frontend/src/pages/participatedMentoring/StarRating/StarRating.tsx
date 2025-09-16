@@ -12,35 +12,35 @@ interface StarRatingProps {
 
 function StarRating({ rating, onRatingChange }: StarRatingProps) {
   return (
-    <StyledContainer>
+    <S_Container>
       {Array.from({ length: MAX_RATING_COUNT }, (_, index) => {
         const score = index + 1;
         const isFilled = score <= rating;
         return (
-          <StyledStarButton
+          <S_StarButton
             key={score}
             type="button"
             onClick={() => onRatingChange(score)}
           >
-            <StyledStarIcon
+            <S_StarIcon
               src={isFilled ? filledStar : emptyStar}
               alt={`${score}점`}
             />
-          </StyledStarButton>
+          </S_StarButton>
         );
       })}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default StarRating;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   gap: 0.5rem;
 `;
 
-const StyledStarButton = styled.button`
+const S_StarButton = styled.button`
   padding: 0;
   border: 0;
 
@@ -48,7 +48,7 @@ const StyledStarButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledStarIcon = styled.img`
+const S_StarIcon = styled.img`
   display: block;
 
   width: 2rem;

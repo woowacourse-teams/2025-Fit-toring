@@ -57,8 +57,8 @@ function Detail() {
   return (
     <>
       <DetailHeader />
-      <StyledContainer>
-        <StyledMentorInfoWrapper>
+      <S_Container>
+        <S_MentorInfoWrapper>
           <Profile
             profileImg={data.profileImageUrl}
             mentorName={data.mentorName}
@@ -71,29 +71,29 @@ function Detail() {
             career={data.career}
             certificates={data.certificates}
           />
-        </StyledMentorInfoWrapper>
-        <StyledTapWrapper>
-          <StyledTap
+        </S_MentorInfoWrapper>
+        <S_TapWrapper>
+          <S_Tap
             onClick={() => handleClick('detail')}
             selected={selected === 'detail'}
           >
             상세보기
-          </StyledTap>
-          <StyledTap
+          </S_Tap>
+          <S_Tap
             onClick={() => handleClick('review')}
             selected={selected === 'review'}
           >
             리뷰
-          </StyledTap>
-          <StyledTapIndicator selected={selected} />
-        </StyledTapWrapper>
-        <StyledContentWrapper>
+          </S_Tap>
+          <S_TapIndicator selected={selected} />
+        </S_TapWrapper>
+        <S_ContentWrapper>
           {selected === 'detail' ? (
-            <StyledDetailWrapper>
+            <S_DetailWrapper>
               <Introduction content={data.content} />
-              <StyledLine />
+              <S_Line />
               <Certificates certificates={data.certificates} />
-            </StyledDetailWrapper>
+            </S_DetailWrapper>
           ) : (
             <DetailReview
               mentoringId={data.id}
@@ -101,8 +101,8 @@ function Detail() {
               ratingCount={data.ratingCount}
             />
           )}
-        </StyledContentWrapper>
-      </StyledContainer>
+        </S_ContentWrapper>
+      </S_Container>
       <ApplySection price={data.price} mentoringId={mentoringId} />
     </>
   );
@@ -110,19 +110,19 @@ function Detail() {
 
 export default Detail;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   margin-bottom: 10rem;
   padding: 0 2rem;
 `;
 
-const StyledMentorInfoWrapper = styled.div`
+const S_MentorInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2.4rem;
 `;
 
-const StyledTapWrapper = styled.div`
+const S_TapWrapper = styled.div`
   display: flex;
   flex-direction: row;
   position: relative;
@@ -131,7 +131,7 @@ const StyledTapWrapper = styled.div`
   padding: 1rem;
 `;
 
-const StyledTap = styled.p<{ selected: boolean }>`
+const S_Tap = styled.p<{ selected: boolean }>`
   width: 50%;
   cursor: pointer;
 
@@ -140,7 +140,7 @@ const StyledTap = styled.p<{ selected: boolean }>`
   ${({ theme }) => theme.TYPOGRAPHY.B2_B};
 `;
 
-const StyledTapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
+const S_TapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
   position: absolute;
   bottom: 0;
   left: 0;
@@ -156,14 +156,14 @@ const StyledTapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
     selected === 'detail' ? 'translateX(0%)' : 'translateX(100%)'};
 `;
 
-const StyledContentWrapper = styled.div`
+const S_ContentWrapper = styled.div`
   display: flex;
 
   width: 100%;
   padding-top: 2rem;
 `;
 
-const StyledDetailWrapper = styled.div`
+const S_DetailWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -171,7 +171,7 @@ const StyledDetailWrapper = styled.div`
   width: 100%;
 `;
 
-const StyledLine = styled.hr`
+const S_Line = styled.hr`
   width: 100%;
   height: 1px;
   margin: 0;

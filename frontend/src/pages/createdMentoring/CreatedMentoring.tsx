@@ -98,11 +98,11 @@ function CreatedMentoring() {
   };
 
   return (
-    <StyledContainer>
+    <S_Container>
       {mineMentoring ? (
         <>
-          <StyledMentoringSectionHeader>
-            <StyledTitle>개설한 멘토링</StyledTitle>
+          <S_MentoringSectionHeader>
+            <S_Title>개설한 멘토링</S_Title>
             <Button
               onClick={handleMentoringShowButtonClick}
               customStyle={css`
@@ -113,17 +113,17 @@ function CreatedMentoring() {
             >
               개설한 멘토링 보기
             </Button>
-          </StyledMentoringSectionHeader>
-          <StyledWrapper>
-            <StyledInfoWrapper>
-              <StyledSubTitle>
+          </S_MentoringSectionHeader>
+          <S_Wrapper>
+            <S_InfoWrapper>
+              <S_SubTitle>
                 멘토링 신청 목록 ({mentoringApplicationList.length}건)
-              </StyledSubTitle>
-              <StyledDescription>
+              </S_SubTitle>
+              <S_Description>
                 사용자들이 신청한 멘토링을 승인하거나 거절할 수 있습니다.
-              </StyledDescription>
-            </StyledInfoWrapper>
-            <StyledLine />
+              </S_Description>
+            </S_InfoWrapper>
+            <S_Line />
             <MentoringApplicationList>
               {mentoringApplicationList.map((item) => (
                 <MentoringApplicationItem
@@ -133,18 +133,18 @@ function CreatedMentoring() {
                 />
               ))}
             </MentoringApplicationList>
-          </StyledWrapper>
+          </S_Wrapper>
         </>
       ) : (
-        <StyledEmptyText>개설한 멘토링이 없습니다.</StyledEmptyText>
+        <S_EmptyText>개설한 멘토링이 없습니다.</S_EmptyText>
       )}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default CreatedMentoring;
 
-const StyledContainer = styled.section`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -154,18 +154,18 @@ const StyledContainer = styled.section`
   padding: 2rem;
 `;
 
-const StyledMentoringSectionHeader = styled.div`
+const S_MentoringSectionHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
-const StyledTitle = styled.h2`
+const S_Title = styled.h2`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
 `;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   flex-direction: column;
 
@@ -176,7 +176,7 @@ const StyledWrapper = styled.div`
   box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
 `;
 
-const StyledInfoWrapper = styled.div`
+const S_InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -184,17 +184,17 @@ const StyledInfoWrapper = styled.div`
   padding: 2.5rem 2rem;
 `;
 
-const StyledSubTitle = styled.h3`
+const S_SubTitle = styled.h3`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
 `;
 
-const StyledDescription = styled.p`
+const S_Description = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B1_R}
 `;
 
-const StyledLine = styled.hr`
+const S_Line = styled.hr`
   width: 100%;
   height: 1px;
   margin: 0;
@@ -202,6 +202,6 @@ const StyledLine = styled.hr`
   border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
-const StyledEmptyText = styled.p`
+const S_EmptyText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;

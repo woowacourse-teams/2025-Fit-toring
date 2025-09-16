@@ -5,17 +5,17 @@ const GoogleFormUrl =
 
 function Feedback() {
   return (
-    <StyledContainer>
-      <StyledLink href={GoogleFormUrl} target="_blank">
+    <S_Container>
+      <S_Link href={GoogleFormUrl} target="_blank">
         서비스 피드백
-      </StyledLink>
-    </StyledContainer>
+      </S_Link>
+    </S_Container>
   );
 }
 
 export default Feedback;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -27,7 +27,7 @@ const StyledContainer = styled.div`
   background: ${({ theme }) => theme.BG.GREEN};
 `;
 
-const StyledLink = styled.a`
+const S_Link = styled.a`
   display: flex;
   align-items: center;
   justify-content: center;
