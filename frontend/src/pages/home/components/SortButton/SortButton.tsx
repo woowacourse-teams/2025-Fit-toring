@@ -7,16 +7,16 @@ interface SortButtonProps {
 
 function SortButton({ handleSortButtonClick }: SortButtonProps) {
   return (
-    <StyledButton onClick={handleSortButtonClick} type="button">
-      <StyledText>기본순</StyledText>
-      <StyledGoIcon src={downIcon} alt="정렬 아이콘" />
-    </StyledButton>
+    <S_Button onClick={handleSortButtonClick} type="button">
+      <S_Text>기본순</S_Text>
+      <S_GoIcon src={downIcon} alt="정렬 아이콘" />
+    </S_Button>
   );
 }
 
 export default SortButton;
 
-const StyledButton = styled.button`
+const S_Button = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,12 +32,12 @@ const StyledButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledText = styled.span`
+const S_Text = styled.span`
   ${({ theme }) => theme.TYPOGRAPHY.C4_R};
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
 `;
 
-const StyledGoIcon = styled.img`
+const S_GoIcon = styled.img`
   width: 1.4rem;
   aspect-ratio: 1 / 1;
 `;

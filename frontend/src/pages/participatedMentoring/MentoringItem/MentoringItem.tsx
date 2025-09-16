@@ -37,44 +37,44 @@ function MentoringItem({
   };
 
   return (
-    <StyledContainer key={reservationId}>
-      <StyledMentorInfoWrapper>
-        <StyledProfileImage
+    <S_Container key={reservationId}>
+      <S_MentorInfoWrapper>
+        <S_ProfileImage
           src={mentorProfileImage || defaultImage}
           alt={`${mentorName} 멘토`}
           onError={(e) => {
             e.currentTarget.src = defaultImage;
           }}
         />
-        <StyledMentoringInfo>
-          <StyledName>{mentorName} 멘토</StyledName>
-          <StyledCategoryWrapper>
+        <S_MentoringInfo>
+          <S_Name>{mentorName} 멘토</S_Name>
+          <S_CategoryWrapper>
             {categories.map((category) => (
-              <StyledCategory key={category}>{category}</StyledCategory>
+              <S_Category key={category}>{category}</S_Category>
             ))}
-          </StyledCategoryWrapper>
-        </StyledMentoringInfo>
-        <StyledStatusWrapper>
+          </S_CategoryWrapper>
+        </S_MentoringInfo>
+        <S_StatusWrapper>
           <MentoringApplicationStatus status={status} />
-        </StyledStatusWrapper>
-      </StyledMentorInfoWrapper>
+        </S_StatusWrapper>
+      </S_MentorInfoWrapper>
 
       {status !== StatusTypeEnum.REJECTED ? (
-        <StyledStepperWrapper>
+        <S_StepperWrapper>
           <MentoringStepper status={status} />
-        </StyledStepperWrapper>
+        </S_StepperWrapper>
       ) : null}
-      <StyledApplicationInfoWrapper>
-        <StyledApplicationDate>⏰ {reservedAt}</StyledApplicationDate>
-        <StyledApplicationPrice>
+      <S_ApplicationInfoWrapper>
+        <S_ApplicationDate>⏰ {reservedAt}</S_ApplicationDate>
+        <S_ApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
-        </StyledApplicationPrice>
+        </S_ApplicationPrice>
         <ReviewButton
           isReviewed={isReviewed}
           status={status}
           onReviewButtonClick={handleReviewModalToggle}
         />
-      </StyledApplicationInfoWrapper>
+      </S_ApplicationInfoWrapper>
       <ReviewModal
         reservationId={reservationId}
         mentorName={mentorName}
@@ -82,13 +82,13 @@ function MentoringItem({
         onCloseClick={handleReviewModalToggle}
         onReviewSubmitButtonClick={handleReviewSubmitButtonClick}
       />
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default MentoringItem;
 
-const StyledContainer = styled.li`
+const S_Container = styled.li`
   display: flex;
   flex-direction: column;
   gap: 1.3rem;
@@ -106,12 +106,12 @@ const StyledContainer = styled.li`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledMentorInfoWrapper = styled.div`
+const S_MentorInfoWrapper = styled.div`
   display: flex;
   gap: 1.2rem;
 `;
 
-const StyledProfileImage = styled.img`
+const S_ProfileImage = styled.img`
   width: 4.8rem;
   height: 4.8rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
@@ -121,25 +121,25 @@ const StyledProfileImage = styled.img`
   object-fit: cover;
 `;
 
-const StyledName = styled.h4`
+const S_Name = styled.h4`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
 `;
 
-const StyledMentoringInfo = styled.div`
+const S_MentoringInfo = styled.div`
   display: flex;
   flex-flow: column wrap;
   flex-grow: 1;
   gap: 1rem;
 `;
 
-const StyledCategoryWrapper = styled.div`
+const S_CategoryWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
 `;
 
-const StyledCategory = styled.span`
+const S_Category = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -153,28 +153,28 @@ const StyledCategory = styled.span`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledStatusWrapper = styled.div`
+const S_StatusWrapper = styled.div`
   height: auto;
 `;
 
-const StyledStepperWrapper = styled.div`
+const S_StepperWrapper = styled.div`
   width: 90%;
   margin: 0 auto;
 `;
 
-const StyledApplicationInfoWrapper = styled.div`
+const S_ApplicationInfoWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
 `;
 
-const StyledApplicationDate = styled.p`
+const S_ApplicationDate = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledApplicationPrice = styled.p`
+const S_ApplicationPrice = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;

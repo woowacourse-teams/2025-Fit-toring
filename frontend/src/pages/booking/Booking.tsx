@@ -73,7 +73,7 @@ function Booking() {
   return (
     <div ref={containerRef}>
       <BookingHeader />
-      <StyledContentWrapper ref={wrapperRef}>
+      <S_ContentWrapper ref={wrapperRef}>
         <MentoInfoCard mentorDetail={mentorDetail} />
         <div ref={formRef}>
           <BookingForm
@@ -82,7 +82,7 @@ function Booking() {
             mentoringPrice={mentorDetail?.price ?? 0}
           />
         </div>
-      </StyledContentWrapper>
+      </S_ContentWrapper>
       {mentorDetail ? (
         <CompleteModal
           mentorInfo={mentorDetail}
@@ -96,7 +96,7 @@ function Booking() {
 
 export default Booking;
 
-const StyledContentWrapper = styled.div`
+const S_ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.8rem;

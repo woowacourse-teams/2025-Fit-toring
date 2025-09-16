@@ -37,23 +37,23 @@ function CompleteModal({
 
   return (
     <Modal opened={opened} onCloseClick={onCloseClick}>
-      <StyledContainer>
-        <StyledColoredBackground />
-        <StyledTitle>멘토링 신청이 완료되었습니다.</StyledTitle>
-        <StyledStepperWrapper>
-          <StyledReservationInfoText>
+      <S_Container>
+        <S_ColoredBackground />
+        <S_Title>멘토링 신청이 완료되었습니다.</S_Title>
+        <S_StepperWrapper>
+          <S_ReservationInfoText>
             확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
-          </StyledReservationInfoText>
+          </S_ReservationInfoText>
           <MentoringStepper status={StatusTypeEnum.PENDING} />
-        </StyledStepperWrapper>
-        <StyledMentorInfoBox>
-          <StyledInfoTextWithIcon>
-            <StyledIcon src={humanIcon} alt="사람 아이콘" />
+        </S_StepperWrapper>
+        <S_MentorInfoBox>
+          <S_InfoTextWithIcon>
+            <S_Icon src={humanIcon} alt="사람 아이콘" />
             <span>멘토 정보</span>
-          </StyledInfoTextWithIcon>
+          </S_InfoTextWithIcon>
           <p>이름: {mentorInfo.mentorName}</p>
           <p>전문분야: {mentorInfo.categories.join(' / ')}</p>
-        </StyledMentorInfoBox>
+        </S_MentorInfoBox>
         <Button
           onClick={handleGoReservationClick}
           size="full"
@@ -82,13 +82,13 @@ function CompleteModal({
         >
           다른 멘토 찾기
         </Button>
-      </StyledContainer>
+      </S_Container>
     </Modal>
   );
 }
 export default CompleteModal;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -96,7 +96,7 @@ const StyledContainer = styled.div`
   padding-top: 4rem;
 `;
 
-const StyledColoredBackground = styled.div`
+const S_ColoredBackground = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -109,12 +109,12 @@ const StyledColoredBackground = styled.div`
   background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 `;
 
-const StyledTitle = styled.p`
+const S_Title = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R};
   color: ${({ theme }) => theme.FONT.W01};
 `;
 
-const StyledMentorInfoBox = styled.div`
+const S_MentorInfoBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -127,7 +127,7 @@ const StyledMentorInfoBox = styled.div`
   }
 `;
 
-const StyledInfoTextWithIcon = styled.div`
+const S_InfoTextWithIcon = styled.div`
   display: flex;
   gap: 0.7rem;
 
@@ -137,12 +137,12 @@ const StyledInfoTextWithIcon = styled.div`
   }
 `;
 
-const StyledIcon = styled.img`
+const S_Icon = styled.img`
   width: 1.4rem;
   height: 1.4rem;
 `;
 
-const StyledStepperWrapper = styled.div`
+const S_StepperWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -154,7 +154,7 @@ const StyledStepperWrapper = styled.div`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyledReservationInfoText = styled.p`
+const S_ReservationInfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_B};
   color: ${({ theme }) => theme.FONT.B02};
   text-align: center;

@@ -13,7 +13,7 @@ function ButtonSection({
   submitButtonName,
 }: ButtonSectionProps) {
   return (
-    <StyledContainer>
+    <S_Container>
       <Button
         type="button"
         variant="secondary"
@@ -26,13 +26,13 @@ function ButtonSection({
       <Button type="submit" size="full" customStyle={buttonStyle}>
         {submitButtonName === 'register' ? '등록하기' : '수정하기'}
       </Button>
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default ButtonSection;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;

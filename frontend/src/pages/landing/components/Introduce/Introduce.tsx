@@ -4,41 +4,41 @@ import mock from '../../../../common/assets/images/mock.png';
 
 function Introduce() {
   return (
-    <StyledContainer>
-      <StyledTextWrapper>
-        <StyledTitle>
+    <S_Container>
+      <S_TextWrapper>
+        <S_Title>
           온라인 운동 멘토링
           <br />
           중개 플랫폼
-        </StyledTitle>
-        <StyledTexts>
-          <StyledText>
+        </S_Title>
+        <S_Texts>
+          <S_Text>
             핏토링은 운동 숙련자들이
             <br />
             자신의 경험과 노하우를 공유합니다.
-          </StyledText>
-          <StyledText>
+          </S_Text>
+          <S_Text>
             운동 초보자들이 합리적인 비용으로
             <br />
             1회성 멘토링을 받을 수 있습니다.
-          </StyledText>
-          <StyledText>
+          </S_Text>
+          <S_Text>
             원하는 멘토에게 신청하여 카카오톡
             <br />
             오픈 채팅을 통해 상담을 받을 수 있어요
-          </StyledText>
-        </StyledTexts>
-      </StyledTextWrapper>
-      <StyledImgWrapper>
-        <StyledImg src={mock} alt="목업" />
-      </StyledImgWrapper>
-    </StyledContainer>
+          </S_Text>
+        </S_Texts>
+      </S_TextWrapper>
+      <S_ImgWrapper>
+        <S_Img src={mock} alt="목업" />
+      </S_ImgWrapper>
+    </S_Container>
   );
 }
 
 export default Introduce;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -48,12 +48,12 @@ const StyledContainer = styled.div`
   line-height: normal;
 `;
 
-const StyledTitle = styled.p`
+const S_Title = styled.p`
   font-weight: bold;
   font-size: 2.5rem;
 `;
 
-const StyledTextWrapper = styled.div`
+const S_TextWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -61,22 +61,22 @@ const StyledTextWrapper = styled.div`
   text-align: center;
 `;
 
-const StyledTexts = styled.div`
+const S_Texts = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.3rem;
 `;
 
-const StyledText = styled.p`
+const S_Text = styled.p`
   font-size: 1.6rem;
 `;
 
-const StyledImgWrapper = styled.div`
+const S_ImgWrapper = styled.div`
   display: flex;
   justify-content: center;
 `;
 
-const StyledImg = styled.img`
+const S_Img = styled.img`
   float: right;
 
   width: 28.9rem;

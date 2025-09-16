@@ -5,16 +5,16 @@ import LoginForm from '../LoginForm/LoginForm';
 
 function LoginFormSection() {
   return (
-    <StyledContainer>
+    <S_Container>
       <LoginForm />
       <AuthFooter currentPage="login" />
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default LoginFormSection;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   padding: 2.4rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 16px;

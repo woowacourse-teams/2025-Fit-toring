@@ -9,21 +9,21 @@ import MenuDropDown from '../MenuDropDown/MenuDropDown';
 function MyPageHeader() {
   return (
     <Header>
-      <StyledWrapper>
-        <StyledLogoLink to={PAGE_URL.HOME}>
-          <StyledImg src={logo} alt="홈으로 돌아가기" />
-        </StyledLogoLink>
-        <StyledTitle>마이 페이지</StyledTitle>
+      <S_Wrapper>
+        <S_LogoLink to={PAGE_URL.HOME}>
+          <S_Img src={logo} alt="홈으로 돌아가기" />
+        </S_LogoLink>
+        <S_Title>마이 페이지</S_Title>
 
         <MenuDropDown />
-      </StyledWrapper>
+      </S_Wrapper>
     </Header>
   );
 }
 
 export default MyPageHeader;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   align-items: center;
 
@@ -31,7 +31,7 @@ const StyledWrapper = styled.div`
   padding: 1.4rem 1.1rem;
 `;
 
-const StyledLogoLink = styled(Link)`
+const S_LogoLink = styled(Link)`
   display: flex;
 
   height: auto;
@@ -45,12 +45,12 @@ const StyledLogoLink = styled(Link)`
   cursor: pointer;
 `;
 
-const StyledImg = styled.img`
+const S_Img = styled.img`
   width: 3.5rem;
   aspect-ratio: 1 / 1;
 `;
 
-const StyledTitle = styled.h1`
+const S_Title = styled.h1`
   flex-grow: 1;
 
   color: ${({ theme }) => theme.FONT.B01};

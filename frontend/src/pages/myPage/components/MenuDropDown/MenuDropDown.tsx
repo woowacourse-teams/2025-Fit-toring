@@ -87,36 +87,36 @@ function MenuDropDown() {
   };
 
   return (
-    <StyledContainer ref={containerRef}>
-      <StyledMenuButton onClick={handleMenuButtonClick}>
-        <StyledMenuIcon src={menuIcon} alt="메뉴 열기 아이콘" />
-      </StyledMenuButton>
+    <S_Container ref={containerRef}>
+      <S_MenuButton onClick={handleMenuButtonClick}>
+        <S_MenuIcon src={menuIcon} alt="메뉴 열기 아이콘" />
+      </S_MenuButton>
 
-      <StyledMenuList opened={opened}>
+      <S_MenuList opened={opened}>
         {MENU_ITEMS.map((item) => (
-          <StyledMenuItem
+          <S_MenuItem
             key={item.name}
             onClick={async () => await handleSelectMenu(item)}
             selected={selectedMenu === item.name}
           >
             {item.name}
-          </StyledMenuItem>
+          </S_MenuItem>
         ))}
-      </StyledMenuList>
-    </StyledContainer>
+      </S_MenuList>
+    </S_Container>
   );
 }
 
 export default MenuDropDown;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 `;
 
-const StyledMenuButton = styled.button`
+const S_MenuButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -131,13 +131,13 @@ const StyledMenuButton = styled.button`
   transition: all 0.2s ease;
 `;
 
-const StyledMenuIcon = styled.img`
+const S_MenuIcon = styled.img`
   width: 2.4rem;
   height: 2.4rem;
   aspect-ratio: 1 / 1;
 `;
 
-const StyledMenuList = styled.ul<{ opened: boolean }>`
+const S_MenuList = styled.ul<{ opened: boolean }>`
   visibility: ${({ opened }) => (opened ? 'visible' : 'hidden')};
   position: absolute;
   top: 100%;
@@ -157,7 +157,7 @@ const StyledMenuList = styled.ul<{ opened: boolean }>`
   transition: all 0.2s ease;
 `;
 
-const StyledMenuItem = styled.li<{ selected: boolean }>`
+const S_MenuItem = styled.li<{ selected: boolean }>`
   width: 100%;
   padding: 1rem 1.2rem;
 

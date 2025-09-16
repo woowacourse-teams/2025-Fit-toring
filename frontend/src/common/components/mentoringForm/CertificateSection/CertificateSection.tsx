@@ -24,7 +24,7 @@ function CertificateSection({
   return (
     <section>
       <TitleSeparator>검증된 자격 사항</TitleSeparator>
-      <StyledDescriptionWrapper>
+      <S_DescriptionWrapper>
         <p>증명서 또는 관련 사진이 확인된 후 게시됩니다.</p>
         <p>항목 작성 후 게시요청 해주세요.</p>
         <p>
@@ -32,7 +32,7 @@ function CertificateSection({
           멘토님께 직접 연락 드립니다.
         </p>
         <p>멘토 페이지에는 항목 형식에 따라 순서대로 보여집니다.</p>
-      </StyledDescriptionWrapper>
+      </S_DescriptionWrapper>
       {certificates.map((item) => (
         <CertificateInput
           key={item.id}
@@ -49,16 +49,16 @@ function CertificateSection({
         />
       ))}
 
-      <StyledAddButton type="button" onClick={onAddButtonClick}>
+      <S_AddButton type="button" onClick={onAddButtonClick}>
         + 자격 항목 추가하기
-      </StyledAddButton>
+      </S_AddButton>
     </section>
   );
 }
 
 export default CertificateSection;
 
-const StyledDescriptionWrapper = styled.div`
+const S_DescriptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -79,7 +79,7 @@ const StyledDescriptionWrapper = styled.div`
   }
 `;
 
-const StyledAddButton = styled.button`
+const S_AddButton = styled.button`
   width: 100%;
   height: 6.8rem;
   margin-top: 1.5rem;

@@ -31,7 +31,7 @@ function Button({
   ...rest
 }: PropsWithChildren<ComponentProps<'button'> & ButtonProps>) {
   return (
-    <StyledContainer
+    <S_Container
       customStyle={customStyle}
       variant={variant}
       size={size}
@@ -39,13 +39,13 @@ function Button({
       {...rest}
     >
       {children}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default Button;
 
-const StyledContainer = styled.button<ButtonProps>`
+const S_Container = styled.button<ButtonProps>`
   width: ${(props) => (props.size === 'full' ? '100%' : 'fit-content')};
   padding: 0.6rem 1.1rem;
   border: none;

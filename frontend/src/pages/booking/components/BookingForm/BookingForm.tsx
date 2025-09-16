@@ -86,21 +86,21 @@ function BookingForm({
   }, []);
 
   return (
-    <StyledContainer onSubmit={handleSubmit}>
-      <StyledInfoText>
+    <S_Container onSubmit={handleSubmit}>
+      <S_InfoText>
         아래 정보를 입력해주시면 멘토에게 상담 신청이 전송됩니다.
-      </StyledInfoText>
-      <StyledUserInfoWrapper>
-        <StyledInfoRow>
-          <StyledUserInfoLabel>상담자명</StyledUserInfoLabel>
-          <StyledUserInfoText>{userInfo.name}</StyledUserInfoText>
-        </StyledInfoRow>
-        <StyledInfoRow>
-          <StyledUserInfoLabel>전화번호</StyledUserInfoLabel>
-          <StyledUserInfoText>{userInfo.phoneNumber}</StyledUserInfoText>
-        </StyledInfoRow>
+      </S_InfoText>
+      <S_UserInfoWrapper>
+        <S_InfoRow>
+          <S_UserInfoLabel>상담자명</S_UserInfoLabel>
+          <S_UserInfoText>{userInfo.name}</S_UserInfoText>
+        </S_InfoRow>
+        <S_InfoRow>
+          <S_UserInfoLabel>전화번호</S_UserInfoLabel>
+          <S_UserInfoText>{userInfo.phoneNumber}</S_UserInfoText>
+        </S_InfoRow>
         <FormField label="상담 내용(선택사항)" errorMessage={''}>
-          <StyledTextarea
+          <S_Textarea
             id="details"
             placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
 더 정확한 조언을 받을 수 있습니다."
@@ -109,35 +109,29 @@ function BookingForm({
             value={counselContent}
           />
         </FormField>
-      </StyledUserInfoWrapper>
-      <StyledLabelWrapper>
+      </S_UserInfoWrapper>
+      <S_LabelWrapper>
         <Checkbox
           id="sharingAgreed"
           checked={sharingAgreed}
           onChange={handleCheckboxChange}
           errored={errored}
-          label={
-            <StyledCheckboxLabelText>
-              전화번호 제공 동의
-            </StyledCheckboxLabelText>
-          }
+          label={<S_CheckboxLabelText>전화번호 제공 동의</S_CheckboxLabelText>}
         />
-        <StyledCheckboxSubText>
+        <S_CheckboxSubText>
           멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
-        </StyledCheckboxSubText>
-        {errored && (
-          <StyledErrorText>전화번호 제공 동의를 해주세요.</StyledErrorText>
-        )}
-      </StyledLabelWrapper>
+        </S_CheckboxSubText>
+        {errored && <S_ErrorText>전화번호 제공 동의를 해주세요.</S_ErrorText>}
+      </S_LabelWrapper>
 
       <BookingSummarySection price={mentoringPrice} />
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default BookingForm;
 
-const StyledContainer = styled.form`
+const S_Container = styled.form`
   width: 100%;
   height: 100%;
   padding: 2.2rem;
@@ -147,14 +141,14 @@ const StyledContainer = styled.form`
   background-color: white;
 `;
 
-const StyledInfoText = styled.p`
+const S_InfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   margin-top: 1.7rem;
 
   color: ${({ theme }) => theme.FONT.B03};
 `;
 
-const StyledUserInfoWrapper = styled.div`
+const S_UserInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.1rem;
@@ -162,23 +156,23 @@ const StyledUserInfoWrapper = styled.div`
   margin-top: 3.3rem;
 `;
 
-const StyledInfoRow = styled.div`
+const S_InfoRow = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
 `;
 
-const StyledUserInfoLabel = styled.p`
+const S_UserInfoLabel = styled.p`
   color: ${({ theme }) => theme.FONT.B02};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
 
-const StyledUserInfoText = styled.p`
+const S_UserInfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const StyledTextarea = styled.textarea<{ errored: boolean }>`
+const S_Textarea = styled.textarea<{ errored: boolean }>`
   width: 100%;
   height: 5.8rem;
   padding: 0.7rem 1.1rem;
@@ -197,7 +191,7 @@ const StyledTextarea = styled.textarea<{ errored: boolean }>`
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const StyledLabelWrapper = styled.div`
+const S_LabelWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -205,18 +199,18 @@ const StyledLabelWrapper = styled.div`
   margin: 2rem 0;
 `;
 
-const StyledCheckboxLabelText = styled.strong`
+const S_CheckboxLabelText = styled.strong`
   color: ${({ theme }) => theme.FONT.B03};
   font-weight: bold;
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
-const StyledCheckboxSubText = styled.p`
+const S_CheckboxSubText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   color: ${({ theme }) => theme.FONT.B03};
 `;
 
-const StyledErrorText = styled.span`
+const S_ErrorText = styled.span`
   color: ${({ theme }) => theme.FONT.ERROR};
   ${({ theme }) => theme.TYPOGRAPHY.C3_R};
 `;

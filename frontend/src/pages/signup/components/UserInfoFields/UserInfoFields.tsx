@@ -19,9 +19,9 @@ function UserInfoFields({
   onGenderChange,
 }: UserInfoFields) {
   return (
-    <StyledContainer>
+    <S_Container>
       <FormField label="이름 *" errorMessage={nameErrorMessage}>
-        <StyledNameInputWrapper>
+        <S_NameInputWrapper>
           <Input
             id="name"
             name="name"
@@ -30,15 +30,15 @@ function UserInfoFields({
             onChange={onNameChange}
             errored={nameErrorMessage !== ''}
           />
-        </StyledNameInputWrapper>
+        </S_NameInputWrapper>
       </FormField>
       <fieldset>
-        <StyledLegend>성별 *</StyledLegend>
-        <StyledRadios>
-          <StyledRadioWrapper>
-            <StyledLabel>
+        <S_Legend>성별 *</S_Legend>
+        <S_Radios>
+          <S_RadioWrapper>
+            <S_Label>
               남
-              <StyledRadio
+              <S_Radio
                 onChange={onGenderChange}
                 type="radio"
                 name="gender"
@@ -46,12 +46,12 @@ function UserInfoFields({
                 id="male"
                 checked={gender === '남'}
               />
-            </StyledLabel>
-          </StyledRadioWrapper>
-          <StyledRadioWrapper>
-            <StyledLabel>
+            </S_Label>
+          </S_RadioWrapper>
+          <S_RadioWrapper>
+            <S_Label>
               여
-              <StyledRadio
+              <S_Radio
                 onChange={onGenderChange}
                 type="radio"
                 name="gender"
@@ -59,40 +59,40 @@ function UserInfoFields({
                 id="female"
                 checked={gender === '여'}
               />
-            </StyledLabel>
-          </StyledRadioWrapper>
-        </StyledRadios>
+            </S_Label>
+          </S_RadioWrapper>
+        </S_Radios>
       </fieldset>
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default UserInfoFields;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   grid-template-columns: 1fr 1fr;
 
   display: grid;
   gap: 2rem;
 `;
 
-const StyledNameInputWrapper = styled.div`
+const S_NameInputWrapper = styled.div`
   height: 4rem;
 `;
 
-const StyledLegend = styled.legend`
+const S_Legend = styled.legend`
   color: ${({ theme }) => theme.FONT.B02};
 
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
 
-const StyledRadioWrapper = styled.div`
+const S_RadioWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
 `;
 
-const StyledRadios = styled.div`
+const S_Radios = styled.div`
   display: flex;
   gap: 3rem;
 
@@ -100,7 +100,7 @@ const StyledRadios = styled.div`
   margin-top: 0.7rem;
 `;
 
-const StyledRadio = styled.input`
+const S_Radio = styled.input`
   flex-shrink: 0;
 
   width: 1.4rem;
@@ -120,7 +120,7 @@ const StyledRadio = styled.input`
   }
 `;
 
-const StyledLabel = styled.label`
+const S_Label = styled.label`
   display: flex;
   align-items: center;
   gap: 1rem;

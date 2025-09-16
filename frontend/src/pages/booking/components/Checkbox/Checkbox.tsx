@@ -10,7 +10,7 @@ interface CheckboxProps {
 
 function Checkbox({ checked, onChange, label, errored, id }: CheckboxProps) {
   return (
-    <StyledContainer>
+    <S_Container>
       <HiddenInput
         type="checkbox"
         checked={checked}
@@ -19,11 +19,11 @@ function Checkbox({ checked, onChange, label, errored, id }: CheckboxProps) {
       />
       <CustomCheckbox errored={errored}>{checked && '✔'}</CustomCheckbox>
       {label}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
-const StyledContainer = styled.label`
+const S_Container = styled.label`
   display: flex;
   align-items: center;
   gap: 0.7rem;

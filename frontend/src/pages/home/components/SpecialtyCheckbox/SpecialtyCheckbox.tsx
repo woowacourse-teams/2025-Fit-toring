@@ -14,23 +14,23 @@ function SpecialtyCheckbox({
   onChange,
 }: SpecialtyCheckboxProps) {
   return (
-    <StyledContainer>
-      <StyledHiddenCheckbox
+    <S_Container>
+      <S_HiddenCheckbox
         type="checkbox"
         checked={checked}
         onChange={onChange}
         disabled={disabled}
       />
-      <StyledCheckboxLabel checked={checked} disabled={disabled}>
+      <S_CheckboxLabel checked={checked} disabled={disabled}>
         {specialty}
-      </StyledCheckboxLabel>
-    </StyledContainer>
+      </S_CheckboxLabel>
+    </S_Container>
   );
 }
 
 export default SpecialtyCheckbox;
 
-const StyledContainer = styled.label`
+const S_Container = styled.label`
   display: inline-flex;
   align-items: center;
 
@@ -38,7 +38,7 @@ const StyledContainer = styled.label`
   user-select: none;
 `;
 
-const StyledHiddenCheckbox = styled.input`
+const S_HiddenCheckbox = styled.input`
   position: absolute;
 
   width: 0;
@@ -46,7 +46,7 @@ const StyledHiddenCheckbox = styled.input`
   opacity: 0;
 `;
 
-const StyledCheckboxLabel = styled.span<{
+const S_CheckboxLabel = styled.span<{
   checked: boolean;
   disabled: boolean;
 }>`

@@ -237,7 +237,7 @@ function MentoringUpdateForm() {
   }, [mentoringId]);
 
   return (
-    <StyledContainer onSubmit={handleSubmitButtonClick}>
+    <S_Container onSubmit={handleSubmitButtonClick}>
       {!isInitialMentoringData(mentoringData) ? (
         <>
           <BaseInfoSection
@@ -272,7 +272,7 @@ function MentoringUpdateForm() {
             detailIntroduce={mentoringData.content}
             onDetailIntroduceChange={handleMentoringDataChange}
           />
-          <StyledSeparator />
+          <S_Separator />
           <ButtonSection
             submitButtonName="update"
             onCancelButtonClick={handleCancelButtonClick}
@@ -281,13 +281,13 @@ function MentoringUpdateForm() {
       ) : (
         <div>로딩중</div>
       )}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default MentoringUpdateForm;
 
-const StyledContainer = styled.form`
+const S_Container = styled.form`
   display: flex;
   flex-direction: column;
   gap: 3.2rem;
@@ -302,7 +302,7 @@ const StyledContainer = styled.form`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyledSeparator = styled.div`
+const S_Separator = styled.div`
   width: 100%;
   height: 0.1rem;
 

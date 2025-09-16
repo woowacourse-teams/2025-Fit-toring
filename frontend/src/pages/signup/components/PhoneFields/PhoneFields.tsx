@@ -35,7 +35,7 @@ function PhoneFields({
   return (
     <>
       <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
-        <StyledInputAndBtnWrapper>
+        <S_InputAndBtnWrapper>
           <div className="input-wrapper">
             <Input
               id="phone"
@@ -56,13 +56,13 @@ function PhoneFields({
           >
             인증요청
           </Button>
-        </StyledInputAndBtnWrapper>
+        </S_InputAndBtnWrapper>
       </FormField>
       <FormField
         label="인증번호 확인 *"
         errorMessage={verificationCodeErrorMessage}
       >
-        <StyledInputAndBtnWrapper>
+        <S_InputAndBtnWrapper>
           <div className="input-wrapper">
             <Input
               id="verificationCode"
@@ -83,7 +83,7 @@ function PhoneFields({
           >
             인증하기
           </Button>
-        </StyledInputAndBtnWrapper>
+        </S_InputAndBtnWrapper>
       </FormField>
     </>
   );
@@ -91,7 +91,7 @@ function PhoneFields({
 
 export default PhoneFields;
 
-const StyledInputAndBtnWrapper = styled.div`
+const S_InputAndBtnWrapper = styled.div`
   display: flex;
   gap: 1.4rem;
 

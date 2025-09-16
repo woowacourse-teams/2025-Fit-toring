@@ -5,12 +5,12 @@ interface CategoryTagProps {
 }
 
 function CategoryTag({ tagName }: CategoryTagProps) {
-  return <StyledTagName>{`#${tagName}`}</StyledTagName>;
+  return <S_TagName>{`#${tagName}`}</S_TagName>;
 }
 
 export default CategoryTag;
 
-const StyledTagName = styled.span`
+const S_TagName = styled.span`
   flex-shrink: 0;
 
   color: ${({ theme }) => theme.SYSTEM.GRAY500};

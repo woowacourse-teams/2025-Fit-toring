@@ -14,29 +14,29 @@ function Slogan() {
   };
 
   return (
-    <StyledContainer>
-      <StyledSloganSection>
-        <StyledSloganWrapper>
-          <StyledSloganText>일대일 온라인 운동 상담 플랫폼</StyledSloganText>
-          <StyledTextWrapper>
-            <StyledNameText highlight>Fit</StyledNameText>
-            <StyledNameText>toring</StyledNameText>
-          </StyledTextWrapper>
-        </StyledSloganWrapper>
-        <StyledTags>
+    <S_Container>
+      <S_SloganSection>
+        <S_SloganWrapper>
+          <S_SloganText>일대일 온라인 운동 상담 플랫폼</S_SloganText>
+          <S_TextWrapper>
+            <S_NameText highlight>Fit</S_NameText>
+            <S_NameText>toring</S_NameText>
+          </S_TextWrapper>
+        </S_SloganWrapper>
+        <S_Tags>
           {TAGS.map((tag) => (
-            <StyledTag key={tag}>#{tag}</StyledTag>
+            <S_Tag key={tag}>#{tag}</S_Tag>
           ))}
-        </StyledTags>
-        <StyledButton onClick={handleStartButtonClick}>시작하기</StyledButton>
-      </StyledSloganSection>
-    </StyledContainer>
+        </S_Tags>
+        <S_Button onClick={handleStartButtonClick}>시작하기</S_Button>
+      </S_SloganSection>
+    </S_Container>
   );
 }
 
 export default Slogan;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,38 +45,38 @@ const StyledContainer = styled.div`
   padding: 0 3rem;
 `;
 
-const StyledSloganSection = styled.div`
+const S_SloganSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 3rem;
 `;
 
-const StyledSloganWrapper = styled.div`
+const S_SloganWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 `;
 
-const StyledSloganText = styled.p`
+const S_SloganText = styled.p`
   color: #000;
   font-weight: 700;
   font-size: 2.5rem;
 `;
 
-const StyledTextWrapper = styled.div`
+const S_TextWrapper = styled.div`
   display: flex;
 `;
 
-const StyledNameText = styled.span<{ highlight?: boolean }>`
+const S_NameText = styled.span<{ highlight?: boolean }>`
   color: ${({ theme, highlight }) =>
     highlight ? theme.SYSTEM.MAIN500 : '#000'};
   font-weight: 700;
   font-size: 5rem;
 `;
 
-const StyledTags = styled.div`
+const S_Tags = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -85,13 +85,13 @@ const StyledTags = styled.div`
   width: 24rem;
 `;
 
-const StyledTag = styled.span`
+const S_Tag = styled.span`
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
   font-weight: 500;
   font-size: 1.5rem;
 `;
 
-const StyledButton = styled.button`
+const S_Button = styled.button`
   width: 10rem;
   padding: 1rem 2rem;
   border: 2px solid #e3e3e3;

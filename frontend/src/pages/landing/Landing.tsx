@@ -23,9 +23,9 @@ function Landing() {
       <FitnessQuestionFlow />
       <Introduce />
       <UserLevelGuide />
-      <StyledButtonSection>
-        <StyledButton onClick={handleStartButtonClick}>시작하기</StyledButton>
-      </StyledButtonSection>
+      <S_ButtonSection>
+        <S_Button onClick={handleStartButtonClick}>시작하기</S_Button>
+      </S_ButtonSection>
       <Footer />
     </div>
   );
@@ -33,7 +33,7 @@ function Landing() {
 
 export default Landing;
 
-const StyledButtonSection = styled.div`
+const S_ButtonSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,7 +42,7 @@ const StyledButtonSection = styled.div`
   padding-bottom: 10rem;
 `;
 
-const StyledButton = styled.button`
+const S_Button = styled.button`
   width: 13rem;
   padding: 1.5rem 2rem;
   border: 2px solid #e3e3e3;
