@@ -79,6 +79,6 @@ const StyledImgWrapper = styled.div`
 const StyledImg = styled.img`
   float: right;
 
-  width: 289px;
+  width: 28.9rem;
   aspect-ratio: 484 / 947;
 `;
