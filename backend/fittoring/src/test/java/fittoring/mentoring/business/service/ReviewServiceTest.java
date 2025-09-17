@@ -526,7 +526,6 @@ class ReviewServiceTest {
         Reservation reservation,
         Member mentee
     ) {
-        // 1️⃣ INSERT 실행
         em.getEntityManager().createNativeQuery("""
                 INSERT INTO review (
                     rating, content, created_at, is_deleted, deleted_at, reservation_id, mentee_id
@@ -541,13 +540,11 @@ class ReviewServiceTest {
             .setParameter(7, mentee.getId())
             .executeUpdate();
 
-        // 2️⃣ 방금 삽입된 review의 ID 가져오기
         Long insertedId = ((Number) em.getEntityManager()
             .createNativeQuery("SELECT LAST_INSERT_ID()")
             .getSingleResult())
             .longValue();
 
-        // 3️⃣ 엔티티로 조회
         return em.find(Review.class, insertedId);
     }
 
