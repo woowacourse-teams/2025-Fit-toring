@@ -63,7 +63,7 @@ function BaseInfoSection({
   return (
     <section>
       <TitleSeparator>기본 정보</TitleSeparator>
-      <StyledFormFieldWrapper>
+      <S_FormFieldWrapper>
         <FormField label="이름 *">
           <Input value={userInfo.name} id="name" disabled />
         </FormField>
@@ -93,14 +93,14 @@ function BaseInfoSection({
             value={price}
           />
         </FormField>
-      </StyledFormFieldWrapper>
+      </S_FormFieldWrapper>
     </section>
   );
 }
 
 export default BaseInfoSection;
 
-const StyledFormFieldWrapper = styled.div`
+const S_FormFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;

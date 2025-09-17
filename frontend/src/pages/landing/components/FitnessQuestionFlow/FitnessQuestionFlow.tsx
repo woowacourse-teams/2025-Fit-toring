@@ -4,46 +4,52 @@ import QuestionBubble from '../QuestionBubble/QuestionBubble';
 
 function FitnessQuestionFlow() {
   return (
-    <StyledContainer>
-      <StyledQuestionBubbles>
-        <StyledWrapper direction="left" padding={8}>
+    <S_Container>
+      <S_QuestionBubbles>
+        <S_Wrapper direction="left" padding={8}>
           <QuestionBubble direction="left">
             PT는 너무 부담스러운데...
           </QuestionBubble>
-        </StyledWrapper>
+        </S_Wrapper>
 
-        <StyledWrapper direction="right" padding={5}>
+        <S_Wrapper direction="right" padding={5}>
           <QuestionBubble direction="right">
             스쿼트만 하면 무릎이 아파요!
           </QuestionBubble>
-        </StyledWrapper>
+        </S_Wrapper>
 
-        <StyledWrapper direction="left" padding={3}>
+        <S_Wrapper direction="left" padding={3}>
           <QuestionBubble direction="left">
             운동이 처음이라 뭐부터 해야할지 모르겠어요...
           </QuestionBubble>
-        </StyledWrapper>
+        </S_Wrapper>
 
-        <StyledWrapper direction="right" padding={3}>
+        <S_Wrapper direction="right" padding={3}>
           <QuestionBubble direction="right">
             헬스장에 가지않고 간단하게 상담받고 싶은데..
           </QuestionBubble>
-        </StyledWrapper>
-      </StyledQuestionBubbles>
-      <StyledDots>
-        <StyledDot>.</StyledDot>
-        <StyledDot>.</StyledDot>
-        <StyledDot>.</StyledDot>
-      </StyledDots>
+        </S_Wrapper>
+      </S_QuestionBubbles>
+      <S_Dots>
+        <S_Dot>.</S_Dot>
+        <S_Dot>.</S_Dot>
+        <S_Dot>.</S_Dot>
+      </S_Dots>
 
-      <StyledText>간단하게 질문할 수 있는 곳 없을까?</StyledText>
-    </StyledContainer>
+      <S_Text>간단하게 질문할 수 있는 곳 없을까?</S_Text>
+    </S_Container>
   );
 }
 
 export default FitnessQuestionFlow;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+
+  padding: 10rem 0;
+
   background: ${({ theme }) => `
   linear-gradient(
     180deg,
@@ -51,44 +57,42 @@ const StyledContainer = styled.div`
     #fff 100%
   )
 `};
-  padding: 10rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
 `;
 
-const StyledQuestionBubbles = styled.div`
+const S_QuestionBubbles = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+
   font-size: 1.5rem;
 `;
 
-const StyledWrapper = styled.div<{
+const S_Wrapper = styled.div<{
   direction: 'left' | 'right';
   padding?: number;
 }>`
   display: flex;
   justify-content: ${({ direction }) =>
     direction === 'left' ? 'flex-start' : 'flex-end'};
-  padding-left: ${({ direction, padding }) =>
-    direction === 'left' ? `${padding ?? 0}rem` : '0'};
+
   padding-right: ${({ direction, padding }) =>
     direction === 'right' ? `${padding ?? 0}rem` : '0'};
+  padding-left: ${({ direction, padding }) =>
+    direction === 'left' ? `${padding ?? 0}rem` : '0'};
 `;
 
-const StyledDots = styled.div`
+const S_Dots = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
   align-items: center;
+  gap: 0.4rem;
 `;
 
-const StyledDot = styled.p`
+const S_Dot = styled.p`
   color: ${({ theme }) => theme.SYSTEM.GRAY500};
 `;
 
-const StyledText = styled.p`
-  text-align: center;
+const S_Text = styled.p`
   font-size: 1.8rem;
+  text-align: center;
 `;

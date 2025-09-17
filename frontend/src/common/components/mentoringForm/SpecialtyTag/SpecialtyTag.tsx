@@ -16,22 +16,16 @@ function SpecialtyTag({
   onChange,
 }: SpecialtyTagProps) {
   return (
-
-    <StyledContainer checked={checked} disabled={disabled}>
-      <StyledHiddenInput
-        onChange={onChange}
-        type="checkbox"
-        disabled={disabled}
-      />
+    <S_Container checked={checked} disabled={disabled}>
+      <S_HiddenInput onChange={onChange} type="checkbox" disabled={disabled} />
       {title}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default SpecialtyTag;
 
-
-const StyledContainer = styled.label<LabelType>`
+const S_Container = styled.label<LabelType>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,6 +62,6 @@ const StyledContainer = styled.label<LabelType>`
   }
 `;
 
-const StyledHiddenInput = styled.input`
+const S_HiddenInput = styled.input`
   display: none;
 `;

@@ -25,11 +25,11 @@ const preview: Preview = {
         <ThemeProvider theme={THEME}>
           <AuthProvider>
             <Global styles={[resetCss, fonts]} />
-            <StyledContainer>
-              <StyledContents>
+            <S_Container>
+              <S_Contents>
                 <Story />
-              </StyledContents>
-            </StyledContainer>
+              </S_Contents>
+            </S_Container>
           </AuthProvider>
         </ThemeProvider>
       );
@@ -39,8 +39,8 @@ const preview: Preview = {
 
 export default preview;
 
-// MobileLayout 에서 배경 색상 제거한 StyledComponents
-const StyledContainer = styled.main`
+// MobileLayout 에서 배경 색상 제거한 S_Components
+const S_Container = styled.main`
   display: flex;
   justify-content: center;
 
@@ -49,7 +49,7 @@ const StyledContainer = styled.main`
   min-height: 100%;
 `;
 
-const StyledContents = styled.section`
+const S_Contents = styled.section`
   width: 48rem;
 
   @media screen and (width <= 480px) {

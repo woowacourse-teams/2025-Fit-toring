@@ -129,10 +129,10 @@ function Home() {
   }, [authenticated]);
 
   return (
-    <StyledContainer>
+    <S_Container>
       <HomeHeader />
-      <StyledActionWrapper>
-        <StyledFilterWrapper>
+      <S_ActionWrapper>
+        <S_FilterWrapper>
           <SpecialtyFilterModalButton handleOpenModal={handleOpenModal} />
           <SpecialtyFilterModal
             opened={modalOpened}
@@ -141,14 +141,13 @@ function Home() {
             handleApplyFinalSpecialties={handleApply}
           />
           <SortButton handleSortButtonClick={handleSortButtonClick} />
-        </StyledFilterWrapper>
+        </S_FilterWrapper>
         <Button onClick={handleMentoringCreation} customStyle={customSytle}>
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
         </Button>
-      </StyledActionWrapper>
-
-      <StyledContents>
-        <StyledCheckboxWrapper>
+      </S_ActionWrapper>
+      <S_Contents>
+        <S_CheckboxWrapper>
           {selectedSpecialties.map((specialty) => (
             <SpecialtyCheckbox
               key={specialty}
@@ -158,17 +157,17 @@ function Home() {
               onChange={() => handleSelectedSpecialtyChange(specialty)}
             />
           ))}
-        </StyledCheckboxWrapper>
+        </S_CheckboxWrapper>
         <MentorCardList>
           {mentorList.map((mentor) => (
             <MentorCardItem key={mentor.id} mentor={mentor} />
           ))}
         </MentorCardList>
-      </StyledContents>
+      </S_Contents>
       {/* <Footer>
         <Feedback />
       </Footer> */}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
@@ -186,14 +185,14 @@ const customSytle = css`
   ${THEME.TYPOGRAPHY.B4_B};
 `;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
 
   min-height: 100%;
 `;
 
-const StyledActionWrapper = styled.div`
+const S_ActionWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -201,19 +200,19 @@ const StyledActionWrapper = styled.div`
   padding: 1.4rem;
 `;
 
-const StyledFilterWrapper = styled.div`
+const S_FilterWrapper = styled.div`
   display: flex;
   gap: 0.7rem;
 `;
 
-const StyledContents = styled.main`
+const S_Contents = styled.main`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   align-items: center;
 `;
 
-const StyledCheckboxWrapper = styled.div`
+const S_CheckboxWrapper = styled.div`
   display: flex;
   gap: 0.5rem;
 

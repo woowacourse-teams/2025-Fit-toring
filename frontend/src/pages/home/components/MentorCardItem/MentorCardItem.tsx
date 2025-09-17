@@ -32,39 +32,39 @@ function MentorCardItem({
   };
 
   return (
-    <StyledContainer onClick={handleDetailInfoButtonClick}>
-      <StyledImageBox>
-        <StyledProfileImg
+    <S_Container onClick={handleDetailInfoButtonClick}>
+      <S_ImageBox>
+        <S_ProfileImg
           src={profileImageUrl || profileImg}
           alt="트레이너 이미지"
           onError={(e) => {
             e.currentTarget.src = profileImg;
           }}
         />
-      </StyledImageBox>
-      <StyledWrapper>
-        <StyledInfoWrapper>
-          <StyledTitle>{mentorName}</StyledTitle>
+      </S_ImageBox>
+      <S_Wrapper>
+        <S_InfoWrapper>
+          <S_Title>{mentorName}</S_Title>
           <TextWithIcon
             text={`${ratingAverage} (${ratingCount})`}
             iconSrc={starIcon}
             iconName="별점"
           />
           <CategoryTags tagNames={categories} />
-        </StyledInfoWrapper>
-        <StyledSelfIntroduction>{introduction}</StyledSelfIntroduction>
-        <StyledPriceWrapper>
-          <StyledTime>15분 /</StyledTime>
-          <StyledPrice>{`${price.toLocaleString()}원`}</StyledPrice>
-        </StyledPriceWrapper>
-      </StyledWrapper>
-    </StyledContainer>
+        </S_InfoWrapper>
+        <S_SelfIntroduction>{introduction}</S_SelfIntroduction>
+        <S_PriceWrapper>
+          <S_Time>15분 /</S_Time>
+          <S_Price>{`${price.toLocaleString()}원`}</S_Price>
+        </S_PriceWrapper>
+      </S_Wrapper>
+    </S_Container>
   );
 }
 
 export default MentorCardItem;
 
-const StyledContainer = styled.li`
+const S_Container = styled.li`
   display: flex;
 
   width: 100%;
@@ -77,7 +77,7 @@ const StyledContainer = styled.li`
   cursor: pointer;
 `;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -87,7 +87,7 @@ const StyledWrapper = styled.div`
   padding: 1.4rem;
 `;
 
-const StyledImageBox = styled.div`
+const S_ImageBox = styled.div`
   flex-shrink: 0;
   overflow: hidden;
 
@@ -96,34 +96,34 @@ const StyledImageBox = styled.div`
   border-radius: 5px 0 0 5px;
 `;
 
-const StyledProfileImg = styled.img`
+const S_ProfileImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
 `;
 
-const StyledInfoWrapper = styled.div`
+const S_InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
 `;
 
-const StyledTitle = styled.h3`
+const S_Title = styled.h3`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 `;
 
-const StyledSelfIntroduction = styled.p`
+const S_SelfIntroduction = styled.p`
   overflow: hidden;
 
   height: 100%;
 
   color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.C2_R};
-  white-space: wrap;
-  word-break: keep-all;
+
+  word-break: break-all;
 `;
 
-const StyledPriceWrapper = styled.div`
+const S_PriceWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -132,10 +132,10 @@ const StyledPriceWrapper = styled.div`
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const StyledTime = styled.span`
+const S_Time = styled.span`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledPrice = styled.span`
+const S_Price = styled.span`
   ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
 `;

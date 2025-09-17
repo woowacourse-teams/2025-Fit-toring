@@ -7,15 +7,15 @@ function MentoringCreate() {
   return (
     <>
       <MentoringCreateHeader />
-      <StyledWrapper>
+      <S_Wrapper>
         <MentoringCreateForm />
-      </StyledWrapper>
+      </S_Wrapper>
     </>
   );
 }
 
 export default MentoringCreate;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   padding: 3.2rem 1.6rem;
 `;

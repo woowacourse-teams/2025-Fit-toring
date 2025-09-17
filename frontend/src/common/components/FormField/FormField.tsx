@@ -13,19 +13,19 @@ function FormField({
   children,
 }: PropsWithChildren<FormFieldProps>) {
   return (
-    <StyledField>
-      <StyledLabel>
+    <S_Field>
+      <S_Label>
         {label}
         {children}
-      </StyledLabel>
-      {errorMessage && <StyledErrorText>{errorMessage}</StyledErrorText>}
-    </StyledField>
+      </S_Label>
+      {errorMessage && <S_ErrorText>{errorMessage}</S_ErrorText>}
+    </S_Field>
   );
 }
 
 export default FormField;
 
-const StyledField = styled.div`
+const S_Field = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
@@ -33,13 +33,13 @@ const StyledField = styled.div`
   width: 100%;
 `;
 
-const StyledErrorText = styled.span`
+const S_ErrorText = styled.span`
   color: ${({ theme }) => theme.FONT.ERROR};
 
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
 
-const StyledLabel = styled.label`
+const S_Label = styled.label`
   display: flex;
   flex-direction: column;
   gap: 1rem;

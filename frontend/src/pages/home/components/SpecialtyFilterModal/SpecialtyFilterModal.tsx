@@ -92,11 +92,11 @@ function SpecialtyFilterModal({
 
   return (
     <Modal opened={opened} onCloseClick={handleRollbackTemporarySpecialties}>
-      <StyledContainer>
-        <StyledTitle>전문 분야</StyledTitle>
-        <StyledLine />
+      <S_Container>
+        <S_Title>전문 분야</S_Title>
+        <S_Line />
 
-        <StyledSpecialtyWrapper>
+        <S_SpecialtyWrapper>
           {specialties.map((specialty) => (
             <SpecialtyCheckbox
               key={specialty.id}
@@ -109,25 +109,25 @@ function SpecialtyFilterModal({
               onChange={() => handleToggleTemporarySpecialty(specialty.title)}
             />
           ))}
-        </StyledSpecialtyWrapper>
+        </S_SpecialtyWrapper>
 
-        <StyledLine />
-        <StyledButtonWrapper>
-          <StyledSecondaryButton onClick={handleResetTemporarySpecialties}>
+        <S_Line />
+        <S_ButtonWrapper>
+          <S_SecondaryButton onClick={handleResetTemporarySpecialties}>
             초기화
-          </StyledSecondaryButton>
-          <StyledPrimaryButton onClick={handleApplySpecialties}>
+          </S_SecondaryButton>
+          <S_PrimaryButton onClick={handleApplySpecialties}>
             적용
-          </StyledPrimaryButton>
-        </StyledButtonWrapper>
-      </StyledContainer>
+          </S_PrimaryButton>
+        </S_ButtonWrapper>
+      </S_Container>
     </Modal>
   );
 }
 
 export default SpecialtyFilterModal;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -135,11 +135,11 @@ const StyledContainer = styled.div`
   gap: 1rem;
 `;
 
-const StyledTitle = styled.h3`
+const S_Title = styled.h3`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R};
 `;
 
-const StyledLine = styled.hr`
+const S_Line = styled.hr`
   width: 100%;
   height: 1px;
   margin: 0;
@@ -147,7 +147,7 @@ const StyledLine = styled.hr`
   border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
-const StyledSpecialtyWrapper = styled.div`
+const S_SpecialtyWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -158,7 +158,7 @@ const StyledSpecialtyWrapper = styled.div`
   overflow-y: auto;
 `;
 
-const StyledButtonWrapper = styled.div`
+const S_ButtonWrapper = styled.div`
   display: flex;
   gap: 1.2rem;
 
@@ -166,7 +166,7 @@ const StyledButtonWrapper = styled.div`
   padding: 0.4rem;
 `;
 
-const StyledButton = styled.button`
+const S_Button = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -179,22 +179,22 @@ const StyledButton = styled.button`
 
   transition: all 0.2s ease;
   cursor: pointer;
-`;
-
-const StyledPrimaryButton = styled(StyledButton)`
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN600};
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
-
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
-
-  color: ${({ theme }) => theme.BG.WHITE};
 
   &:hover {
-    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+    scale: 1.05;
   }
 `;
 
-const StyledSecondaryButton = styled(StyledButton)`
+const S_PrimaryButton = styled(S_Button)`
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY900};
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
+
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY900};
+
+  color: ${({ theme }) => theme.BG.WHITE};
+`;
+
+const S_SecondaryButton = styled(S_Button)`
   border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
 
   background-color: transparent;

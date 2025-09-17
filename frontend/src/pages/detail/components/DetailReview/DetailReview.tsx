@@ -48,24 +48,24 @@ function DetailReview({
   }
 
   return (
-    <StyledContainer>
-      <StyledTotalWrapper>
+    <S_Container>
+      <S_TotalWrapper>
         <img src={filledStar} />
         <strong>{ratingAverage}</strong>
         <p>({ratingCount}개 리뷰)</p>
-      </StyledTotalWrapper>
-      <StyledReviewList>
+      </S_TotalWrapper>
+      <S_ReviewList>
         {totalReviewInfo.map((review) => (
           <ReviewItem key={review.id} review={review} />
         ))}
-      </StyledReviewList>
-    </StyledContainer>
+      </S_ReviewList>
+    </S_Container>
   );
 }
 
 export default DetailReview;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -74,7 +74,7 @@ const StyledContainer = styled.div`
   margin-top: 4rem;
 `;
 
-const StyledTotalWrapper = styled.div`
+const S_TotalWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -95,7 +95,7 @@ const StyledTotalWrapper = styled.div`
   }
 `;
 
-const StyledReviewList = styled.ul`
+const S_ReviewList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 1rem;

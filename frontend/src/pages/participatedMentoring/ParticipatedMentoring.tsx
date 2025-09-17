@@ -45,19 +45,19 @@ function ParticipatedMentoring() {
   }, []);
 
   return (
-    <StyledContainer>
-      <StyledTitle>참여한 멘토링</StyledTitle>
-      <StyledWrapper>
-        <StyledInfoWrapper>
-          <StyledSubTitle>
+    <S_Container>
+      <S_Title>참여한 멘토링</S_Title>
+      <S_Wrapper>
+        <S_InfoWrapper>
+          <S_SubTitle>
             참여한 멘토링 목록 ({participatedMentoringList.length}건)
-          </StyledSubTitle>
-          <StyledDescription>
+          </S_SubTitle>
+          <S_Description>
             내가 신청한 멘토링 목록을 확인하고 완료된 멘토링에 대해 리뷰를
             작성할 수 있습니다.
-          </StyledDescription>
-        </StyledInfoWrapper>
-        <StyledLine />
+          </S_Description>
+        </S_InfoWrapper>
+        <S_Line />
         {participatedMentoringList.length > 0 ? (
           <MentoringList>
             {participatedMentoringList.map((item) => (
@@ -69,16 +69,16 @@ function ParticipatedMentoring() {
             ))}
           </MentoringList>
         ) : (
-          <StyledDescription>참여한 멘토링이 없습니다.</StyledDescription>
+          <S_Description>참여한 멘토링이 없습니다.</S_Description>
         )}
-      </StyledWrapper>
-    </StyledContainer>
+      </S_Wrapper>
+    </S_Container>
   );
 }
 
 export default ParticipatedMentoring;
 
-const StyledContainer = styled.section`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -88,12 +88,12 @@ const StyledContainer = styled.section`
   padding: 2rem;
 `;
 
-const StyledTitle = styled.h2`
+const S_Title = styled.h2`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
 `;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   flex-direction: column;
 
@@ -106,7 +106,7 @@ const StyledWrapper = styled.div`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyledInfoWrapper = styled.div`
+const S_InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -114,19 +114,19 @@ const StyledInfoWrapper = styled.div`
   padding: 2.5rem 2rem;
 `;
 
-const StyledSubTitle = styled.h3`
+const S_SubTitle = styled.h3`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
 `;
 
-const StyledDescription = styled.p`
+const S_Description = styled.p`
   word-break: keep-all;
 
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B1_R}
 `;
 
-const StyledLine = styled.hr`
+const S_Line = styled.hr`
   width: 100%;
   height: 1px;
   margin: 0;

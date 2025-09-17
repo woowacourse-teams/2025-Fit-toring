@@ -43,29 +43,27 @@ function MentoringStepper({ status }: MentoringStepperProps) {
   };
 
   return (
-    <StyledContainer>
-      <StyledSteps>
+    <S_Container>
+      <S_Steps>
         {stepValues.map((stepInfo, step) => (
           <Step type={getType(step)} status={status} key={stepInfo}>
-            <StyledTextWrapper>
-              <StyledText step={getType(step)}>
-                {statusTextMap[stepInfo]}
-              </StyledText>
-              <StyledIconWrapper>
-                <StyledIcon src={tooltipIcon} alt="툴팁 아이콘" />
-                <StyledTooltip>{statusInfoTextMap[stepInfo]}</StyledTooltip>
-              </StyledIconWrapper>
-            </StyledTextWrapper>
+            <S_TextWrapper>
+              <S_Text step={getType(step)}>{statusTextMap[stepInfo]}</S_Text>
+              <S_IconWrapper>
+                <S_Icon src={tooltipIcon} alt="툴팁 아이콘" />
+                <S_Tooltip>{statusInfoTextMap[stepInfo]}</S_Tooltip>
+              </S_IconWrapper>
+            </S_TextWrapper>
           </Step>
         ))}
-      </StyledSteps>
-    </StyledContainer>
+      </S_Steps>
+    </S_Container>
   );
 }
 
 export default MentoringStepper;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   --circle-size: 2rem;
   --offset: 3.2rem;
   --text-height: 1rem;
@@ -80,14 +78,14 @@ const StyledContainer = styled.div`
   );
 `;
 
-const StyledSteps = styled.div`
+const S_Steps = styled.div`
   display: flex;
   align-items: center;
 
   width: 100%;
 `;
 
-const StyledTextWrapper = styled.div`
+const S_TextWrapper = styled.div`
   display: flex;
   gap: 0.5rem;
   position: absolute;
@@ -98,19 +96,19 @@ const StyledTextWrapper = styled.div`
   margin-top: 3.2rem;
 `;
 
-const StyledText = styled.span<{ step: 'before' | 'current' | 'after' }>`
+const S_Text = styled.span<{ step: 'before' | 'current' | 'after' }>`
   color: ${({ step, theme }) =>
     step === 'after' ? theme.SYSTEM.GRAY200 : theme.SYSTEM.MAIN500};
   white-space: nowrap;
 `;
 
-const StyledIcon = styled.img`
+const S_Icon = styled.img`
   width: 1rem;
   height: 1rem;
   cursor: pointer;
 `;
 
-const StyledIconWrapper = styled.div`
+const S_IconWrapper = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -124,7 +122,7 @@ const StyledIconWrapper = styled.div`
   }
 `;
 
-const StyledTooltip = styled.div`
+const S_Tooltip = styled.div`
   visibility: hidden;
   position: absolute;
   top: 2rem;

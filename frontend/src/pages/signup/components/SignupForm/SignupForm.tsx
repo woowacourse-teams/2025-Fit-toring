@@ -236,8 +236,8 @@ function SignupForm() {
   };
 
   return (
-    <StyledContainer onSubmit={handleSubmit}>
-      <StyledFormFields>
+    <S_Container onSubmit={handleSubmit}>
+      <S_FormFields>
         <UserInfoFields
           name={name}
           nameErrorMessage={nameErrorMessage}
@@ -274,7 +274,7 @@ function SignupForm() {
           verificationButtonEnabled={getVerificationButtonEnabled()}
           verificationRequestButtonEnabled={verificationRequestButtonEnabled}
         />
-      </StyledFormFields>
+      </S_FormFields>
       <Button
         variant={validateForm() ? 'primary' : 'disabled'}
         type="submit"
@@ -289,13 +289,13 @@ function SignupForm() {
       >
         회원가입
       </Button>
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default SignupForm;
 
-const StyledContainer = styled.form`
+const S_Container = styled.form`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -305,7 +305,7 @@ const StyledContainer = styled.form`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyledFormFields = styled.div`
+const S_FormFields = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.7rem;

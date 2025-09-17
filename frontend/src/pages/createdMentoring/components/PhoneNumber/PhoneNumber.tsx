@@ -17,13 +17,13 @@ function PhoneNumber({ status, phoneNumber }: PhoneNumberProps) {
     phoneNumber;
 
   return canShowPhoneNumber ? (
-    <StyledContainer>연락처: {phoneNumber}</StyledContainer>
+    <S_Container>연락처: {phoneNumber}</S_Container>
   ) : null;
 }
 
 export default PhoneNumber;
 
-const StyledContainer = styled.p`
+const S_Container = styled.p`
   width: fit-content;
 
   background-color: ${({ theme }) => theme.BG.YELLOW};

@@ -4,22 +4,20 @@ import logo from '../../../../common/assets/images/logo.svg';
 
 function LoginIntro() {
   return (
-    <StyledContainer>
-      <StyledImgWrapper>
-        <StyledImg src={logo} alt="핏토링 메인 로고" />
-      </StyledImgWrapper>
-      <StyledInfoTextWrapper>
-        <StyledSubText>
-          계정에 로그인하여 피트니스 멘토링을 시작하세요
-        </StyledSubText>
-      </StyledInfoTextWrapper>
-    </StyledContainer>
+    <S_Container>
+      <S_ImgWrapper>
+        <S_Img src={logo} alt="핏토링 메인 로고" />
+      </S_ImgWrapper>
+      <S_InfoTextWrapper>
+        <S_SubText>계정에 로그인하여 피트니스 멘토링을 시작하세요</S_SubText>
+      </S_InfoTextWrapper>
+    </S_Container>
   );
 }
 
 export default LoginIntro;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,7 +27,7 @@ const StyledContainer = styled.div`
   padding-bottom: 1.8rem;
 `;
 
-const StyledImgWrapper = styled.div`
+const S_ImgWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,20 +39,20 @@ const StyledImgWrapper = styled.div`
   box-shadow: 0 4px 12px rgb(0 120 111 / 20%);
 `;
 
-const StyledImg = styled.img`
+const S_Img = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
 `;
 
-const StyledInfoTextWrapper = styled.div`
+const S_InfoTextWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.1rem;
 `;
 
-const StyledSubText = styled.p`
+const S_SubText = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};

@@ -26,7 +26,7 @@ function IntroduceSection({
   return (
     <section>
       <TitleSeparator>소개 및 경력</TitleSeparator>
-      <StyledFormFieldWrapper>
+      <S_FormFieldWrapper>
         <FormField label="한줄 소개" errorMessage={introduceErrorMessage}>
           <Input
             placeholder="간단한 소개를 한 줄로 작성해주세요"
@@ -50,14 +50,14 @@ function IntroduceSection({
             errored={careerErrorMessage !== ''}
           />
         </FormField>
-      </StyledFormFieldWrapper>
+      </S_FormFieldWrapper>
     </section>
   );
 }
 
 export default IntroduceSection;
 
-const StyledFormFieldWrapper = styled.div`
+const S_FormFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;

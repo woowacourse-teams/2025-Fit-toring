@@ -29,8 +29,8 @@ function PasswordFields({
   return (
     <>
       <FormField label="비밀번호 *" errorMessage={passwordErrorMessage}>
-        <StyledInputWithIconWrapper>
-          <StyledInput
+        <S_InputWithIconWrapper>
+          <S_Input
             id="password"
             name="password"
             placeholder="5자이상 15자이하 입력하세요"
@@ -38,18 +38,18 @@ function PasswordFields({
             value={password}
             onChange={onPasswordChange}
           />
-          <StyledImg
+          <S_Img
             src={passwordVisible ? blind : notBlind}
             onClick={() => setPasswordVisible((prev) => !prev)}
           />
-        </StyledInputWithIconWrapper>
+        </S_InputWithIconWrapper>
       </FormField>
       <FormField
         label="비밀번호 확인 *"
         errorMessage={passwordConfirmErrorMessage}
       >
-        <StyledInputWithIconWrapper>
-          <StyledInput
+        <S_InputWithIconWrapper>
+          <S_Input
             id="passwordConfrim"
             name="passwordConfrim"
             placeholder="비밀번호를 다시 입력하세요"
@@ -57,11 +57,11 @@ function PasswordFields({
             value={passwordConfirm}
             onChange={onPasswordConfirmChange}
           />
-          <StyledImg
+          <S_Img
             src={passwordConfrimVisible ? blind : notBlind}
             onClick={() => setPasswordConfrimVisible((prev) => !prev)}
           />
-        </StyledInputWithIconWrapper>
+        </S_InputWithIconWrapper>
       </FormField>
     </>
   );
@@ -69,11 +69,11 @@ function PasswordFields({
 
 export default PasswordFields;
 
-const StyledInputWithIconWrapper = styled.div<{ errored?: boolean }>`
+const S_InputWithIconWrapper = styled.div<{ errored?: boolean }>`
   position: relative;
 `;
 
-const StyledInput = styled.input<{ errored?: boolean }>`
+const S_Input = styled.input<{ errored?: boolean }>`
   width: 100%;
   height: 4rem;
   padding: 0.7rem 1.1rem;
@@ -99,7 +99,7 @@ const StyledInput = styled.input<{ errored?: boolean }>`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
-const StyledImg = styled.img`
+const S_Img = styled.img`
   position: absolute;
   right: 0;
   bottom: 50%;

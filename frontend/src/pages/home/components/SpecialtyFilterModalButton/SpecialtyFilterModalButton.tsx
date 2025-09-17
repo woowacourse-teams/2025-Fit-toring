@@ -10,19 +10,20 @@ function SpecialtyFilterModalButton({
   handleOpenModal,
 }: SpecialtyFilterModalButtonProps) {
   return (
-    <StyledButton onClick={handleOpenModal} type="button">
-      <StyledGoIcon src={goIcon} alt="카테고리 열기 아이콘" />
-      <StyledText>카테고리</StyledText>
-    </StyledButton>
+    <S_Button onClick={handleOpenModal} type="button">
+      <S_GoIcon src={goIcon} alt="카테고리 열기 아이콘" />
+      <S_Text>카테고리</S_Text>
+    </S_Button>
   );
 }
 
 export default SpecialtyFilterModalButton;
 
-const StyledButton = styled.button`
+const S_Button = styled.button`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 0.6rem;
 
   width: 9.4rem;
   height: 3.4rem;
@@ -34,12 +35,12 @@ const StyledButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledText = styled.span`
+const S_Text = styled.span`
   ${({ theme }) => theme.TYPOGRAPHY.C4_R};
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
 `;
 
-const StyledGoIcon = styled.img`
+const S_GoIcon = styled.img`
   width: 1.4rem;
   aspect-ratio: 1 / 1;
 `;
