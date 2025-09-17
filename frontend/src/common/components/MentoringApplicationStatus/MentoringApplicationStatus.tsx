@@ -6,34 +6,50 @@ import type { myTheme } from '../../types/theme';
 
 interface MentoringApplicationStatusProps {
   status: StatusType;
+  type?: 'CREATED' | 'PARTICIPATED';
 }
 
 const STATUS_DESCRIPTION = {
   [StatusTypeEnum.PENDING]: {
     VALUE: '승인대기',
-    EMOTICON: '⏳',
   },
   [StatusTypeEnum.APPROVED]: {
     VALUE: '승인됨',
-    EMOTICON: '✅',
   },
   [StatusTypeEnum.COMPLETE]: {
     VALUE: '완료됨',
-    EMOTICON: '🎉',
   },
   [StatusTypeEnum.REJECTED]: {
     VALUE: '거절됨',
-    EMOTICON: '❌',
+  },
+} as const;
+
+const STATUS_PARTICIPATED_DESCRIPTION = {
+  [StatusTypeEnum.PENDING]: {
+    VALUE: '예약신청',
+  },
+  [StatusTypeEnum.APPROVED]: {
+    VALUE: '예약확정',
+  },
+  [StatusTypeEnum.COMPLETE]: {
+    VALUE: '완료됨',
+  },
+  [StatusTypeEnum.REJECTED]: {
+    VALUE: '거절됨',
   },
 } as const;
 
 function MentoringApplicationStatus({
   status,
+  type = 'CREATED',
 }: MentoringApplicationStatusProps) {
+  const description =
+    type === 'CREATED'
+      ? STATUS_DESCRIPTION[status]
+      : STATUS_PARTICIPATED_DESCRIPTION[status];
   return (
     <S_Container status={status}>
-      <span>{STATUS_DESCRIPTION[status].EMOTICON}</span>
-      <span>{STATUS_DESCRIPTION[status].VALUE}</span>
+      <span>{description.VALUE}</span>
     </S_Container>
   );
 }
@@ -71,20 +87,6 @@ const statusStyles: Record<
 } as const;
 
 const S_Container = styled.p<MentoringApplicationStatusProps>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-
-  width: 8.2rem;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid ${({ theme, status }) => statusStyles[status].border(theme)};
-  border-radius: 8px;
-
-  background-color: ${({ theme, status }) =>
-    statusStyles[status].background(theme)};
-
-  color: ${({ theme, status }) => statusStyles[status].color(theme)};
-
+  color: ${({ theme }) => theme.SYSTEM.MAIN500};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
