@@ -1,3 +1,13 @@
+## [1.4.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.4.0...v1.4.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* Footer 컴포넌트의 이메일 주소 수정 [#661](https://github.com/woowacourse-teams/2025-Fit-toring/issues/661) ([39be9e5](https://github.com/woowacourse-teams/2025-Fit-toring/commit/39be9e5506f2b0c1ae7619699011ed63412fd2ba))
+* og-image 경로 재설정 [#667](https://github.com/woowacourse-teams/2025-Fit-toring/issues/667) ([4f2223f](https://github.com/woowacourse-teams/2025-Fit-toring/commit/4f2223f9741ec5d7c4c73e7c7d16da1565195c8f))
+* prod 에서는 prod.txt dev 에서는 dev.txt 가 복사되도록 변경 [#667](https://github.com/woowacourse-teams/2025-Fit-toring/issues/667) ([b394af7](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b394af77a683dd0fcd267eb123d80768840e45bd))
+* 멘토링에 달린 리뷰 조회 테스트 수정 ([9790ffe](https://github.com/woowacourse-teams/2025-Fit-toring/commit/9790ffea8c3c904b300310fe0b15dd3a776426ba))
+
 # [1.4.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.3.1...v1.4.0) (2025-09-15)
 
 
