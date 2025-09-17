@@ -63,7 +63,7 @@ const router = createBrowserRouter([
         element: <EditProfile />,
       },
     ],
-  }, // TODO: `${PAGE_URL.MY_PAGE}/:userId`로 변경 예정
+  },
 ]);
 
 function App() {
