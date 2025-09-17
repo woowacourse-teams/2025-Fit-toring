@@ -145,7 +145,8 @@ const S_ContentWrapper = styled.div`
   display: flex;
 
   width: 100%;
-  padding-top: 2rem;
+  padding: 0 2rem;
+  padding-top: 4rem;
 `;
 
 const S_DetailWrapper = styled.div`
