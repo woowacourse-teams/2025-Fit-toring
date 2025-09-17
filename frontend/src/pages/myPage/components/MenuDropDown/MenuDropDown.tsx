@@ -53,7 +53,7 @@ function MenuDropDown() {
       name: '참여한 멘토링',
       action: () => navigate(PAGE_URL.PARTICIPATED_MENTORING),
     },
-    // { name: '회원 정보', path: 'my-profile' },
+    { name: '회원 정보', action: () => navigate(PAGE_URL.EDIT_PROFILE) },
     { name: '로그아웃', action: async () => await handleLogout(PAGE_URL.HOME) },
   ];
 
