@@ -85,7 +85,6 @@ function Detail() {
           >
             리뷰
           </S_Tap>
-          <S_TapIndicator selected={selected} />
         </S_TapWrapper>
         <S_ContentWrapper>
           {selected === 'detail' ? (
@@ -124,36 +123,27 @@ const S_MentorInfoWrapper = styled.div`
 
 const S_TapWrapper = styled.div`
   display: flex;
-  flex-direction: row;
-  position: relative;
-
   width: 100%;
-  padding: 1rem;
+  overflow: hidden;
 `;
 
-const S_Tap = styled.p<{ selected: boolean }>`
-  width: 50%;
+const S_Tap = styled.div<{ selected: boolean }>`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  padding: 1.6rem 0;
+  background-color: ${({ selected, theme }) =>
+    selected ? theme.SYSTEM.GRAY800 : theme.BG.WHITE};
+  color: ${({ selected, theme }) =>
+    selected ? theme.BG.WHITE : theme.FONT.B01};
 
-  text-align: center;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_B};
-`;
-
-const S_TapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 0;
-
-  width: 50%;
-  height: 1px;
-
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  transition: transform 0.2s ease-in-out;
-
-  transform: ${({ selected }) =>
-    selected === 'detail' ? 'translateX(0%)' : 'translateX(100%)'};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
 const S_ContentWrapper = styled.div`
