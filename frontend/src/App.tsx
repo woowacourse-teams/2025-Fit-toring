@@ -9,6 +9,7 @@ import { PAGE_URL } from './common/constants/url';
 import Booking from './pages/booking/Booking';
 import CreatedMentoring from './pages/createdMentoring/CreatedMentoring';
 import Detail from './pages/detail/Detail';
+import EditProfile from './pages/editProfile/EditProfile';
 import Home from './pages/home/Home';
 import Landing from './pages/landing/Landing';
 import Login from './pages/login/Login';
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: PAGE_URL.PARTICIPATED_MENTORING,
         element: <ParticipatedMentoring />,
+      },
+      {
+        path: PAGE_URL.EDIT_PROFILE,
+        element: <EditProfile />,
       },
     ],
   }, // TODO: `${PAGE_URL.MY_PAGE}/:userId`로 변경 예정
