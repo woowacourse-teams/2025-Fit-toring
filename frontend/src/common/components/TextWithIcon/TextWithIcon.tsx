@@ -32,5 +32,5 @@ const S_Span = styled.span`
   display: flex;
 
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
-  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
 `;
