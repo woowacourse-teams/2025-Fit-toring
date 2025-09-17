@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
+import downIcon from '../../common/assets/images/downIcon.svg';
 
 import { StatusTypeEnum } from '../../common/types/statusType';
 import { captureSentryError } from '../../common/utils/captureSentryError';
@@ -26,6 +27,10 @@ function ParticipatedMentoring() {
     );
   };
 
+  const handleFilterClick = () => {
+    alert('기능 추가 예정입니다.');
+  };
+
   useEffect(() => {
     const fetchParticipatedMentoringList = async () => {
       try {
@@ -46,7 +51,13 @@ function ParticipatedMentoring() {
 
   return (
     <S_Container>
-      <S_Title>참여한 멘토링</S_Title>
+      <S_TitleWrapper>
+        <S_Title>신청 목록 ({participatedMentoringList.length})</S_Title>
+        <S_Button onClick={handleFilterClick} type="button">
+          <S_DownIcon src={downIcon} alt="카테고리 열기 아이콘" />
+          <S_Text>전체보기</S_Text>
+        </S_Button>
+      </S_TitleWrapper>
       <S_Wrapper>
         <S_InfoWrapper>
           <S_SubTitle>
@@ -87,10 +98,41 @@ const S_Container = styled.section`
   height: 100%;
   padding: 2rem;
 `;
+const S_TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
 
+  width: 100%;
+`;
 const S_Title = styled.h2`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
+`;
+
+const S_Button = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+
+  width: 9.4rem;
+  height: 3.4rem;
+  padding: 1rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+  border-radius: 6.75px;
+
+  background: ${({ theme }) => theme.BG.WHITE};
+  cursor: pointer;
+`;
+
+const S_Text = styled.span`
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
+  color: ${({ theme }) => theme.SYSTEM.GRAY600};
+`;
+
+const S_DownIcon = styled.img`
+  width: 1.4rem;
+  aspect-ratio: 1 / 1;
 `;
 
 const S_Wrapper = styled.div`
