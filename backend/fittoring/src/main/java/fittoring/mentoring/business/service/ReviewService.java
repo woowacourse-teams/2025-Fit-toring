@@ -100,7 +100,7 @@ public class ReviewService {
 
     @Transactional
     public List<ReviewGetResponse> findMentoringReviews(Long mentoringId) {
-        List<Review> reviews = findReviewsByMentoringId(mentoringId);
+        List<Review> reviews = reviewRepository.findAllByReservationMentoringIdOrderByCreatedAtDesc(mentoringId);
         return reviews.stream()
                 .map(review -> new ReviewGetResponse(
                         review.getId(),
@@ -110,16 +110,6 @@ public class ReviewService {
                         review.getContent()
                 ))
                 .toList();
-    }
-
-    private List<Review> findReviewsByMentoringId(Long mentoringId) {
-        List<Reservation> reservations = reservationRepository.findByMentoringId(mentoringId);
-        List<Review> reviews = new ArrayList<>();
-        for (Reservation reservation : reservations) {
-            Optional<Review> review = reviewRepository.findByReservationId(reservation.getId());
-            review.ifPresent(reviews::add);
-        }
-        return reviews;
     }
 
     @Transactional(readOnly = true)
