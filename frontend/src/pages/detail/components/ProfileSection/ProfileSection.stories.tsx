@@ -3,7 +3,7 @@ import Profile from './ProfileSection';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
-  title: 'Detail/Profile',
+  title: 'Detail/ProfileSection',
   component: Profile,
 
   decorators: [(Story) => <Story />],
