@@ -14,13 +14,6 @@ module.exports = merge(common, {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'public',
-          to: '.',
-          globOptions: {
-            ignore: ['**/robots.*.txt'],
-          },
-        },
-        {
           from: 'public/robots.prod.txt',
           to: 'robots.txt',
         },

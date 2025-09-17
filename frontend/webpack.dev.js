@@ -10,6 +10,8 @@ module.exports = merge(common, {
     static: {
       directory: path.join(__dirname, 'dist'),
     },
+    allowedHosts: 'all', // ✅ 모든 호스트 허용
+
     port: 3000,
     open: true,
     hot: true,
@@ -21,13 +23,6 @@ module.exports = merge(common, {
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        {
-          from: 'public',
-          to: '.',
-          globOptions: {
-            ignore: ['**/robots.*.txt'],
-          },
-        },
         {
           from: 'public/robots.dev.txt',
           to: 'robots.txt',
