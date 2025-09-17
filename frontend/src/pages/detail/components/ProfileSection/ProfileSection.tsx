@@ -1,7 +1,9 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import defaultProfileImg from '../../../../common/assets/images/profileImg.svg';
 import starIcon from '../../../../common/assets/images/starIcon.svg';
+import Button from '../../../../common/components/Button/Button';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
@@ -11,14 +13,16 @@ interface ProfileProps {
   categories: string[];
   ratingAverage: string;
   ratingCount: number;
+  introduction: string;
 }
 
-function Profile({
+function ProfileSection({
   profileImg,
   mentorName,
   categories,
   ratingAverage,
   ratingCount,
+  introduction,
 }: ProfileProps) {
   return (
     <S_Container>
@@ -30,46 +34,64 @@ function Profile({
         }}
       />
       <S_InfoWrapper>
-        <S_Title>{mentorName}</S_Title>
+        <S_InfoHeader>
+          <S_Title>{mentorName}</S_Title>
+          <Button
+            variant="newPrimary"
+            customStyle={css`
+              padding: 1rem 1.35rem;
+            `}
+          >
+            자격사항 보러가기
+          </Button>
+        </S_InfoHeader>
+
         <TextWithIcon
-          text={`${ratingAverage} (${ratingCount}개 리뷰)`}
+          text={`${ratingAverage} (${ratingCount})`}
           iconSrc={starIcon}
           iconName="별점"
         />
         <CategoryTags tagNames={categories} />
+        <S_Introduction>{introduction}</S_Introduction>
       </S_InfoWrapper>
     </S_Container>
   );
 }
 
-export default Profile;
+export default ProfileSection;
 
 const S_Container = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-
+  flex-direction: column;
   width: 100%;
-  margin-top: 2.3rem;
 `;
 
 const S_ProfileImg = styled.img`
-  flex-shrink: 0;
-
-  width: 12rem;
-  height: 12rem;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
-  border-radius: 50%;
+  width: 100%;
+  height: 43rem;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
 `;
 
 const S_InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  padding: 2.2rem 2.7rem;
+  gap: 0.7rem;
+`;
+
+const S_InfoHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const S_Title = styled.h3`
-  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
-  color: ${({ theme }) => theme.FONT.B01}
+  ${({ theme }) => theme.TYPOGRAPHY.H1_B};
+  color: ${({ theme }) => theme.FONT.B01};
+`;
+
+const S_Introduction = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  color: ${({ theme }) => theme.FONT.B01};
 `;

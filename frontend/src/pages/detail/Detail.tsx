@@ -11,8 +11,7 @@ import Certificates from './components/Certificates/Certificates';
 import DetailHeader from './components/DetailHeader/DetailHeader';
 import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
-import MentorSummary from './components/MentorSummary/MentorSummary';
-import Profile from './components/Profile/Profile';
+import ProfileSection from './components/ProfileSection/ProfileSection';
 
 import type { MentoringDetail } from '../../common/types/MentoringDetail';
 
@@ -59,18 +58,19 @@ function Detail() {
       <DetailHeader />
       <S_Container>
         <S_MentorInfoWrapper>
-          <Profile
+          <ProfileSection
             profileImg={data.profileImageUrl}
             mentorName={data.mentorName}
             categories={data.categories}
             ratingAverage={data.ratingAverage}
             ratingCount={data.ratingCount}
+            introduction={data.introduction}
           />
-          <MentorSummary
+          {/* <MentorSummary
             introduction={data.introduction}
             career={data.career}
             certificates={data.certificates}
-          />
+          /> */}
         </S_MentorInfoWrapper>
         <S_TapWrapper>
           <S_Tap
@@ -111,8 +111,8 @@ function Detail() {
 export default Detail;
 
 const S_Container = styled.div`
-  margin-bottom: 10rem;
-  padding: 0 2rem;
+  /* margin-bottom: 10rem; */
+  /* padding: 0 2rem; */
 `;
 
 const S_MentorInfoWrapper = styled.div`

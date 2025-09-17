@@ -1,4 +1,4 @@
-import Profile from './Profile';
+import Profile from './ProfileSection';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
