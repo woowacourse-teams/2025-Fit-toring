@@ -19,6 +19,8 @@ export const DefaultProfile: Story = {
     categories: ['식단관리', '체력 증진', '근력 운동'],
     ratingAverage: 3.7,
     ratingCount: 10,
+    introduction:
+      '5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
   },
   parameters: {
     docs: {
