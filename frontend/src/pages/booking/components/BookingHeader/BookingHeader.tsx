@@ -13,26 +13,26 @@ function BookingHeader() {
 
   return (
     <Header>
-      <StyledWrapper>
-        <StyledBackButton onClick={handleBackButtonClick}>
-          <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
-        </StyledBackButton>
-        <StyledTitle>예약 신청</StyledTitle>
-      </StyledWrapper>
+      <S_Wrapper>
+        <S_BackButton onClick={handleBackButtonClick}>
+          <S_BackIcon src={backIcon} alt="뒤로가기 아이콘" />
+        </S_BackButton>
+        <S_Title>예약 신청</S_Title>
+      </S_Wrapper>
     </Header>
   );
 }
 
 export default BookingHeader;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   align-items: center;
 
   height: 100%;
 `;
 
-const StyledBackButton = styled.button`
+const S_BackButton = styled.button`
   position: absolute;
 
   margin-left: 1rem;
@@ -43,7 +43,7 @@ const StyledBackButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledTitle = styled.h1`
+const S_Title = styled.h1`
   flex-grow: 1;
 
   color: ${({ theme }) => theme.FONT.B01};
@@ -51,6 +51,6 @@ const StyledTitle = styled.h1`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 `;
 
-const StyledBackIcon = styled.img`
+const S_BackIcon = styled.img`
   width: 3.4rem;
 `;

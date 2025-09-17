@@ -17,14 +17,14 @@ interface ReviewButtonProps {
 
 function ReviewWriteButton({ onClick, disabled }: ReviewWriteButtonProps) {
   return (
-    <StyledReviewWriteButton onClick={onClick} disabled={disabled}>
+    <S_ReviewWriteButton onClick={onClick} disabled={disabled}>
       리뷰 작성
-    </StyledReviewWriteButton>
+    </S_ReviewWriteButton>
   );
 }
 
 function ReviewCompleteButton() {
-  return <StyledReviewCompleteButton>리뷰 완료</StyledReviewCompleteButton>;
+  return <S_ReviewCompleteButton>리뷰 완료</S_ReviewCompleteButton>;
 }
 
 function ReviewButton({
@@ -48,7 +48,7 @@ function ReviewButton({
 
 export default ReviewButton;
 
-const StyledContainer = styled.button`
+const S_Container = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,7 +67,7 @@ const StyledContainer = styled.button`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledReviewWriteButton = styled(StyledContainer)<{ disabled: boolean }>`
+const S_ReviewWriteButton = styled(S_Container)<{ disabled: boolean }>`
   background-color: ${({ theme, disabled }) =>
     disabled ? theme.BG.GRAY : theme.SYSTEM.MAIN700};
 
@@ -81,7 +81,7 @@ const StyledReviewWriteButton = styled(StyledContainer)<{ disabled: boolean }>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
-const StyledReviewCompleteButton = styled(StyledContainer)`
+const S_ReviewCompleteButton = styled(S_Container)`
   background-color: ${({ theme }) => theme.SYSTEM.MAIN200};
 
   color: ${({ theme }) => theme.FONT.B02};

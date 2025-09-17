@@ -15,15 +15,15 @@ interface MentorInfoCardProps {
 
 function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
   return (
-    <StyledContainer>
+    <S_Container>
       {mentorDetail ? (
         <>
-          <StyledMentorProfileWrapper>
+          <S_MentorProfileWrapper>
             <ProfileImg src={mentorDetail.profileImageUrl} />
-            <StyledMetorNameText>{mentorDetail.mentorName}</StyledMetorNameText>
-          </StyledMentorProfileWrapper>
-          <StyledInfoWithTags>
-            <StyledInfoWrapper>
+            <S_MetorNameText>{mentorDetail.mentorName}</S_MetorNameText>
+          </S_MentorProfileWrapper>
+          <S_InfoWithTags>
+            <S_InfoWrapper>
               <TextWithIcon
                 iconSrc={startIcon}
                 text={`${mentorDetail.ratingAverage} (${mentorDetail.ratingCount})`}
@@ -35,23 +35,21 @@ function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
                 iconName="위치"
               />
               <TextWithIcon iconSrc={timeIcon} text="15분" iconName="시간" />
-            </StyledInfoWrapper>
+            </S_InfoWrapper>
             <CategoryTags tagNames={mentorDetail.categories} />
-          </StyledInfoWithTags>
-          <StyledPriceText>
-            {mentorDetail.price.toLocaleString('ko')}원
-          </StyledPriceText>
+          </S_InfoWithTags>
+          <S_PriceText>{mentorDetail.price.toLocaleString('ko')}원</S_PriceText>
         </>
       ) : (
         <div>로딩중</div>
       )}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default MentorInfoCard;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,31 +64,31 @@ const StyledContainer = styled.div`
   background-color: white;
 `;
 
-const StyledMentorProfileWrapper = styled.div`
+const S_MentorProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.4rem;
 `;
 
-const StyledMetorNameText = styled.span`
+const S_MetorNameText = styled.span`
   color: ${({ theme }) => theme.FONT.B01};
   font-size: 1.6rem;
 `;
 
-const StyledInfoWithTags = styled.div`
+const S_InfoWithTags = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.7rem;
 `;
 
-const StyledInfoWrapper = styled.div`
+const S_InfoWrapper = styled.div`
   display: flex;
   gap: 1.3rem;
 `;
 
-const StyledPriceText = styled.span`
+const S_PriceText = styled.span`
   color: ${({ theme }) => theme.SYSTEM.MAIN600};
   font-weight: bold;
   font-size: 1.6rem;

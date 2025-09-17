@@ -7,17 +7,17 @@ interface CategoryTags {
 
 function CategoryTags({ tagNames }: CategoryTags) {
   return (
-    <StyledContainer>
+    <S_Container>
       {tagNames.map((tagName) => (
         <CategoryTag tagName={tagName} key={tagName} />
       ))}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default CategoryTags;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;

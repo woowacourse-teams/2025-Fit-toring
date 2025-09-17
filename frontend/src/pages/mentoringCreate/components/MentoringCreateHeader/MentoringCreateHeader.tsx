@@ -13,26 +13,26 @@ function MentoringCreateHeader() {
 
   return (
     <Header>
-      <StyledHeaderWrapper>
-        <StyledBackButton onClick={handleBackButtonClick}>
-          <StyledImg src={backIcon} alt="뒤로가기 버튼" />
-        </StyledBackButton>
-        <StyledTitle>멘토링 개설</StyledTitle>
-      </StyledHeaderWrapper>
+      <S_HeaderWrapper>
+        <S_BackButton onClick={handleBackButtonClick}>
+          <S_Img src={backIcon} alt="뒤로가기 버튼" />
+        </S_BackButton>
+        <S_Title>멘토링 개설</S_Title>
+      </S_HeaderWrapper>
     </Header>
   );
 }
 
 export default MentoringCreateHeader;
 
-const StyledHeaderWrapper = styled.div`
+const S_HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
 
   height: 100%;
 `;
 
-const StyledBackButton = styled.button`
+const S_BackButton = styled.button`
   position: absolute;
 
   margin-left: 1rem;
@@ -43,11 +43,11 @@ const StyledBackButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledImg = styled.img`
+const S_Img = styled.img`
   width: 3.4rem;
 `;
 
-const StyledTitle = styled.h3`
+const S_Title = styled.h3`
   flex-grow: 1;
 
   color: ${({ theme }) => theme.FONT.B01};

@@ -7,17 +7,17 @@ import MyPageHeader from './components/MyPageHeader/MyPageHeader';
 
 function MyPage() {
   return (
-    <StyledContainer>
+    <S_Container>
       <MyPageHeader />
       <MyProfile />
       <Outlet />
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default MyPage;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
 `;

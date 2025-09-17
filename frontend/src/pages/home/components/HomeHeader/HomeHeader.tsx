@@ -18,13 +18,13 @@ function HomeHeader() {
 
   return (
     <Header>
-      <StyledHeaderWrapper>
-        <StyledTitleIconWrapper>
-          <StyledLogoLink to={PAGE_URL.HOME} reloadDocument>
-            <StyledColorTitle>Fit</StyledColorTitle>
-            <StyledTitle>toring</StyledTitle>
-          </StyledLogoLink>
-        </StyledTitleIconWrapper>
+      <S_HeaderWrapper>
+        <S_TitleIconWrapper>
+          <S_LogoLink to={PAGE_URL.HOME} reloadDocument>
+            <S_ColorTitle>Fit</S_ColorTitle>
+            <S_Title>toring</S_Title>
+          </S_LogoLink>
+        </S_TitleIconWrapper>
         {authenticated ? (
           <MenuDropDown />
         ) : (
@@ -32,14 +32,14 @@ function HomeHeader() {
             로그인
           </Button>
         )}
-      </StyledHeaderWrapper>
+      </S_HeaderWrapper>
     </Header>
   );
 }
 
 export default HomeHeader;
 
-const StyledHeaderWrapper = styled.div`
+const S_HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -49,13 +49,13 @@ const StyledHeaderWrapper = styled.div`
   padding: 1.4rem 1.1rem;
 `;
 
-const StyledTitleIconWrapper = styled.div`
+const S_TitleIconWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 1.05rem;
 `;
 
-const StyledLogoLink = styled(Link)`
+const S_LogoLink = styled(Link)`
   display: flex;
   text-decoration: none;
 
@@ -66,12 +66,12 @@ const StyledLogoLink = styled(Link)`
   cursor: pointer;
 `;
 
-const StyledColorTitle = styled.h1`
+const S_ColorTitle = styled.h1`
   ${({ theme }) => theme.TYPOGRAPHY.H1_B}
   color: ${({ theme }) => theme.SYSTEM.MAIN500};
 `;
 
-const StyledTitle = styled.h3`
+const S_Title = styled.h3`
   ${({ theme }) => theme.TYPOGRAPHY.H1_B}
   color: ${({ theme }) => theme.SYSTEM.GRAY900};
 `;

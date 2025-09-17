@@ -14,14 +14,12 @@ function Header({ children }: PropsWithChildren) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  return (
-    <StyledContainer hasScrolled={hasScrolled}>{children}</StyledContainer>
-  );
+  return <S_Container hasScrolled={hasScrolled}>{children}</S_Container>;
 }
 
 export default Header;
 
-const StyledContainer = styled.header<{ hasScrolled: boolean }>`
+const S_Container = styled.header<{ hasScrolled: boolean }>`
   position: sticky;
   top: 0;
   z-index: 100;

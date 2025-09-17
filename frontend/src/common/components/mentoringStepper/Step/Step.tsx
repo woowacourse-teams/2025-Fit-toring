@@ -25,49 +25,49 @@ function Step({ type, status, children }: PropsWithChildren<StepProps>) {
   switch (type) {
     case 'before':
       return (
-        <StyledWrapper step="notCurrent">
-          <StyledStepCircleWrapper>
-            <StyledStepCircle step="before">{children}</StyledStepCircle>
-            <StyledLine step="before" />
-          </StyledStepCircleWrapper>
-        </StyledWrapper>
+        <S_Wrapper step="notCurrent">
+          <S_StepCircleWrapper>
+            <S_StepCircle step="before">{children}</S_StepCircle>
+            <S_Line step="before" />
+          </S_StepCircleWrapper>
+        </S_Wrapper>
       );
     case 'current':
       return (
-        <StyledWrapper step="current">
-          <StyledCurrentCircle>
-            <StyledIcon src={iconSrc} alt={`${status} Icon`} />
+        <S_Wrapper step="current">
+          <S_CurrentCircle>
+            <S_Icon src={iconSrc} alt={`${status} Icon`} />
             {children}
-          </StyledCurrentCircle>
-        </StyledWrapper>
+          </S_CurrentCircle>
+        </S_Wrapper>
       );
     case 'after':
       return (
-        <StyledWrapper step="notCurrent">
-          <StyledStepCircleWrapper>
-            <StyledLine step="after" />
-            <StyledStepCircle step="after">{children}</StyledStepCircle>
-          </StyledStepCircleWrapper>
-        </StyledWrapper>
+        <S_Wrapper step="notCurrent">
+          <S_StepCircleWrapper>
+            <S_Line step="after" />
+            <S_StepCircle step="after">{children}</S_StepCircle>
+          </S_StepCircleWrapper>
+        </S_Wrapper>
       );
   }
 }
 
 export default Step;
 
-const StyledWrapper = styled.div<{ step: 'current' | 'notCurrent' }>`
+const S_Wrapper = styled.div<{ step: 'current' | 'notCurrent' }>`
   display: flex;
   flex-direction: column;
   flex-grow: ${({ step }) => (step === 'notCurrent' ? 1 : 0)};
   gap: 2rem;
 `;
 
-const StyledStepCircleWrapper = styled.div`
+const S_StepCircleWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
 
-const StyledStepCircle = styled.div<{ step: 'before' | 'after' }>`
+const S_StepCircle = styled.div<{ step: 'before' | 'after' }>`
   position: relative;
 
   width: 2rem;
@@ -81,7 +81,7 @@ const StyledStepCircle = styled.div<{ step: 'before' | 'after' }>`
     step === 'before' ? theme.BG.WHITE : theme.SYSTEM.GRAY100};
 `;
 
-const StyledCurrentCircle = styled.div`
+const S_CurrentCircle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,7 +94,7 @@ const StyledCurrentCircle = styled.div`
   background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 `;
 
-const StyledIcon = styled.img`
+const S_Icon = styled.img`
   display: block;
 
   width: auto;
@@ -102,7 +102,7 @@ const StyledIcon = styled.img`
   aspect-ratio: 1 / 1;
 `;
 
-const StyledLine = styled.div<{ step: 'before' | 'after' }>`
+const S_Line = styled.div<{ step: 'before' | 'after' }>`
   flex-grow: 1;
 
   width: 3rem;

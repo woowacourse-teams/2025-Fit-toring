@@ -7,16 +7,16 @@ import SignupIntro from './components/SignupIntro/SignupIntro';
 
 function Signup() {
   return (
-    <StyledContainer>
+    <S_Container>
       <SignupHeader />
       <SignupIntro />
       <SignupForm />
       <AuthFooter currentPage="signup" />
-    </StyledContainer>
+    </S_Container>
   );
 }
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   padding-bottom: 3rem;
 
   background-color: ${({ theme }) => theme.BG.WHITE};

@@ -21,30 +21,30 @@ function Profile({
   ratingCount,
 }: ProfileProps) {
   return (
-    <StyledContainer>
-      <StyledProfileImg
+    <S_Container>
+      <S_ProfileImg
         src={profileImg || defaultProfileImg}
         alt="멘토 프로필 이미지"
         onError={(e) => {
           e.currentTarget.src = defaultProfileImg;
         }}
       />
-      <StyledInfoWrapper>
-        <StyledTitle>{mentorName}</StyledTitle>
+      <S_InfoWrapper>
+        <S_Title>{mentorName}</S_Title>
         <TextWithIcon
           text={`${ratingAverage} (${ratingCount}개 리뷰)`}
           iconSrc={starIcon}
           iconName="별점"
         />
         <CategoryTags tagNames={categories} />
-      </StyledInfoWrapper>
-    </StyledContainer>
+      </S_InfoWrapper>
+    </S_Container>
   );
 }
 
 export default Profile;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,7 +54,7 @@ const StyledContainer = styled.div`
   margin-top: 2.3rem;
 `;
 
-const StyledProfileImg = styled.img`
+const S_ProfileImg = styled.img`
   flex-shrink: 0;
 
   width: 12rem;
@@ -63,13 +63,13 @@ const StyledProfileImg = styled.img`
   border-radius: 50%;
 `;
 
-const StyledInfoWrapper = styled.div`
+const S_InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
 `;
 
-const StyledTitle = styled.h3`
+const S_Title = styled.h3`
   ${({ theme }) => theme.TYPOGRAPHY.H3_R}
   color: ${({ theme }) => theme.FONT.B01}
 `;

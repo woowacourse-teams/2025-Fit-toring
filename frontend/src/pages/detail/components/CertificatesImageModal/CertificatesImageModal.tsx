@@ -24,29 +24,29 @@ function CertificatesImageModal({
 }: CertificatesImageModalProps) {
   return (
     <Modal opened={opened} onCloseClick={onCloseClick}>
-      <StyledContainer>
-        <StyledCloseButton onClick={onCloseClick}>
-          <StyledCloseImage src={closeImg} alt="모달 닫기 버튼" />
-        </StyledCloseButton>
-        <StyledPrevButton onClick={onPrevButtonClick}>
-          <StyledPrevImage src={prevImg} alt="이전 이미지 버튼" />
-        </StyledPrevButton>
-        <StyledNextButton onClick={onNextButtonClick}>
-          <StyledNextImage src={nextImg} alt="다음 이미지 버튼" />
-        </StyledNextButton>
-        <StyledImage src={imageUrl} alt={`${title}`} />
-      </StyledContainer>
+      <S_Container>
+        <S_CloseButton onClick={onCloseClick}>
+          <S_CloseImage src={closeImg} alt="모달 닫기 버튼" />
+        </S_CloseButton>
+        <S_PrevButton onClick={onPrevButtonClick}>
+          <S_PrevImage src={prevImg} alt="이전 이미지 버튼" />
+        </S_PrevButton>
+        <S_NextButton onClick={onNextButtonClick}>
+          <S_NextImage src={nextImg} alt="다음 이미지 버튼" />
+        </S_NextButton>
+        <S_Image src={imageUrl} alt={`${title}`} />
+      </S_Container>
     </Modal>
   );
 }
 
 export default CertificatesImageModal;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   position: relative;
 `;
 
-const StyledImage = styled.img`
+const S_Image = styled.img`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,7 +57,7 @@ const StyledImage = styled.img`
   object-fit: cover;
 `;
 
-const StyledCloseButton = styled.button`
+const S_CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,12 +72,12 @@ const StyledCloseButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledCloseImage = styled.img`
+const S_CloseImage = styled.img`
   width: 3rem;
   height: 3rem;
 `;
 
-const StyledPrevButton = styled.button`
+const S_PrevButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,12 +92,12 @@ const StyledPrevButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledPrevImage = styled.img`
+const S_PrevImage = styled.img`
   width: 3rem;
   height: 3rem;
 `;
 
-const StyledNextButton = styled.button`
+const S_NextButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,7 +112,7 @@ const StyledNextButton = styled.button`
   cursor: pointer;
 `;
 
-const StyledNextImage = styled.img`
+const S_NextImage = styled.img`
   width: 3rem;
   height: 3rem;
 `;

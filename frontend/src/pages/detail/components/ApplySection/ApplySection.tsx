@@ -61,11 +61,11 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
   }, []);
 
   return (
-    <StyledContainer>
-      <StyledWrapper>
+    <S_Container>
+      <S_Wrapper>
         <p>15분 상담료</p>
         <strong>{price.toLocaleString()}원</strong>
-      </StyledWrapper>
+      </S_Wrapper>
       <Button
         size="full"
         customStyle={css`
@@ -75,13 +75,13 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
       >
         {createdByMe ? '수정하기' : '신청하기'}
       </Button>
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default ApplySection;
 
-const StyledContainer = styled.section`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -103,7 +103,7 @@ const StyledContainer = styled.section`
   }
 `;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
 
