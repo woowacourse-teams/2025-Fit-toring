@@ -3,13 +3,12 @@ package fittoring.mentoring.presentation.api;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
+import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.service.MentoringService;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
-import fittoring.mentoring.presentation.dto.MentoringModifyRequest;
-import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
-import fittoring.mentoring.presentation.dto.MentoringResponse;
-import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+import fittoring.mentoring.presentation.dto.*;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,6 +58,20 @@ public class MentoringController {
                 categoryTitle2,
                 categoryTitle3
         );
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(responseBody);
+    }
+
+    @GetMapping("/mentorings")
+    public ResponseEntity<SliceResponse<MentoringSummaryResponse>> getMentoringSummaryPages(
+            @RequestParam(defaultValue = "CREATED_AT") SortKey sortKey,
+            @RequestParam(required = false) String cursorCode,
+            @RequestParam(required = false) List<Long> categoryIds
+    ) {
+        if (categoryIds == null) {
+            categoryIds = List.of();
+        }
+        SliceResponse<MentoringSummaryResponse> responseBody = mentoringService.findMentoringSummaryPages(sortKey, cursorCode, categoryIds);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseBody);
     }

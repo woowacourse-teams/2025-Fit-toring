@@ -1,6 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.config.auth.LoginInfo;
+import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.ForbiddenException;
@@ -8,16 +9,7 @@ import fittoring.mentoring.business.exception.ImageNotFoundException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
-import fittoring.mentoring.business.model.Category;
-import fittoring.mentoring.business.model.CategoryMentoring;
-import fittoring.mentoring.business.model.Certificate;
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.ImageType;
-import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.MemberRole;
-import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.model.Reservation;
-import fittoring.mentoring.business.model.Status;
+import fittoring.mentoring.business.model.*;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.CertificateRepository;
@@ -31,6 +23,8 @@ import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+import fittoring.mentoring.presentation.dto.SliceResponse;
+import fittoring.util.CursorCodec;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
@@ -346,5 +340,14 @@ public class MentoringService {
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
+    }
+
+    public SliceResponse<MentoringSummaryResponse> findMentoringSummaryPages(SortKey sortKey, String cursorCode, List<Long> categoryIds) {
+        Cursor cursor = CursorCodec.decode(cursorCode);
+        // 0. 쿼리 dsl 적용
+        // 1. 카테고리 필터링
+        // 2. 커서 조건
+        //
+        return null;
     }
 }
