@@ -66,11 +66,6 @@ function Detail() {
             ratingCount={data.ratingCount}
             introduction={data.introduction}
           />
-          {/* <MentorSummary
-            introduction={data.introduction}
-            career={data.career}
-            certificates={data.certificates}
-          /> */}
         </S_MentorInfoWrapper>
         <S_TapWrapper>
           <S_Tap
