@@ -65,6 +65,12 @@ export const THEME = {
       font-size: 2.5rem;
       line-height: normal;
     `,
+    H1_SB: css`
+      font-weight: 600;
+      font-size: 2.5rem;
+      line-height: normal;
+    `,
+
     H2_B: css`
       font-weight: 700;
       font-size: 2.2rem;
@@ -75,6 +81,12 @@ export const THEME = {
       font-size: 2.2rem;
       line-height: normal;
     `,
+    H2_SB: css`
+      font-weight: 600;
+      font-size: 2.2rem;
+      line-height: normal;
+    `,
+
     H3_B: css`
       font-weight: 700;
       font-size: 2rem;
@@ -85,6 +97,12 @@ export const THEME = {
       font-size: 2rem;
       line-height: normal;
     `,
+    H3_SB: css`
+      font-weight: 600;
+      font-size: 2rem;
+      line-height: normal;
+    `,
+
     H4_B: css`
       font-weight: 700;
       font-size: 1.8rem;
@@ -95,6 +113,12 @@ export const THEME = {
       font-size: 1.8rem;
       line-height: normal;
     `,
+    H4_SB: css`
+      font-weight: 600;
+      font-size: 1.8rem;
+      line-height: normal;
+    `,
+
     LB1_R: css`
       font-weight: 400;
       font-size: 2.5rem;
@@ -105,6 +129,12 @@ export const THEME = {
       font-size: 2.5rem;
       line-height: normal;
     `,
+    LB1_SB: css`
+      font-weight: 600;
+      font-size: 2.5rem;
+      line-height: normal;
+    `,
+
     LB2_R: css`
       font-weight: 400;
       font-size: 2.2rem;
@@ -115,6 +145,12 @@ export const THEME = {
       font-size: 2.2rem;
       line-height: normal;
     `,
+    LB2_SB: css`
+      font-weight: 600;
+      font-size: 2.2rem;
+      line-height: normal;
+    `,
+
     LB3_R: css`
       font-weight: 400;
       font-size: 2rem;
@@ -125,6 +161,12 @@ export const THEME = {
       font-size: 2rem;
       line-height: normal;
     `,
+    LB3_SB: css`
+      font-weight: 600;
+      font-size: 2rem;
+      line-height: normal;
+    `,
+
     LB4_R: css`
       font-weight: 400;
       font-size: 1.8rem;
@@ -135,6 +177,12 @@ export const THEME = {
       font-size: 1.8rem;
       line-height: normal;
     `,
+    LB4_SB: css`
+      font-weight: 600;
+      font-size: 1.8rem;
+      line-height: normal;
+    `,
+
     B1_B: css`
       font-weight: 700;
       font-size: 1.7rem;
@@ -143,8 +191,14 @@ export const THEME = {
     B1_R: css`
       font-weight: 400;
       font-size: 1.7rem;
-      line-height: 160%; /* LH행간: 160% */
+      line-height: 160%;
     `,
+    B1_SB: css`
+      font-weight: 600;
+      font-size: 1.7rem;
+      line-height: 160%;
+    `,
+
     B2_B: css`
       font-weight: 700;
       font-size: 1.6rem;
@@ -153,8 +207,14 @@ export const THEME = {
     B2_R: css`
       font-weight: 400;
       font-size: 1.6rem;
-      line-height: 150%; /* LH행간: 150% */
+      line-height: 150%;
     `,
+    B2_SB: css`
+      font-weight: 600;
+      font-size: 1.6rem;
+      line-height: 150%;
+    `,
+
     B3_B: css`
       font-weight: 700;
       font-size: 1.5rem;
@@ -165,6 +225,12 @@ export const THEME = {
       font-size: 1.5rem;
       line-height: normal;
     `,
+    B3_SB: css`
+      font-weight: 600;
+      font-size: 1.5rem;
+      line-height: normal;
+    `,
+
     B4_B: css`
       font-weight: 700;
       font-size: 1.4rem;
@@ -173,28 +239,58 @@ export const THEME = {
     B4_R: css`
       font-weight: 400;
       font-size: 1.4rem;
-      line-height: 125%; /* LH행간: 125% */
+      line-height: 125%;
     `,
+    B4_SB: css`
+      font-weight: 600;
+      font-size: 1.4rem;
+      line-height: 125%;
+    `,
+
     C1_R: css`
       font-weight: 400;
       font-size: 1.5rem;
       line-height: normal;
     `,
+    C1_SB: css`
+      font-weight: 600;
+      font-size: 1.5rem;
+      line-height: normal;
+    `,
+
     C2_R: css`
       font-weight: 400;
       font-size: 1.4rem;
       line-height: normal;
     `,
+    C2_SB: css`
+      font-weight: 600;
+      font-size: 1.4rem;
+      line-height: normal;
+    `,
+
     C3_R: css`
       font-weight: 400;
       font-size: 1.3rem;
       line-height: normal;
     `,
+    C3_SB: css`
+      font-weight: 600;
+      font-size: 1.3rem;
+      line-height: normal;
+    `,
+
     C4_R: css`
       font-weight: 400;
       font-size: 1.2rem;
       line-height: normal;
     `,
+    C4_SB: css`
+      font-weight: 600;
+      font-size: 1.2rem;
+      line-height: normal;
+    `,
+
     BTN1_B: css`
       font-weight: 700;
       font-size: 1.8rem;
@@ -205,6 +301,12 @@ export const THEME = {
       font-size: 1.8rem;
       line-height: normal;
     `,
+    BTN1_SB: css`
+      font-weight: 600;
+      font-size: 1.8rem;
+      line-height: normal;
+    `,
+
     BTN2_B: css`
       font-weight: 700;
       font-size: 1.6rem;
@@ -215,6 +317,12 @@ export const THEME = {
       font-size: 1.6rem;
       line-height: normal;
     `,
+    BTN2_SB: css`
+      font-weight: 600;
+      font-size: 1.6rem;
+      line-height: normal;
+    `,
+
     BTN3_B: css`
       font-weight: 700;
       font-size: 1.5rem;
@@ -225,6 +333,12 @@ export const THEME = {
       font-size: 1.5rem;
       line-height: normal;
     `,
+    BTN3_SB: css`
+      font-weight: 600;
+      font-size: 1.5rem;
+      line-height: normal;
+    `,
+
     BTN4_B: css`
       font-weight: 700;
       font-size: 1.4rem;
@@ -232,6 +346,11 @@ export const THEME = {
     `,
     BTN4_R: css`
       font-weight: 400;
+      font-size: 1.4rem;
+      line-height: normal;
+    `,
+    BTN4_SB: css`
+      font-weight: 600;
       font-size: 1.4rem;
       line-height: normal;
     `,
