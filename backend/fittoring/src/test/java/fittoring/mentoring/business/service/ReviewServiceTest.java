@@ -419,7 +419,7 @@ class ReviewServiceTest {
         assertThat(memberReviewGetResponses).containsExactlyInAnyOrderElementsOf(expected);
     }
 
-    @DisplayName("특정 멘토링에 달린 리뷰 조회 성공 시 리뷰 정보를 반환한다")
+    @DisplayName("특정 멘토링에 달린 리뷰 조회 성공 시 리뷰 정보를 생성일자 내림차순으로 반환한다")
     @Test
     void findMentoringReviews() {
         // given
@@ -458,10 +458,22 @@ class ReviewServiceTest {
                 mentee1
         ));
         Reservation reservation2 = em.persist(new Reservation(
-                "예약합니다.",
-                Status.COMPLETE,
-                mentoring,
-                mentee2
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee2
+        ));
+        Reservation reservation3 = em.persist(new Reservation(
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee2
+        ));
+        Reservation reservation4 = em.persist(new Reservation(
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee2
         ));
         Review review1 = em.persist(new Review(
                 5,
@@ -470,11 +482,24 @@ class ReviewServiceTest {
                 mentee1
         ));
         Review review2 = em.persist(new Review(
-                2,
-                "최고의 멘토링이었습니다.",
-                reservation2,
-                mentee2
+            2,
+            "최고의 멘토링이었습니다.",
+            reservation2,
+            mentee2
         ));
+        Review review3 = em.persist(new Review(
+            2,
+            "최고의 멘토링이었습니다.",
+            reservation4,
+            mentee1
+        ));
+        Review review4 = em.persist(new Review(
+            2,
+            "최고의 멘토링이었습니다.",
+            reservation3,
+            mentee2
+        ));
+        em.remove(review3);
 
         // when
         List<ReviewGetResponse> responseBody
@@ -482,7 +507,7 @@ class ReviewServiceTest {
 
         // then
         assertSoftly(softAssertions -> {
-            assertThat(responseBody).containsExactlyInAnyOrder(
+            assertThat(responseBody).containsExactly(
                     new ReviewGetResponse(
                             review1.getId(),
                             review1.getMenteeName(),
@@ -491,11 +516,18 @@ class ReviewServiceTest {
                             review1.getContent()
                     ),
                     new ReviewGetResponse(
-                            review2.getId(),
-                            review2.getMenteeName(),
-                            review2.getCreatedAt().toLocalDate(),
-                            review2.getRating(),
-                            review2.getContent()
+                        review2.getId(),
+                        review2.getMenteeName(),
+                        review2.getCreatedAt().toLocalDate(),
+                        review2.getRating(),
+                        review2.getContent()
+                    ),
+                    new ReviewGetResponse(
+                        review4.getId(),
+                        review4.getMenteeName(),
+                        review4.getCreatedAt().toLocalDate(),
+                        review4.getRating(),
+                        review4.getContent()
                     )
             );
         });
