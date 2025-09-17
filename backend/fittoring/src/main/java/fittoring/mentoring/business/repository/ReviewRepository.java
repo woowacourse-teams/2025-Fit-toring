@@ -42,7 +42,7 @@ public interface ReviewRepository extends ListCrudRepository<Review, Long> {
               JOIN FETCH rv.mentoring mt
               JOIN FETCH r.mentee m
             WHERE mt.id = :mentoringId
-            ORDER BY r.createdAt desc
+            ORDER BY r.createdAt DESC
             """)
     List<Review> findAllByReservationMentoringIdOrderByCreatedAtDesc(@Param("mentoringId") Long mentoringId);
 
