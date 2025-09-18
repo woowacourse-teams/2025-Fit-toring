@@ -14,7 +14,7 @@ export interface MentoringDetail {
 }
 
 export interface Certificates {
-  certificateId: number;
+  certificateId: string;
   title: string;
   type: string;
   imageUrl: string;
