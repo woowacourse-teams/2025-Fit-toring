@@ -14,6 +14,7 @@ interface ProfileProps {
   ratingAverage: string;
   ratingCount: number;
   introduction: string;
+  onCertificateShowButton: () => void;
 }
 
 function ProfileSection({
@@ -23,6 +24,7 @@ function ProfileSection({
   ratingAverage,
   ratingCount,
   introduction,
+  onCertificateShowButton,
 }: ProfileProps) {
   return (
     <S_Container>
@@ -41,6 +43,7 @@ function ProfileSection({
             customStyle={css`
               padding: 1rem 1.35rem;
             `}
+            onClick={onCertificateShowButton}
           >
             <S_MoveLink href="#certificate-section">
               자격사항 보러가기

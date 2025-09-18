@@ -49,6 +49,12 @@ function Detail() {
     setSelected(selectedType);
   };
 
+  const handleCertificateShowButton = () => {
+    if (selected === 'review') {
+      setSelected('detail');
+    }
+  };
+
   if (!data) {
     return <div>로딩 중...</div>;
   }
@@ -65,6 +71,7 @@ function Detail() {
             ratingAverage={data.ratingAverage}
             ratingCount={data.ratingCount}
             introduction={data.introduction}
+            onCertificateShowButton={handleCertificateShowButton}
           />
         </S_MentorInfoWrapper>
         <S_TapWrapper>
