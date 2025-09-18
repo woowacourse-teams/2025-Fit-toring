@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 
 interface CaptureSentryErrorParams {
   error: unknown;
-  level: 'warning' | 'error';
+  level: Sentry.SeverityLevel;
   feature: string;
   step: string;
 }
