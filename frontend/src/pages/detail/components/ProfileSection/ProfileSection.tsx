@@ -42,7 +42,9 @@ function ProfileSection({
               padding: 1rem 1.35rem;
             `}
           >
-            자격사항 보러가기
+            <S_MoveLink href="#certificate-section">
+              자격사항 보러가기
+            </S_MoveLink>
           </Button>
         </S_InfoHeader>
 
@@ -89,6 +91,12 @@ const S_InfoHeader = styled.div`
 const S_Title = styled.h3`
   ${({ theme }) => theme.TYPOGRAPHY.H1_B};
   color: ${({ theme }) => theme.FONT.B01};
+`;
+
+const S_MoveLink = styled.a`
+  text-decoration: none;
+  color: inherit;
+  display: block;
 `;
 
 const S_Introduction = styled.p`
