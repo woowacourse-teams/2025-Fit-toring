@@ -20,6 +20,7 @@ import { postMentoringCreate } from '../../apis/postMentoringCreate';
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { mentoringCreateFormData } from '../../../../common/types/mentoringCreateFormData';
+import { validateTextarea } from '../../../../common/utils/validateDetail';
 
 function MentoringCreateForm() {
   const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
@@ -40,7 +41,7 @@ function MentoringCreateForm() {
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
   const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
-
+  const detailErrorMessage = validateTextarea(mentoringData.content);
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,
   ) => {
@@ -97,7 +98,8 @@ function MentoringCreateForm() {
       priceErrorMessage ||
       introduceErrorMessage ||
       careerErrorMessage ||
-      chatUrlErrorMessage
+      chatUrlErrorMessage ||
+      detailErrorMessage
     ) {
       alert('입력값을 확인해주세요.');
       return;
@@ -195,6 +197,7 @@ function MentoringCreateForm() {
       <DetailIntroduce
         detailIntroduce={mentoringData.content}
         onDetailIntroduceChange={handleMentoringDataChange}
+        detailErrorMessage={detailErrorMessage}
       />
       <S_Separator />
       <ButtonSection
