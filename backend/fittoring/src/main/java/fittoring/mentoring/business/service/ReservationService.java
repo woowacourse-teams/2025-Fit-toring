@@ -145,16 +145,14 @@ public class ReservationService {
     private ParticipatedReservationResponse generateParticipatedReservationResponse(Reservation reservation) {
         Mentoring mentoring = reservation.getMentoring();
         String mentorProfileImage = findProfileImageUrl(mentoring.getId());
-        List<String> categoryTitles = categoryMentoringRepository.findTitlesByMentoringId(mentoring.getId());
         boolean isReviewed = reviewRepository.existsByReservationId(reservation.getId());
         return new ParticipatedReservationResponse(
                 reservation.getId(),
                 mentoring.getId(),
                 mentoring.getMentor().getName(),
                 mentorProfileImage,
-                mentoring.getPrice(),
                 reservation.getCreatedAt().toLocalDate(),
-                categoryTitles,
+                reservation.getContent(),
                 reservation.getStatus(),
                 isReviewed
         );

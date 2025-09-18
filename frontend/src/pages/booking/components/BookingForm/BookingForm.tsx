@@ -52,9 +52,12 @@ function BookingForm({
 
       captureSentryError({
         error,
-        level: 'warning',
+        level: 'error',
         feature: 'reservation',
         step: 'reservation-apply',
+        extras: {
+          content: counselContent,
+        },
       });
     }
   };
