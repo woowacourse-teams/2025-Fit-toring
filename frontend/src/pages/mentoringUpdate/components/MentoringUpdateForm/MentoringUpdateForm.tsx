@@ -95,7 +95,7 @@ function MentoringUpdateForm() {
         },
         profileImageFile,
         certificateImageFiles,
-        mentoringId: mentoringId,
+        mentoringId,
       });
       navigate(PAGE_URL.HOME);
       if (response.status === 200) {
@@ -106,9 +106,22 @@ function MentoringUpdateForm() {
 
       captureSentryError({
         error,
-        level: 'warning',
+        level: 'error',
         feature: 'mentoring',
         step: 'mentoring-update',
+        extras: {
+          mentoringData: {
+            ...mentoringData,
+            certificateInfos: addedCertifications.map((addedCertification) => ({
+              title: addedCertification.title,
+              type: addedCertification.type,
+            })),
+            profileImageUrl: mentoringData.profileImageUrl,
+          },
+          profileImageFile,
+          certificateImageFiles,
+          mentoringId,
+        },
       });
     }
   };

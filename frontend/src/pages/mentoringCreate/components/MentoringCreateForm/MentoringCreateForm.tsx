@@ -11,6 +11,7 @@ import IntroduceSection from '../../../../common/components/mentoringForm/Introd
 import ProfileSection from '../../../../common/components/mentoringForm/ProfileSection/ProfileSection';
 import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { addSentryBreadcrumb } from '../../../../common/utils/addSentryBreadcrumb';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
@@ -48,14 +49,32 @@ function MentoringCreateForm() {
       ...prevData,
       ...newData,
     }));
+
+    addSentryBreadcrumb({
+      category: 'ui.change',
+      message: `멘토링 데이터 변경`,
+      data: { newData },
+    });
   };
 
   const handleProfileImageChange = (file: File | null) => {
     setProfileImageFile(file);
+
+    addSentryBreadcrumb({
+      category: 'ui.change',
+      message: `프로필 이미지 변경`,
+      data: { file },
+    });
   };
 
   const handleCertificateImageFilesChange = (files: File[]) => {
     setCertificateImageFiles(files);
+
+    addSentryBreadcrumb({
+      category: 'ui.change',
+      message: `자격증 이미지 변경`,
+      data: { files },
+    });
   };
 
   const submitMentoringForm = async () => {
@@ -80,9 +99,17 @@ function MentoringCreateForm() {
 
       captureSentryError({
         error,
-        level: 'warning',
+        level: 'error',
         feature: 'mentoring',
         step: 'mentoring-create',
+        extras: {
+          mentoringData: {
+            ...mentoringData,
+            certificateInfos: filteredCertificateInfos,
+          },
+          profileImageFile,
+          certificateImageFiles,
+        },
       });
     }
   };
@@ -104,6 +131,18 @@ function MentoringCreateForm() {
     }
     await submitMentoringForm();
     navigate(PAGE_URL.HOME);
+
+    addSentryBreadcrumb({
+      category: 'ui.submit',
+      message: '멘토링 생성 폼 제출 시도',
+      data: {
+        isFormValid:
+          priceErrorMessage ||
+          introduceErrorMessage ||
+          careerErrorMessage ||
+          chatUrlErrorMessage,
+      },
+    });
   };
 
   const handleCancelButtonClick = () => {
@@ -124,6 +163,12 @@ function MentoringCreateForm() {
         file: undefined,
       },
     ]);
+
+    addSentryBreadcrumb({
+      category: 'ui.click',
+      message: '자격증 항목 추가',
+      data: { newTotalCertificates: certificates.length + 1 },
+    });
   };
 
   const onDeleteButtonClick = (id: string) => {
@@ -143,6 +188,15 @@ function MentoringCreateForm() {
       .map((item) => item.file)
       .filter((file): file is File => !!file);
     handleCertificateImageFilesChange(files);
+
+    addSentryBreadcrumb({
+      category: 'ui.click',
+      message: '자격증 항목 삭제',
+      data: {
+        deletedCertificateId: id,
+        newTotalCertificates: certificates.length - 1,
+      },
+    });
   };
 
   const onCertificateChangeById = (
