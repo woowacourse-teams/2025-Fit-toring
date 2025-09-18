@@ -80,9 +80,17 @@ function MentoringCreateForm() {
 
       captureSentryError({
         error,
-        level: 'warning',
+        level: 'error',
         feature: 'mentoring',
         step: 'mentoring-create',
+        extras: {
+          mentoringData: {
+            ...mentoringData,
+            certificateInfos: filteredCertificateInfos,
+          },
+          profileImageFile,
+          certificateImageFiles,
+        },
       });
     }
   };
