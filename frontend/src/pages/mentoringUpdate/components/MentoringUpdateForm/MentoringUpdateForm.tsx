@@ -27,6 +27,7 @@ import {
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
+import { validateTextarea } from '../../../../common/utils/validateDetail';
 
 function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(
@@ -45,6 +46,7 @@ function MentoringUpdateForm() {
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
   const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
+  const detailErrorMessage = validateTextarea(mentoringData.content);
 
   const handleMentoringDataChange = (
     newData: Partial<MentoringUpdateFormData>,
@@ -72,7 +74,7 @@ function MentoringUpdateForm() {
     }
 
     const addedCertifications = mentoringData.certificateInfos.filter(
-      (e) => !initialCertificatesIdRef.current.includes(e.id),
+      (e) => !initialCertificatesIdRef.current.includes(String(e.id)),
     );
 
     try {
@@ -123,7 +125,8 @@ function MentoringUpdateForm() {
       priceErrorMessage ||
       introduceErrorMessage ||
       careerErrorMessage ||
-      chatUrlErrorMessage
+      chatUrlErrorMessage ||
+      detailErrorMessage
     ) {
       alert('입력값을 확인해주세요.');
       return;
@@ -202,7 +205,7 @@ function MentoringUpdateForm() {
           await getMentoringDetail(mentoringId);
 
         const certificateInfosData = certificates.map((e) => ({
-          id: e.certificateId,
+          id: String(e.certificateId),
           title: e.title,
           type: e.type,
           imageUrl: e.imageUrl,
@@ -271,6 +274,7 @@ function MentoringUpdateForm() {
           <DetailIntroduce
             detailIntroduce={mentoringData.content}
             onDetailIntroduceChange={handleMentoringDataChange}
+            detailErrorMessage={detailErrorMessage}
           />
           <S_Separator />
           <ButtonSection
