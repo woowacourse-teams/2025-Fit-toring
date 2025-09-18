@@ -45,7 +45,7 @@ function Detail() {
 
   const [selected, setSelected] = useState<TapType>(state?.tab ?? 'detail');
 
-  const handleClick = (selectedType: TapType) => {
+  const handleTapClick = (selectedType: TapType) => {
     setSelected(selectedType);
   };
 
@@ -76,13 +76,13 @@ function Detail() {
         </S_MentorInfoWrapper>
         <S_TapWrapper>
           <S_Tap
-            onClick={() => handleClick('detail')}
+            onClick={() => handleTapClick('detail')}
             selected={selected === 'detail'}
           >
             상세보기
           </S_Tap>
           <S_Tap
-            onClick={() => handleClick('review')}
+            onClick={() => handleTapClick('review')}
             selected={selected === 'review'}
           >
             리뷰
