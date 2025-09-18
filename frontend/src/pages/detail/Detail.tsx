@@ -128,6 +128,10 @@ const S_Tap = styled.div<{ selected: boolean }>`
   justify-content: center;
   cursor: pointer;
   padding: 1.6rem 0;
+  border-top: 1px solid
+    ${({ selected, theme }) => (selected ? 'none' : theme.SYSTEM.GRAY50)};
+  border-bottom: 1px solid
+    ${({ selected, theme }) => (selected ? 'none' : theme.SYSTEM.GRAY50)};
   background-color: ${({ selected, theme }) =>
     selected ? theme.SYSTEM.GRAY800 : theme.BG.WHITE};
   color: ${({ selected, theme }) =>
