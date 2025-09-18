@@ -5,10 +5,13 @@ import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.service.MentoringService;
+import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
-import fittoring.mentoring.presentation.dto.*;
-
+import fittoring.mentoring.presentation.dto.MentoringModifyRequest;
+import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
+import fittoring.mentoring.presentation.dto.MentoringResponse;
+import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -63,7 +66,7 @@ public class MentoringController {
     }
 
     @GetMapping("/mentorings")
-    public ResponseEntity<SliceResponse<MentoringSummaryResponse>> getMentoringSummaryPages(
+    public ResponseEntity<MentoringSummaryPaginationResponse> getMentoringSummaryPages(
             @RequestParam(defaultValue = "CREATED_AT") SortKey sortKey,
             @RequestParam(required = false) String cursorCode,
             @RequestParam(required = false) List<Long> categoryIds
@@ -71,7 +74,8 @@ public class MentoringController {
         if (categoryIds == null) {
             categoryIds = List.of();
         }
-        SliceResponse<MentoringSummaryResponse> responseBody = mentoringService.findMentoringSummaryPages(sortKey, cursorCode, categoryIds);
+        MentoringSummaryPaginationResponse responseBody = mentoringService.findMentoringSummaryPages(sortKey,
+                cursorCode, categoryIds);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseBody);
     }
@@ -108,6 +112,6 @@ public class MentoringController {
     public ResponseEntity<MentoringResponse> getMentoringMine(@Login LoginInfo loginInfo) {
         MentoringResponse response = mentoringService.getMentoringByMentorId(loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(response);
+                .body(response);
     }
 }

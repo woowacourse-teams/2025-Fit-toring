@@ -6,10 +6,21 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.ImageNotFoundException;
+import fittoring.mentoring.business.exception.InvalidCursorException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
-import fittoring.mentoring.business.model.*;
+import fittoring.mentoring.business.model.Category;
+import fittoring.mentoring.business.model.CategoryMentoring;
+import fittoring.mentoring.business.model.Certificate;
+import fittoring.mentoring.business.model.Image;
+import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
+import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.SortKey;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.CertificateRepository;
@@ -17,15 +28,15 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
+import fittoring.mentoring.business.service.dto.MentoringPaginationResult;
+import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
-import fittoring.mentoring.presentation.dto.SliceResponse;
 import fittoring.util.CursorCodec;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -49,8 +60,6 @@ public class MentoringService {
     private final CertificateRepository certificateRepository;
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
-
-    private final EntityManager entityManager;
 
     @Transactional
     public void registerMentoring(RegisterMentoringDto dto) {
@@ -342,12 +351,39 @@ public class MentoringService {
         }
     }
 
-    public SliceResponse<MentoringSummaryResponse> findMentoringSummaryPages(SortKey sortKey, String cursorCode, List<Long> categoryIds) {
+    public MentoringSummaryPaginationResponse findMentoringSummaryPages(SortKey sortKey, String cursorCode,
+                                                                        List<Long> categoryIds) {
         Cursor cursor = CursorCodec.decode(cursorCode);
-        // 0. 쿼리 dsl 적용
-        // 1. 카테고리 필터링
-        // 2. 커서 조건
-        //
-        return null;
+        if (cursor.isSameSortKey(sortKey)) {
+            throw new InvalidCursorException("Invalid cursor");
+        }
+
+        MentoringPaginationResult mentoringPaginationResult = mentoringRepository.findMentoringsWithPagination(cursor);
+
+        List<Mentoring> mentorings = mentoringPaginationResult.mentorings();
+        List<Long> mentoringIds = createMentoringIdsByMentoring(mentorings);
+
+        List<RatingStatsDto> ratingStatsDtos = reviewRepository.findReviewStatsByMentoringIds(mentoringIds);
+        Map<Long, RatingStatsDto> ratingStatsDtoMap = createReviewStatsMap(ratingStatsDtos);
+        List<MentoringSummaryResponse> mentoringSummaryResponses = mentorings.stream()
+                .map(mentoring -> {
+                            Image profileImage = getProfileImageOrNull(mentoring.getId());
+                            List<String> categoryTitles = getCategoryMentoringTitlesByMentoringId(mentoring);
+                            RatingStatsDto ratingStatsDto = getReviewStats(mentoring, ratingStatsDtoMap);
+                            return MentoringSummaryResponse.of(
+                                    mentoring,
+                                    categoryTitles,
+                                    profileImage,
+                                    ratingStatsDto
+                            );
+                        }
+                )
+                .toList();
+
+        return new MentoringSummaryPaginationResponse(
+                mentoringSummaryResponses,
+                mentoringPaginationResult.nextCursorCode(),
+                mentoringPaginationResult.hasNext()
+        );
     }
 }

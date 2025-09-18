@@ -8,4 +8,7 @@ public record Cursor(
         long sortValue,
         long id
 ) {
+    public boolean isSameSortKey(SortKey sortKey) {
+        return this.sortKey.equals(sortKey);
+    }
 }
