@@ -1,3 +1,22 @@
+# [1.6.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.5.0...v1.6.0) (2025-09-18)
+
+
+### Bug Fixes
+
+* CaptureSentryErrorParams의 level 타입을 Sentry에서 제공하는 Sentry.SeverityLevel로 변경 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([31d8a11](https://github.com/woowacourse-teams/2025-Fit-toring/commit/31d8a11175070f8e0d4b389caf9a5324f042d1bd))
+* Certificates 인터페이스의 certificateId 타입을 number에서 string으로 변경 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([b99ff58](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b99ff5813c5980d516a7e2fc4b2385c8ebbf4945))
+
+
+### Features
+
+* addSentryBreadcrumb 함수 추가하여 Sentry에 커스텀 breadcrumb 추가 기능 구현 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([1843161](https://github.com/woowacourse-teams/2025-Fit-toring/commit/18431613bc166556111f0f654c42b4b3ec277fe9))
+* captureSentryError 함수에 extras 매개변수 추가 및 Sentry.withScope로 스코프 설정 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([5f7b818](https://github.com/woowacourse-teams/2025-Fit-toring/commit/5f7b8187dafde7fa41b8187683536b5f41f1c65d))
+* Sentry 초기화 시 환경 변수 설정 추가 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([eb1d8b6](https://github.com/woowacourse-teams/2025-Fit-toring/commit/eb1d8b6d75b0caa2b766bc39412f0423407f8da5))
+* 멘토링 개설 captureSentryError의 level을 'warning'에서 'error'로 변경하고 extras에 mentoringData, profileImageFile, certificateImageFiles 추가 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([372f749](https://github.com/woowacourse-teams/2025-Fit-toring/commit/372f749674035349d0f7799a33ca7f8c64a86623))
+* 멘토링 생성 Sentry breadcrumb 추가 - 멘토링 데이터, 프로필 이미지, 자격증 이미지 변경 및 폼 제출 시도 시 로깅 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([66ed410](https://github.com/woowacourse-teams/2025-Fit-toring/commit/66ed4105bab01e70e3677354f7810b2a0580c404))
+* 멘토링 업데이트 captureSentryError의 level을 'warning'에서 'error'로 변경하고 extras에 mentoringData, profileImageFile, certificateImageFiles, mentoringId 추가 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([53c40da](https://github.com/woowacourse-teams/2025-Fit-toring/commit/53c40daafe5e42401d27fe14a2da8a5c2ff7f6e3))
+* 멘토링 예약 captureSentryError의 level을 'warning'에서 'error'로 변경하고 extras에 counselContent 추가 [#680](https://github.com/woowacourse-teams/2025-Fit-toring/issues/680) ([2370493](https://github.com/woowacourse-teams/2025-Fit-toring/commit/237049395a8ab3fe5f4c25b68d04ddc0444a11e7))
+
 # [1.5.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.4.1...v1.5.0) (2025-09-18)
 
 
