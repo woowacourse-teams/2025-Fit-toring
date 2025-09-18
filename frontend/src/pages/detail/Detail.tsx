@@ -105,8 +105,7 @@ function Detail() {
 export default Detail;
 
 const S_Container = styled.div`
-  /* margin-bottom: 10rem; */
-  /* padding: 0 2rem; */
+  margin-bottom: 12rem;
 `;
 
 const S_MentorInfoWrapper = styled.div`
