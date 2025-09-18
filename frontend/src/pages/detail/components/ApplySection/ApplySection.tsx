@@ -8,6 +8,7 @@ import { getMineMentoring } from '../../../../common/apis/getMineMentoring';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { THEME } from '../../../../common/styles/theme';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
@@ -70,6 +71,9 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
         size="full"
         customStyle={css`
           font-size: 1.2rem;
+          background-color: ${THEME.BG.BLACK};
+          ${THEME.TYPOGRAPHY.LB4_R}
+          padding: 1.6rem 0;
         `}
         onClick={handleMoveToBookingPage}
       >
@@ -83,39 +87,47 @@ export default ApplySection;
 
 const S_Container = styled.section`
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   position: fixed;
   bottom: 0;
 
   width: 48rem;
   height: 9.4rem;
-  padding: 2rem 2.1rem 0.8rem;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
-  border-radius: 8px 8px 0 0;
+  padding: 2.5rem 2.7rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+  background-color: ${({ theme }) => theme.BG.WHITE};
 
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
+  @media screen and (min-width: 481px) {
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-  @media screen and (width <= 480px) {
+  @media screen and (max-width: 480px) {
     width: 100%;
     border: none;
+    border-top: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+    left: 0;
+    transform: none;
   }
 `;
 
 const S_Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
 
-  width: 100%;
+  width: fit-content;
+  white-space: nowrap;
 
   & p {
     ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-    color: ${({ theme }) => theme.FONT.B03};
+    color: ${({ theme }) => theme.SYSTEM.GRAY800};
   }
 
   & strong {
-    ${({ theme }) => theme.TYPOGRAPHY.H4_B};
-    color: ${({ theme }) => theme.SYSTEM.MAIN600};
+    font-size: 2.6rem;
+    font-weight: bold;
+    color: ${({ theme }) => theme.FONT.B01};
   }
 `;
