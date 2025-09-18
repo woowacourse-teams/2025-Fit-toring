@@ -9,6 +9,7 @@ import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import Checkbox from '../Checkbox/Checkbox';
+import { validateTextarea } from '../../../../common/utils/validateDetail';
 
 interface BookingFormProps {
   handleBookingButtonClick: () => void;
@@ -28,7 +29,12 @@ function BookingForm({
   });
   const [sharingAgreed, setSharingAgreed] = useState(false);
 
-  const [errored, setErrored] = useState(false);
+  const [errored, setErrored] = useState({
+    checkbox: false,
+    textarea: false,
+  });
+
+  const detailErrorMessage = validateTextarea(counselContent);
 
   const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
@@ -62,16 +68,20 @@ function BookingForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!sharingAgreed) {
-      setErrored(true);
-      return;
-    }
+    const newErrors = {
+      checkbox: !sharingAgreed,
+      textarea: !!detailErrorMessage,
+    };
+
+    setErrored(newErrors);
+
+    if (newErrors.checkbox || newErrors.textarea) return;
 
     handleBooking();
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setErrored(false);
+    setErrored((prev) => ({ ...prev, checkbox: !e.target.checked }));
     setSharingAgreed(e.target.checked);
   };
 
@@ -99,13 +109,16 @@ function BookingForm({
           <S_UserInfoLabel>전화번호</S_UserInfoLabel>
           <S_UserInfoText>{userInfo.phoneNumber}</S_UserInfoText>
         </S_InfoRow>
-        <FormField label="상담 내용(선택사항)" errorMessage={''}>
+        <FormField
+          label="상담 내용(선택사항)"
+          errorMessage={detailErrorMessage}
+        >
           <S_Textarea
             id="details"
             placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
 더 정확한 조언을 받을 수 있습니다."
             onChange={handleCounselContentChange}
-            errored={false}
+            errored={errored.textarea}
             value={counselContent}
           />
         </FormField>
@@ -115,13 +128,15 @@ function BookingForm({
           id="sharingAgreed"
           checked={sharingAgreed}
           onChange={handleCheckboxChange}
-          errored={errored}
+          errored={errored.checkbox}
           label={<S_CheckboxLabelText>전화번호 제공 동의</S_CheckboxLabelText>}
         />
         <S_CheckboxSubText>
           멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
         </S_CheckboxSubText>
-        {errored && <S_ErrorText>전화번호 제공 동의를 해주세요.</S_ErrorText>}
+        {errored.checkbox && (
+          <S_ErrorText>전화번호 제공 동의를 해주세요.</S_ErrorText>
+        )}
       </S_LabelWrapper>
 
       <BookingSummarySection price={mentoringPrice} />
