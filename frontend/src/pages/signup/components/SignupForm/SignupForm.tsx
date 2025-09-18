@@ -4,6 +4,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import ApiError from '../../../../common/apis/ApiError';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
@@ -225,6 +226,9 @@ function SignupForm() {
       }
     } catch (error) {
       console.error('회원가입 실패', error);
+      if (error instanceof ApiError) {
+        alert(error.message);
+      }
 
       captureSentryError({
         error,
