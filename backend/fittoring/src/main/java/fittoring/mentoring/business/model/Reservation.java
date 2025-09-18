@@ -34,6 +34,7 @@ public class Reservation {
     @Id
     private Long id;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @CreatedDate
