@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
@@ -6,6 +8,7 @@ import starIcon from '../../../../common/assets/images/starIcon.svg';
 import Button from '../../../../common/components/Button/Button';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
+import ProfileImageModal from '../ProfileImageModal/ProfileImageModal';
 
 interface ProfileProps {
   profileImg: string | null;
@@ -26,6 +29,18 @@ function ProfileSection({
   introduction,
   onCertificateShowButton,
 }: ProfileProps) {
+  const [opened, setOpened] = useState(false);
+
+  const handleImgClick = () => {
+    setOpened(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const handleCloseClick = () => {
+    setOpened(false);
+    document.body.style.overflow = 'auto';
+  };
+
   return (
     <S_Container>
       <S_ProfileImg
@@ -34,6 +49,7 @@ function ProfileSection({
         onError={(e) => {
           e.currentTarget.src = defaultProfileImg;
         }}
+        onClick={handleImgClick}
       />
       <S_InfoWrapper>
         <S_InfoHeader>
@@ -59,6 +75,11 @@ function ProfileSection({
         <CategoryTags tagNames={categories} />
         <S_Introduction>{introduction}</S_Introduction>
       </S_InfoWrapper>
+      <ProfileImageModal
+        opened={opened}
+        imageSrc={profileImg || defaultProfileImg}
+        onCloseClick={handleCloseClick}
+      />
     </S_Container>
   );
 }
@@ -69,6 +90,7 @@ const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  position: relative;
 `;
 
 const S_ProfileImg = styled.img`
@@ -76,6 +98,7 @@ const S_ProfileImg = styled.img`
   height: 43rem;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  cursor: pointer;
 `;
 
 const S_InfoWrapper = styled.div`
