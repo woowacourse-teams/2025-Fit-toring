@@ -21,6 +21,7 @@ export const DefaultProfile: Story = {
     ratingCount: 10,
     introduction:
       '5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
+    onCertificateShowButton: () => {},
   },
   parameters: {
     docs: {
