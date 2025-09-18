@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.4.1...v1.5.0) (2025-09-18)
+
+
+### Features
+
+* 이미 있는 전화번호로 가입시 실패 alert 추가 [#681](https://github.com/woowacourse-teams/2025-Fit-toring/issues/681) ([592aff0](https://github.com/woowacourse-teams/2025-Fit-toring/commit/592aff0eb8f1608261fadeeb0c357f7be362e2c2))
+
 ## [1.4.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.4.0...v1.4.1) (2025-09-17)
 
 
