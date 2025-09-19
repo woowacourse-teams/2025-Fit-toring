@@ -46,19 +46,21 @@ function MentoringItem({
         <S_ProfileImage src={mentorProfileImage}></S_ProfileImage>
         <S_MessageAndReviewWrapper>
           <S_Message>{content}</S_Message>
-          <ReviewButton
-            isReviewed={isReviewed}
-            status={status}
-            onReviewButtonClick={handleReviewModalToggle}
-          />
+          {status !== StatusTypeEnum.REJECTED ? (
+            <ReviewButton
+              isReviewed={isReviewed}
+              status={status}
+              onReviewButtonClick={handleReviewModalToggle}
+            />
+          ) : null}
         </S_MessageAndReviewWrapper>
       </S_MentorCardWrapper>
-      {status !== StatusTypeEnum.REJECTED ? (
+      {status !== StatusTypeEnum.REJECTED &&
+      status !== StatusTypeEnum.COMPLETE ? (
         <S_StepperWrapper>
           <MentoringStepper status={status} />
         </S_StepperWrapper>
       ) : null}
-
       <ReviewModal
         reservationId={reservationId}
         mentorName={mentorName}
@@ -76,7 +78,6 @@ const S_Container = styled.li`
   display: flex;
   flex-direction: column;
 
-  height: 31.8rem;
   padding: 2.4rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
   border-radius: 5px;
@@ -139,4 +140,9 @@ const S_Message = styled.div`
   ${({ theme }) => theme.TYPOGRAPHY.C2_R}
 `;
 
+const S_StepperWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+
+  width: 100%;
 `;

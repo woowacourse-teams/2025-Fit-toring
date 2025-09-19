@@ -56,37 +56,10 @@ function MentoringApplicationStatus({
 
 export default MentoringApplicationStatus;
 
-const statusStyles: Record<
-  StatusType,
-  {
-    border: (theme: myTheme) => string;
-    background: (theme: myTheme) => string;
-    color: (theme: myTheme) => string;
-  }
-> = {
-  PENDING: {
-    border: (theme) => theme.OUTLINE.YELLOW,
-    background: (theme) => theme.BG.YELLOW,
-    color: (theme) => theme.FONT.Y01,
-  },
-  APPROVED: {
-    border: (theme) => theme.SYSTEM.MAIN300,
-    background: (theme) => theme.SYSTEM.MAIN100,
-    color: (theme) => theme.SYSTEM.MAIN800,
-  },
-  COMPLETE: {
-    border: (theme) => theme.SYSTEM.MAIN500,
-    background: (theme) => theme.SYSTEM.MAIN200,
-    color: (theme) => theme.SYSTEM.MAIN900,
-  },
-  REJECTED: {
-    border: (theme) => theme.FONT.ERROR,
-    background: (theme) => theme.BG.RED,
-    color: (theme) => theme.FONT.W01,
-  },
-} as const;
-
 const S_Container = styled.p<MentoringApplicationStatusProps>`
-  color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  color: ${({ theme, status }) =>
+    status === StatusTypeEnum.REJECTED
+      ? theme.SYSTEM.GRAY600
+      : theme.SYSTEM.MAIN500};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
