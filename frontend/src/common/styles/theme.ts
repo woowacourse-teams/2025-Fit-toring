@@ -7,7 +7,7 @@ export const THEME = {
     GRAY700: '#505050',
     GRAY600: '#666666',
     GRAY500: '#767676',
-    GRAY400: '#888888',
+    GRAY400: '#999999',
     GRAY300: '#E3E3E3',
     GRAY200: '#BBBBBB',
     GRAY100: '#E1E1E1',

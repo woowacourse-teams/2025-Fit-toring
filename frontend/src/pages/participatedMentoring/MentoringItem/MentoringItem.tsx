@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import styled from '@emotion/styled';
 
-import defaultImage from '../../../common/assets/images/profileImg.svg';
 import MentoringApplicationStatus from '../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import MentoringStepper from '../../../common/components/mentoringStepper/MentoringStepper/MentoringStepper';
 import { StatusTypeEnum } from '../../../common/types/statusType';
@@ -20,11 +19,11 @@ const TIME = '15';
 function MentoringItem({
   mentoring: {
     reservationId,
+    mentoringId,
     mentorName,
     mentorProfileImage,
-    price,
+    content,
     reservedAt,
-    categories,
     isReviewed,
     status,
   },
@@ -38,43 +37,28 @@ function MentoringItem({
 
   return (
     <S_Container key={reservationId}>
-      <S_MentorInfoWrapper>
-        <S_ProfileImage
-          src={mentorProfileImage || defaultImage}
-          alt={`${mentorName} 멘토`}
-          onError={(e) => {
-            e.currentTarget.src = defaultImage;
-          }}
-        />
-        <S_MentoringInfo>
-          <S_Name>{mentorName} 멘토</S_Name>
-          <S_CategoryWrapper>
-            {categories.map((category) => (
-              <S_Category key={category}>{category}</S_Category>
-            ))}
-          </S_CategoryWrapper>
-        </S_MentoringInfo>
-        <S_StatusWrapper>
-          <MentoringApplicationStatus status={status} />
-        </S_StatusWrapper>
-      </S_MentorInfoWrapper>
-
+      <S_SummaryWrapper>
+        <S_Name>{mentorName}</S_Name>
+        <MentoringApplicationStatus status={status} type="PARTICIPATED" />
+      </S_SummaryWrapper>
+      <S_ReservedAt>신청일: {reservedAt}</S_ReservedAt>
+      <S_MentorCardWrapper>
+        <S_ProfileImage src={mentorProfileImage}></S_ProfileImage>
+        <S_MessageAndReviewWrapper>
+          <S_Message>{content}</S_Message>
+          <ReviewButton
+            isReviewed={isReviewed}
+            status={status}
+            onReviewButtonClick={handleReviewModalToggle}
+          />
+        </S_MessageAndReviewWrapper>
+      </S_MentorCardWrapper>
       {status !== StatusTypeEnum.REJECTED ? (
         <S_StepperWrapper>
           <MentoringStepper status={status} />
         </S_StepperWrapper>
       ) : null}
-      <S_ApplicationInfoWrapper>
-        <S_ApplicationDate>⏰ {reservedAt}</S_ApplicationDate>
-        <S_ApplicationPrice>
-          💰 {TIME}분 {price.toLocaleString()}원
-        </S_ApplicationPrice>
-        <ReviewButton
-          isReviewed={isReviewed}
-          status={status}
-          onReviewButtonClick={handleReviewModalToggle}
-        />
-      </S_ApplicationInfoWrapper>
+
       <ReviewModal
         reservationId={reservationId}
         mentorName={mentorName}
@@ -91,90 +75,68 @@ export default MentoringItem;
 const S_Container = styled.li`
   display: flex;
   flex-direction: column;
-  gap: 1.3rem;
 
-  padding: 1.5rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 16px;
-
-  transition: all 0.2s ease;
-
-  :hover {
-    box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
-  }
+  height: 31.8rem;
+  padding: 2.4rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+  border-radius: 5px;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const S_MentorInfoWrapper = styled.div`
+const S_SummaryWrapper = styled.div`
   display: flex;
-  gap: 1.2rem;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  margin-bottom: 0.9rem;
+`;
+
+const S_Name = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.LB3_SB}
+`;
+
+const S_ReservedAt = styled.p`
+  margin-bottom: 1.6rem;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY500};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
+`;
+
+const S_MentorCardWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  width: 100%;
 `;
 
 const S_ProfileImage = styled.img`
-  width: 4.8rem;
-  height: 4.8rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 50%;
-
-  aspect-ratio: 1/1;
-  object-fit: cover;
+  width: 12rem;
+  height: 14rem;
+  border-radius: 5px;
 `;
 
-const S_Name = styled.h4`
-  color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
-`;
-
-const S_MentoringInfo = styled.div`
+const S_MessageAndReviewWrapper = styled.div`
   display: flex;
-  flex-flow: column wrap;
-  flex-grow: 1;
-  gap: 1rem;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 100%;
+  padding-left: 1.2rem;
 `;
 
-const S_CategoryWrapper = styled.div`
+const S_Message = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
+
+  width: 100%;
+  height: 8.5rem;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY800};
+  overflow-y: scroll;
+
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R}
 `;
 
-const S_Category = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0.2rem 0.4rem;
-  border-radius: 6px;
-
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN100};
-
-  color: ${({ theme }) => theme.SYSTEM.MAIN600};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
-`;
-
-const S_StatusWrapper = styled.div`
-  height: auto;
-`;
-
-const S_StepperWrapper = styled.div`
-  width: 90%;
-  margin: 0 auto;
-`;
-
-const S_ApplicationInfoWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-`;
-
-const S_ApplicationDate = styled.p`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
-`;
-
-const S_ApplicationPrice = styled.p`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
