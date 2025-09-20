@@ -1,5 +1,9 @@
 import styled from '@emotion/styled';
 
+import useNameInput from '../../../common/hooks/useNameInput';
+import UserInfoFields from '../../signup/components/UserInfoFields/UserInfoFields';
+import useGender from '../hooks/useGender';
+
 import type { UserProfileResponse } from '../types/userProfile';
 
 interface EditProfileFormProps {
@@ -7,13 +11,27 @@ interface EditProfileFormProps {
 }
 
 function EditProfileForm({ myProfile }: EditProfileFormProps) {
-  const { name, gender } = myProfile;
+  const { name: initialName, gender: initialGender } = myProfile;
+
+  const {
+    name,
+    handleNameChange,
+    errorMessage: nameErrorMessage,
+    validated: nameValidated,
+  } = useNameInput(initialName);
+
+  const { gender, handleGenderChange } = useGender(initialGender);
 
   return (
     <S_Container>
       <S_FormFields>
-        {name}
-        {gender}
+        <UserInfoFields
+          name={name}
+          nameErrorMessage={nameErrorMessage}
+          onNameChange={handleNameChange}
+          gender={gender}
+          onGenderChange={handleGenderChange}
+        />
       </S_FormFields>
     </S_Container>
   );
