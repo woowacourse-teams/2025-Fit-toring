@@ -105,6 +105,7 @@ const S_Container = styled.section`
 
 const S_Title = styled.h3`
   flex-grow: 1;
+
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
 `;
@@ -137,9 +138,14 @@ const S_Item = styled.li`
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
-const S_ItemText = styled.span``;
+const S_ItemText = styled.span`
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
 
-const S_PhotoIcon = styled.img``;
+const S_PhotoIcon = styled.img`
+  width: 2.4rem;
+  aspect-ratio: 1/1;
+`;
 
 const S_EmptyDescription = styled.p`
   color: ${({ theme }) => theme.FONT.B02};
