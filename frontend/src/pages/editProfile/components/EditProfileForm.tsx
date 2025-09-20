@@ -3,7 +3,9 @@ import styled from '@emotion/styled';
 
 import Button from '../../../common/components/Button/Button';
 import useNameInput from '../../../common/hooks/useNameInput';
+import PasswordFields from '../../signup/components/PasswordFields/PasswordFields';
 import UserInfoFields from '../../signup/components/UserInfoFields/UserInfoFields';
+import usePasswordWithConfirmInput from '../../signup/hooks/usePasswordWithConfirmInput';
 import useGender from '../hooks/useGender';
 
 import type { UserProfileResponse } from '../types/userProfile';
@@ -14,6 +16,7 @@ interface EditProfileFormProps {
 
 function EditProfileForm({ myProfile }: EditProfileFormProps) {
   const { name: initialName, gender: initialGender } = myProfile;
+  const initialPassword = '';
 
   const {
     name,
@@ -24,14 +27,35 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
 
   const { gender, handleGenderChange } = useGender(initialGender);
 
-  const myProfileChanged = initialName !== name || initialGender !== gender;
+  const {
+    password,
+    passwordConfirm,
+    passwordErrorMessage,
+    passwordConfirmErrorMessage,
+    handlePasswordChange,
+    handlePasswordConfirmChange,
+    passwordValidated,
+    passwordConfirmValidated,
+  } = usePasswordWithConfirmInput();
+
+  const myProfileChanged =
+    initialName !== name ||
+    initialGender !== gender ||
+    initialPassword !== password;
 
   const validateForm = () => {
     if (!myProfileChanged) {
       return false;
     }
 
-    return nameValidated && !!gender;
+    const validations = [
+      nameValidated,
+      !!gender,
+      passwordValidated,
+      passwordConfirmValidated,
+    ];
+
+    return validations.every(Boolean);
   };
 
   return (
@@ -43,6 +67,14 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
           onNameChange={handleNameChange}
           gender={gender}
           onGenderChange={handleGenderChange}
+        />
+        <PasswordFields
+          password={password}
+          passwordConfirm={passwordConfirm}
+          passwordErrorMessage={passwordErrorMessage}
+          passwordConfirmErrorMessage={passwordConfirmErrorMessage}
+          onPasswordChange={handlePasswordChange}
+          onPasswordConfirmChange={handlePasswordConfirmChange}
         />
       </S_FormFields>
       <Button
