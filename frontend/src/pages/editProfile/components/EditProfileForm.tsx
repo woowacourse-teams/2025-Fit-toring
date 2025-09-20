@@ -24,7 +24,13 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
 
   const { gender, handleGenderChange } = useGender(initialGender);
 
+  const myProfileChanged = initialName !== name || initialGender !== gender;
+
   const validateForm = () => {
+    if (!myProfileChanged) {
+      return false;
+    }
+
     return nameValidated && !!gender;
   };
 
