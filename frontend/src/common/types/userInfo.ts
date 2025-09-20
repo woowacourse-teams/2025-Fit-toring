@@ -1,5 +1,5 @@
 export interface UserInfo {
-  loginId: number;
+  loginId: string;
   name: string;
   gender: string;
   phoneNumber: string;
