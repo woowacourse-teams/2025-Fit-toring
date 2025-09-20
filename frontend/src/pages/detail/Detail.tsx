@@ -50,9 +50,7 @@ function Detail() {
   };
 
   const handleCertificateShowButton = () => {
-    if (selected === 'review') {
-      setSelected('detail');
-    }
+    setSelected('detail');
   };
 
   if (!data) {
