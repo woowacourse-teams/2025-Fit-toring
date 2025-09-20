@@ -13,12 +13,14 @@ interface DetailReviewProps {
   mentoringId: number;
   ratingAverage: string;
   ratingCount: number;
+  loadingComponent: React.ReactNode;
 }
 
 function DetailReview({
   mentoringId,
   ratingAverage,
   ratingCount,
+  loadingComponent,
 }: DetailReviewProps) {
   const [totalReviewInfo, setTotalReviewInfo] = useState<
     ReviewResponse[] | null
@@ -44,7 +46,7 @@ function DetailReview({
   }, [fetchReview]);
 
   if (!totalReviewInfo) {
-    return null;
+    return <>{loadingComponent}</>;
   }
 
   return (

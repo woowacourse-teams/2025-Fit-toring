@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { useLocation, useParams } from 'react-router-dom';
 
 import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
+import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import ApplySection from './components/ApplySection/ApplySection';
@@ -44,9 +45,11 @@ function Detail() {
   }, [mentoringId]);
 
   const [selected, setSelected] = useState<TapType>(state?.tab ?? 'detail');
+  const [scrollY, setScrollY] = useState(0);
 
   const handleTapClick = (selectedType: TapType) => {
     setSelected(selectedType);
+    setScrollY(window.scrollY);
   };
 
   const handleCertificateShowButton = () => {
@@ -98,6 +101,11 @@ function Detail() {
               mentoringId={data.id}
               ratingAverage={data.ratingAverage}
               ratingCount={data.ratingCount}
+              loadingComponent={
+                <S_SpinnerWrapper height={scrollY}>
+                  <LoadingSpinner />
+                </S_SpinnerWrapper>
+              }
             />
           )}
         </S_ContentWrapper>
@@ -174,4 +182,13 @@ const S_Line = styled.hr`
   height: 1px;
   margin: 0;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+`;
+
+const S_SpinnerWrapper = styled.div<{ height: number }>`
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+
+  height: ${({ height }) => `${height}px`};
 `;
