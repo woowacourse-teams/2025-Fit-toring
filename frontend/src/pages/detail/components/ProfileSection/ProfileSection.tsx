@@ -8,6 +8,7 @@ import starIcon from '../../../../common/assets/images/starIcon.svg';
 import Button from '../../../../common/components/Button/Button';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
+import useEscapeKeyDown from '../../../../common/hooks/useEscapeKeyDown';
 import ProfileImageModal from '../ProfileImageModal/ProfileImageModal';
 
 interface ProfileProps {
@@ -40,6 +41,8 @@ function ProfileSection({
     setOpened(false);
     document.body.style.overflow = 'auto';
   };
+
+  useEscapeKeyDown(handleCloseClick, opened);
 
   return (
     <S_Container>
