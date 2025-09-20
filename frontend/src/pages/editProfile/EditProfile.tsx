@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 
+import EditProfileForm from './components/EditProfileForm';
 import useMyProfile from './hooks/useMyProfile';
 
 function EditProfile() {
@@ -9,7 +10,11 @@ function EditProfile() {
     return null;
   }
 
-  return <S_Container>회원 정보 수정 페이지</S_Container>;
+  return (
+    <S_Container>
+      <EditProfileForm myProfile={myProfile} />
+    </S_Container>
+  );
 }
 
 const S_Container = styled.section`
