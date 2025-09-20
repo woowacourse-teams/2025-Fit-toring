@@ -157,7 +157,7 @@ const S_ContentWrapper = styled.div`
   display: flex;
 
   width: 100%;
-  padding: 4rem 2.7rem 0;
+  padding: 3rem 2.7rem 0;
   cursor: pointer;
 `;
 
