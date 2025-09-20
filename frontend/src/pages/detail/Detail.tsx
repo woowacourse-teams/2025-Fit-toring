@@ -122,22 +122,27 @@ const S_MentorInfoWrapper = styled.div`
 
 const S_TapWrapper = styled.div`
   display: flex;
+
   width: 100%;
 `;
 
 const S_Tap = styled.div<{ selected: boolean }>`
-  flex: 1;
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
+
   cursor: pointer;
+
   padding: 1.6rem 0;
   border-top: 1px solid
     ${({ selected, theme }) => (selected ? 'none' : theme.SYSTEM.GRAY50)};
   border-bottom: 1px solid
     ${({ selected, theme }) => (selected ? 'none' : theme.SYSTEM.GRAY50)};
+
   background-color: ${({ selected, theme }) =>
     selected ? theme.SYSTEM.GRAY800 : theme.BG.WHITE};
+
   color: ${({ selected, theme }) =>
     selected ? theme.BG.WHITE : theme.FONT.B01};
 
@@ -154,6 +159,7 @@ const S_ContentWrapper = styled.div`
   width: 100%;
   padding: 0 2rem;
   padding-top: 4rem;
+  cursor: pointer;
 `;
 
 const S_DetailWrapper = styled.div`

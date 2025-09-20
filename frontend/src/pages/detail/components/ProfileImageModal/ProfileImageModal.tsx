@@ -34,15 +34,16 @@ export default ProfileImageModal;
 const S_Contaienr = styled.div`
   display: flex;
   flex-direction: column;
-  width: 48rem;
-  height: 100vh;
-  background-color: ${({ theme }) => theme.BG.BLACK};
-
   position: fixed;
   top: 0;
   left: 50%;
-  transform: translateX(-50%);
   z-index: 100;
+
+  width: 48rem;
+  height: 100vh;
+
+  background-color: ${({ theme }) => theme.BG.BLACK};
+  transform: translateX(-50%);
 
   @media screen and (width <= 480px) {
     width: 100%;
@@ -51,22 +52,26 @@ const S_Contaienr = styled.div`
 
 const S_CloseButtonWrapper = styled.div`
   position: absolute;
+
   width: 100%;
   height: 6rem;
+
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.1) 0%,
-    rgba(0, 0, 0, 0.05) 50%,
+    rgb(0 0 0 / 10%) 0%,
+    rgb(0 0 0 / 5%) 50%,
     transparent 100%
   );
 `;
 
 const S_CloseButton = styled.button`
-  border: none;
-  background-color: transparent;
-  padding: 1rem;
-  cursor: pointer;
   position: absolute;
+
+  padding: 1rem;
+  border: none;
+
+  background-color: transparent;
+  cursor: pointer;
 `;
 const S_CloseIcon = styled.img`
   width: 2.4rem;
@@ -75,9 +80,9 @@ const S_CloseIcon = styled.img`
 
 const S_ImgWrapper = styled.div`
   display: flex;
+  flex-grow: 1;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
 `;
 
 const S_Img = styled.img`

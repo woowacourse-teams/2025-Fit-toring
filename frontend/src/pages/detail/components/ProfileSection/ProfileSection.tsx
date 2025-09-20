@@ -89,8 +89,9 @@ export default ProfileSection;
 const S_Container = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
   position: relative;
+
+  width: 100%;
 `;
 
 const S_ProfileImg = styled.img`
@@ -104,14 +105,15 @@ const S_ProfileImg = styled.img`
 const S_InfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 2.2rem 2.7rem;
   gap: 0.7rem;
+
+  padding: 2.2rem 2.7rem;
 `;
 
 const S_InfoHeader = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const S_Title = styled.h3`
@@ -120,9 +122,10 @@ const S_Title = styled.h3`
 `;
 
 const S_MoveLink = styled.a`
-  text-decoration: none;
-  color: inherit;
   display: block;
+
+  color: inherit;
+  text-decoration: none;
 `;
 
 const S_Introduction = styled.p`

@@ -70,10 +70,13 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
       <Button
         size="full"
         customStyle={css`
-          font-size: 1.2rem;
-          background-color: ${THEME.BG.BLACK};
-          ${THEME.TYPOGRAPHY.LB4_R}
           padding: 1.6rem 0;
+
+          background-color: ${THEME.BG.BLACK};
+
+          font-size: 1.2rem;
+
+          ${THEME.TYPOGRAPHY.LB4_R}
         `}
         onClick={handleMoveToBookingPage}
       >
@@ -96,18 +99,20 @@ const S_Container = styled.section`
   height: 9.4rem;
   padding: 2.5rem 2.7rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+
   background-color: ${({ theme }) => theme.BG.WHITE};
 
-  @media screen and (min-width: 481px) {
+  @media screen and (width >= 481px) {
     left: 50%;
     transform: translateX(-50%);
   }
 
-  @media screen and (max-width: 480px) {
+  @media screen and (width <= 480px) {
+    left: 0;
+
     width: 100%;
     border: none;
     border-top: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
-    left: 0;
     transform: none;
   }
 `;
@@ -118,6 +123,7 @@ const S_Wrapper = styled.div`
   align-items: flex-start;
 
   width: fit-content;
+
   white-space: nowrap;
 
   & p {
@@ -126,8 +132,8 @@ const S_Wrapper = styled.div`
   }
 
   & strong {
-    font-size: 2.6rem;
-    font-weight: bold;
     color: ${({ theme }) => theme.FONT.B01};
+    font-weight: bold;
+    font-size: 2.6rem;
   }
 `;
