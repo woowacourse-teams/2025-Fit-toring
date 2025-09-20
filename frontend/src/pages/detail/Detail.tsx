@@ -123,7 +123,6 @@ const S_MentorInfoWrapper = styled.div`
 const S_TapWrapper = styled.div`
   display: flex;
   width: 100%;
-  overflow: hidden;
 `;
 
 const S_Tap = styled.div<{ selected: boolean }>`
