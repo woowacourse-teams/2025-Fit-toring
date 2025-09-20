@@ -17,6 +17,7 @@ interface EditProfileFormProps {
 function EditProfileForm({ myProfile }: EditProfileFormProps) {
   const { name: initialName, gender: initialGender } = myProfile;
   const initialPassword = '';
+  const initialPasswordConfirm = '';
 
   const {
     name,
@@ -38,22 +39,36 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     passwordConfirmValidated,
   } = usePasswordWithConfirmInput();
 
-  const myProfileChanged =
-    initialName !== name ||
-    initialGender !== gender ||
-    initialPassword !== password;
+  const profileFields = [
+    {
+      target: 'name',
+      changed: name !== initialName,
+      validated: nameValidated,
+    },
+    {
+      target: 'gender',
+      changed: gender !== initialGender,
+      validated: !!gender,
+    },
+    {
+      target: 'password',
+      changed:
+        password !== initialPassword ||
+        passwordConfirm !== initialPasswordConfirm,
+      validated: passwordValidated && passwordConfirmValidated,
+    },
+  ] as const;
+
+  const myProfileChanged = profileFields.some((item) => item.changed);
 
   const validateForm = () => {
     if (!myProfileChanged) {
       return false;
     }
 
-    const validations = [
-      nameValidated,
-      !!gender,
-      passwordValidated,
-      passwordConfirmValidated,
-    ];
+    const validations = profileFields
+      .filter((item) => item.changed)
+      .map((item) => item.validated);
 
     return validations.every(Boolean);
   };
