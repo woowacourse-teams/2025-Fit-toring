@@ -17,7 +17,6 @@ export default Introduction;
 
 const S_Container = styled.div`
   width: 100%;
-  padding: 0 1rem;
 
   color: ${({ theme }) => theme.FONT.B02};
   white-space: pre-line;
