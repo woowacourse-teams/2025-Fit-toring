@@ -1,3 +1,16 @@
+# [1.7.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.6.0...v1.7.0) (2025-09-21)
+
+
+### Features
+
+* Docker Compose에 로그 관리 설정 추가 ([92ca3f3](https://github.com/woowacourse-teams/2025-Fit-toring/commit/92ca3f3f507c909ee1d6286ff7d789acbdcc52e8))
+* 리뷰 탭 전환 시 레이아웃 밀림 방지용 로딩 스피너 추가 [#669](https://github.com/woowacourse-teams/2025-Fit-toring/issues/669) ([d577d37](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d577d375e81cece9255c60287a7f922a726b8089))
+* 리뷰 탭에서 '멘토링 보러가기' 클릭 시 상세보기 탭 전환 및 스크롤 이동 기능 추가 [#669](https://github.com/woowacourse-teams/2025-Fit-toring/issues/669) ([6aea454](https://github.com/woowacourse-teams/2025-Fit-toring/commit/6aea454a5180b1640d64de659d787b1c55bef05f))
+* 멘토링 엔티티에 생성 시간 컬럼 추가 ([92fc441](https://github.com/woowacourse-teams/2025-Fit-toring/commit/92fc441ae305846b829fe9da8515c0f1655af90c))
+* 모달 열림시 esc키로 닫을 수 있는 기능 추가 [#669](https://github.com/woowacourse-teams/2025-Fit-toring/issues/669) ([3ab6d33](https://github.com/woowacourse-teams/2025-Fit-toring/commit/3ab6d336ba49d2a837419fce32476d1f8c7143a9))
+* 자격사항 보러가기 클릭시 페이지내에서 스크롤 이동하도록 구현 [#669](https://github.com/woowacourse-teams/2025-Fit-toring/issues/669) ([7226dc3](https://github.com/woowacourse-teams/2025-Fit-toring/commit/7226dc36c32cf63efce1656330d75187a96dcadd))
+* 프로필 이미지 클릭시 원본 이미지를 보여주는 모달이 나타나도록 구현 [#669](https://github.com/woowacourse-teams/2025-Fit-toring/issues/669) ([0b28f82](https://github.com/woowacourse-teams/2025-Fit-toring/commit/0b28f824289dbd941e82a0eb294186bf54af910d))
+
 # [1.6.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.5.0...v1.6.0) (2025-09-18)
 
 
