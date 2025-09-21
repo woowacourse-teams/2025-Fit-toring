@@ -1,9 +1,9 @@
-import Profile from './Profile';
+import Profile from './ProfileSection';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
-  title: 'Detail/Profile',
+  title: 'Detail/ProfileSection',
   component: Profile,
 
   decorators: [(Story) => <Story />],
@@ -17,8 +17,11 @@ export const DefaultProfile: Story = {
     profileImg: 'https://example.com/profile.png',
     mentorName: '김트레이너',
     categories: ['식단관리', '체력 증진', '근력 운동'],
-    ratingAverage: 3.7,
+    ratingAverage: '3.7',
     ratingCount: 10,
+    introduction:
+      '5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
+    onCertificateShowButton: () => {},
   },
   parameters: {
     docs: {

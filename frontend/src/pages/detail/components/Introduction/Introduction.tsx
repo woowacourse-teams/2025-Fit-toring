@@ -17,7 +17,6 @@ export default Introduction;
 
 const S_Container = styled.div`
   width: 100%;
-  padding: 0 1rem;
 
   color: ${({ theme }) => theme.FONT.B02};
   white-space: pre-line;
@@ -26,10 +25,10 @@ const S_Container = styled.div`
 
 const S_H4 = styled.h4`
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 
   margin-bottom: 1.7rem;
 
-  ${({ theme }) => theme.TYPOGRAPHY.H4_R}
+  ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
   color: ${({ theme }) => theme.FONT.B01};
 `;
