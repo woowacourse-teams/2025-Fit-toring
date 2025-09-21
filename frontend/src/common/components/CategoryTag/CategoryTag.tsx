@@ -15,5 +15,5 @@ const S_TagName = styled.span`
 
   color: ${({ theme }) => theme.SYSTEM.GRAY500};
 
-  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
 `;

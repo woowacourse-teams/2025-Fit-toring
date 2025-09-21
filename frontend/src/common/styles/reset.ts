@@ -80,6 +80,10 @@ export const resetCss = css`
     height: 100%;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   ol,
   ul {
     list-style: none;
