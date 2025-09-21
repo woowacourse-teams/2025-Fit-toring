@@ -2,6 +2,7 @@ package fittoring.mentoring.business.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,10 +17,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE mentoring SET is_deleted = true, deleted_at = now() WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "mentoring")
@@ -40,6 +44,14 @@ public class Mentoring {
 
     @Column(nullable = false)
     private String introduction;
+
+    /*
+    임시로 nullable == true 로 설정합니다.
+    멘토링 데이터 마이그레이션이 완료되면 nullable로 변경해야 합니다.
+     */
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @Getter
     @Column(name = "is_deleted", nullable = false)
@@ -64,7 +76,7 @@ public class Mentoring {
             String introduction,
             String chatUrl
     ) {
-        this(null, price, career, content, introduction, false, null, member, chatUrl);
+        this(null, price, career, content, introduction, null, false, null, member, chatUrl);
     }
 
     public void modify(
