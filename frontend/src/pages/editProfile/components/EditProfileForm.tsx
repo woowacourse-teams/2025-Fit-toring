@@ -1,23 +1,43 @@
+import { useState } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import ApiError from '../../../common/apis/ApiError';
 import Button from '../../../common/components/Button/Button';
+import useFormattedPhoneNumber from '../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../common/hooks/useNameInput';
+import { captureSentryError } from '../../../common/utils/captureSentryError';
+import { getPhoneNumberErrorMessage } from '../../../common/utils/phoneNumberValidator';
 import PasswordFields from '../../signup/components/PasswordFields/PasswordFields';
+import PhoneFields from '../../signup/components/PhoneFields/PhoneFields';
 import UserInfoFields from '../../signup/components/UserInfoFields/UserInfoFields';
 import usePasswordWithConfirmInput from '../../signup/hooks/usePasswordWithConfirmInput';
+import useVerificationCodeConfirm from '../../signup/hooks/useVerificationCodeConfirm';
+import useVerificationCodeInput from '../../signup/hooks/useVerificationCodeInput';
+import useVerificationCodeRequest from '../../signup/hooks/useVerificationCodeRequest';
+import { patchMyProfile } from '../apis/patchMyProfile';
 import useGender from '../hooks/useGender';
+import useVerificationStep from '../hooks/useVerificationStep';
 
-import type { UserProfileResponse } from '../types/userProfile';
+import type {
+  PartialUserProfileRequest,
+  UserProfileResponse,
+} from '../types/userProfile';
 
 interface EditProfileFormProps {
   myProfile: UserProfileResponse;
 }
 
 function EditProfileForm({ myProfile }: EditProfileFormProps) {
-  const { name: initialName, gender: initialGender } = myProfile;
+  const {
+    name: initialName,
+    gender: initialGender,
+    phoneNumber: initialPhoneNumber,
+  } = myProfile;
   const initialPassword = '';
   const initialPasswordConfirm = '';
+  const initialVerificationCode = '';
 
   const {
     name,
@@ -39,16 +59,91 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     passwordConfirmValidated,
   } = usePasswordWithConfirmInput();
 
+  const {
+    phoneNumber,
+    inputRef,
+    handlePhoneNumberChange: changePhoneNumber,
+  } = useFormattedPhoneNumber(initialPhoneNumber);
+
+  const {
+    verificationStep,
+    reset: resetVerification,
+    request: requestVerification,
+    complete: completeVerification,
+  } = useVerificationStep('editProfile');
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    changePhoneNumber(e);
+    resetVerification();
+  };
+
+  const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
+
+  const {
+    shouldBlockSubmitByPhoneNumberCheck,
+    handleAuthCodeClick,
+    getFinalPhoneNumberErrorMessage,
+    matchConfirmedPhoneNumber,
+  } = useVerificationCodeRequest({
+    phoneNumber,
+    phoneNumberErrorMessage,
+    completeRequest: requestVerification,
+  });
+
+  const {
+    verificationCode,
+    handleVerificationCodeChange,
+    errorMessage: verificationCodeErrorMessage,
+    validated: verificationCodeValidated,
+  } = useVerificationCodeInput();
+
+  const [submitVerificationErrorMessage, setSubmitVerificationErrorMessage] =
+    useState('');
+
+  const {
+    verificationCodeError,
+    handleAuthCodeVerifyClick,
+    getFinalVerificationCodeErrorMessage,
+    shouldBlockSubmitByVerificationCode,
+  } = useVerificationCodeConfirm({
+    verificationCode,
+    verificationCodeErrorMessage,
+    completeVerification,
+  });
+
+  const getDisplayedVerificationErrorMessage = () => {
+    const errorMessage = getFinalVerificationCodeErrorMessage();
+
+    if (verificationStep !== 'verified') {
+      return errorMessage;
+    }
+
+    return errorMessage === '' ? submitVerificationErrorMessage : errorMessage;
+  };
+
+  const verificationRequestButtonEnabled =
+    phoneNumber !== initialPhoneNumber &&
+    phoneNumberErrorMessage === '' &&
+    phoneNumber !== '';
+
+  const verificationButtonEnabled =
+    phoneNumber !== initialPhoneNumber &&
+    matchConfirmedPhoneNumber &&
+    phoneNumberErrorMessage === '' &&
+    verificationCodeValidated;
+
   const profileFields = [
     {
       target: 'name',
       changed: name !== initialName,
       validated: nameValidated,
+      value: name,
     },
     {
       target: 'gender',
       changed: gender !== initialGender,
       validated: !!gender,
+      value: gender,
     },
     {
       target: 'password',
@@ -56,6 +151,19 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
         password !== initialPassword ||
         passwordConfirm !== initialPasswordConfirm,
       validated: passwordValidated && passwordConfirmValidated,
+      value: password,
+    },
+    {
+      target: 'phoneNumber',
+      changed: phoneNumber !== initialPhoneNumber,
+      validated: phoneNumber !== '' && phoneNumberErrorMessage === '',
+      value: phoneNumber,
+    },
+    {
+      target: 'verificationCode',
+      changed: verificationCode !== initialVerificationCode,
+      validated: verificationCodeValidated && !verificationCodeError,
+      value: verificationCode,
     },
   ] as const;
 
@@ -73,8 +181,51 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     return validations.every(Boolean);
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (shouldBlockSubmitByVerificationCode()) {
+      return;
+    }
+
+    if (shouldBlockSubmitByPhoneNumberCheck()) {
+      return;
+    }
+
+    if (phoneNumber !== initialPhoneNumber && verificationStep !== 'verified') {
+      setSubmitVerificationErrorMessage('인증을 다시 해주세요.');
+      return;
+    }
+
+    const updatedUserProfile: PartialUserProfileRequest = profileFields
+      .filter((item) => item.target !== 'verificationCode' && item.changed)
+
+      .reduce((acc, cur) => {
+        return { ...acc, [cur.target]: cur.value };
+      }, {} as PartialUserProfileRequest);
+
+    try {
+      const response = await patchMyProfile(updatedUserProfile);
+      if (response.status === 204) {
+        alert('회원정보 수정에 성공했습니다.');
+      }
+    } catch (error) {
+      console.error('회원정보 수정 실패', error);
+      if (error instanceof ApiError) {
+        alert(error.message);
+      }
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'updatedUserProfile',
+        step: 'updatedUserProfile',
+      });
+    }
+  };
+
   return (
-    <S_Container>
+    <S_Container onSubmit={handleSubmit}>
       <S_FormFields>
         <UserInfoFields
           name={name}
@@ -90,6 +241,19 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
           passwordConfirmErrorMessage={passwordConfirmErrorMessage}
           onPasswordChange={handlePasswordChange}
           onPasswordConfirmChange={handlePasswordConfirmChange}
+        />
+        <PhoneFields
+          phoneNumber={phoneNumber}
+          verificationCode={verificationCode}
+          verificationCodeErrorMessage={getDisplayedVerificationErrorMessage()}
+          phoneNumberErrorMessage={getFinalPhoneNumberErrorMessage()}
+          onPhoneNumberChange={handlePhoneNumberChange}
+          inputRef={inputRef}
+          onVerificationCodeChange={handleVerificationCodeChange}
+          onAuthCodeVerifyClick={handleAuthCodeVerifyClick}
+          onAuthCodeClick={handleAuthCodeClick}
+          verificationButtonEnabled={verificationButtonEnabled}
+          verificationRequestButtonEnabled={verificationRequestButtonEnabled}
         />
       </S_FormFields>
       <Button
