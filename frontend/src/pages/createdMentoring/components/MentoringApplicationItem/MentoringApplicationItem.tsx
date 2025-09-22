@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import { type StatusType } from '../../../../common/types/statusType';
+import useClampedRef from '../../hooks/useClampedRef';
 import ActionButtons from '../ActionButtons/ActionButtons';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';
@@ -40,6 +41,8 @@ function MentoringApplicationItem({
     setShowMore((prev) => !prev);
   };
 
+  const { clamped: isClamped, setRef: contentRef } = useClampedRef();
+
   const handleActionButtonsComplete = (
     updatedStatus: StatusType,
     phoneNumber: string,
@@ -60,10 +63,14 @@ function MentoringApplicationItem({
       <S_ApplicationInfoWrapper>
         <S_CreatedAt>신청일: {formatDate(createdAt)}</S_CreatedAt>
       </S_ApplicationInfoWrapper>
-      <S_ApplicationContent showMore={showMore}>{content}</S_ApplicationContent>
-      <S_ApplicationContentShowMore onClick={handleShowMoreButtonClick}>
-        ({showMore ? '접기' : '더보기'})
-      </S_ApplicationContentShowMore>
+      <S_ApplicationContent showMore={showMore} ref={contentRef}>
+        {content}
+      </S_ApplicationContent>
+      {isClamped && (
+        <S_ApplicationContentShowMore onClick={handleShowMoreButtonClick}>
+          ({showMore ? '접기' : '더보기'})
+        </S_ApplicationContentShowMore>
+      )}
       <S_ButtonWrapper>
         <ActionButtons
           reservationId={reservationId}
