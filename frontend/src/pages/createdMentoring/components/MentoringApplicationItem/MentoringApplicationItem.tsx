@@ -50,7 +50,7 @@ function MentoringApplicationItem({
 
   return (
     <S_Container key={reservationId}>
-      <S_Name>{menteeName}님의 상담 신청</S_Name>
+      <S_Name>{menteeName} 님</S_Name>
       <S_ApplicationInfoWrapper>
         <S_CreatedAt>⏰ {formatDate(createdAt)}</S_CreatedAt>
         <S_ApplicationPrice>
@@ -94,7 +94,7 @@ const S_Container = styled.li`
 
 const S_Name = styled.h4`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_R}
+  ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
 `;
 
 const S_ApplicationInfoWrapper = styled.div`
