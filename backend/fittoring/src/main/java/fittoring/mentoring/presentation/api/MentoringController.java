@@ -65,7 +65,7 @@ public class MentoringController {
                 .body(responseBody);
     }
 
-    @GetMapping("/mentorings")
+    @GetMapping("/mentorings-page")
     public ResponseEntity<MentoringSummaryPaginationResponse> getMentoringSummaryPages(
             @RequestParam(defaultValue = "CREATED_AT") SortKey sortKey,
             @RequestParam(required = false) String cursorCode,
@@ -74,8 +74,11 @@ public class MentoringController {
         if (categoryIds == null) {
             categoryIds = List.of();
         }
-        MentoringSummaryPaginationResponse responseBody = mentoringService.findMentoringSummaryPages(sortKey,
-                cursorCode, categoryIds);
+        MentoringSummaryPaginationResponse responseBody = mentoringService.findMentoringSummaryPages(
+                sortKey,
+                cursorCode,
+                categoryIds
+        );
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseBody);
     }
