@@ -138,6 +138,7 @@ const S_Message = styled.div`
   overflow-y: scroll;
 
   ${({ theme }) => theme.TYPOGRAPHY.C2_R}
+  line-height: 1.8rem;
 `;
 
 const S_StepperWrapper = styled.div`
