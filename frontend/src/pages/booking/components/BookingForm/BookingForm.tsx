@@ -38,15 +38,19 @@ function BookingForm({
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setCounselContent(e.target.value);
-    !errored.textarea && e.target.value.length > 5000
-      ? setErrored((prev) => ({
-          ...prev,
-          textarea: true,
-        }))
-      : setErrored((prev) => ({
-          ...prev,
-          textarea: false,
-        }));
+    if (!errored.textarea && e.target.value.length > 5000) {
+      setErrored((prev) => ({
+        ...prev,
+        textarea: true,
+      }));
+    }
+
+    if (errored.textarea && e.target.value.length <= 5000) {
+      setErrored((prev) => ({
+        ...prev,
+        textarea: false,
+      }));
+    }
   };
 
   const handleBooking = async () => {
