@@ -2,9 +2,11 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../common/apis/ApiError';
 import Button from '../../../common/components/Button/Button';
+import { PAGE_URL } from '../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../common/hooks/useNameInput';
 import { captureSentryError } from '../../../common/utils/captureSentryError';
@@ -181,6 +183,8 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     return validations.every(Boolean);
   };
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -199,7 +203,6 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
 
     const updatedUserProfile: PartialUserProfileRequest = profileFields
       .filter((item) => item.target !== 'verificationCode' && item.changed)
-
       .reduce((acc, cur) => {
         return { ...acc, [cur.target]: cur.value };
       }, {} as PartialUserProfileRequest);
@@ -208,6 +211,7 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
       const response = await patchMyProfile(updatedUserProfile);
       if (response.status === 204) {
         alert('회원정보 수정에 성공했습니다.');
+        navigate(PAGE_URL.HOME);
       }
     } catch (error) {
       console.error('회원정보 수정 실패', error);
