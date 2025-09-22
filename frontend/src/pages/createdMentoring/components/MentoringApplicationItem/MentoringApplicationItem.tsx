@@ -1,10 +1,9 @@
-import { useState } from 'react';
-
 import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import { type StatusType } from '../../../../common/types/statusType';
 import useClampedRef from '../../hooks/useClampedRef';
+import useShowMore from '../../hooks/useShowMore';
 import ActionButtons from '../ActionButtons/ActionButtons';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';
@@ -35,11 +34,7 @@ function MentoringApplicationItem({
   },
   onActionButtonsClick,
 }: MentoringApplicationItemProps) {
-  const [showMore, setShowMore] = useState(false);
-
-  const handleShowMoreButtonClick = () => {
-    setShowMore((prev) => !prev);
-  };
+  const { showMore, toggleShowMore: handleShowMoreButtonClick } = useShowMore();
 
   const { clamped: isClamped, setRef: contentRef } = useClampedRef();
 
