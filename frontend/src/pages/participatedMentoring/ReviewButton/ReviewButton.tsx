@@ -13,6 +13,7 @@ interface ReviewButtonProps {
   isReviewed: boolean;
   status: StatusType;
   onReviewButtonClick: () => void;
+  onReviewCompleteButtonClick: () => void;
 }
 
 function ReviewWriteButton({ onClick, disabled }: ReviewWriteButtonProps) {
@@ -23,19 +24,24 @@ function ReviewWriteButton({ onClick, disabled }: ReviewWriteButtonProps) {
   );
 }
 
-function ReviewCompleteButton() {
-  return <S_ReviewCompleteButton>리뷰 완료</S_ReviewCompleteButton>;
+function ReviewCompleteButton({ onClick }: { onClick: () => void }) {
+  return (
+    <S_ReviewCompleteButton onClick={onClick}>
+      내가 작성한 리뷰
+    </S_ReviewCompleteButton>
+  );
 }
 
 function ReviewButton({
   isReviewed,
   status,
   onReviewButtonClick,
+  onReviewCompleteButtonClick,
 }: ReviewButtonProps) {
   const canWriteReview = !isReviewed && status === StatusTypeEnum.COMPLETE;
 
   if (isReviewed) {
-    return <ReviewCompleteButton />;
+    return <ReviewCompleteButton onClick={onReviewCompleteButtonClick} />;
   }
 
   return (
@@ -75,16 +81,13 @@ const S_ReviewWriteButton = styled(S_Container)<{ disabled: boolean }>`
 
   color: ${({ theme }) => theme.FONT.W01};
 
-  :hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  }
-
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
 const S_ReviewCompleteButton = styled(S_Container)`
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN200};
+  background-color: ${({ theme }) => theme.BG.BLACK};
 
-  color: ${({ theme }) => theme.FONT.B02};
-  pointer-events: none;
+  color: ${({ theme }) => theme.FONT.W01};
+
+  cursor: pointer;
 `;

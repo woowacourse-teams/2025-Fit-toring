@@ -9,6 +9,8 @@ import ReviewButton from '../ReviewButton/ReviewButton';
 import ReviewModal from '../ReviewModal/ReviewModal';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
+import { useNavigate } from 'react-router-dom';
+import { PAGE_URL } from '../../../common/constants/url';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
   handleReviewSubmitButtonClick: (reservationId: number) => void;
@@ -31,8 +33,16 @@ function MentoringItem({
 }: MentoringItemProps) {
   const [opened, setOpened] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleReviewModalToggle = () => {
     setOpened((prev) => !prev);
+  };
+
+  const handleReviewCompleteButtonClick = () => {
+    navigate(`${PAGE_URL.DETAIL}/${mentoringId}`, {
+      state: { tab: 'review' },
+    });
   };
 
   return (
@@ -51,6 +61,7 @@ function MentoringItem({
               isReviewed={isReviewed}
               status={status}
               onReviewButtonClick={handleReviewModalToggle}
+              onReviewCompleteButtonClick={handleReviewCompleteButtonClick}
             />
           ) : null}
         </S_MessageAndReviewWrapper>
