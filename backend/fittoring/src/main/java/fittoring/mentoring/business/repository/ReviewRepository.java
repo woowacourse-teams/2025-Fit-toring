@@ -5,6 +5,7 @@ import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -51,4 +52,10 @@ public interface ReviewRepository extends ListCrudRepository<Review, Long> {
     boolean existsByReservationIdAndMentee_Id(Long reservationId, Long menteeId);
 
     void deleteByReservation(Reservation reservation);
+
+    @Query("""
+            select rv.reservation.id from Review rv
+            where rv.reservation.id in :reservationIds
+""")
+    Set<Long> findReviewedReservationIds(List<Long> reservationIds);
 }

@@ -27,9 +27,12 @@ import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
 import fittoring.mentoring.presentation.dto.AdminReservationResponse;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,10 +115,40 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ParticipatedReservationResponse> findMemberReservations(Long memberId) {
-        List<Reservation> memberReservations = reservationRepository.findAllByMenteeId(memberId);
-        return memberReservations.stream()
-                .map(this::generateParticipatedReservationResponse)
-                .toList();
+        List<Reservation> reservations = reservationRepository.findAllByMenteeId(memberId);
+        List<Long> reservationIds = reservations.stream().map(Reservation::getId).toList();
+        List<Long> mentorIds = reservations.stream().map(reservation -> reservation.getMentoring().getMentor().getId()).distinct().toList();
+        List<Image> images = imageRepository.findAllByImageTypeAndRelationIdIn(
+                ImageType.MENTORING_PROFILE, mentorIds);
+        Map<Long, String> profileUrlByMentoringId = images.stream()
+                .collect(Collectors.toMap(
+                        Image::getRelationId,
+                        Image::getUrl
+                ));
+        Set<Long> reviewedReservationIds = reviewRepository.findReviewedReservationIds(reservationIds);
+
+        return reservations.stream()
+                .map(reservation->{
+                    Mentoring mentoring = reservation.getMentoring();
+                    Member mentor = mentoring.getMentor();
+                    Long reservationId = reservation.getId();
+                    Long mentoringId = mentoring.getId();
+                    String mentorName = mentor.getName();
+                    String mentorProfileImage = profileUrlByMentoringId.get(mentor.getId());
+                    boolean isReviewed = reviewedReservationIds.contains(reservationId);
+                    LocalDate reservedAt = reservation.getCreatedAt().toLocalDate();
+
+                    return new ParticipatedReservationResponse(
+                            reservationId,
+                            mentoringId,
+                            mentorName,
+                            mentorProfileImage,
+                            reservedAt,
+                            reservation.getContent(),
+                            reservation.getStatus(),
+                            isReviewed
+                    );
+                }).toList();
     }
 
     @Transactional(readOnly = true)
@@ -140,29 +173,6 @@ public class ReservationService {
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-    }
-
-    private ParticipatedReservationResponse generateParticipatedReservationResponse(Reservation reservation) {
-        Mentoring mentoring = reservation.getMentoring();
-        String mentorProfileImage = findProfileImageUrl(mentoring.getId());
-        boolean isReviewed = reviewRepository.existsByReservationId(reservation.getId());
-        return new ParticipatedReservationResponse(
-                reservation.getId(),
-                mentoring.getId(),
-                mentoring.getMentor().getName(),
-                mentorProfileImage,
-                reservation.getCreatedAt().toLocalDate(),
-                reservation.getContent(),
-                reservation.getStatus(),
-                isReviewed
-        );
-    }
-
-    private String findProfileImageUrl(Long relationId) {
-        Optional<Image> image = imageRepository.findByImageTypeAndRelationId(
-                ImageType.MENTORING_PROFILE, relationId);
-        return image.map(Image::getUrl)
-                .orElse(null);
     }
 
     @Transactional
