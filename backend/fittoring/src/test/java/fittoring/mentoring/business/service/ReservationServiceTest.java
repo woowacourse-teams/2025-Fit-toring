@@ -396,16 +396,6 @@ class ReservationServiceTest {
         ));
         List<ParticipatedReservationResponse> expected = List.of(
                 new ParticipatedReservationResponse(
-                        reservation1.getId(),
-                        mentoring1.getId(),
-                        mentoring1.getMentorName(),
-                        profileImageOfMentor1.getUrl(),
-                        reservation1.getCreatedAt().toLocalDate(),
-                        reservation1.getContent(),
-                        Status.PENDING.name(),
-                        false
-                ),
-                new ParticipatedReservationResponse(
                         reservation2.getId(),
                         mentoring2.getId(),
                         mentoring2.getMentorName(),
@@ -414,6 +404,16 @@ class ReservationServiceTest {
                         reservation2.getContent(),
                         Status.PENDING.name(),
                         true
+                ),
+                new ParticipatedReservationResponse(
+                        reservation1.getId(),
+                        mentoring1.getId(),
+                        mentoring1.getMentorName(),
+                        profileImageOfMentor1.getUrl(),
+                        reservation1.getCreatedAt().toLocalDate(),
+                        reservation1.getContent(),
+                        Status.PENDING.name(),
+                        false
                 )
         );
 
