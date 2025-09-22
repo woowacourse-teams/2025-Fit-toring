@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import { getMineMentoring } from '../../common/apis/getMineMentoring';
-import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
@@ -102,28 +100,9 @@ function CreatedMentoring() {
       {mineMentoring ? (
         <>
           <S_MentoringSectionHeader>
-            <S_Title>개설한 멘토링</S_Title>
-            <Button
-              onClick={handleMentoringShowButtonClick}
-              customStyle={css`
-                padding: 1rem;
-
-                font-size: 1.4rem;
-              `}
-            >
-              개설한 멘토링 보기
-            </Button>
+            <S_Title>예약 목록 ({mentoringApplicationList.length})</S_Title>
           </S_MentoringSectionHeader>
           <S_Wrapper>
-            <S_InfoWrapper>
-              <S_SubTitle>
-                멘토링 신청 목록 ({mentoringApplicationList.length}건)
-              </S_SubTitle>
-              <S_Description>
-                사용자들이 신청한 멘토링을 승인하거나 거절할 수 있습니다.
-              </S_Description>
-            </S_InfoWrapper>
-            <S_Line />
             <MentoringApplicationList>
               {mentoringApplicationList.map((item) => (
                 <MentoringApplicationItem
@@ -171,35 +150,9 @@ const S_Wrapper = styled.div`
 
   width: 100%;
   height: 100%;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
-`;
-
-const S_InfoWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  padding: 2.5rem 2rem;
-`;
-
-const S_SubTitle = styled.h3`
-  color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
-`;
-
-const S_Description = styled.p`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_R}
-`;
-
-const S_Line = styled.hr`
-  width: 100%;
-  height: 1px;
-  margin: 0;
   border: none;
-  border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
 const S_EmptyText = styled.p`
