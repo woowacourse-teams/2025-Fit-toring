@@ -47,10 +47,12 @@ function MentoringApplicationItem({
 
   return (
     <S_Container key={reservationId}>
-      <S_Name>{menteeName} 님</S_Name>
+      <S_SummaryWrapper>
+        <S_Name>{menteeName} 님</S_Name>
+        <MentoringApplicationStatus status={status} />
+      </S_SummaryWrapper>
       <S_ApplicationInfoWrapper>
         <S_CreatedAt>신청일: {formatDate(createdAt)}</S_CreatedAt>
-        <MentoringApplicationStatus status={status} />
       </S_ApplicationInfoWrapper>
       <PhoneNumber status={status} phoneNumber={phoneNumber} />
       <S_ApplicationContent>{content}</S_ApplicationContent>
@@ -84,6 +86,12 @@ const S_Container = styled.li`
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const S_SummaryWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const S_Name = styled.h4`
