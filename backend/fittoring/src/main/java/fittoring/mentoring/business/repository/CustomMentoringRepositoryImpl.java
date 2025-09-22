@@ -20,17 +20,15 @@ import lombok.RequiredArgsConstructor;
 public class CustomMentoringRepositoryImpl implements CustomMentoringRepository {
 
     private static final int PAGE_SIZE = 10;
+    private static final QMentoring mentoring = QMentoring.mentoring;
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final QMentoring mentoring;
 
     @Override
-    public MentoringPaginationResult findMentoringsWithPagination(Cursor cursor) {
-        SortKey sortKey = cursor.sortKey();
-
+    public MentoringPaginationResult findMentoringsWithPagination(SortKey sortKey, Cursor cursor) {
         BooleanBuilder where = new BooleanBuilder();
-        BooleanExpression ex = ex(cursor);
-        where.and(ex);
+        BooleanExpression booleanExpression = buildCursorCondition(sortKey, cursor);
+        where.and(booleanExpression);
 
         List<Mentoring> rows = jpaQueryFactory.select(mentoring)
                 .from(mentoring)
@@ -41,7 +39,7 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
 
         boolean hasNext = rows.size() > PAGE_SIZE;
         if (hasNext) {
-            rows.subList(0, PAGE_SIZE);
+            rows = rows.subList(0, PAGE_SIZE);
         }
 
         String nextCursorCode = "";
@@ -51,20 +49,14 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
 
             if (sortKey.equals(SortKey.CREATED_AT)) {
                 long nextSortValue = lastMentoring.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
-                nextCursorCode = CursorCodec.incode(new Cursor(sortKey, "DESC", nextSortValue, lastMentoring.getId()));
+                nextCursorCode = CursorCodec.incode(new Cursor(nextSortValue, lastMentoring.getId()));
             }
         }
-
         return new MentoringPaginationResult(rows, nextCursorCode, hasNext);
     }
 
-
-    private BooleanExpression ex(Cursor cursor) {
-        if (cursor == null) {
-            return null;
-        }
-
-        if (cursor.sortKey().equals(SortKey.CREATED_AT)) {
+    private BooleanExpression buildCursorCondition(SortKey sortKey, Cursor cursor) {
+        if (sortKey.equals(SortKey.CREATED_AT) && cursor != null) {
             LocalDateTime cursorDateTime = Instant.ofEpochSecond(cursor.sortValue())
                     .atZone(ZoneId.of("Asia/Seoul"))
                     .toLocalDateTime();

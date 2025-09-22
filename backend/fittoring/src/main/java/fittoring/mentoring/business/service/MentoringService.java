@@ -6,7 +6,6 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.ImageNotFoundException;
-import fittoring.mentoring.business.exception.InvalidCursorException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
@@ -351,14 +350,14 @@ public class MentoringService {
         }
     }
 
-    public MentoringSummaryPaginationResponse findMentoringSummaryPages(SortKey sortKey, String cursorCode,
-                                                                        List<Long> categoryIds) {
+    public MentoringSummaryPaginationResponse findMentoringSummaryPages(
+            SortKey sortKey,
+            String cursorCode,
+            List<Long> categoryIds
+    ) {
         Cursor cursor = CursorCodec.decode(cursorCode);
-        if (cursor.isSameSortKey(sortKey)) {
-            throw new InvalidCursorException("Invalid cursor");
-        }
-
-        MentoringPaginationResult mentoringPaginationResult = mentoringRepository.findMentoringsWithPagination(cursor);
+        MentoringPaginationResult mentoringPaginationResult = mentoringRepository.findMentoringsWithPagination(sortKey,
+                cursor);
 
         List<Mentoring> mentorings = mentoringPaginationResult.mentorings();
         List<Long> mentoringIds = createMentoringIdsByMentoring(mentorings);

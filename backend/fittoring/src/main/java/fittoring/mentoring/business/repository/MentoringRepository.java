@@ -1,9 +1,7 @@
 package fittoring.mentoring.business.repository;
 
-import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.service.dto.MentoringPaginationResult;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
@@ -52,7 +50,4 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
 
     @Query(value = "SELECT * FROM mentoring WHERE is_deleted = true", nativeQuery = true)
     List<Mentoring> findAllDeleted();
-
-    @Override
-    MentoringPaginationResult findMentoringsWithPagination(Cursor cursor);
 }
