@@ -23,14 +23,11 @@ const formatDate = (dateString: string) => {
   return fullDate;
 };
 
-const TIME = '15';
-
 function MentoringApplicationItem({
   mentoringApplication: {
     reservationId,
     menteeName,
     phoneNumber,
-    price,
     content,
     status,
     createdAt,
@@ -53,9 +50,6 @@ function MentoringApplicationItem({
       <S_Name>{menteeName} 님</S_Name>
       <S_ApplicationInfoWrapper>
         <S_CreatedAt>⏰ {formatDate(createdAt)}</S_CreatedAt>
-        <S_ApplicationPrice>
-          💰 {TIME}분 {price.toLocaleString()}원
-        </S_ApplicationPrice>
         <MentoringApplicationStatus status={status} />
       </S_ApplicationInfoWrapper>
       <PhoneNumber status={status} phoneNumber={phoneNumber} />
@@ -105,11 +99,6 @@ const S_ApplicationInfoWrapper = styled.div`
 `;
 
 const S_CreatedAt = styled.p`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
-`;
-
-const S_ApplicationPrice = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
