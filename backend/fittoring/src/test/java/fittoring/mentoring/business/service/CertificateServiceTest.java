@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.config.JpaConfiguration;
+import fittoring.config.QueryDslConfig;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CertificateNotFoundException;
@@ -44,7 +45,8 @@ import org.springframework.test.context.ActiveProfiles;
         ImageService.class,
         S3Uploader.class,
         S3Configuration.class,
-        JpaConfiguration.class
+        JpaConfiguration.class,
+        QueryDslConfig.class
 })
 @DataJpaTest
 class CertificateServiceTest {

@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.repository;
+package fittoring.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
