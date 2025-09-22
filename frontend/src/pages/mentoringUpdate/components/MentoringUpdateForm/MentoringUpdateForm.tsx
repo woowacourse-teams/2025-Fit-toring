@@ -74,7 +74,7 @@ function MentoringUpdateForm() {
     }
 
     const addedCertifications = mentoringData.certificateInfos.filter(
-      (e) => !initialCertificatesIdRef.current.includes(String(e.id)),
+      (info) => !initialCertificatesIdRef.current.includes(info.id),
     );
 
     try {
@@ -204,11 +204,11 @@ function MentoringUpdateForm() {
         const { certificates, categories, ...mentoring } =
           await getMentoringDetail(mentoringId);
 
-        const certificateInfosData = certificates.map((e) => ({
-          id: String(e.certificateId),
-          title: e.title,
-          type: e.type,
-          imageUrl: e.imageUrl,
+        const certificateInfosData = certificates.map((info) => ({
+          id: info.certificateId,
+          title: info.title,
+          type: info.type,
+          imageUrl: info.imageUrl,
         }));
         const {
           price,
@@ -231,7 +231,7 @@ function MentoringUpdateForm() {
         setCertificates(certificateInfosData);
 
         initialCertificatesIdRef.current = certificates.map(
-          (e) => e.certificateId,
+          (info) => info.certificateId,
         );
       }
     };
