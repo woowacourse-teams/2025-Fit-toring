@@ -2,7 +2,29 @@ package fittoring.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.aspect.dto.ErrorLog;
-import fittoring.mentoring.business.exception.*;
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.CategoryNotFoundException;
+import fittoring.mentoring.business.exception.CertificateNotFoundException;
+import fittoring.mentoring.business.exception.DuplicateLoginIdException;
+import fittoring.mentoring.business.exception.DuplicatePhoneException;
+import fittoring.mentoring.business.exception.ForbiddenException;
+import fittoring.mentoring.business.exception.InvalidCertificateException;
+import fittoring.mentoring.business.exception.InvalidCursorException;
+import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
+import fittoring.mentoring.business.exception.InvalidStatusException;
+import fittoring.mentoring.business.exception.InvalidTokenException;
+import fittoring.mentoring.business.exception.MemberNotFoundException;
+import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
+import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
+import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.exception.MisMatchPasswordException;
+import fittoring.mentoring.business.exception.NotFoundMemberException;
+import fittoring.mentoring.business.exception.NotFoundStatusException;
+import fittoring.mentoring.business.exception.PasswordEncryptionException;
+import fittoring.mentoring.business.exception.ReservationNotCompletedException;
+import fittoring.mentoring.business.exception.ReservationNotFoundException;
+import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
+import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.infra.exception.S3UploadException;
 import fittoring.mentoring.infra.exception.SmsException;
 import fittoring.util.ResponseDurationCalculator;
@@ -18,6 +40,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RequiredArgsConstructor
@@ -136,6 +159,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(S3UploadException.class)
     public ResponseEntity<ErrorResponse> handle(S3UploadException e) {
         return buildErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handle(MethodArgumentTypeMismatchException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(InvalidCertificateException.class)
