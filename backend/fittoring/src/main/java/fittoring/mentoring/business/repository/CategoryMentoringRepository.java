@@ -11,8 +11,8 @@ public interface CategoryMentoringRepository extends ListCrudRepository<Category
 
     @Query("""
                 SELECT cm
-                FROM CategoryMentoring cm 
-                JOIN FETCH Mentoring m ON cm.mentoring = m 
+                FROM CategoryMentoring cm
+                JOIN FETCH cm.mentoring m
                 WHERE m.id = :mentoringId
             """)
     List<CategoryMentoring> findAllByMentoringId(Long mentoringId);
