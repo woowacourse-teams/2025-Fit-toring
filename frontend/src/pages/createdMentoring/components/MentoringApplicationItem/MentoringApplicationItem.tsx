@@ -81,7 +81,7 @@ const S_Container = styled.li`
   height: auto;
   padding: 1.5rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 16px;
+  border-radius: 5px;
 
   transition: all 0.2s ease;
 
