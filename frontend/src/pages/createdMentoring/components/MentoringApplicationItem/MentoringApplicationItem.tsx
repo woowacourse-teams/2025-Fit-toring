@@ -3,7 +3,6 @@ import styled from '@emotion/styled';
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import { type StatusType } from '../../../../common/types/statusType';
 import ActionButtons from '../ActionButtons/ActionButtons';
-import PhoneNumber from '../PhoneNumber/PhoneNumber';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';
 
@@ -27,7 +26,6 @@ function MentoringApplicationItem({
   mentoringApplication: {
     reservationId,
     menteeName,
-    phoneNumber,
     content,
     status,
     createdAt,
@@ -54,7 +52,6 @@ function MentoringApplicationItem({
       <S_ApplicationInfoWrapper>
         <S_CreatedAt>신청일: {formatDate(createdAt)}</S_CreatedAt>
       </S_ApplicationInfoWrapper>
-      <PhoneNumber status={status} phoneNumber={phoneNumber} />
       <S_ApplicationContent>{content}</S_ApplicationContent>
       <S_ButtonWrapper>
         <ActionButtons
