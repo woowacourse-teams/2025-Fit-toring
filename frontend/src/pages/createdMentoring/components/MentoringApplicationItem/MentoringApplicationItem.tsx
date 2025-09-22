@@ -62,9 +62,9 @@ function MentoringApplicationItem({
         {content}
       </S_ApplicationContent>
       {isClamped && (
-        <S_ApplicationContentShowMore onClick={handleShowMoreButtonClick}>
+        <S_ApplicationContentShowMoreButton onClick={handleShowMoreButtonClick}>
           ({showMore ? '접기' : '더보기'})
-        </S_ApplicationContentShowMore>
+        </S_ApplicationContentShowMoreButton>
       )}
       <S_ButtonWrapper>
         <ActionButtons
@@ -139,7 +139,7 @@ const S_ApplicationContent = styled.p<{ showMore: boolean }>`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const S_ApplicationContentShowMore = styled.button`
+const S_ApplicationContentShowMoreButton = styled.button`
   display: flex;
   align-self: flex-end;
 
