@@ -9,10 +9,10 @@ public class CursorCodec {
             return null;
         }
         String[] p = cursorCode.split("\\|");
-        if (p.length != 4) {
+        if (p.length != 2) {
             throw new InvalidCursorException("Invalid cursor");
         }
-        return new Cursor(Long.parseLong(p[2]), Integer.parseInt(p[3]));
+        return new Cursor(Long.parseLong(p[0]), Integer.parseInt(p[1]));
     }
 
     public static String incode(Cursor cursor) {
