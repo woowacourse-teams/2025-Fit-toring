@@ -85,15 +85,7 @@ public class ReviewService {
     }
 
     public List<MemberReviewGetResponse> findMemberReviews(Long memberId) {
-        List<Review> reviews = reviewRepository.findAllByMentee_Id(memberId);
-        return reviews.stream()
-                .map(review -> new MemberReviewGetResponse(
-                        review.getId(),
-                        review.getCreatedAt().toLocalDate(),
-                        review.getRating(),
-                        review.getContent()
-                ))
-                .toList();
+        return reviewRepository.findMemberReviews(memberId);
     }
 
     @Transactional
