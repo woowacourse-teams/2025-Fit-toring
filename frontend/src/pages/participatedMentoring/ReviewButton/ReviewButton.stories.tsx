@@ -28,6 +28,7 @@ export const Default: Story = {
     isReviewed: false,
     status: StatusTypeEnum.PENDING,
     onReviewButtonClick: () => {},
+    onReviewCompleteButtonClick: () => {},
   },
   parameters: {
     docs: {
@@ -42,8 +43,9 @@ export const Default: Story = {
 export const CanReview: Story = {
   args: {
     isReviewed: false,
-    status: StatusTypeEnum.COMPLETE,
+    status: StatusTypeEnum.PENDING,
     onReviewButtonClick: () => {},
+    onReviewCompleteButtonClick: () => {},
   },
   parameters: {
     docs: {
@@ -57,9 +59,10 @@ export const CanReview: Story = {
 
 export const ReviewCompleted: Story = {
   args: {
-    isReviewed: true,
-    status: StatusTypeEnum.COMPLETE,
+    isReviewed: false,
+    status: StatusTypeEnum.PENDING,
     onReviewButtonClick: () => {},
+    onReviewCompleteButtonClick: () => {},
   },
   parameters: {
     docs: {
@@ -76,6 +79,7 @@ export const CanNotReview: Story = {
     isReviewed: false,
     status: StatusTypeEnum.PENDING,
     onReviewButtonClick: () => {},
+    onReviewCompleteButtonClick: () => {},
   },
   parameters: {
     docs: {
