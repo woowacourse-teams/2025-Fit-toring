@@ -128,6 +128,9 @@ const S_ProfileImage = styled.img`
   width: 12rem;
   height: 14rem;
   border-radius: 5px;
+
+  aspect-ratio: 120/ 140;
+  object-fit: cover;
 `;
 
 const S_MessageAndReviewWrapper = styled.div`
