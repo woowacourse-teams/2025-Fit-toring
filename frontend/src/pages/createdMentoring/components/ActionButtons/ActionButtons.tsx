@@ -114,12 +114,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
   if (status === StatusTypeEnum.PENDING) {
     return (
       <S_Container>
-        <S_PrimaryButton onClick={handleApproveButtonClick}>
-          승인
-        </S_PrimaryButton>
         <S_SecondaryButton onClick={handleRejectedButtonClick}>
           거절
         </S_SecondaryButton>
+        <S_PrimaryButton onClick={handleApproveButtonClick}>
+          승인
+        </S_PrimaryButton>
       </S_Container>
     );
   }
@@ -140,24 +140,32 @@ const S_Container = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
+
+  width: 100%;
 `;
 
 const S_BaseButton = styled.button`
-  width: fit-content;
+  width: 100%;
+  height: 3.6rem;
   padding: 0.8rem 1.3rem;
   border: none;
   border-radius: 8px;
 
   cursor: pointer;
 
-  color: ${({ theme }) => theme.FONT.W01};
-  ${({ theme }) => theme.TYPOGRAPHY.BTN4_R}
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_R}
 `;
 
 const S_PrimaryButton = styled(S_BaseButton)`
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY900};
+
+  color: ${({ theme }) => theme.FONT.W01};
 `;
 
 const S_SecondaryButton = styled(S_BaseButton)`
-  background-color: ${({ theme }) => theme.BG.RED};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.BLACK};
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+
+  color: ${({ theme }) => theme.FONT.B01};
 `;
