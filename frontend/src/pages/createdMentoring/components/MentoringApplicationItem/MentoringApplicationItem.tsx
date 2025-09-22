@@ -49,7 +49,7 @@ function MentoringApplicationItem({
     <S_Container key={reservationId}>
       <S_Name>{menteeName} 님</S_Name>
       <S_ApplicationInfoWrapper>
-        <S_CreatedAt>⏰ {formatDate(createdAt)}</S_CreatedAt>
+        <S_CreatedAt>신청일: {formatDate(createdAt)}</S_CreatedAt>
         <MentoringApplicationStatus status={status} />
       </S_ApplicationInfoWrapper>
       <PhoneNumber status={status} phoneNumber={phoneNumber} />
@@ -99,8 +99,8 @@ const S_ApplicationInfoWrapper = styled.div`
 `;
 
 const S_CreatedAt = styled.p`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  color: ${({ theme }) => theme.SYSTEM.GRAY500};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_ApplicationContent = styled.p`
