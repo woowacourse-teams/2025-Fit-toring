@@ -13,7 +13,7 @@ public interface CategoryMentoringRepository extends ListCrudRepository<Category
                 SELECT cm
                 FROM CategoryMentoring cm
                 JOIN FETCH cm.mentoring m
-                WHERE m.id = :mentoringId
+                WHERE cm.mentoring.id = :mentoringId
             """)
     List<CategoryMentoring> findAllByMentoringId(Long mentoringId);
 
