@@ -111,6 +111,7 @@ const S_CreatedAt = styled.p`
 const S_ApplicationContent = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  word-break: break-all;
 `;
 
 const S_ButtonWrapper = styled.div`
