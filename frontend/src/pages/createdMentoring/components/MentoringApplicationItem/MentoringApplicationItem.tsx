@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
@@ -32,6 +34,12 @@ function MentoringApplicationItem({
   },
   onActionButtonsClick,
 }: MentoringApplicationItemProps) {
+  const [showMore, setShowMore] = useState(false);
+
+  const handleShowMoreButtonClick = () => {
+    setShowMore((prev) => !prev);
+  };
+
   const handleActionButtonsComplete = (
     updatedStatus: StatusType,
     phoneNumber: string,
@@ -52,7 +60,10 @@ function MentoringApplicationItem({
       <S_ApplicationInfoWrapper>
         <S_CreatedAt>신청일: {formatDate(createdAt)}</S_CreatedAt>
       </S_ApplicationInfoWrapper>
-      <S_ApplicationContent>{content}</S_ApplicationContent>
+      <S_ApplicationContent showMore={showMore}>{content}</S_ApplicationContent>
+      <S_ApplicationContentShowMore onClick={handleShowMoreButtonClick}>
+        ({showMore ? '접기' : '더보기'})
+      </S_ApplicationContentShowMore>
       <S_ButtonWrapper>
         <ActionButtons
           reservationId={reservationId}
@@ -108,10 +119,37 @@ const S_CreatedAt = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
-const S_ApplicationContent = styled.p`
-  color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+const S_ApplicationContent = styled.p<{ showMore: boolean }>`
+  ${({ showMore }) =>
+    !showMore &&
+    `
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  `}
+  width: 100%;
   word-break: break-all;
+
+  color: ${({ theme }) => theme.FONT.B01};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const S_ApplicationContentShowMore = styled.button`
+  display: flex;
+  align-self: flex-end;
+
+  width: fit-content;
+  padding: 0;
+  border: none;
+
+  background: none;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY500};
+  cursor: pointer;
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
 const S_ButtonWrapper = styled.div`
