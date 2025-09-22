@@ -1054,7 +1054,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-no-filter-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first"))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
                     .when()
@@ -1068,7 +1068,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-no-filter-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success-next"))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
                     .queryParam("cursorCode", nextCursorCode)
