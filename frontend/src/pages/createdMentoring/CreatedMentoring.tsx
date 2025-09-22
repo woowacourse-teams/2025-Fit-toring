@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import { getMineMentoring } from '../../common/apis/getMineMentoring';
+import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
@@ -115,6 +116,15 @@ function CreatedMentoring() {
               </MentoringApplicationList>
             </S_Wrapper>
           </S_ContentsWrapper>
+          <S_ButtonWrapper>
+            <S_Button
+              variant="newPrimary"
+              size="full"
+              onClick={handleMentoringShowButtonClick}
+            >
+              내 멘토링 보러가기
+            </S_Button>
+          </S_ButtonWrapper>
         </>
       ) : (
         <S_ContentsWrapper>
@@ -166,6 +176,28 @@ const S_Wrapper = styled.div`
   height: 100%;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
+`;
+
+const S_ButtonWrapper = styled.section`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  bottom: 0;
+
+  width: 100%;
+  padding: 1.4rem 1.8rem;
+  border-top: 1px solid ${({ theme }) => theme.OUTLINE.LIGHT};
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+`;
+
+const S_Button = styled(Button)`
+  padding: 1.6rem;
+
+  background-color: ${({ theme }) => theme.BG.BLACK};
+
+  color: ${({ theme }) => theme.FONT.W01};
 `;
 
 const S_EmptyText = styled.p`
