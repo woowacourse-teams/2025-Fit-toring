@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({DbCleaner.class, JpaConfiguration.class, QueryDslConfig.class})
 @DataJpaTest
-public class aaaaaa {
+public class RepositoryTestSupport {
 
     @Autowired
     private DbCleaner dbCleaner;
