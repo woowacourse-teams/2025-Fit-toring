@@ -10,32 +10,33 @@ interface MentoringApplicationStatusProps {
 }
 
 const STATUS_DESCRIPTION = {
-  [StatusTypeEnum.PENDING]: {
-    VALUE: '승인대기',
+  CREATED: {
+    [StatusTypeEnum.PENDING]: {
+      VALUE: '승인대기',
+    },
+    [StatusTypeEnum.APPROVED]: {
+      VALUE: '승인됨',
+    },
+    [StatusTypeEnum.COMPLETE]: {
+      VALUE: '완료됨',
+    },
+    [StatusTypeEnum.REJECTED]: {
+      VALUE: '거절됨',
+    },
   },
-  [StatusTypeEnum.APPROVED]: {
-    VALUE: '승인됨',
-  },
-  [StatusTypeEnum.COMPLETE]: {
-    VALUE: '완료됨',
-  },
-  [StatusTypeEnum.REJECTED]: {
-    VALUE: '거절됨',
-  },
-} as const;
-
-const STATUS_PARTICIPATED_DESCRIPTION = {
-  [StatusTypeEnum.PENDING]: {
-    VALUE: '예약신청',
-  },
-  [StatusTypeEnum.APPROVED]: {
-    VALUE: '예약확정',
-  },
-  [StatusTypeEnum.COMPLETE]: {
-    VALUE: '완료됨',
-  },
-  [StatusTypeEnum.REJECTED]: {
-    VALUE: '거절됨',
+  PARTICIPATED: {
+    [StatusTypeEnum.PENDING]: {
+      VALUE: '예약신청',
+    },
+    [StatusTypeEnum.APPROVED]: {
+      VALUE: '예약확정',
+    },
+    [StatusTypeEnum.COMPLETE]: {
+      VALUE: '완료됨',
+    },
+    [StatusTypeEnum.REJECTED]: {
+      VALUE: '거절됨',
+    },
   },
 } as const;
 
@@ -43,10 +44,7 @@ function MentoringApplicationStatus({
   status,
   type = 'CREATED',
 }: MentoringApplicationStatusProps) {
-  const description =
-    type === 'CREATED'
-      ? STATUS_DESCRIPTION[status]
-      : STATUS_PARTICIPATED_DESCRIPTION[status];
+  const description = STATUS_DESCRIPTION[type][status];
   return (
     <S_Container status={status}>
       <span>{description.VALUE}</span>
