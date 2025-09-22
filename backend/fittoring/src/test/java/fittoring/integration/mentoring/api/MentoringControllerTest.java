@@ -1090,6 +1090,50 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 assertThat(nextResponse.hasNext()).isFalse();
             });
         }
+
+        @DisplayName("잘못된 커서 코드로 조회하면 400 Bad Request를 반환한다")
+        @Test
+        void getMentoringSummaryPagesFail_invalidCursor() {
+            //given
+            Member mentee = memberRepository.save(
+                    new Member("menteeId2", "MALE", "멘티2", new Phone("010-9999-9999"), Password.from("pw")));
+            String invalidCursorCode = "invalid-cursor";
+
+            //when
+            Response response = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-fail-invalid-cursor"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "CREATED_AT")
+                    .queryParam("cursorCode", invalidCursorCode)
+                    .when()
+                    .get("/mentorings-page");
+
+            //then
+            String responseMessage = response.jsonPath().getString("message");
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(400);
+                softly.assertThat(responseMessage).isEqualTo("Invalid cursor");
+            });
+        }
+
+        @DisplayName("존재하지 않는 sortKey로 조회하면 400 Bad Request를 반환한다")
+        @Test
+        void getMentoringSummaryPagesFail_invalidSortKey() {
+            //when
+            Response response = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-fail-invalid-sortkey"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "INVALID_SORT_KEY")
+                    .when()
+                    .get("/mentorings-page");
+
+            //then
+            assertThat(response.statusCode()).isEqualTo(400);
+        }
     }
 }
 
