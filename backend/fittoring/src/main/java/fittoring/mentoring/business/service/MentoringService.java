@@ -152,6 +152,7 @@ public class MentoringService {
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
     }
 
+    // todo: n+1 의심 1,
     private List<String> getCategoryTitlesByMentoringId(Long mentoringId) {
         List<CategoryMentoring> categoryMappingsByMentoring = categoryMentoringRepository.findAllByMentoringId(
                 mentoringId);

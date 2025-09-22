@@ -9,6 +9,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CategoryMentoringRepository extends ListCrudRepository<CategoryMentoring, Long> {
 
+    @Query("""
+                SELECT cm
+                FROM CategoryMentoring cm 
+                JOIN FETCH Mentoring m ON cm.mentoring = m 
+                WHERE m.id = :mentoringId
+            """)
     List<CategoryMentoring> findAllByMentoringId(Long mentoringId);
 
     @Query("""
