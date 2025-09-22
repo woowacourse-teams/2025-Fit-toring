@@ -99,23 +99,27 @@ function CreatedMentoring() {
     <S_Container>
       {mineMentoring ? (
         <>
-          <S_MentoringSectionHeader>
-            <S_Title>예약 목록 ({mentoringApplicationList.length})</S_Title>
-          </S_MentoringSectionHeader>
-          <S_Wrapper>
-            <MentoringApplicationList>
-              {mentoringApplicationList.map((item) => (
-                <MentoringApplicationItem
-                  key={item.reservationId}
-                  mentoringApplication={item}
-                  onActionButtonsClick={handleActionButtonsClick}
-                />
-              ))}
-            </MentoringApplicationList>
-          </S_Wrapper>
+          <S_ContentsWrapper>
+            <S_MentoringSectionHeader>
+              <S_Title>예약 목록 ({mentoringApplicationList.length})</S_Title>
+            </S_MentoringSectionHeader>
+            <S_Wrapper>
+              <MentoringApplicationList>
+                {mentoringApplicationList.map((item) => (
+                  <MentoringApplicationItem
+                    key={item.reservationId}
+                    mentoringApplication={item}
+                    onActionButtonsClick={handleActionButtonsClick}
+                  />
+                ))}
+              </MentoringApplicationList>
+            </S_Wrapper>
+          </S_ContentsWrapper>
         </>
       ) : (
-        <S_EmptyText>개설한 멘토링이 없습니다.</S_EmptyText>
+        <S_ContentsWrapper>
+          <S_EmptyText>개설한 멘토링이 없습니다.</S_EmptyText>
+        </S_ContentsWrapper>
       )}
     </S_Container>
   );
@@ -129,8 +133,18 @@ const S_Container = styled.section`
   gap: 1rem;
 
   width: 100%;
+  min-height: calc(100vh - 5.7rem);
+`;
+
+const S_ContentsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 1rem;
+
+  width: 100%;
   height: 100%;
-  padding: 2rem;
+  padding: 0 2rem;
 `;
 
 const S_MentoringSectionHeader = styled.div`
@@ -150,7 +164,6 @@ const S_Wrapper = styled.div`
 
   width: 100%;
   height: 100%;
-  border: none;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
