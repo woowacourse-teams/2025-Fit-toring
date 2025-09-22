@@ -101,10 +101,10 @@ const S_Title = styled.h2`
 const S_Button = styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 0.6rem;
 
-  width: 9.4rem;
+  width: 8.4rem;
   height: 3.4rem;
   padding: 1rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
