@@ -16,8 +16,6 @@ interface MentoringItemProps {
   handleReviewSubmitButtonClick: (reservationId: number) => void;
 }
 
-const TIME = '15';
-
 function MentoringItem({
   mentoring: {
     reservationId,
