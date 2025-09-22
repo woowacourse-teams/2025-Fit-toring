@@ -13,29 +13,35 @@ interface ReviewButtonProps {
   isReviewed: boolean;
   status: StatusType;
   onReviewButtonClick: () => void;
+  onReviewCompleteButtonClick: () => void;
 }
 
 function ReviewWriteButton({ onClick, disabled }: ReviewWriteButtonProps) {
   return (
     <S_ReviewWriteButton onClick={onClick} disabled={disabled}>
-      리뷰 작성
+      리뷰 작성하기
     </S_ReviewWriteButton>
   );
 }
 
-function ReviewCompleteButton() {
-  return <S_ReviewCompleteButton>리뷰 완료</S_ReviewCompleteButton>;
+function ReviewCompleteButton({ onClick }: { onClick: () => void }) {
+  return (
+    <S_ReviewCompleteButton onClick={onClick}>
+      내가 작성한 리뷰
+    </S_ReviewCompleteButton>
+  );
 }
 
 function ReviewButton({
   isReviewed,
   status,
   onReviewButtonClick,
+  onReviewCompleteButtonClick,
 }: ReviewButtonProps) {
   const canWriteReview = !isReviewed && status === StatusTypeEnum.COMPLETE;
 
   if (isReviewed) {
-    return <ReviewCompleteButton />;
+    return <ReviewCompleteButton onClick={onReviewCompleteButtonClick} />;
   }
 
   return (
@@ -54,7 +60,8 @@ const S_Container = styled.button`
   justify-content: center;
   gap: 0.4rem;
 
-  width: 7.5rem;
+  width: 100%;
+  height: 3.8rem;
   margin-left: auto;
   padding: 0.4rem 0.8rem;
   border: none;
@@ -68,22 +75,19 @@ const S_Container = styled.button`
 `;
 
 const S_ReviewWriteButton = styled(S_Container)<{ disabled: boolean }>`
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_R}
   background-color: ${({ theme, disabled }) =>
-    disabled ? theme.BG.GRAY : theme.SYSTEM.MAIN700};
+    disabled ? theme.SYSTEM.GRAY400 : theme.BG.BLACK};
 
-  color: ${({ theme, disabled }) =>
-    disabled ? theme.FONT.B04 : theme.FONT.W01};
-
-  :hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  }
+  color: ${({ theme }) => theme.FONT.W01};
 
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
 const S_ReviewCompleteButton = styled(S_Container)`
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN200};
+  background-color: ${({ theme }) => theme.BG.BLACK};
 
-  color: ${({ theme }) => theme.FONT.B02};
-  pointer-events: none;
+  color: ${({ theme }) => theme.FONT.W01};
+
+  cursor: pointer;
 `;

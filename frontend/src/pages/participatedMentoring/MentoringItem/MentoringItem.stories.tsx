@@ -82,3 +82,18 @@ export const Completed: Story = {
     },
   },
 };
+
+export const Rejected: Story = {
+  args: {
+    mentoring: PARTICIPATED_MENTORING_LIST[3],
+    handleReviewSubmitButtonClick: () => {},
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '거절된 멘토링 상담 신청 정보 카드 입니다. 상태가 "거절됨"으로 표시되며, 거절된 상태를 보여줍니다.',
+      },
+    },
+  },
+};

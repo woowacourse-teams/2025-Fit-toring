@@ -2,11 +2,11 @@ import type { StatusType } from '../../../common/types/statusType';
 
 export interface ParticipatedMentoringType {
   reservationId: number;
+  mentoringId: number;
   mentorName: string;
   mentorProfileImage: string;
-  price: string;
   reservedAt: string;
-  categories: string[];
-  isReviewed: boolean;
+  content: string;
   status: StatusType;
+  isReviewed: boolean;
 }
