@@ -91,10 +91,6 @@ const S_Container = styled.li`
 
   transition: all 0.2s ease;
 
-  :hover {
-    box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
-  }
-
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
