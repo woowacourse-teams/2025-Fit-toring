@@ -7,7 +7,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.infra.S3Uploader;
+import fittoring.mentoring.infra.image.S3Uploader;
 import fittoring.mentoring.presentation.dto.MyInfoResponse;
 import fittoring.mentoring.presentation.dto.MyInfoSummaryResponse;
 import fittoring.util.DbCleaner;

@@ -19,7 +19,7 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.CertificateDeleteDto;
-import fittoring.mentoring.infra.S3Uploader;
+import fittoring.mentoring.infra.image.S3Uploader;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
 import fittoring.util.DbCleaner;

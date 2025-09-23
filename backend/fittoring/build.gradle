@@ -61,6 +61,13 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
     testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
     testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
+
+    // image
+    implementation 'net.coobird:thumbnailator:0.4.20'
+    implementation 'com.twelvemonkeys.imageio:imageio-core:3.12.0'
+    implementation 'com.twelvemonkeys.imageio:imageio-metadata:3.12.0'
+    implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.12.0'
+    implementation 'com.github.gotson.nightmonkeys:imageio-heif:1.1.0'
 }
 
 openapi3 {
