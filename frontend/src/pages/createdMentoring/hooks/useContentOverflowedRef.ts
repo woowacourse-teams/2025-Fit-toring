@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
-const useClampedRef = () => {
-  const [clamped, setClamped] = useState(false);
+const useContentOverflowedRef = () => {
+  const [contentOverflowed, setContentOverflowed] = useState(false);
 
   const ref = useRef<HTMLElement>(null);
 
@@ -10,7 +10,7 @@ const useClampedRef = () => {
       return;
     }
 
-    setClamped(ref.current.scrollHeight > ref.current.clientHeight);
+    setContentOverflowed(ref.current.scrollHeight > ref.current.clientHeight);
   }, []);
 
   const setRef = useCallback((element: HTMLElement | null) => {
@@ -25,7 +25,7 @@ const useClampedRef = () => {
     };
   }, []);
 
-  return { clamped, setRef };
+  return { contentOverflowed, setRef };
 };
 
-export default useClampedRef;
+export default useContentOverflowedRef;

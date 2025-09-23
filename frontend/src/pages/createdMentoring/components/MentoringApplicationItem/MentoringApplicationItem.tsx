@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import { type StatusType } from '../../../../common/types/statusType';
-import useClampedRef from '../../hooks/useClampedRef';
+import useContentOverflowedRef from '../../hooks/useContentOverflowedRef';
 import useShowMore from '../../hooks/useShowMore';
 import ActionButtons from '../ActionButtons/ActionButtons';
 
@@ -35,7 +35,7 @@ function MentoringApplicationItem({
 }: MentoringApplicationItemProps) {
   const { showMore, toggleShowMore: handleShowMoreButtonClick } = useShowMore();
 
-  const { clamped: isClamped, setRef: contentRef } = useClampedRef();
+  const { contentOverflowed, setRef: contentRef } = useContentOverflowedRef();
 
   const handleActionButtonsComplete = (updatedStatus: StatusType) => {
     onActionButtonsClick({
@@ -56,7 +56,7 @@ function MentoringApplicationItem({
       <S_ApplicationContent showMore={showMore} ref={contentRef}>
         {content}
       </S_ApplicationContent>
-      {isClamped && (
+      {contentOverflowed && (
         <S_ApplicationContentShowMoreButton onClick={handleShowMoreButtonClick}>
           ({showMore ? '접기' : '더보기'})
         </S_ApplicationContentShowMoreButton>
