@@ -18,8 +18,6 @@ export const testStateStore = {
 const BASE_URL = process.env.API_BASE_URL;
 const CREATED_MENTORING_URL = `${BASE_URL}${API_ENDPOINTS.CREATED_MENTORING}`;
 const getCreatedMentoringList = http.get(CREATED_MENTORING_URL, () => {
-  const response = { data: MENTORING_APPLICATIONS };
-
   if (testStateStore.shouldFail) {
     return new HttpResponse(
       { message: 'created mentoring list fetch failed' },
@@ -29,7 +27,7 @@ const getCreatedMentoringList = http.get(CREATED_MENTORING_URL, () => {
     );
   }
 
-  return HttpResponse.json(response);
+  return HttpResponse.json(MENTORING_APPLICATIONS);
 });
 
 interface PatchReservationStatusBody {
