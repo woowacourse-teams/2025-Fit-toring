@@ -74,7 +74,7 @@ const S_StepCircle = styled.div<{ step: 'before' | 'after' }>`
   height: 2rem;
   border: 2px solid
     ${({ step, theme }) =>
-      step === 'before' ? theme.SYSTEM.MAIN500 : theme.SYSTEM.GRAY100};
+      step === 'before' ? theme.SYSTEM.GRAY900 : theme.SYSTEM.GRAY100};
   border-radius: 50%;
 
   background-color: ${({ step, theme }) =>
@@ -91,7 +91,7 @@ const S_CurrentCircle = styled.div`
   height: 4rem;
   border-radius: 50%;
 
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  background-color: ${({ theme }) => theme.BG.BLACK};
 `;
 
 const S_Icon = styled.img`
@@ -109,5 +109,5 @@ const S_Line = styled.div<{ step: 'before' | 'after' }>`
   height: 2px;
 
   background-color: ${({ step, theme }) =>
-    step === 'before' ? theme.SYSTEM.MAIN500 : theme.SYSTEM.GRAY100};
+    step === 'before' ? theme.BG.BLACK : theme.SYSTEM.GRAY100};
 `;
