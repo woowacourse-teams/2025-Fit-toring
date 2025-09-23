@@ -2,137 +2,160 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-import bookedIcon from '../../../../common/assets/images/bookedIcon.svg';
+import humanIcon from '../../../../common/assets/images/human.svg';
 import Button from '../../../../common/components/Button/Button';
+import MentoringStepper from '../../../../common/components/mentoringStepper/MentoringStepper/MentoringStepper';
 import Modal from '../../../../common/components/Modal/Modal';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { THEME } from '../../../../common/styles/theme';
+import { StatusTypeEnum } from '../../../../common/types/statusType';
 
-import type { BookingResponse } from '../../types/BookingResponse';
+import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
 interface CompleteModalProps {
-  bookedInfo: BookingResponse | null;
   opened: boolean;
   onCloseClick: () => void;
+  mentorInfo: MentoringDetail;
 }
 
 function CompleteModal({
-  bookedInfo,
   opened,
   onCloseClick,
+  mentorInfo,
 }: CompleteModalProps) {
   const navigate = useNavigate();
 
-  const handleGoHome = () => {
+  const handleMentorSearchClick = () => {
     onCloseClick();
     navigate(PAGE_URL.HOME);
   };
 
+  const handleGoReservationClick = () => {
+    onCloseClick();
+    navigate(PAGE_URL.PARTICIPATED_MENTORING);
+  };
+
   return (
     <Modal opened={opened} onCloseClick={onCloseClick}>
-      <StyledContainer>
-        <StyledCompleteNotice>
-          <StyledImg src={bookedIcon} alt="Booked Icon" />
-          <h3>신청이 완료되었습니다!</h3>
-          <div>
-            <p>
-              <strong>{bookedInfo?.mentorName}</strong> 멘토에게
-            </p>
-            <p>상담 신청이 전송되었습니다.</p>
-          </div>
-        </StyledCompleteNotice>
-        <StyledInfoWrapper>
-          <p>신청자: {bookedInfo?.menteeName}</p>
-          <p>연락처: {bookedInfo?.menteePhone}</p>
-        </StyledInfoWrapper>
-        <StyledCompleteGuide>
-          <div>
-            <p>멘토가 확인 후 연락드릴 예정입니다.</p>
-            <p>조금만 기다려주세요!</p>
-          </div>
-        </StyledCompleteGuide>
+      <S_Container>
+        <S_ColoredBackground />
+        <S_Title>멘토링 신청이 완료되었습니다.</S_Title>
+        <S_StepperWrapper>
+          <S_ReservationInfoText>
+            확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
+          </S_ReservationInfoText>
+          <MentoringStepper status={StatusTypeEnum.PENDING} />
+        </S_StepperWrapper>
+        <S_MentorInfoBox>
+          <S_InfoTextWithIcon>
+            <S_Icon src={humanIcon} alt="사람 아이콘" />
+            <span>멘토 정보</span>
+          </S_InfoTextWithIcon>
+          <p>이름: {mentorInfo.mentorName}</p>
+          <p>전문분야: {mentorInfo.categories.join(' / ')}</p>
+        </S_MentorInfoBox>
         <Button
-          onClick={handleGoHome}
+          onClick={handleGoReservationClick}
           size="full"
           customStyle={css`
             padding: 0.8rem;
 
+            background-color: ${THEME.SYSTEM.MAIN500};
+
             font-size: 1.2rem;
           `}
         >
-          홈으로 돌아가기
+          예약 내역 보러가기
         </Button>
-      </StyledContainer>
+        <Button
+          onClick={handleMentorSearchClick}
+          size="full"
+          customStyle={css`
+            padding: 0.8rem;
+            border: 1px solid ${THEME.OUTLINE.DARK};
+
+            background-color: ${THEME.BG.WHITE};
+
+            color: ${THEME.FONT.B02};
+            font-size: 1.2rem;
+          `}
+        >
+          다른 멘토 찾기
+        </Button>
+      </S_Container>
     </Modal>
   );
 }
 export default CompleteModal;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 
-  height: 43.5rem;
-  padding: 4rem 2.2rem 2.4rem;
+  padding-top: 4rem;
 `;
 
-const StyledCompleteNotice = styled.div`
+const S_ColoredBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+
+  width: 100%;
+  height: 30%;
+  border-radius: 5px 5px 0 0;
+
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+`;
+
+const S_Title = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R};
+  color: ${({ theme }) => theme.FONT.W01};
+`;
+
+const S_MentorInfoBox = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.6rem;
+  gap: 0.4rem;
 
-  & p {
-    ${({ theme }) => theme.TYPOGRAPHY.B2_B};
-    color: ${({ theme }) => theme.FONT.B03};
-    line-height: 2.2rem;
-    text-align: center;
-  }
+  background-color: rgb(255 255 255 / 10%);
 
-  & strong {
-    ${({ theme }) => theme.TYPOGRAPHY.B2_B};
-    color: ${({ theme }) => theme.SYSTEM.MAIN600};
-  }
-
-  & h3 {
-    ${({ theme }) => theme.TYPOGRAPHY.H3_R};
+  & > p {
+    ${({ theme }) => theme.TYPOGRAPHY.B4_R};
     color: ${({ theme }) => theme.FONT.B01};
   }
 `;
 
-const StyledImg = styled.img`
-  width: 5.6rem;
-  height: 5.6rem;
-`;
-
-const StyledInfoWrapper = styled.div`
+const S_InfoTextWithIcon = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.7rem;
 
-  width: 100%;
-  padding: 1.5rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 0.8rem;
-
-  background-color: ${({ theme }) => theme.BG.LIGHT};
-
-  & p {
-    ${({ theme }) => theme.TYPOGRAPHY.B2_R};
-    color: ${({ theme }) => theme.FONT.B03};
-  }
-`;
-
-const StyledCompleteGuide = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.6rem;
-
-  & p {
+  & > span {
     ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-    color: ${({ theme }) => theme.FONT.B04};
-    line-height: 1.9rem;
-    text-align: center;
+    color: ${({ theme }) => theme.FONT.B01};
   }
+`;
+
+const S_Icon = styled.img`
+  width: 1.4rem;
+  height: 1.4rem;
+`;
+
+const S_StepperWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  padding: 3rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.LIGHT};
+  border-radius: 9px;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+`;
+
+const S_ReservationInfoText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B4_B};
+  color: ${({ theme }) => theme.FONT.B02};
+  text-align: center;
 `;

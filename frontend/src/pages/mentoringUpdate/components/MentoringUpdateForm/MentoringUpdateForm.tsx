@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
+import { getMentoringDetail } from '../../../../common/apis/getMentoringDetail';
 import BaseInfoSection from '../../../../common/components/mentoringForm/BaseInfoSection/BaseInfoSection';
 import ButtonSection from '../../../../common/components/mentoringForm/ButtonSection/ButtonSection';
 import CertificateSection from '../../../../common/components/mentoringForm/CertificateSection/CertificateSection';
@@ -12,10 +13,11 @@ import IntroduceSection from '../../../../common/components/mentoringForm/Introd
 import ProfileSection from '../../../../common/components/mentoringForm/ProfileSection/ProfileSection';
 import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
-import { getMentoringDetail } from '../../../detail/apis/getMentoringDetail';
+import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
 import { deleteCertificate } from '../../apis/deleteCertificate';
 import { putMentoring } from '../../apis/putMentoring';
 import {
@@ -25,7 +27,6 @@ import {
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(
@@ -43,6 +44,7 @@ function MentoringUpdateForm() {
   const priceErrorMessage = priceValidator(mentoringData.price);
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
+  const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
 
   const handleMentoringDataChange = (
     newData: Partial<MentoringUpdateFormData>,
@@ -93,7 +95,7 @@ function MentoringUpdateForm() {
         },
         profileImageFile,
         certificateImageFiles,
-        mentoringId: mentoringId,
+        mentoringId,
       });
       navigate(PAGE_URL.HOME);
       if (response.status === 200) {
@@ -104,9 +106,22 @@ function MentoringUpdateForm() {
 
       captureSentryError({
         error,
-        level: 'warning',
+        level: 'error',
         feature: 'mentoring',
         step: 'mentoring-update',
+        extras: {
+          mentoringData: {
+            ...mentoringData,
+            certificateInfos: addedCertifications.map((addedCertification) => ({
+              title: addedCertification.title,
+              type: addedCertification.type,
+            })),
+            profileImageUrl: mentoringData.profileImageUrl,
+          },
+          profileImageFile,
+          certificateImageFiles,
+          mentoringId,
+        },
       });
     }
   };
@@ -117,7 +132,12 @@ function MentoringUpdateForm() {
     e: React.FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault();
-    if (priceErrorMessage || introduceErrorMessage || careerErrorMessage) {
+    if (
+      priceErrorMessage ||
+      introduceErrorMessage ||
+      careerErrorMessage ||
+      chatUrlErrorMessage
+    ) {
       alert('입력값을 확인해주세요.');
       return;
     }
@@ -200,14 +220,21 @@ function MentoringUpdateForm() {
           type: e.type,
           imageUrl: e.imageUrl,
         }));
-        const { price, career, introduction, content, profileImageUrl } =
-          mentoring;
+        const {
+          price,
+          career,
+          introduction,
+          content,
+          profileImageUrl,
+          chatUrl,
+        } = mentoring;
         setMentoringData({
           price,
           career,
           introduction,
           content,
           category: categories,
+          chatUrl,
           certificateInfos: certificateInfosData,
           profileImageUrl,
         });
@@ -223,13 +250,15 @@ function MentoringUpdateForm() {
   }, [mentoringId]);
 
   return (
-    <StyledContainer onSubmit={handleSubmitButtonClick}>
+    <S_Container onSubmit={handleSubmitButtonClick}>
       {!isInitialMentoringData(mentoringData) ? (
         <>
           <BaseInfoSection
-            onPriceChange={handleMentoringDataChange}
+            onBaseInfoChange={handleMentoringDataChange}
             priceErrorMessage={priceErrorMessage}
             price={mentoringData.price}
+            chatUrlErrorMessage={chatUrlErrorMessage}
+            chatUrl={mentoringData.chatUrl}
           />
           <ProfileSection
             profileImageUrl={mentoringData.profileImageUrl}
@@ -256,7 +285,7 @@ function MentoringUpdateForm() {
             detailIntroduce={mentoringData.content}
             onDetailIntroduceChange={handleMentoringDataChange}
           />
-          <StyledSeparator />
+          <S_Separator />
           <ButtonSection
             submitButtonName="update"
             onCancelButtonClick={handleCancelButtonClick}
@@ -265,13 +294,13 @@ function MentoringUpdateForm() {
       ) : (
         <div>로딩중</div>
       )}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default MentoringUpdateForm;
 
-const StyledContainer = styled.form`
+const S_Container = styled.form`
   display: flex;
   flex-direction: column;
   gap: 3.2rem;
@@ -286,7 +315,7 @@ const StyledContainer = styled.form`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyledSeparator = styled.div`
+const S_Separator = styled.div`
   width: 100%;
   height: 0.1rem;
 

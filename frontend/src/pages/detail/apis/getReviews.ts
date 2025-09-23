@@ -1,6 +1,7 @@
 import { apiClient } from '../../../common/apis/apiClient';
 import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
-import { ReviewResponse } from '../types/ReviewResponse';
+
+import type { ReviewResponse } from '../types/ReviewResponse';
 
 export const getReviews = async (mentoringId: number) => {
   return await apiClient.get<ReviewResponse[]>({

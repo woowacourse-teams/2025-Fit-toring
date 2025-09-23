@@ -8,7 +8,7 @@ export const THEME = {
     GRAY600: '#666666',
     GRAY500: '#767676',
     GRAY400: '#888888',
-    GRAY300: '#999999',
+    GRAY300: '#E3E3E3',
     GRAY200: '#BBBBBB',
     GRAY100: '#E1E1E1',
     GRAY50: '#F1F1F5',
@@ -16,7 +16,7 @@ export const THEME = {
     MAIN800: '#005F5A',
     MAIN700: '#006760',
     MAIN600: '#00786F',
-    MAIN500: '#26BDB1',
+    MAIN500: '#2BA79F',
     MAIN400: '#46ECD5',
     MAIN300: '#74E7D4',
     MAIN200: '#A6F3E5',
@@ -57,182 +57,182 @@ export const THEME = {
   TYPOGRAPHY: {
     H1_B: css`
       font-weight: 700;
-      font-size: 23px;
+      font-size: 2.5rem;
       line-height: normal;
     `,
     H1_R: css`
       font-weight: 400;
-      font-size: 23px;
+      font-size: 2.5rem;
       line-height: normal;
     `,
     H2_B: css`
       font-weight: 700;
-      font-size: 20px;
+      font-size: 2.2rem;
       line-height: normal;
     `,
     H2_R: css`
       font-weight: 400;
-      font-size: 20px;
+      font-size: 2.2rem;
       line-height: normal;
     `,
     H3_B: css`
       font-weight: 700;
-      font-size: 18px;
+      font-size: 2rem;
       line-height: normal;
     `,
     H3_R: css`
       font-weight: 400;
-      font-size: 18px;
+      font-size: 2rem;
       line-height: normal;
     `,
     H4_B: css`
       font-weight: 700;
-      font-size: 16px;
+      font-size: 1.8rem;
       line-height: normal;
     `,
     H4_R: css`
       font-weight: 400;
-      font-size: 16px;
+      font-size: 1.8rem;
       line-height: normal;
     `,
     LB1_R: css`
       font-weight: 400;
-      font-size: 23px;
+      font-size: 2.5rem;
       line-height: normal;
     `,
     LB1_B: css`
       font-weight: 700;
-      font-size: 23px;
+      font-size: 2.5rem;
       line-height: normal;
     `,
     LB2_R: css`
       font-weight: 400;
-      font-size: 20px;
+      font-size: 2.2rem;
       line-height: normal;
     `,
     LB2_B: css`
       font-weight: 700;
-      font-size: 20px;
+      font-size: 2.2rem;
       line-height: normal;
     `,
     LB3_R: css`
       font-weight: 400;
-      font-size: 18px;
+      font-size: 2rem;
       line-height: normal;
     `,
     LB3_B: css`
       font-weight: 700;
-      font-size: 18px;
+      font-size: 2rem;
       line-height: normal;
     `,
     LB4_R: css`
       font-weight: 400;
-      font-size: 16px;
+      font-size: 1.8rem;
       line-height: normal;
     `,
     LB4_B: css`
       font-weight: 700;
-      font-size: 16px;
+      font-size: 1.8rem;
       line-height: normal;
     `,
     B1_B: css`
       font-weight: 700;
-      font-size: 15px;
+      font-size: 1.7rem;
       line-height: normal;
     `,
     B1_R: css`
       font-weight: 400;
-      font-size: 15px;
+      font-size: 1.7rem;
       line-height: 160%; /* LH행간: 160% */
     `,
     B2_B: css`
       font-weight: 700;
-      font-size: 14px;
+      font-size: 1.6rem;
       line-height: normal;
     `,
     B2_R: css`
       font-weight: 400;
-      font-size: 14px;
+      font-size: 1.6rem;
       line-height: 150%; /* LH행간: 150% */
     `,
     B3_B: css`
       font-weight: 700;
-      font-size: 13px;
+      font-size: 1.5rem;
       line-height: normal;
     `,
     B3_R: css`
       font-weight: 400;
-      font-size: 13px;
+      font-size: 1.5rem;
       line-height: normal;
     `,
     B4_B: css`
       font-weight: 700;
-      font-size: 12px;
+      font-size: 1.4rem;
       line-height: normal;
     `,
     B4_R: css`
       font-weight: 400;
-      font-size: 12px;
+      font-size: 1.4rem;
       line-height: 125%; /* LH행간: 125% */
     `,
     C1_R: css`
       font-weight: 400;
-      font-size: 13px;
+      font-size: 1.5rem;
       line-height: normal;
     `,
     C2_R: css`
       font-weight: 400;
-      font-size: 12px;
+      font-size: 1.4rem;
       line-height: normal;
     `,
     C3_R: css`
       font-weight: 400;
-      font-size: 11px;
+      font-size: 1.3rem;
       line-height: normal;
     `,
     C4_R: css`
       font-weight: 400;
-      font-size: 10px;
+      font-size: 1.2rem;
       line-height: normal;
     `,
     BTN1_B: css`
       font-weight: 700;
-      font-size: 16px;
+      font-size: 1.8rem;
       line-height: normal;
     `,
     BTN1_R: css`
       font-weight: 400;
-      font-size: 16px;
+      font-size: 1.8rem;
       line-height: normal;
     `,
     BTN2_B: css`
       font-weight: 700;
-      font-size: 14px;
+      font-size: 1.6rem;
       line-height: normal;
     `,
     BTN2_R: css`
       font-weight: 400;
-      font-size: 14px;
+      font-size: 1.6rem;
       line-height: normal;
     `,
     BTN3_B: css`
       font-weight: 700;
-      font-size: 13px;
+      font-size: 1.5rem;
       line-height: normal;
     `,
     BTN3_R: css`
       font-weight: 400;
-      font-size: 13px;
+      font-size: 1.5rem;
       line-height: normal;
     `,
     BTN4_B: css`
       font-weight: 700;
-      font-size: 12px;
+      font-size: 1.4rem;
       line-height: normal;
     `,
     BTN4_R: css`
       font-weight: 400;
-      font-size: 12px;
+      font-size: 1.4rem;
       line-height: normal;
     `,
   },

@@ -4,9 +4,9 @@ import styled from '@emotion/styled';
 
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import defaultProfile from '../../../../common/assets/images/profileImg.svg';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 import type { UserInfo } from '../../../../common/types/userInfo';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 function MyProfile() {
   const [myProfile, setMyProfile] = useState<UserInfo | null>(null);
@@ -36,23 +36,21 @@ function MyProfile() {
   const { loginId, name, phoneNumber, image } = myProfile;
 
   return (
-    <StyledContainer>
-      <StyledIntro>
-        멘토링 활동 내역을 확인하고 개인정보를 관리하세요.
-      </StyledIntro>
-      <StyledWrapper>
-        <StyledImage src={image || defaultProfile} alt="내 프로필 이미지" />
-        <StyledName>{name}</StyledName>
-        <StyledId>아이디: {loginId}</StyledId>
-        <StyledPhone>전화번호: {phoneNumber}</StyledPhone>
-      </StyledWrapper>
-    </StyledContainer>
+    <S_Container>
+      <S_Intro>멘토링 활동 내역을 확인하고 개인정보를 관리하세요.</S_Intro>
+      <S_Wrapper>
+        <S_Image src={image || defaultProfile} alt="내 프로필 이미지" />
+        <S_Name>{name}</S_Name>
+        <S_Id>아이디: {loginId}</S_Id>
+        <S_Phone>전화번호: {phoneNumber}</S_Phone>
+      </S_Wrapper>
+    </S_Container>
   );
 }
 
 export default MyProfile;
 
-const StyledContainer = styled.section`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,12 +60,12 @@ const StyledContainer = styled.section`
   padding: 2rem;
 `;
 
-const StyledIntro = styled.h2`
+const S_Intro = styled.h2`
   color: ${({ theme }) => theme.FONT.B03};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -82,24 +80,24 @@ const StyledWrapper = styled.div`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyledImage = styled.img`
+const S_Image = styled.img`
   width: 6rem;
   height: 6rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN300};
   border-radius: 50%;
 `;
 
-const StyledName = styled.p`
+const S_Name = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B1_B}
 `;
 
-const StyledId = styled.p`
+const S_Id = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;
 
-const StyledPhone = styled.p`
+const S_Phone = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;

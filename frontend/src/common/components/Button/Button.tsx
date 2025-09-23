@@ -6,13 +6,14 @@ import styled from '@emotion/styled';
 import type { myTheme } from '../../types/theme';
 import type { SerializedStyles } from '@emotion/react';
 
-type Variant = 'primary' | 'secondary' | 'disabled';
+type Variant = 'primary' | 'secondary' | 'disabled' | 'newPrimary';
 type Size = 'full' | 'fit';
 
 interface StyleVariant {
   primary: (theme: myTheme) => SerializedStyles;
   secondary: (theme: myTheme) => SerializedStyles;
   disabled: (theme: myTheme) => SerializedStyles;
+  newPrimary: (theme: myTheme) => SerializedStyles;
 }
 
 interface ButtonProps {
@@ -30,7 +31,7 @@ function Button({
   ...rest
 }: PropsWithChildren<ComponentProps<'button'> & ButtonProps>) {
   return (
-    <StyledContainer
+    <S_Container
       customStyle={customStyle}
       variant={variant}
       size={size}
@@ -38,13 +39,13 @@ function Button({
       {...rest}
     >
       {children}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default Button;
 
-const StyledContainer = styled.button<ButtonProps>`
+const S_Container = styled.button<ButtonProps>`
   width: ${(props) => (props.size === 'full' ? '100%' : 'fit-content')};
   padding: 0.6rem 1.1rem;
   border: none;
@@ -61,6 +62,7 @@ const styleVariant: StyleVariant = {
   primary: (theme: myTheme) => primaryStyles(theme),
   secondary: (theme: myTheme) => secondaryStyles(theme),
   disabled: (theme: myTheme) => disabledStyles(theme),
+  newPrimary: (theme: myTheme) => newPrimaryStyles(theme),
 };
 
 const primaryStyles = (theme: myTheme) => css`
@@ -80,4 +82,12 @@ const disabledStyles = (theme: myTheme) => css`
 
   color: ${theme.FONT.G01};
   pointer-events: none;
+`;
+
+const newPrimaryStyles = (theme: myTheme) => css`
+  border: 1px solid ${theme.SYSTEM.GRAY300};
+
+  background-color: transparent;
+
+  color: ${theme.SYSTEM.GRAY600};
 `;

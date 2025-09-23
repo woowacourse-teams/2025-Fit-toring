@@ -5,13 +5,7 @@ const usePreviewImage = (initialCertificate?: string | null) => {
     initialCertificate ?? null,
   );
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
+  const handleImageChange = (file: File) => {
     const fileUrl = URL.createObjectURL(file);
     setPreviewUrl(fileUrl);
   };

@@ -1,17 +1,19 @@
 import styled from '@emotion/styled';
-import filledStar from '../../../../common/assets/images/starIcon.svg';
+
 import emptyStar from '../../../../common/assets/images/emptyStarIcon.svg';
-import { ReviewResponse } from '../../types/ReviewResponse';
+import filledStar from '../../../../common/assets/images/starIcon.svg';
+
+import type { ReviewResponse } from '../../types/ReviewResponse';
 
 function ReviewItem({ review }: { review: ReviewResponse }) {
   const { reviewerName, createdAt, rating, content } = review;
   const [year, month, day] = createdAt.split('-');
 
   return (
-    <StyledContainer>
-      <StyledNameAndRatingWrapper>
-        <StyledName>{reviewerName}</StyledName>
-        <StyledRating>
+    <S_Container>
+      <S_NameAndRatingWrapper>
+        <S_Name>{reviewerName}</S_Name>
+        <S_Rating>
           {Array.from({ length: 5 }).map((_, index) => {
             const score = index + 1;
             if (score <= rating) {
@@ -19,43 +21,44 @@ function ReviewItem({ review }: { review: ReviewResponse }) {
             }
             return <img key={index} src={emptyStar} />;
           })}
-        </StyledRating>
-      </StyledNameAndRatingWrapper>
-      <StyledDate>
+        </S_Rating>
+      </S_NameAndRatingWrapper>
+      <S_Date>
         {year}년 {month}월 {day}일
-      </StyledDate>
-      <StyledContent>{content}</StyledContent>
-    </StyledContainer>
+      </S_Date>
+      <S_Content>{content}</S_Content>
+    </S_Container>
   );
 }
 
 export default ReviewItem;
 
-const StyledContainer = styled.li`
+const S_Container = styled.li`
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
 
   width: 100%;
   padding: 2.1rem;
-  background-color: ${({ theme }) => theme.BG.WHITE};
   border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
   border-radius: 8px;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
 
   color: ${({ theme }) => theme.FONT.B04};
 `;
 
-const StyledNameAndRatingWrapper = styled.div`
+const S_NameAndRatingWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
-const StyledName = styled.p`
+const S_Name = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const StyledRating = styled.div`
+const S_Rating = styled.div`
   display: flex;
   align-items: center;
   gap: 0.1rem;
@@ -69,12 +72,12 @@ const StyledRating = styled.div`
   }
 `;
 
-const StyledDate = styled.p`
+const S_Date = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   color: ${({ theme }) => theme.FONT.B04};
 `;
 
-const StyledContent = styled.p`
+const S_Content = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
   color: ${({ theme }) => theme.FONT.B03};
 `;

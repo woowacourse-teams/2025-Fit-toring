@@ -10,35 +10,37 @@ function SpecialtyFilterModalButton({
   handleOpenModal,
 }: SpecialtyFilterModalButtonProps) {
   return (
-    <StyledButton onClick={handleOpenModal} type="button">
-      <StyledText>전문 분야</StyledText>
-      <StyledGoIcon src={goIcon} alt="모달 열기 아이콘" />
-    </StyledButton>
+    <S_Button onClick={handleOpenModal} type="button">
+      <S_GoIcon src={goIcon} alt="카테고리 열기 아이콘" />
+      <S_Text>카테고리</S_Text>
+    </S_Button>
   );
 }
 
 export default SpecialtyFilterModalButton;
 
-const StyledButton = styled.button`
-  display: inline-flex;
+const S_Button = styled.button`
+  display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 0.6rem;
 
-  width: 90%;
-  padding: 0.7rem 1.1rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
+  width: 9.4rem;
+  height: 3.4rem;
+  padding: 1rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
   border-radius: 6.75px;
 
   background: ${({ theme }) => theme.BG.WHITE};
   cursor: pointer;
 `;
 
-const StyledText = styled.span`
-  ${({ theme }) => theme.TYPOGRAPHY.BTN4_R};
-  color: ${({ theme }) => theme.FONT.B02};
+const S_Text = styled.span`
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
+  color: ${({ theme }) => theme.SYSTEM.GRAY600};
 `;
 
-const StyledGoIcon = styled.img`
+const S_GoIcon = styled.img`
   width: 1.4rem;
   aspect-ratio: 1 / 1;
 `;

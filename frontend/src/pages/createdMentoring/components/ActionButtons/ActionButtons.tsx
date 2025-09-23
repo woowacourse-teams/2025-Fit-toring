@@ -4,12 +4,12 @@ import {
   StatusTypeEnum,
   type StatusType,
 } from '../../../../common/types/statusType';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getMenteePhoneNumber } from '../../apis/getMenteePhoneNumber';
 import { patchReservationStatus } from '../../apis/patchReservationStatus';
 import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
 
 import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -40,7 +40,9 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         status: newStatus,
       });
 
-      if (response.status !== 200) throw new Error('status update failed');
+      if (response.status !== 200) {
+        throw new Error('status update failed');
+      }
     } catch (error) {
       console.error(`Error updating reservation status:`, error);
       captureSentryError({
@@ -111,36 +113,36 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
 
   if (status === StatusTypeEnum.PENDING) {
     return (
-      <StyledContainer>
-        <StyledPrimaryButton onClick={handleApproveButtonClick}>
+      <S_Container>
+        <S_PrimaryButton onClick={handleApproveButtonClick}>
           승인
-        </StyledPrimaryButton>
-        <StyledSecondaryButton onClick={handleRejectedButtonClick}>
+        </S_PrimaryButton>
+        <S_SecondaryButton onClick={handleRejectedButtonClick}>
           거절
-        </StyledSecondaryButton>
-      </StyledContainer>
+        </S_SecondaryButton>
+      </S_Container>
     );
   }
   if (status === StatusTypeEnum.APPROVED) {
     return (
-      <StyledContainer>
-        <StyledPrimaryButton onClick={handleCompleteButtonClick}>
+      <S_Container>
+        <S_PrimaryButton onClick={handleCompleteButtonClick}>
           완료
-        </StyledPrimaryButton>
-      </StyledContainer>
+        </S_PrimaryButton>
+      </S_Container>
     );
   }
 }
 
 export default ActionButtons;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
 `;
 
-const StyledBaseButton = styled.button`
+const S_BaseButton = styled.button`
   width: fit-content;
   padding: 0.8rem 1.3rem;
   border: none;
@@ -152,10 +154,10 @@ const StyledBaseButton = styled.button`
   ${({ theme }) => theme.TYPOGRAPHY.BTN4_R}
 `;
 
-const StyledPrimaryButton = styled(StyledBaseButton)`
+const S_PrimaryButton = styled(S_BaseButton)`
   background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
 `;
 
-const StyledSecondaryButton = styled(StyledBaseButton)`
+const S_SecondaryButton = styled(S_BaseButton)`
   background-color: ${({ theme }) => theme.BG.RED};
 `;

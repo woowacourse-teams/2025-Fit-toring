@@ -3,17 +3,18 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useLocation, useParams } from 'react-router-dom';
 
-import { getMentoringDetail } from './apis/getMentoringDetail';
+import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
+import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
+import { captureSentryError } from '../../common/utils/captureSentryError';
+
 import ApplySection from './components/ApplySection/ApplySection';
 import Certificates from './components/Certificates/Certificates';
 import DetailHeader from './components/DetailHeader/DetailHeader';
 import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
-import MentorSummary from './components/MentorSummary/MentorSummary';
-import Profile from './components/Profile/Profile';
+import ProfileSection from './components/ProfileSection/ProfileSection';
 
-import type { MentoringResponse } from './types/MentoringResponse';
-import { captureSentryError } from '../../common/utils/captureSentryError';
+import type { MentoringDetail } from '../../common/types/MentoringDetail';
 
 type TapType = 'detail' | 'review';
 
@@ -22,7 +23,7 @@ function Detail() {
   const state = location.state as { tab?: TapType };
 
   const { mentoringId } = useParams();
-  const [data, setData] = useState<MentoringResponse | null>(null);
+  const [data, setData] = useState<MentoringDetail | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,9 +45,15 @@ function Detail() {
   }, [mentoringId]);
 
   const [selected, setSelected] = useState<TapType>(state?.tab ?? 'detail');
+  const [scrollY, setScrollY] = useState(0);
 
-  const handleClick = (selectedType: TapType) => {
+  const handleTapClick = (selectedType: TapType) => {
     setSelected(selectedType);
+    setScrollY(window.scrollY);
+  };
+
+  const handleCertificateShowButton = () => {
+    setSelected('detail');
   };
 
   if (!data) {
@@ -56,52 +63,53 @@ function Detail() {
   return (
     <>
       <DetailHeader />
-      <StyledContainer>
-        <StyledMentorInfoWrapper>
-          <Profile
+      <S_Container>
+        <S_MentorInfoWrapper>
+          <ProfileSection
             profileImg={data.profileImageUrl}
             mentorName={data.mentorName}
             categories={data.categories}
             ratingAverage={data.ratingAverage}
             ratingCount={data.ratingCount}
-          />
-          <MentorSummary
             introduction={data.introduction}
-            career={data.career}
-            certificates={data.certificates}
+            onCertificateShowButton={handleCertificateShowButton}
           />
-        </StyledMentorInfoWrapper>
-        <StyledTapWrapper>
-          <StyledTap
-            onClick={() => handleClick('detail')}
+        </S_MentorInfoWrapper>
+        <S_TapWrapper>
+          <S_Tap
+            onClick={() => handleTapClick('detail')}
             selected={selected === 'detail'}
           >
             상세보기
-          </StyledTap>
-          <StyledTap
-            onClick={() => handleClick('review')}
+          </S_Tap>
+          <S_Tap
+            onClick={() => handleTapClick('review')}
             selected={selected === 'review'}
           >
             리뷰
-          </StyledTap>
-          <StyledTapIndicator selected={selected} />
-        </StyledTapWrapper>
-        <StyledContentWrapper>
+          </S_Tap>
+        </S_TapWrapper>
+        <S_ContentWrapper>
           {selected === 'detail' ? (
-            <StyledDetailWrapper>
+            <S_DetailWrapper>
               <Introduction content={data.content} />
-              <StyledLine />
+              <S_Line />
               <Certificates certificates={data.certificates} />
-            </StyledDetailWrapper>
+            </S_DetailWrapper>
           ) : (
             <DetailReview
               mentoringId={data.id}
               ratingAverage={data.ratingAverage}
               ratingCount={data.ratingCount}
+              loadingComponent={
+                <S_SpinnerWrapper height={scrollY}>
+                  <LoadingSpinner />
+                </S_SpinnerWrapper>
+              }
             />
           )}
-        </StyledContentWrapper>
-      </StyledContainer>
+        </S_ContentWrapper>
+      </S_Container>
       <ApplySection price={data.price} mentoringId={mentoringId} />
     </>
   );
@@ -109,60 +117,59 @@ function Detail() {
 
 export default Detail;
 
-const StyledContainer = styled.div`
-  margin-bottom: 10rem;
-  padding: 0 2rem;
+const S_Container = styled.div`
+  margin-bottom: 12rem;
 `;
 
-const StyledMentorInfoWrapper = styled.div`
+const S_MentorInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2.4rem;
 `;
 
-const StyledTapWrapper = styled.div`
+const S_TapWrapper = styled.div`
   display: flex;
-  flex-direction: row;
-  position: relative;
 
   width: 100%;
-  padding: 1rem;
 `;
 
-const StyledTap = styled.p<{ selected: boolean }>`
-  width: 50%;
+const S_Tap = styled.div<{ selected: boolean }>`
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
 
-  text-align: center;
+  padding: 1.6rem 0;
+  border-top: 1px solid
+    ${({ selected, theme }) => (selected ? 'none' : theme.SYSTEM.GRAY50)};
+  border-bottom: 1px solid
+    ${({ selected, theme }) => (selected ? 'none' : theme.SYSTEM.GRAY50)};
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_B};
+  background-color: ${({ selected, theme }) =>
+    selected ? theme.SYSTEM.GRAY800 : theme.BG.WHITE};
+
+  color: ${({ selected, theme }) =>
+    selected ? theme.BG.WHITE : theme.FONT.B01};
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
-const StyledTapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 0;
-
-  width: 50%;
-  height: 1px;
-
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  transition: transform 0.2s ease-in-out;
-
-  transform: ${({ selected }) =>
-    selected === 'detail' ? 'translateX(0%)' : 'translateX(100%)'};
-`;
-
-const StyledContentWrapper = styled.div`
+const S_ContentWrapper = styled.div`
   display: flex;
 
   width: 100%;
-  padding-top: 2rem;
+  padding: 3rem 2.7rem 0;
+  cursor: pointer;
 `;
 
-const StyledDetailWrapper = styled.div`
+const S_DetailWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -170,9 +177,18 @@ const StyledDetailWrapper = styled.div`
   width: 100%;
 `;
 
-const StyledLine = styled.hr`
+const S_Line = styled.hr`
   width: 100%;
   height: 1px;
   margin: 0;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+`;
+
+const S_SpinnerWrapper = styled.div<{ height: number }>`
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+
+  height: ${({ height }) => `${height}px`};
 `;

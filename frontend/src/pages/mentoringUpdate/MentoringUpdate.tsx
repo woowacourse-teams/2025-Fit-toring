@@ -7,15 +7,15 @@ function MentoringUpdate() {
   return (
     <>
       <MentoringUpdateHeader />
-      <StyledWrapper>
+      <S_Wrapper>
         <MentoringUpdateForm />
-      </StyledWrapper>
+      </S_Wrapper>
     </>
   );
 }
 
 export default MentoringUpdate;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   padding: 3.2rem 1.6rem;
 `;

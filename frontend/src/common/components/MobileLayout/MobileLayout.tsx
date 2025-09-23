@@ -4,15 +4,15 @@ import styled from '@emotion/styled';
 
 function MobileLayout({ children }: PropsWithChildren) {
   return (
-    <StyledContainer>
-      <StyledContents>{children}</StyledContents>
-    </StyledContainer>
+    <S_Container>
+      <S_Contents>{children}</S_Contents>
+    </S_Container>
   );
 }
 
 export default MobileLayout;
 
-const StyledContainer = styled.main`
+const S_Container = styled.main`
   display: flex;
   justify-content: center;
 
@@ -21,10 +21,11 @@ const StyledContainer = styled.main`
   min-height: 100%;
 `;
 
-const StyledContents = styled.section`
+const S_Contents = styled.section`
   width: 48rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
 
-  background-color: ${({ theme }) => theme.BG.LIGHT};
+  background-color: ${({ theme }) => theme.BG.WHITE};
 
   @media screen and (width <= 480px) {
     width: 100%;

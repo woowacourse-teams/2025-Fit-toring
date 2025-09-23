@@ -2,7 +2,10 @@ import styled from '@emotion/styled';
 
 import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import uploadIcon from '../../../../common/assets/images/uploadIcon.svg';
+import useAsyncLoadingInput from '../../../hooks/useAsyncLoadingInput';
 import usePreviewImage from '../../../hooks/usePreviewImage';
+import { convertHeicToJpegIfNeeded } from '../../../utils/heicFile/convertHeicToJpegIfNeeded';
+import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 interface ProfileSectionProps {
@@ -17,11 +20,16 @@ function ProfileSection({
   const { previewUrl, handleImageChange, updatePreviewUrl } =
     usePreviewImage(profileImageUrl);
 
-  const handleProfileImageInputChange = (
+  const handleProfileImageInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    handleImageChange(e);
-    onProfileImageChange(e.target.files?.[0] || null);
+    const file = e.target.files?.[0];
+    if (file) {
+      const convertedFile = await convertHeicToJpegIfNeeded(file);
+
+      handleImageChange(convertedFile);
+      onProfileImageChange(convertedFile);
+    }
   };
 
   const handleDeleteProfileImageClick = () => {
@@ -29,62 +37,70 @@ function ProfileSection({
     onProfileImageChange(null);
   };
 
+  const handleError = (error: unknown) => {
+    if (error instanceof Error) {
+      console.error(error.message);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    } else if (typeof error === 'string') {
+      console.error(error);
+      alert('알 수 없는 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const { isLoading, handleCallback: handleProfileImageInputClick } =
+    useAsyncLoadingInput({
+      callback: handleProfileImageInputChange,
+      onError: handleError,
+    });
+
   return (
     <section>
       <TitleSeparator>프로필 사진</TitleSeparator>
-      <StyledProfileWrapper>
-        <StyledDeleteButton
-          type="button"
-          onClick={handleDeleteProfileImageClick}
-        >
+      <S_ProfileWrapper>
+        <S_DeleteButton type="button" onClick={handleDeleteProfileImageClick}>
           <img src={deleteIcon} alt="삭제 아이콘" />
-        </StyledDeleteButton>
-        <StyledProfileInputWrapper>
-          {previewUrl ? (
-            <>
-              <StyledHiddenInput
-                type="file"
-                accept="image/*"
-                id="profileImage"
-                onChange={handleProfileImageInputChange}
-              />
-              <StyledPreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
-            </>
+        </S_DeleteButton>
+        <S_ProfileInputWrapper>
+          {isLoading ? (
+            <LoadingSpinner />
           ) : (
             <>
-              <StyledHiddenInput
+              <S_HiddenInput
                 type="file"
                 accept="image/*"
                 id="profileImage"
-                onChange={handleProfileImageInputChange}
+                onChange={handleProfileImageInputClick}
               />
-
-              <StyledContentWrapper>
-                <StyledUploadIcon src={uploadIcon} alt="업로드 아이콘" />
-                {/* TODO: 드래그를 통한 업로드 기능 추가 */}
-                <StyledGuideText>
-                  <strong>클릭하여 업로드</strong>
-                </StyledGuideText>{' '}
-                <StyledFileTypeText>(최대 30MB)</StyledFileTypeText>
-              </StyledContentWrapper>
+              {previewUrl ? (
+                <S_PreviewImage src={previewUrl} alt="프로필 사진 미리보기" />
+              ) : (
+                <S_ContentWrapper>
+                  <S_UploadIcon src={uploadIcon} alt="업로드 아이콘" />
+                  {/* TODO: 드래그를 통한 업로드 기능 추가 */}
+                  <S_GuideText>
+                    <strong>클릭하여 업로드</strong>
+                  </S_GuideText>{' '}
+                  <S_FileTypeText>(최대 30MB)</S_FileTypeText>
+                </S_ContentWrapper>
+              )}
             </>
           )}
-        </StyledProfileInputWrapper>
-      </StyledProfileWrapper>
+        </S_ProfileInputWrapper>
+      </S_ProfileWrapper>
     </section>
   );
 }
 
 export default ProfileSection;
 
-const StyledProfileWrapper = styled.div`
+const S_ProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 1.5rem;
 `;
 
-const StyledProfileInputWrapper = styled.label`
+const S_ProfileInputWrapper = styled.label`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -101,7 +117,7 @@ const StyledProfileInputWrapper = styled.label`
   cursor: pointer;
 `;
 
-const StyledContentWrapper = styled.div`
+const S_ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -112,7 +128,7 @@ const StyledContentWrapper = styled.div`
   height: 100%;
 `;
 
-const StyledDeleteButton = styled.button`
+const S_DeleteButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,7 +146,7 @@ const StyledDeleteButton = styled.button`
   }
 `;
 
-const StyledPreviewImage = styled.img`
+const S_PreviewImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -138,7 +154,7 @@ const StyledPreviewImage = styled.img`
   border-radius: 16px;
 `;
 
-const StyledGuideText = styled.p`
+const S_GuideText = styled.p`
   color: ${({ theme }) => theme.FONT.B02};
   ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
   text-align: center;
@@ -149,16 +165,16 @@ const StyledGuideText = styled.p`
   }
 `;
 
-const StyledFileTypeText = styled.p`
+const S_FileTypeText = styled.p`
   color: ${({ theme }) => theme.FONT.G01};
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
   text-align: center;
 `;
-const StyledHiddenInput = styled.input`
+const S_HiddenInput = styled.input`
   display: none;
 `;
 
-const StyledUploadIcon = styled.img`
+const S_UploadIcon = styled.img`
   width: 6.4rem;
   height: 6.4rem;
 `;

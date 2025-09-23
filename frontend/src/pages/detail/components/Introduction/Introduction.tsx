@@ -6,30 +6,29 @@ interface IntroductionProps {
 
 function Introduction({ content }: IntroductionProps) {
   return (
-    <StyledContainer>
-      <StyledH4>멘토 소개</StyledH4>
+    <S_Container>
+      <S_H4>멘토 소개</S_H4>
       {content}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default Introduction;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   width: 100%;
-  padding: 0 1rem;
 
   color: ${({ theme }) => theme.FONT.B02};
   white-space: pre-line;
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
-const StyledH4 = styled.h4`
+const S_H4 = styled.h4`
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 
   margin-bottom: 1.7rem;
 
-  ${({ theme }) => theme.TYPOGRAPHY.H4_R}
+  ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
   color: ${({ theme }) => theme.FONT.B01};
 `;

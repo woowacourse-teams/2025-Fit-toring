@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 
-import type { CertificateResponse } from '../../types/CertificatesResponse';
+import type { Certificates } from '../../../../common/types/MentoringDetail';
 
 interface MentorSummaryProps {
   introduction: string;
   career: number;
-  certificates: CertificateResponse[];
+  certificates: Certificates[];
 }
 
 function MentorSummary({
@@ -14,23 +14,23 @@ function MentorSummary({
   certificates,
 }: MentorSummaryProps) {
   return (
-    <StyledContainer>
-      <StyledSelfIntroduction>{introduction}</StyledSelfIntroduction>
-      <StyledCertifications>
+    <S_Container>
+      <S_SelfIntroduction>{introduction}</S_SelfIntroduction>
+      <S_Certifications>
         <p>경력: {career}년 </p>
         <p>
           자격증:{' '}
           {certificates.map((certificate) => certificate.title).join(', ')}
         </p>
-      </StyledCertifications>
-      <StyledHr />
-    </StyledContainer>
+      </S_Certifications>
+      <S_Hr />
+    </S_Container>
   );
 }
 
 export default MentorSummary;
 
-const StyledContainer = styled.section`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,12 +40,12 @@ const StyledContainer = styled.section`
   padding: 0;
 `;
 
-const StyledSelfIntroduction = styled.p`
+const S_SelfIntroduction = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_B}
   color: ${({ theme }) => theme.FONT.B03}
 `;
 
-const StyledCertifications = styled.div`
+const S_Certifications = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,7 +61,7 @@ const StyledCertifications = styled.div`
   color: ${({ theme }) => theme.FONT.B02}
 `;
 
-const StyledHr = styled.hr`
+const S_Hr = styled.hr`
   width: 100%;
   height: 0.1rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};

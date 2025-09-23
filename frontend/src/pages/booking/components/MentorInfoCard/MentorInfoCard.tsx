@@ -7,26 +7,26 @@ import CategoryTags from '../../../../common/components/CategoryTags/CategoryTag
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import ProfileImg from '../ProfileImg/ProfileImg';
 
-import type { MentoringDetail } from '../../apis/getMentoringDetail';
+import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
-interface MentoInfoCardProps {
+interface MentorInfoCardProps {
   mentorDetail: MentoringDetail | null;
 }
 
-function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
+function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
   return (
-    <StyledContainer>
+    <S_Container>
       {mentorDetail ? (
         <>
-          <StyledMentoProfileWrapper>
+          <S_MentorProfileWrapper>
             <ProfileImg src={mentorDetail.profileImageUrl} />
-            <StyledMetoNameText>{mentorDetail.mentorName}</StyledMetoNameText>
-          </StyledMentoProfileWrapper>
-          <StyledInfoWithTags>
-            <StyledInfoWrapper>
+            <S_MetorNameText>{mentorDetail.mentorName}</S_MetorNameText>
+          </S_MentorProfileWrapper>
+          <S_InfoWithTags>
+            <S_InfoWrapper>
               <TextWithIcon
                 iconSrc={startIcon}
-                text="4.5 (127)"
+                text={`${mentorDetail.ratingAverage} (${mentorDetail.ratingCount})`}
                 iconName="별점"
               />
               <TextWithIcon
@@ -35,23 +35,21 @@ function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
                 iconName="위치"
               />
               <TextWithIcon iconSrc={timeIcon} text="15분" iconName="시간" />
-            </StyledInfoWrapper>
+            </S_InfoWrapper>
             <CategoryTags tagNames={mentorDetail.categories} />
-          </StyledInfoWithTags>
-          <StyledPriceText>
-            {mentorDetail.price.toLocaleString('ko')}원
-          </StyledPriceText>
+          </S_InfoWithTags>
+          <S_PriceText>{mentorDetail.price.toLocaleString('ko')}원</S_PriceText>
         </>
       ) : (
         <div>로딩중</div>
       )}
-    </StyledContainer>
+    </S_Container>
   );
 }
 
-export default MentoInfoCard;
+export default MentorInfoCard;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,31 +64,31 @@ const StyledContainer = styled.div`
   background-color: white;
 `;
 
-const StyledMentoProfileWrapper = styled.div`
+const S_MentorProfileWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.4rem;
 `;
 
-const StyledMetoNameText = styled.span`
+const S_MetorNameText = styled.span`
   color: ${({ theme }) => theme.FONT.B01};
   font-size: 1.6rem;
 `;
 
-const StyledInfoWithTags = styled.div`
+const S_InfoWithTags = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.7rem;
 `;
 
-const StyledInfoWrapper = styled.div`
+const S_InfoWrapper = styled.div`
   display: flex;
   gap: 1.3rem;
 `;
 
-const StyledPriceText = styled.span`
+const S_PriceText = styled.span`
   color: ${({ theme }) => theme.SYSTEM.MAIN600};
   font-weight: bold;
   font-size: 1.6rem;

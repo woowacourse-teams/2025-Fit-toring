@@ -31,10 +31,10 @@ function MentoringApplicationStatus({
   status,
 }: MentoringApplicationStatusProps) {
   return (
-    <StyledContainer status={status}>
+    <S_Container status={status}>
       <span>{STATUS_DESCRIPTION[status].EMOTICON}</span>
       <span>{STATUS_DESCRIPTION[status].VALUE}</span>
-    </StyledContainer>
+    </S_Container>
   );
 }
 
@@ -70,7 +70,7 @@ const statusStyles: Record<
   },
 } as const;
 
-const StyledContainer = styled.p<MentoringApplicationStatusProps>`
+const S_Container = styled.p<MentoringApplicationStatusProps>`
   display: flex;
   align-items: center;
   justify-content: center;

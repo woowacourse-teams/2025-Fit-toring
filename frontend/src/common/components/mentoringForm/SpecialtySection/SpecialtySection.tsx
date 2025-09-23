@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 
 import { getSpecialties } from '../../../apis/getSpecialties';
+import { captureSentryError } from '../../../utils/captureSentryError';
 import SpecialtyTag from '../SpecialtyTag/SpecialtyTag';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
 import type { Specialty } from '../../../types/Specialty';
-import { captureSentryError } from '../../../utils/captureSentryError';
 
 const MAX_SPECIALTIES = 3;
 
@@ -61,10 +61,8 @@ function SpecialtySection({
     <section>
       <TitleSeparator>전문 분야</TitleSeparator>
 
-      <StyledGuideText>
-        최대 {MAX_SPECIALTIES}개까지 등록 가능합니다.
-      </StyledGuideText>
-      <StyledSpecialtyWrapper>
+      <S_GuideText>최대 {MAX_SPECIALTIES}개까지 등록 가능합니다.</S_GuideText>
+      <S_SpecialtyWrapper>
         {specialties.map((specialty) => (
           <SpecialtyTag
             key={specialty.id}
@@ -77,14 +75,14 @@ function SpecialtySection({
             checked={selectedSpecialties.includes(specialty.title)}
           />
         ))}
-      </StyledSpecialtyWrapper>
+      </S_SpecialtyWrapper>
     </section>
   );
 }
 
 export default SpecialtySection;
 
-const StyledSpecialtyWrapper = styled.div`
+const S_SpecialtyWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 1.2rem;
@@ -93,7 +91,7 @@ const StyledSpecialtyWrapper = styled.div`
   height: 100%;
 `;
 
-const StyledGuideText = styled.p`
+const S_GuideText = styled.p`
   margin-bottom: 2rem;
   padding-left: 0.5rem;
 

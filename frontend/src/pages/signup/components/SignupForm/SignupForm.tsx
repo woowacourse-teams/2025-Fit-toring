@@ -4,6 +4,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import ApiError from '../../../../common/apis/ApiError';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
@@ -225,6 +226,9 @@ function SignupForm() {
       }
     } catch (error) {
       console.error('회원가입 실패', error);
+      if (error instanceof ApiError) {
+        alert(error.message);
+      }
 
       captureSentryError({
         error,
@@ -236,8 +240,8 @@ function SignupForm() {
   };
 
   return (
-    <StyledContainer onSubmit={handleSubmit}>
-      <StyledFormFields>
+    <S_Container onSubmit={handleSubmit}>
+      <S_FormFields>
         <UserInfoFields
           name={name}
           nameErrorMessage={nameErrorMessage}
@@ -274,7 +278,7 @@ function SignupForm() {
           verificationButtonEnabled={getVerificationButtonEnabled()}
           verificationRequestButtonEnabled={verificationRequestButtonEnabled}
         />
-      </StyledFormFields>
+      </S_FormFields>
       <Button
         variant={validateForm() ? 'primary' : 'disabled'}
         type="submit"
@@ -289,13 +293,13 @@ function SignupForm() {
       >
         회원가입
       </Button>
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default SignupForm;
 
-const StyledContainer = styled.form`
+const S_Container = styled.form`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -305,7 +309,7 @@ const StyledContainer = styled.form`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
-const StyledFormFields = styled.div`
+const S_FormFields = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.7rem;

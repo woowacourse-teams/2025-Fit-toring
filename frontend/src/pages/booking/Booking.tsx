@@ -3,18 +3,16 @@ import { useRef, useState, useLayoutEffect, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
 
-import {
-  getMentoringDetail,
-  type MentoringDetail,
-} from './apis/getMentoringDetail';
+import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
+import { captureSentryError } from '../../common/utils/captureSentryError';
+
 import BookingForm from './components/BookingForm/BookingForm';
 import BookingHeader from './components/BookingHeader/BookingHeader';
 import CompleteModal from './components/CompleteModal/CompleteModal';
 import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
 import { smoothScrollTo } from './utils/smoothScrollTo';
 
-import type { BookingResponse } from './types/BookingResponse';
-import { captureSentryError } from '../../common/utils/captureSentryError';
+import type { MentoringDetail } from '../../common/types/MentoringDetail';
 
 function Booking() {
   const [opened, setOpened] = useState(false);
@@ -23,10 +21,8 @@ function Booking() {
   );
 
   const { mentoringId } = useParams();
-  const [bookedInfo, setBookedInfo] = useState<BookingResponse | null>(null);
 
-  const handleBookingButtonClick = (bookingResponse: BookingResponse) => {
-    setBookedInfo(bookingResponse);
+  const handleBookingButtonClick = () => {
     setOpened(true);
   };
 
@@ -77,27 +73,30 @@ function Booking() {
   return (
     <div ref={containerRef}>
       <BookingHeader />
-      <StyledContentWrapper ref={wrapperRef}>
+      <S_ContentWrapper ref={wrapperRef}>
         <MentoInfoCard mentorDetail={mentorDetail} />
         <div ref={formRef}>
           <BookingForm
             handleBookingButtonClick={handleBookingButtonClick}
             mentoringId={Number(mentoringId)}
+            mentoringPrice={mentorDetail?.price ?? 0}
           />
         </div>
-      </StyledContentWrapper>
-      <CompleteModal
-        bookedInfo={bookedInfo}
-        opened={opened}
-        onCloseClick={handleCloseClick}
-      />
+      </S_ContentWrapper>
+      {mentorDetail ? (
+        <CompleteModal
+          mentorInfo={mentorDetail}
+          opened={opened}
+          onCloseClick={handleCloseClick}
+        />
+      ) : null}
     </div>
   );
 }
 
 export default Booking;
 
-const StyledContentWrapper = styled.div`
+const S_ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.8rem;

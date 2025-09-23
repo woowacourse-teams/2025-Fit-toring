@@ -3,24 +3,30 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 
 import { getUserInfoSummary } from '../../../apis/getUserInfoSummary';
+import { captureSentryError } from '../../../utils/captureSentryError';
 import FormField from '../../FormField/FormField';
 import Input from '../../Input/Input';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
 import type { UserInfoResponse } from '../../../types/userInfoResponse';
-import { captureSentryError } from '../../../utils/captureSentryError';
 
 interface BaseInfoSectionProps {
   priceErrorMessage: string;
-  onPriceChange: (newData: Pick<mentoringCreateFormData, 'price'>) => void;
+  onBaseInfoChange: (
+    newData: Partial<Pick<mentoringCreateFormData, 'price' | 'chatUrl'>>,
+  ) => void;
   price: number;
+  chatUrlErrorMessage: string;
+  chatUrl: string;
 }
 
 function BaseInfoSection({
-  onPriceChange,
+  onBaseInfoChange,
   priceErrorMessage,
   price,
+  chatUrlErrorMessage,
+  chatUrl,
 }: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
@@ -47,15 +53,35 @@ function BaseInfoSection({
   }, []);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onPriceChange({ price: Number(e.target.value) });
+    onBaseInfoChange({ price: Number(e.target.value) });
+  };
+
+  const handleChatUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onBaseInfoChange({ chatUrl: e.target.value });
   };
 
   return (
     <section>
       <TitleSeparator>기본 정보</TitleSeparator>
-      <StyledFormFieldWrapper>
+      <S_FormFieldWrapper>
         <FormField label="이름 *">
           <Input value={userInfo.name} id="name" disabled />
+        </FormField>
+        <FormField label="전화번호 *">
+          <Input value={userInfo.phoneNumber} id="phone" disabled />
+        </FormField>
+        <FormField
+          label="카카오톡 오픈 채팅 주소 *"
+          errorMessage={chatUrlErrorMessage}
+        >
+          <Input
+            placeholder="https://open.kakao.com/o/xxxxxx"
+            id="chatUrl"
+            required
+            onChange={handleChatUrlChange}
+            value={chatUrl}
+            errored={chatUrlErrorMessage !== ''}
+          />
         </FormField>
         <FormField label="15분 상담료 (원) *" errorMessage={priceErrorMessage}>
           <Input
@@ -67,17 +93,14 @@ function BaseInfoSection({
             value={price}
           />
         </FormField>
-        <FormField label="전화번호 *">
-          <Input value={userInfo.phoneNumber} id="phone" disabled />
-        </FormField>
-      </StyledFormFieldWrapper>
+      </S_FormFieldWrapper>
     </section>
   );
 }
 
 export default BaseInfoSection;
 
-const StyledFormFieldWrapper = styled.div`
+const S_FormFieldWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;

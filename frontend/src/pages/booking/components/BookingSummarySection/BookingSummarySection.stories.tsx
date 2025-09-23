@@ -20,4 +20,7 @@ export const Default: Story = {
       },
     },
   },
+  args: {
+    price: 5000,
+  },
 };

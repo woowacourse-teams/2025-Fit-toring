@@ -14,23 +14,23 @@ function SpecialtyCheckbox({
   onChange,
 }: SpecialtyCheckboxProps) {
   return (
-    <StyledContainer>
-      <StyledHiddenCheckbox
+    <S_Container>
+      <S_HiddenCheckbox
         type="checkbox"
         checked={checked}
         onChange={onChange}
         disabled={disabled}
       />
-      <StyledCheckboxLabel checked={checked} disabled={disabled}>
+      <S_CheckboxLabel checked={checked} disabled={disabled}>
         {specialty}
-      </StyledCheckboxLabel>
-    </StyledContainer>
+      </S_CheckboxLabel>
+    </S_Container>
   );
 }
 
 export default SpecialtyCheckbox;
 
-const StyledContainer = styled.label`
+const S_Container = styled.label`
   display: inline-flex;
   align-items: center;
 
@@ -38,7 +38,7 @@ const StyledContainer = styled.label`
   user-select: none;
 `;
 
-const StyledHiddenCheckbox = styled.input`
+const S_HiddenCheckbox = styled.input`
   position: absolute;
 
   width: 0;
@@ -46,7 +46,7 @@ const StyledHiddenCheckbox = styled.input`
   opacity: 0;
 `;
 
-const StyledCheckboxLabel = styled.span<{
+const S_CheckboxLabel = styled.span<{
   checked: boolean;
   disabled: boolean;
 }>`
@@ -56,13 +56,11 @@ const StyledCheckboxLabel = styled.span<{
   padding: 0.6rem 1.2rem;
   border: 1px solid
     ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN800 : theme.OUTLINE.DARK};
+      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
   border-radius: 16px;
 
-  background-color: ${({ theme, checked }) =>
-    checked ? theme.SYSTEM.MAIN600 : theme.BG.WHITE};
-
-  color: ${({ theme, checked }) => (checked ? theme.BG.WHITE : theme.FONT.B02)};
+  color: ${({ theme, checked }) =>
+    checked ? theme.SYSTEM.MAIN500 : theme.FONT.B02};
 
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 
@@ -74,9 +72,6 @@ const StyledCheckboxLabel = styled.span<{
   &:hover {
     border-color: ${({ theme, disabled }) =>
       disabled ? theme.OUTLINE.DARK : theme.SYSTEM.MAIN500};
-
-    background-color: ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN500 : theme.BG.WHITE};
   }
 
   &:active {

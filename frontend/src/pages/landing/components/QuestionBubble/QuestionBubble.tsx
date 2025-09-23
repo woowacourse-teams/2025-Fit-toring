@@ -1,0 +1,75 @@
+import type { PropsWithChildren } from 'react';
+
+import styled from '@emotion/styled';
+
+interface QuestionBubbleProps {
+  direction: 'left' | 'right';
+}
+function QuestionBubble({
+  direction,
+  children,
+}: PropsWithChildren<QuestionBubbleProps>) {
+  return <S_Bubble direction={direction}>{children}</S_Bubble>;
+}
+
+export default QuestionBubble;
+
+const S_Bubble = styled.div<{ direction: 'left' | 'right' }>`
+  position: relative;
+  z-index: 100;
+
+  width: fit-content;
+  padding: 1rem 3.5rem;
+  border: 1px solid #e3e3e3;
+  border-radius: 50px;
+
+  background-color: white;
+
+  color: black;
+  font-weight: 500;
+  font-size: 12px;
+
+  &::before {
+    content: '';
+
+    position: absolute;
+    bottom: -8px;
+    ${({ direction }) =>
+      direction === 'right'
+        ? `
+          right: 10px;
+          border-left: 6.5px solid transparent;
+          border-right: 5px solid transparent;
+          border-top: 8px solid #e3e3e3;
+        `
+        : `
+          left: 10px;
+          border-left: 5px solid transparent;
+          border-right: 6.5px solid transparent;
+          border-top: 8px solid #e3e3e3;
+        `}
+    z-index: 0;
+  }
+
+  &::after {
+    content: '';
+
+    position: absolute;
+    bottom: -6px;
+    ${({ direction }) =>
+      direction === 'right'
+        ? `
+          right: 10px;
+          border-left: 6.5px solid transparent;
+          border-right: 5px solid transparent;
+          border-top: 8px solid white;
+        `
+        : `
+          left: 10px;
+          border-left: 5px solid transparent;
+          border-right: 6.5px solid transparent;
+          border-top: 8px solid white;
+        `}
+    z-index: 1;
+  }
+`;

@@ -5,13 +5,17 @@ import timeIcon from '../../../../common/assets/images/timeIcon.svg';
 import Button from '../../../../common/components/Button/Button';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
-function BookingSummarySection() {
+interface BookingSummarySectionProps {
+  price: number;
+}
+
+function BookingSummarySection({ price }: BookingSummarySectionProps) {
   return (
-    <StyledContainer>
-      <StyledWrapper>
+    <S_Container>
+      <S_Wrapper>
         <TextWithIcon iconSrc={timeIcon} iconName="시간 아이콘" text="15분" />
-        <StyledPrice>5,000원</StyledPrice>
-      </StyledWrapper>
+        <S_Price>{price.toLocaleString()}원</S_Price>
+      </S_Wrapper>
       <Button
         customStyle={css`
           flex-grow: 1;
@@ -21,13 +25,13 @@ function BookingSummarySection() {
       >
         예약하기
       </Button>
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default BookingSummarySection;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -36,13 +40,13 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.22rem;
 `;
 
-const StyledPrice = styled.span`
+const S_Price = styled.span`
   color: ${({ theme }) => theme.SYSTEM.MAIN600};
   ${({ theme }) => theme.TYPOGRAPHY.B1_B};
   font-weight: 600;

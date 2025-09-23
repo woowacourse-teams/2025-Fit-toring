@@ -400,9 +400,8 @@ class ReservationServiceTest {
                         mentoring1.getId(),
                         mentoring1.getMentorName(),
                         profileImageOfMentor1.getUrl(),
-                        mentoring1.getPrice(),
                         reservation1.getCreatedAt().toLocalDate(),
-                        List.of(category1OfMentoring1.getCategoryTitle(), category2OfMentoring1.getCategoryTitle()),
+                        reservation1.getContent(),
                         Status.PENDING.name(),
                         false
                 ),
@@ -411,9 +410,8 @@ class ReservationServiceTest {
                         mentoring2.getId(),
                         mentoring2.getMentorName(),
                         null,
-                        mentoring2.getPrice(),
                         reservation2.getCreatedAt().toLocalDate(),
-                        List.of(category1OfMentoring2.getCategoryTitle()),
+                        reservation2.getContent(),
                         Status.PENDING.name(),
                         true
                 )

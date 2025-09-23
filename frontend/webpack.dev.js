@@ -1,6 +1,7 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'development',
@@ -17,4 +18,14 @@ module.exports = merge(common, {
       overlay: true,
     },
   },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'public/robots.dev.txt',
+          to: 'robots.txt',
+        },
+      ],
+    }),
+  ],
 });

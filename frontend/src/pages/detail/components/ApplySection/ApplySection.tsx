@@ -8,9 +8,10 @@ import { getMineMentoring } from '../../../../common/apis/getMineMentoring';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
-
-import type { MentoringResponse } from '../../types/MentoringResponse';
+import { THEME } from '../../../../common/styles/theme';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+
+import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
 interface ApplySectionProps {
   price: number;
@@ -22,7 +23,7 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
 
   const { authenticated } = useAuth();
 
-  const [mineMentoring, setMineMentoring] = useState<MentoringResponse | null>(
+  const [mineMentoring, setMineMentoring] = useState<MentoringDetail | null>(
     null,
   );
 
@@ -61,61 +62,78 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
   }, []);
 
   return (
-    <StyledContainer>
-      <StyledWrapper>
+    <S_Container>
+      <S_Wrapper>
         <p>15분 상담료</p>
         <strong>{price.toLocaleString()}원</strong>
-      </StyledWrapper>
+      </S_Wrapper>
       <Button
         size="full"
         customStyle={css`
+          padding: 1.6rem 0;
+
+          background-color: ${THEME.BG.BLACK};
+
           font-size: 1.2rem;
+
+          ${THEME.TYPOGRAPHY.LB4_R}
         `}
         onClick={handleMoveToBookingPage}
       >
         {createdByMe ? '수정하기' : '신청하기'}
       </Button>
-    </StyledContainer>
+    </S_Container>
   );
 }
 
 export default ApplySection;
 
-const StyledContainer = styled.section`
+const S_Container = styled.section`
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   position: fixed;
   bottom: 0;
 
   width: 48rem;
   height: 9.4rem;
-  padding: 2rem 2.1rem 0.8rem;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
-  border-radius: 8px 8px 0 0;
+  padding: 2.5rem 2.7rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
 
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
+  background-color: ${({ theme }) => theme.BG.WHITE};
+
+  @media screen and (width >= 481px) {
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
   @media screen and (width <= 480px) {
+    left: 0;
+
     width: 100%;
     border: none;
+    border-top: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+    transform: none;
   }
 `;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
 
-  width: 100%;
+  width: fit-content;
+
+  white-space: nowrap;
 
   & p {
     ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-    color: ${({ theme }) => theme.FONT.B03};
+    color: ${({ theme }) => theme.SYSTEM.GRAY800};
   }
 
   & strong {
-    ${({ theme }) => theme.TYPOGRAPHY.H4_B};
-    color: ${({ theme }) => theme.SYSTEM.MAIN600};
+    color: ${({ theme }) => theme.FONT.B01};
+    font-weight: bold;
+    font-size: 2.6rem;
   }
 `;

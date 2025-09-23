@@ -13,8 +13,8 @@ import Input from '../../../../common/components/Input/Input';
 import { PAGE_URL } from '../../../../common/constants/url';
 import usePasswordInput from '../../../../common/hooks/usePasswordInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
-import { postLogin } from '../../apis/postLogin';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+import { postLogin } from '../../apis/postLogin';
 
 function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -59,21 +59,21 @@ function LoginForm() {
   const loginFormValidated = userId !== '' && password !== '';
 
   return (
-    <StyledContainer onSubmit={handleSubmit}>
-      <StyledFields>
+    <S_Container onSubmit={handleSubmit}>
+      <S_Fields>
         <FormField label="아이디">
-          <StyledInputWrapper>
+          <S_InputWrapper>
             <Input
               placeholder="fittoring"
               value={userId}
               onChange={handleUserIdChange}
               required
             />
-          </StyledInputWrapper>
+          </S_InputWrapper>
         </FormField>
         <FormField label="비밀번호">
-          <StyledInputWithIconWrapper>
-            <StyledInput
+          <S_InputWithIconWrapper>
+            <S_Input
               id="password"
               name="password"
               placeholder="••••••••"
@@ -82,15 +82,15 @@ function LoginForm() {
               onChange={handlePasswordChange}
               required
             />
-            <StyledImg
+            <S_Img
               src={passwordVisible ? blind : notBlind}
               onClick={() => setPasswordVisible((prev) => !prev)}
             />
-          </StyledInputWithIconWrapper>
+          </S_InputWithIconWrapper>
         </FormField>
-      </StyledFields>
-      {errorMessage && <StyledErrorText>{errorMessage}</StyledErrorText>}
-      <StyledButtonWrapper>
+      </S_Fields>
+      {errorMessage && <S_ErrorText>{errorMessage}</S_ErrorText>}
+      <S_ButtonWrapper>
         <Button
           type="submit"
           size="full"
@@ -106,32 +106,32 @@ function LoginForm() {
         >
           로그인
         </Button>
-      </StyledButtonWrapper>
-    </StyledContainer>
+      </S_ButtonWrapper>
+    </S_Container>
   );
 }
 
 export default LoginForm;
 
-const StyledContainer = styled.form`
+const S_Container = styled.form`
   display: flex;
   flex-direction: column;
 `;
 
-const StyledFields = styled.div`
+const S_Fields = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
 `;
-const StyledInputWrapper = styled.div`
+const S_InputWrapper = styled.div`
   height: 4rem;
 `;
 
-const StyledInputWithIconWrapper = styled.div<{ errored?: boolean }>`
+const S_InputWithIconWrapper = styled.div<{ errored?: boolean }>`
   position: relative;
 `;
 
-const StyledInput = styled.input<{ errored?: boolean }>`
+const S_Input = styled.input<{ errored?: boolean }>`
   width: 100%;
   height: 4rem;
   padding: 0.7rem 1.1rem;
@@ -156,7 +156,7 @@ const StyledInput = styled.input<{ errored?: boolean }>`
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
 `;
 
-const StyledImg = styled.img`
+const S_Img = styled.img`
   position: absolute;
   right: 0;
   bottom: 50%;
@@ -168,11 +168,11 @@ const StyledImg = styled.img`
   margin-right: 1rem;
 `;
 
-const StyledButtonWrapper = styled.div`
+const S_ButtonWrapper = styled.div`
   margin-top: 3rem;
 `;
 
-const StyledErrorText = styled.span`
+const S_ErrorText = styled.span`
   margin-top: 1rem;
 
   color: ${({ theme }) => theme.FONT.ERROR};

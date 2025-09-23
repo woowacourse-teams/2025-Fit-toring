@@ -1,27 +1,32 @@
+import { useCallback, useEffect, useState } from 'react';
+
 import styled from '@emotion/styled';
+
 import filledStar from '../../../../common/assets/images/starIcon.svg';
-import ReviewItem from '../ReviewItem/ReviewItem';
-import { getReviews } from '../../apis/getReviews';
-import { useEffect, useState } from 'react';
-import { ReviewResponse } from '../../types/ReviewResponse';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+import { getReviews } from '../../apis/getReviews';
+import ReviewItem from '../ReviewItem/ReviewItem';
+
+import type { ReviewResponse } from '../../types/ReviewResponse';
 
 interface DetailReviewProps {
   mentoringId: number;
   ratingAverage: string;
   ratingCount: number;
+  loadingComponent: React.ReactNode;
 }
 
 function DetailReview({
   mentoringId,
   ratingAverage,
   ratingCount,
+  loadingComponent,
 }: DetailReviewProps) {
   const [totalReviewInfo, setTotalReviewInfo] = useState<
     ReviewResponse[] | null
   >(null);
 
-  const fetchReview = async () => {
+  const fetchReview = useCallback(async () => {
     try {
       const response = await getReviews(mentoringId);
       setTotalReviewInfo(response);
@@ -34,33 +39,35 @@ function DetailReview({
         step: 'mentoring-review-fetch',
       });
     }
-  };
+  }, [mentoringId]);
 
   useEffect(() => {
     fetchReview();
-  }, []);
+  }, [fetchReview]);
 
-  if (!totalReviewInfo) return null;
+  if (!totalReviewInfo) {
+    return <>{loadingComponent}</>;
+  }
 
   return (
-    <StyledContainer>
-      <StyledTotalWrapper>
+    <S_Container>
+      <S_TotalWrapper>
         <img src={filledStar} />
         <strong>{ratingAverage}</strong>
         <p>({ratingCount}개 리뷰)</p>
-      </StyledTotalWrapper>
-      <StyledReviewList>
+      </S_TotalWrapper>
+      <S_ReviewList>
         {totalReviewInfo.map((review) => (
           <ReviewItem key={review.id} review={review} />
         ))}
-      </StyledReviewList>
-    </StyledContainer>
+      </S_ReviewList>
+    </S_Container>
   );
 }
 
 export default DetailReview;
 
-const StyledContainer = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -69,7 +76,7 @@ const StyledContainer = styled.div`
   margin-top: 4rem;
 `;
 
-const StyledTotalWrapper = styled.div`
+const S_TotalWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -90,7 +97,7 @@ const StyledTotalWrapper = styled.div`
   }
 `;
 
-const StyledReviewList = styled.ul`
+const S_ReviewList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 1rem;

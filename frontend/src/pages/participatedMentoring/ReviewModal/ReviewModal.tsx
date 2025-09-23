@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../common/components/Button/Button';
 import Modal from '../../../common/components/Modal/Modal';
+import { PAGE_URL } from '../../../common/constants/url';
+import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postReview } from '../apis/postReview';
 import { MAX_RATING_COUNT } from '../constants/starRating';
 import StarRating from '../StarRating/StarRating';
-import { useNavigate } from 'react-router-dom';
-import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
-import { captureSentryError } from '../../../common/utils/captureSentryError';
-import { PAGE_URL } from '../../../common/constants/url';
 
 interface ReviewModalProps {
   reservationId: number;
@@ -69,31 +68,31 @@ function ReviewModal({
 
   return (
     <Modal opened={opened} onCloseClick={onCloseClick}>
-      <StyledContainer onSubmit={handleSubmit}>
-        <StyledWrapper>
-          <StyledTitle>리뷰 작성</StyledTitle>
-          <StyledDescription>
+      <S_Container onSubmit={handleSubmit}>
+        <S_Wrapper>
+          <S_Title>리뷰 작성</S_Title>
+          <S_Description>
             {mentorName} 멘토와의 상담은 어떠셨나요? 솔직한 후기를 남겨주세요.
-          </StyledDescription>
-          <StyledSeparator />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledSubtitle>만족도 *</StyledSubtitle>
+          </S_Description>
+          <S_Separator />
+        </S_Wrapper>
+        <S_Wrapper>
+          <S_Subtitle>만족도 *</S_Subtitle>
           <StarRating
             rating={rating}
             maxRatingCount={MAX_RATING_COUNT}
             onRatingChange={handleRatingChange}
           />
-        </StyledWrapper>
-        <StyledWrapper>
-          <StyledSubtitle>상세 리뷰</StyledSubtitle>
-          <StyledTextarea
+        </S_Wrapper>
+        <S_Wrapper>
+          <S_Subtitle>상세 리뷰</S_Subtitle>
+          <S_Textarea
             value={content}
             onChange={handleContentChange}
             placeholder="멘토와의 상담 경험을 자세히 공유해주세요. 어떤 점이 도움이 되었는지, 개선할 점은 무엇인지 등을 솔직하게 작성해주시면 다른 분들에게 도움이 됩니다."
           />
-        </StyledWrapper>
-        <StyledButtonWrapper>
+        </S_Wrapper>
+        <S_ButtonWrapper>
           <Button
             variant="secondary"
             customStyle={css`
@@ -112,15 +111,15 @@ function ReviewModal({
           >
             리뷰 등록
           </Button>
-        </StyledButtonWrapper>
-      </StyledContainer>
+        </S_ButtonWrapper>
+      </S_Container>
     </Modal>
   );
 }
 
 export default ReviewModal;
 
-const StyledContainer = styled.form`
+const S_Container = styled.form`
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
@@ -129,32 +128,32 @@ const StyledContainer = styled.form`
   height: 100%;
 `;
 
-const StyledTitle = styled.p`
+const S_Title = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
 `;
 
-const StyledDescription = styled.p`
+const S_Description = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
-const StyledSeparator = styled.div`
+const S_Separator = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
 `;
 
-const StyledWrapper = styled.div`
+const S_Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 `;
 
-const StyledSubtitle = styled.p`
+const S_Subtitle = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
-const StyledTextarea = styled.textarea`
+const S_Textarea = styled.textarea`
   width: 100%;
   height: 14rem;
   padding: 0.7rem 1.1rem;
@@ -171,7 +170,7 @@ const StyledTextarea = styled.textarea`
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const StyledButtonWrapper = styled.div`
+const S_ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;

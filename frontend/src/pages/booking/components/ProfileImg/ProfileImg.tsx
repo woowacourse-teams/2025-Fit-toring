@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import profileImg from '../../../../common/assets/images/profileImg.svg';
 
 interface ProfileImgProps {
-  src: string;
+  src: string | null;
 }
 
 function ProfileImg({ src }: ProfileImgProps) {
@@ -11,8 +11,9 @@ function ProfileImg({ src }: ProfileImgProps) {
     const target = e.target as HTMLImageElement;
     target.src = profileImg; // TODO: 임시 기본이미지 추후에 변경해야함
   };
+
   return (
-    <StyledContainer
+    <S_Container
       src={src || profileImg}
       alt="프로필 이미지"
       onError={handleImgError}
@@ -22,7 +23,7 @@ function ProfileImg({ src }: ProfileImgProps) {
 
 export default ProfileImg;
 
-const StyledContainer = styled.img`
+const S_Container = styled.img`
   width: 5.6rem;
   height: 5.6rem;
   border: ${({ theme }) => theme.OUTLINE.REGULAR} 0.1rem solid;
