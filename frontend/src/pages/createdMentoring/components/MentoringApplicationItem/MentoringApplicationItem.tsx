@@ -85,7 +85,7 @@ const S_Container = styled.li`
   gap: 1rem;
 
   height: auto;
-  padding: 1.5rem;
+  padding: 1.8rem 2rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 5px;
 
