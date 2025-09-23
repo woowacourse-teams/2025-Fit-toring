@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 
-import PretendardBold from '../assets/fonts/Pretendard-Bold.woff2';
-import PretendardRegular from '../assets/fonts/Pretendard-Regular.woff2';
+import PretendardBold from '../assets/fonts/Pretendard-Bold.subset.woff2';
+import PretendardRegular from '../assets/fonts/Pretendard-Regular.subset.woff2';
 
 export const fonts = css`
   @font-face {
