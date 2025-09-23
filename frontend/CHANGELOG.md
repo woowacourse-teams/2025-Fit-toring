@@ -1,3 +1,26 @@
+# [1.8.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.7.0...v1.8.0) (2025-09-23)
+
+
+### Bug Fixes
+
+* max-size 100MB로 수정 ([faa2466](https://github.com/woowacourse-teams/2025-Fit-toring/commit/faa24668c207b2513d3312839345585b3eed893b))
+* 멘토링 가져오기 api 명세 변경에 따른 반환값 타입 추가 [#664](https://github.com/woowacourse-teams/2025-Fit-toring/issues/664) ([8b618d6](https://github.com/woowacourse-teams/2025-Fit-toring/commit/8b618d63612c8000d939a95a8c4f721d6ffe87da))
+* 에러 처리가 토글되던 오류 수정 [#663](https://github.com/woowacourse-teams/2025-Fit-toring/issues/663) ([219f9b9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/219f9b99a98f39761a3c3bcda7bdba35ee8dbfac))
+* 이미지가 비율을 유지할 수 있도록 속성 추가 [#664](https://github.com/woowacourse-teams/2025-Fit-toring/issues/664) ([00c7b71](https://github.com/woowacourse-teams/2025-Fit-toring/commit/00c7b71320e3ff8f5061fe10d1575079f091d719))
+* 자격사항 아이디 타입 변경 [#663](https://github.com/woowacourse-teams/2025-Fit-toring/issues/663) ([a6ec7cc](https://github.com/woowacourse-teams/2025-Fit-toring/commit/a6ec7cc92cc964acbc03a8ccbfe992dcd8b72b10))
+
+
+### Features
+
+* textarea 5,000자 이상 입력시 에러 [#663](https://github.com/woowacourse-teams/2025-Fit-toring/issues/663) ([d74c512](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d74c51208972dab60feff03e5f2b5b7a78566999))
+* TYPHOGRAPHY 세미 볼드체 추가 [#664](https://github.com/woowacourse-teams/2025-Fit-toring/issues/664) ([691372a](https://github.com/woowacourse-teams/2025-Fit-toring/commit/691372a383bd4169e77913e7add5e9bed2dabeed))
+* 리뷰 완료 후 내가 작성한 리뷰를 볼 수 있도록 버튼 변경 [#664](https://github.com/woowacourse-teams/2025-Fit-toring/issues/664) ([c6d1be5](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c6d1be56d26bc50d01145d6872bda9bb7a6bb354))
+* 멘토링 개설 시 textarea 에러 추가 [#663](https://github.com/woowacourse-teams/2025-Fit-toring/issues/663) ([5612fe1](https://github.com/woowacourse-teams/2025-Fit-toring/commit/5612fe10baf21de231a8f646479d8d21f2129d3c))
+* 멘토링 수정 시 textarea 에러 추가 [#663](https://github.com/woowacourse-teams/2025-Fit-toring/issues/663) ([48da8d7](https://github.com/woowacourse-teams/2025-Fit-toring/commit/48da8d7fe4e143b6fd31e35cd17698ea45d391ab))
+* 멘토링 예약 시 textarea 에러 추가 [#663](https://github.com/woowacourse-teams/2025-Fit-toring/issues/663) ([cf80acd](https://github.com/woowacourse-teams/2025-Fit-toring/commit/cf80acd3d176e68610ba2f593e30ac98a3ee27b9))
+* 상태 설명 응집하여 간단하게 변경 [#664](https://github.com/woowacourse-teams/2025-Fit-toring/issues/664) ([c20d81c](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c20d81cc6e4eb87dd3ce76f5e838aeb9eca33225))
+* 스텝퍼 UI 변경 [#664](https://github.com/woowacourse-teams/2025-Fit-toring/issues/664) ([c3633bb](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c3633bb338217e9186a6ea90aa992d04864ed79d))
+
 # [1.7.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.6.0...v1.7.0) (2025-09-21)
 
 
