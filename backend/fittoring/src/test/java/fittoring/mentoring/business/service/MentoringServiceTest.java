@@ -176,7 +176,7 @@ class MentoringServiceTest {
                 .getSingleResult();
 
         SoftAssertions.assertSoftly(softly -> {
-                    assertThatThrownBy(() -> mentoringService.getMentoringWithRelations(mentoringId))
+                    assertThatThrownBy(() -> mentoringService.getMentoringWithRelationsById(mentoringId))
                             .isInstanceOf(MentoringNotFoundException.class);
                     assertThat(categoryMentoringRepository.findTitlesByMentoringId(
                             mentoringId)).isEmpty();
@@ -509,7 +509,7 @@ class MentoringServiceTest {
             );
 
             //when
-            MentoringResponse actual = mentoringService.getMentoringWithRelations(mentoring1.getId());
+            MentoringResponse actual = mentoringService.getMentoringWithRelationsById(mentoring1.getId());
 
             //then
             assertThat(actual).isEqualTo(expected);
@@ -539,7 +539,7 @@ class MentoringServiceTest {
             //when
             //then
             assertThatThrownBy(() ->
-                    mentoringService.getMentoringWithRelations(invalidId))
+                    mentoringService.getMentoringWithRelationsById(invalidId))
                     .isInstanceOf(MentoringNotFoundException.class)
                     .hasMessageStartingWith(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
         }

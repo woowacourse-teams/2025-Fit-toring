@@ -40,7 +40,7 @@ public class MemberService {
     }
 
     private Mentoring getMentoring(Member member) {
-        return mentoringRepository.findByMentor(member)
+        return mentoringRepository.findByMentorId(member.getId())
                 .orElse(null);
     }
 

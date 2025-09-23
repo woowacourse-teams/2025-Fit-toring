@@ -13,7 +13,6 @@ import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
-import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
@@ -40,7 +39,6 @@ public class ReservationService {
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
-    private final CategoryMentoringRepository categoryMentoringRepository;
     private final ReviewRepository reviewRepository;
     private final ImageRepository imageRepository;
 

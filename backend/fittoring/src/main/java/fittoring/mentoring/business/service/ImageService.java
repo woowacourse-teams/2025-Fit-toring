@@ -7,6 +7,7 @@ import fittoring.mentoring.infra.S3Uploader;
 import fittoring.mentoring.infra.exception.InfraErrorMessage;
 import fittoring.mentoring.infra.exception.S3UploadException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,6 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final S3Uploader s3Uploader;
-
-    public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId) {
-        return imageRepository.findByImageTypeAndRelationId(imageType, relationId);
-    }
 
     public Image uploadImageToS3(MultipartFile imageFile, String dir, ImageType type, Long id) {
         try {
@@ -36,6 +33,14 @@ public class ImageService {
 
     private Image saveImage(Image image){
         return imageRepository.save(image);
+    }
+
+    public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId) {
+        return imageRepository.findByImageTypeAndRelationId(imageType, relationId);
+    }
+
+    public List<Image> findByRelationIdsAndImageType(List<Long> certificateIds, ImageType imageType) {
+        return imageRepository.findByRelationIdsAndImageType(certificateIds, imageType);
     }
 
     public void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId) {

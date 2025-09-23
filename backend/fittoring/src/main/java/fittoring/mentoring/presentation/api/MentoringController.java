@@ -65,7 +65,7 @@ public class MentoringController {
 
     @GetMapping("/mentorings/{mentoringId}")
     public ResponseEntity<MentoringResponse> getMentoring(@PathVariable("mentoringId") Long id) {
-        MentoringResponse response = mentoringService.getMentoringWithRelations(id);
+        MentoringResponse response = mentoringService.getMentoringWithRelationsById(id);
         return ResponseEntity.ok(response);
     }
 
@@ -93,7 +93,7 @@ public class MentoringController {
     @AuthRequired
     @GetMapping("/mentorings/mine")
     public ResponseEntity<MentoringResponse> getMentoringMine(@Login LoginInfo loginInfo) {
-        MentoringResponse response = mentoringService.getMentoringByMentorId(loginInfo.memberId());
+        MentoringResponse response = mentoringService.getMentoringWithRelationsByMentorId(loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
             .body(response);
     }

@@ -15,13 +15,14 @@ public interface ImageRepository extends ListCrudRepository<Image, Long> {
     Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId);
 
     @Query("""
-            SELECT i
-            FROM Image i
-            WHERE i.imageType = :imageType AND i.relationId IN :relationIds
-            """)
-    List<Image> findAllByImageTypeAndRelationIds(
-            @Param("imageType") ImageType imageType,
-            @Param("relationIds") List<Long> ids
+      SELECT i
+      FROM Image i
+      WHERE i.relationId IN :relationIds
+          AND i.imageType = :imageType
+    """)
+    List<Image> findByRelationIdsAndImageType(
+        @Param("relationIds") List<Long> relationIds,
+        @Param("imageType") ImageType imageType
     );
 
     void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId);

@@ -19,7 +19,8 @@ public interface CategoryMentoringRepository extends ListCrudRepository<Category
 
     @Query("""
                 SELECT c.title
-                FROM CategoryMentoring cm INNER JOIN Category c ON cm.category.id = c.id
+                FROM CategoryMentoring cm
+                  JOIN FETCH Category c ON cm.category.id = c.id
                 WHERE cm.mentoring.id = :mentoringId
             """)
     List<String> findTitlesByMentoringId(Long mentoringId);
