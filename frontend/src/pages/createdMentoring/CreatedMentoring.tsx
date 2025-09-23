@@ -104,7 +104,7 @@ const S_ContentsWrapper = styled.div`
 
   width: 100%;
   height: 100%;
-  padding: 0 2rem;
+  padding: 1.3rem 2rem 0;
 `;
 
 const S_MentoringSectionHeader = styled.div`
