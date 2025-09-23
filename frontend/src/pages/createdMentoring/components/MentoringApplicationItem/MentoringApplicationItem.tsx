@@ -13,7 +13,6 @@ interface MentoringApplicationItemProps {
   onActionButtonsClick: (params: {
     reservationId: number;
     status: StatusType;
-    phoneNumber: string;
   }) => void;
 }
 
@@ -38,14 +37,10 @@ function MentoringApplicationItem({
 
   const { clamped: isClamped, setRef: contentRef } = useClampedRef();
 
-  const handleActionButtonsComplete = (
-    updatedStatus: StatusType,
-    phoneNumber: string,
-  ) => {
+  const handleActionButtonsComplete = (updatedStatus: StatusType) => {
     onActionButtonsClick({
       reservationId,
       status: updatedStatus,
-      phoneNumber,
     });
   };
 

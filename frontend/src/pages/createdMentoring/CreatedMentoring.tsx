@@ -77,11 +77,9 @@ function CreatedMentoring() {
   const handleActionButtonsClick = ({
     reservationId,
     status,
-    phoneNumber,
   }: {
     reservationId: number;
     status: StatusType;
-    phoneNumber: string;
   }) => {
     setMentoringApplicationList((prevList) => {
       return prevList.map((item) => {
@@ -91,7 +89,6 @@ function CreatedMentoring() {
         return {
           ...item,
           status,
-          phoneNumber,
         };
       });
     });
