@@ -16,12 +16,7 @@ public enum ImageVariant {
         return List.of(DEFAULT);
     }
 
-    public static String getName(ImageVariant variant) {
-        for (ImageVariant value : values()) {
-            if (value == variant) {
-                return variant.name().toLowerCase();
-            }
-        }
-        return "default";
+    public String getName() {
+        return this.name().toLowerCase();
     }
 }
