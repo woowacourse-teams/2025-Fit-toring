@@ -1,57 +1,20 @@
-import { useEffect, useState } from 'react';
-
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-import { getMineMentoring } from '../../common/apis/getMineMentoring';
 import downIcon from '../../common/assets/images/downIcon.svg';
 import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
-import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import MentoringApplicationItem from './components/MentoringApplicationItem/MentoringApplicationItem';
 import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
 import useMentoringApplicationList from './hooks/useMentoringApplicationList';
+import useMineMentoring from './hooks/useMineMentoring';
 
-import type { MentoringDetail } from '../../common/types/MentoringDetail';
 import type { StatusType } from '../../common/types/statusType';
 
 function CreatedMentoring() {
-  const navigate = useNavigate();
-
   const { mentoringApplicationList, updateMentoringApplicationListStatus } =
     useMentoringApplicationList();
-
-  const [mineMentoring, setMineMentoring] = useState<MentoringDetail | null>(
-    null,
-  );
-
-  const handleMentoringShowButtonClick = () => {
-    if (!mineMentoring) {
-      return;
-    }
-
-    navigate(`${PAGE_URL.DETAIL}/${mineMentoring.id}`);
-  };
-
-  useEffect(() => {
-    const fetchMentoring = async () => {
-      try {
-        const mentoring = await getMineMentoring();
-        setMineMentoring(mentoring);
-      } catch (error) {
-        console.error(error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'createdMentoring',
-          step: 'mine-mentoring-fetch',
-        });
-      }
-    };
-
-    fetchMentoring();
-  }, []);
 
   const handleActionButtonsClick = ({
     reservationId,
@@ -61,6 +24,18 @@ function CreatedMentoring() {
     status: StatusType;
   }) => {
     updateMentoringApplicationListStatus({ reservationId, status });
+  };
+
+  const { mineMentoring } = useMineMentoring();
+
+  const navigate = useNavigate();
+
+  const handleMentoringShowButtonClick = () => {
+    if (!mineMentoring) {
+      return;
+    }
+
+    navigate(`${PAGE_URL.DETAIL}/${mineMentoring.id}`);
   };
 
   const handleFilterClick = () => {
