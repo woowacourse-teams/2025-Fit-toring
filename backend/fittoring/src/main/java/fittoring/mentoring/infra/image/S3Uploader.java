@@ -20,23 +20,23 @@ public class S3Uploader {
 
     public VariantUploadResult uploadVariant(
             MultipartFile originalInput,
-            String dir,
+            String imageTypeName,
             ImageVariant variant,
             int maxWidth,
             String baseName
     ) throws IOException {
         MultipartFile resized = imageResizer.resize(originalInput, maxWidth);
 
-        String originalExt = extensionOf(resized.getOriginalFilename());
-        String originalContentType = contentTypeOf(originalExt);
+        String originalExtension = extensionOf(resized.getOriginalFilename());
+        String originalContentType = contentTypeOf(originalExtension);
 
-        Encoded orig = imageTranscoder.toOriginal(resized, originalExt, originalContentType);
-        String keyOriginal = buildKey(dir, variant, baseName, "." + orig.extension());
+        Encoded orig = imageTranscoder.toOriginal(resized, originalExtension, originalContentType);
+        String keyOriginal = buildKey(imageTypeName, variant, baseName, "." + orig.extension());
         putObject(keyOriginal, orig.contentType(), orig.bytes());
         String urlOriginal = getUrl(keyOriginal);
 
         Encoded avif = imageTranscoder.toAvif(resized);
-        String keyAvif = buildKey(dir, variant, baseName, "." + avif.extension());
+        String keyAvif = buildKey(imageTypeName, variant, baseName, "." + avif.extension());
         putObject(keyAvif, avif.contentType(), avif.bytes());
         String urlAvif = getUrl(keyAvif);
 
@@ -53,9 +53,9 @@ public class S3Uploader {
         s3Client.putObject(req, RequestBody.fromBytes(bytes));
     }
 
-    private static String buildKey(String dir, ImageVariant v, String baseName, String extWithDot) {
-        String sub = (v == ImageVariant.DEFAULT) ? "default" : "thumbnail";
-        return "fit-toring/" + dir + "/" + sub + "/" + baseName + extWithDot;
+    private static String buildKey(String imageType, ImageVariant variant, String baseName, String extensionWithDot) {
+        String variantName = ImageVariant.getName(variant);
+        return "fit-toring/" + imageType + "/" + variantName + "/" + baseName + extensionWithDot;
     }
 
     private static String extensionOf(String name) {

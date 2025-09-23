@@ -15,4 +15,13 @@ public enum ImageVariant {
     public static List<ImageVariant> getDefaultType() {
         return List.of(DEFAULT);
     }
+
+    public static String getName(ImageVariant variant) {
+        for (ImageVariant value : values()) {
+            if (value == variant) {
+                return variant.name().toLowerCase();
+            }
+        }
+        return "default";
+    }
 }
