@@ -9,17 +9,20 @@ export const fonts = css`
     font-family: Pretendard;
     font-weight: 400;
     src: url(${PretendardRegular}) format('woff2');
+    font-display: swap;
   }
 
   @font-face {
     font-family: Pretendard;
     font-weight: 600;
     src: url(${PretendardSemiBold}) format('woff2');
+    font-display: swap;
   }
 
   @font-face {
     font-family: Pretendard;
     font-weight: 700;
     src: url(${PretendardBold}) format('woff2');
+    font-display: swap;
   }
 `;
