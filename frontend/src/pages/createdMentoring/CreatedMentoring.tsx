@@ -9,39 +9,18 @@ import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
-import { getMentoringApplicationList } from './apis/getMentoringApplicationList';
 import MentoringApplicationItem from './components/MentoringApplicationItem/MentoringApplicationItem';
 import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
+import useMentoringApplicationList from './hooks/useMentoringApplicationList';
 
-import type { MentoringApplication } from './types/mentoringApplication';
 import type { MentoringDetail } from '../../common/types/MentoringDetail';
 import type { StatusType } from '../../common/types/statusType';
 
 function CreatedMentoring() {
-  const [mentoringApplicationList, setMentoringApplicationList] = useState<
-    MentoringApplication[]
-  >([]);
-
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchMentoringApplicationList = async () => {
-      try {
-        const response = await getMentoringApplicationList();
-        setMentoringApplicationList(response);
-      } catch (error) {
-        console.error(error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'createdMentoring',
-          step: 'mentoring-application-fetch',
-        });
-      }
-    };
-
-    fetchMentoringApplicationList();
-  }, []);
+  const { mentoringApplicationList, updateMentoringApplicationListStatus } =
+    useMentoringApplicationList();
 
   const [mineMentoring, setMineMentoring] = useState<MentoringDetail | null>(
     null,
@@ -81,17 +60,7 @@ function CreatedMentoring() {
     reservationId: number;
     status: StatusType;
   }) => {
-    setMentoringApplicationList((prevList) => {
-      return prevList.map((item) => {
-        if (item.reservationId !== reservationId) {
-          return item;
-        }
-        return {
-          ...item,
-          status,
-        };
-      });
-    });
+    updateMentoringApplicationListStatus({ reservationId, status });
   };
 
   const handleFilterClick = () => {
