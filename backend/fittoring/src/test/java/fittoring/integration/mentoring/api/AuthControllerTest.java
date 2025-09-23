@@ -216,7 +216,7 @@ class AuthControllerTest extends AbstractApiDocumentationTest {
 
         String accessToken = jwtProvider.createAccessToken(savedMember.getId());
         String refreshToken = jwtProvider.createRefreshToken();
-        refreshTokenRepository.save(new RefreshToken(savedMember, refreshToken, LocalDateTime.now()));
+        refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
 
         //when
         Response response = RestAssured
@@ -266,7 +266,7 @@ class AuthControllerTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMember.getId());
         String refreshToken = jwtProvider.createRefreshToken();
 
-        refreshTokenRepository.save(new RefreshToken(savedMember, refreshToken, LocalDateTime.now()));
+        refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
 
         //when
         Response reissueResponse = RestAssured

@@ -27,7 +27,6 @@ import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
 import fittoring.mentoring.presentation.dto.AdminReservationResponse;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -83,22 +82,7 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<MentorMentoringReservationResponse> getReservationsByMentor(Long mentorId) {
-        List<Mentoring> mentoringsByMentor = mentoringRepository.findAllByMentorId(mentorId);
-        List<Reservation> reservations = findReservation(mentoringsByMentor);
-        return getMentorMentoringReservationResponses(reservations);
-    }
-
-    private List<Reservation> findReservation(List<Mentoring> mentoringsByMentor) {
-        List<Reservation> reservations = new ArrayList<>();
-        for (Mentoring mentoring : mentoringsByMentor) {
-            List<Reservation> mentorings = reservationRepository.findAllByMentoringId(mentoring.getId());
-            reservations.addAll(mentorings);
-        }
-        return reservations;
-    }
-
-    private List<MentorMentoringReservationResponse> getMentorMentoringReservationResponses(
-            List<Reservation> reservations) {
+        List<Reservation> reservations = reservationRepository.findAllByMentorId(mentorId);
         return reservations.stream()
                 .map(MentorMentoringReservationResponse::of)
                 .toList();

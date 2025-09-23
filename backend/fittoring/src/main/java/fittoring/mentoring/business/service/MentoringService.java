@@ -21,6 +21,7 @@ import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.CertificateRepository;
+import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
@@ -31,6 +32,7 @@ import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,8 @@ public class MentoringService {
     private final CertificateRepository certificateRepository;
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
+    private final ImageRepository imageRepository;
+
 
     @Transactional
     public void registerMentoring(RegisterMentoringDto dto) {
@@ -249,8 +253,8 @@ public class MentoringService {
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-               && categoryTitle2 == null
-               && categoryTitle3 == null;
+                && categoryTitle2 == null
+                && categoryTitle3 == null;
     }
 
     private void validateAllCategoryTitle(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
@@ -282,6 +286,37 @@ public class MentoringService {
                 mentoring.getId(),
                 RatingStatsDto.defaultOf(mentoring.getId())
         );
+    }
+
+    private List<CertificateSpecAndImageResponse> getApprovedCertificates(List<Certificate> certificates) {
+        List<Long> certificateIds = createCertificateIds(certificates);
+        List<Image> certificateImages = imageRepository.findAllByImageTypeAndRelationIds(
+                ImageType.CERTIFICATE,
+                certificateIds
+        );
+        Map<Long, Image> imageMappedByCertificateId = new HashMap<>();
+        for (Image certificateImage : certificateImages) {
+            imageMappedByCertificateId.putIfAbsent(
+                    certificateImage.getRelationId(),
+                    certificateImage
+            );
+        }
+        return certificates.stream()
+                .filter(certificate -> imageMappedByCertificateId.containsKey(certificate.getId()))
+                .map(certificate -> CertificateSpecAndImageResponse.of(
+                        certificate,
+                        imageMappedByCertificateId.get(certificate.getId()).getUrl()
+                ))
+                .toList();
+    }
+
+    private List<Long> createCertificateIds(List<Certificate> certificates) {
+        if (certificates.isEmpty()) {
+            return List.of();
+        }
+        return certificates.stream()
+                .map(Certificate::getId)
+                .toList();
     }
 
     @Transactional
