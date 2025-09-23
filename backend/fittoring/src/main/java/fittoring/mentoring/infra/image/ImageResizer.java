@@ -11,6 +11,21 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class ImageResizer {
 
+    /**
+     * Resize an image MultipartFile to not exceed the specified maximum width.
+     *
+     * If the input image's width is already less than or equal to maxWidth, the
+     * original MultipartFile is returned unchanged. Otherwise the image is resized
+     * to maxWidth with the height adjusted to preserve aspect ratio, encoded using
+     * the file's original extension (or a default `jpg`), and returned as an
+     * in-memory MultipartFile.
+     *
+     * @param inputFile the uploaded image file to resize
+     * @param maxWidth the maximum allowed width (pixels); must be > 0
+     * @return the original inputFile if no resizing was necessary, or a new
+     *     InmemoryMultipartFile containing the resized image
+     * @throws IOException if reading or writing the image data fails
+     */
     public MultipartFile resize(MultipartFile inputFile, int maxWidth) throws IOException {
         BufferedImage original = ImageIO.read(inputFile.getInputStream());
         if (original == null) {
@@ -44,6 +59,16 @@ public class ImageResizer {
         );
     }
 
+    /**
+     * Determine the image file extension from a filename, normalizing and validating it.
+     *
+     * <p>Returns the lowercase extension if it is one of: "jpg", "jpeg", "png", "gif", or "bmp".
+     * The value "jpeg" is normalized to "jpg". If the filename is null, has no extension, or
+     * the extension is not one of the accepted values, this method returns the default "jpg".</p>
+     *
+     * @param originalFilename the original filename to inspect; may be null
+     * @return a validated, lowercase image extension ("jpg", "png", "gif", or "bmp"), defaulting to "jpg"
+     */
     private static String guessExtension(String originalFilename) {
         if (originalFilename != null) {
             int dot = originalFilename.lastIndexOf('.');
@@ -57,6 +82,18 @@ public class ImageResizer {
         return "jpg";
     }
 
+    /**
+     * Returns the MIME content type corresponding to an image file extension.
+     *
+     * Supported mappings:
+     * - "png" -> "image/png"
+     * - "gif" -> "image/gif"
+     * - "bmp" -> "image/bmp"
+     * Any other value maps to "image/jpeg".
+     *
+     * @param extension lowercase file extension without a leading dot
+     * @return the MIME type for the provided extension
+     */
     private static String contentTypeOf(String extension) {
         return switch (extension) {
             case "png" -> "image/png";
@@ -66,6 +103,16 @@ public class ImageResizer {
         };
     }
 
+    /**
+     * Return a safe filename for stored image files.
+     *
+     * If the provided original filename is null or does not contain an extension (no '.'),
+     * a default name of "image.{ext}" is returned; otherwise the originalFilename is returned unchanged.
+     *
+     * @param originalFilename the original filename from the uploaded file, may be null
+     * @param ext the file extension to use when generating a default name (e.g. "jpg", without a leading dot)
+     * @return a filename that is safe to use (either the originalFilename or "image.{ext}")
+     */
     private static String safeFilename(String originalFilename, String ext) {
         if (originalFilename == null || !originalFilename.contains(".")) {
             return "image." + ext;
