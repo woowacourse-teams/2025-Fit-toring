@@ -38,21 +38,23 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
                 .fetch();
 
         boolean hasNext = rows.size() > PAGE_SIZE;
+        String nextCursorCode = null;
         if (hasNext) {
+            Mentoring nextMentoring = rows.getLast();
             rows = rows.subList(0, PAGE_SIZE);
-        }
-
-        String nextCursorCode = "";
-
-        if (!rows.isEmpty()) {
-            Mentoring lastMentoring = rows.getLast();
-
-            if (sortKey.equals(SortKey.CREATED_AT)) {
-                long nextSortValue = lastMentoring.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
-                nextCursorCode = CursorCodec.incode(new Cursor(nextSortValue, lastMentoring.getId()));
-            }
+            nextCursorCode = switch (sortKey) {
+                case CREATED_AT -> getNextCursorCode(nextMentoring);
+                // 다른 정렬 기준이 추가될 수 있습니다.
+            };
         }
         return new MentoringPaginationResult(rows, nextCursorCode, hasNext);
+    }
+
+    private String getNextCursorCode(Mentoring nextMentoring) {
+        String nextCursorCode;
+        long nextSortValue = nextMentoring.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
+        nextCursorCode = CursorCodec.incode(new Cursor(nextSortValue, nextMentoring.getId()));
+        return nextCursorCode;
     }
 
     private BooleanExpression buildCursorCondition(SortKey sortKey, Cursor cursor) {
@@ -61,7 +63,11 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
                     .atZone(ZoneId.of("Asia/Seoul"))
                     .toLocalDateTime();
             return mentoring.createdAt.lt(cursorDateTime)
-                    .or(mentoring.createdAt.eq(cursorDateTime).and(mentoring.id.lt(cursor.id())));
+                    .or(
+                            mentoring.createdAt.eq(cursorDateTime)
+                                    .and(mentoring.id.loe(cursor.id()))
+                    );
+
         }
         return null;
     }

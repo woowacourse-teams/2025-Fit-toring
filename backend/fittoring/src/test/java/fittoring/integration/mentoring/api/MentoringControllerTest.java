@@ -1086,7 +1086,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 assertThat(firstResponse.hasNext()).isTrue();
                 assertThat(nextResponse.mentoringSummaryResponses()).hasSize(2);
                 assertThat(nextResponse.mentoringSummaryResponses().getLast().id()).isEqualTo(1L);
-                assertThat(nextResponse.nextCursorCode()).isNotNull();
+                assertThat(nextResponse.nextCursorCode()).isNull();
                 assertThat(nextResponse.hasNext()).isFalse();
             });
         }
