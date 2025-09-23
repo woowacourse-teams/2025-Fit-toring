@@ -79,18 +79,8 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<MentorMentoringReservationResponse> getReservationsByMentor(Long mentorId) {
-        List<Mentoring> mentoringsByMentor = mentoringRepository.findAllByMentorId(mentorId);
-        List<Reservation> reservations = findAllMentoringsReservations(mentoringsByMentor);
+        List<Reservation> reservations = reservationRepository.findAllByMentorId(mentorId);
         return getMentorMentoringReservationResponses(reservations);
-    }
-
-    private List<Reservation> findAllMentoringsReservations(List<Mentoring> mentoringsByMentor) {
-        List<Reservation> reservations = new ArrayList<>();
-        for (Mentoring mentoring : mentoringsByMentor) {
-            List<Reservation> mentorings = reservationRepository.findAllByMentoringId(mentoring.getId());
-            reservations.addAll(mentorings);
-        }
-        return reservations;
     }
 
     private List<MentorMentoringReservationResponse> getMentorMentoringReservationResponses(

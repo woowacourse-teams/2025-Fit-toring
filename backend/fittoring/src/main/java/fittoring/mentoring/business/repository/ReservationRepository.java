@@ -37,6 +37,7 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
                 order by r.createdAt desc, r.id desc
             """)
     List<ParticipatedReservationView> findMemberReservationsView(@Param("memberId") Long menteeId);
+
     @Query("""
             SELECT r
             FROM Reservation r
