@@ -9,6 +9,7 @@ import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 import Checkbox from '../Checkbox/Checkbox';
+import { validateTextarea } from '../../../../common/utils/validateDetail';
 
 interface BookingFormProps {
   handleBookingButtonClick: () => void;
@@ -26,14 +27,30 @@ function BookingForm({
     name: '',
     phoneNumber: '',
   });
-  const [sharingAgreed, setSharingAgreed] = useState(false);
 
-  const [errored, setErrored] = useState(false);
+  const [errored, setErrored] = useState({
+    textarea: false,
+  });
+
+  const detailErrorMessage = validateTextarea(counselContent);
 
   const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setCounselContent(e.target.value);
+    if (!errored.textarea && e.target.value.length > 5000) {
+      setErrored((prev) => ({
+        ...prev,
+        textarea: true,
+      }));
+    }
+
+    if (errored.textarea && e.target.value.length <= 5000) {
+      setErrored((prev) => ({
+        ...prev,
+        textarea: false,
+      }));
+    }
   };
 
   const handleBooking = async () => {
@@ -65,17 +82,9 @@ function BookingForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!sharingAgreed) {
-      setErrored(true);
-      return;
-    }
+    if (!!detailErrorMessage) return;
 
     handleBooking();
-  };
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setErrored(false);
-    setSharingAgreed(e.target.checked);
   };
 
   useEffect(() => {
@@ -98,34 +107,20 @@ function BookingForm({
           <S_UserInfoLabel>상담자명</S_UserInfoLabel>
           <S_UserInfoText>{userInfo.name}</S_UserInfoText>
         </S_InfoRow>
-        <S_InfoRow>
-          <S_UserInfoLabel>전화번호</S_UserInfoLabel>
-          <S_UserInfoText>{userInfo.phoneNumber}</S_UserInfoText>
-        </S_InfoRow>
-        <FormField label="상담 내용(선택사항)" errorMessage={''}>
+        <FormField
+          label="상담 내용(선택사항)"
+          errorMessage={detailErrorMessage}
+        >
           <S_Textarea
             id="details"
             placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
 더 정확한 조언을 받을 수 있습니다."
             onChange={handleCounselContentChange}
-            errored={false}
+            errored={errored.textarea}
             value={counselContent}
           />
         </FormField>
       </S_UserInfoWrapper>
-      <S_LabelWrapper>
-        <Checkbox
-          id="sharingAgreed"
-          checked={sharingAgreed}
-          onChange={handleCheckboxChange}
-          errored={errored}
-          label={<S_CheckboxLabelText>전화번호 제공 동의</S_CheckboxLabelText>}
-        />
-        <S_CheckboxSubText>
-          멘토 승인이 완료되면, 상담을 위해 내 전화번호가 멘토에게 전달됩니다.
-        </S_CheckboxSubText>
-        {errored && <S_ErrorText>전화번호 제공 동의를 해주세요.</S_ErrorText>}
-      </S_LabelWrapper>
 
       <BookingSummarySection price={mentoringPrice} />
     </S_Container>
@@ -135,6 +130,10 @@ function BookingForm({
 export default BookingForm;
 
 const S_Container = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1.7rem;
+
   width: 100%;
   height: 100%;
   padding: 2.2rem;
@@ -146,23 +145,18 @@ const S_Container = styled.form`
 
 const S_InfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-  margin-top: 1.7rem;
-
   color: ${({ theme }) => theme.FONT.B03};
 `;
 
 const S_UserInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2.1rem;
-
-  margin-top: 3.3rem;
+  gap: 1.7rem;
 `;
 
 const S_InfoRow = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 `;
 
 const S_UserInfoLabel = styled.p`
@@ -192,28 +186,4 @@ const S_Textarea = styled.textarea<{ errored: boolean }>`
   }
 
   color: ${({ theme }) => theme.FONT.B01};
-`;
-
-const S_LabelWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-
-  margin: 2rem 0;
-`;
-
-const S_CheckboxLabelText = styled.strong`
-  color: ${({ theme }) => theme.FONT.B03};
-  font-weight: bold;
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
-`;
-
-const S_CheckboxSubText = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-  color: ${({ theme }) => theme.FONT.B03};
-`;
-
-const S_ErrorText = styled.span`
-  color: ${({ theme }) => theme.FONT.ERROR};
-  ${({ theme }) => theme.TYPOGRAPHY.C3_R};
 `;

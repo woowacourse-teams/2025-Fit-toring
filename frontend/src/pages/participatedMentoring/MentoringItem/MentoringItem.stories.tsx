@@ -47,7 +47,7 @@ export const Pending: Story = {
     docs: {
       description: {
         story:
-          '승인 대기중인 멘토링 상담 신청 정보 카드입니다. 상태가 "승인대기"으로 표시되며, 승인 대기중인 상담 신청 정보를 보여줍니다.',
+          '승인 대기중인 멘토링 상담 신청 정보 카드입니다. 상태가 "승인 대기"으로 표시되며, 승인 대기중인 상담 신청 정보를 보여줍니다.',
       },
     },
   },
@@ -62,7 +62,7 @@ export const Approved: Story = {
     docs: {
       description: {
         story:
-          '승인된 멘토링 상담 신청 정보 카드입니다. 상태가 "승인됨"으로 표시되며, 승인된 상담 신청 정보를 보여줍니다.',
+          '승인된 멘토링 상담 신청 정보 카드입니다. 상태가 "승인 확정"으로 표시되며, 승인된 상담 신청 정보를 보여줍니다.',
       },
     },
   },
@@ -78,6 +78,21 @@ export const Completed: Story = {
       description: {
         story:
           '완료된 멘토링 상담 신청 정보 카드입니다. 상태가 "완료됨"으로 표시되며, 리뷰 작성을 하지 않았다면 리뷰 작성 버튼이 표시됩니다. 완료된 상담 신청 정보를 보여줍니다.',
+      },
+    },
+  },
+};
+
+export const Rejected: Story = {
+  args: {
+    mentoring: PARTICIPATED_MENTORING_LIST[3],
+    handleReviewSubmitButtonClick: () => {},
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '거절된 멘토링 상담 신청 정보 카드 입니다. 상태가 "거절됨"으로 표시되며, 거절된 상태를 보여줍니다.',
       },
     },
   },

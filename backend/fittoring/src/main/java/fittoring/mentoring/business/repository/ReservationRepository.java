@@ -37,6 +37,16 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
                 order by r.createdAt desc, r.id desc
             """)
     List<ParticipatedReservationView> findMemberReservationsView(@Param("memberId") Long menteeId);
+    @Query("""
+            SELECT r
+            FROM Reservation r
+            JOIN FETCH r.mentoring m
+            JOIN FETCH r.mentee mt
+            WHERE m.mentor.id = :mentorId
+            """)
+    List<Reservation> findAllByMentorId(Long mentorId);
+
+    List<Reservation> findAllByMenteeId(Long menteeId);
 
     List<Reservation> findAllByMentoring(Mentoring mentoring);
 }
