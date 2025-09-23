@@ -10,17 +10,19 @@ interface DetailIntroduceProps {
     newData: Pick<mentoringCreateFormData, 'content'>,
   ) => void;
   detailIntroduce: string;
+  detailErrorMessage: string;
 }
 
 function DetailIntroduce({
   onDetailIntroduceChange,
   detailIntroduce,
+  detailErrorMessage,
 }: DetailIntroduceProps) {
   return (
     <section>
       <TitleSeparator>상세 소개</TitleSeparator>
       <S_FormFieldWrapper>
-        <FormField label="상세 소개 *">
+        <FormField label="상세 소개 *" errorMessage={detailErrorMessage}>
           <S_Textarea
             placeholder="멘토링 경험, 전문성, 제공하는 서비스 등을 자세히 소개해주세요"
             id="content"
