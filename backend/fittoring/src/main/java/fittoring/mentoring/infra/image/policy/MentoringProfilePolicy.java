@@ -1,0 +1,20 @@
+package fittoring.mentoring.infra.image.policy;
+
+import fittoring.mentoring.infra.image.ImageConstants;
+import fittoring.mentoring.infra.image.ImageVariant;
+import java.util.List;
+
+public class MentoringProfilePolicy implements ImageTypePolicy {
+
+    @Override
+    public List<ImageVariant> variants() {
+        return ImageVariant.getThumbnailRequiredTypes();
+    }
+
+    @Override
+    public int maxWidth(ImageVariant variant) {
+        return (variant == ImageVariant.DEFAULT)
+                ? ImageConstants.DEFAULT_MAX_WIDTH
+                : ImageConstants.THUMBNAIL_MAX_WIDTH;
+    }
+}
