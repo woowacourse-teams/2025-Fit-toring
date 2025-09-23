@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 
-import logo from '../../../../common/assets/images/logo.svg';
+import backIcon from '../../../../common/assets/images/backIcon.svg';
 import Header from '../../../../common/components/Header/Header';
 import { PAGE_URL } from '../../../../common/constants/url';
 import MenuDropDown from '../MenuDropDown/MenuDropDown';
@@ -11,7 +11,7 @@ function MyPageHeader() {
     <Header>
       <S_Wrapper>
         <S_LogoLink to={PAGE_URL.HOME}>
-          <S_Img src={logo} alt="홈으로 돌아가기" />
+          <S_Img src={backIcon} alt="홈으로 돌아가기" />
         </S_LogoLink>
         <S_Title>마이 페이지</S_Title>
 
@@ -35,11 +35,6 @@ const S_LogoLink = styled(Link)`
   display: flex;
 
   height: auto;
-  padding: 0;
-  border: none;
-  border-bottom: 1px solid #e2e8f0;
-  border-radius: 30%;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
 
   background: none;
   cursor: pointer;
@@ -47,6 +42,7 @@ const S_LogoLink = styled(Link)`
 
 const S_Img = styled.img`
   width: 3.5rem;
+  height: 3.5rem;
   aspect-ratio: 1 / 1;
 `;
 
