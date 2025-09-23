@@ -34,16 +34,17 @@ const S_Wrapper = styled.div`
 const S_LogoLink = styled(Link)`
   display: flex;
 
+  width: 3.5rem;
   height: auto;
+  aspect-ratio: 1 / 1;
 
   background: none;
   cursor: pointer;
 `;
 
 const S_Img = styled.img`
-  width: 3.5rem;
-  height: 3.5rem;
-  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 100%;
 `;
 
 const S_Title = styled.h1`
