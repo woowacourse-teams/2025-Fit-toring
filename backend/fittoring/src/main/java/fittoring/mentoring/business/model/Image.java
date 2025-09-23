@@ -32,6 +32,7 @@ public class Image {
     @Column(nullable = false)
     private ImageType imageType;
 
+    @Getter
     @Column(nullable = false)
     private Long relationId;
 

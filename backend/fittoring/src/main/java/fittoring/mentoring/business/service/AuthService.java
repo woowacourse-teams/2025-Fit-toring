@@ -54,9 +54,7 @@ public class AuthService {
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken saveRefreshToken = new RefreshToken(
-                member,
-                refreshToken,
-                LocalDateTime.now()
+                refreshToken, LocalDateTime.now(), member
         );
         refreshTokenRepository.save(saveRefreshToken);
 
