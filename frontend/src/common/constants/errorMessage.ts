@@ -11,4 +11,5 @@ export const ERROR_MESSAGE = {
   INVALID_ID_LENGTH: `아이디는 ${ID.MIN_LENGTH}자 이상 ${ID.MAX_LENGTH}자 미만으로 입력해주세요.`,
   INVALID_USER_ID_CHARACTERS: '아이디는 영문과 숫자만 입력할 수 있습니다.',
   INVALID_CHAT_URL: '올바른 카카오톡 오픈 채팅 주소를 입력해주세요.',
+  CONTENT_LENGTH_TOO_LONG: `상세 설명은 5,000자 이하로 작성해주세요.`,
 };

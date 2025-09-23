@@ -27,6 +27,7 @@ import {
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
+import { validateTextarea } from '../../../../common/utils/validateDetail';
 
 function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(
@@ -45,6 +46,7 @@ function MentoringUpdateForm() {
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
   const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
+  const detailErrorMessage = validateTextarea(mentoringData.content);
 
   const handleMentoringDataChange = (
     newData: Partial<MentoringUpdateFormData>,
@@ -72,7 +74,7 @@ function MentoringUpdateForm() {
     }
 
     const addedCertifications = mentoringData.certificateInfos.filter(
-      (e) => !initialCertificatesIdRef.current.includes(e.id),
+      (info) => !initialCertificatesIdRef.current.includes(info.id),
     );
 
     try {
@@ -136,7 +138,8 @@ function MentoringUpdateForm() {
       priceErrorMessage ||
       introduceErrorMessage ||
       careerErrorMessage ||
-      chatUrlErrorMessage
+      chatUrlErrorMessage ||
+      detailErrorMessage
     ) {
       alert('입력값을 확인해주세요.');
       return;
@@ -214,11 +217,11 @@ function MentoringUpdateForm() {
         const { certificates, categories, ...mentoring } =
           await getMentoringDetail(mentoringId);
 
-        const certificateInfosData = certificates.map((e) => ({
-          id: e.certificateId,
-          title: e.title,
-          type: e.type,
-          imageUrl: e.imageUrl,
+        const certificateInfosData = certificates.map((info) => ({
+          id: info.certificateId,
+          title: info.title,
+          type: info.type,
+          imageUrl: info.imageUrl,
         }));
         const {
           price,
@@ -241,7 +244,7 @@ function MentoringUpdateForm() {
         setCertificates(certificateInfosData);
 
         initialCertificatesIdRef.current = certificates.map(
-          (e) => e.certificateId,
+          (info) => info.certificateId,
         );
       }
     };
@@ -284,6 +287,7 @@ function MentoringUpdateForm() {
           <DetailIntroduce
             detailIntroduce={mentoringData.content}
             onDetailIntroduceChange={handleMentoringDataChange}
+            detailErrorMessage={detailErrorMessage}
           />
           <S_Separator />
           <ButtonSection

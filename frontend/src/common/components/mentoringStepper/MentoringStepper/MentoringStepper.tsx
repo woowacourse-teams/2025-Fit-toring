@@ -43,46 +43,31 @@ function MentoringStepper({ status }: MentoringStepperProps) {
   };
 
   return (
-    <S_Container>
-      <S_Steps>
-        {stepValues.map((stepInfo, step) => (
-          <Step type={getType(step)} status={status} key={stepInfo}>
-            <S_TextWrapper>
-              <S_Text step={getType(step)}>{statusTextMap[stepInfo]}</S_Text>
-              <S_IconWrapper>
-                <S_Icon src={tooltipIcon} alt="툴팁 아이콘" />
-                <S_Tooltip>{statusInfoTextMap[stepInfo]}</S_Tooltip>
-              </S_IconWrapper>
-            </S_TextWrapper>
-          </Step>
-        ))}
-      </S_Steps>
-    </S_Container>
+    <S_Steps>
+      {stepValues.map((stepInfo, step) => (
+        <Step type={getType(step)} status={status} key={stepInfo}>
+          <S_TextWrapper>
+            <S_Text step={getType(step)}>{statusTextMap[stepInfo]}</S_Text>
+            <S_IconWrapper>
+              <S_Icon src={tooltipIcon} alt="툴팁 아이콘" />
+              <S_Tooltip>{statusInfoTextMap[stepInfo]}</S_Tooltip>
+            </S_IconWrapper>
+          </S_TextWrapper>
+        </Step>
+      ))}
+    </S_Steps>
   );
 }
 
 export default MentoringStepper;
 
-const S_Container = styled.div`
-  --circle-size: 2rem;
-  --offset: 3.2rem;
-  --text-height: 1rem;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-
-  padding-bottom: calc(
-    var(--circle-size) / 2 + var(--offset) - var(--circle-size)
-  );
-`;
-
 const S_Steps = styled.div`
   display: flex;
   align-items: center;
 
-  width: 100%;
+  width: 90%;
+  margin-top: 2.6rem;
+  margin-bottom: 1rem;
 `;
 
 const S_TextWrapper = styled.div`
@@ -97,8 +82,8 @@ const S_TextWrapper = styled.div`
 `;
 
 const S_Text = styled.span<{ step: 'before' | 'current' | 'after' }>`
-  color: ${({ step, theme }) =>
-    step === 'after' ? theme.SYSTEM.GRAY200 : theme.SYSTEM.MAIN500};
+  color: ${({ theme }) => theme.FONT.B01};
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R}
   white-space: nowrap;
 `;
 
