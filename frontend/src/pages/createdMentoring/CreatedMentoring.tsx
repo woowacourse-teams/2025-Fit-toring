@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import { getMineMentoring } from '../../common/apis/getMineMentoring';
+import downIcon from '../../common/assets/images/downIcon.svg';
 import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
@@ -96,6 +97,10 @@ function CreatedMentoring() {
     });
   };
 
+  const handleFilterClick = () => {
+    alert('기능 추가 예정입니다.');
+  };
+
   return (
     <S_Container>
       {mineMentoring ? (
@@ -103,6 +108,10 @@ function CreatedMentoring() {
           <S_ContentsWrapper>
             <S_MentoringSectionHeader>
               <S_Title>예약 목록 ({mentoringApplicationList.length})</S_Title>
+              <S_SmallButton onClick={handleFilterClick} type="button">
+                <S_DownIcon src={downIcon} alt="카테고리 열기 아이콘" />
+                <S_Text>전체보기</S_Text>
+              </S_SmallButton>
             </S_MentoringSectionHeader>
             <S_Wrapper>
               <MentoringApplicationList>
@@ -166,6 +175,32 @@ const S_MentoringSectionHeader = styled.div`
 const S_Title = styled.h2`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
+`;
+
+const S_SmallButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+
+  width: 8.4rem;
+  height: 3.4rem;
+  padding: 1rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+  border-radius: 5px;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+  cursor: pointer;
+`;
+
+const S_Text = styled.span`
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
+  color: ${({ theme }) => theme.SYSTEM.GRAY600};
+`;
+
+const S_DownIcon = styled.img`
+  width: 1.4rem;
+  aspect-ratio: 1 / 1;
 `;
 
 const S_Wrapper = styled.div`
