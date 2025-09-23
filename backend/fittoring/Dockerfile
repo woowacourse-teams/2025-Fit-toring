@@ -2,7 +2,10 @@ FROM openjdk:21-jdk-slim AS runtime
 WORKDIR /app
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends curl ca-certificates \
+ && apt-get install -y --no-install-recommends \
+    curl ca-certificates \
+    libheif1 libheif-dev \
+    libaom3 libaom-dev \
  && rm -rf /var/lib/apt/lists/*
 
 COPY build/libs/*SNAPSHOT.jar app.jar
