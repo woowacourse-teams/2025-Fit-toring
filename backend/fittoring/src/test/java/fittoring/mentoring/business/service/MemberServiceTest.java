@@ -11,7 +11,10 @@ import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.infra.image.ImageResizer;
 import fittoring.mentoring.infra.image.ImageTranscoder;
 import fittoring.mentoring.infra.image.S3Uploader;
+import fittoring.mentoring.infra.image.policy.CertificatePolicy;
 import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
+import fittoring.mentoring.infra.image.policy.MentoringProfilePolicy;
+import fittoring.mentoring.infra.image.policy.NonePolicy;
 import fittoring.mentoring.presentation.dto.MyInfoResponse;
 import fittoring.mentoring.presentation.dto.MyInfoSummaryResponse;
 import fittoring.util.DbCleaner;
@@ -39,6 +42,9 @@ import org.springframework.test.context.ActiveProfiles;
         ImageResizer.class,
         ImageTranscoder.class,
         S3Configuration.class,
+        CertificatePolicy.class,
+        MentoringProfilePolicy.class,
+        NonePolicy.class,
         DbCleaner.class,
         MemberService.class,
         ImageService.class,

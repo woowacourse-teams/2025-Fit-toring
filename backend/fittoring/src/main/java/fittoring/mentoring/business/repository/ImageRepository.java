@@ -23,7 +23,7 @@ public interface ImageRepository extends ListCrudRepository<Image, Long> {
               SELECT i
                 FROM Image i
                WHERE i.relationId = :relationId
-                 AND i.imageType       = :type
+                 AND i.imageType = :type
                  AND i.imageVariant IN (:prefer, :fallback)
             """)
     List<Image> findThumbnailByImageTypeAndRelationId(
