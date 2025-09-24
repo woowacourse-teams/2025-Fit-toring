@@ -13,6 +13,7 @@ import fittoring.mentoring.infra.image.policy.ImageTypePolicy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -77,6 +78,10 @@ public class ImageService {
                         .filter(img -> img.getImageVariant() == ImageVariant.DEFAULT)
                         .findFirst()
                 );
+    }
+
+    public List<Image> findByRelationIdsAndImageType(List<Long> certificateIds, ImageType imageType) {
+        return imageRepository.findByRelationIdsAndImageType(certificateIds, imageType);
     }
 
     public void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId) {

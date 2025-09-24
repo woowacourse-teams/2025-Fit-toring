@@ -33,5 +33,16 @@ public interface ImageRepository extends ListCrudRepository<Image, Long> {
             @Param("fallback") ImageVariant fallback
     );
 
+    @Query("""
+      SELECT i
+      FROM Image i
+      WHERE i.relationId IN :relationIds
+          AND i.imageType = :imageType
+    """)
+    List<Image> findByRelationIdsAndImageType(
+        @Param("relationIds") List<Long> relationIds,
+        @Param("imageType") ImageType imageType
+    );
+
     void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId);
 }

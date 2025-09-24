@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
+import fittoring.config.QueryDslConfig;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenException;
@@ -56,14 +57,15 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
-        ReservationService.class,
         JpaConfiguration.class,
-        ImageService.class,
         S3Uploader.class,
         ImagePolicyRegistry.class,
         ImageResizer.class,
         ImageTranscoder.class,
-        S3Configuration.class
+        S3Configuration.class,
+        ReservationService.class,
+        ImageService.class,
+        QueryDslConfig.class
 })
 @DataJpaTest
 class ReservationServiceTest {

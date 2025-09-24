@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.config.QueryDslConfig;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
@@ -37,7 +38,13 @@ import org.springframework.test.context.ActiveProfiles;
         S3Uploader.class,
         ImageResizer.class,
         ImageTranscoder.class,
-        S3Configuration.class
+        S3Configuration.class,
+        DbCleaner.class,
+        MemberService.class,
+        ImageService.class,
+        S3Uploader.class,
+        S3Configuration.class,
+        QueryDslConfig.class
 })
 @DataJpaTest
 class MemberServiceTest {
