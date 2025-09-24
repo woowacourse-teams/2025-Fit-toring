@@ -2,7 +2,7 @@ package fittoring.mentoring.business.service.dto;
 
 import java.time.LocalDate;
 
-public interface ParticipatedReservationView {
+public interface ParticipatedReservationDto {
     Long getReservationId();
     Long getMentoringId();
     String getMentorName();

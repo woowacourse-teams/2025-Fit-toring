@@ -19,13 +19,12 @@ import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
-import fittoring.mentoring.business.service.dto.ParticipatedReservationView;
+import fittoring.mentoring.business.service.dto.ParticipatedReservationDto;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
 import fittoring.mentoring.presentation.dto.AdminReservationResponse;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -98,17 +97,17 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ParticipatedReservationResponse> findMemberReservations(Long memberId) {
-        List<ParticipatedReservationView> views = reservationRepository.findMemberReservationsView(memberId);
+        List<ParticipatedReservationDto> views = reservationRepository.findMemberReservationDtos(memberId);
         return views.stream()
-                .map(v -> new ParticipatedReservationResponse(
-                        v.getReservationId(),
-                        v.getMentoringId(),
-                        v.getMentorName(),
-                        v.getMentorProfileImage(),
-                        v.getReservedAt(),
-                        v.getContent(),
-                        v.getStatus(),
-                        v.getIsReviewed()))
+                .map(dto -> new ParticipatedReservationResponse(
+                        dto.getReservationId(),
+                        dto.getMentoringId(),
+                        dto.getMentorName(),
+                        dto.getMentorProfileImage(),
+                        dto.getReservedAt(),
+                        dto.getContent(),
+                        dto.getStatus(),
+                        dto.getIsReviewed()))
                 .toList();
     }
 

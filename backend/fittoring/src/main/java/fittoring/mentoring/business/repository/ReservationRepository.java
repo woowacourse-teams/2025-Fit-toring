@@ -2,7 +2,7 @@ package fittoring.mentoring.business.repository;
 
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
-import fittoring.mentoring.business.service.dto.ParticipatedReservationView;
+import fittoring.mentoring.business.service.dto.ParticipatedReservationDto;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
@@ -36,7 +36,7 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
                     and r.mentee.id = :memberId
                 order by r.createdAt desc, r.id desc
             """)
-    List<ParticipatedReservationView> findMemberReservationsView(@Param("memberId") Long menteeId);
+    List<ParticipatedReservationDto> findMemberReservationDtos(@Param("memberId") Long menteeId);
 
     @Query("""
             SELECT r
