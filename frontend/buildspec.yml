@@ -23,7 +23,7 @@ phases:
           echo "❌ Unknown APP_ENV. Halting build."
           exit 1
         fi
-      - echo "📦 Target S3 path: $S3_PATH"
+      - echo "📦 Target S3 path $S3_PATH"
 
   post_build:
     commands:
