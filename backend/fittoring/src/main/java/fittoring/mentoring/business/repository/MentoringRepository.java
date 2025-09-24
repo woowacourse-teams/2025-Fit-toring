@@ -43,14 +43,12 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
     );
 
     @Query("""
-      SELECT m
-      FROM Mentoring m
-      JOIN FETCH m.mentor
-      WHERE m.mentor.id = :mentorId
-    """)
+              SELECT m
+              FROM Mentoring m
+              JOIN FETCH m.mentor
+              WHERE m.mentor.id = :mentorId
+            """)
     Optional<Mentoring> findByMentorId(Long mentorId);
-
-    List<Mentoring> findAllByMentorId(Long mentorId);
 
     boolean existsByMentor(Member member);
 
