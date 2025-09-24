@@ -45,8 +45,8 @@ public class AdminImageController {
         List<Image> images = imageService.uploadImageToS3(
                 image,
                 ImageType.getDir(imageInfo.imageType()),
-                imageInfo.imageType(),
-                imageInfo.relationId()
+                imageInfo != null ? imageInfo.imageType() : ImageType.NONE,
+                imageInfo != null ? imageInfo.relationId() : 0L
         );
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(images.stream()
