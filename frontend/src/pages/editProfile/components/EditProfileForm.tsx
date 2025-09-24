@@ -169,9 +169,8 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     },
   ] as const;
 
-  const myProfileChanged = profileFields.some((item) => item.changed);
-
   const validateForm = () => {
+    const myProfileChanged = profileFields.some((item) => item.changed);
     if (!myProfileChanged) {
       return false;
     }
