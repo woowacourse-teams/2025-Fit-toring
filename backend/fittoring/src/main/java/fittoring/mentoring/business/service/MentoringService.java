@@ -1,6 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.config.auth.LoginInfo;
+import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.ForbiddenException;
@@ -17,6 +18,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
@@ -25,12 +27,15 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
+import fittoring.mentoring.business.service.dto.MentoringPaginationResult;
+import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+import fittoring.util.CursorCodec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +84,7 @@ public class MentoringService {
 
     private Member getMemberById(Long mentorId) {
         return memberRepository.findById(mentorId)
-            .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
     private void validateAlreadyRegistered(Member member) {
@@ -113,7 +118,8 @@ public class MentoringService {
     @Transactional(readOnly = true)
     public MentoringResponse getMentoringWithRelationsByMentorId(Long mentorId) {
         Mentoring mentoring = mentoringRepository.findByMentorId(mentorId)
-            .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
+                .orElseThrow(
+                        () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
         return getMentoringWithRelations(mentoring);
     }
 
@@ -125,8 +131,8 @@ public class MentoringService {
 
     private Mentoring getMentoringById(Long mentoringId) {
         return mentoringRepository.findById(mentoringId)
-            .orElseThrow(
-                () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
+                .orElseThrow(
+                        () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
     }
 
     private MentoringResponse getMentoringWithRelations(Mentoring mentoring) {
@@ -136,12 +142,12 @@ public class MentoringService {
         List<CertificateSpecAndImageResponse> certificateDetails = getApprovedCertificates(mentoring);
         Image image = getMentoringProfileImageOrNull(mentoring);
         return MentoringResponse.of(
-            mentoring,
-            categoryTitles,
-            image,
-            certificateDetails,
-            ratingStatsDto.average(),
-            ratingStatsDto.count()
+                mentoring,
+                categoryTitles,
+                image,
+                certificateDetails,
+                ratingStatsDto.average(),
+                ratingStatsDto.count()
         );
     }
 
@@ -152,29 +158,29 @@ public class MentoringService {
 
     private List<CertificateSpecAndImageResponse> getApprovedCertificates(Mentoring mentoring) {
         List<Certificate> certificates = certificateRepository.findByMentoringIdAndVerificationStatus(
-            mentoring.getId(),
-            Status.APPROVED
+                mentoring.getId(),
+                Status.APPROVED
         );
 
         List<Long> certificateIds = certificates.stream()
-            .map(Certificate::getId)
-            .toList();
+                .map(Certificate::getId)
+                .toList();
 
         List<Image> certificateImages = imageService.findByRelationIdsAndImageType(
-            certificateIds,
-            ImageType.CERTIFICATE
+                certificateIds,
+                ImageType.CERTIFICATE
         );
 
         return buildResponsesWithImages(certificateImages, certificates);
     }
 
     private List<CertificateSpecAndImageResponse> buildResponsesWithImages(
-        List<Image> certificateImages,
-        List<Certificate> certificates
+            List<Image> certificateImages,
+            List<Certificate> certificates
     ) {
         // (certificateId, Image객체) 형태의 Map 생성
         Map<Long, Image> certificateIdToImageMap = certificateImages.stream()
-            .collect(Collectors.toMap(Image::getRelationId, Function.identity()));
+                .collect(Collectors.toMap(Image::getRelationId, Function.identity()));
 
         // certificates를 돌면서 이미지가 존재하는 경우에만 response에 추가함
         List<CertificateSpecAndImageResponse> response = new ArrayList<>();
@@ -249,8 +255,8 @@ public class MentoringService {
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-                && categoryTitle2 == null
-                && categoryTitle3 == null;
+               && categoryTitle2 == null
+               && categoryTitle3 == null;
     }
 
     private void validateAllCategoryTitle(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
@@ -348,5 +354,43 @@ public class MentoringService {
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public MentoringSummaryPaginationResponse findMentoringSummaryPages(
+            SortKey sortKey,
+            String cursorCode,
+            List<Long> categoryIds
+    ) {
+        Cursor cursor = CursorCodec.decode(cursorCode);
+        MentoringPaginationResult mentoringPaginationResult = mentoringRepository.findMentoringsWithPagination(sortKey,
+                cursor);
+
+        List<Mentoring> mentorings = mentoringPaginationResult.mentorings();
+
+        List<Long> mentoringIds = createMentoringIdsByMentoring(mentorings);
+
+        List<RatingStatsDto> ratingStatsDtos = reviewRepository.findReviewStatsByMentoringIds(mentoringIds);
+        Map<Long, RatingStatsDto> ratingStatsDtoMap = createReviewStatsMap(ratingStatsDtos);
+        List<MentoringSummaryResponse> mentoringSummaryResponses = mentorings.stream()
+                .map(mentoring -> {
+                            Image profileImage = getProfileImageOrNull(mentoring.getId());
+                            List<String> categoryTitles = getCategoryMentoringTitlesByMentoringId(mentoring);
+                            RatingStatsDto ratingStatsDto = getReviewStats(mentoring, ratingStatsDtoMap);
+                            return MentoringSummaryResponse.of(
+                                    mentoring,
+                                    categoryTitles,
+                                    profileImage,
+                                    ratingStatsDto
+                            );
+                        }
+                )
+                .toList();
+
+        return new MentoringSummaryPaginationResponse(
+                mentoringSummaryResponses,
+                mentoringPaginationResult.nextCursorCode(),
+                mentoringPaginationResult.hasNext()
+        );
     }
 }

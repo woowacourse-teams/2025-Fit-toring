@@ -9,6 +9,7 @@ import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.DuplicatePhoneException;
 import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.InvalidCertificateException;
+import fittoring.mentoring.business.exception.InvalidCursorException;
 import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.exception.InvalidStatusException;
 import fittoring.mentoring.business.exception.InvalidTokenException;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RequiredArgsConstructor
@@ -159,6 +161,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handle(MethodArgumentTypeMismatchException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(InvalidCertificateException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidCertificateException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
@@ -176,6 +183,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ReservationNotCompletedException.class)
     public ResponseEntity<ErrorResponse> handle(ReservationNotCompletedException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidCursorException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidCursorException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
