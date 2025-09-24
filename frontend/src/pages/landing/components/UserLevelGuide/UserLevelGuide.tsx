@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
-import beginner from '../../../../common/assets/images/beginner.png';
-import expert from '../../../../common/assets/images/expert.png';
+import beginner from '../../../../common/assets/images/beginner.svg';
+import expert from '../../../../common/assets/images/expert.svg';
 
 function UserLevelGuide() {
   return (
