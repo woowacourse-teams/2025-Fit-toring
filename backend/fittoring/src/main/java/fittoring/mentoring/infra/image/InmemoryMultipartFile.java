@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
 
-final class InmemoryMultipartFile implements MultipartFile {
+class InmemoryMultipartFile implements MultipartFile {
     private final String name;
     private final String originalFilename;
     private final String contentType;
