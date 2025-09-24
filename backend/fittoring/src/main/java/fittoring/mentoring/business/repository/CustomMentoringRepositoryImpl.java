@@ -53,7 +53,7 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
     private String getNextCursorCode(Mentoring nextMentoring) {
         String nextCursorCode;
         long nextSortValue = nextMentoring.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
-        nextCursorCode = CursorCodec.incode(new Cursor(nextSortValue, nextMentoring.getId()));
+        nextCursorCode = CursorCodec.encode(new Cursor(nextSortValue, nextMentoring.getId()));
         return nextCursorCode;
     }
 

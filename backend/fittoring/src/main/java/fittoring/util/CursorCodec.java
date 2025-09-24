@@ -15,7 +15,7 @@ public class CursorCodec {
         return new Cursor(Long.parseLong(p[0]), Integer.parseInt(p[1]));
     }
 
-    public static String incode(Cursor cursor) {
+    public static String encode(Cursor cursor) {
         return String.join("|",
                 Long.toString(cursor.sortValue()), Long.toString(cursor.id()));
     }
