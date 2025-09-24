@@ -12,7 +12,7 @@ public class CursorCodec {
         if (p.length != 2) {
             throw new InvalidCursorException("Invalid cursor");
         }
-        return new Cursor(Long.parseLong(p[0]), Integer.parseInt(p[1]));
+        return new Cursor(Long.parseLong(p[0]), Long.parseLong(p[1]));
     }
 
     public static String encode(Cursor cursor) {
