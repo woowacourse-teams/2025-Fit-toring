@@ -350,6 +350,7 @@ public class MentoringService {
         }
     }
 
+    @Transactional(readOnly = true)
     public MentoringSummaryPaginationResponse findMentoringSummaryPages(
             SortKey sortKey,
             String cursorCode,
