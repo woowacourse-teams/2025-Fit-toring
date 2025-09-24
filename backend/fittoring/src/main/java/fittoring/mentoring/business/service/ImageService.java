@@ -27,10 +27,6 @@ public class ImageService {
     private final S3Uploader s3Uploader;
     private final ImagePolicyRegistry imagePolicyRegistry;
 
-    public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId) {
-        return imageRepository.findByImageTypeAndRelationId(imageType, relationId);
-    }
-
     public List<Image> uploadImageToS3(MultipartFile imageFile, String dir, ImageType type, Long relationId) {
         try {
             ImageTypePolicy policy = imagePolicyRegistry.get(type);
@@ -58,6 +54,29 @@ public class ImageService {
 
     private Image saveImage(Image image) {
         return imageRepository.save(image);
+    }
+
+    public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId) {
+        return imageRepository.findByImageTypeAndRelationIdAndImageVariant(imageType, relationId, ImageVariant.DEFAULT);
+    }
+
+    public Optional<Image> findThumbnailByImageTypeAndRelationId(ImageType imageType, Long relationId) {
+        List<Image> thumbnailImages = imageRepository.findThumbnailByImageTypeAndRelationId(
+                relationId,
+                imageType,
+                ImageVariant.THUMBNAIL,
+                ImageVariant.DEFAULT
+        );
+        if (thumbnailImages.isEmpty()) {
+            return Optional.empty();
+        }
+        return thumbnailImages.stream()
+                .filter(img -> img.getImageVariant() == ImageVariant.THUMBNAIL)
+                .findFirst()
+                .or(() -> thumbnailImages.stream()
+                        .filter(img -> img.getImageVariant() == ImageVariant.DEFAULT)
+                        .findFirst()
+                );
     }
 
     public void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId) {

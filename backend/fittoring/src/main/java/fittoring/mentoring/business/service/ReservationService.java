@@ -44,6 +44,7 @@ public class ReservationService {
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final ReviewRepository reviewRepository;
     private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
@@ -159,8 +160,10 @@ public class ReservationService {
     }
 
     private String findProfileImageUrl(Long relationId) {
-        Optional<Image> image = imageRepository.findByImageTypeAndRelationId(
-                ImageType.MENTORING_PROFILE, relationId);
+        Optional<Image> image = imageService.findThumbnailByImageTypeAndRelationId(
+                ImageType.MENTORING_PROFILE,
+                relationId
+        );
         return image.map(Image::getUrl)
                 .orElse(null);
     }

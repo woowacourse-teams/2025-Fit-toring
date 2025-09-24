@@ -32,6 +32,7 @@ public class Image {
     @Column(nullable = false)
     private ImageType imageType;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ImageVariant imageVariant;
