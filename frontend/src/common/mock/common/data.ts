@@ -11,7 +11,7 @@ export const SPECIALTIES: Specialty[] = [
 ] as const;
 
 export const USER_INFO: UserInfo = {
-  loginId: 1,
+  loginId: '1',
   name: '홍길동',
   gender: '남',
   phoneNumber: '010-1234-5678',

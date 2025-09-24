@@ -3,8 +3,8 @@ import { useRef, useState } from 'react';
 
 import { getFormattedPhoneNumber } from '../utils/getFormattedPhoneNumber ';
 
-const useFormattedPhoneNumber = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+const useFormattedPhoneNumber = (initialValue?: string) => {
+  const [phoneNumber, setPhoneNumber] = useState(initialValue || '');
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
