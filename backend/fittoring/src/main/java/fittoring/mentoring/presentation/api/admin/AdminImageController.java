@@ -33,8 +33,8 @@ public class AdminImageController {
     @PostMapping
     public ResponseEntity<List<ImageResponse>> save(
             @Login LoginInfo loginInfo,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart("data") ImageRequest imageInfo
+            @RequestPart(value = "image") MultipartFile image,
+            @RequestPart(value = "data", required = false) ImageRequest imageInfo
     ) {
         if (!memberService.getAdminMemberActiveStatus(loginInfo.memberId())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
@@ -42,8 +42,8 @@ public class AdminImageController {
         List<Image> images = imageService.uploadImageToS3(
                 image,
                 ImageType.getDir(imageInfo.imageType()),
-                imageInfo.imageType(),
-                imageInfo.relationId()
+                imageInfo != null ? imageInfo.imageType() : ImageType.NONE,
+                imageInfo != null ? imageInfo.relationId() : 0L
         );
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(images.stream()

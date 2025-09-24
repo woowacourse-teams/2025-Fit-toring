@@ -9,7 +9,8 @@ public class ImagePolicyRegistry {
 
     private final Map<ImageType, ImageTypePolicy> policyRegistry = Map.of(
             ImageType.MENTORING_PROFILE, new MentoringProfilePolicy(),
-            ImageType.CERTIFICATE, new CertificatePolicy()
+            ImageType.CERTIFICATE, new CertificatePolicy(),
+            ImageType.NONE, new NonePolicy()
     );
 
     public ImageTypePolicy get(ImageType type) {
