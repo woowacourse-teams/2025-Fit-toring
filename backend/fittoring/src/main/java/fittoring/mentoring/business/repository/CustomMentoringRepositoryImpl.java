@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.QCategoryMentoring;
 import fittoring.mentoring.business.model.QMentoring;
 import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.service.dto.MentoringPaginationResult;
@@ -21,14 +22,19 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
 
     private static final int PAGE_SIZE = 10;
     private static final QMentoring mentoring = QMentoring.mentoring;
+    private static final QCategoryMentoring categoryMentoring = QCategoryMentoring.categoryMentoring;
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public MentoringPaginationResult findMentoringsWithPagination(SortKey sortKey, Cursor cursor) {
+    public MentoringPaginationResult findMentoringsWithPagination(SortKey sortKey, Cursor cursor, List<Long> categoryIds) {
         BooleanBuilder where = new BooleanBuilder();
         BooleanExpression booleanExpression = buildCursorCondition(sortKey, cursor);
+
         where.and(booleanExpression);
+        where = where.and(
+                // 카테고리 리스트 필터링 조건식
+        );
 
         List<Mentoring> rows = jpaQueryFactory.select(mentoring)
                 .from(mentoring)
