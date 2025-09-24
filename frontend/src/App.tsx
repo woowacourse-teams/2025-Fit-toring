@@ -7,6 +7,7 @@ import {
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
 import Landing from './pages/landing/Landing';
+import Home from './pages/home/Home';
 import { lazy } from 'react';
 
 const Login = lazy(() => import('./pages/login/Login'));
@@ -22,7 +23,6 @@ const ParticipatedMentoring = lazy(
 );
 const Signup = lazy(() => import('./pages/signup/Signup'));
 const Detail = lazy(() => import('./pages/detail/Detail'));
-const Home = lazy(() => import('./pages/home/Home'));
 const Booking = lazy(() => import('./pages/booking/Booking'));
 const CreatedMentoring = lazy(
   () => import('./pages/createdMentoring/CreatedMentoring'),
