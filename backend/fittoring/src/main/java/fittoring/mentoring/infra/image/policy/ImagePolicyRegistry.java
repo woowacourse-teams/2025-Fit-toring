@@ -7,11 +7,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class ImagePolicyRegistry {
 
-    private final Map<ImageType, ImageTypePolicy> policyRegistry = Map.of(
-            ImageType.MENTORING_PROFILE, new MentoringProfilePolicy(),
-            ImageType.CERTIFICATE, new CertificatePolicy(),
-            ImageType.NONE, new NonePolicy()
-    );
+    private final Map<ImageType, ImageTypePolicy> policyRegistry;
+
+    public ImagePolicyRegistry(
+            MentoringProfilePolicy mentoringProfilePolicy,
+            CertificatePolicy certificatePolicy,
+            NonePolicy nonePolicy
+    ) {
+        this.policyRegistry = Map.of(
+                ImageType.MENTORING_PROFILE, mentoringProfilePolicy,
+                ImageType.CERTIFICATE, certificatePolicy,
+                ImageType.NONE, nonePolicy
+        );
+    }
 
     public ImageTypePolicy get(ImageType type) {
         return policyRegistry.get(type);
