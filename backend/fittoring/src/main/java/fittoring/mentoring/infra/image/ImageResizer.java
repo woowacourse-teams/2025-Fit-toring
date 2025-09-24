@@ -1,5 +1,7 @@
 package fittoring.mentoring.infra.image;
 
+import fittoring.mentoring.infra.exception.InfraErrorMessage;
+import fittoring.mentoring.infra.exception.S3UploadException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,7 +16,7 @@ public class ImageResizer {
     public MultipartFile resize(MultipartFile inputFile, int maxWidth) throws IOException {
         BufferedImage original = ImageIO.read(inputFile.getInputStream());
         if (original == null) {
-            // todo: 우아아아아아아악
+            throw new S3UploadException(InfraErrorMessage.IMAGE_RESIZING_ERROR.getMessage());
         }
         int originalWidth = original.getWidth();
         int originalHeight = original.getHeight();

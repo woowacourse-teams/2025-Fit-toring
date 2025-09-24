@@ -1,5 +1,7 @@
 package fittoring.mentoring.infra.image;
 
+import fittoring.mentoring.infra.exception.InfraErrorMessage;
+import fittoring.mentoring.infra.exception.S3UploadException;
 import jakarta.annotation.Nullable;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -20,7 +22,7 @@ public class ImageTranscoder {
 
         BufferedImage src = ImageIO.read(input.getInputStream());
         if (src == null) {
-            // todo: 적절한 예외 반환
+            throw new S3UploadException(InfraErrorMessage.IMAGE_TRANSCODE_ERROR.getMessage());
         }
         if (normalizedExt.equals("jpg") || normalizedExt.equals("jpeg")) {
             src = flattenIfHasAlpha(src, Color.WHITE);
@@ -34,11 +36,11 @@ public class ImageTranscoder {
     public Encoded toAvif(MultipartFile input) throws IOException {
         BufferedImage src = ImageIO.read(input.getInputStream());
         if (src == null) {
-            // todo: 적절한 예외 반환
+            throw new S3UploadException(InfraErrorMessage.IMAGE_TRANSCODE_ERROR.getMessage());
         }
         boolean hasAvifWriter = ImageIO.getImageWritersByFormatName("avif").hasNext();
         if (!hasAvifWriter) {
-            // todo: 적절한 예외 반환
+            throw new S3UploadException(InfraErrorMessage.IMAGE_TRANSCODE_ERROR.getMessage());
         }
         byte[] out = writeWithImageIO(src, "avif");
         return new Encoded(out, "avif", "image/avif");
@@ -92,7 +94,7 @@ public class ImageTranscoder {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             boolean ok = ImageIO.write(image, formatName, baos);
             if (!ok) {
-                // todo: 적절한 예외 반환
+                throw new S3UploadException(InfraErrorMessage.IMAGE_TRANSCODE_ERROR.getMessage());
             }
             return baos.toByteArray();
         }
