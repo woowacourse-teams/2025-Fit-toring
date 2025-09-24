@@ -2,10 +2,10 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.ImageVariant;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.infra.exception.InfraErrorMessage;
 import fittoring.mentoring.infra.exception.S3UploadException;
-import fittoring.mentoring.business.model.ImageVariant;
 import fittoring.mentoring.infra.image.S3Uploader;
 import fittoring.mentoring.infra.image.VariantUploadResult;
 import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
@@ -47,7 +47,7 @@ public class ImageService {
                         maxWidth,
                         baseName
                 );
-                Image row = new Image(uploaded.originalUrl(), type, relationId);
+                Image row = new Image(uploaded.originalUrl(), type, uploaded.variant(), relationId);
                 results.add(saveImage(row));
             }
             return results;

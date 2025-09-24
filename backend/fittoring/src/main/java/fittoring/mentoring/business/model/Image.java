@@ -39,6 +39,10 @@ public class Image {
     @Column(nullable = false)
     private Long relationId;
 
+    public Image(String url, ImageType imageType, ImageVariant imageVariant, Long relationId) {
+        this(null, url, imageType, imageVariant, relationId);
+    }
+
     public Image(String url, ImageType imageType, Long relationId) {
         this(null, url, imageType, ImageVariant.DEFAULT, relationId);
     }
