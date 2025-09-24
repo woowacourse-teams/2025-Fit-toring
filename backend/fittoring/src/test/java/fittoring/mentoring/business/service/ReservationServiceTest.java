@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
+import fittoring.config.QueryDslConfig;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenException;
@@ -51,8 +52,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, ReservationService.class, JpaConfiguration.class, ImageService.class, S3Uploader.class,
-        S3Configuration.class})
+@Import({
+        DbCleaner.class,
+        ReservationService.class,
+        JpaConfiguration.class,
+        ImageService.class,
+        S3Uploader.class,
+        S3Configuration.class,
+        QueryDslConfig.class
+})
 @DataJpaTest
 class ReservationServiceTest {
 
@@ -396,16 +404,6 @@ class ReservationServiceTest {
         ));
         List<ParticipatedReservationResponse> expected = List.of(
                 new ParticipatedReservationResponse(
-                        reservation1.getId(),
-                        mentoring1.getId(),
-                        mentoring1.getMentorName(),
-                        profileImageOfMentor1.getUrl(),
-                        reservation1.getCreatedAt().toLocalDate(),
-                        reservation1.getContent(),
-                        Status.PENDING.name(),
-                        false
-                ),
-                new ParticipatedReservationResponse(
                         reservation2.getId(),
                         mentoring2.getId(),
                         mentoring2.getMentorName(),
@@ -414,6 +412,16 @@ class ReservationServiceTest {
                         reservation2.getContent(),
                         Status.PENDING.name(),
                         true
+                ),
+                new ParticipatedReservationResponse(
+                        reservation1.getId(),
+                        mentoring1.getId(),
+                        mentoring1.getMentorName(),
+                        profileImageOfMentor1.getUrl(),
+                        reservation1.getCreatedAt().toLocalDate(),
+                        reservation1.getContent(),
+                        Status.PENDING.name(),
+                        false
                 )
         );
 
