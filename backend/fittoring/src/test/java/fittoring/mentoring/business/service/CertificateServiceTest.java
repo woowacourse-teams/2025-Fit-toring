@@ -19,7 +19,10 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.CertificateDeleteDto;
+import fittoring.mentoring.infra.image.ImageResizer;
+import fittoring.mentoring.infra.image.ImageTranscoder;
 import fittoring.mentoring.infra.image.S3Uploader;
+import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
 import fittoring.util.DbCleaner;
@@ -44,6 +47,9 @@ import org.springframework.test.context.ActiveProfiles;
         ImageService.class,
         S3Uploader.class,
         S3Configuration.class,
+        ImagePolicyRegistry.class,
+        ImageResizer.class,
+        ImageTranscoder.class,
         JpaConfiguration.class
 })
 @DataJpaTest
