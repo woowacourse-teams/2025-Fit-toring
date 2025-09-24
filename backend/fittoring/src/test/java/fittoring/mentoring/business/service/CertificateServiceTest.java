@@ -51,7 +51,7 @@ import org.springframework.test.context.ActiveProfiles;
         ImagePolicyRegistry.class,
         ImageResizer.class,
         ImageTranscoder.class,
-        JpaConfiguration.class
+        JpaConfiguration.class,
         JpaConfiguration.class,
         QueryDslConfig.class
 })

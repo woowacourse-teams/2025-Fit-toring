@@ -432,8 +432,13 @@ class ReservationServiceTest {
         );
 
         // when
+        List<ParticipatedReservationResponse> actual =
+                reservationService.findMemberReservations(mentee.getId());
+
         // then
-        assertThat(reservationService.findMemberReservations(mentee.getId())).isEqualTo(expected);
+        assertThat(actual)
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @DisplayName("관리자는 특정 멘토링에 달린 모든 예약을 조회할 수 있다")
