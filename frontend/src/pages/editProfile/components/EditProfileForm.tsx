@@ -175,11 +175,11 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
       return false;
     }
 
-    const validations = profileFields
+    const validation = profileFields
       .filter((item) => item.changed)
-      .map((item) => item.validated);
+      .every((item) => item.validated);
 
-    return validations.every(Boolean);
+    return validation;
   };
 
   const navigate = useNavigate();
