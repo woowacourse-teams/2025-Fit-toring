@@ -33,6 +33,5 @@ const S_Container = styled.header<{ hasScrolled: boolean }>`
 
   @media screen and (width <= 480px) {
     width: 100%;
-    border: none;
   }
 `;

@@ -206,9 +206,7 @@ class AuthServiceTest {
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken savedRefreshToken = new RefreshToken(
-                savedMember,
-                refreshToken,
-                LocalDateTime.now().minusDays(1)
+                refreshToken, LocalDateTime.now().minusDays(1), savedMember
         );
 
         em.persist(savedRefreshToken);
@@ -246,7 +244,7 @@ class AuthServiceTest {
 
         String refreshToken = jwtProvider.createRefreshToken();
         RefreshToken savedRefreshToken = em.persist(
-                new RefreshToken(savedMember, refreshToken, LocalDateTime.now())
+                new RefreshToken(refreshToken, LocalDateTime.now(), savedMember)
         );
 
         //when

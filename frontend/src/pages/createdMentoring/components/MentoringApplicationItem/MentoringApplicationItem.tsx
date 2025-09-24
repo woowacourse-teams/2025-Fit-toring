@@ -2,8 +2,9 @@ import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import { type StatusType } from '../../../../common/types/statusType';
+import useContentOverflowedRef from '../../hooks/useContentOverflowedRef';
+import useShowMore from '../../hooks/useShowMore';
 import ActionButtons from '../ActionButtons/ActionButtons';
-import PhoneNumber from '../PhoneNumber/PhoneNumber';
 
 import type { MentoringApplication } from '../../types/mentoringApplication';
 
@@ -12,7 +13,6 @@ interface MentoringApplicationItemProps {
   onActionButtonsClick: (params: {
     reservationId: number;
     status: StatusType;
-    phoneNumber: string;
   }) => void;
 }
 
@@ -23,43 +23,44 @@ const formatDate = (dateString: string) => {
   return fullDate;
 };
 
-const TIME = '15';
-
 function MentoringApplicationItem({
   mentoringApplication: {
     reservationId,
     menteeName,
-    phoneNumber,
-    price,
     content,
     status,
     createdAt,
   },
   onActionButtonsClick,
 }: MentoringApplicationItemProps) {
-  const handleActionButtonsComplete = (
-    updatedStatus: StatusType,
-    phoneNumber: string,
-  ) => {
+  const { showMore, toggleShowMore: handleShowMoreButtonClick } = useShowMore();
+
+  const { contentOverflowed, setRef: contentRef } = useContentOverflowedRef();
+
+  const handleActionButtonsComplete = (updatedStatus: StatusType) => {
     onActionButtonsClick({
       reservationId,
       status: updatedStatus,
-      phoneNumber,
     });
   };
 
   return (
     <S_Container key={reservationId}>
-      <S_Name>{menteeName}님의 상담 신청</S_Name>
-      <S_ApplicationInfoWrapper>
-        <S_CreatedAt>⏰ {formatDate(createdAt)}</S_CreatedAt>
-        <S_ApplicationPrice>
-          💰 {TIME}분 {price.toLocaleString()}원
-        </S_ApplicationPrice>
+      <S_SummaryWrapper>
+        <S_Name>{menteeName} 님</S_Name>
         <MentoringApplicationStatus status={status} />
+      </S_SummaryWrapper>
+      <S_ApplicationInfoWrapper>
+        <S_CreatedAt>신청일: {formatDate(createdAt)}</S_CreatedAt>
       </S_ApplicationInfoWrapper>
-      <PhoneNumber status={status} phoneNumber={phoneNumber} />
-      <S_ApplicationContent>{content}</S_ApplicationContent>
+      <S_ApplicationContent showMore={showMore} ref={contentRef}>
+        {content}
+      </S_ApplicationContent>
+      {contentOverflowed && (
+        <S_ApplicationContentShowMoreButton onClick={handleShowMoreButtonClick}>
+          ({showMore ? '접기' : '더보기'})
+        </S_ApplicationContentShowMoreButton>
+      )}
       <S_ButtonWrapper>
         <ActionButtons
           reservationId={reservationId}
@@ -79,22 +80,24 @@ const S_Container = styled.li`
   gap: 1rem;
 
   height: auto;
-  padding: 1.5rem;
+  padding: 1.8rem 2rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 16px;
+  border-radius: 5px;
 
   transition: all 0.2s ease;
-
-  :hover {
-    box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
-  }
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
+const S_SummaryWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
 const S_Name = styled.h4`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_R}
+  ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
 `;
 
 const S_ApplicationInfoWrapper = styled.div`
@@ -105,17 +108,40 @@ const S_ApplicationInfoWrapper = styled.div`
 `;
 
 const S_CreatedAt = styled.p`
-  color: ${({ theme }) => theme.FONT.B04};
+  color: ${({ theme }) => theme.SYSTEM.GRAY500};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
+`;
+
+const S_ApplicationContent = styled.p<{ showMore: boolean }>`
+  ${({ showMore }) =>
+    !showMore &&
+    `
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  `}
+  width: 100%;
+  word-break: break-all;
+
+  color: ${({ theme }) => theme.FONT.B01};
+
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
-const S_ApplicationPrice = styled.p`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
-`;
+const S_ApplicationContentShowMoreButton = styled.button`
+  display: flex;
+  align-self: flex-end;
 
-const S_ApplicationContent = styled.p`
-  color: ${({ theme }) => theme.FONT.B03};
+  width: fit-content;
+  padding: 0;
+  border: none;
+
+  background: none;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY500};
+  cursor: pointer;
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 

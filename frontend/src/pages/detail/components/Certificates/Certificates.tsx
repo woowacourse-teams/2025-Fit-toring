@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import styled from '@emotion/styled';
 
+import photoIcon from '../../../../common/assets/images/photoIcon.svg';
 import CertificatesImageModal from '../CertificatesImageModal/CertificatesImageModal';
 
 import type { Certificates } from '../../../../common/types/MentoringDetail';
@@ -62,7 +63,7 @@ function Certificates({ certificates }: CertificatesProps) {
 
   return (
     <S_Container>
-      <S_Title>검증된 자격 사항</S_Title>
+      <S_Title id="certificate-section">자격 사항</S_Title>
       {certificates.length > 0 ? (
         <S_List>
           {certificates.map((item) => (
@@ -70,7 +71,8 @@ function Certificates({ certificates }: CertificatesProps) {
               key={item.certificateId}
               onClick={() => handleItemClick(item)}
             >
-              {item.title}
+              <S_ItemText>{item.title}</S_ItemText>
+              <S_PhotoIcon src={photoIcon} alt="사진 아이콘" />
             </S_Item>
           ))}
         </S_List>
@@ -105,7 +107,7 @@ const S_Title = styled.h3`
   flex-grow: 1;
 
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.H4_R}
+  ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
 `;
 
 const S_List = styled.ul`
@@ -117,11 +119,11 @@ const S_List = styled.ul`
 const S_Item = styled.li`
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 1.2rem;
 
-  padding: 1.6rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.LIGHT};
-  border-radius: 12px;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.LIGHT};
 
   background: ${({ theme }) => theme.BG.WHITE};
   transition: all 0.2s ease;
@@ -134,6 +136,15 @@ const S_Item = styled.li`
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.B3_R}
+`;
+
+const S_ItemText = styled.span`
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
+
+const S_PhotoIcon = styled.img`
+  width: 2.4rem;
+  aspect-ratio: 1/1;
 `;
 
 const S_EmptyDescription = styled.p`

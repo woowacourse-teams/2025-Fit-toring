@@ -81,7 +81,7 @@
   },
   "msw": {
     "workerDirectory": [
-      "dist"
+      "public"
     ]
   },
   "release": {

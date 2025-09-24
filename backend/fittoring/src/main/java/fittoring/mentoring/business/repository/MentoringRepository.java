@@ -42,7 +42,13 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
             @Param("title3") String categoryTitle3
     );
 
-    Optional<Mentoring> findByMentor(Member mentor);
+    @Query("""
+      SELECT m
+      FROM Mentoring m
+      JOIN FETCH m.mentor
+      WHERE m.mentor.id = :mentorId
+    """)
+    Optional<Mentoring> findByMentorId(Long mentorId);
 
     List<Mentoring> findAllByMentorId(Long mentorId);
 
