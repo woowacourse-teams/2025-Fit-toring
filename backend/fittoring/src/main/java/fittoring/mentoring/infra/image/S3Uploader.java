@@ -1,5 +1,6 @@
 package fittoring.mentoring.infra.image;
 
+import fittoring.mentoring.business.model.ImageVariant;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

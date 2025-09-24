@@ -1,4 +1,4 @@
-package fittoring.mentoring.infra.image;
+package fittoring.mentoring.business.model;
 
 import java.util.List;
 

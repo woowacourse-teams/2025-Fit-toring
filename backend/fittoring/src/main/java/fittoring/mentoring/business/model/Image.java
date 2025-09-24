@@ -32,10 +32,14 @@ public class Image {
     @Column(nullable = false)
     private ImageType imageType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ImageVariant imageVariant;
+
     @Column(nullable = false)
     private Long relationId;
 
     public Image(String url, ImageType imageType, Long relationId) {
-        this(null, url, imageType, relationId);
+        this(null, url, imageType, ImageVariant.DEFAULT, relationId);
     }
 }
