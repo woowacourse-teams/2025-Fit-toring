@@ -6,8 +6,6 @@ import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
@@ -21,13 +19,13 @@ import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
+import fittoring.mentoring.business.service.dto.ParticipatedReservationDto;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
 import fittoring.mentoring.presentation.dto.AdminReservationResponse;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,6 +79,11 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<MentorMentoringReservationResponse> getReservationsByMentor(Long mentorId) {
         List<Reservation> reservations = reservationRepository.findAllByMentorId(mentorId);
+        return getMentorMentoringReservationResponses(reservations);
+    }
+
+    private List<MentorMentoringReservationResponse> getMentorMentoringReservationResponses(
+            List<Reservation> reservations) {
         return reservations.stream()
                 .map(MentorMentoringReservationResponse::of)
                 .toList();
@@ -94,9 +97,17 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ParticipatedReservationResponse> findMemberReservations(Long memberId) {
-        List<Reservation> memberReservations = reservationRepository.findAllByMenteeId(memberId);
-        return memberReservations.stream()
-                .map(this::generateParticipatedReservationResponse)
+        List<ParticipatedReservationDto> views = reservationRepository.findMemberReservationDtos(memberId);
+        return views.stream()
+                .map(dto -> new ParticipatedReservationResponse(
+                        dto.getReservationId(),
+                        dto.getMentoringId(),
+                        dto.getMentorName(),
+                        dto.getMentorProfileImage(),
+                        dto.getReservedAt(),
+                        dto.getContent(),
+                        dto.getStatus(),
+                        dto.getIsReviewed()))
                 .toList();
     }
 
@@ -122,29 +133,6 @@ public class ReservationService {
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-    }
-
-    private ParticipatedReservationResponse generateParticipatedReservationResponse(Reservation reservation) {
-        Mentoring mentoring = reservation.getMentoring();
-        String mentorProfileImage = findProfileImageUrl(mentoring.getId());
-        boolean isReviewed = reviewRepository.existsByReservationId(reservation.getId());
-        return new ParticipatedReservationResponse(
-                reservation.getId(),
-                mentoring.getId(),
-                mentoring.getMentor().getName(),
-                mentorProfileImage,
-                reservation.getCreatedAt().toLocalDate(),
-                reservation.getContent(),
-                reservation.getStatus(),
-                isReviewed
-        );
-    }
-
-    private String findProfileImageUrl(Long relationId) {
-        Optional<Image> image = imageRepository.findByImageTypeAndRelationId(
-                ImageType.MENTORING_PROFILE, relationId);
-        return image.map(Image::getUrl)
-                .orElse(null);
     }
 
     @Transactional
