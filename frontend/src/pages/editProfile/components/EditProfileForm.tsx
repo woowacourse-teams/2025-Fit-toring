@@ -192,7 +192,10 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
       return;
     }
 
-    if (shouldBlockSubmitByPhoneNumberCheck()) {
+    if (
+      shouldBlockSubmitByPhoneNumberCheck() &&
+      initialPhoneNumber !== phoneNumber
+    ) {
       return;
     }
 
@@ -250,7 +253,11 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
           phoneNumber={phoneNumber}
           verificationCode={verificationCode}
           verificationCodeErrorMessage={getDisplayedVerificationErrorMessage()}
-          phoneNumberErrorMessage={getFinalPhoneNumberErrorMessage()}
+          phoneNumberErrorMessage={
+            initialPhoneNumber !== phoneNumber
+              ? getFinalPhoneNumberErrorMessage()
+              : ''
+          }
           onPhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
           onVerificationCodeChange={handleVerificationCodeChange}
