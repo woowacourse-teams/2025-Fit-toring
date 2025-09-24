@@ -13,7 +13,6 @@ import fittoring.mentoring.infra.image.policy.ImageTypePolicy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +30,10 @@ public class ImageService {
     public List<Image> uploadImageToS3(MultipartFile imageFile, String dir, ImageType type, Long relationId) {
         try {
             ImageTypePolicy policy = imagePolicyRegistry.get(type);
-            List<ImageVariant> variants = policy.variants();
-            deleteByImageTypeAndRelationId(type, relationId);
             String baseName = UUID.randomUUID().toString();
-            List<Image> results = new ArrayList<>();
-            for (ImageVariant variant : variants) {
+            List<Image> images = new ArrayList<>();
+
+            for (ImageVariant variant : policy.variants()) {
                 int maxWidth = policy.maxWidth(variant);
                 VariantUploadResult uploaded = s3Uploader.uploadVariant(
                         imageFile,
@@ -44,17 +42,12 @@ public class ImageService {
                         maxWidth,
                         baseName
                 );
-                Image row = new Image(uploaded.originalUrl(), type, uploaded.variant(), relationId);
-                results.add(saveImage(row));
+                images.add(new Image(uploaded.originalUrl(), type, uploaded.variant(), relationId));
             }
-            return results;
+            return imageRepository.saveAll(images);
         } catch (IOException e) {
             throw new S3UploadException(InfraErrorMessage.S3_UPLOAD_ERROR.getMessage());
         }
-    }
-
-    private Image saveImage(Image image) {
-        return imageRepository.save(image);
     }
 
     public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId) {
