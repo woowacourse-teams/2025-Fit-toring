@@ -61,7 +61,7 @@ public class Review {
 
     @Getter
     @JoinColumn(nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member mentee;
 
     public Review(int rating, String content, Reservation reservation, Member mentee) {
