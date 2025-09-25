@@ -3,7 +3,9 @@ package fittoring.mentoring.presentation.api;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
+import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.service.MentoringService;
+import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.MentoringModifyRequest;
@@ -63,9 +65,27 @@ public class MentoringController {
                 .body(responseBody);
     }
 
+    @GetMapping("/mentorings-page")
+    public ResponseEntity<MentoringSummaryPaginationResponse> getMentoringSummaryPages(
+            @RequestParam(defaultValue = "CREATED_AT") SortKey sortKey,
+            @RequestParam(required = false) String cursorCode,
+            @RequestParam(required = false) List<Long> categoryIds
+    ) {
+        if (categoryIds == null) {
+            categoryIds = List.of();
+        }
+        MentoringSummaryPaginationResponse responseBody = mentoringService.findMentoringSummaryPages(
+                sortKey,
+                cursorCode,
+                categoryIds
+        );
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(responseBody);
+    }
+
     @GetMapping("/mentorings/{mentoringId}")
     public ResponseEntity<MentoringResponse> getMentoring(@PathVariable("mentoringId") Long id) {
-        MentoringResponse response = mentoringService.getMentoringWithRelations(id);
+        MentoringResponse response = mentoringService.getMentoringWithRelationsById(id);
         return ResponseEntity.ok(response);
     }
 
@@ -93,8 +113,8 @@ public class MentoringController {
     @AuthRequired
     @GetMapping("/mentorings/mine")
     public ResponseEntity<MentoringResponse> getMentoringMine(@Login LoginInfo loginInfo) {
-        MentoringResponse response = mentoringService.getMentoringByMentorId(loginInfo.memberId());
+        MentoringResponse response = mentoringService.getMentoringWithRelationsByMentorId(loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(response);
+                .body(response);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MentoringRepository extends ListCrudRepository<Mentoring, Long> {
+public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>, CustomMentoringRepository {
 
     @Query("""
                     SELECT m
@@ -42,9 +42,13 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
             @Param("title3") String categoryTitle3
     );
 
-    Optional<Mentoring> findByMentor(Member mentor);
-
-    List<Mentoring> findAllByMentorId(Long mentorId);
+    @Query("""
+              SELECT m
+              FROM Mentoring m
+              JOIN FETCH m.mentor
+              WHERE m.mentor.id = :mentorId
+            """)
+    Optional<Mentoring> findByMentorId(Long mentorId);
 
     boolean existsByMentor(Member member);
 

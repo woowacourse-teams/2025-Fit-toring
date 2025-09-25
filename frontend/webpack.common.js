@@ -31,7 +31,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.(png|svg|jpg|jpeg|gif|avif)$/i,
         type: 'asset',
       },
       {
@@ -71,7 +71,7 @@ module.exports = {
           from: 'public',
           to: '.',
           globOptions: {
-            ignore: ['**/robots.*.txt'],
+            ignore: ['**/robots.*.txt', '**/mockServiceWorker.js'],
           },
         },
       ],

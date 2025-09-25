@@ -10,10 +10,10 @@ interface MentoringApplicationStatusProps {
 const STATUS_DESCRIPTION = {
   CREATED: {
     [StatusTypeEnum.PENDING]: {
-      VALUE: '승인대기',
+      VALUE: '승인 대기',
     },
     [StatusTypeEnum.APPROVED]: {
-      VALUE: '승인됨',
+      VALUE: '승인 확정',
     },
     [StatusTypeEnum.COMPLETE]: {
       VALUE: '완료됨',

@@ -12,7 +12,7 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 type MenuItemName =
   | '개설한 멘토링'
   | '참여한 멘토링'
-  | '회원 정보'
+  | '회원 정보 수정'
   | '로그아웃';
 
 interface MenuItem {
@@ -53,7 +53,7 @@ function MenuDropDown() {
       name: '참여한 멘토링',
       action: () => navigate(PAGE_URL.PARTICIPATED_MENTORING),
     },
-    // { name: '회원 정보', path: 'my-profile' },
+    { name: '회원 정보 수정', action: () => navigate(PAGE_URL.EDIT_PROFILE) },
     { name: '로그아웃', action: async () => await handleLogout(PAGE_URL.HOME) },
   ];
 

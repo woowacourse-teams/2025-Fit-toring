@@ -10,4 +10,5 @@ export const PAGE_URL = {
   SIGNUP: '/signup',
   LOGIN: '/login',
   LANDING: '/landing',
+  EDIT_PROFILE: '/my-page/edit-profile',
 } as const;

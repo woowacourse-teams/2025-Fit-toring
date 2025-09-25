@@ -33,7 +33,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'ActionButtons 컴포넌트는 멘토링 상담 신청의 상태에 따라 승인 및 거절 버튼을 보여주는 컴포넌트입니다. 상태가 "승인대기"일 때만 버튼이 표시됩니다.',
+          'ActionButtons 컴포넌트는 멘토링 상담 신청의 상태에 따라 승인 및 거절 버튼을 보여주는 컴포넌트입니다. 상태가 "승인 대기"일 때만 버튼이 표시됩니다.',
       },
     },
   },

@@ -2,6 +2,7 @@ import { authCodeHandler } from './authCode/authCode';
 import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
 import { commonHandler } from './common/handlers';
 import { createdMentoringHandler } from './createdMentoring/handlers';
+import { editProfileHandlers } from './editProfile/handler';
 import { loginHandler } from './login/handler';
 import { membersHandler } from './members/handlers';
 import { mentoringHandler } from './mentoring/handlers';
@@ -23,4 +24,5 @@ export const handlers = [
   ...createdMentoringHandler,
   ...mentoringDetailHandler,
   ...participatedMentoringHandler,
+  ...editProfileHandlers,
 ];
