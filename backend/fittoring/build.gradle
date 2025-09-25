@@ -25,6 +25,10 @@ tasks.named('test') {
     outputs.dir snippetsDir
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-parameters']
+}
+
 repositories {
     mavenCentral()
 }
