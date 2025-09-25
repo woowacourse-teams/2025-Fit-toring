@@ -161,7 +161,7 @@ function Home() {
           />
           <SortButton handleSortButtonClick={handleSortButtonClick} />
         </S_FilterWrapper>
-        <Button onClick={handleMentoringCreation} customStyle={customSytle}>
+        <Button onClick={handleMentoringCreation} customStyle={customStyle}>
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
         </Button>
       </S_ActionWrapper>
@@ -193,7 +193,7 @@ function Home() {
 
 export default Home;
 
-const customSytle = css`
+const customStyle = css`
   width: 12.9rem;
   height: 3.4rem;
   border: 1px solid ${THEME.SYSTEM.GRAY300};
