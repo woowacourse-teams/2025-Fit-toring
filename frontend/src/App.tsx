@@ -6,18 +6,28 @@ import {
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
-import Booking from './pages/booking/Booking';
-import CreatedMentoring from './pages/createdMentoring/CreatedMentoring';
-import Detail from './pages/detail/Detail';
-import EditProfile from './pages/editProfile/EditProfile';
-import Home from './pages/home/Home';
 import Landing from './pages/landing/Landing';
-import Login from './pages/login/Login';
-import MentoringCreate from './pages/mentoringCreate/MentoringCreate';
-import MentoringUpdate from './pages/mentoringUpdate/MentoringUpdate';
-import MyPage from './pages/myPage/MyPage';
-import ParticipatedMentoring from './pages/participatedMentoring/ParticipatedMentoring';
-import Signup from './pages/signup/Signup';
+import Home from './pages/home/Home';
+import { lazy } from 'react';
+
+const Login = lazy(() => import('./pages/login/Login'));
+const MentoringCreate = lazy(
+  () => import('./pages/mentoringCreate/MentoringCreate'),
+);
+const MentoringUpdate = lazy(
+  () => import('./pages/mentoringUpdate/MentoringUpdate'),
+);
+const MyPage = lazy(() => import('./pages/myPage/MyPage'));
+const ParticipatedMentoring = lazy(
+  () => import('./pages/participatedMentoring/ParticipatedMentoring'),
+);
+const Signup = lazy(() => import('./pages/signup/Signup'));
+const Detail = lazy(() => import('./pages/detail/Detail'));
+const Booking = lazy(() => import('./pages/booking/Booking'));
+const CreatedMentoring = lazy(
+  () => import('./pages/createdMentoring/CreatedMentoring'),
+);
+const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
 
 const router = createBrowserRouter([
   {

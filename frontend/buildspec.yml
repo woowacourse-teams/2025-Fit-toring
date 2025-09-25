@@ -30,14 +30,14 @@ phases:
       - echo "🚀 Deploying to $S3_PATH with proper cache headers..."
       - |
         aws s3 cp dist/index.html $S3_PATH/index.html \
-          --cache-control "no-store" \
+          --cache-control "no-store, no-cache, must-revalidate" \
           --content-type "text/html" \
           --metadata-directive REPLACE
       - |
         aws s3 sync dist $S3_PATH/ \
           --exclude "index.html" \
-          --cache-control "public, max-age=31536000, immutable" \
-          --metadata-directive REPLACE
+          --delete \
+          --cache-control "public, max-age=31536000, immutable"
       - |
         aws s3 cp $S3_BASE_PATH/certificate-image/ $S3_BASE_PATH/certificate-image/ \
           --recursive \
@@ -48,6 +48,10 @@ phases:
           --recursive \
           --metadata-directive REPLACE \
           --cache-control "public, max-age=31536000, immutable"
+
+      - echo "📦 Creating dummy artifact for CodePipeline..."
+      - mkdir empty_artifacts
+      - touch empty_artifacts/placeholder.txt
 
 artifacts:
   base-directory: frontend/dist

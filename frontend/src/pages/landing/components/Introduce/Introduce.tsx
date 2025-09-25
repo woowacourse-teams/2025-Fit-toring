@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-
-import mock from '../../../../common/assets/images/mock.png';
+import mockAvif from '../../../../common/assets/images/mock.avif';
+import mockPng from '../../../../common/assets/images/mock.png';
 
 function Introduce() {
   return (
@@ -30,7 +30,10 @@ function Introduce() {
         </S_Texts>
       </S_TextWrapper>
       <S_ImgWrapper>
-        <S_Img src={mock} alt="목업" />
+        <picture>
+          <source srcSet={mockAvif} type="image/avif" />
+          <S_Img src={mockPng} alt="목업" loading="lazy" />
+        </picture>
       </S_ImgWrapper>
     </S_Container>
   );
