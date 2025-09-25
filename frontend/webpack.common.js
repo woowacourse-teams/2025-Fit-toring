@@ -71,7 +71,7 @@ module.exports = {
           from: 'public',
           to: '.',
           globOptions: {
-            ignore: ['**/robots.*.txt'],
+            ignore: ['**/robots.*.txt', '**/mockServiceWorker.js'],
           },
         },
       ],

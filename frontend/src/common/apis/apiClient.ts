@@ -20,9 +20,9 @@ interface ApiClientDeleteType {
   withCredentials?: boolean;
 }
 
-interface ApiClientPatchType {
+interface ApiClientPatchType<T> {
   endpoint: string;
-  searchParams: Record<string, string | number>;
+  body: Record<string, string | number> | T;
   withCredentials?: boolean;
 }
 
@@ -183,7 +183,7 @@ class ApiClient {
     return this.requestWithRefresh(sendRequest);
   }
 
-  async patch({ endpoint, searchParams, withCredentials }: ApiClientPatchType) {
+  async patch<T>({ endpoint, body, withCredentials }: ApiClientPatchType<T>) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
 
     const options = {
@@ -191,7 +191,7 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(searchParams),
+      body: JSON.stringify(body),
       credentials: withCredentials
         ? 'include'
         : ('same-origin' as RequestCredentials),

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
+import fittoring.config.QueryDslConfig;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
@@ -48,7 +49,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, ReviewService.class, JpaConfiguration.class})
+@Import({DbCleaner.class, ReviewService.class, JpaConfiguration.class, QueryDslConfig.class})
 @DataJpaTest
 class ReviewServiceTest {
 
@@ -459,27 +460,31 @@ class ReviewServiceTest {
                 mentee1
         ));
         Reservation reservation2 = em.persist(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee2
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee2
         ));
         Reservation reservation3 = em.persist(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee2
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee2
         ));
         Reservation reservation4 = em.persist(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee2
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee2
         ));
-        Review review1 = insertReviewUsingNativeQuery(2, "최고의 멘토링이었습니다.", LocalDateTime.of(2025, 9, 1, 10, 0, 0), reservation1, mentee1);
-        Review review2 = insertReviewUsingNativeQuery(2, "최고의 멘토링이었습니다.", LocalDateTime.of(2025, 9, 2, 9, 0, 0), reservation2, mentee1);
-        Review review3 = insertReviewUsingNativeQuery(2, "최고의 멘토링이었습니다.", LocalDateTime.of(2025, 9, 3, 10, 0, 0), reservation3, mentee2);
-        Review review4 = insertReviewUsingNativeQuery(2, "최고의 멘토링이었습니다.", LocalDateTime.of(2025, 9, 3, 9, 0, 0), reservation4, mentee2);
+        Review review1 = insertReviewUsingNativeQuery(2, "최고의 멘토링이었습니다.", LocalDateTime.of(2025, 9, 1, 10, 0, 0),
+                reservation1, mentee1);
+        Review review2 = insertReviewUsingNativeQuery(2, "최고의 멘토링이었습니다.", LocalDateTime.of(2025, 9, 2, 9, 0, 0),
+                reservation2, mentee1);
+        Review review3 = insertReviewUsingNativeQuery(2, "최고의 멘토링이었습니다.", LocalDateTime.of(2025, 9, 3, 10, 0, 0),
+                reservation3, mentee2);
+        Review review4 = insertReviewUsingNativeQuery(2, "최고의 멘토링이었습니다.", LocalDateTime.of(2025, 9, 3, 9, 0, 0),
+                reservation4, mentee2);
 
         // when
         List<ReviewGetResponse> responseBody
@@ -489,61 +494,62 @@ class ReviewServiceTest {
         assertSoftly(softAssertions -> {
             assertThat(responseBody).containsExactly(
                     new ReviewGetResponse(
-                        review3.getId(),
-                        review3.getMenteeName(),
-                        review3.getCreatedAt().toLocalDate(),
-                        review3.getRating(),
-                        review3.getContent()
+                            review3.getId(),
+                            review3.getMenteeName(),
+                            review3.getCreatedAt().toLocalDate(),
+                            review3.getRating(),
+                            review3.getContent()
                     ),
                     new ReviewGetResponse(
-                        review4.getId(),
-                        review4.getMenteeName(),
-                        review4.getCreatedAt().toLocalDate(),
-                        review4.getRating(),
-                        review4.getContent()
+                            review4.getId(),
+                            review4.getMenteeName(),
+                            review4.getCreatedAt().toLocalDate(),
+                            review4.getRating(),
+                            review4.getContent()
                     ),
-                new ReviewGetResponse(
-                    review2.getId(),
-                    review2.getMenteeName(),
-                    review2.getCreatedAt().toLocalDate(),
-                    review2.getRating(),
-                    review2.getContent()
-                ),
-                new ReviewGetResponse(
-                    review1.getId(),
-                    review1.getMenteeName(),
-                    review1.getCreatedAt().toLocalDate(),
-                    review1.getRating(),
-                    review1.getContent()
-                )
+                    new ReviewGetResponse(
+                            review2.getId(),
+                            review2.getMenteeName(),
+                            review2.getCreatedAt().toLocalDate(),
+                            review2.getRating(),
+                            review2.getContent()
+                    ),
+                    new ReviewGetResponse(
+                            review1.getId(),
+                            review1.getMenteeName(),
+                            review1.getCreatedAt().toLocalDate(),
+                            review1.getRating(),
+                            review1.getContent()
+                    )
             );
         });
     }
+
     public Review insertReviewUsingNativeQuery(
-        int rating,
-        String content,
-        LocalDateTime createdAt,
-        Reservation reservation,
-        Member mentee
+            int rating,
+            String content,
+            LocalDateTime createdAt,
+            Reservation reservation,
+            Member mentee
     ) {
         em.getEntityManager().createNativeQuery("""
-                INSERT INTO review (
-                    rating, content, created_at, is_deleted, deleted_at, reservation_id, mentee_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
-                """)
-            .setParameter(1, rating)
-            .setParameter(2, content)
-            .setParameter(3, createdAt)
-            .setParameter(4, false)
-            .setParameter(5, null)
-            .setParameter(6, reservation.getId())
-            .setParameter(7, mentee.getId())
-            .executeUpdate();
+                        INSERT INTO review (
+                            rating, content, created_at, is_deleted, deleted_at, reservation_id, mentee_id
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                        """)
+                .setParameter(1, rating)
+                .setParameter(2, content)
+                .setParameter(3, createdAt)
+                .setParameter(4, false)
+                .setParameter(5, null)
+                .setParameter(6, reservation.getId())
+                .setParameter(7, mentee.getId())
+                .executeUpdate();
 
         Long insertedId = ((Number) em.getEntityManager()
-            .createNativeQuery("SELECT LAST_INSERT_ID()")
-            .getSingleResult())
-            .longValue();
+                .createNativeQuery("SELECT LAST_INSERT_ID()")
+                .getSingleResult())
+                .longValue();
 
         return em.find(Review.class, insertedId);
     }

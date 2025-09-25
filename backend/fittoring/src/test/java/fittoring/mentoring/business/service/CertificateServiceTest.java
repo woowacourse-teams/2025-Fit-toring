@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.config.JpaConfiguration;
+import fittoring.config.QueryDslConfig;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CertificateNotFoundException;
@@ -19,7 +20,13 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.CertificateDeleteDto;
-import fittoring.mentoring.infra.S3Uploader;
+import fittoring.mentoring.infra.image.ImageResizer;
+import fittoring.mentoring.infra.image.ImageTranscoder;
+import fittoring.mentoring.infra.image.S3Uploader;
+import fittoring.mentoring.infra.image.policy.CertificatePolicy;
+import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
+import fittoring.mentoring.infra.image.policy.MentoringProfilePolicy;
+import fittoring.mentoring.infra.image.policy.NonePolicy;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
 import fittoring.util.DbCleaner;
@@ -44,7 +51,15 @@ import org.springframework.test.context.ActiveProfiles;
         ImageService.class,
         S3Uploader.class,
         S3Configuration.class,
-        JpaConfiguration.class
+        ImagePolicyRegistry.class,
+        CertificatePolicy.class,
+        MentoringProfilePolicy.class,
+        NonePolicy.class,
+        ImageResizer.class,
+        ImageTranscoder.class,
+        JpaConfiguration.class,
+        JpaConfiguration.class,
+        QueryDslConfig.class
 })
 @DataJpaTest
 class CertificateServiceTest {

@@ -67,8 +67,12 @@ const router = createBrowserRouter([
         path: PAGE_URL.PARTICIPATED_MENTORING,
         element: <ParticipatedMentoring />,
       },
+      {
+        path: PAGE_URL.EDIT_PROFILE,
+        element: <EditProfile />,
+      },
     ],
-  }, // TODO: `${PAGE_URL.MY_PAGE}/:userId`로 변경 예정
+  },
 ]);
 
 function App() {

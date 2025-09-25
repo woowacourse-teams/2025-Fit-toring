@@ -27,6 +27,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
+import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -76,7 +78,6 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private ReviewRepository reviewRepository;
-
 
     @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
     @Test
@@ -960,6 +961,178 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 softly.assertThat(response.statusCode()).isEqualTo(404);
                 softly.assertThat(responseMessage).isEqualTo(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
             });
+        }
+    }
+
+    @Nested
+    @DisplayName("멘토링 페이징 조회")
+    class getMentoringWithPagination {
+        @DisplayName("첫 멘토링 목록 페이지를 조회하고, 반환된 커서를 사용하면 나머지 목록을 조회할 수 있다.")
+        @Test
+        void getMentoringSummaryPages() {
+            //given
+            Member mentee = memberRepository.save(
+                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+
+            List<String> phoneNumbers = List.of(
+                    "010-1234-5678",
+                    "010-2345-6789",
+                    "010-3456-7890",
+                    "010-4567-8901",
+                    "010-5678-9012",
+                    "010-6789-0123",
+                    "010-7890-1234",
+                    "010-8901-2345",
+                    "010-9012-3456",
+                    "010-1122-3344",
+                    "010-2233-4455",
+                    "010-3344-5566"
+            );
+            List<Member> savedMentor = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Member mentor = new Member(
+                        "mentorId" + i,
+                        "MALE",
+                        "멘토1",
+                        new Phone(phoneNumbers.get(i)),
+                        Password.from("pw"));
+                savedMentor.add(mentor);
+            }
+            memberRepository.saveAll(savedMentor);
+
+            List<Mentoring> savedMentorings = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Mentoring mentoring =
+                        new Mentoring(
+                                savedMentor.get(i),
+                                1000,
+                                3,
+                                "멘토링 내용: " + i,
+                                "멘토링 자기소개",
+                                "가상의카카오오픈채팅"
+                        );
+                savedMentorings.add(mentoring);
+            }
+            mentoringRepository.saveAll(savedMentorings);
+
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+
+            List<CategoryMentoring> categoryMentorings = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                CategoryMentoring categoryMentoring = new CategoryMentoring(savedCategory, savedMentorings.get(i));
+                categoryMentorings.add(categoryMentoring);
+            }
+            categoryMentoringRepository.saveAll(categoryMentorings);
+
+            List<Image> images = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                images.add(image);
+            }
+            imageRepository.saveAll(images);
+
+            List<Reservation> reservations = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Reservation reservation = new Reservation("content", Status.COMPLETE, savedMentorings.get(i), mentee);
+                reservations.add(reservation);
+            }
+            reservationRepository.saveAll(reservations);
+
+            List<Review> reviews = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Review review = new Review(
+                        5,
+                        "최고의 멘토링이었습니다.",
+                        reservations.get(i),
+                        mentee
+                );
+                reviews.add(review);
+            }
+            reviewRepository.saveAll(reviews);
+
+            //when
+            MentoringSummaryPaginationResponse firstResponse = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "CREATED_AT")
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
+
+            String nextCursorCode = firstResponse.nextCursorCode();
+            MentoringSummaryPaginationResponse nextResponse = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success-next"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "CREATED_AT")
+                    .queryParam("cursorCode", nextCursorCode)
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
+            //then
+            SoftAssertions.assertSoftly(softAssertions -> {
+                assertThat(firstResponse.mentoringSummaryResponses()).hasSize(10);
+                assertThat(firstResponse.mentoringSummaryResponses().getLast().id()).isEqualTo(3L);
+                assertThat(firstResponse.nextCursorCode()).isNotNull();
+                assertThat(firstResponse.hasNext()).isTrue();
+                assertThat(nextResponse.mentoringSummaryResponses()).hasSize(2);
+                assertThat(nextResponse.mentoringSummaryResponses().getLast().id()).isEqualTo(1L);
+                assertThat(nextResponse.nextCursorCode()).isNull();
+                assertThat(nextResponse.hasNext()).isFalse();
+            });
+        }
+
+        @DisplayName("잘못된 커서 코드로 조회하면 400 Bad Request를 반환한다")
+        @Test
+        void getMentoringSummaryPagesFail_invalidCursor() {
+            //given
+            Member mentee = memberRepository.save(
+                    new Member("menteeId2", "MALE", "멘티2", new Phone("010-9999-9999"), Password.from("pw")));
+            String invalidCursorCode = "invalid-cursor";
+
+            //when
+            Response response = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-fail-invalid-cursor"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "CREATED_AT")
+                    .queryParam("cursorCode", invalidCursorCode)
+                    .when()
+                    .get("/mentorings-page");
+
+            //then
+            String responseMessage = response.jsonPath().getString("message");
+            assertSoftly(softly -> {
+                softly.assertThat(response.statusCode()).isEqualTo(400);
+                softly.assertThat(responseMessage).isEqualTo("Invalid cursor");
+            });
+        }
+
+        @DisplayName("존재하지 않는 sortKey로 조회하면 400 Bad Request를 반환한다")
+        @Test
+        void getMentoringSummaryPagesFail_invalidSortKey() {
+            //when
+            Response response = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-fail-invalid-sortkey"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "INVALID_SORT_KEY")
+                    .when()
+                    .get("/mentorings-page");
+
+            //then
+            assertThat(response.statusCode()).isEqualTo(400);
         }
     }
 }

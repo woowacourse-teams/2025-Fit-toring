@@ -5,7 +5,6 @@ import {
   type StatusType,
 } from '../../../../common/types/statusType';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
-import { getMenteePhoneNumber } from '../../apis/getMenteePhoneNumber';
 import { patchReservationStatus } from '../../apis/patchReservationStatus';
 import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
 
@@ -14,26 +13,10 @@ import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicat
 interface ActionButtonsProps {
   reservationId: number;
   status: StatusType;
-  onClick: (status: StatusType, phoneNumber: string) => void;
+  onClick: (status: StatusType) => void;
 }
 
 function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
-  const fetchPhoneNumber = async (status: StatusType) => {
-    try {
-      const { phoneNumber } = await getMenteePhoneNumber(reservationId);
-
-      onClick(status, phoneNumber);
-    } catch (error) {
-      console.error(`Error fetching mentee phone number:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'mentee-phone-number-fetch',
-      });
-    }
-  };
-
   const updateStatus = async (newStatus: MENTORING_APPLICATION_STATUS) => {
     try {
       const response = await patchReservationStatus(reservationId, {
@@ -60,7 +43,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
-        await fetchPhoneNumber(StatusTypeEnum.APPROVED);
+        onClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
       }
     } catch (error) {
       console.error(`Error handling approve button click:`, error);
@@ -79,7 +62,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
-        onClick(StatusTypeEnum.REJECTED, '');
+        onClick(StatusTypeEnum.REJECTED);
       }
     } catch (error) {
       console.error(`Error handling reject button click:`, error);
@@ -98,7 +81,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
-        onClick(StatusTypeEnum.COMPLETE, '');
+        onClick(StatusTypeEnum.COMPLETE);
       }
     } catch (error) {
       console.error(`Error handling complete button click:`, error);
@@ -114,12 +97,12 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
   if (status === StatusTypeEnum.PENDING) {
     return (
       <S_Container>
-        <S_PrimaryButton onClick={handleApproveButtonClick}>
-          승인
-        </S_PrimaryButton>
         <S_SecondaryButton onClick={handleRejectedButtonClick}>
           거절
         </S_SecondaryButton>
+        <S_PrimaryButton onClick={handleApproveButtonClick}>
+          승인
+        </S_PrimaryButton>
       </S_Container>
     );
   }
@@ -140,24 +123,32 @@ const S_Container = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
+
+  width: 100%;
 `;
 
 const S_BaseButton = styled.button`
-  width: fit-content;
+  width: 100%;
+  height: 3.6rem;
   padding: 0.8rem 1.3rem;
   border: none;
   border-radius: 8px;
 
   cursor: pointer;
 
-  color: ${({ theme }) => theme.FONT.W01};
-  ${({ theme }) => theme.TYPOGRAPHY.BTN4_R}
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_R}
 `;
 
 const S_PrimaryButton = styled(S_BaseButton)`
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN700};
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY900};
+
+  color: ${({ theme }) => theme.FONT.W01};
 `;
 
 const S_SecondaryButton = styled(S_BaseButton)`
-  background-color: ${({ theme }) => theme.BG.RED};
+  border: 1px solid ${({ theme }) => theme.OUTLINE.BLACK};
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+
+  color: ${({ theme }) => theme.FONT.B01};
 `;
