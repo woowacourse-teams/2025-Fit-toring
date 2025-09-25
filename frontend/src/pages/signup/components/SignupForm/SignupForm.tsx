@@ -54,6 +54,9 @@ function SignupForm() {
     setGender(value);
   };
 
+  // 아이디
+  const [userIdDuplicateChecked, setUserIdDuplicateChecked] = useState(false);
+
   const {
     userId,
     handleUserIdChange,
@@ -64,8 +67,6 @@ function SignupForm() {
   const {
     duplicateError,
     handleDuplicateConfirmClick,
-    shouldBlockSubmitByUserId,
-    getFinalUserIdErrorMessage,
     resetDuplicateCheck,
     duplicateChecked,
   } = useUserIdDuplicateCheck({ userId, userIdErrorMessage });
@@ -73,9 +74,16 @@ function SignupForm() {
   const onUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleUserIdChange(e);
 
+    setUserIdDuplicateChecked(false);
+
     if (duplicateChecked) {
       resetDuplicateCheck();
     }
+  };
+
+  const onDuplicateConfirmClick = () => {
+    setUserIdDuplicateChecked(true);
+    handleDuplicateConfirmClick();
   };
 
   const {
@@ -179,10 +187,29 @@ function SignupForm() {
     );
   };
 
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const getFinalUserIdErrorMessage = () => {
+    if (userIdErrorMessage !== '') {
+      return userIdErrorMessage;
+    }
+
+    if (duplicateError) {
+      return '이미 사용중인 아이디입니다.';
+    }
+
+    if (!userIdDuplicateChecked && submitAttempted) {
+      return '중복확인을 해주세요';
+    }
+
+    return userIdErrorMessage;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitAttempted(true);
 
-    if (shouldBlockSubmitByUserId()) {
+    if (!userIdDuplicateChecked) {
       return;
     }
 
@@ -252,7 +279,7 @@ function SignupForm() {
         <UserIdField
           userId={userId}
           onUserIdChange={onUserIdChange}
-          onDuplicateConfrimClick={handleDuplicateConfirmClick}
+          onDuplicateConfrimClick={onDuplicateConfirmClick}
           errorMessage={getFinalUserIdErrorMessage()}
           isUserIdInputValid={userIdErrorMessage === ''}
           duplicateChecked={duplicateChecked}

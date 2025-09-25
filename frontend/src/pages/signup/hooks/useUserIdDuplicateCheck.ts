@@ -3,25 +3,14 @@ import { useState } from 'react';
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postValidateId } from '../apis/postValidateId';
 
-import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
-
 interface useUserIdDuplicateCheckParams {
   userId: string;
   userIdErrorMessage: string;
 }
 
-const useUserIdDuplicateCheck = ({
-  userId,
-  userIdErrorMessage,
-}: useUserIdDuplicateCheckParams) => {
+const useUserIdDuplicateCheck = ({ userId }: useUserIdDuplicateCheckParams) => {
   const [duplicateError, setDuplicateError] = useState(false);
   const [duplicateChecked, setDuplicateChecked] = useState(false);
-
-  const {
-    confirm: confirmUserId,
-    matchConfirmed: userIdMatchConfirmed,
-    shouldBlockSubmit: shouldBlockSubmitByUserId,
-  } = useSubmitGuardWithConfirm(userId);
 
   const handleDuplicateConfirmClick = async () => {
     setDuplicateError(false);
@@ -30,7 +19,6 @@ const useUserIdDuplicateCheck = ({
       const response = await postValidateId(userId);
 
       if (response.status === 200) {
-        confirmUserId();
         setDuplicateChecked(true);
       }
     } catch (error) {
@@ -51,27 +39,9 @@ const useUserIdDuplicateCheck = ({
     setDuplicateError(false);
   };
 
-  const getFinalUserIdErrorMessage = () => {
-    if (userIdErrorMessage !== '') {
-      return userIdErrorMessage;
-    }
-
-    if (duplicateError) {
-      return '이미 사용중인 아이디입니다.';
-    }
-
-    if (!userIdMatchConfirmed) {
-      return '중복확인을 해주세요';
-    }
-
-    return userIdErrorMessage;
-  };
-
   return {
     duplicateError,
     handleDuplicateConfirmClick,
-    shouldBlockSubmitByUserId,
-    getFinalUserIdErrorMessage,
     resetDuplicateCheck,
     duplicateChecked,
   };
