@@ -34,5 +34,5 @@ public class MentoringStatistics {
     private long reviewCount;
 
     @Column(nullable = false)
-    private long reviewSum;
+    private long ratingSum;
 }
