@@ -114,69 +114,85 @@ public class ImageTranscoder {
         }
         final String yuv = yuv444 ? "444" : "420";
         final int jobs = Math.min(Math.max(1, Runtime.getRuntime().availableProcessors()), 4);
-        Process process = null;
-        final ByteArrayOutputStream errBuf = new ByteArrayOutputStream();
 
-        try {
-            ProcessBuilder pb = new ProcessBuilder(
-                    "avifenc",
-                    "-", "-",
-                    "--yuv", yuv,
-                    "-q", String.valueOf(quality),
-                    "-s", String.valueOf(speed),
-                    "--jobs", String.valueOf(jobs)
-            );
-            pb.redirectErrorStream(false);
-            process = pb.start();
-
-            final InputStream stderrStream = process.getErrorStream();
-            Thread stderrDrainer = new Thread(() -> {
-                try (InputStream stdErr = stderrStream) {
-                    stdErr.transferTo(errBuf);
-                } catch (IOException ignored) {
-                }
-            }, "avifenc-stderr-drain");
-            stderrDrainer.setDaemon(true);
-            stderrDrainer.start();
-            try (OutputStream os = process.getOutputStream()) {
-                boolean ok = ImageIO.write(src, "png", os);
-                if (!ok) {
-                    throw new S3UploadException("PNG 변환 실패");
-                }
+        java.util.function.Function<String[], ProcessBuilder> pbFactory = (extraArgs) -> {
+            java.util.List<String> args = new java.util.ArrayList<>();
+            args.add("avifenc");
+            args.add("--stdin");
+            args.add("--stdout");
+            args.add("--yuv");
+            args.add(yuv);
+            args.add("--speed");
+            args.add(String.valueOf(speed));
+            args.add("--jobs");
+            args.add(String.valueOf(jobs));
+            for (String s : extraArgs) {
+                args.add(s);
             }
-            byte[] avifBytes;
-            try (InputStream stdOut = process.getInputStream();
-                 ByteArrayOutputStream outBuf = new ByteArrayOutputStream()) {
-                stdOut.transferTo(outBuf);
-                avifBytes = outBuf.toByteArray();
-            }
-            boolean finished = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
-            if (!finished) {
-                process.destroyForcibly();
-                throw new S3UploadException("avifenc 타임아웃(" + timeout.toSeconds() + "s)");
-            }
+            return new ProcessBuilder(args);
+        };
+        String[][] attempts = new String[][]{
+                new String[]{"--cq-level", String.valueOf(quality)},
+                new String[]{"-q", String.valueOf(quality)}
+        };
+        IOException lastIo = null;
+        for (String[] attemptArgs : attempts) {
+            Process process = null;
+            final ByteArrayOutputStream errBuf = new ByteArrayOutputStream();
             try {
-                stderrDrainer.join(Math.min(timeout.toMillis(), 1000));
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-
-            int exit = process.exitValue();
-            if (exit != 0 || avifBytes.length == 0) {
+                ProcessBuilder pb = pbFactory.apply(attemptArgs);
+                pb.redirectErrorStream(false);
+                process = pb.start();
+                final InputStream stderrStream = process.getErrorStream();
+                Thread stderrDrainer = new Thread(() -> {
+                    try (InputStream stdErr = stderrStream) {
+                        stdErr.transferTo(errBuf);
+                    } catch (IOException ignored) {
+                    }
+                }, "avifenc-stderr-drain");
+                stderrDrainer.setDaemon(true);
+                stderrDrainer.start();
+                try (OutputStream os = process.getOutputStream()) {
+                    boolean ok = ImageIO.write(src, "png", os);
+                    if (!ok) {
+                        throw new S3UploadException("PNG 변환 실패");
+                    }
+                }
+                byte[] avifBytes;
+                try (InputStream stdOut = process.getInputStream();
+                     ByteArrayOutputStream outBuf = new ByteArrayOutputStream()) {
+                    stdOut.transferTo(outBuf);
+                    avifBytes = outBuf.toByteArray();
+                }
+                boolean finished = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
+                if (!finished) {
+                    process.destroyForcibly();
+                    throw new S3UploadException("avifenc 타임아웃(" + timeout.toSeconds() + "s)");
+                }
+                try {
+                    stderrDrainer.join(Math.min(timeout.toMillis(), 1000));
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+                int exit = process.exitValue();
+                if (exit == 0 && avifBytes.length > 0) {
+                    return avifBytes;
+                }
                 String err = errBuf.toString(StandardCharsets.UTF_8);
-                throw new S3UploadException("avifenc 실패 (exit=" + exit + ") stderr=" + err);
-            }
-            return avifBytes;
+                lastIo = new IOException("avifenc 실패 (exit=" + exit + ") stderr=" + err);
 
-        } catch (IOException e) {
-            throw new S3UploadException("avifenc 실행 실패: " + e.getMessage());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new S3UploadException("avifenc 대기 중 인터럽트");
-        } finally {
-            if (process != null) {
-                process.destroy();
+            } catch (IOException e) {
+                lastIo = e;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new S3UploadException("avifenc 대기 중 인터럽트");
+            } finally {
+                if (process != null) {
+                    process.destroy();
+                }
             }
         }
+        String msg = (lastIo != null ? lastIo.getMessage() : "원인 불명");
+        throw new S3UploadException("avifenc 실행 실패: " + msg);
     }
 }
