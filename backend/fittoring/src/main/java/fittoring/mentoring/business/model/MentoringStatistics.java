@@ -13,7 +13,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE member SET is_deleted = true, deleted_at = now() WHERE id = ?")
+@SQLDelete(sql = "UPDATE mentoring_statistics SET is_deleted = true, deleted_at = now() WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "mentoring_statistics")
 @Entity
