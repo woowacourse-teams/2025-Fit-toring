@@ -39,6 +39,7 @@ public class ReservationService {
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {

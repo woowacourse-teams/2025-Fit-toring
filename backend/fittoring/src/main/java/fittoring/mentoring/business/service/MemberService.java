@@ -45,7 +45,7 @@ public class MemberService {
     }
 
     private Image findMentoringImage(Mentoring mentoring) {
-        return imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
+        return imageService.findThumbnailByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
                 .orElse(null);
     }
 
