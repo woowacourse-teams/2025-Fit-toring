@@ -32,7 +32,7 @@ function Introduce() {
       <S_ImgWrapper>
         <picture>
           <source srcSet={mockAvif} type="image/avif" />
-          <S_Img src={mockPng} alt="목업" />
+          <S_Img src={mockPng} alt="목업" loading="lazy" />
         </picture>
       </S_ImgWrapper>
     </S_Container>

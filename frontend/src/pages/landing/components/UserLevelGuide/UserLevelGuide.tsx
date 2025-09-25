@@ -1,13 +1,18 @@
 import styled from '@emotion/styled';
 
-import beginner from '../../../../common/assets/images/beginner.svg';
-import expert from '../../../../common/assets/images/expert.svg';
+import beginnerAvif from '../../../../common/assets/images/beginner.avif';
+import expertAvif from '../../../../common/assets/images/expert.avif';
+import beginnerPng from '../../../../common/assets/images/beginner.png';
+import expertPng from '../../../../common/assets/images/expert.png';
 
 function UserLevelGuide() {
   return (
     <S_Container>
       <S_UserWrapper>
-        <S_Img src={beginner} alt="초보자 이미지" />
+        <picture>
+          <source srcSet={beginnerAvif} type="image/avif" />
+          <S_Img src={beginnerPng} alt="초보자 이미지" loading="lazy" />
+        </picture>
         <S_Name>운동 초보자</S_Name>
         <S_Description>
           소액으로 1회성 <br />
@@ -15,7 +20,10 @@ function UserLevelGuide() {
         </S_Description>
       </S_UserWrapper>
       <S_UserWrapper>
-        <S_Img src={expert} alt="숙련자 이미지" />
+        <picture>
+          <source srcSet={expertAvif} type="image/avif" />
+          <S_Img src={expertPng} alt="숙련자 이미지" loading="lazy" />
+        </picture>
         <S_Name>운동 숙련자</S_Name>
         <S_Description>
           전문성과 경험을 공유해 <br />
