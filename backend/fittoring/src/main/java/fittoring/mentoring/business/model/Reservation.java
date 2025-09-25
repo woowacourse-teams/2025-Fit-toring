@@ -57,7 +57,7 @@ public class Reservation {
     private Mentoring mentoring;
 
     @JoinColumn(nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member mentee;
 
     public Reservation(String content, Status status, Mentoring mentoring, Member mentee) {
