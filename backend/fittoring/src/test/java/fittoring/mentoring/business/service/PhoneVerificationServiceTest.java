@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.config.QueryDslConfig;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.model.Phone;
@@ -27,7 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, PhoneVerificationService.class, CodeGeneratorStub.class})
+@Import({DbCleaner.class, PhoneVerificationService.class, CodeGeneratorStub.class, QueryDslConfig.class})
 @DataJpaTest
 class PhoneVerificationServiceTest {
 

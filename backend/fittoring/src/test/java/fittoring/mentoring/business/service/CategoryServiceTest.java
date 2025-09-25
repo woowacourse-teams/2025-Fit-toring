@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.config.QueryDslConfig;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.presentation.dto.CategoryResponse;
 import fittoring.util.DbCleaner;
@@ -17,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, CategoryService.class})
+@Import({DbCleaner.class, CategoryService.class, QueryDslConfig.class})
 @DataJpaTest
 class CategoryServiceTest {
 

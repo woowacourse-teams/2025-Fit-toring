@@ -11,7 +11,5 @@ export default MentoringApplicationList;
 const S_Container = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-
-  padding: 1.5rem 2rem;
+  gap: 1.2rem;
 `;

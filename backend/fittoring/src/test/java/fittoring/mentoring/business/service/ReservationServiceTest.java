@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
+import fittoring.config.QueryDslConfig;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenException;
@@ -28,7 +29,13 @@ import fittoring.mentoring.business.service.dto.MentorMentoringReservationRespon
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
-import fittoring.mentoring.infra.S3Uploader;
+import fittoring.mentoring.infra.image.ImageResizer;
+import fittoring.mentoring.infra.image.ImageTranscoder;
+import fittoring.mentoring.infra.image.S3Uploader;
+import fittoring.mentoring.infra.image.policy.CertificatePolicy;
+import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
+import fittoring.mentoring.infra.image.policy.MentoringProfilePolicy;
+import fittoring.mentoring.infra.image.policy.NonePolicy;
 import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
 import fittoring.mentoring.presentation.dto.AdminReservationResponse;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
@@ -51,8 +58,21 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, ReservationService.class, JpaConfiguration.class, ImageService.class, S3Uploader.class,
-        S3Configuration.class})
+@Import({
+        DbCleaner.class,
+        JpaConfiguration.class,
+        S3Uploader.class,
+        ImagePolicyRegistry.class,
+        ImageResizer.class,
+        ImageTranscoder.class,
+        S3Configuration.class,
+        CertificatePolicy.class,
+        MentoringProfilePolicy.class,
+        NonePolicy.class,
+        ReservationService.class,
+        ImageService.class,
+        QueryDslConfig.class
+})
 @DataJpaTest
 class ReservationServiceTest {
 
@@ -418,8 +438,13 @@ class ReservationServiceTest {
         );
 
         // when
+        List<ParticipatedReservationResponse> actual =
+                reservationService.findMemberReservations(mentee.getId());
+
         // then
-        assertThat(reservationService.findMemberReservations(mentee.getId())).isEqualTo(expected);
+        assertThat(actual)
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @DisplayName("관리자는 특정 멘토링에 달린 모든 예약을 조회할 수 있다")

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
 const useSubmitGuardWithConfirm = <T>(value: T) => {
-  const [lastConfirmedValue, setLastConfirmedValue] = useState<T | null>(null);
+  const [lastConfirmedValue, setLastConfirmedValue] = useState<T | null>(
+    value ?? null,
+  );
   const [matchConfirmed, setMatchConfirmed] = useState(true);
 
   const confirm = () => {

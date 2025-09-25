@@ -5,11 +5,11 @@ import type { MENTORING_APPLICATION_STATUS } from '../types/mentoringApplication
 
 export const patchReservationStatus = async (
   reservationId: number,
-  searchParams: { status: MENTORING_APPLICATION_STATUS },
+  body: { status: MENTORING_APPLICATION_STATUS },
 ) => {
   return await apiClient.patch({
     endpoint: `${API_ENDPOINTS.RESERVATIONS}/${reservationId}${API_ENDPOINTS.PATCH_MENTORING_STATUS}`,
-    searchParams,
+    body,
     withCredentials: true,
   });
 };

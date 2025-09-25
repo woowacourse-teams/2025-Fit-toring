@@ -17,6 +17,7 @@ java {
 ext {
     jjwtVersion = '0.11.5'
     set('snippetsDir', file("build/generated-snippets"))
+    querydslVersion = '5.0.0'
 }
 
 tasks.named('test') {
@@ -48,6 +49,12 @@ dependencies {
     // rest-assured
     testImplementation("io.rest-assured:rest-assured:5.5.5")
 
+    // query DSL
+    implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+    annotationProcessor("com.querydsl:querydsl-apt:${querydslVersion}:jakarta")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+
     // jwt
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
@@ -61,6 +68,13 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
     testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
     testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
+
+    // image
+    implementation 'net.coobird:thumbnailator:0.4.20'
+    implementation 'com.twelvemonkeys.imageio:imageio-core:3.12.0'
+    implementation 'com.twelvemonkeys.imageio:imageio-metadata:3.12.0'
+    implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.12.0'
+    implementation 'com.github.gotson.nightmonkeys:imageio-heif:1.1.0'
 }
 
 openapi3 {
