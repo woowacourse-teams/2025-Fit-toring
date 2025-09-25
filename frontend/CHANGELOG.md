@@ -1,3 +1,18 @@
+# [1.10.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.9.1...v1.10.0) (2025-09-25)
+
+
+### Bug Fixes
+
+* avif 제거 ([536a2d3](https://github.com/woowacourse-teams/2025-Fit-toring/commit/536a2d3177bff9348ab17390d9b289e121e615fb))
+* stderr 쓰레드 분리하여 프로세스 스트림 교착 가능성 줄임 ([1721a4f](https://github.com/woowacourse-teams/2025-Fit-toring/commit/1721a4f434ab65f58fa05a78f992dadae91a5592))
+* 이미지 확장자 변환 방식 수정 ([b0c94a6](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b0c94a6aa946927a0b7f680b37aa7cc830ad69b5))
+* 임시 파일 생성 방식으로 수정 ([77ad824](https://github.com/woowacourse-teams/2025-Fit-toring/commit/77ad824ae313c51adba5cdcc268edeacf9479415))
+
+
+### Features
+
+* swagger request 옵션 추가 ([d77d76a](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d77d76a4430cbadc5bc9f1787f8008effe095ccb))
+
 ## [1.9.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.9.0...v1.9.1) (2025-09-25)
 
 
