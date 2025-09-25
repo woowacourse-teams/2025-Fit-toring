@@ -618,15 +618,13 @@ class MentoringServiceTest {
             VariantUploadResult profileDefault =
                     new VariantUploadResult(
                             ImageVariant.DEFAULT,
-                            "https://s3.../profile-image/default/uuid.jpg",
-                            "https://s3.../profile-image/default/uuid.avif");
+                            "https://s3.../profile-image/default/uuid.jpg");
 
             // 프로필 - THUMBNAIL (추가)
             VariantUploadResult profileThumb =
                     new VariantUploadResult(
                             ImageVariant.THUMBNAIL,
-                            "https://s3.../profile-image/thumbnail/uuid.jpg",
-                            "https://s3.../profile-image/thumbnail/uuid.avif");
+                            "https://s3.../profile-image/thumbnail/uuid.jpg");
 
             // 모킹: DEFAULT
             when(s3Uploader.uploadVariant(
@@ -688,29 +686,24 @@ class MentoringServiceTest {
             MockMultipartFile certificateImageFile2 = new MockMultipartFile("testCertificate2",
                     "testCertificate2".getBytes(StandardCharsets.UTF_8));
 
-            // 프로필 - DEFAULT/THUMBNAIL
             VariantUploadResult profileDefault =
                     new VariantUploadResult(
                             ImageVariant.DEFAULT,
-                            "https://s3.../profile-image/default/uuid.jpg",
-                            "https://s3.../profile-image/default/uuid.avif");
+                            "https://s3.../profile-image/default/uuid.jpg");
             VariantUploadResult profileThumb =
                     new VariantUploadResult(
                             ImageVariant.THUMBNAIL,
-                            "https://s3.../profile-image/thumbnail/uuid.jpg",
-                            "https://s3.../profile-image/thumbnail/uuid.avif");
+                            "https://s3.../profile-image/thumbnail/uuid.jpg");
 
             // 자격증 - DEFAULT (썸네일 없음)
             VariantUploadResult certResult1 =
                     new VariantUploadResult(
                             ImageVariant.DEFAULT,
-                            "https://s3.../certificate-image/default/uuid1.jpg",
-                            "https://s3.../certificate-image/default/uuid1.avif");
+                            "https://s3.../certificate-image/default/uuid1.jpg");
             VariantUploadResult certResult2 =
                     new VariantUploadResult(
                             ImageVariant.DEFAULT,
-                            "https://s3.../certificate-image/default/uuid2.jpg",
-                            "https://s3.../certificate-image/default/uuid2.avif");
+                            "https://s3.../certificate-image/default/uuid2.jpg");
 
             // 프로필 DEFAULT
             when(s3Uploader.uploadVariant(
@@ -793,18 +786,15 @@ class MentoringServiceTest {
 
             VariantUploadResult profileDefault =
                     new VariantUploadResult(ImageVariant.DEFAULT,
-                            "https://s3.../profile-image/default/uuid.jpg",
-                            "https://s3.../profile-image/default/uuid.avif");
+                            "https://s3.../profile-image/default/uuid.jpg");
 
             VariantUploadResult profileThumb =
                     new VariantUploadResult(ImageVariant.THUMBNAIL,
-                            "https://s3.../profile-image/thumbnail/uuid.jpg",
-                            "https://s3.../profile-image/thumbnail/uuid.avif");
+                            "https://s3.../profile-image/thumbnail/uuid.jpg");
 
             VariantUploadResult certDefault =
                     new VariantUploadResult(ImageVariant.DEFAULT,
-                            "https://s3.../certificate-image/default/uuid.jpg",
-                            "https://s3.../certificate-image/default/uuid.avif");
+                            "https://s3.../certificate-image/default/uuid.jpg");
 
             when(s3Uploader.uploadVariant(
                     ArgumentMatchers.eq(profileImageFile),

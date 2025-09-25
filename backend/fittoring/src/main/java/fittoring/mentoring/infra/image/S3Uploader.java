@@ -36,12 +36,7 @@ public class S3Uploader {
         putObject(keyOriginal, orig.contentType(), orig.bytes());
         String urlOriginal = getUrl(keyOriginal);
 
-        Encoded avif = imageTranscoder.toAvif(resized);
-        String keyAvif = buildKey(imageTypeName, variant, baseName, "." + avif.extension());
-        putObject(keyAvif, avif.contentType(), avif.bytes());
-        String urlAvif = getUrl(keyAvif);
-
-        return new VariantUploadResult(variant, urlOriginal, urlAvif);
+        return new VariantUploadResult(variant, urlOriginal);
     }
 
     private void putObject(String key, String contentType, byte[] bytes) {
