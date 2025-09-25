@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
-import mockAvif from '../../../../common/assets/images/mock.avif';
-import mockPng from '../../../../common/assets/images/mock.png';
+
+import mockPng from '../../../../common/assets/images/mock_resized_500.png';
+import mockAvif from '../../../../common/assets/images/mock_resized_converted.avif';
 
 function Introduce() {
   return (
