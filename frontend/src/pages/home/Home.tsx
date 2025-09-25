@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -10,9 +10,7 @@ import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
 import { THEME } from '../../common/styles/theme';
-import { captureSentryError } from '../../common/utils/captureSentryError';
 
-import { getMentorList } from './apis/getMentorList';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
@@ -85,29 +83,6 @@ function Home() {
     navigate(PAGE_URL.MENTORING_CREATE);
   };
 
-  const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
-
-  const fetchMentorData = useCallback(async () => {
-    try {
-      const data = await getMentorList({
-        params: convertSelectedSpecialtiesToParams(selectedSpecialties),
-      });
-      setMentorList(data);
-    } catch (error) {
-      console.error('멘토 데이터 가져오기 실패:', error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'home',
-        step: 'mentor-data-fetch',
-      });
-    }
-  }, [selectedSpecialties]);
-
-  useEffect(() => {
-    fetchMentorData();
-  }, [fetchMentorData]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -127,6 +102,20 @@ function Home() {
       setMyMentoringId(null);
     }
   }, [authenticated]);
+
+  const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
+
+  const elementRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    const callback = async () => {};
+
+    const io = new IntersectionObserver(callback);
+    if (elementRef.current) {
+      io.observe(elementRef.current);
+    }
+    return () => io.disconnect();
+  }, []);
 
   return (
     <S_Container>
@@ -162,6 +151,7 @@ function Home() {
           {mentorList.map((mentor) => (
             <MentorCardItem key={mentor.id} mentor={mentor} />
           ))}
+          <S_Trigger ref={elementRef} />
         </MentorCardList>
       </S_Contents>
       {/* <Footer>
@@ -170,6 +160,15 @@ function Home() {
     </S_Container>
   );
 }
+
+const S_Trigger = styled.li`
+  visibility: hidden;
+  position: absolute;
+  bottom: 5rem;
+
+  width: 100%;
+  height: 1rem;
+`;
 
 export default Home;
 
