@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.9.0...v1.9.1) (2025-09-25)
+
+
+### Bug Fixes
+
+* 캐싱 디렉토리 dist -> empty_artifacts로 변경 ([c9bf3b5](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c9bf3b5ad3f24894866d3d606d3974a0c6013b79))
+
 # [1.9.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.8.0...v1.9.0) (2025-09-25)
 
 
