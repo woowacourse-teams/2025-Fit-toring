@@ -27,6 +27,7 @@ const Booking = lazy(() => import('./pages/booking/Booking'));
 const CreatedMentoring = lazy(
   () => import('./pages/createdMentoring/CreatedMentoring'),
 );
+const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
 
 const router = createBrowserRouter([
   {
