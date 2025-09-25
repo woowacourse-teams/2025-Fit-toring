@@ -3,6 +3,8 @@ package fittoring.mentoring.business.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.model.Mentoring;
@@ -27,14 +29,14 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public MentoringPaginationResult findMentoringsWithPagination(SortKey sortKey, Cursor cursor, List<Long> categoryIds) {
+    public MentoringPaginationResult findMentoringsWithPagination(SortKey sortKey, Cursor cursor,
+                                                                  List<Long> categoryIds) {
         BooleanBuilder where = new BooleanBuilder();
-        BooleanExpression booleanExpression = buildCursorCondition(sortKey, cursor);
+        BooleanExpression cursorCondition = buildCursorCondition(sortKey, cursor);
+        BooleanExpression categoryFilterCondition = buildCategoryFilterCondition(categoryIds);
 
-        where.and(booleanExpression);
-        where = where.and(
-                // 카테고리 리스트 필터링 조건식
-        );
+        where.and(cursorCondition)
+                .and(categoryFilterCondition);
 
         List<Mentoring> rows = jpaQueryFactory.select(mentoring)
                 .from(mentoring)
@@ -54,6 +56,25 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
             };
         }
         return new MentoringPaginationResult(rows, nextCursorCode, hasNext);
+    }
+
+    private BooleanExpression buildCategoryFilterCondition(List<Long> categoryIds) {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            return null;
+        }
+        NumberExpression<Long> distinctCnt = categoryMentoring.category.id.countDistinct();
+
+        return mentoring.id.in(
+                JPAExpressions
+                        .select(categoryMentoring.mentoring.id)
+                        .from(categoryMentoring)
+                        .where(
+                                categoryMentoring.isDeleted.isFalse(),
+                                categoryMentoring.category.id.in(categoryIds)
+                        )
+                        .groupBy(categoryMentoring.mentoring.id)
+                        .having(distinctCnt.eq((long) categoryIds.size()))
+        );
     }
 
     private String getNextCursorCode(Mentoring nextMentoring) {

@@ -993,7 +993,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 Member mentor = new Member(
                         "mentorId" + i,
                         "MALE",
-                        "멘토1",
+                        "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
                 savedMentor.add(mentor);
@@ -1081,6 +1081,247 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
             //then
             SoftAssertions.assertSoftly(softAssertions -> {
                 assertThat(firstResponse.mentoringSummaryResponses()).hasSize(10);
+                assertThat(firstResponse.mentoringSummaryResponses().getLast().id()).isEqualTo(3L);
+                assertThat(firstResponse.nextCursorCode()).isNotNull();
+                assertThat(firstResponse.hasNext()).isTrue();
+                assertThat(nextResponse.mentoringSummaryResponses()).hasSize(2);
+                assertThat(nextResponse.mentoringSummaryResponses().getLast().id()).isEqualTo(1L);
+                assertThat(nextResponse.nextCursorCode()).isNull();
+                assertThat(nextResponse.hasNext()).isFalse();
+            });
+        }
+
+        @DisplayName("첫 멘토링 목록 페이지를 조회하고, 카테고리 필터링을 할 수 있다.")
+        @Test
+        void getMentoringSummaryPagesWithCategory_1() {
+            //given
+            Member mentee = memberRepository.save(
+                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+
+            List<String> phoneNumbers = List.of(
+                    "111-1234-5678",
+                    "111-2345-6789",
+                    "111-3456-7890",
+                    "111-4567-8901",
+                    "111-5678-9012",
+                    "111-6789-0123",
+                    "111-7890-1234",
+                    "111-8901-2345",
+                    "111-9012-3456",
+                    "111-1122-3344",
+                    "111-2233-4455",
+                    "111-3344-5566"
+            );
+            List<Member> savedMentor = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Member mentor = new Member(
+                        "mentorId" + i,
+                        "MALE",
+                        "멘토" + i,
+                        new Phone(phoneNumbers.get(i)),
+                        Password.from("pw"));
+                savedMentor.add(mentor);
+            }
+            memberRepository.saveAll(savedMentor);
+
+            List<Mentoring> savedMentorings = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Mentoring mentoring =
+                        new Mentoring(
+                                savedMentor.get(i),
+                                1000,
+                                3,
+                                "멘토링 내용: " + i,
+                                "멘토링 자기소개",
+                                "가상의카카오오픈채팅"
+                        );
+                savedMentorings.add(mentoring);
+            }
+            mentoringRepository.saveAll(savedMentorings);
+
+            Category category1 = categoryRepository.save(new Category("체형교정"));
+            Category category2 = categoryRepository.save(new Category("다이어트"));
+
+            List<CategoryMentoring> categoryMentorings = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                CategoryMentoring categoryMentoring = new CategoryMentoring(category1, savedMentorings.get(i));
+                categoryMentorings.add(categoryMentoring);
+            }
+            for (int i = 0; i < 5; i++) {
+                CategoryMentoring categoryMentoring = new CategoryMentoring(category2, savedMentorings.get(i));
+                categoryMentorings.add(categoryMentoring);
+            }
+            categoryMentoringRepository.saveAll(categoryMentorings);
+
+            List<Image> images = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                images.add(image);
+            }
+            imageRepository.saveAll(images);
+
+            List<Reservation> reservations = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Reservation reservation = new Reservation("content", Status.COMPLETE, savedMentorings.get(i), mentee);
+                reservations.add(reservation);
+            }
+            reservationRepository.saveAll(reservations);
+
+            List<Review> reviews = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Review review = new Review(
+                        5,
+                        "최고의 멘토링이었습니다.",
+                        reservations.get(i),
+                        mentee
+                );
+                reviews.add(review);
+            }
+            reviewRepository.saveAll(reviews);
+
+            //when
+            MentoringSummaryPaginationResponse firstResponse = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "CREATED_AT")
+                    .queryParam("categoryIds", "1, 2")
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
+
+            //then
+            SoftAssertions.assertSoftly(softAssertions -> {
+                assertThat(firstResponse.mentoringSummaryResponses()).hasSize(5);   // 카테고리 1, 2번 동시 보유 조건
+                assertThat(firstResponse.mentoringSummaryResponses().getLast().id()).isEqualTo(1L);
+                assertThat(firstResponse.nextCursorCode()).isNull();
+                assertThat(firstResponse.hasNext()).isFalse();
+            });
+        }
+
+        @DisplayName("첫 멘토링 목록 페이지를 조회하고, 카테고리 필터링을 할 수 있다._2")
+        @Test
+        void getMentoringSummaryPagesWithCategory() {
+            //given
+            Member mentee = memberRepository.save(
+                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+
+            List<String> phoneNumbers = List.of(
+                    "111-1234-5678",
+                    "111-2345-6789",
+                    "111-3456-7890",
+                    "111-4567-8901",
+                    "111-5678-9012",
+                    "111-6789-0123",
+                    "111-7890-1234",
+                    "111-8901-2345",
+                    "111-9012-3456",
+                    "111-1122-3344",
+                    "111-2233-4455",
+                    "111-3344-5566"
+            );
+            List<Member> savedMentor = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Member mentor = new Member(
+                        "mentorId" + i,
+                        "MALE",
+                        "멘토" + i,
+                        new Phone(phoneNumbers.get(i)),
+                        Password.from("pw"));
+                savedMentor.add(mentor);
+            }
+            memberRepository.saveAll(savedMentor);
+
+            List<Mentoring> savedMentorings = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Mentoring mentoring =
+                        new Mentoring(
+                                savedMentor.get(i),
+                                1000,
+                                3,
+                                "멘토링 내용: " + i,
+                                "멘토링 자기소개",
+                                "가상의카카오오픈채팅"
+                        );
+                savedMentorings.add(mentoring);
+            }
+            mentoringRepository.saveAll(savedMentorings);
+
+            Category category1 = categoryRepository.save(new Category("체형교정"));
+            Category category2 = categoryRepository.save(new Category("다이어트"));
+
+            List<CategoryMentoring> categoryMentorings = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                CategoryMentoring categoryMentoring1 = new CategoryMentoring(category1, savedMentorings.get(i));
+                categoryMentorings.add(categoryMentoring1);
+                CategoryMentoring categoryMentoring2 = new CategoryMentoring(category2, savedMentorings.get(i));
+                categoryMentorings.add(categoryMentoring2);
+            }
+            categoryMentoringRepository.saveAll(categoryMentorings);
+
+            List<Image> images = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                images.add(image);
+            }
+            imageRepository.saveAll(images);
+
+            List<Reservation> reservations = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Reservation reservation = new Reservation("content", Status.COMPLETE, savedMentorings.get(i), mentee);
+                reservations.add(reservation);
+            }
+            reservationRepository.saveAll(reservations);
+
+            List<Review> reviews = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                Review review = new Review(
+                        5,
+                        "최고의 멘토링이었습니다.",
+                        reservations.get(i),
+                        mentee
+                );
+                reviews.add(review);
+            }
+            reviewRepository.saveAll(reviews);
+
+            //when
+            MentoringSummaryPaginationResponse firstResponse = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "CREATED_AT")
+                    .queryParam("categoryIds", "1, 2")
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
+
+            String nextCursorCode = firstResponse.nextCursorCode();
+            MentoringSummaryPaginationResponse nextResponse = RestAssured
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success-next"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "CREATED_AT")
+                    .queryParam("categoryIds", "1, 2")
+                    .queryParam("cursorCode", nextCursorCode)
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
+            //then
+            SoftAssertions.assertSoftly(softAssertions -> {
+                assertThat(firstResponse.mentoringSummaryResponses()).hasSize(10);   // 카테고리 1, 2번 동시 보유 조건
                 assertThat(firstResponse.mentoringSummaryResponses().getLast().id()).isEqualTo(3L);
                 assertThat(firstResponse.nextCursorCode()).isNotNull();
                 assertThat(firstResponse.hasNext()).isTrue();
