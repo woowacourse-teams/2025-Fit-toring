@@ -4,7 +4,6 @@ import fittoring.mentoring.business.model.ImageVariant;
 
 public record VariantUploadResult(
         ImageVariant variant,
-        String originalUrl,
-        String avifUrl
+        String originalUrl
 ) {
 }
