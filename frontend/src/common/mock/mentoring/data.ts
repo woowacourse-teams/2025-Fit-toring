@@ -7,11 +7,11 @@ export const MENTORINGS: MentorInformation[] = [
     categories: ['근력 운동', '다이어트', '체형 교정'],
     price: 5000,
     career: 5,
-    imageUrl: '',
+    profileImageUrl: '',
     introduction:
       '5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
-    reviewAverage: 4.5,
-    reviewCount: 127,
+    ratingAverage: '4.5',
+    ratingCount: 127,
   },
   {
     id: 2,
@@ -19,11 +19,11 @@ export const MENTORINGS: MentorInformation[] = [
     categories: ['영양 상담'],
     price: 4500,
     career: 3,
-    imageUrl: '',
+    profileImageUrl: '',
     introduction:
       '3년차 전문 영양사로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
-    reviewAverage: 4.2,
-    reviewCount: 237,
+    ratingAverage: '4.2',
+    ratingCount: 237,
   },
 
   {
@@ -32,10 +32,10 @@ export const MENTORINGS: MentorInformation[] = [
     categories: ['영양 상담'],
     price: 4500,
     career: 3,
-    imageUrl: null,
+    profileImageUrl: null,
     introduction:
       '3년차 전문 영양사로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
-    reviewAverage: 4.8,
-    reviewCount: 122,
+    ratingAverage: '4.8',
+    ratingCount: 122,
   },
 ] as const;
