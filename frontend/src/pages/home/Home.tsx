@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -11,6 +11,7 @@ import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
 import { THEME } from '../../common/styles/theme';
 
+import { getMentorListByPage } from './apis/getMentorListByPage';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
@@ -104,18 +105,47 @@ function Home() {
   }, [authenticated]);
 
   const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
-
+  const [hasNext, setHasNext] = useState(true);
+  const [cursorCode, setCursorCode] = useState<string | null>(null);
   const elementRef = useRef<HTMLLIElement>(null);
 
+  const fetchMentorData = useCallback(async () => {
+    const data = await getMentorListByPage({
+      params: cursorCode
+        ? {
+            ...convertSelectedSpecialtiesToParams(selectedSpecialties),
+            cursorCode,
+          }
+        : convertSelectedSpecialtiesToParams(selectedSpecialties),
+    });
+
+    return data;
+  }, [cursorCode, selectedSpecialties]);
+
   useEffect(() => {
-    const callback = async () => {};
+    const callback = async (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasNext) {
+        const data = await fetchMentorData();
+        const {
+          mentoringSummaryResponses,
+          hasNext: hasNewNext,
+          nextCursorCode,
+        } = data;
+
+        setHasNext(hasNewNext);
+        if (hasNewNext) {
+          setMentorList((prev) => [...prev, ...mentoringSummaryResponses]);
+          setCursorCode(nextCursorCode);
+        }
+      }
+    };
 
     const io = new IntersectionObserver(callback);
     if (elementRef.current) {
       io.observe(elementRef.current);
     }
     return () => io.disconnect();
-  }, []);
+  }, [fetchMentorData, hasNext]);
 
   return (
     <S_Container>
