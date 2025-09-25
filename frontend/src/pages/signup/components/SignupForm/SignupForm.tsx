@@ -86,7 +86,7 @@ function SignupForm() {
     handlePasswordChange,
     handlePasswordConfirmChange,
     passwordValidated,
-    passwordConfrimValidated,
+    passwordConfirmValidated,
   } = usePasswordWithConfirmInput();
 
   const {
@@ -160,7 +160,7 @@ function SignupForm() {
       nameValidated,
       userIdValidated && !duplicateError,
       passwordValidated,
-      passwordConfrimValidated,
+      passwordConfirmValidated,
       phoneNumber !== '' && phoneNumberErrorMessage === '',
       verificationCodeValidated && !verificationCodeError,
     ];

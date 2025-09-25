@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { ERROR_MESSAGE } from '../constants/errorMessage';
 import { NAME } from '../constants/name';
 
-const useNameInput = () => {
-  const [name, setName] = useState('');
+const useNameInput = (initialValue?: string) => {
+  const [name, setName] = useState(initialValue || '');
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);

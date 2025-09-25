@@ -36,7 +36,7 @@ const usePasswordWithConfirmInput = () => {
     passwordErrorMessage,
     passwordConfirmErrorMessage,
     passwordValidated: password !== '' && passwordErrorMessage === '',
-    passwordConfrimValidated:
+    passwordConfirmValidated:
       passwordConfirm !== '' && passwordConfirmErrorMessage === '',
   };
 };

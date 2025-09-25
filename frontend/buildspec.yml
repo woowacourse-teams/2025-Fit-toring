@@ -7,20 +7,47 @@ phases:
     commands:
       - cd frontend
       - npm install
-
   build:
     commands:
       - |
+        S3_BASE_PATH="s3://techcourse-project-2025/fit-toring"
         if [ "$APP_ENV" = "production" ]; then
           echo "✅ Building for PRODUCTION..."
           npm run build:prod
+          S3_PATH="$S3_BASE_PATH/prod/dist"
         elif [ "$APP_ENV" = "development" ]; then
           echo "✅ Building for DEVELOPMENT..."
           npm run build:dev
+          S3_PATH="$S3_BASE_PATH/dev/dist"
         else
           echo "❌ Unknown APP_ENV. Halting build."
           exit 1
         fi
+      - echo "📦 Target S3 path $S3_PATH"
+
+  post_build:
+    commands:
+      - echo "🚀 Deploying to $S3_PATH with proper cache headers..."
+      - |
+        aws s3 cp dist/index.html $S3_PATH/index.html \
+          --cache-control "no-store" \
+          --content-type "text/html" \
+          --metadata-directive REPLACE
+      - |
+        aws s3 sync dist $S3_PATH/ \
+          --exclude "index.html" \
+          --cache-control "public, max-age=31536000, immutable" \
+          --metadata-directive REPLACE
+      - |
+        aws s3 cp $S3_BASE_PATH/certificate-image/ $S3_BASE_PATH/certificate-image/ \
+          --recursive \
+          --metadata-directive REPLACE \
+          --cache-control "public, max-age=31536000, immutable"
+      - |
+        aws s3 cp $S3_BASE_PATH/profile-image/ $S3_BASE_PATH/profile-image/ \
+          --recursive \
+          --metadata-directive REPLACE \
+          --cache-control "public, max-age=31536000, immutable"
 
 artifacts:
   base-directory: frontend/dist
