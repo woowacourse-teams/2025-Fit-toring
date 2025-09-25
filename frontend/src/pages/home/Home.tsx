@@ -191,15 +191,6 @@ function Home() {
   );
 }
 
-const S_Trigger = styled.li`
-  visibility: hidden;
-  position: absolute;
-  bottom: 5rem;
-
-  width: 100%;
-  height: 1rem;
-`;
-
 export default Home;
 
 const customSytle = css`
@@ -232,6 +223,15 @@ const S_ActionWrapper = styled.div`
 const S_FilterWrapper = styled.div`
   display: flex;
   gap: 0.7rem;
+`;
+
+const S_Trigger = styled.li`
+  visibility: hidden;
+  position: absolute;
+  bottom: 1rem;
+
+  width: 100%;
+  height: 21.5rem;
 `;
 
 const S_Contents = styled.main`
