@@ -33,7 +33,10 @@ function MentorCardItem({
     navigate(`${PAGE_URL.DETAIL}/${id}`);
   };
 
-  const splittedProfileImageUrl = profileImageUrl?.split('.')[0];
+  const splittedProfileImageUrl = profileImageUrl?.substring(
+    0,
+    profileImageUrl.lastIndexOf('.'),
+  );
 
   return (
     <S_Container onClick={handleDetailInfoButtonClick}>
