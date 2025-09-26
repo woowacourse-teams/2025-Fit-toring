@@ -8,7 +8,7 @@ function Introduction({ content }: IntroductionProps) {
   return (
     <S_Container>
       <S_H4>멘토 소개</S_H4>
-      {content}
+      <p>{content}</p>
     </S_Container>
   );
 }

@@ -106,6 +106,7 @@ public class MentoringService {
         if (profileImageFile == null) {
             return;
         }
+        imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
         imageService.uploadImageToS3(
                 profileImageFile,
                 "profile-image",
@@ -254,8 +255,8 @@ public class MentoringService {
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-               && categoryTitle2 == null
-               && categoryTitle3 == null;
+                && categoryTitle2 == null
+                && categoryTitle3 == null;
     }
 
     private void validateAllCategoryTitle(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
@@ -301,10 +302,13 @@ public class MentoringService {
 
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {
         if (dto.profileImageFile() != null) {
+            // 프로필 이미지 새 업로드 →profileImageUrl: null,image: 변경할 파일
             saveProfileImage(dto.profileImageFile(), mentoring);
         } else if (dto.profileImageUrl() == null) {
+            // 프로필 이미지 삭제 →profileImageUrl: null, image: null
             imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
         } else {
+            // 프로필 이미지 변경 없음 →profileImageUrl: "기존 url값"
             validateProfileImageUrlMatches(mentoring.getId(), dto.profileImageUrl());
         }
     }

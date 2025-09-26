@@ -53,7 +53,9 @@ function MentoringItem({
       <S_MentorCardWrapper>
         <S_ProfileImage src={mentorProfileImage}></S_ProfileImage>
         <S_MessageAndReviewWrapper>
-          <S_Message>{content}</S_Message>
+          <S_Message>
+            <p>{content}</p>
+          </S_Message>
           {status !== StatusTypeEnum.REJECTED ? (
             <ReviewButton
               isReviewed={isReviewed}
@@ -137,12 +139,11 @@ const S_MessageAndReviewWrapper = styled.div`
   justify-content: space-between;
 
   width: 100%;
+  min-width: 0;
   padding-left: 1.2rem;
 `;
 
 const S_Message = styled.div`
-  display: flex;
-
   width: 100%;
   height: 8.5rem;
 

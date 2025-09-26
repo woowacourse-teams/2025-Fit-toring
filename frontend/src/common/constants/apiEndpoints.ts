@@ -19,4 +19,5 @@ export const API_ENDPOINTS = {
   MENTEE_PHONE_NUMBER: '/phone',
   REVIEWS: '/reviews',
   CERTIFICATES: '/certificates',
+  MENTORINGS_PAGE: '/mentorings-page',
 } as const;

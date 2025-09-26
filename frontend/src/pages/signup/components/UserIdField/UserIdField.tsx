@@ -74,6 +74,7 @@ const S_SuccessText = styled.p`
 
 const buttonCustomStyle = css`
   height: 4rem;
+  min-width: 6.44rem;
   padding: 1.1rem 0.8rem;
 
   font-size: 1.4rem;

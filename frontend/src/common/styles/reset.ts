@@ -62,6 +62,7 @@ export const resetCss = css`
 
   html {
     scrollbar-gutter: stable;
+    scroll-behavior: smooth;
   }
 
   html,
@@ -80,8 +81,9 @@ export const resetCss = css`
     height: 100%;
   }
 
-  html {
-    scroll-behavior: smooth;
+  p {
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
   ol,
