@@ -21,14 +21,13 @@ import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFil
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 import type { MentorInformation } from './types/MentorInformation';
+import type { Specialty } from '../../common/types/Specialty';
 
 const convertSelectedSpecialtiesToParams = (
-  selectedSpecialties: string[],
+  selectedSpecialties: Specialty[],
 ): Record<string, string> => {
   const params: Record<string, string> = {};
-  selectedSpecialties.forEach((specialty, index) => {
-    params[`categoryTitle${index + 1}`] = specialty;
-  });
+  params['categoryIds'] = selectedSpecialties.map(({ id }) => id).join(',');
 
   return params;
 };
@@ -56,19 +55,24 @@ function Home() {
     setModalOpened(false);
   };
 
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [selectedSpecialties, setSelectedSpecialties] = useState<Specialty[]>(
+    [],
+  );
 
-  const handleApply = (specialties: string[]) => {
+  const handleApply = (specialties: Specialty[]) => {
     setSelectedSpecialties(specialties);
     handleCloseModal();
   };
 
-  const handleSelectedSpecialtyChange = (specialty: string) => {
-    setSelectedSpecialties((prev) =>
-      prev.includes(specialty)
-        ? prev.filter((prevSpecialty) => prevSpecialty !== specialty)
-        : [...prev, specialty],
-    );
+  const handleSelectedSpecialtyChange = (specialty: Specialty) => {
+    setSelectedSpecialties((prev) => {
+      const hasSpecialty = prev.find(
+        (prevSpecialty) => prevSpecialty.id === specialty.id,
+      );
+      return hasSpecialty
+        ? prev.filter((prevSpecialty) => prevSpecialty.id !== specialty.id)
+        : [...prev, specialty];
+    });
   };
 
   const handleMentoringCreation = () => {
@@ -167,8 +171,8 @@ function Home() {
         <S_CheckboxWrapper>
           {selectedSpecialties.map((specialty) => (
             <SpecialtyCheckbox
-              key={specialty}
-              specialty={specialty}
+              key={specialty.id}
+              specialty={specialty.title}
               checked={selectedSpecialties.includes(specialty)}
               disabled={false}
               onChange={() => handleSelectedSpecialtyChange(specialty)}
