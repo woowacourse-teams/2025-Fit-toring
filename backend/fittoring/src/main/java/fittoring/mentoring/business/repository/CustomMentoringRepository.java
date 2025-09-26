@@ -3,8 +3,9 @@ package fittoring.mentoring.business.repository;
 import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.service.dto.MentoringPaginationResult;
+import java.util.List;
 
 public interface CustomMentoringRepository {
 
-    MentoringPaginationResult findMentoringsWithPagination(SortKey sortKey, Cursor cursor);
+    MentoringPaginationResult findMentoringsWithPagination(SortKey sortKey, Cursor cursor, List<Long> categoryIds);
 }
