@@ -59,12 +59,13 @@ function Home() {
     [],
   );
 
-  const handleApply = (specialties: Specialty[]) => {
+  const handleApply = async (specialties: Specialty[]) => {
     setSelectedSpecialties(specialties);
     handleCloseModal();
+    await fetchFilteredMentors(specialties);
   };
 
-  const handleSelectedSpecialtyChange = (specialty: Specialty) => {
+  const handleSelectedSpecialtyChange = async (specialty: Specialty) => {
     setSelectedSpecialties((prev) => {
       const hasSpecialty = prev.find(
         (prevSpecialty) => prevSpecialty.id === specialty.id,
@@ -73,6 +74,12 @@ function Home() {
         ? prev.filter((prevSpecialty) => prevSpecialty.id !== specialty.id)
         : [...prev, specialty];
     });
+
+    await fetchFilteredMentors(
+      selectedSpecialties.filter(
+        (prevSpecialty) => prevSpecialty.id !== specialty.id,
+      ),
+    );
   };
 
   const handleMentoringCreation = () => {
@@ -149,34 +156,26 @@ function Home() {
     return () => io.disconnect();
   }, [fetchMentorData, hasNext]);
 
-  const getFilteredMentors = useCallback(async () => {
+  const getFilteredMentors = async (selectedSpecialties: Specialty[]) => {
     const data = await getMentorListByPage({
       params: convertSelectedSpecialtiesToParams(selectedSpecialties),
     });
 
     return data;
-  }, [selectedSpecialties]);
+  };
 
-  useEffect(() => {
-    if (!selectedSpecialties.length) {
-      return;
-    }
+  const fetchFilteredMentors = async (selectedSpecialties: Specialty[]) => {
+    const data = await getFilteredMentors(selectedSpecialties);
+    const {
+      mentoringSummaryResponses,
+      hasNext: hasNewNext,
+      nextCursorCode,
+    } = data;
 
-    const fetchFilteredMentors = async () => {
-      const data = await getFilteredMentors();
-      const {
-        mentoringSummaryResponses,
-        hasNext: hasNewNext,
-        nextCursorCode,
-      } = data;
-
-      setMentorList(mentoringSummaryResponses);
-      setHasNext(hasNewNext);
-      setCursorCode(nextCursorCode);
-    };
-
-    fetchFilteredMentors();
-  }, [getFilteredMentors, selectedSpecialties]);
+    setMentorList(mentoringSummaryResponses);
+    setHasNext(hasNewNext);
+    setCursorCode(nextCursorCode);
+  };
 
   return (
     <S_Container>
