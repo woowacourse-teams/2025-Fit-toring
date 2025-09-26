@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.11.0...v1.11.1) (2025-09-26)
+
+
+### Bug Fixes
+
+* mentorList 업데이트 로직 간소화 [#781](https://github.com/woowacourse-teams/2025-Fit-toring/issues/781) ([f848ff9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/f848ff90998c7ecffb412e48a0c0c742bc21a614))
+
 # [1.11.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.10.0...v1.11.0) (2025-09-26)
 
 
