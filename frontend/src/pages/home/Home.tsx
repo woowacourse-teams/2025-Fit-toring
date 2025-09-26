@@ -133,10 +133,8 @@ function Home() {
         } = data;
 
         setHasNext(hasNewNext);
-        if (hasNewNext) {
-          setMentorList((prev) => [...prev, ...mentoringSummaryResponses]);
-          setCursorCode(nextCursorCode);
-        }
+        setMentorList((prev) => [...prev, ...mentoringSummaryResponses]);
+        setCursorCode(nextCursorCode);
       }
     };
 
