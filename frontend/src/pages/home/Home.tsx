@@ -149,6 +149,35 @@ function Home() {
     return () => io.disconnect();
   }, [fetchMentorData, hasNext]);
 
+  const getFilteredMentors = useCallback(async () => {
+    const data = await getMentorListByPage({
+      params: convertSelectedSpecialtiesToParams(selectedSpecialties),
+    });
+
+    return data;
+  }, [selectedSpecialties]);
+
+  useEffect(() => {
+    if (!selectedSpecialties.length) {
+      return;
+    }
+
+    const fetchFilteredMentors = async () => {
+      const data = await getFilteredMentors();
+      const {
+        mentoringSummaryResponses,
+        hasNext: hasNewNext,
+        nextCursorCode,
+      } = data;
+
+      setMentorList(mentoringSummaryResponses);
+      setHasNext(hasNewNext);
+      setCursorCode(nextCursorCode);
+    };
+
+    fetchFilteredMentors();
+  }, [getFilteredMentors, selectedSpecialties]);
+
   return (
     <S_Container>
       <HomeHeader />
