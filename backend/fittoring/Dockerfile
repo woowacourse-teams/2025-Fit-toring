@@ -4,8 +4,7 @@ WORKDIR /app
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     curl ca-certificates \
-    libheif1 libheif-dev \
-    libaom3 libaom-dev \
+    libavif-bin \
  && rm -rf /var/lib/apt/lists/*
 
 COPY build/libs/*SNAPSHOT.jar app.jar

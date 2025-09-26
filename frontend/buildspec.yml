@@ -54,6 +54,6 @@ phases:
       - touch empty_artifacts/placeholder.txt
 
 artifacts:
-  base-directory: frontend/dist
+  base-directory: frontend/empty_artifacts
   files:
     - '**/*'

@@ -11,7 +11,6 @@ import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
-import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
@@ -38,8 +37,6 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
-    private final ImageRepository imageRepository;
-    private final ImageService imageService;
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {

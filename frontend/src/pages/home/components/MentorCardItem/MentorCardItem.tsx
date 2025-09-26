@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
@@ -62,7 +64,7 @@ function MentorCardItem({
   );
 }
 
-export default MentorCardItem;
+export default memo(MentorCardItem);
 
 const S_Container = styled.li`
   display: flex;

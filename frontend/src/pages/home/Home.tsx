@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -10,9 +10,8 @@ import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
 import { THEME } from '../../common/styles/theme';
-import { captureSentryError } from '../../common/utils/captureSentryError';
 
-import { getMentorList } from './apis/getMentorList';
+import { getMentorListByPage } from './apis/getMentorListByPage';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
@@ -22,14 +21,13 @@ import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFil
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 import type { MentorInformation } from './types/MentorInformation';
+import type { Specialty } from '../../common/types/Specialty';
 
 const convertSelectedSpecialtiesToParams = (
-  selectedSpecialties: string[],
+  selectedSpecialties: Specialty[],
 ): Record<string, string> => {
   const params: Record<string, string> = {};
-  selectedSpecialties.forEach((specialty, index) => {
-    params[`categoryTitle${index + 1}`] = specialty;
-  });
+  params['categoryIds'] = selectedSpecialties.map(({ id }) => id).join(',');
 
   return params;
 };
@@ -57,18 +55,30 @@ function Home() {
     setModalOpened(false);
   };
 
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [selectedSpecialties, setSelectedSpecialties] = useState<Specialty[]>(
+    [],
+  );
 
-  const handleApply = (specialties: string[]) => {
+  const handleApply = async (specialties: Specialty[]) => {
     setSelectedSpecialties(specialties);
     handleCloseModal();
+    await fetchFilteredMentors(specialties);
   };
 
-  const handleSelectedSpecialtyChange = (specialty: string) => {
-    setSelectedSpecialties((prev) =>
-      prev.includes(specialty)
-        ? prev.filter((prevSpecialty) => prevSpecialty !== specialty)
-        : [...prev, specialty],
+  const handleSelectedSpecialtyChange = async (specialty: Specialty) => {
+    setSelectedSpecialties((prev) => {
+      const hasSpecialty = prev.find(
+        (prevSpecialty) => prevSpecialty.id === specialty.id,
+      );
+      return hasSpecialty
+        ? prev.filter((prevSpecialty) => prevSpecialty.id !== specialty.id)
+        : [...prev, specialty];
+    });
+
+    await fetchFilteredMentors(
+      selectedSpecialties.filter(
+        (prevSpecialty) => prevSpecialty.id !== specialty.id,
+      ),
     );
   };
 
@@ -84,29 +94,6 @@ function Home() {
 
     navigate(PAGE_URL.MENTORING_CREATE);
   };
-
-  const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
-
-  const fetchMentorData = useCallback(async () => {
-    try {
-      const data = await getMentorList({
-        params: convertSelectedSpecialtiesToParams(selectedSpecialties),
-      });
-      setMentorList(data);
-    } catch (error) {
-      console.error('멘토 데이터 가져오기 실패:', error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'home',
-        step: 'mentor-data-fetch',
-      });
-    }
-  }, [selectedSpecialties]);
-
-  useEffect(() => {
-    fetchMentorData();
-  }, [fetchMentorData]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,6 +115,68 @@ function Home() {
     }
   }, [authenticated]);
 
+  const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
+  const [hasNext, setHasNext] = useState(true);
+  const [cursorCode, setCursorCode] = useState<string | null>(null);
+  const elementRef = useRef<HTMLLIElement>(null);
+
+  const fetchMentorData = useCallback(async () => {
+    const data = await getMentorListByPage({
+      params: cursorCode
+        ? {
+            ...convertSelectedSpecialtiesToParams(selectedSpecialties),
+            cursorCode,
+          }
+        : convertSelectedSpecialtiesToParams(selectedSpecialties),
+    });
+
+    return data;
+  }, [cursorCode, selectedSpecialties]);
+
+  useEffect(() => {
+    const callback = async (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasNext) {
+        const data = await fetchMentorData();
+        const {
+          mentoringSummaryResponses,
+          hasNext: hasNewNext,
+          nextCursorCode,
+        } = data;
+
+        setHasNext(hasNewNext);
+        setMentorList((prev) => [...prev, ...mentoringSummaryResponses]);
+        setCursorCode(nextCursorCode);
+      }
+    };
+
+    const io = new IntersectionObserver(callback);
+    if (elementRef.current) {
+      io.observe(elementRef.current);
+    }
+    return () => io.disconnect();
+  }, [fetchMentorData, hasNext]);
+
+  const getFilteredMentors = async (selectedSpecialties: Specialty[]) => {
+    const data = await getMentorListByPage({
+      params: convertSelectedSpecialtiesToParams(selectedSpecialties),
+    });
+
+    return data;
+  };
+
+  const fetchFilteredMentors = async (selectedSpecialties: Specialty[]) => {
+    const data = await getFilteredMentors(selectedSpecialties);
+    const {
+      mentoringSummaryResponses,
+      hasNext: hasNewNext,
+      nextCursorCode,
+    } = data;
+
+    setMentorList(mentoringSummaryResponses);
+    setHasNext(hasNewNext);
+    setCursorCode(nextCursorCode);
+  };
+
   return (
     <S_Container>
       <HomeHeader />
@@ -142,7 +191,7 @@ function Home() {
           />
           <SortButton handleSortButtonClick={handleSortButtonClick} />
         </S_FilterWrapper>
-        <Button onClick={handleMentoringCreation} customStyle={customSytle}>
+        <Button onClick={handleMentoringCreation} customStyle={customStyle}>
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
         </Button>
       </S_ActionWrapper>
@@ -150,8 +199,8 @@ function Home() {
         <S_CheckboxWrapper>
           {selectedSpecialties.map((specialty) => (
             <SpecialtyCheckbox
-              key={specialty}
-              specialty={specialty}
+              key={specialty.id}
+              specialty={specialty.title}
               checked={selectedSpecialties.includes(specialty)}
               disabled={false}
               onChange={() => handleSelectedSpecialtyChange(specialty)}
@@ -162,6 +211,7 @@ function Home() {
           {mentorList.map((mentor) => (
             <MentorCardItem key={mentor.id} mentor={mentor} />
           ))}
+          <S_Trigger ref={elementRef} />
         </MentorCardList>
       </S_Contents>
       {/* <Footer>
@@ -173,7 +223,7 @@ function Home() {
 
 export default Home;
 
-const customSytle = css`
+const customStyle = css`
   width: 12.9rem;
   height: 3.4rem;
   border: 1px solid ${THEME.SYSTEM.GRAY300};
@@ -203,6 +253,15 @@ const S_ActionWrapper = styled.div`
 const S_FilterWrapper = styled.div`
   display: flex;
   gap: 0.7rem;
+`;
+
+const S_Trigger = styled.li`
+  visibility: hidden;
+  position: absolute;
+  bottom: 1rem;
+
+  width: 100%;
+  height: 21.5rem;
 `;
 
 const S_Contents = styled.main`

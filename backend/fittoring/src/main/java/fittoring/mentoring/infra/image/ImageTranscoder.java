@@ -24,7 +24,8 @@ public class ImageTranscoder {
         if (src == null) {
             throw new S3UploadException(InfraErrorMessage.IMAGE_TRANSCODE_ERROR.getMessage());
         }
-        if (normalizedExt.equals("jpg") || normalizedExt.equals("jpeg")) {
+
+        if ("jpg".equals(normalizedExt) || "jpeg".equals(normalizedExt)) {
             src = flattenIfHasAlpha(src, Color.WHITE);
             normalizedExt = "jpg";
             ct = "image/jpeg";
@@ -33,25 +34,12 @@ public class ImageTranscoder {
         return new Encoded(out, normalizedExt, ct);
     }
 
-    public Encoded toAvif(MultipartFile input) throws IOException {
-        BufferedImage src = ImageIO.read(input.getInputStream());
-        if (src == null) {
-            throw new S3UploadException(InfraErrorMessage.IMAGE_TRANSCODE_ERROR.getMessage());
-        }
-        boolean hasAvifWriter = ImageIO.getImageWritersByFormatName("avif").hasNext();
-        if (!hasAvifWriter) {
-            throw new S3UploadException(InfraErrorMessage.IMAGE_TRANSCODE_ERROR.getMessage());
-        }
-        byte[] out = writeWithImageIO(src, "avif");
-        return new Encoded(out, "avif", "image/avif");
-    }
-
     private static String normalizeExtension(String ext) {
         if (ext == null) {
             return "jpg";
         }
         String e = ext.toLowerCase().replace(".", "");
-        if (e.equals("jpeg")) {
+        if ("jpeg".equals(e)) {
             return "jpg";
         }
         return switch (e) {
@@ -72,28 +60,25 @@ public class ImageTranscoder {
     }
 
     private static BufferedImage flattenIfHasAlpha(BufferedImage src, Color bg) {
-        boolean hasAlpha = src.getColorModel().hasAlpha();
-        if (!hasAlpha) {
+        if (!src.getColorModel().hasAlpha()) {
             return src;
         }
-
         BufferedImage rgb = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D rgbGraphicImage = rgb.createGraphics();
+        Graphics2D g = rgb.createGraphics();
         try {
-            rgbGraphicImage.setComposite(AlphaComposite.SrcOver);
-            rgbGraphicImage.setColor(bg);
-            rgbGraphicImage.fillRect(0, 0, rgb.getWidth(), rgb.getHeight());
-            rgbGraphicImage.drawImage(src, 0, 0, null);
+            g.setComposite(AlphaComposite.SrcOver);
+            g.setColor(bg);
+            g.fillRect(0, 0, rgb.getWidth(), rgb.getHeight());
+            g.drawImage(src, 0, 0, null);
         } finally {
-            rgbGraphicImage.dispose();
+            g.dispose();
         }
         return rgb;
     }
 
     private static byte[] writeWithImageIO(BufferedImage image, String formatName) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            boolean ok = ImageIO.write(image, formatName, baos);
-            if (!ok) {
+            if (!ImageIO.write(image, formatName, baos)) {
                 throw new S3UploadException(InfraErrorMessage.IMAGE_TRANSCODE_ERROR.getMessage());
             }
             return baos.toByteArray();

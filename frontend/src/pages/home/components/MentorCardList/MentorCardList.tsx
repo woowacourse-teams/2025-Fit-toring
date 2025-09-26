@@ -13,6 +13,7 @@ const S_Container = styled.ul`
   flex-direction: column;
   justify-content: center;
   gap: 1.4rem;
+  position: relative;
 
   width: 100%;
   padding: 1rem 1.1rem;

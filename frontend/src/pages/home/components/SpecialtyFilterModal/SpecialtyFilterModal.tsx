@@ -16,8 +16,8 @@ interface SpecialtyFilterModalProps {
   opened: boolean;
   handleCloseModal: () => void;
 
-  selectedSpecialties: string[];
-  handleApplyFinalSpecialties: (specialties: string[]) => void;
+  selectedSpecialties: Specialty[];
+  handleApplyFinalSpecialties: (specialties: Specialty[]) => void;
 }
 
 function SpecialtyFilterModal({
@@ -49,7 +49,7 @@ function SpecialtyFilterModal({
   }, []);
 
   const [temporarySelectedSpecialties, setTemporarySelectedSpecialties] =
-    useState<string[]>(selectedSpecialties);
+    useState<Specialty[]>(selectedSpecialties);
 
   useEffect(() => {
     setTemporarySelectedSpecialties(selectedSpecialties);
@@ -59,12 +59,15 @@ function SpecialtyFilterModal({
     return null;
   }
 
-  const handleToggleTemporarySpecialty = (specialty: string) => {
-    setTemporarySelectedSpecialties((prev) =>
-      prev.includes(specialty)
-        ? prev.filter((prevSpecialty) => prevSpecialty !== specialty)
-        : [...prev, specialty],
-    );
+  const handleToggleTemporarySpecialty = (specialty: Specialty) => {
+    setTemporarySelectedSpecialties((prev) => {
+      const hasSpecialty = prev.find(
+        (prevSpecialty) => prevSpecialty.id === specialty.id,
+      );
+      return hasSpecialty
+        ? prev.filter((prevSpecialty) => prevSpecialty.id !== specialty.id)
+        : [...prev, specialty];
+    });
   };
 
   const handleApplySpecialties = () => {
@@ -101,12 +104,16 @@ function SpecialtyFilterModal({
             <SpecialtyCheckbox
               key={specialty.id}
               specialty={specialty.title}
-              checked={temporarySelectedSpecialties.includes(specialty.title)}
+              checked={
+                !!temporarySelectedSpecialties.find(
+                  (s) => s.id === specialty.id,
+                )
+              }
               disabled={
                 temporarySelectedSpecialties.length >= MAX_SPECIALTIES &&
-                !temporarySelectedSpecialties.includes(specialty.title)
+                !temporarySelectedSpecialties.find((s) => s.id === specialty.id)
               }
-              onChange={() => handleToggleTemporarySpecialty(specialty.title)}
+              onChange={() => handleToggleTemporarySpecialty(specialty)}
             />
           ))}
         </S_SpecialtyWrapper>
