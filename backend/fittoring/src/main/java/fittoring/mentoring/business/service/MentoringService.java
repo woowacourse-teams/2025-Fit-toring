@@ -368,13 +368,14 @@ public class MentoringService {
     ) {
         Cursor cursor = CursorCodec.decode(cursorCode);
         MentoringPaginationResult mentoringPaginationResult = mentoringRepository.findMentoringsWithPagination(sortKey,
-                cursor);
+                cursor, categoryIds);
 
         List<Mentoring> mentorings = mentoringPaginationResult.mentorings();
 
         List<Long> mentoringIds = createMentoringIdsByMentoring(mentorings);
 
         List<RatingStatsDto> ratingStatsDtos = reviewRepository.findReviewStatsByMentoringIds(mentoringIds);
+
         Map<Long, RatingStatsDto> ratingStatsDtoMap = createReviewStatsMap(ratingStatsDtos);
         List<MentoringSummaryResponse> mentoringSummaryResponses = mentorings.stream()
                 .map(mentoring -> {
