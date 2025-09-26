@@ -1,3 +1,11 @@
+# [1.12.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.11.1...v1.12.0) (2025-09-26)
+
+
+### Features
+
+* 멘토링 목록 조회 시 카테고리 필터링 기능 추가 ([9cb477c](https://github.com/woowacourse-teams/2025-Fit-toring/commit/9cb477cd2b64845b54dedabc14e068b3a969d37c))
+* 멘토링 목록 조회 시 카테고리 필터링 테스트 추가 ([c453bc2](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c453bc27ef436e014402243c5204a9d902012858))
+
 ## [1.11.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.11.0...v1.11.1) (2025-09-26)
 
 
