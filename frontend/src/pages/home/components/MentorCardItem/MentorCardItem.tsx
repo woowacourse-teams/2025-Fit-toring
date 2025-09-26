@@ -33,16 +33,25 @@ function MentorCardItem({
     navigate(`${PAGE_URL.DETAIL}/${id}`);
   };
 
+  const splittedProfileImageUrl = profileImageUrl?.split('.')[0];
+
   return (
     <S_Container onClick={handleDetailInfoButtonClick}>
       <S_ImageBox>
-        <S_ProfileImg
-          src={profileImageUrl || profileImg}
-          alt="트레이너 이미지"
-          onError={(e) => {
-            e.currentTarget.src = profileImg;
-          }}
-        />
+        <picture>
+          <source
+            srcSet={`${splittedProfileImageUrl}.avif`}
+            type="image/avif"
+          />
+          <S_ProfileImg
+            src={profileImageUrl || profileImg}
+            alt="트레이너 이미지"
+            onError={(e) => {
+              e.currentTarget.src = profileImg;
+            }}
+            fetchPriority="high"
+          />
+        </picture>
       </S_ImageBox>
       <S_Wrapper>
         <S_InfoWrapper>
