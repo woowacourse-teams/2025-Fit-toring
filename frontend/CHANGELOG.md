@@ -1,3 +1,31 @@
+# [1.11.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.10.0...v1.11.0) (2025-09-26)
+
+
+### Bug Fixes
+
+* customStyle 변수 이름 오타 수정 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([60682e9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/60682e9d905be038bf8f79526111745b3e36c7bc))
+* MSW 멘토 정보에 평점, 이미지 필드 수정 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([db71792](https://github.com/woowacourse-teams/2025-Fit-toring/commit/db717926f3177b8f973216baa5a4ed2f2aedfdbc))
+* ratingAverage 필드 타입을 number에서 string으로 변경 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([2f08289](https://github.com/woowacourse-teams/2025-Fit-toring/commit/2f0828990824217f05e0b6b2830f8673c4ab878f))
+* 마이페이지 넘치던 글 디자인 수정 [#755](https://github.com/woowacourse-teams/2025-Fit-toring/issues/755) ([dba6cef](https://github.com/woowacourse-teams/2025-Fit-toring/commit/dba6cef890140082a5c8f325aa9b43f7a25be9d0))
+* 멘토 상세보기 페이지 넘치던 글자 수정 [#755](https://github.com/woowacourse-teams/2025-Fit-toring/issues/755) ([ccc6a2e](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ccc6a2e34ce94dc00114d6c29497ec8084cc2350))
+* 멘토링 이미지 수정 시 삭제되도록 수정 [#768](https://github.com/woowacourse-teams/2025-Fit-toring/issues/768) ([c40e4a5](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c40e4a5acab10715193f48310b5f68086e84adbf))
+* 회원가입 폼의 인증요청, 인증하기 버튼에 최소 너비 추가 [#764](https://github.com/woowacourse-teams/2025-Fit-toring/issues/764) ([befba40](https://github.com/woowacourse-teams/2025-Fit-toring/commit/befba40360dd363dbcbb3885964176b74c60ba2c))
+* 회원가입 폼의 중복확인 버튼에 최소 너비 추가 [#764](https://github.com/woowacourse-teams/2025-Fit-toring/issues/764) ([5a1e085](https://github.com/woowacourse-teams/2025-Fit-toring/commit/5a1e085fcd85a9d966497985279ed39868ff6185))
+
+
+### Features
+
+* image 테이블 복합 유니크 키 추가 ([ff36ac5](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ff36ac5048fb44e385fa05f47caed482d68b221c))
+* IntersectionObserver를 사용하여 멘토 리스트의 무한 스크롤 감지 기능 추가 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([6f9c478](https://github.com/woowacourse-teams/2025-Fit-toring/commit/6f9c478b69a57900630a52b191aea23b3958b190))
+* MentorCardItem 컴포넌트를 메모이제이션하여 성능 개선 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([6f762f6](https://github.com/woowacourse-teams/2025-Fit-toring/commit/6f762f6a316242eee4fcb20e1cc01c6697ef4352))
+* MentoringByPage 인터페이스 추가 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([6002eaf](https://github.com/woowacourse-teams/2025-Fit-toring/commit/6002eafc92a1ce704fe1335fef924bcaa8268d75))
+* MENTORINGS_PAGE API 엔드포인트 추가 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([826e5c7](https://github.com/woowacourse-teams/2025-Fit-toring/commit/826e5c759ecbbe4fedbc7ea1deb881f8d25edb4b))
+* MSW 멘토 정보 추가 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([6368ea0](https://github.com/woowacourse-teams/2025-Fit-toring/commit/6368ea070ced8ce2224a37267f56fc6b8a4fd853))
+* rel-dev CI 실패 시 테스트 리포트 업로드 job 추가 ([b4d45a8](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b4d45a8af2dec2c0d10beb069215068e1db5225c))
+* rel-prod CI 실패 시 테스트 리포트 업로드 job 추가 ([afe35ed](https://github.com/woowacourse-teams/2025-Fit-toring/commit/afe35ede64549ffb0a85a63989c02b95895b9ec9))
+* 멘토 리스트 페이징을 위한 API 호출 및 IntersectionObserver 구현 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([ebb7e33](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ebb7e33ff5a488c1ec8c6008a7dc7a138e23d465))
+* 무한스크롤을 위한 MENTORINGS_PAGE API 기능 추가 [#731](https://github.com/woowacourse-teams/2025-Fit-toring/issues/731) ([d6b5362](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d6b5362ea8c26db17087c624471efeaa9a154ee0))
+
 # [1.10.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.9.1...v1.10.0) (2025-09-25)
 
 
