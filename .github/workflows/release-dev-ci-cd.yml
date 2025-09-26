@@ -141,3 +141,18 @@ jobs:
         run: |
           cd /home/ubuntu
           IMAGE="${IMAGE}" TAG="${TAG}" PROFILE="${PROFILE}" ./deploy-be.sh
+
+  test-report:
+    if: failure()
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: |
+            backend/fittoring/build/reports/tests/test
+            backend/fittoring/build/test-results/test
