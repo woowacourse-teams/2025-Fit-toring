@@ -37,9 +37,19 @@ management:
     web:
       base-path: /
       exposure:
-        include: health
+        include: health,info,metrics
       path-mapping:
         health: healthcheck
+  metrics:
+    tags:
+      application: fittoring
+    export:
+      cloudwatch:
+        enabled: true
+        namespace: fittoring-backend-dev
+        step: 30s
+        batch-size: 20
+        region: ap-northeast-2
 sms:
   base-url: https://api.solapi.com
   timeout:
