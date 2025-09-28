@@ -25,7 +25,7 @@ module.exports = merge(common, {
         vendors: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor-else',
-          chunks: 'all',
+          chunks: 'initial',
           priority: -10,
         },
       },
