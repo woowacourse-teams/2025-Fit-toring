@@ -28,6 +28,12 @@ function LoginForm() {
   const navigate = useNavigate();
 
   const { login } = useAuth();
+
+  const REST_API_KEY = process.env.KAKAO_REST_API_KEY;
+  const KAKAO_REDIRECT_URI = process.env.KAKAO_REDIRECT_URI;
+
+  const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
+
   const fetchLogin = async () => {
     try {
       const response = await postLogin(userId, password);
@@ -55,6 +61,10 @@ function LoginForm() {
     e.preventDefault();
 
     fetchLogin();
+  };
+
+  const handleSocialLogin = () => {
+    window.location.href = KAKAO_URL;
   };
 
   const loginFormValidated = userId !== '' && password !== '';
@@ -104,7 +114,7 @@ function LoginForm() {
         >
           로그인
         </Button>
-        <S_KakaoButton onClick={handleSocialLogin} />
+        <S_KakaoButton type="button" onClick={handleSocialLogin} />
       </S_ButtonWrapper>
     </S_Container>
   );
