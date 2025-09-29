@@ -114,6 +114,7 @@ class MentoringServiceTest {
         dbCleaner.clean();
     }
 
+    @Transactional
     @DisplayName("관리자가 멘토링을 삭제하면 연관된 객체도 함께 삭제 상태가 된다.")
     @Test
     void deleteByAdmin() {
@@ -128,6 +129,9 @@ class MentoringServiceTest {
         Mentoring mentoring = new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
         mentoringRepository.save(mentoring);
         Long mentoringId = mentoring.getId();
+
+        MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(mentoring);
+        mentoringStatisticsRepository.save(mentoringStatistics);
 
         Category category1 = new Category("카테고리1");
         Category category2 = new Category("카테고리2");
@@ -158,6 +162,8 @@ class MentoringServiceTest {
 
         // when
         mentoringService.deleteMentoringByAdmin(adminLoginId, mentoringId);
+        em.flush();
+        em.clear();
 
         // then
         Review deletedReview = (Review) em.createNativeQuery(
@@ -189,6 +195,8 @@ class MentoringServiceTest {
                         "SELECT * FROM mentoring WHERE id = ?", Mentoring.class)
                 .setParameter(1, mentoring.getId())
                 .getSingleResult();
+        em.flush();
+        em.clear();
 
         SoftAssertions.assertSoftly(softly -> {
                     assertThatThrownBy(() -> mentoringService.getMentoringWithRelationsById(mentoringId))
