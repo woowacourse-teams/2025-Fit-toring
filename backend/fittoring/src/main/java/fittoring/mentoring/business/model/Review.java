@@ -20,6 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,29 +30,23 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class Review {
 
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @Getter
     @Column(columnDefinition = "TINYINT", nullable = false)
     private int rating;
 
-    @Getter
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Getter
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Getter
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    @Getter
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -59,7 +54,6 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     private Reservation reservation;
 
-    @Getter
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member mentee;
