@@ -38,7 +38,6 @@ import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.CursorCodec;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
