@@ -11,6 +11,7 @@ import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.RefreshTokenRepository;
+import fittoring.mentoring.infra.OauthClientService;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
+    private final OauthClientService oauthClientService;
 
     @Transactional
     public void register(SignUpRequest request) {
@@ -95,5 +97,9 @@ public class AuthService {
     @Transactional
     public void logout(Long memberId) {
         refreshTokenRepository.deleteAllByMemberId(memberId);
+    }
+
+    public void kakaoLogin(String code) {
+        oauthClientService.requestKakaoToken(code);
     }
 }
