@@ -1,4 +1,4 @@
-package fittoring.mentoring.infra.image;
+package fittoring.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
