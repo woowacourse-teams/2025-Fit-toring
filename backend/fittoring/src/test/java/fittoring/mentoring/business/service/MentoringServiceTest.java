@@ -21,6 +21,7 @@ import fittoring.mentoring.business.model.ImageVariant;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.MentoringStatistics;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
@@ -32,6 +33,7 @@ import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
@@ -51,6 +53,7 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -102,6 +105,9 @@ class MentoringServiceTest {
 
     @Autowired
     private CertificateRepository certificateRepository;
+
+    @Autowired
+    private MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @BeforeEach
     void setUp() {
@@ -748,6 +754,44 @@ class MentoringServiceTest {
                             profileImageFile,
                             List.of(certificateImageFile1, certificateImageFile2)
                     ))).doesNotThrowAnyException();
+        }
+
+        @DisplayName("멘토링이 저장될 때 멘토링 통계 정보도 저장된다.")
+        @Test
+        void saveMentoringStatistics() {
+            //given
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
+            Member savedMentor = memberRepository.save(member1);
+
+            MentoringRegisterRequest request = new MentoringRegisterRequest(
+                    5000,
+                    List.of("근육증가", "다이어트"),
+                    "자기소개",
+                    3,
+                    "컨텐츠컨텐츠",
+                    "가상의카카오오픈채팅",
+                    List.of()
+            );
+
+            Category category1 = new Category("근육증가");
+            Category category2 = new Category("다이어트");
+
+            categoryRepository.save(category1);
+            categoryRepository.save(category2);
+
+            //when
+            mentoringService.registerMentoring(
+                    RegisterMentoringDto.of(
+                            savedMentor.getId(),
+                            request,
+                            null,
+                            null
+                    )
+            );
+
+            //then
+            Optional<MentoringStatistics> byId = mentoringStatisticsRepository.findById(1L);
+            assertThat(byId.get()).isNotNull();
         }
     }
 
