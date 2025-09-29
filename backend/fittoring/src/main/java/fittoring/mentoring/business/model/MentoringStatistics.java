@@ -51,6 +51,14 @@ public class MentoringStatistics {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Getter
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
+    @Getter
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public static MentoringStatistics defaultOf(Mentoring mentoring) {
         return new MentoringStatistics(
             null,
@@ -58,6 +66,8 @@ public class MentoringStatistics {
             0,
             0,
             0,
+            null,
+            false,
             null
         );
     }
