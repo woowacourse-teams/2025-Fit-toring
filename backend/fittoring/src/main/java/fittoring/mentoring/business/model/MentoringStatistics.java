@@ -9,9 +9,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import java.time.LocalDateTime;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -38,9 +39,11 @@ public class MentoringStatistics {
     @Column(nullable = false)
     private long reservationCount;
 
+    @Getter
     @Column(nullable = false)
     private long reviewCount;
 
+    @Getter
     @Column(nullable = false)
     private long ratingSum;
 

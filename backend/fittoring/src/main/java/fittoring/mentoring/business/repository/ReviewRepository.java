@@ -11,8 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends ListCrudRepository<Review, Long> {
 
-    Optional<Review> findByReservationId(Long reservationId);
-
     List<Review> findAllByMentee_Id(Long menteeId);
 
     @Query("""
@@ -45,8 +43,6 @@ public interface ReviewRepository extends ListCrudRepository<Review, Long> {
             ORDER BY r.createdAt DESC
             """)
     List<Review> findAllByReservationMentoringIdOrderByCreatedAtDesc(@Param("mentoringId") Long mentoringId);
-
-    boolean existsByReservationId(Long reservationId);
 
     boolean existsByReservationIdAndMentee_Id(Long reservationId, Long menteeId);
 
