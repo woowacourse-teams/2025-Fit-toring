@@ -181,7 +181,7 @@ class MentoringServiceTest {
                 .getSingleResult();
 
         MentoringStatistics deletedMentoringStatistics = (MentoringStatistics) em.createNativeQuery(
-                        "SELECT * FROM mentoring_statistics WHERE id = ?", Mentoring.class)
+                        "SELECT * FROM mentoring_statistics WHERE mentoring_id = ?", MentoringStatistics.class)
             .setParameter(1, mentoring.getId())
             .getSingleResult();
 
