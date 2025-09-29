@@ -73,3 +73,9 @@ jwt:
   secret-key: ${JWT_SECRET_KEY}
   access-token-expiration-millis: ${ACCESS_TOKEN_EXPIRATION_MILLIS}
   refresh-token-expiration-millis: ${REFRESH_TOKEN_EXPIRATION_MILLIS}
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket: techcourse-project-2025
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
