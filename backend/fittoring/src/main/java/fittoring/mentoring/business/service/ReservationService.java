@@ -166,6 +166,7 @@ public class ReservationService {
         checkAdminAuthority(adminReservationDeleteDto.memberId());
         Reservation reservation = getReservation(adminReservationDeleteDto.reservationId());
         reviewRepository.deleteByReservation(reservation);
+        mentoringStatisticsRepository.updateReservationCountMinus(reservation.getMentoring().getId());
         reservationRepository.delete(reservation);
     }
 }

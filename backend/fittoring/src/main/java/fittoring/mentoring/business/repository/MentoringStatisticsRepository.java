@@ -33,4 +33,12 @@ public interface MentoringStatisticsRepository extends ListCrudRepository<Mentor
             WHERE ms.id = :mentoringId
         """)
     void updateReservationCountPlus(@Param("mentoringId") Long mentoringId);
+
+    @Modifying
+    @Query("""
+            UPDATE MentoringStatistics ms
+            SET ms.reservationCount = ms.reservationCount - 1
+            WHERE ms.id = :mentoringId
+        """)
+    void updateReservationCountMinus(Long mentoringId);
 }

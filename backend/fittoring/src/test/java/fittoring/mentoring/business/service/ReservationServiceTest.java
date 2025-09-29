@@ -112,9 +112,9 @@ class ReservationServiceTest {
                 "가상의오픈채팅링크"
         );
         entityManager.persist(mentoring);
-        MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(mentoring);
+        MentoringStatistics mentoringStatistics = entityManager.persist(MentoringStatistics.defaultOf(mentoring));
         long originalReservationCount = mentoringStatistics.getReservationCount();
-        entityManager.persist(mentoringStatistics);
+
         entityManager.flush();
         entityManager.clear();
 
@@ -730,6 +730,9 @@ class ReservationServiceTest {
                 mentee
         ));
 
+        MentoringStatistics mentoringStatistics = entityManager.persist(MentoringStatistics.defaultOf(mentoring));
+        long originalReservationCount = mentoringStatistics.getReservationCount();
+
         AdminReservationDeleteDto adminReservationDeleteDto
                 = new AdminReservationDeleteDto(admin.getId(), reservation.getId());
 
@@ -755,6 +758,7 @@ class ReservationServiceTest {
             softly.assertThat(deletedReservation.isDeleted()).isTrue();
             softly.assertThat(deletedReservation.getDeletedAt()).isNotNull();
             softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
+            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount()).isEqualTo(originalReservationCount - 1);
         });
     }
 
