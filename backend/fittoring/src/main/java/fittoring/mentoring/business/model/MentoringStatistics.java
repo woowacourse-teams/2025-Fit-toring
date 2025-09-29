@@ -36,6 +36,7 @@ public class MentoringStatistics {
     @MapsId()
     private Mentoring mentoring;
 
+    @Getter
     @Column(nullable = false)
     private long reservationCount;
 

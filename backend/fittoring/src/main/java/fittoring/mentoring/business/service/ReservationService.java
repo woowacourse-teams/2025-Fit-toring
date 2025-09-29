@@ -13,6 +13,7 @@ import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
@@ -37,11 +38,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
+    private final MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
         Reservation reservation = createReservationEntity(dto);
-        return reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
+        return savedReservation;
     }
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {
