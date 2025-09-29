@@ -15,6 +15,7 @@ import usePasswordInput from '../../../../common/hooks/usePasswordInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { postLogin } from '../../apis/postLogin';
+import kakaoLoginIcon from '../../../../common/assets/images/kakao_login_large_wide.png';
 
 function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -96,16 +97,14 @@ function LoginForm() {
           size="full"
           customStyle={css`
             height: 4.3rem;
-            box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
-            box-shadow: 0 4px 12px 0
-              ${loginFormValidated ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
 
-            font-size: 1.6rem;
+            font-size: 1.8rem;
           `}
           variant={loginFormValidated ? 'primary' : 'disabled'}
         >
           로그인
         </Button>
+        <S_KakaoButton onClick={handleSocialLogin} />
       </S_ButtonWrapper>
     </S_Container>
   );
@@ -168,7 +167,23 @@ const S_Img = styled.img`
   margin-right: 1rem;
 `;
 
+const S_KakaoButton = styled.button`
+  width: 100%;
+  height: 4.3rem;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  border-radius: 0.7rem;
+  cursor: pointer;
+  background-image: url(${kakaoLoginIcon});
+  background-size: cover;
+  background-position: center;
+`;
+
 const S_ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+
   margin-top: 3rem;
 `;
 
