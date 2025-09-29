@@ -3,7 +3,7 @@ CREATE TABLE mentoring_statistics (
     reservation_count BIGINT NOT NULL,
     review_count BIGINT NOT NULL,
     rating_sum BIGINT NOT NULL,
-    updated_at DATETIME NULL,
+    updated_at DATETIME NOT NULL,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at DATETIME NULL,
 
