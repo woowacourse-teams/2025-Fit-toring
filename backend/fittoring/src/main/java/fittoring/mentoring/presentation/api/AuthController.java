@@ -7,21 +7,13 @@ import fittoring.mentoring.business.service.AuthService;
 import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
 import fittoring.mentoring.business.service.PhoneVerificationService;
 import fittoring.mentoring.presentation.CookieWriter;
-import fittoring.mentoring.presentation.dto.AuthTokenResponse;
-import fittoring.mentoring.presentation.dto.SignInRequest;
-import fittoring.mentoring.presentation.dto.SignUpRequest;
-import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
-import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
-import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
+import fittoring.mentoring.presentation.dto.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -37,7 +29,7 @@ public class AuthController {
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
         authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .build();
+                .build();
     }
 
     @PostMapping("/login")
@@ -45,7 +37,7 @@ public class AuthController {
         AuthTokenResponse response = authService.login(request.loginId(), request.password());
         CookieWriter.write(httpResponse, response);
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
     }
 
     @AuthRequired
@@ -54,7 +46,7 @@ public class AuthController {
         authService.logout(loginInfo.memberId());
         CookieWriter.clearCookies(httpResponse);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .build();
+                .build();
     }
 
     @PostMapping("/reissue")
@@ -65,27 +57,49 @@ public class AuthController {
         AuthTokenResponse response = authService.reissue(refreshToken);
         CookieWriter.write(httpResponse, response);
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
     }
 
     @PostMapping("/validate-id")
     public ResponseEntity<Void> validateDuplicateLoginId(@RequestBody @Valid ValidateDuplicateLoginIdRequest request) {
         authService.validateDuplicateLoginId(request.loginId());
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
     }
 
     @PostMapping("/auth-code")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
         phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
         return ResponseEntity.status(HttpStatus.CREATED)
-            .build();
+                .build();
     }
 
     @PostMapping("/auth-code/verify")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerificationCodeRequest request) {
         phoneVerificationService.verifyCode(request);
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
     }
+
+    @PostMapping("/kakao/callback")
+    public ResponseEntity<?> kakaoCallback(
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String error,
+            @RequestParam(required = false, value = "error_description") String errorDescription,
+            @RequestParam(required = false) String state) {
+        // TODO : state 검증
+
+        if (error != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("카카오 로그인 실패 : " + error + " : " + errorDescription);
+        }
+
+        if (code != null) {
+            authService.kakaoLogin(code);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
 }
