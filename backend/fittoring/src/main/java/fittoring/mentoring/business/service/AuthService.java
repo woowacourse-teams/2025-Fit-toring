@@ -11,6 +11,8 @@ import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.RefreshTokenRepository;
+import fittoring.mentoring.business.service.dto.KakaoTokenResponse;
+import fittoring.mentoring.business.service.dto.KakaoUserInfoResponse;
 import fittoring.mentoring.infra.OauthClientService;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
@@ -100,6 +102,9 @@ public class AuthService {
     }
 
     public void kakaoLogin(String code) {
-        oauthClientService.requestKakaoToken(code);
+        KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code);
+        String accessToken = tokenResponse.access_token();
+        KakaoUserInfoResponse userInfoResponse = oauthClientService.requestKakaoId(accessToken);
+        Long kakaoId = userInfoResponse.id();
     }
 }
