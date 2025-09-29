@@ -10,8 +10,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 /**
- * legacy 클래스입니다.
- * 이제 서버에서 이미지를 직접 업로드하지 않고 presigned-url을 발급하는 방식으로 수정됩니다.
+ * legacy 클래스입니다. 이제 서버에서 이미지를 직접 업로드하지 않고 presigned-url을 발급하는 방식으로 수정됩니다.
  */
 @RequiredArgsConstructor
 @Component
@@ -36,7 +35,7 @@ public class S3Uploader {
         String originalContentType = contentTypeOf(originalExtension);
 
         Encoded orig = imageTranscoder.toOriginal(resized, originalExtension, originalContentType);
-        String keyOriginal = buildKey(imageTypeName, variant, baseName, "." + orig.extension());
+        String keyOriginal = KeyBuilder.buildKey(imageTypeName, variant, baseName, "." + orig.extension());
         putObject(keyOriginal, orig.contentType(), orig.bytes());
         String urlOriginal = getUrl(keyOriginal);
 
@@ -51,11 +50,6 @@ public class S3Uploader {
                 .cacheControl("public, max-age=31536000, immutable")
                 .build();
         s3Client.putObject(req, RequestBody.fromBytes(bytes));
-    }
-
-    private static String buildKey(String imageType, ImageVariant variant, String baseName, String extensionWithDot) {
-        String variantName = variant.getName();
-        return "fit-toring/" + imageType + "/" + variantName + "/" + baseName + extensionWithDot;
     }
 
     private static String extensionOf(String name) {
