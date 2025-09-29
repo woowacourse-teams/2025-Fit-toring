@@ -11,4 +11,5 @@ export const PAGE_URL = {
   LOGIN: '/login',
   LANDING: '/landing',
   EDIT_PROFILE: '/my-page/edit-profile',
+  CHAT_ROOM: '/chat/room',
 } as const;
