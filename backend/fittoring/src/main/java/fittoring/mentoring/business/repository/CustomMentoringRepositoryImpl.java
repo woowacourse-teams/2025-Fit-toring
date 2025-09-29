@@ -10,6 +10,7 @@ import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.QCategoryMentoring;
 import fittoring.mentoring.business.model.QMentoring;
+import fittoring.mentoring.business.model.QMentoringStatistics;
 import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.service.dto.MentoringPaginationResult;
 import fittoring.util.CursorCodec;
@@ -24,22 +25,24 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
 
     private static final int PAGE_SIZE = 10;
     private static final QMentoring mentoring = QMentoring.mentoring;
+    private static final QMentoringStatistics mentoringStatistics = QMentoringStatistics.mentoringStatistics;
     private static final QCategoryMentoring categoryMentoring = QCategoryMentoring.categoryMentoring;
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public MentoringPaginationResult findMentoringsWithPagination(SortKey sortKey, Cursor cursor,
-                                                                  List<Long> categoryIds) {
-        BooleanBuilder where = new BooleanBuilder();
-        BooleanExpression cursorCondition = buildCursorCondition(sortKey, cursor);
-        BooleanExpression categoryFilterCondition = buildCategoryFilterCondition(categoryIds);
-
-        where.and(cursorCondition)
-                .and(categoryFilterCondition);
+    public MentoringPaginationResult findMentoringsWithPagination(
+        SortKey sortKey,
+        Cursor cursor,
+        List<Long> categoryIds
+    ) {
+        BooleanBuilder where = buildWhereClause(sortKey, cursor, categoryIds);
 
         List<Mentoring> rows = jpaQueryFactory.select(mentoring)
                 .from(mentoring)
+                .join(mentoringStatistics)
+                .on(mentoringStatistics.mentoring.eq(mentoring)
+                .and(mentoringStatistics.isDeleted.isFalse()))
                 .where(where)
                 .orderBy(orderSpecifiers(sortKey))
                 .limit(PAGE_SIZE + 1)
@@ -52,10 +55,41 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
             rows = rows.subList(0, PAGE_SIZE);
             nextCursorCode = switch (sortKey) {
                 case CREATED_AT -> getNextCursorCode(nextMentoring);
-                // 다른 정렬 기준이 추가될 수 있습니다.
+                case RESERVATION_COUNT ->
             };
         }
         return new MentoringPaginationResult(rows, nextCursorCode, hasNext);
+    }
+
+    private BooleanBuilder buildWhereClause(SortKey sortKey, Cursor cursor, List<Long> categoryIds) {
+        BooleanBuilder where = new BooleanBuilder();
+        where.and(buildCursorCondition(sortKey, cursor))
+            .and(buildCategoryFilterCondition(categoryIds))
+            .and(buildSoftDeleteCondition());
+        return where;
+    }
+
+    private BooleanExpression buildCursorCondition(SortKey sortKey, Cursor cursor) {
+        if (sortKey == SortKey.CREATED_AT && cursor != null) {
+            LocalDateTime cursorDateTime = Instant.ofEpochSecond(cursor.sortValue())
+                .atZone(ZoneId.of("Asia/Seoul"))
+                .toLocalDateTime();
+            return mentoring.createdAt.lt(cursorDateTime)
+                .or(
+                    mentoring.createdAt.eq(cursorDateTime)
+                        .and(mentoring.id.loe(cursor.id()))
+                );
+
+        }
+        if (sortKey == SortKey.RESERVATION_COUNT && cursor != null) {
+            long cursorReservationCount = cursor.sortValue();
+            return mentoringStatistics.reservationCount.lt(cursorReservationCount)
+                .or(
+                    mentoringStatistics.reservationCount.eq(cursorReservationCount)
+                        .and(mentoring.id.loe(cursor.id()))
+                );
+        }
+        return null;
     }
 
     private BooleanExpression buildCategoryFilterCondition(List<Long> categoryIds) {
@@ -77,6 +111,10 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
         );
     }
 
+    private BooleanExpression buildSoftDeleteCondition() {
+        return mentoring.isDeleted.isFalse();
+    }
+
     private String getNextCursorCode(Mentoring nextMentoring) {
         String nextCursorCode;
         long nextSortValue = nextMentoring.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
@@ -84,25 +122,14 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
         return nextCursorCode;
     }
 
-    private BooleanExpression buildCursorCondition(SortKey sortKey, Cursor cursor) {
-        if (sortKey.equals(SortKey.CREATED_AT) && cursor != null) {
-            LocalDateTime cursorDateTime = Instant.ofEpochSecond(cursor.sortValue())
-                    .atZone(ZoneId.of("Asia/Seoul"))
-                    .toLocalDateTime();
-            return mentoring.createdAt.lt(cursorDateTime)
-                    .or(
-                            mentoring.createdAt.eq(cursorDateTime)
-                                    .and(mentoring.id.loe(cursor.id()))
-                    );
-
-        }
-        return null;
-    }
-
     private OrderSpecifier<?>[] orderSpecifiers(SortKey sortKey) {
         return switch (sortKey) {
             case CREATED_AT -> new OrderSpecifier<?>[]{
                     mentoring.createdAt.desc(),
+                    mentoring.id.desc()
+            };
+            case RESERVATION_COUNT -> new OrderSpecifier<?>[]{
+                    mentoringStatistics.reservationCount.desc(),
                     mentoring.id.desc()
             };
         };
