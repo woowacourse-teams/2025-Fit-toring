@@ -48,12 +48,8 @@ public class Mentoring {
     @Column(name = "chat_url", columnDefinition = "TEXT", nullable = false)
     private String chatUrl;
 
-    /*
-    임시로 nullable == true 로 설정합니다.
-    멘토링 데이터 마이그레이션이 완료되면 nullable로 변경해야 합니다.
-     */
     @CreatedDate
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Getter

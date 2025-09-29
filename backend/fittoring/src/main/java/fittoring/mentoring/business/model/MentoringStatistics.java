@@ -2,6 +2,7 @@ package fittoring.mentoring.business.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -14,9 +15,12 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE mentoring_statistics SET is_deleted = true, deleted_at = now() WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "mentoring_statistics")
@@ -40,26 +44,18 @@ public class MentoringStatistics {
     @Column(nullable = false)
     private long ratingSum;
 
+    @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public static MentoringStatistics defaultOf(Mentoring mentoring, LocalDateTime updatedAt) {
+    public static MentoringStatistics defaultOf(Mentoring mentoring) {
         return new MentoringStatistics(
-                mentoring,
-                0,
-                0,
-                0,
-                updatedAt
+            null,
+            mentoring,
+            0,
+            0,
+            0,
+            null
         );
-    }
-
-    public MentoringStatistics(
-            Mentoring mentoring,
-            long reservationCount,
-            long reviewCount,
-            long ratingSum,
-            LocalDateTime updatedAt
-    ) {
-        this(null, mentoring, reservationCount, reviewCount, ratingSum, updatedAt);
     }
 }

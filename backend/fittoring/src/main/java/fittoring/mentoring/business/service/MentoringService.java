@@ -79,7 +79,7 @@ public class MentoringService {
         );
 
         final Mentoring savedMentoring = mentoringRepository.save(mentoring);
-        MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(mentoring, LocalDateTime.now());
+        MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(mentoring);
         mentoringStatisticsRepository.save(mentoringStatistics);
 
         List<String> categoryTitles = dto.category();
