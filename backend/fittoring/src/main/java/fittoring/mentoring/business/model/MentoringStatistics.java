@@ -31,11 +31,6 @@ public class MentoringStatistics {
     @Id
     private Long id;
 
-    @JoinColumn(name = "mentoring_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId()
-    private Mentoring mentoring;
-
     @Getter
     @Column(nullable = false)
     private long reservationCount;
@@ -60,16 +55,21 @@ public class MentoringStatistics {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @JoinColumn(name = "mentoring_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId()
+    private Mentoring mentoring;
+
     public static MentoringStatistics defaultOf(Mentoring mentoring) {
         return new MentoringStatistics(
             null,
-            mentoring,
             0,
             0,
             0,
             null,
             false,
-            null
+            null,
+            mentoring
         );
     }
 }
