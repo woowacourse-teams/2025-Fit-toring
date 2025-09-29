@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 import {
   createBrowserRouter,
   redirect,
@@ -6,9 +8,8 @@ import {
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
-import Landing from './pages/landing/Landing';
 import Home from './pages/home/Home';
-import { lazy } from 'react';
+import Landing from './pages/landing/Landing';
 
 const Login = lazy(() => import('./pages/login/Login'));
 const MentoringCreate = lazy(
@@ -28,6 +29,7 @@ const CreatedMentoring = lazy(
   () => import('./pages/createdMentoring/CreatedMentoring'),
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
+const ChatRoom = lazy(() => import('./pages/chatRoom/ChatRoom'));
 
 const router = createBrowserRouter([
   {
@@ -52,6 +54,7 @@ const router = createBrowserRouter([
     element: <MentoringUpdate />,
   },
   { path: PAGE_URL.LOGIN, element: <Login /> },
+  { path: `${PAGE_URL.CHAT_ROOM}/:roomId`, element: <ChatRoom /> },
   {
     path: `${PAGE_URL.MY_PAGE}`,
     element: <MyPage />,
