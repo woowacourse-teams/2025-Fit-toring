@@ -180,7 +180,12 @@ class MentoringServiceTest {
                 .setParameter(1, categoryMentoring1_1.getId())
                 .getSingleResult();
 
-        Mentoring deltedMentoring = (Mentoring) em.createNativeQuery(
+        MentoringStatistics deletedMentoringStatistics = (MentoringStatistics) em.createNativeQuery(
+                        "SELECT * FROM mentoring_statistics WHERE id = ?", Mentoring.class)
+            .setParameter(1, mentoring.getId())
+            .getSingleResult();
+
+        Mentoring deletedMentoring = (Mentoring) em.createNativeQuery(
                         "SELECT * FROM mentoring WHERE id = ?", Mentoring.class)
                 .setParameter(1, mentoring.getId())
                 .getSingleResult();
@@ -199,7 +204,8 @@ class MentoringServiceTest {
                     assertThat(deletedReservation.isDeleted()).isTrue();
                     assertThat(deletedCertificate.isDeleted()).isTrue();
                     assertThat(deletedCategoryMentoring.isDeleted()).isTrue();
-                    assertThat(deltedMentoring.isDeleted()).isTrue();
+                    assertThat(deletedMentoringStatistics.isDeleted()).isTrue();
+                    assertThat(deletedMentoring.isDeleted()).isTrue();
                 }
         );
     }

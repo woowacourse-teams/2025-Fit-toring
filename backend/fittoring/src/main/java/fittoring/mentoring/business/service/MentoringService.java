@@ -357,6 +357,7 @@ public class MentoringService {
         reservationRepository.deleteAll(allReservationByMentoring);
         categoryMentoringRepository.deleteByMentoringId(mentoring.getId());
         certificateRepository.deleteAllByMentoring(mentoring);
+        mentoringStatisticsRepository.deleteById(mentoring.getId());
         mentoringRepository.delete(mentoring);
     }
 
