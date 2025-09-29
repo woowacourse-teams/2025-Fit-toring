@@ -9,6 +9,10 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+/**
+ * legacy 클래스입니다.
+ * 이제 서버에서 이미지를 직접 업로드하지 않고 presigned-url을 발급하는 방식으로 수정됩니다.
+ */
 @RequiredArgsConstructor
 @Component
 public class S3Uploader {
