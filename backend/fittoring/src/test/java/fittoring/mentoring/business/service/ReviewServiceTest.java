@@ -16,6 +16,7 @@ import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.MentoringStatistics;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
@@ -23,6 +24,7 @@ import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
@@ -70,6 +72,8 @@ class ReviewServiceTest {
     private ReservationRepository reservationRepository;
     @Autowired
     private ReviewRepository reviewRepository;
+    @Autowired
+    private MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @BeforeEach
     void setUp() {
@@ -78,7 +82,7 @@ class ReviewServiceTest {
 
     @DisplayName("리뷰 작성을 성공하면 별점과 리뷰 내용, 리뷰를 작성한 멘토링의 id을 반환한다")
     @Test
-    void createReservation() {
+    void createReview() {
         // given
         Password password = Password.from("password");
         Member mentor = em.persist(new Member(
@@ -102,6 +106,7 @@ class ReviewServiceTest {
                 "content",
                 "introduction", "가상의카카오오픈채팅"
         ));
+        MentoringStatistics mentoringStatistics = em.persist(MentoringStatistics.defaultOf(mentoring));
         Reservation reservation = em.persist(
                 new Reservation(
                         "예약 신청합니다.",
@@ -118,21 +123,27 @@ class ReviewServiceTest {
                 rating,
                 content
         );
+        long originalReviewCount = mentoringStatistics.getReviewCount();
+        long originalRatingSum = mentoringStatistics.getRatingSum();
 
         // when
         ReviewCreateResponse reviewCreateResponse = reviewService.createReview(reviewCreateDto);
+        em.flush();
+        em.clear();
 
         // then
         assertSoftly(softAssertions -> {
             softAssertions.assertThat(reviewCreateResponse.mentoringId()).isEqualTo(mentoring.getId());
             softAssertions.assertThat(reviewCreateResponse.rating()).isEqualTo(rating);
             softAssertions.assertThat(reviewCreateResponse.content()).isEqualTo(content);
+            softAssertions.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReviewCount()).isEqualTo(originalReviewCount + 1);
+            softAssertions.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getRatingSum()).isEqualTo(originalRatingSum + rating);
         });
     }
 
     @DisplayName("존재하지 않는 멤버의 요청이라면 예외가 발생한다.")
     @Test
-    void createReservationFail1() {
+    void createReviewFail1() {
         // given
         Member mentor = em.persist(new Member(
                 "mentor",
@@ -179,7 +190,7 @@ class ReviewServiceTest {
 
     @DisplayName("신청하지 않았던 멘토링에 리뷰 작성을 요청하면 예외가 발생한다")
     @Test
-    void createReservationFail2() {
+    void createReviewFail2() {
         // given
         Password password = Password.from("password");
         Member mentor = em.persist(new Member(
@@ -236,7 +247,7 @@ class ReviewServiceTest {
 
     @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 예외가 발생한다")
     @Test
-    void createReservationFail3() {
+    void createReviewFail3() {
         // given
         Password password = Password.from("password");
         Member mentor = em.persist(new Member(
@@ -287,7 +298,7 @@ class ReviewServiceTest {
 
     @DisplayName("멘토링이 완료되지 않은 예약에는 리뷰를 남길 수 없다")
     @Test
-    void createReservationFail4() {
+    void createReviewFail4() {
         // given
         Password password = Password.from("password");
         Member mentor = em.persist(new Member(
@@ -1067,6 +1078,7 @@ class ReviewServiceTest {
                 "한 줄 소개",
                 "긴 글 소개", "가상의카카오오픈채팅"
         ));
+        MentoringStatistics mentoringStatistics = em.persist(MentoringStatistics.defaultOf(mentoring));
         Reservation reservation = em.persist(new Reservation(
                 "예약합니다.",
                 Status.COMPLETE,
@@ -1083,6 +1095,8 @@ class ReviewServiceTest {
                 mentee.getId(),
                 review.getId()
         );
+        long originalReviewCount = mentoringStatistics.getReviewCount();
+        long originalRatingSum = mentoringStatistics.getRatingSum();
 
         //when
         reviewService.deleteReview(reviewDeleteDto);
@@ -1098,6 +1112,8 @@ class ReviewServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(deletedReview.isDeleted()).isTrue();
             softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
+            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReviewCount()).isEqualTo(originalReviewCount - 1);
+            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getRatingSum()).isEqualTo(originalRatingSum - review.getRating());
         });
     }
 }
