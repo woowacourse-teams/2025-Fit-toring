@@ -3,9 +3,9 @@ import styled from '@emotion/styled';
 import ChatBubble from '../ChatBubble/ChatBubble';
 
 type MessageType = {
-  text: string;
+  content: string;
   createdAt: string;
-  sendId: string;
+  senderId: string;
 };
 
 interface ChatContentProps {
@@ -17,15 +17,23 @@ function ChatContent({ messages }: ChatContentProps) {
 
   return (
     <S_Container>
-      {messages.map(({ text, createdAt, sendId }) => {
-        if (sendId === myId) {
+      {messages.map(({ content, createdAt, senderId }) => {
+        if (senderId === myId) {
           return (
-            <ChatBubble text={text} createdAt={createdAt} authored={true} />
+            <ChatBubble
+              content={content}
+              createdAt={createdAt}
+              authored={true}
+            />
           );
         }
 
         return (
-          <ChatBubble text={text} createdAt={createdAt} authored={false} />
+          <ChatBubble
+            content={content}
+            createdAt={createdAt}
+            authored={false}
+          />
         );
       })}
     </S_Container>
