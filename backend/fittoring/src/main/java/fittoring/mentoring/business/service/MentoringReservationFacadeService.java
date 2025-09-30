@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
+import fittoring.mentoring.business.service.dto.ReservationInfo;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,11 @@ public class MentoringReservationFacadeService {
     }
 
     public void updateReservationStatusAndSendSms(Long reservationId, String updatedStatus) {
-        Reservation reservation = reservationService.updateStatus(reservationId, updatedStatus);
-        reservationNotificationService.sendReservationStatusUpdateSmsMessage(reservation, updatedStatus);
+        ReservationInfo reservationInfo = reservationService.updateStatus(reservationId, updatedStatus);
+        reservationNotificationService.sendReservationStatusUpdateSmsMessage(
+                reservationInfo.reservation(),
+                reservationInfo.reservation().getStatus(),
+                reservationInfo.chatRoomUrl()
+        );
     }
 }
