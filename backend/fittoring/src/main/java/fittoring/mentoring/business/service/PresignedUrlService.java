@@ -35,6 +35,7 @@ public class PresignedUrlService {
                 .bucket(properties.getBucketName())
                 .key(key)
                 .contentType(ContentType.of(dto.extension()))
+                .cacheControl("public, max-age=31536000, immutable")
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
