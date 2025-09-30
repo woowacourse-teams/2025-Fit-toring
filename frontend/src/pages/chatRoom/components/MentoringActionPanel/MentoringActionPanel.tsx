@@ -13,7 +13,7 @@ interface MentoringActionPanelProps {
   onPaymentRequestClick: (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
-  onReiviewRequestClick: (
+  onReviewRequestClick: (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
   onEndClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -27,7 +27,7 @@ function MentoringActionPanel({
   profileImageUrl,
   mentorOwned,
   onPaymentRequestClick,
-  onReiviewRequestClick,
+  onReviewRequestClick,
   onEndClick,
   onPaymentClick,
   onReviewClick,
@@ -63,7 +63,7 @@ function MentoringActionPanel({
             <Button
               variant="newPrimary"
               customStyle={customStyle}
-              onClick={onReiviewRequestClick}
+              onClick={onReviewRequestClick}
             >
               리뷰 요청
             </Button>
