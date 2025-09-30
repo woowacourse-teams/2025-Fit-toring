@@ -20,4 +20,5 @@ export const API_ENDPOINTS = {
   REVIEWS: '/reviews',
   CERTIFICATES: '/certificates',
   MENTORINGS_PAGE: '/mentorings-page',
+  KAKAO_LOGIN: '/kakao/callback',
 } as const;
