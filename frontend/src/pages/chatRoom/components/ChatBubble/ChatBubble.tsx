@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
 
+import { formatToKoreanTime } from '../../../../common/utils/formatToKoreanTime';
+
 interface ChatBubbleProps {
   content: string;
   createdAt: string;
@@ -12,7 +14,7 @@ function ChatBubble({ content, createdAt, authored }: ChatBubbleProps) {
       <S_Bubble authored={authored}>
         <S_Text authored={authored}>{content}</S_Text>
       </S_Bubble>
-      <S_Time>{createdAt}</S_Time>
+      <S_Time>{formatToKoreanTime(createdAt)}</S_Time>
     </S_Container>
   );
 }
