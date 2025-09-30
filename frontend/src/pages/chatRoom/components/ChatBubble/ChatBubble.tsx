@@ -1,16 +1,16 @@
 import styled from '@emotion/styled';
 
 interface ChatBubbleProps {
-  text: string;
+  content: string;
   createdAt: string;
   authored: boolean;
 }
 
-function ChatBubble({ text, createdAt, authored }: ChatBubbleProps) {
+function ChatBubble({ content, createdAt, authored }: ChatBubbleProps) {
   return (
     <S_Contaienr authored={authored}>
       <S_Bubble authored={authored}>
-        <S_Text authored={authored}>{text}</S_Text>
+        <S_Text authored={authored}>{content}</S_Text>
       </S_Bubble>
       <S_Time>{createdAt}</S_Time>
     </S_Contaienr>
