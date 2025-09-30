@@ -28,6 +28,9 @@ const CreatedMentoring = lazy(
   () => import('./pages/createdMentoring/CreatedMentoring'),
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
+const IdentityVerification = lazy(
+  () => import('./pages/identityVerification/IdentityVerification'),
+);
 
 const router = createBrowserRouter([
   {
@@ -52,6 +55,7 @@ const router = createBrowserRouter([
     element: <MentoringUpdate />,
   },
   { path: PAGE_URL.LOGIN, element: <Login /> },
+  { path: PAGE_URL.IDENTITY_VERIFICATION, element: <IdentityVerification /> },
   {
     path: `${PAGE_URL.MY_PAGE}`,
     element: <MyPage />,
