@@ -8,18 +8,18 @@ interface ChatBubbleProps {
 
 function ChatBubble({ content, createdAt, authored }: ChatBubbleProps) {
   return (
-    <S_Contaienr authored={authored}>
+    <S_Container authored={authored}>
       <S_Bubble authored={authored}>
         <S_Text authored={authored}>{content}</S_Text>
       </S_Bubble>
       <S_Time>{createdAt}</S_Time>
-    </S_Contaienr>
+    </S_Container>
   );
 }
 
 export default ChatBubble;
 
-const S_Contaienr = styled.div<Pick<ChatBubbleProps, 'authored'>>`
+const S_Container = styled.div<Pick<ChatBubbleProps, 'authored'>>`
   display: flex;
   flex-direction: column;
   align-items: ${({ authored }) => (authored ? 'flex-end' : 'flex-start')};
