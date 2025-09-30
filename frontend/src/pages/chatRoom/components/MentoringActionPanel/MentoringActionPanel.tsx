@@ -114,6 +114,7 @@ const S_Container = styled.div`
   gap: 1.2rem;
 
   padding: 1.2rem;
+  padding-top: 0;
   border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 
   background-color: ${({ theme }) => theme.BG.WHITE};
