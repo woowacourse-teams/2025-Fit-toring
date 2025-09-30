@@ -3,15 +3,19 @@ package fittoring.mentoring.presentation.api;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
+import fittoring.mentoring.business.model.MemberOauth;
 import fittoring.mentoring.business.service.AuthService;
 import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
 import fittoring.mentoring.business.service.PhoneVerificationService;
+import fittoring.mentoring.presentation.CookieProvider;
 import fittoring.mentoring.presentation.CookieWriter;
 import fittoring.mentoring.presentation.dto.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,7 +90,9 @@ public class AuthController {
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String error,
             @RequestParam(required = false, value = "error_description") String errorDescription,
-            @RequestParam(required = false) String state) {
+            @RequestParam(required = false) String state,
+            HttpServletResponse httpResponse
+    ) {
         // TODO : state 검증
 
         if (error != null) {
@@ -94,12 +100,29 @@ public class AuthController {
                     .body("카카오 로그인 실패 : " + error + " : " + errorDescription);
         }
 
-        if (code != null) {
-            authService.kakaoLogin(code);
+        if (code == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        AuthTokenResponse authTokenResponse = authService.kakaoLogin(code);
+
+        if (authTokenResponse.isLoginSuccess()){
+            CookieWriter.write(httpResponse, authTokenResponse);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken", authTokenResponse.oauthSignUpToken());
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).build();
+    }
+
+    @PostMapping("/oauth-signup")
+    public ResponseEntity<Void> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request, HttpServletResponse httpResponse) {
+        MemberOauth memberOauth = authService.registerOauthMember(request);
+        AuthTokenResponse authTokenResponse = authService.loginOauthMember(memberOauth);
+        CookieWriter.write(httpResponse, authTokenResponse);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .build();
     }
 
 }
