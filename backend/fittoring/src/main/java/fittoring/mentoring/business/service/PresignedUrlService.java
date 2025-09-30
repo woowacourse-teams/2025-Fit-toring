@@ -34,6 +34,7 @@ public class PresignedUrlService {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(properties.getBucketName())
                 .key(key)
+                .contentType(ContentType.of(dto.extension()))
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
