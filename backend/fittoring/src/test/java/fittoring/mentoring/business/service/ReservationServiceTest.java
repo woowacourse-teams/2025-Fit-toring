@@ -31,6 +31,7 @@ import fittoring.mentoring.business.service.dto.MentorMentoringReservationRespon
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
+import fittoring.mentoring.business.service.dto.ReservationInfo;
 import fittoring.mentoring.infra.image.ImageResizer;
 import fittoring.mentoring.infra.image.ImageTranscoder;
 import fittoring.mentoring.infra.image.S3Uploader;
@@ -61,6 +62,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
+        ChatRoomService.class,
         DbCleaner.class,
         JpaConfiguration.class,
         S3Uploader.class,
@@ -134,7 +136,9 @@ class ReservationServiceTest {
                     softAssertions.assertThat(actual.getMenteePhone()).isEqualTo(mentee.getPhoneNumber());
                     softAssertions.assertThat(actual.getContent()).isEqualTo(dto.content());
                     softAssertions.assertThat(actual.getStatus()).isEqualTo(Status.PENDING.name());
-                    softAssertions.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount()).isEqualTo(originalReservationCount + 1);
+                    softAssertions.assertThat(
+                                    mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount())
+                            .isEqualTo(originalReservationCount + 1);
                 }
         );
     }
@@ -312,6 +316,74 @@ class ReservationServiceTest {
         //then
         Reservation actual = entityManager.find(Reservation.class, savedReservation.getId());
         assertThat(actual.getStatus()).isEqualTo(expectedStatusValue);
+    }
+
+    @DisplayName("예약이 승인으로 변경되었다면 채팅방 URL을 반환한다.")
+    @Test
+    void updateStatusApprove() {
+        //given
+        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+        Member savedMentor = entityManager.persist(mentor);
+
+        Mentoring mentoring = new Mentoring(
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction",
+                "가상의오픈채팅링크"
+        );
+        entityManager.persist(mentoring);
+
+        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
+        Member savedMentee = entityManager.persist(mentee);
+
+        Reservation reservation = new Reservation("content", Status.PENDING, mentoring, savedMentee);
+        Reservation savedReservation = entityManager.persist(reservation);
+
+        String requestStatus = "APPROVED";
+
+        //when
+        ReservationInfo actual = reservationService.updateStatus(reservation.getId(), requestStatus);
+        entityManager.flush();
+        entityManager.clear();
+
+        //then
+        assertThat(actual.chatRoomUrl()).startsWith("https://www");
+    }
+
+    @DisplayName("예약이 거절로 변경되었다면 빈 채팅방 URL을 반환한다.")
+    @Test
+    void updateStatusReject() {
+        //given
+        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+        Member savedMentor = entityManager.persist(mentor);
+
+        Mentoring mentoring = new Mentoring(
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction",
+                "가상의오픈채팅링크"
+        );
+        entityManager.persist(mentoring);
+
+        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
+        Member savedMentee = entityManager.persist(mentee);
+
+        Reservation reservation = new Reservation("content", Status.PENDING, mentoring, savedMentee);
+        Reservation savedReservation = entityManager.persist(reservation);
+
+        String requestStatus = "REJECTED";
+
+        //when
+        ReservationInfo actual = reservationService.updateStatus(reservation.getId(), requestStatus);
+        entityManager.flush();
+        entityManager.clear();
+
+        //then
+        assertThat(actual.chatRoomUrl()).isEqualTo("");
     }
 
     @DisplayName("예약자(멘티)의 전화번호를 반환할 수 있다.")
@@ -758,7 +830,8 @@ class ReservationServiceTest {
             softly.assertThat(deletedReservation.isDeleted()).isTrue();
             softly.assertThat(deletedReservation.getDeletedAt()).isNotNull();
             softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
-            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount()).isEqualTo(originalReservationCount - 1);
+            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount())
+                    .isEqualTo(originalReservationCount - 1);
         });
     }
 
