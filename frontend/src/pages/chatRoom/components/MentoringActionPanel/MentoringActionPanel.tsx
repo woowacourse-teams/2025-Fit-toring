@@ -115,6 +115,8 @@ const S_Container = styled.div`
 
   padding: 1.2rem;
   border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
 const S_MentorInfoWrapper = styled.div`
