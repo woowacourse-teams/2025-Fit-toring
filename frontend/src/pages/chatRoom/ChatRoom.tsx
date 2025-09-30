@@ -135,7 +135,7 @@ function ChatRoom() {
 
   return (
     <S_Container>
-      <S_MentoringChatHeader>
+      <div>
         <ChatRoomHeader name="김멘토" />
         <MentoringActionPanel
           mentorName="김멘토"
@@ -148,7 +148,7 @@ function ChatRoom() {
           onPaymentClick={handlePaymentClick}
           onReviewClick={handleReviewClick}
         />
-      </S_MentoringChatHeader>
+      </div>
 
       <ChatContent messages={DUMMY_MESSAGES} />
       <InputSection value={value} onChange={handleChange} />
@@ -159,10 +159,8 @@ function ChatRoom() {
 export default ChatRoom;
 
 const S_Container = styled.div`
-  position: relative;
-`;
+  display: flex;
+  flex-direction: column;
 
-const S_MentoringChatHeader = styled.section`
-  position: sticky;
-  top: 0;
+  height: 100vh;
 `;

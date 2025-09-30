@@ -45,9 +45,11 @@ export default ChatContent;
 const S_Container = styled.div`
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   gap: 0.5rem;
 
   padding: 1.6rem;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
+  overflow-y: auto;
 `;

@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
-import Header from '../../../../common/components/Header/Header';
 
 interface ChatRoomHeader {
   name: string;
@@ -16,18 +15,25 @@ function ChatRoomHeader({ name }: ChatRoomHeader) {
   };
 
   return (
-    <Header>
+    <S_Container>
       <S_Wrapper>
         <S_BackButton onClick={handleBackButtonClick}>
           <S_BackIcon src={backIcon} alt="뒤로가기 아이콘" />
         </S_BackButton>
         <S_Title>{name}님과의 멘토링</S_Title>
       </S_Wrapper>
-    </Header>
+    </S_Container>
   );
 }
 
 export default ChatRoomHeader;
+
+const S_Container = styled.header`
+  width: 100%;
+  height: 5.7rem;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+`;
 
 const S_Wrapper = styled.div`
   display: flex;

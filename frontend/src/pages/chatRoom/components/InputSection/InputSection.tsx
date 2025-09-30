@@ -29,8 +29,6 @@ export default InputSection;
 const S_Container = styled.div`
   display: flex;
   gap: 1rem;
-  position: sticky;
-  bottom: 0;
 
   padding: 1.6rem;
   border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
