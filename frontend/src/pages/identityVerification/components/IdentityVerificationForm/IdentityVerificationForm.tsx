@@ -149,18 +149,12 @@ function IdentityVerificationForm() {
       return;
     }
 
-    const invalidSignupInfo =
+    const invalidIdentityVerificationInfo =
       !name || (gender !== '남' && gender !== '여') || !phoneNumber;
 
-    if (invalidSignupInfo) {
+    if (invalidIdentityVerificationInfo) {
       return;
     }
-
-    const signupInfo: IdentityVerificationInfo = {
-      name,
-      gender,
-      phone: phoneNumber,
-    };
   };
 
   return (
@@ -199,7 +193,7 @@ function IdentityVerificationForm() {
           font-size: 1.6rem;
         `}
       >
-        회원가입
+        본인 인증 완료
       </Button>
     </S_Container>
   );
