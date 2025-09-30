@@ -85,6 +85,10 @@ public class Reservation {
         return this.status.isPending();
     }
 
+    public boolean isApprove() {
+        return this.status.isApprove();
+    }
+
     public String getChatUrlOfMentoring() {
         return mentoring.getChatUrl();
     }

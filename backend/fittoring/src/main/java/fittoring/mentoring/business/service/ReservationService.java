@@ -22,6 +22,8 @@ import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.business.service.dto.ParticipatedReservationDto;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
+import fittoring.mentoring.business.service.dto.ReservationInfo;
+import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
 import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
 import fittoring.mentoring.presentation.dto.AdminReservationResponse;
 import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
@@ -33,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class ReservationService {
+
+    private final ChatRoomService chatRoomService;
 
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
@@ -138,11 +142,18 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation updateStatus(Long reservationId, String updateStatus) {
+    public ReservationInfo updateStatus(Long reservationId, String updateStatus) {
         Reservation reservation = getReservation(reservationId);
         Status status = Status.of(updateStatus);
         reservation.changeStatus(status);
-        return reservation;
+
+        String url = "";
+        if (reservation.isApprove()) {
+            ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
+            url = chatRoomCreatedInfo.url();
+        }
+
+        return new ReservationInfo(reservation, url);
     }
 
     private Reservation getReservation(Long reservationId) {
