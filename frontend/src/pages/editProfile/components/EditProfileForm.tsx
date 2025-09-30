@@ -12,12 +12,7 @@ import useNameInput from '../../../common/hooks/useNameInput';
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../common/utils/phoneNumberValidator';
 import PasswordFields from '../../signup/components/PasswordFields/PasswordFields';
-import PhoneFields from '../../signup/components/PhoneFields/PhoneFields';
-import UserInfoFields from '../../signup/components/UserInfoFields/UserInfoFields';
 import usePasswordWithConfirmInput from '../../signup/hooks/usePasswordWithConfirmInput';
-import useVerificationCodeConfirm from '../../signup/hooks/useVerificationCodeConfirm';
-import useVerificationCodeInput from '../../signup/hooks/useVerificationCodeInput';
-import useVerificationCodeRequest from '../../signup/hooks/useVerificationCodeRequest';
 import { patchMyProfile } from '../apis/patchMyProfile';
 import useGender from '../hooks/useGender';
 import useVerificationStep from '../hooks/useVerificationStep';
@@ -26,6 +21,11 @@ import type {
   PartialUserProfileRequest,
   UserProfileResponse,
 } from '../types/userProfile';
+import useVerificationCodeRequest from '../../../common/hooks/useVerificationCodeRequest';
+import useVerificationCodeInput from '../../../common/hooks/useVerificationCodeInput';
+import useVerificationCodeConfirm from '../../../common/hooks/useVerificationCodeConfirm';
+import UserInfoFields from '../../../common/components/UserInfoFields/UserInfoFields';
+import PhoneFields from '../../../common/components/PhoneFields/PhoneFields';
 
 interface EditProfileFormProps {
   myProfile: UserProfileResponse;

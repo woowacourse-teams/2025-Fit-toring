@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import { ERROR_MESSAGE } from '../constants/errorMessage';
 
 export const VERIFICATION_CODE_LENGTH = 6;

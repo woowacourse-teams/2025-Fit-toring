@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
-
-import FormField from '../../../../common/components/FormField/FormField';
-import Input from '../../../../common/components/Input/Input';
+import FormField from '../FormField/FormField';
+import Input from '../Input/Input';
 
 interface UserInfoFields {
   name: string;
