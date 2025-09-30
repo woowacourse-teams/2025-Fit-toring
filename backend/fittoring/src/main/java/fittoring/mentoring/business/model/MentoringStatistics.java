@@ -29,6 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class MentoringStatistics {
 
     @Getter
+    @Column(name = "mentoring_id")
     @Id
     private Long id;
 
@@ -56,21 +57,15 @@ public class MentoringStatistics {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @JoinColumn(name = "mentoring_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId()
-    private Mentoring mentoring;
-
     public static MentoringStatistics defaultOf(Mentoring mentoring) {
         return new MentoringStatistics(
-            null,
+            mentoring.getId(),
             0,
             0,
             0,
             null,
             false,
-            null,
-            mentoring
+            null
         );
     }
 }

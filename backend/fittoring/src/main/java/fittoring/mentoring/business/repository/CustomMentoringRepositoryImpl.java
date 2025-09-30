@@ -29,25 +29,15 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
         List<Long> categoryIds
     ) {
         // 결과 행을 튜플 타입(Mentoring, MentoringStatistics)으로 가져온다.
-        List<Mentoring> test = jpaQueryFactory
-            .select(mentoring)
-            .from(mentoring)
-            .where(mentoring.isDeleted.isTrue().or(mentoring.isDeleted.isFalse())) // isDeleted 값과 무관하게 모두 조회
-            .fetch();
-        System.out.println("222222   " + test.size());
-
         List<Tuple> rows = jpaQueryFactory
                 .select(mentoring, mentoringStatistics)
                 .from(mentoring)
                     .leftJoin(mentoringStatistics)
-                    .on(mentoringStatistics.mentoring.id.eq(mentoring.id))
+                    .on(mentoringStatistics.id.eq(mentoring.id))
                 .where(mentoringPaginationHelper.buildWhereClause(sortKey, cursor, categoryIds))
                 .orderBy(mentoringPaginationHelper.buildOrderSpecifiers(sortKey))
                 .limit(PAGE_SIZE + 1)
                 .fetch();
-        System.out.println("===============");
-System.out.println("11111111   " + rows.size());
-        System.out.println("===============");
 
         // 다음 행이 존재할 경우 다음 커서를 문자열화 해서 반환한다.
         boolean hasNext = rows.size() > PAGE_SIZE;

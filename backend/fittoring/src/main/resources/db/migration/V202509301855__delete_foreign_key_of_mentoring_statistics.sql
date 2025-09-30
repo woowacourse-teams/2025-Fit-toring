@@ -1,0 +1,1 @@
+ALTER TABLE mentoring_statistics DROP FOREIGN KEY fk_mentoring_statistics_mentoring;
