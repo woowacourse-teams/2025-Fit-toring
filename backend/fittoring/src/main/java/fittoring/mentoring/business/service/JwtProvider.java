@@ -49,6 +49,13 @@ public class JwtProvider {
         return buildToken(UUID.randomUUID().toString(), now, refreshMillis);
     }
 
+    public String createOauthSignUpToken(String providerMemberId){
+        Date now = new Date();
+        Date oauthMillis = new Date(now.getTime() + accessExpirationMillis);
+        return buildToken(providerMemberId, now, oauthMillis);
+
+    }
+
     private String buildToken(String subject, Date issuedAt, Date expiresAt) {
         JwtBuilder builder = Jwts.builder()
                 .signWith(secretKey, SignatureAlgorithm.HS256)
