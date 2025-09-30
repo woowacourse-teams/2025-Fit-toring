@@ -120,6 +120,7 @@ public class AuthController {
     public ResponseEntity<Void> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request, HttpServletResponse httpResponse) {
         MemberOauth memberOauth = authService.registerOauthMember(request);
         AuthTokenResponse authTokenResponse = authService.loginOauthMember(memberOauth);
+        CookieWriter.clearCookies(httpResponse);
         CookieWriter.write(httpResponse, authTokenResponse);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
