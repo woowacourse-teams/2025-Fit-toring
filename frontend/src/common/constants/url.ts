@@ -12,4 +12,5 @@ export const PAGE_URL = {
   LANDING: '/landing',
   EDIT_PROFILE: '/my-page/edit-profile',
   IDENTITY_VERIFICATION: '/identity-verification',
+  KAKAO_CALLBACK: '/kakao/callback',
 } as const;
