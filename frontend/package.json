@@ -5,7 +5,7 @@
   "scripts": {
     "build:dev": "webpack --config webpack.dev.js",
     "build:prod": "webpack --config webpack.prod.js",
-    "dev": "webpack serve --config webpack.dev.js",
+    "dev": "webpack serve --config webpack.local.js",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "storybook": "storybook dev -p 6006",

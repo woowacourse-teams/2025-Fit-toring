@@ -2,6 +2,7 @@ const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const DotenvWebpackPlugin = require('dotenv-webpack');
 
 module.exports = merge(common, {
   mode: 'development',
@@ -19,6 +20,9 @@ module.exports = merge(common, {
     },
   },
   plugins: [
+    new DotenvWebpackPlugin({
+      path: path.resolve(__dirname, '.env.dev'),
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {
