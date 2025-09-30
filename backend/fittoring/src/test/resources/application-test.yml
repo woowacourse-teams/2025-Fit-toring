@@ -34,7 +34,5 @@ jwt:
   refresh-token-expiration-millis: 20000000
 aws:
   s3:
-    access-key: test-ak
-    secret-key: test-sk
     region: ap-northeast-2
     bucket-name: test-bucket
