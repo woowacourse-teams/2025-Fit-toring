@@ -8,11 +8,11 @@ type MessageType = {
   sendId: string;
 };
 
-interface ChatProps {
+interface ChatContentProps {
   messages: MessageType[]; // 추후 타입 변경
 }
 
-function Chat({ messages }: ChatProps) {
+function ChatContent({ messages }: ChatContentProps) {
   const myId = '1';
 
   return (
@@ -32,7 +32,7 @@ function Chat({ messages }: ChatProps) {
   );
 }
 
-export default Chat;
+export default ChatContent;
 
 const S_Container = styled.div`
   display: flex;
