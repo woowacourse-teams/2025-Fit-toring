@@ -4,6 +4,7 @@ import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.exception.InvalidCursorException;
 
 public class CursorCodec {
+
     public static Cursor decode(String cursorCode) {
         if (cursorCode == null || cursorCode.isBlank()) {
             return null;
@@ -16,7 +17,10 @@ public class CursorCodec {
     }
 
     public static String encode(Cursor cursor) {
-        return String.join("|",
-                Long.toString(cursor.sortValue()), Long.toString(cursor.id()));
+        return String.join(
+                "|",
+                Long.toString(cursor.sortValue()),
+                Long.toString(cursor.id())
+        );
     }
 }

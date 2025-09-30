@@ -28,6 +28,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class MentoringStatistics {
 
+    @Getter
     @Id
     private Long id;
 
