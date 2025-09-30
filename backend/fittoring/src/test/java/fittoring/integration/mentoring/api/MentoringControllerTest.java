@@ -13,6 +13,7 @@ import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.MentoringStatistics;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
@@ -24,6 +25,7 @@ import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
@@ -38,6 +40,9 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +62,9 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private MentoringRepository mentoringRepository;
+
+    @Autowired
+    private MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
@@ -81,6 +89,9 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
     @Test
@@ -1094,6 +1105,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
             });
         }
 
+        @Transactional
         @DisplayName("첫 멘토링 목록 페이지를 조회하고, 카테고리 필터링을 할 수 있다.")
         @Test
         void getMentoringSummaryPagesWithCategory_1() {
@@ -1128,22 +1140,29 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
             memberRepository.saveAll(savedMentor);
 
             List<Mentoring> savedMentorings = new ArrayList<>();
+            List<MentoringStatistics> savedMentoringStatistics = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Mentoring mentoring =
-                        new Mentoring(
-                                savedMentor.get(i),
-                                1000,
-                                3,
-                                "멘토링 내용: " + i,
-                                "멘토링 자기소개",
-                                "가상의카카오오픈채팅"
-                        );
+                Mentoring mentoring = new Mentoring(
+                    savedMentor.get(i),
+                    1000,
+                    3,
+                    "멘토링 내용: " + i,
+                    "멘토링 자기소개",
+                    "가상의카카오오픈채팅"
+                );
                 savedMentorings.add(mentoring);
+                MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(mentoring);
+                savedMentoringStatistics.add(mentoringStatistics);
             }
             mentoringRepository.saveAll(savedMentorings);
+            mentoringStatisticsRepository.saveAll(savedMentoringStatistics);
+            em.flush();
+            em.clear();
 
             Category category1 = categoryRepository.save(new Category("체형교정"));
             Category category2 = categoryRepository.save(new Category("다이어트"));
+            em.flush();
+            em.clear();
 
             List<CategoryMentoring> categoryMentorings = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
@@ -1155,6 +1174,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 categoryMentorings.add(categoryMentoring);
             }
             categoryMentoringRepository.saveAll(categoryMentorings);
+            em.flush();
+            em.clear();
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
@@ -1162,13 +1183,18 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 images.add(image);
             }
             imageRepository.saveAll(images);
+            em.flush();
+            em.clear();
 
             List<Reservation> reservations = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
                 Reservation reservation = new Reservation("content", Status.COMPLETE, savedMentorings.get(i), mentee);
                 reservations.add(reservation);
+                mentoringStatisticsRepository.updateReservationCountPlus(savedMentorings.get(i).getId());
             }
             reservationRepository.saveAll(reservations);
+            em.flush();
+            em.clear();
 
             List<Review> reviews = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
@@ -1179,8 +1205,11 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                         mentee
                 );
                 reviews.add(review);
+                mentoringStatisticsRepository.updateReviewStatisticsPlus(reservations.get(i).getMentoring().getId(), 5);
             }
             reviewRepository.saveAll(reviews);
+            em.flush();
+            em.clear();
 
             //when
             MentoringSummaryPaginationResponse firstResponse = RestAssured
@@ -1189,7 +1218,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                     .filter(documentWithTag("mentoring/get-mentorings-page-success-first"))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
-                    .queryParam("categoryIds", "1, 2")
+                    .queryParam("categoryIds", category1.getId() + "," + category2.getId())
                     .when()
                     .get("/mentorings-page")
                     .then().log().all()
@@ -1197,9 +1226,17 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                     .extract()
                     .as(MentoringSummaryPaginationResponse.class);
 
+            em.flush();
+            em.clear();
+
+String sql = "SELECT COUNT(*) FROM mentoring";
+Number result = (Number) em.createNativeQuery(sql)
+    .getSingleResult();
+long count = result.longValue();
+System.out.println("멘토링 테이블의 레코드 개수: " + count);
+
             //then
-            SoftAssertions.assertSoftly(softAssertions -> {
-                assertThat(firstResponse.mentoringSummaryResponses()).hasSize(5);   // 카테고리 1, 2번 동시 보유 조건
+            SoftAssertions.assertSoftly(softAssertions -> {assertThat(firstResponse.mentoringSummaryResponses()).hasSize(5);   // 카테고리 1, 2번 동시 보유 조건
                 assertThat(firstResponse.mentoringSummaryResponses().getLast().id()).isEqualTo(1L);
                 assertThat(firstResponse.nextCursorCode()).isNull();
                 assertThat(firstResponse.hasNext()).isFalse();
