@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { fixupConfigRules } from '@eslint/compat';
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
+import pluginQuery from '@tanstack/eslint-plugin-query';
 import tsParser from '@typescript-eslint/parser';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import prettier from 'eslint-config-prettier';
@@ -40,6 +41,7 @@ export default defineConfig([
       import: importPlugin,
       'unused-imports': unusedImportPlugin,
       react: reactPlugin,
+      '@tanstack/query': pluginQuery,
     },
 
     languageOptions: {
