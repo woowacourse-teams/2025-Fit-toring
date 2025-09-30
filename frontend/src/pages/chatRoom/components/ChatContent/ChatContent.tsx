@@ -17,23 +17,18 @@ function ChatContent({ messages }: ChatContentProps) {
 
   return (
     <S_Container>
-      {messages.map(({ content, createdAt, senderId }) => {
-        if (senderId === myId) {
-          return (
+      {messages.map(({ content, createdAt, senderId }, index) => {
+        const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
+        const marginNeeded = prevSenderId !== senderId;
+
+        return (
+          <S_ChatBubbleWrapper key={index} marginNeeded={marginNeeded}>
             <ChatBubble
               content={content}
               createdAt={createdAt}
-              authored={true}
+              authored={senderId === myId}
             />
-          );
-        }
-
-        return (
-          <ChatBubble
-            content={content}
-            createdAt={createdAt}
-            authored={false}
-          />
+          </S_ChatBubbleWrapper>
         );
       })}
     </S_Container>
@@ -46,10 +41,13 @@ const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 0.5rem;
 
   padding: 1.6rem;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
   overflow-y: auto;
+`;
+
+const S_ChatBubbleWrapper = styled.div<{ marginNeeded: boolean }>`
+  margin-top: ${({ marginNeeded }) => (marginNeeded ? '1.5rem' : '0.8rem')};
 `;
