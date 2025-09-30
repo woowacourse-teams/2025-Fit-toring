@@ -31,10 +31,8 @@ public enum ImageExtension {
         return Arrays.stream(values())
                 .filter(ext -> ext.value.equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() ->
-                        new UnsupportedImageExtensionException(
-                                BusinessErrorMessage.UNSUPPORTED_IMAGE_EXTENSION.getMessage()
-                        )
+                .orElseThrow(() -> new UnsupportedImageExtensionException(
+                        BusinessErrorMessage.UNSUPPORTED_IMAGE_EXTENSION.getMessage())
                 );
     }
 }
