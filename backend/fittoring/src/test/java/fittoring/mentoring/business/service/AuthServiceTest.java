@@ -12,6 +12,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.util.DbCleaner;
@@ -30,7 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class})
+@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class, MentoringPaginationHelper.class})
 @DataJpaTest
 class AuthServiceTest {
 

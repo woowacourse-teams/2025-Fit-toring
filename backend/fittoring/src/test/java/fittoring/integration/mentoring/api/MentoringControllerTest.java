@@ -26,6 +26,7 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
@@ -46,7 +47,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
+@Import({MentoringPaginationHelper.class})
 class MentoringControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
