@@ -23,14 +23,14 @@ export default ChatBubble;
 
 const S_Container = styled.div<Pick<ChatBubbleProps, 'authored'>>`
   display: flex;
-  flex-direction: column;
-  align-items: ${({ authored }) => (authored ? 'flex-end' : 'flex-start')};
-  gap: 0.2rem;
+  flex-direction: ${({ authored }) => (authored ? 'row-reverse' : 'row')};
+  align-items: flex-end;
+  gap: 0.5rem;
 `;
 
 const S_Bubble = styled.div<Pick<ChatBubbleProps, 'authored'>>`
   width: fit-content;
-  max-width: 30rem;
+  max-width: 28rem;
   padding: 0.7rem 1.2rem;
   border-radius: ${({ authored }) =>
     authored ? '14px 14px 8px 14px;' : '14px 14px 14px 8px'};
@@ -46,6 +46,6 @@ const S_Text = styled.p<Pick<ChatBubbleProps, 'authored'>>`
 `;
 
 const S_Time = styled.span`
-  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
+  ${({ theme }) => theme.TYPOGRAPHY.C5_R};
   color: ${({ theme }) => theme.SYSTEM.GRAY400};
 `;
