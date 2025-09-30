@@ -12,5 +12,5 @@ export const formatToKoreanTime = (isoString: string) => {
 
   const paddedMinutes = String(minutes).padStart(2, '0');
 
-  return `${period} ${hours}시 ${paddedMinutes}분`;
+  return `${period} ${hours}: ${paddedMinutes}`;
 };
