@@ -28,7 +28,8 @@ interface ApiClientPatchType<T> {
 
 interface ApiClientPutType {
   endpoint: string;
-  body: Record<string, string | number> | FormData;
+  headers?: Record<string, string>;
+  body: Record<string, string | number> | FormData | File;
   withCredentials?: boolean;
 }
 
