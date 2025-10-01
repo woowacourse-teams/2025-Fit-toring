@@ -1,5 +1,0 @@
-ALTER TABLE member_oauth
-ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
-
-ALTER TABLE member_oauth
-ADD COLUMN deleted_at DATETIME NULL;
