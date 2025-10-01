@@ -31,6 +31,7 @@ interface ApiClientPutType {
   headers?: Record<string, string>;
   body: Record<string, string | number> | FormData | File;
   withCredentials?: boolean;
+  useBaseUrl?: boolean;
 }
 
 type RequestCredentials = 'omit' | 'same-origin' | 'include';
@@ -216,14 +217,16 @@ class ApiClient {
     headers = { 'Content-Type': 'application/json' },
     body,
     withCredentials,
+    useBaseUrl = true,
   }: ApiClientPutType) {
-    const url = new URL(`${this.#baseUrl}${endpoint}`);
+    const url = new URL(`${useBaseUrl ? this.#baseUrl : ''}${endpoint}`);
     const isFormData = body instanceof FormData;
+    const isFile = body instanceof File;
 
     const options = {
       method: 'PUT',
       headers: isFormData ? undefined : headers,
-      body: isFormData ? body : JSON.stringify(body),
+      body: isFormData || isFile ? body : JSON.stringify(body),
       credentials: withCredentials
         ? 'include'
         : ('same-origin' as RequestCredentials),
