@@ -9,6 +9,7 @@ public record ChatRoomResponse(
         int mentoringPrice,
         Long senderId
 ) {
+
     public static ChatRoomResponse of(
             String participant,
             String mentorName,
