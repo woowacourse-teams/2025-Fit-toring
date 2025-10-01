@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
-import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CertificateNotFoundException;
 import fittoring.mentoring.business.exception.ForbiddenException;
@@ -42,6 +41,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -49,8 +49,6 @@ import org.springframework.test.context.ActiveProfiles;
         DbCleaner.class,
         CertificateService.class,
         ImageService.class,
-        S3Uploader.class,
-        S3Configuration.class,
         ImagePolicyRegistry.class,
         CertificatePolicy.class,
         MentoringProfilePolicy.class,
@@ -58,18 +56,23 @@ import org.springframework.test.context.ActiveProfiles;
         ImageResizer.class,
         ImageTranscoder.class,
         JpaConfiguration.class,
-        JpaConfiguration.class,
         QueryDslConfig.class
 })
 @DataJpaTest
 class CertificateServiceTest {
 
-    @Autowired
-    TestEntityManager em;
     private Member admin;
     private Mentoring mentoring;
+
+    @MockitoBean
+    private S3Uploader s3Uploader;
+
+    @Autowired
+    TestEntityManager em;
+
     @Autowired
     private CertificateService certificateService;
+
     @Autowired
     private DbCleaner dbCleaner;
 
