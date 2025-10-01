@@ -5,7 +5,6 @@ import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.ForbiddenException;
-import fittoring.mentoring.business.exception.ImageNotFoundException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
@@ -296,34 +295,39 @@ public class MentoringService {
     @Transactional
     public void modifyMentoring(ModifyMentoringDto dto) {
         Mentoring mentoring = findMentoringOwnedByMentor(dto.mentoringId(), dto.mentorId());
+
         categoryMentoringRepository.deleteByMentoringId(mentoring.getId());
         mapCategoriesToMentoring(dto.category(), mentoring);
+
         fetchProfileImage(dto, mentoring);
+
         certificateService.mapCertificatesToMentoring(dto.certificateInfos(), mentoring);
         mentoring.modify(dto.price(), dto.career(), dto.content(), dto.introduction(), dto.chatUrl());
     }
 
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {
-        if (dto.profileImageFile() != null) {
-            // 프로필 이미지 새 업로드 →profileImageUrl: null,image: 변경할 파일
-            saveProfileImage(dto.profileImageFile(), mentoring);
-        } else if (dto.profileImageUrl() == null) {
-            // 프로필 이미지 삭제 →profileImageUrl: null, image: null
-            imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
-        } else {
-            // 프로필 이미지 변경 없음 →profileImageUrl: "기존 url값"
-            validateProfileImageUrlMatches(mentoring.getId(), dto.profileImageUrl());
-        }
-    }
-
-    private void validateProfileImageUrlMatches(Long mentoringId, String profileImageUrl) {
-        if (imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoringId)
-                .orElseThrow(() -> new ImageNotFoundException(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage()))
-                .getUrl()
-                .equals(profileImageUrl)) {
+        if (!validateS3UploadedImage(dto.profileImageUrl())) {
             return;
         }
-        throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_URL.getMessage());
+        if (dto.profileImageUrl() == null) {
+            imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
+            return;
+        }
+        Image profileImage = imageService.findByImageTypeAndRelationId(
+                        ImageType.MENTORING_PROFILE,
+                        mentoring.getId()
+                )
+                .orElse(null);
+        if (profileImage == null) {
+            imageService.save(ImageType.CERTIFICATE, mentoring.getId(), dto.profileImageUrl());
+            return;
+        }
+        imageService.deleteByImageTypeAndRelationId(ImageType.CERTIFICATE, mentoring.getId());
+        imageService.save(ImageType.CERTIFICATE, mentoring.getId(), dto.profileImageUrl());
+    }
+
+    private boolean validateS3UploadedImage(String imageUrl) {
+
     }
 
     private Mentoring findMentoringOwnedByMentor(Long mentoringId, Long mentorId) {
