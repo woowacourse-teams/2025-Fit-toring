@@ -14,6 +14,7 @@ import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
@@ -38,6 +39,7 @@ public class ReviewService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final MentoringRepository mentoringRepository;
+    private final MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @Transactional
     public ReviewCreateResponse createReview(ReviewCreateDto dto) {
@@ -45,6 +47,7 @@ public class ReviewService {
         Review savedReview = reviewRepository.save(review);
         Mentoring mentoring = mentoringRepository.findByReviewId(savedReview.getId())
                 .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
+        mentoringStatisticsRepository.updateReviewStatisticsPlus(mentoring.getId(), savedReview.getRating());
         return new ReviewCreateResponse(
                 mentoring.getId(),
                 savedReview.getRating(),
@@ -161,19 +164,18 @@ public class ReviewService {
         Review review = reviewRepository.findById((reviewDeleteDto.reviewId()))
                 .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
         validateReviewOwner(review, reviewDeleteDto.menteeId());
+        Mentoring mentoring = review.getReservation().getMentoring();
+        mentoringStatisticsRepository.updateReviewStatisticsMinus(mentoring.getId(), review.getRating());
         reviewRepository.delete(review);
     }
 
     @Transactional
     public void deleteForAdmin(Long memberId, Long reviewId) {
         validateAdmin(memberId);
-        validateReviewExists(reviewId);
-        reviewRepository.deleteById(reviewId);
-    }
-
-    private void validateReviewExists(Long reviewId) {
-        if (!reviewRepository.existsById(reviewId)) {
-            throw new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
-        }
+        Review review = reviewRepository.findById((reviewId))
+            .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
+        Mentoring mentoring = review.getReservation().getMentoring();
+        mentoringStatisticsRepository.updateReviewStatisticsMinus(mentoring.getId(), review.getRating());
+        reviewRepository.delete(review);
     }
 }

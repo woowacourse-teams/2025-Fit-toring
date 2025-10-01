@@ -1,7 +1,6 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.config.QueryDslConfig;
-import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
@@ -29,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -38,22 +38,21 @@ import org.springframework.test.context.ActiveProfiles;
         ImagePolicyRegistry.class,
         ImageService.class,
         ImagePolicyRegistry.class,
-        S3Uploader.class,
         ImageResizer.class,
         ImageTranscoder.class,
-        S3Configuration.class,
         CertificatePolicy.class,
         MentoringProfilePolicy.class,
         NonePolicy.class,
         DbCleaner.class,
         MemberService.class,
         ImageService.class,
-        S3Uploader.class,
-        S3Configuration.class,
         QueryDslConfig.class
 })
 @DataJpaTest
 class MemberServiceTest {
+
+    @MockitoBean
+    private S3Uploader s3Uploader;
 
     @Autowired
     private MemberService memberService;

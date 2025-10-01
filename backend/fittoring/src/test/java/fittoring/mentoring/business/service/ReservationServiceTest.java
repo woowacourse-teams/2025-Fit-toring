@@ -6,7 +6,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
-import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
@@ -19,11 +18,13 @@ import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.MentoringStatistics;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
@@ -55,17 +56,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
         JpaConfiguration.class,
-        S3Uploader.class,
         ImagePolicyRegistry.class,
         ImageResizer.class,
         ImageTranscoder.class,
-        S3Configuration.class,
         CertificatePolicy.class,
         MentoringProfilePolicy.class,
         NonePolicy.class,
@@ -76,8 +76,14 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest
 class ReservationServiceTest {
 
+    @MockitoBean
+    private S3Uploader s3Uploader;
+
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @Autowired
     private TestEntityManager entityManager;
@@ -107,6 +113,12 @@ class ReservationServiceTest {
                 "가상의오픈채팅링크"
         );
         entityManager.persist(mentoring);
+        MentoringStatistics mentoringStatistics = entityManager.persist(MentoringStatistics.defaultOf(mentoring));
+        long originalReservationCount = mentoringStatistics.getReservationCount();
+
+        entityManager.flush();
+        entityManager.clear();
+
         ReservationCreateDto dto = new ReservationCreateDto(
                 mentee.getId(),
                 mentoring.getId(),
@@ -123,6 +135,9 @@ class ReservationServiceTest {
                     softAssertions.assertThat(actual.getMenteePhone()).isEqualTo(mentee.getPhoneNumber());
                     softAssertions.assertThat(actual.getContent()).isEqualTo(dto.content());
                     softAssertions.assertThat(actual.getStatus()).isEqualTo(Status.PENDING.name());
+                    softAssertions.assertThat(
+                                    mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount())
+                            .isEqualTo(originalReservationCount + 1);
                 }
         );
     }
@@ -718,6 +733,9 @@ class ReservationServiceTest {
                 mentee
         ));
 
+        MentoringStatistics mentoringStatistics = entityManager.persist(MentoringStatistics.defaultOf(mentoring));
+        long originalReservationCount = mentoringStatistics.getReservationCount();
+
         AdminReservationDeleteDto adminReservationDeleteDto
                 = new AdminReservationDeleteDto(admin.getId(), reservation.getId());
 
@@ -743,6 +761,8 @@ class ReservationServiceTest {
             softly.assertThat(deletedReservation.isDeleted()).isTrue();
             softly.assertThat(deletedReservation.getDeletedAt()).isNotNull();
             softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
+            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount())
+                    .isEqualTo(originalReservationCount - 1);
         });
     }
 

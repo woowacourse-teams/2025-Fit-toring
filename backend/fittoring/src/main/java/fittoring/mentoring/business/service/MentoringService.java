@@ -17,6 +17,7 @@ import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.MentoringStatistics;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.model.Status;
@@ -25,6 +26,7 @@ import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.MentoringPaginationResult;
@@ -36,6 +38,7 @@ import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.CursorCodec;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +62,7 @@ public class MentoringService {
     private final CertificateRepository certificateRepository;
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
+    private final MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @Transactional
     public void registerMentoring(RegisterMentoringDto dto) {
@@ -72,7 +76,10 @@ public class MentoringService {
                 dto.introduction(),
                 dto.chatUrl()
         );
+
         final Mentoring savedMentoring = mentoringRepository.save(mentoring);
+        MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(mentoring);
+        mentoringStatisticsRepository.save(mentoringStatistics);
 
         List<String> categoryTitles = dto.category();
         mapCategoriesToMentoring(categoryTitles, savedMentoring);
@@ -349,6 +356,7 @@ public class MentoringService {
         reservationRepository.deleteAll(allReservationByMentoring);
         categoryMentoringRepository.deleteByMentoringId(mentoring.getId());
         certificateRepository.deleteAllByMentoring(mentoring);
+        mentoringStatisticsRepository.deleteById(mentoring.getId());
         mentoringRepository.delete(mentoring);
     }
 
