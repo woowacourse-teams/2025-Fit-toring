@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 @RequiredArgsConstructor
@@ -43,10 +44,12 @@ public class PresignedUrlService {
                 .putObjectRequest(putObjectRequest)
                 .build();
 
+        PresignedPutObjectRequest presigned = presigner.presignPutObject(presignRequest);
+
         return new PresignedIssueResponse(
-                presigner.presignPutObject(presignRequest).url().toString(),
+                presigned.url().toString(),
                 LocalDateTime.ofInstant(
-                        presigner.presignPutObject(presignRequest).expiration(),
+                        presigned.expiration(),
                         ZoneId.of("Asia/Seoul")
                 )
         );
