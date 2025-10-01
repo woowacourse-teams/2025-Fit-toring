@@ -27,6 +27,14 @@ public class ImageService {
     private final S3Uploader s3Uploader;
     private final ImagePolicyRegistry imagePolicyRegistry;
 
+    public Optional<Image> save(ImageType type, Long relationId, String imageUrl) {
+        return Optional.of(imageRepository.save(new Image(
+                imageUrl,
+                type,
+                relationId
+        )));
+    }
+
     public List<Image> saveAll(ImageType type, Long relationId, List<String> imagesUrl) {
         List<Image> images = new ArrayList<>();
         for (String imageUrl : imagesUrl) {
