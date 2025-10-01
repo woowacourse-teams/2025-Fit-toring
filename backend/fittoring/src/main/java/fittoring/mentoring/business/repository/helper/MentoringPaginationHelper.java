@@ -69,6 +69,12 @@ public class MentoringPaginationHelper {
                 .or(mentoringStatistics.reservationCount.eq(cursorReservationCount)
                         .and(mentoring.id.loe(cursor.id())));
         }
+        if (sortKey == SortKey.AVERAGE_RATING && cursor != null) {
+            double cursorAverageCount = Double.longBitsToDouble(cursor.sortValue());
+            return mentoringStatistics.ratingSum.doubleValue().divide(mentoringStatistics.reviewCount.doubleValue()).lt(cursorAverageCount)
+                .or(mentoringStatistics.ratingSum.doubleValue().divide(mentoringStatistics.reviewCount.doubleValue()).eq(cursorAverageCount)
+                    .and(mentoring.id.loe(cursor.id())));
+        }
         return null;
     }
 
@@ -110,6 +116,10 @@ public class MentoringPaginationHelper {
                 mentoringStatistics.reservationCount.desc(),
                 mentoring.id.desc()
             };
+            case AVERAGE_RATING -> new OrderSpecifier[]{
+                mentoringStatistics.ratingSum.doubleValue().divide(mentoringStatistics.reviewCount.doubleValue()).desc(),
+                mentoring.id.desc()
+            };
         };
     }
 
@@ -129,13 +139,14 @@ public class MentoringPaginationHelper {
             return switch (sortKey) {
                 case CREATED_AT -> getNextCursorCodeOfCreatedAt(nextMentoring);
                 case RESERVATION_COUNT -> getNextCursorCodeOfReservationCount(nextMentoringStatistics.getReservationCount(), nextMentoring.getId());
+                case AVERAGE_RATING -> getNextCursorCodeOfAverageRating(nextMentoringStatistics);
             };
         }
         return null;
     }
 
     /**
-     * 정렬 기준이 created_at인 경우의 다음 커서를 문자열한다.
+     * 정렬 기준이 created_at인 경우의 다음 커서를 문자열화 한다.
      * LocalDateTime 타입의 created_at을 long 타입으로 변환하여 Cursor 객체를 만든 후 문자열화 한다.
      */
     private String getNextCursorCodeOfCreatedAt(Mentoring nextMentoring) {
@@ -146,10 +157,23 @@ public class MentoringPaginationHelper {
     }
 
     /**
-     * 정렬 기준이 reservation_count인 경우의 다음 커서를 문자열한다.
+     * 정렬 기준이 reservation_count인 경우의 다음 커서를 문자열화 한다.
      * 다음 멘토링 값의 reservation_count를 사용하여 Cursor 객체를 만든 후 문자열화 한다.
      */
     private String getNextCursorCodeOfReservationCount(long nextReservationCount, long nextMentoringId) {
         return CursorCodec.encode(new Cursor(nextReservationCount, nextMentoringId));
+    }
+
+    /**
+     * 정렬 기준이 average_count인 경우의 다음 커서를 문자열화 한다.
+     * double 타입의 다음 별점 평균을 바로 커서에 저장할 수 없으므로 double 타입을 bit화 하여 long 타입으로 변환하여 커서에 저장한다.
+     */
+    private String getNextCursorCodeOfAverageRating(MentoringStatistics nextMentoringStatistics) {
+        double nextAverageRating = 0.0;
+        if (nextMentoringStatistics.getReviewCount() > 0) {
+            nextAverageRating = (double) nextMentoringStatistics.getRatingSum() / nextMentoringStatistics.getReviewCount();
+        }
+        long nextAverageRatingBits = Double.doubleToLongBits(nextAverageRating);
+        return CursorCodec.encode(new Cursor(nextAverageRatingBits, nextMentoringStatistics.getId()));
     }
 }
