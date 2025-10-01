@@ -166,7 +166,6 @@ public class MentoringService {
     private RatingStatsDto getRatingStatsDto(Long mentoringId) {
         MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.findById(mentoringId)
             .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
-        System.out.println(mentoringStatistics.getReviewCount() + " " + mentoringStatistics.getRatingSum() + " ===========================================================");
         return new RatingStatsDto(
             mentoringId,
             mentoringStatistics.calculateAverageRating(),
