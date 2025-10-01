@@ -47,6 +47,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Deprecated
 class MentoringControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
@@ -121,6 +122,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
         int newPrice = 1000;
         String newCategory = "category2";
         String newIntroduction = "수정된 긴 글 소개";
+        String newProfileImageUrl = "수정된 새로운 프로필 이미지";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         String chatUrl = "가상의카카오오픈채팅";
@@ -128,6 +130,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 newPrice,
                 List.of(newCategory),
                 newIntroduction,
+                newProfileImageUrl,
                 newCareer,
                 newContent,
                 chatUrl,
@@ -164,6 +167,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
         int newPrice = 1000;
         String newCategory = "category2";
         String newIntroduction = "수정된 긴 글 소개";
+        String newProfileImageUrl = "수정된 새로운 프로필 이미지";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         String chatUrl = "가상의카카오오픈채팅";
@@ -171,6 +175,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 newPrice,
                 List.of(newCategory),
                 newIntroduction,
+                newProfileImageUrl,
                 newCareer,
                 newContent,
                 chatUrl,
@@ -224,12 +229,14 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
         int newPrice = 1000;
         String newCategory = "category2";
         String newIntroduction = "수정된 긴 글 소개";
+        String newProfileImageUrl = "수정된 새로운 프로필 이미지";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
                 newPrice,
                 List.of(newCategory),
                 newIntroduction,
+                newProfileImageUrl,
                 newCareer,
                 newContent,
                 chatUrl,
