@@ -1015,14 +1015,5 @@ class MentoringServiceTest {
                     .hasMessage(BusinessErrorMessage.MENTOR_NOT_SAME.getMessage());
         }
     }
-
-    @DisplayName("멘토링을 아무 조건 및 필터링 없이 조회할 수 있다")
-    @Test
-    void findMentoringSummaryPages1() {
-        // given
-
-        // when
-
-        // then
-    }
 }
+
