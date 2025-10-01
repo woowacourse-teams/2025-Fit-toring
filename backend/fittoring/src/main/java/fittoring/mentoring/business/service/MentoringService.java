@@ -33,6 +33,7 @@ import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationRespon
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
+import fittoring.mentoring.infra.image.KeyBuilder;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
@@ -61,6 +62,7 @@ public class MentoringService {
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
     private final MentoringStatisticsRepository mentoringStatisticsRepository;
+    private final PresignedUrlService presignedUrlService;
 
     @Transactional
     public void registerMentoring(RegisterMentoringDto dto) {
@@ -109,10 +111,9 @@ public class MentoringService {
     }
 
     private void saveProfileImage(String profileImageUrl, Mentoring mentoring) {
-        if (profileImageUrl == null) {
+        if (profileImageUrl == null || !isImageExistsInS3(profileImageUrl)) {
             return;
         }
-        // todo: S3 업로드 유효성 검증 추가
         imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
         imageService.save(ImageType.MENTORING_PROFILE, mentoring.getId(), profileImageUrl);
     }
@@ -306,7 +307,7 @@ public class MentoringService {
     }
 
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {
-        if (!validateS3UploadedImage(dto.profileImageUrl())) {
+        if (!isImageExistsInS3(dto.profileImageUrl())) {
             return;
         }
         if (dto.profileImageUrl() == null) {
@@ -326,8 +327,9 @@ public class MentoringService {
         imageService.save(ImageType.CERTIFICATE, mentoring.getId(), dto.profileImageUrl());
     }
 
-    private boolean validateS3UploadedImage(String imageUrl) {
-
+    private boolean isImageExistsInS3(String url) {
+        String s3Key = KeyBuilder.extractFromUrl(url);
+        return presignedUrlService.isObjectExists(s3Key);
     }
 
     private Mentoring findMentoringOwnedByMentor(Long mentoringId, Long mentorId) {
