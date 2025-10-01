@@ -328,8 +328,12 @@ public class MentoringService {
     }
 
     private boolean isImageExistsInS3(String url) {
-        String s3Key = KeyBuilder.extractFromUrl(url);
-        return presignedUrlService.isObjectExists(s3Key);
+        try {
+            String s3Key = KeyBuilder.extractFromUrl(url);
+            return presignedUrlService.isObjectExists(s3Key);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Mentoring findMentoringOwnedByMentor(Long mentoringId, Long mentorId) {
