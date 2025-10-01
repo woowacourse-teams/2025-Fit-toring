@@ -25,6 +25,7 @@ const compat = new FlatCompat({
 
 export default defineConfig([
   globalIgnores(['**/dist', '**/.eslintrc.cjs', '**/webpack.*.js']),
+  ...pluginQuery.configs['flat/recommended'],
   {
     extends: fixupConfigRules(
       compat.extends(
@@ -41,7 +42,6 @@ export default defineConfig([
       import: importPlugin,
       'unused-imports': unusedImportPlugin,
       react: reactPlugin,
-      '@tanstack/query': pluginQuery,
     },
 
     languageOptions: {
