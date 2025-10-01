@@ -6,7 +6,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
-import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
@@ -58,17 +57,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
         JpaConfiguration.class,
-        S3Uploader.class,
         ImagePolicyRegistry.class,
         ImageResizer.class,
         ImageTranscoder.class,
-        S3Configuration.class,
         CertificatePolicy.class,
         MentoringProfilePolicy.class,
         NonePolicy.class,
@@ -79,6 +77,9 @@ import org.springframework.test.context.ActiveProfiles;
 })
 @DataJpaTest
 class ReservationServiceTest {
+
+    @MockitoBean
+    private S3Uploader s3Uploader;
 
     @Autowired
     private ReservationService reservationService;
@@ -136,7 +137,9 @@ class ReservationServiceTest {
                     softAssertions.assertThat(actual.getMenteePhone()).isEqualTo(mentee.getPhoneNumber());
                     softAssertions.assertThat(actual.getContent()).isEqualTo(dto.content());
                     softAssertions.assertThat(actual.getStatus()).isEqualTo(Status.PENDING.name());
-                    softAssertions.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount()).isEqualTo(originalReservationCount + 1);
+                    softAssertions.assertThat(
+                                    mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount())
+                            .isEqualTo(originalReservationCount + 1);
                 }
         );
     }
@@ -760,7 +763,8 @@ class ReservationServiceTest {
             softly.assertThat(deletedReservation.isDeleted()).isTrue();
             softly.assertThat(deletedReservation.getDeletedAt()).isNotNull();
             softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
-            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount()).isEqualTo(originalReservationCount - 1);
+            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount())
+                    .isEqualTo(originalReservationCount - 1);
         });
     }
 

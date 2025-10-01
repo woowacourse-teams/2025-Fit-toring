@@ -41,6 +41,7 @@ public enum BusinessErrorMessage {
     FORBIDDEN_URL("권한이 없는 URL 입니다"),
     NOT_CERTIFICATE_OWNER("자신의 자격사항이 아닙니다."),
     MEMBER_ROLE_NOT_FOUND("존재하지 않는 사용자 권한입니다. "),
+    UNSUPPORTED_IMAGE_EXTENSION("지원하지 않는 확장자입니다."),
     ;
 
     private final String message;

@@ -12,6 +12,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.infra.OauthClientService;
 import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
@@ -21,6 +22,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -28,15 +31,24 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.client.RestClient;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class, MentoringPaginationHelper.class})
+@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class, OauthClientService.class, MentoringPaginationHelper.class})
+@ExtendWith(MockitoExtension.class)
 @DataJpaTest
 class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
+
+    @MockitoBean
+    OauthClientService oauthClientService;
+
+    @MockitoBean
+    RestClient restClient;
 
     @Autowired
     private TestEntityManager em;

@@ -25,8 +25,10 @@ import fittoring.mentoring.business.exception.ReservationNotCompletedException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
+import fittoring.mentoring.business.exception.UnsupportedImageExtensionException;
 import fittoring.mentoring.infra.exception.S3UploadException;
 import fittoring.mentoring.infra.exception.SmsException;
+import fittoring.mentoring.presentation.exception.OauthLoginException;
 import fittoring.util.ResponseDurationCalculator;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -201,6 +203,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
     }
 
+    @ExceptionHandler(UnsupportedImageExtensionException.class)
+    public ResponseEntity<ErrorResponse> handle(UnsupportedImageExtensionException e) {
+        return buildErrorResponse(e, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
+    }
+
+    @ExceptionHandler(OauthLoginException.class)
+    public ResponseEntity<ErrorResponse> handle(OauthLoginException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {
         logErrorJson(e, status);
         return ErrorResponse.of(status, message).toResponseEntity();
@@ -215,19 +227,8 @@ public class GlobalExceptionHandler {
         String uri = MDC.get("uri");
         String normalizedUri = MDC.get("normalizedUri");
 
-        ErrorLog dto = new ErrorLog(
-                "ERROR",
-                method,
-                uri,
-                durationMs,
-                status.value(),
-                e.getClass().getName(),
-                e.getMessage(),
-                stackToOneLine(e),
-                normalizedUri,
-                LocalDateTime.now(),
-                traceId
-        );
+        ErrorLog dto = new ErrorLog("ERROR", method, uri, durationMs, status.value(), e.getClass().getName(),
+                e.getMessage(), stackToOneLine(e), normalizedUri, LocalDateTime.now(), traceId);
         try {
             String jsonLog = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
             if (status.is4xxClientError()) {
