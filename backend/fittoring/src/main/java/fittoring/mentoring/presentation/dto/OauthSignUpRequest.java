@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record OauthSignUpRequest(
         @NotBlank
-        String oauthSignUpToken,
-        @NotBlank
         String name,
         @NotBlank
         String gender,

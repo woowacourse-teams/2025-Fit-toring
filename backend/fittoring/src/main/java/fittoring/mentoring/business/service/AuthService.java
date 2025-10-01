@@ -131,8 +131,7 @@ public class AuthService {
         return new AuthTokenResponse(null, null, oauthSignUpToken);
     }
 
-    public MemberOauth registerOauthMember(@Valid OauthSignUpRequest request) {
-        String oauthSignUpToken = request.oauthSignUpToken();
+    public MemberOauth registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
         String kakaoId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
         String randomId = RandomStringUtils.randomAlphanumeric(20);
         String randomPw = RandomStringUtils.randomAlphanumeric(20);

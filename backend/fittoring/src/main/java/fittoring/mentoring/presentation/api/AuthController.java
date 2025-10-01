@@ -9,7 +9,13 @@ import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
 import fittoring.mentoring.business.service.PhoneVerificationService;
 import fittoring.mentoring.presentation.CookieProvider;
 import fittoring.mentoring.presentation.CookieWriter;
-import fittoring.mentoring.presentation.dto.*;
+import fittoring.mentoring.presentation.dto.AuthTokenResponse;
+import fittoring.mentoring.presentation.dto.OauthSignUpRequest;
+import fittoring.mentoring.presentation.dto.SignInRequest;
+import fittoring.mentoring.presentation.dto.SignUpRequest;
+import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
+import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
+import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +23,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -117,8 +127,8 @@ public class AuthController {
     }
 
     @PostMapping("/oauth-signup")
-    public ResponseEntity<Void> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request, HttpServletResponse httpResponse) {
-        MemberOauth memberOauth = authService.registerOauthMember(request);
+    public ResponseEntity<Void> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request, @CookieValue("oauthSignUpToken") String oauthSignUpToken, HttpServletResponse httpResponse) {
+        MemberOauth memberOauth = authService.registerOauthMember(request, oauthSignUpToken);
         AuthTokenResponse authTokenResponse = authService.loginOauthMember(memberOauth);
         CookieWriter.clearCookies(httpResponse);
         CookieWriter.write(httpResponse, authTokenResponse);
