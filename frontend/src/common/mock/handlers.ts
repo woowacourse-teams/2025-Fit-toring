@@ -10,6 +10,7 @@ import { mentoringDetailHandler } from './mentoringDetail/handler';
 import { participatedMentoringHandler } from './participatedMentoring/handler';
 import { signupHandler } from './signup/signup';
 import { validateIdHandler } from './validateId/validateId';
+import { chatRoomHandler } from './chatrooms/handlers';
 
 export const handlers = [
   ...mentoringHandler,
@@ -25,4 +26,5 @@ export const handlers = [
   ...mentoringDetailHandler,
   ...participatedMentoringHandler,
   ...editProfileHandlers,
+  ...chatRoomHandler,
 ];
