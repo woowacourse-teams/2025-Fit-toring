@@ -1,4 +1,4 @@
-package fittoring.mentoring.presentation.api.admin;
+package fittoring.mentoring.presentation.api;
 
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
