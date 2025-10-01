@@ -8,22 +8,28 @@ import fittoring.mentoring.infra.exception.SmsException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-@RequiredArgsConstructor
 @Service
 public class SmsRestClientService {
 
     private static final String SEND_MESSAGE_ENDPOINT = "/messages/v4/send-many/detail";
 
     private final RestClient smsRestClient;
+
     private final SmsAuthHeaderGenerator authHeaderGenerator;
 
     @Value("${COOL_SMS_FROM_PHONE}")
     private String fromPhone;
+
+    public SmsRestClientService(@Qualifier("smsRestClient") RestClient smsRestClient, SmsAuthHeaderGenerator authHeaderGenerator) {
+        this.smsRestClient = smsRestClient;
+        this.authHeaderGenerator = authHeaderGenerator;
+    }
 
     public void sendSms(Phone toPhone, String text, String subject) {
         smsRestClient.post()
