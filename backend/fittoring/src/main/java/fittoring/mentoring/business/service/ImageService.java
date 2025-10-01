@@ -35,11 +35,7 @@ public class ImageService {
         )));
     }
 
-    public List<Image> saveAll(ImageType type, Long relationId, List<String> imagesUrl) {
-        List<Image> images = new ArrayList<>();
-        for (String imageUrl : imagesUrl) {
-            images.add(new Image(imageUrl, type, relationId));
-        }
+    public List<Image> saveAll(List<Image> images) {
         return imageRepository.saveAll(images);
     }
 
