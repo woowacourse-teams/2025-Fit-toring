@@ -19,10 +19,6 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.CertificateDeleteDto;
-import fittoring.mentoring.infra.image.policy.CertificatePolicy;
-import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
-import fittoring.mentoring.infra.image.policy.MentoringProfilePolicy;
-import fittoring.mentoring.infra.image.policy.NonePolicy;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
 import fittoring.util.DbCleaner;
@@ -38,7 +34,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -46,12 +41,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         DbCleaner.class,
         CertificateService.class,
         ImageService.class,
-        ImagePolicyRegistry.class,
-        CertificatePolicy.class,
-        MentoringProfilePolicy.class,
-        NonePolicy.class,
-        ImageResizer.class,
-        ImageTranscoder.class,
         JpaConfiguration.class,
         QueryDslConfig.class
 })
@@ -60,9 +49,6 @@ class CertificateServiceTest {
 
     private Member admin;
     private Mentoring mentoring;
-
-    @MockitoBean
-    private S3Uploader s3Uploader;
 
     @Autowired
     TestEntityManager em;

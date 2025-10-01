@@ -61,7 +61,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -78,9 +77,6 @@ class MentoringServiceTest {
 
     @Autowired
     private DbCleaner dbCleaner;
-
-    @MockitoBean
-    private S3Uploader s3Uploader;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -185,8 +181,8 @@ class MentoringServiceTest {
 
         MentoringStatistics deletedMentoringStatistics = (MentoringStatistics) em.createNativeQuery(
                         "SELECT * FROM mentoring_statistics WHERE mentoring_id = ?", MentoringStatistics.class)
-            .setParameter(1, mentoring.getId())
-            .getSingleResult();
+                .setParameter(1, mentoring.getId())
+                .getSingleResult();
 
         Mentoring deletedMentoring = (Mentoring) em.createNativeQuery(
                         "SELECT * FROM mentoring WHERE id = ?", Mentoring.class)

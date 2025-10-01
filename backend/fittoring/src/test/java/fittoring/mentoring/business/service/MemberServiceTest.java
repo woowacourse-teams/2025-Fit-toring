@@ -7,10 +7,6 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.infra.image.policy.CertificatePolicy;
-import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
-import fittoring.mentoring.infra.image.policy.MentoringProfilePolicy;
-import fittoring.mentoring.infra.image.policy.NonePolicy;
 import fittoring.mentoring.presentation.dto.MyInfoResponse;
 import fittoring.mentoring.presentation.dto.MyInfoSummaryResponse;
 import fittoring.util.DbCleaner;
@@ -25,21 +21,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
         MemberService.class,
-        ImagePolicyRegistry.class,
         ImageService.class,
-        ImagePolicyRegistry.class,
-        ImageResizer.class,
-        ImageTranscoder.class,
-        CertificatePolicy.class,
-        MentoringProfilePolicy.class,
-        NonePolicy.class,
         DbCleaner.class,
         MemberService.class,
         ImageService.class,
@@ -47,9 +35,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 })
 @DataJpaTest
 class MemberServiceTest {
-
-    @MockitoBean
-    private S3Uploader s3Uploader;
 
     @Autowired
     private MemberService memberService;
