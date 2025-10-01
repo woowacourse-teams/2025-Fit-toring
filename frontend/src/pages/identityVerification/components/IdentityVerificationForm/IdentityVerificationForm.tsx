@@ -16,10 +16,18 @@ import useVerificationCodeInput from '../../../../common/hooks/useVerificationCo
 import useVerificationCodeConfirm from '../../../../common/hooks/useVerificationCodeConfirm';
 import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
 import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
+import { postIdentityVerification } from '../../apis/postIdentityVerification';
+import { useNavigate } from 'react-router-dom';
+import { PAGE_URL } from '../../../../common/constants/url';
+import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 
 function IdentityVerificationForm() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const {
     name,
     handleNameChange,
@@ -154,6 +162,30 @@ function IdentityVerificationForm() {
 
     if (invalidIdentityVerificationInfo) {
       return;
+    }
+
+    const userInfo = {
+      name,
+      gender,
+      phone: phoneNumber,
+    };
+
+    try {
+      const response = await postIdentityVerification(userInfo);
+      if (response.status === 201) {
+        alert('본인 인증이 완료되었습니다.');
+        login();
+        navigate(PAGE_URL.HOME);
+      }
+    } catch (error) {
+      console.error('본인 인증 실패', error);
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'identityVerification',
+        step: 'identityVerification',
+      });
     }
   };
 
