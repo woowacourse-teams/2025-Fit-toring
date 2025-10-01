@@ -33,7 +33,7 @@ public class S3Uploader {
         String originalContentType = contentTypeOf(originalExtension);
 
         Encoded orig = imageTranscoder.toOriginal(resized, originalExtension, originalContentType);
-        String keyOriginal = buildKey(imageTypeName, variant, baseName, "." + orig.extension());
+        String keyOriginal = KeyBuilder.buildKey(imageTypeName, variant, baseName, "." + orig.extension());
         putObject(keyOriginal, orig.contentType(), orig.bytes());
         String urlOriginal = getUrl(keyOriginal);
 
@@ -48,11 +48,6 @@ public class S3Uploader {
                 .cacheControl("public, max-age=31536000, immutable")
                 .build();
         s3Client.putObject(req, RequestBody.fromBytes(bytes));
-    }
-
-    private static String buildKey(String imageType, ImageVariant variant, String baseName, String extensionWithDot) {
-        String variantName = variant.getName();
-        return "fit-toring/" + imageType + "/" + variantName + "/" + baseName + extensionWithDot;
     }
 
     private static String extensionOf(String name) {
