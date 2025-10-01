@@ -7,15 +7,34 @@ export interface PostPresignedURLRequest {
   extension: 'png' | 'jpg' | 'jpeg' | 'webp' | 'avif';
 }
 
-export interface PostPresignedURLResponse {
+interface PostPresignedURLResponse {
   presignedUrl: string;
   expiresAt: string;
 }
 
+const isPostPresignedURLResponse = (
+  data: unknown,
+): data is PostPresignedURLResponse => {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'presignedUrl' in data &&
+    'expiresAt' in data
+  );
+};
+
 export const postPresignedURL = async (request: PostPresignedURLRequest) => {
-  return await apiClient.post({
+  const response = await apiClient.post({
     endpoint: API_ENDPOINTS.REQUEST_PRESIGNED_URL,
     body: { ...request },
     withCredentials: true,
   });
+
+  const data = await response.json();
+
+  if (!isPostPresignedURLResponse(data)) {
+    throw new Error('presigned URL 응답 형식이 올바르지 않습니다.');
+  }
+
+  return data;
 };
