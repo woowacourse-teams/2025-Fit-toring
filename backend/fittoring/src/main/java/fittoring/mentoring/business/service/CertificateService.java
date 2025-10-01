@@ -39,7 +39,7 @@ public class CertificateService {
     ) {
         List<CertificateInfo> validCertificateInfos = new ArrayList<>();
         for (CertificateInfo certificateInfo : certificateInfos) {
-            if (presignedUrlService.isObjectExists(certificateInfo.imageUrl())) {
+            if (presignedUrlService.isObjectExistsFromKey(certificateInfo.imageUrl())) {
                 validCertificateInfos.add(certificateInfo);
             }
         }

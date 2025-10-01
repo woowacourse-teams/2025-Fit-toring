@@ -144,7 +144,7 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
-        given(presignedUrlService.isObjectExists(anyString()))
+        given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
 
         // when

@@ -86,7 +86,7 @@ class CertificateServiceTest {
                 "가상의오픈채팅링크"
         );
         em.persist(mentoring);
-        given(presignedUrlService.isObjectExists(anyString()))
+        given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
     }
 
