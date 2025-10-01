@@ -4,6 +4,7 @@ import fittoring.mentoring.business.model.ImageType;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
+// TODO: api 작업 후 deprecated
 @Component
 public class ImagePolicyRegistry {
 

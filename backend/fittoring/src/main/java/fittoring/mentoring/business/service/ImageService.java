@@ -43,6 +43,7 @@ public class ImageService {
         return imageRepository.saveAll(images);
     }
 
+    // TODO: api 작업 후 deprecated
     public List<Image> uploadImageToS3(MultipartFile imageFile, String dir, ImageType type, Long relationId) {
         try {
             ImageTypePolicy policy = imagePolicyRegistry.get(type);

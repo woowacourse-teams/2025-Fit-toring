@@ -10,6 +10,7 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+// TODO: api 작업 후 deprecated
 @Component
 public class ImageResizer {
 

@@ -4,6 +4,7 @@ import fittoring.mentoring.business.model.ImageVariant;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
+// TODO: api 작업 후 deprecated
 @Component
 public class NonePolicy implements ImageTypePolicy {
 
