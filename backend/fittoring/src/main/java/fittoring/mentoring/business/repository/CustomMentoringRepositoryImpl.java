@@ -29,7 +29,7 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
         List<Long> categoryIds
     ) {
         // 결과 행을 튜플 타입(Mentoring, MentoringStatistics)으로 가져온다.
-        List<Tuple> rows = jpaQueryFactory
+        List<Tuple> mentoringAndMentoringStatistics = jpaQueryFactory
                 .select(mentoring, mentoringStatistics)
                 .from(mentoring)
                     .leftJoin(mentoringStatistics)
@@ -40,11 +40,11 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
                 .fetch();
 
         // 다음 행이 존재할 경우 다음 커서를 문자열화 해서 반환한다.
-        boolean hasNext = rows.size() > PAGE_SIZE;
-        String nextCursorCode = mentoringPaginationHelper.generateNextCursorCode(sortKey, hasNext, rows);
+        boolean hasNext = mentoringAndMentoringStatistics.size() > PAGE_SIZE;
+        String nextCursorCode = mentoringPaginationHelper.generateNextCursorCode(sortKey, hasNext, mentoringAndMentoringStatistics);
 
         // 결과 행을 튜플 타입에서 List<Mentoring> 타입으로 변환한 후 반환한다.
-        List<Mentoring> mentorings = mapTuplesToMentorings(rows);
+        List<Mentoring> mentorings = mapTuplesToMentorings(mentoringAndMentoringStatistics);
         return new MentoringPaginationResult(mentorings, nextCursorCode, hasNext);
     }
 
