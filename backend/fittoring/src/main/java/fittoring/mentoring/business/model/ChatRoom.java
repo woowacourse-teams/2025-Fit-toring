@@ -3,6 +3,8 @@ package fittoring.mentoring.business.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,6 +48,11 @@ public class ChatRoom {
     private LocalDateTime createdAt;
 
     @Getter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ChatStatus status;
+
+    @Getter
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
@@ -53,8 +60,29 @@ public class ChatRoom {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    public ChatRoom(
+            Long reservationId,
+            Long menteeId,
+            Long mentorId,
+            LocalDateTime createdAt,
+            ChatStatus status,
+            boolean isDeleted,
+            LocalDateTime deletedAt
+    ) {
+        this(null, reservationId, menteeId, mentorId, createdAt, status, isDeleted, deletedAt);
+    }
+
     public ChatRoom(Long reservationId, Long menteeId, Long mentorId) {
-        this(null, reservationId, menteeId, mentorId, null, false, null);
+        this(
+                null,
+                reservationId,
+                menteeId,
+                mentorId,
+                null,
+                ChatStatus.ACTIVATE,
+                false,
+                null
+        );
     }
 
     public boolean hasParticipant(Long memberId) {
