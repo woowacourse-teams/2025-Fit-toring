@@ -1,6 +1,10 @@
 package fittoring.mentoring.infra.image;
 
 import fittoring.mentoring.business.model.ImageVariant;
+import fittoring.mentoring.infra.exception.InfraErrorMessage;
+import fittoring.mentoring.infra.exception.S3UploadException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 public class KeyBuilder {
@@ -18,5 +22,15 @@ public class KeyBuilder {
 
         String variantName = variant.getName();
         return KEY_PREFIX + imageType + "/" + variantName + "/" + baseName + extensionWithDot;
+    }
+
+    public static String extractFromUrl(String url) {
+        try {
+            URI uri = new URI(url);
+            String path = uri.getPath();
+            return path.startsWith("/") ? path.substring(1) : path;
+        } catch (URISyntaxException e) {
+            throw new S3UploadException(InfraErrorMessage.S3_UPLOAD_ERROR.getMessage() + url);
+        }
     }
 }
