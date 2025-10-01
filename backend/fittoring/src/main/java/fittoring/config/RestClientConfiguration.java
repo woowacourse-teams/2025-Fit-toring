@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
@@ -12,7 +14,7 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfiguration {
 
     @Value("${sms.base-url}")
-    private String baseUrl;
+    private String smsBaseUrl;
 
     @Value("${sms.timeout.connect}")
     private int connectTimeout;
@@ -22,8 +24,15 @@ public class RestClientConfiguration {
 
     @Bean
     public RestClient smsRestClient(RestClient.Builder builder) {
-        return builder.baseUrl(baseUrl)
+        return builder.baseUrl(smsBaseUrl)
                 .defaultHeader("Content-Type", "application/json")
+                .build();
+    }
+
+    @Bean
+    public RestClient defaultRestClient(RestClient.Builder builder) {
+        return builder
+                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
