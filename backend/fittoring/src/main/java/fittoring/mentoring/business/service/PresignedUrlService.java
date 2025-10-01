@@ -13,6 +13,8 @@ import java.time.ZoneId;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -22,6 +24,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 @Component
 public class PresignedUrlService {
 
+    private final S3Client s3Client;
     private final S3Presigner presigner;
     private final S3Properties properties;
 
@@ -53,5 +56,18 @@ public class PresignedUrlService {
                         ZoneId.of("Asia/Seoul")
                 )
         );
+    }
+
+    public boolean isObjectExists(String key) {
+        try {
+            HeadObjectRequest request = HeadObjectRequest.builder()
+                    .bucket(properties.getBucketName())
+                    .key(key)
+                    .build();
+            s3Client.headObject(request);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
