@@ -16,7 +16,7 @@ public class S3Configuration {
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
-                .region(Region.AP_NORTHEAST_2)
+                .region(Region.of(s3Properties.getRegion()))
                 .build();
     }
 
