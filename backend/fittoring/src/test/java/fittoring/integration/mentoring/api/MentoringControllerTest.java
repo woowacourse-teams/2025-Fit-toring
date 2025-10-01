@@ -1393,5 +1393,3 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
         }
     }
 }
-
-
