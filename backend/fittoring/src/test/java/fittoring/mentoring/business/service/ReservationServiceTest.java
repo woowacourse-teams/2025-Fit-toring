@@ -30,9 +30,6 @@ import fittoring.mentoring.business.service.dto.MentorMentoringReservationRespon
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
 import fittoring.mentoring.business.service.dto.ReservationCreateDto;
-import fittoring.mentoring.infra.image.ImageResizer;
-import fittoring.mentoring.infra.image.ImageTranscoder;
-import fittoring.mentoring.infra.image.S3Uploader;
 import fittoring.mentoring.infra.image.policy.CertificatePolicy;
 import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
 import fittoring.mentoring.infra.image.policy.MentoringProfilePolicy;
