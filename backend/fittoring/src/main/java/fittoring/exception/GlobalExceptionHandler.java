@@ -27,6 +27,7 @@ import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.infra.exception.S3UploadException;
 import fittoring.mentoring.infra.exception.SmsException;
+import fittoring.mentoring.presentation.exception.OauthLoginException;
 import fittoring.util.ResponseDurationCalculator;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -199,6 +200,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<ErrorResponse> handle(MissingRequestCookieException e) {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
+    }
+
+    @ExceptionHandler(OauthLoginException.class)
+    public ResponseEntity<ErrorResponse> handle(OauthLoginException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {

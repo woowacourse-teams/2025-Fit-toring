@@ -16,6 +16,7 @@ import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
 import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.mentoring.presentation.dto.VerifyPhoneNumberRequest;
+import fittoring.mentoring.presentation.exception.OauthLoginException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -106,28 +107,30 @@ public class AuthController {
         // TODO : state 검증
 
         if (error != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("카카오 로그인 실패 : " + error + " : " + errorDescription);
+            throw new OauthLoginException("카카오 로그인 에러 : " + error + " : " + errorDescription);
         }
 
         if (code == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new OauthLoginException("인증 코드가 없습니다.");
         }
 
         AuthTokenResponse authTokenResponse = authService.kakaoLogin(code);
 
-        if (authTokenResponse.isLoginSuccess()){
+        if (authTokenResponse.isLoginSuccess()) {
             CookieWriter.write(httpResponse, authTokenResponse);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
 
-        ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken", authTokenResponse.oauthSignUpToken());
+        ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
+                authTokenResponse.oauthSignUpToken());
         httpResponse.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).build();
     }
 
     @PostMapping("/oauth-signup")
-    public ResponseEntity<Void> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request, @CookieValue("oauthSignUpToken") String oauthSignUpToken, HttpServletResponse httpResponse) {
+    public ResponseEntity<Void> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request,
+                                            @CookieValue("oauthSignUpToken") String oauthSignUpToken,
+                                            HttpServletResponse httpResponse) {
         MemberOauth memberOauth = authService.registerOauthMember(request, oauthSignUpToken);
         AuthTokenResponse authTokenResponse = authService.loginOauthMember(memberOauth);
         CookieWriter.clearCookies(httpResponse);

@@ -11,4 +11,5 @@ public record OauthSignUpRequest(
         @PhoneNumber
         @NotBlank
         String phone) {
+
 }

@@ -2,6 +2,8 @@ package fittoring.mentoring.business.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,7 +36,8 @@ public class MemberOauth {
     private Member member;
 
     @Column(nullable = false)
-    private String provider;
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
 
     @Column(name = "provider_member_id", nullable = false)
     private String providerMemberId;
@@ -47,7 +50,7 @@ public class MemberOauth {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public MemberOauth(Member member, String provider, String providerMemberId){
+    public MemberOauth(Member member, AuthProvider provider, String providerMemberId){
         this(null, member, provider, providerMemberId, false, null);
     }
 }

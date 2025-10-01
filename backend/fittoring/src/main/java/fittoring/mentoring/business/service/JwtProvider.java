@@ -53,7 +53,6 @@ public class JwtProvider {
         Date now = new Date();
         Date oauthMillis = new Date(now.getTime() + accessExpirationMillis);
         return buildToken(providerMemberId, now, oauthMillis);
-
     }
 
     private String buildToken(String subject, Date issuedAt, Date expiresAt) {

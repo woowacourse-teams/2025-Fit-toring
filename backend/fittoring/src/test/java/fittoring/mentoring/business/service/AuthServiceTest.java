@@ -43,7 +43,7 @@ class AuthServiceTest {
     @Autowired
     private AuthService authService;
 
-    @Autowired
+    @MockitoBean
     OauthClientService oauthClientService;
 
     @MockitoBean

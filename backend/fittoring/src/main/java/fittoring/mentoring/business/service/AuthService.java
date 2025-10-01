@@ -5,6 +5,7 @@ import fittoring.mentoring.business.exception.DuplicateLoginIdException;
 import fittoring.mentoring.business.exception.DuplicatePhoneException;
 import fittoring.mentoring.business.exception.InvalidTokenException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
+import fittoring.mentoring.business.model.AuthProvider;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberOauth;
 import fittoring.mentoring.business.model.Phone;
@@ -114,12 +115,12 @@ public class AuthService {
 
     public AuthTokenResponse kakaoLogin(String code) {
         KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code);
-        String accessToken = tokenResponse.access_token();
+        String kakaoAccessToken = tokenResponse.access_token();
 
-        KakaoUserInfoResponse userInfoResponse = oauthClientService.requestKakaoId(accessToken);
+        KakaoUserInfoResponse userInfoResponse = oauthClientService.requestKakaoId(kakaoAccessToken);
         Long kakaoId = userInfoResponse.id();
 
-        Optional<MemberOauth> memberOauth = memberOauthRepository.findByProviderAndProviderMemberId("KAKAO",
+        Optional<MemberOauth> memberOauth = memberOauthRepository.findByProviderAndProviderMemberId(AuthProvider.KAKAO,
                 String.valueOf(kakaoId));
 
         if (memberOauth.isPresent()) {
@@ -132,18 +133,18 @@ public class AuthService {
     }
 
     public MemberOauth registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
-        String kakaoId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
-        String randomId = RandomStringUtils.randomAlphanumeric(20);
+        String oauthId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
+        String randomLoginId = RandomStringUtils.randomAlphanumeric(20);
         String randomPw = RandomStringUtils.randomAlphanumeric(20);
         Member member = new Member(
-                randomId,
+                randomLoginId,
                 request.gender(),
                 request.name(),
                 new Phone(request.phone()),
                 Password.from(randomPw)
         );
         memberRepository.save(member);
-        MemberOauth memberOauth = new MemberOauth(member, "KAKAO", kakaoId);
+        MemberOauth memberOauth = new MemberOauth(member, AuthProvider.KAKAO, oauthId);
         memberOauthRepository.save(memberOauth);
         return memberOauth;
     }
