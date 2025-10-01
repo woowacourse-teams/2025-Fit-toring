@@ -81,6 +81,9 @@ dependencies {
     implementation 'com.twelvemonkeys.imageio:imageio-metadata:3.12.0'
     implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.12.0'
     implementation 'com.github.gotson.nightmonkeys:imageio-heif:1.1.0'
+
+    // String util
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
 }
 
 openapi3 {

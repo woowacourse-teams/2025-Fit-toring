@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
 import { useLocation, useParams } from 'react-router-dom';
 
 import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
@@ -14,7 +15,6 @@ import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
 
-import type { MentoringDetail } from '../../common/types/MentoringDetail';
 
 type TapType = 'detail' | 'review';
 
@@ -23,26 +23,23 @@ function Detail() {
   const state = location.state as { tab?: TapType };
 
   const { mentoringId } = useParams();
-  const [data, setData] = useState<MentoringDetail | null>(null);
+
+  const { data, isError, error } = useQuery({
+    queryKey: ['mentoringDetail', mentoringId],
+    queryFn: () => getMentoringDetail(mentoringId!),
+  });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getMentoringDetail(mentoringId!);
-
-        setData(response);
-      } catch (error) {
-        console.error('fetchData 실패', error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'detail',
-          step: 'mentoring-detail-fetch',
-        });
-      }
-    };
-    fetchData();
-  }, [mentoringId]);
+    if (isError && error) {
+      console.error('fetchData 실패', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'detail',
+        step: 'mentoring-detail-fetch',
+      });
+    }
+  }, [isError, error]);
 
   const [selected, setSelected] = useState<TapType>(state?.tab ?? 'detail');
   const [scrollY, setScrollY] = useState(0);
