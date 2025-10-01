@@ -110,7 +110,7 @@ public class MentoringService {
     }
 
     private void saveProfileImage(String profileImageUrl, Mentoring mentoring) {
-        if (profileImageUrl == null || !isImageExistsInS3(profileImageUrl)) {
+        if (profileImageUrl == null || !presignedUrlService.isObjectExistsFromUrl(profileImageUrl)) {
             return;
         }
         imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());

@@ -58,7 +58,7 @@ public class PresignedUrlService {
         );
     }
 
-    public boolean isObjectExists(String key) {
+    public boolean isObjectExistsFromKey(String key) {
         try {
             HeadObjectRequest request = HeadObjectRequest.builder()
                     .bucket(properties.getBucketName())
@@ -66,6 +66,15 @@ public class PresignedUrlService {
                     .build();
             s3Client.headObject(request);
             return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isObjectExistsFromUrl(String url) {
+        try {
+            String key = KeyBuilder.extractFromUrl(url);
+            return isObjectExistsFromKey(key);
         } catch (Exception e) {
             return false;
         }
