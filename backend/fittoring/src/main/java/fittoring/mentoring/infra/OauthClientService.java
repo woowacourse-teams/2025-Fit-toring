@@ -16,8 +16,6 @@ public class OauthClientService {
     private final RestClient restClient;
     private static final String kakaoTokenRequestUri = "https://kauth.kakao.com/oauth/token";
     private static final String kakaoUserInfoRequestUri = "https://kapi.kakao.com/v2/user/me";
-    @Value("${kakao.redirect-uri}")
-    private String kakaoRedirectUri;
     @Value("${kakao.client-id}")
     private String kakaoClientId;
 
@@ -25,11 +23,11 @@ public class OauthClientService {
         this.restClient = restClient;
     }
 
-    public KakaoTokenResponse requestKakaoToken(String code) {
+    public KakaoTokenResponse requestKakaoToken(String code, String redirectUrl) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoClientId);
-        params.add("redirect_uri", kakaoRedirectUri);
+        params.add("redirect_uri", redirectUrl);
         params.add("code", code);
 
         return restClient.post()
