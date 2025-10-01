@@ -39,7 +39,7 @@ public class PresignedUrlService {
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(5))
+                .signatureDuration(Duration.ofMinutes(3))
                 .putObjectRequest(putObjectRequest)
                 .build();
 
