@@ -20,4 +20,5 @@ export const API_ENDPOINTS = {
   REVIEWS: '/reviews',
   CERTIFICATES: '/certificates',
   MENTORINGS_PAGE: '/mentorings-page',
+  REQUEST_PRESIGNED_URL: '/images/presigned',
 } as const;
