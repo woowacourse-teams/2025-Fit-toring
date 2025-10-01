@@ -3,16 +3,12 @@ package fittoring.mentoring.business.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import java.time.LocalDateTime;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -67,5 +63,12 @@ public class MentoringStatistics {
             false,
             null
         );
+    }
+
+    public double calculateAverageRating() {
+        if (reviewCount == 0) {
+            return 0.0;
+        }
+        return (double) ratingSum / reviewCount;
     }
 }

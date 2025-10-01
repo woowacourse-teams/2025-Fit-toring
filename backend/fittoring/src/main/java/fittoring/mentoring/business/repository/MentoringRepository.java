@@ -22,27 +22,6 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
     Optional<Mentoring> findByReviewId(Long reviewId);
 
     @Query("""
-            SELECT m
-              FROM CategoryMentoring cm
-              JOIN cm.mentoring m
-             WHERE cm.category.title IN (
-                      COALESCE(:title1, '__NULL__'),
-                      COALESCE(:title2, '__NULL__'),
-                      COALESCE(:title3, '__NULL__')
-                  )
-             GROUP BY m.id
-             HAVING COUNT (DISTINCT cm.category.title) >=
-                (CASE WHEN :title1 IS NOT NULL THEN 1 ELSE 0 END +
-                 CASE WHEN :title2 IS NOT NULL THEN 1 ELSE 0 END +
-                 CASE WHEN :title3 IS NOT NULL THEN 1 ELSE 0 END)
-            """)
-    List<Mentoring> findAllMentoringWithFilter(
-            @Param("title1") String categoryTitle1,
-            @Param("title2") String categoryTitle2,
-            @Param("title3") String categoryTitle3
-    );
-
-    @Query("""
               SELECT m
               FROM Mentoring m
               JOIN FETCH m.mentor
