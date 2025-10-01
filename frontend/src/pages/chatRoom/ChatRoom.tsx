@@ -117,11 +117,11 @@ function ChatRoom() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState('');
 
+  const { chatRoomId } = useParams();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
-
-  const { chatRoomId } = useParams();
 
   const handlePaymentRequestClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,

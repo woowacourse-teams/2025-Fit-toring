@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
+import type { Message } from '../../types/message';
+import { useEffect, useRef } from 'react';
 
 type MessageType = {
   content: string;
@@ -14,6 +16,14 @@ interface ChatContentProps {
 
 function ChatContent({ messages }: ChatContentProps) {
   const myId = '1';
+
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   return (
     <S_Container>
@@ -31,6 +41,7 @@ function ChatContent({ messages }: ChatContentProps) {
           </S_ChatBubbleWrapper>
         );
       })}
+      <div ref={messageEndRef} />
     </S_Container>
   );
 }
