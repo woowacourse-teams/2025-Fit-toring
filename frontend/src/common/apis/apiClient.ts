@@ -211,13 +211,18 @@ class ApiClient {
     return this.requestWithRefresh(sendRequest);
   }
 
-  async put({ endpoint, body, withCredentials }: ApiClientPutType) {
+  async put({
+    endpoint,
+    headers = { 'Content-Type': 'application/json' },
+    body,
+    withCredentials,
+  }: ApiClientPutType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
     const isFormData = body instanceof FormData;
 
     const options = {
       method: 'PUT',
-      headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
+      headers: isFormData ? undefined : headers,
       body: isFormData ? body : JSON.stringify(body),
       credentials: withCredentials
         ? 'include'
