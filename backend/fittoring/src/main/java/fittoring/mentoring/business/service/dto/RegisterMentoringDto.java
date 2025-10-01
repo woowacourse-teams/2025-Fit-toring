@@ -3,7 +3,6 @@ package fittoring.mentoring.business.service.dto;
 import fittoring.mentoring.presentation.dto.CertificateInfo;
 import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import java.util.List;
-import org.springframework.web.multipart.MultipartFile;
 
 public record RegisterMentoringDto(
         Long mentorId,
@@ -13,17 +12,14 @@ public record RegisterMentoringDto(
         int career,
         String content,
         String chatUrl,
+        String profileImageUrl,
 
-        MultipartFile profileImage,
-        List<CertificateInfo> certificateInfos,
-        List<MultipartFile> certificateImages
+        List<CertificateInfo> certificateInfos
 ) {
 
     public static RegisterMentoringDto of(
             Long memberId,
-            MentoringRegisterRequest request,
-            MultipartFile profileImageFile,
-            List<MultipartFile> certificateImages
+            MentoringRegisterRequest request
     ) {
         return new RegisterMentoringDto(
                 memberId,
@@ -33,8 +29,8 @@ public record RegisterMentoringDto(
                 request.career(),
                 request.content(),
                 request.chatUrl(),
-                profileImageFile,
-                request.certificateInfos(),
-                certificateImages);
+                request.profileImageUrl(),
+                request.certificateInfos()
+        );
     }
 }

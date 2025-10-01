@@ -12,6 +12,7 @@ import fittoring.mentoring.presentation.dto.MentoringModifyRequest;
 import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,15 +37,11 @@ public class MentoringController {
     @PostMapping("/mentorings")
     public ResponseEntity<Void> registerMentoring(
             @Login LoginInfo loginInfo,
-            @RequestPart("data") MentoringRegisterRequest request,
-            @RequestPart(value = "image", required = false) MultipartFile profileImage,
-            @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
+            @Valid @RequestBody MentoringRegisterRequest requestBody
     ) {
         RegisterMentoringDto dto = RegisterMentoringDto.of(
                 loginInfo.memberId(),
-                request,
-                profileImage,
-                certificateImages
+                requestBody
         );
         mentoringService.registerMentoring(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
