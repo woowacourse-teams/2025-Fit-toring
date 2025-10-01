@@ -28,7 +28,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
-import fittoring.mentoring.infra.querydsl.helper.MentoringPaginationHelper;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;

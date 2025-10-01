@@ -13,7 +13,7 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.infra.OauthClientService;
-import fittoring.mentoring.infra.querydsl.helper.MentoringPaginationHelper;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.util.DbCleaner;

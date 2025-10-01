@@ -7,7 +7,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.infra.querydsl.helper.MentoringPaginationHelper;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

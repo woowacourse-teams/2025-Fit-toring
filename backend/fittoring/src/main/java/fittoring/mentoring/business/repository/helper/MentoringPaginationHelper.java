@@ -1,4 +1,4 @@
-package fittoring.mentoring.infra.querydsl.helper;
+package fittoring.mentoring.business.repository.helper;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
