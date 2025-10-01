@@ -33,7 +33,6 @@ import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationRespon
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
-import fittoring.mentoring.infra.image.KeyBuilder;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
@@ -181,11 +180,9 @@ public class MentoringService {
             List<Image> certificateImages,
             List<Certificate> certificates
     ) {
-        // (certificateId, Image객체) 형태의 Map 생성
         Map<Long, Image> certificateIdToImageMap = certificateImages.stream()
                 .collect(Collectors.toMap(Image::getRelationId, Function.identity()));
 
-        // certificates를 돌면서 이미지가 존재하는 경우에만 response에 추가함
         List<CertificateSpecAndImageResponse> response = new ArrayList<>();
         for (Certificate certificate : certificates) {
             Image image = certificateIdToImageMap.get(certificate.getId());
@@ -307,33 +304,15 @@ public class MentoringService {
     }
 
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {
-        if (!isImageExistsInS3(dto.profileImageUrl())) {
-            return;
-        }
-        if (dto.profileImageUrl() == null) {
+        if (dto.profileImageUrl() == null || dto.profileImageUrl().isBlank()) {
             imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
             return;
         }
-        Image profileImage = imageService.findByImageTypeAndRelationId(
-                        ImageType.MENTORING_PROFILE,
-                        mentoring.getId()
-                )
-                .orElse(null);
-        if (profileImage == null) {
-            imageService.save(ImageType.CERTIFICATE, mentoring.getId(), dto.profileImageUrl());
+        if (!presignedUrlService.isObjectExistsFromUrl(dto.profileImageUrl())) {
             return;
         }
-        imageService.deleteByImageTypeAndRelationId(ImageType.CERTIFICATE, mentoring.getId());
-        imageService.save(ImageType.CERTIFICATE, mentoring.getId(), dto.profileImageUrl());
-    }
-
-    private boolean isImageExistsInS3(String url) {
-        try {
-            String s3Key = KeyBuilder.extractFromUrl(url);
-            return presignedUrlService.isObjectExists(s3Key);
-        } catch (Exception e) {
-            return false;
-        }
+        imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
+        imageService.save(ImageType.MENTORING_PROFILE, mentoring.getId(), dto.profileImageUrl());
     }
 
     private Mentoring findMentoringOwnedByMentor(Long mentoringId, Long mentorId) {
