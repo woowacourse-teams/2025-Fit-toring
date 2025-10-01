@@ -329,7 +329,7 @@ public class MentoringService {
     private List<RatingStatsDto> getRatingStatsDtos(List<Long> mentoringIds) {
         List<MentoringStatistics> mentoringStatistics = mentoringStatisticsRepository.findByIds(mentoringIds);
         return mentoringStatistics.stream()
-            .map(ms -> new RatingStatsDto(ms.getId(), ms.calculateAverageRating(), ms.getReviewCount()))
+            .map(ms -> new RatingStatsDto(ms.getMentoringId(), ms.calculateAverageRating(), ms.getReviewCount()))
             .toList();
     }
 

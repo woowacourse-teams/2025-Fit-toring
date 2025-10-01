@@ -27,7 +27,7 @@ public class MentoringStatistics {
     @Getter
     @Column(name = "mentoring_id")
     @Id
-    private Long id;
+    private Long mentoringId;
 
     @Getter
     @Column(nullable = false)

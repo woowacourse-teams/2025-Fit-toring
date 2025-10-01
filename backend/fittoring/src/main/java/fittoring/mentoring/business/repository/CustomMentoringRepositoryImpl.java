@@ -33,7 +33,7 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
                 .select(mentoring, mentoringStatistics)
                 .from(mentoring)
                     .leftJoin(mentoringStatistics)
-                    .on(mentoringStatistics.id.eq(mentoring.id))
+                    .on(mentoringStatistics.mentoringId.eq(mentoring.id))
                 .where(mentoringPaginationHelper.buildWhereClause(sortKey, cursor, categoryIds))
                 .orderBy(mentoringPaginationHelper.buildOrderSpecifiers(sortKey))
                 .limit(PAGE_SIZE + 1)
