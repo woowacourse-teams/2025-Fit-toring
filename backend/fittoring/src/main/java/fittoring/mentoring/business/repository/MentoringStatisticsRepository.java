@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface MentoringStatisticsRepository extends ListCrudRepository<MentoringStatistics, Long> {
 
     @Transactional
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             UPDATE MentoringStatistics ms
             SET ms.reviewCount = ms.reviewCount + 1,
@@ -20,7 +20,7 @@ public interface MentoringStatisticsRepository extends ListCrudRepository<Mentor
     void updateReviewStatisticsPlus(@Param("mentoringId") Long mentoringId, @Param("rating") int rating);
 
     @Transactional
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             UPDATE MentoringStatistics ms
             SET ms.reviewCount = ms.reviewCount - 1,
@@ -30,7 +30,7 @@ public interface MentoringStatisticsRepository extends ListCrudRepository<Mentor
     void updateReviewStatisticsMinus(@Param("mentoringId") Long mentoringId, @Param("rating") int rating);
 
     @Transactional
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             UPDATE MentoringStatistics ms
             SET ms.reservationCount = ms.reservationCount + 1
@@ -39,7 +39,7 @@ public interface MentoringStatisticsRepository extends ListCrudRepository<Mentor
     void updateReservationCountPlus(@Param("mentoringId") Long mentoringId);
 
     @Transactional
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             UPDATE MentoringStatistics ms
             SET ms.reservationCount = ms.reservationCount - 1
