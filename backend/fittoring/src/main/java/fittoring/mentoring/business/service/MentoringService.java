@@ -38,7 +38,6 @@ import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.CursorCodec;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -77,15 +75,16 @@ public class MentoringService {
                 dto.introduction(),
                 dto.chatUrl()
         );
-
         final Mentoring savedMentoring = mentoringRepository.save(mentoring);
         MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(mentoring);
         mentoringStatisticsRepository.save(mentoringStatistics);
 
         List<String> categoryTitles = dto.category();
         mapCategoriesToMentoring(categoryTitles, savedMentoring);
-        saveProfileImage(dto.profileImage(), savedMentoring);
-        certificateService.mapCertificatesToMentoring(dto.certificateInfos(), dto.certificateImages(), savedMentoring);
+
+        saveProfileImage(dto.profileImageUrl(), savedMentoring);
+
+        certificateService.mapCertificatesToMentoring(dto.certificateInfos(), savedMentoring);
         member.registerAsMentor();
     }
 
@@ -110,17 +109,13 @@ public class MentoringService {
         }
     }
 
-    private void saveProfileImage(MultipartFile profileImageFile, Mentoring mentoring) {
-        if (profileImageFile == null) {
+    private void saveProfileImage(String profileImageUrl, Mentoring mentoring) {
+        if (profileImageUrl == null) {
             return;
         }
+        // todo: S3 업로드 유효성 검증 추가
         imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
-        imageService.uploadImageToS3(
-                profileImageFile,
-                "profile-image",
-                ImageType.MENTORING_PROFILE,
-                mentoring.getId()
-        );
+        imageService.save(ImageType.MENTORING_PROFILE, mentoring.getId(), profileImageUrl);
     }
 
     @Transactional(readOnly = true)
@@ -304,7 +299,7 @@ public class MentoringService {
         categoryMentoringRepository.deleteByMentoringId(mentoring.getId());
         mapCategoriesToMentoring(dto.category(), mentoring);
         fetchProfileImage(dto, mentoring);
-        certificateService.mapCertificatesToMentoring(dto.certificateInfos(), dto.certificateImages(), mentoring);
+        certificateService.mapCertificatesToMentoring(dto.certificateInfos(), mentoring);
         mentoring.modify(dto.price(), dto.career(), dto.content(), dto.introduction(), dto.chatUrl());
     }
 
