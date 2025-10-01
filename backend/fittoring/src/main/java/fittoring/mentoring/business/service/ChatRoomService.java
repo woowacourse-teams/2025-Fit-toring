@@ -58,7 +58,7 @@ public class ChatRoomService {
                 );
     }
 
-    private void validateReservationExists(final Reservation reservation) {
+    private void validateReservationExists(Reservation reservation) {
         if (chatRoomRepository.existsByReservationId(reservation.getId())) {
             throw new ChatRoomAlreadyExistsException(BusinessErrorMessage.CHAT_ROOM_ALREADY_EXISTS.getMessage());
         }
