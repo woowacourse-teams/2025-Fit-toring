@@ -13,6 +13,7 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
+import fittoring.mentoring.presentation.dto.LoginResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.util.DbCleaner;
 import java.time.LocalDateTime;
@@ -158,7 +159,7 @@ class AuthServiceTest {
                 .isInstanceOf(MisMatchPasswordException.class);
     }
 
-    @DisplayName("정상적인 로그인이 성공하면 토큰을 반환한다.")
+    @DisplayName("정상적인 로그인이 성공하면 member 식별자와 토큰을 반환한다.")
     @Test
     void login3() {
         //given
@@ -175,16 +176,17 @@ class AuthServiceTest {
         String password = "password";
 
         //when
-        AuthTokenResponse actual = authService.login(loginId, password);
+        LoginResponse actual = authService.login(loginId, password);
 
         //then
         RefreshToken refreshToken = em.find(RefreshToken.class, savedMember.getId());
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(actual.accessToken()).isNotNull();
-                    assertThat(actual.refreshToken()).isNotNull();
+                    assertThat(actual.memberId()).isEqualTo(savedMember.getId());
+                    assertThat(actual.authToken().accessToken()).isNotNull();
+                    assertThat(actual.authToken().refreshToken()).isNotNull();
                     assertThat(refreshToken).isNotNull();
                     assertThat(refreshToken.getMember().getId()).isEqualTo(savedMember.getId());
-                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.refreshToken());
+                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.authToken().refreshToken());
                 }
         );
     }

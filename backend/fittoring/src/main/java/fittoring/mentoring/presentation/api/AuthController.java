@@ -8,6 +8,7 @@ import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
 import fittoring.mentoring.business.service.PhoneVerificationService;
 import fittoring.mentoring.presentation.CookieWriter;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
+import fittoring.mentoring.presentation.dto.LoginResponse;
 import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
@@ -37,15 +38,14 @@ public class AuthController {
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
         authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .build();
+                .build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
-        AuthTokenResponse response = authService.login(request.loginId(), request.password());
-        CookieWriter.write(httpResponse, response);
-        return ResponseEntity.status(HttpStatus.OK)
-            .build();
+    public ResponseEntity<Long> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
+        LoginResponse response = authService.login(request.loginId(), request.password());
+        CookieWriter.write(httpResponse, response.authToken());
+        return ResponseEntity.ok(response.memberId());
     }
 
     @AuthRequired
@@ -54,7 +54,7 @@ public class AuthController {
         authService.logout(loginInfo.memberId());
         CookieWriter.clearCookies(httpResponse);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .build();
+                .build();
     }
 
     @PostMapping("/reissue")
@@ -65,27 +65,27 @@ public class AuthController {
         AuthTokenResponse response = authService.reissue(refreshToken);
         CookieWriter.write(httpResponse, response);
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
     }
 
     @PostMapping("/validate-id")
     public ResponseEntity<Void> validateDuplicateLoginId(@RequestBody @Valid ValidateDuplicateLoginIdRequest request) {
         authService.validateDuplicateLoginId(request.loginId());
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
     }
 
     @PostMapping("/auth-code")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
         phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
         return ResponseEntity.status(HttpStatus.CREATED)
-            .build();
+                .build();
     }
 
     @PostMapping("/auth-code/verify")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerificationCodeRequest request) {
         phoneVerificationService.verifyCode(request);
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
     }
 }
