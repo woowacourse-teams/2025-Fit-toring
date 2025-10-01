@@ -2,6 +2,8 @@ package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
@@ -34,6 +36,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -50,8 +53,11 @@ class CertificateServiceTest {
     private Member admin;
     private Mentoring mentoring;
 
+    @MockitoBean
+    private PresignedUrlService presignedUrlService;
+
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @Autowired
     private CertificateService certificateService;
@@ -80,6 +86,8 @@ class CertificateServiceTest {
                 "가상의오픈채팅링크"
         );
         em.persist(mentoring);
+        given(presignedUrlService.isObjectExists(anyString()))
+                .willReturn(true);
     }
 
     @DisplayName("관리자 권한이 없는 일반 사용자라면 자격증명 목록을 조회할 수 없다.")
