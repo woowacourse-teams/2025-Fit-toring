@@ -4,15 +4,16 @@ import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import { postKakaoLogin } from './apis/postKakaoLogin';
 import { PAGE_URL } from '../../common/constants/url';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
+import { API_ENDPOINTS } from '../../common/constants/apiEndpoints';
 
 function KakaoCallback() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get('code');
+    const authCode = new URLSearchParams(window.location.search).get('code');
 
-    if (code) {
+    if (authCode) {
       const handleLogin = async (authCode: string) => {
         try {
           const response = await postKakaoLogin(authCode);
@@ -33,7 +34,7 @@ function KakaoCallback() {
         }
       };
 
-      handleLogin(code);
+      handleLogin(authCode);
     } else {
       alert('잘못된 접근입니다.');
       navigate(PAGE_URL.LOGIN);
