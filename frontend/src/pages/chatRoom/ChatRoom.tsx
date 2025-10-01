@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
@@ -6,6 +6,13 @@ import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
+
+import type { Message } from './types/message';
+import type SockJS from 'sockjs-client';
+import { useQuery } from '@tanstack/react-query';
+import { getChatRooms } from './apis/getChatRooms';
+import { useParams } from 'react-router-dom';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 const DUMMY_MESSAGES = [
   {
@@ -107,11 +114,14 @@ const DUMMY_MESSAGES = [
 ];
 
 function ChatRoom() {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
+
+  const { chatRoomId } = useParams();
 
   const handlePaymentRequestClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -133,6 +143,85 @@ function ChatRoom() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
 
+  const [socket, setSocket] = useState<SockJS | null>(null);
+
+  const { data, isError, error } = useQuery({
+    queryKey: ['chatrooms', chatRoomId],
+    queryFn: () => getChatRooms(Number(chatRoomId!)),
+  });
+
+  useEffect(() => {
+    if (data) {
+      setMessages(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const ws = new WebSocket('wss://ws.postman-echo.com/raw');
+
+    ws.onopen = () => console.log('✅ Connected');
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      setMessages((prev) => [...prev, { ...msg, senderId: 2 }]);
+    };
+    ws.onclose = () => console.log('❌ Disconnected');
+
+    setSocket(ws);
+
+    return () => ws.close();
+  }, []);
+
+  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (socket && socket.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    const tempId = Date.now();
+
+    const optimisticMsg = {
+      senderId: 1,
+      content: message,
+      createdAt: new Date().toString(),
+      chatRoomId: Number(chatRoomId),
+      id: tempId,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessage('');
+
+    try {
+      socket.send(JSON.stringify(optimisticMsg));
+
+      // POST요청 후 받은 응답값
+      const savedMessage = {
+        senderId: 1,
+        content: message,
+        createdAt: new Date().toString(),
+        chatRoomId: Number(chatRoomId),
+        id: tempId,
+      };
+
+      setMessages((prev) =>
+        prev.map((message) => (message.id === tempId ? savedMessage : message)),
+      );
+    } catch (error) {
+      setMessages((prev) =>
+        prev.map((message) =>
+          message.id === tempId ? { ...message, errored: true } : message,
+        ),
+      );
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'chat',
+        step: 'chat-send',
+      });
+    }
+  };
+
   return (
     <S_Container>
       <div>
@@ -151,7 +240,11 @@ function ChatRoom() {
       </div>
 
       <ChatContent messages={DUMMY_MESSAGES} />
-      <InputSection value={message} onChange={handleChange} />
+      <InputSection
+        value={message}
+        onChange={handleChange}
+        onSubmit={handleMessageSubmit}
+      />
     </S_Container>
   );
 }
