@@ -31,6 +31,7 @@ public class ChatRoom {
     @Id
     private Long id;
 
+    @Getter
     @Column(name = "reservation_id", nullable = false)
     private Long reservationId;
 
@@ -54,5 +55,9 @@ public class ChatRoom {
 
     public ChatRoom(Long reservationId, Long menteeId, Long mentorId) {
         this(null, reservationId, menteeId, mentorId, null, false, null);
+    }
+
+    public boolean hasParticipant(Long memberId) {
+        return mentorId.equals(memberId) || menteeId.equals(memberId);
     }
 }

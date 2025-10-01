@@ -63,12 +63,12 @@ public class Member {
     }
 
     public Member(
-        String loginId,
-        String gender,
-        String name,
-        Phone phone,
-        Password password,
-        MemberRole role
+            String loginId,
+            String gender,
+            String name,
+            Phone phone,
+            Password password,
+            MemberRole role
     ) {
         this(null, loginId, gender, name, phone, password, role, false, null);
     }
@@ -81,6 +81,10 @@ public class Member {
         if (this.role != MemberRole.ADMIN) {
             this.role = MemberRole.MENTOR;
         }
+    }
+
+    public boolean isMentee() {
+        return MemberRole.isMentee(this.role);
     }
 
     public boolean isSameIdWith(Long memberId) {

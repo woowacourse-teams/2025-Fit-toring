@@ -112,4 +112,8 @@ public class Reservation {
     public String getStatus() {
         return status.name();
     }
+
+    public boolean isChatRoomAccessibleStatus() {
+        return status.isApprove() || status.isComplete();
+    }
 }
