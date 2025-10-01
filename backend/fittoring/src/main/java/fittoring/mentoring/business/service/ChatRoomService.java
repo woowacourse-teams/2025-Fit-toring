@@ -1,9 +1,26 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.ChatRoomAlreadyExistsException;
+import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
+import fittoring.mentoring.business.exception.MemberNotFoundException;
+import fittoring.mentoring.business.exception.MentoringNotFoundException;
+import fittoring.mentoring.business.exception.ReservationNotFoundException;
+import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
 import fittoring.mentoring.business.model.ChatRoom;
+import fittoring.mentoring.business.model.Image;
+import fittoring.mentoring.business.model.ImageType;
+import fittoring.mentoring.business.model.ImageVariant;
+import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.repository.ChatRoomRepository;
+import fittoring.mentoring.business.repository.ImageRepository;
+import fittoring.mentoring.business.repository.MemberRepository;
+import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
+import fittoring.mentoring.presentation.dto.ChatRoomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +30,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final ReservationRepository reservationRepository;
+    private final ImageRepository imageRepository;
+    private final MemberRepository memberRepository;
+    private final MentoringRepository mentoringRepository;
 
     @Transactional
     public ChatRoomCreatedInfo registerChatRoom(Reservation reservation) {
+        Mentoring mentoring = reservation.getMentoring();
+        validateMentoring(mentoring);
+        validateReservationExists(reservation);
+
         ChatRoom chatRoom = new ChatRoom(
                 reservation.getId(),
                 reservation.getMentee().getId(),
@@ -24,6 +49,19 @@ public class ChatRoomService {
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
         String url = ChatRoomUrlGenerator.generate(savedChatRoom.getId());
         return new ChatRoomCreatedInfo(url);
+    }
+
+    private void validateMentoring(Mentoring mentoring) {
+        mentoringRepository.findById(mentoring.getId())
+                .orElseThrow(
+                        () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage())
+                );
+    }
+
+    private void validateReservationExists(final Reservation reservation) {
+        if (chatRoomRepository.existsByReservationId(reservation.getId())) {
+            throw new ChatRoomAlreadyExistsException(BusinessErrorMessage.CHAT_ROOM_ALREADY_EXISTS.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
