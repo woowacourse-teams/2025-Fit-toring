@@ -25,7 +25,7 @@ import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
-import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
+import fittoring.mentoring.infra.querydsl.helper.MentoringPaginationHelper;
 import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;

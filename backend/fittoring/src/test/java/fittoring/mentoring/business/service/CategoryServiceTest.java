@@ -2,7 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.config.QueryDslConfig;
 import fittoring.mentoring.business.model.Category;
-import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
+import fittoring.mentoring.infra.querydsl.helper.MentoringPaginationHelper;
 import fittoring.mentoring.presentation.dto.CategoryResponse;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.Assertions;

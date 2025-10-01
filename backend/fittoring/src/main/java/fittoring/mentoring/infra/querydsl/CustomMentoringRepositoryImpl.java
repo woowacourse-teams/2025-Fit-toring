@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.repository;
+package fittoring.mentoring.infra.querydsl;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -7,7 +7,8 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.QMentoring;
 import fittoring.mentoring.business.model.QMentoringStatistics;
 import fittoring.mentoring.business.model.SortKey;
-import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
+import fittoring.mentoring.business.repository.CustomMentoringRepository;
+import fittoring.mentoring.infra.querydsl.helper.MentoringPaginationHelper;
 import fittoring.mentoring.business.service.dto.MentoringPaginationResult;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

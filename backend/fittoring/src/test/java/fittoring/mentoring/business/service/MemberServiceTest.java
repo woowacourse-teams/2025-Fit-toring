@@ -7,7 +7,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
+import fittoring.mentoring.infra.querydsl.helper.MentoringPaginationHelper;
 import fittoring.mentoring.infra.image.ImageResizer;
 import fittoring.mentoring.infra.image.ImageTranscoder;
 import fittoring.mentoring.infra.image.S3Uploader;
