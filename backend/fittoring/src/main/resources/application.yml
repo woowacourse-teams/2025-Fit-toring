@@ -74,7 +74,6 @@ jwt:
   access-token-expiration-millis: ${ACCESS_TOKEN_EXPIRATION_MILLIS}
   refresh-token-expiration-millis: ${REFRESH_TOKEN_EXPIRATION_MILLIS}
 kakao:
-  redirect-uri: ${KAKAO_REDIRECT_URI}
   client-id: ${KAKAO_CLIENT_ID}
 aws:
   s3:

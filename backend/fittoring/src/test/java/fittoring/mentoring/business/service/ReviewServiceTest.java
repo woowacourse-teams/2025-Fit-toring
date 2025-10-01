@@ -27,6 +27,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
@@ -51,7 +52,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, ReviewService.class, JpaConfiguration.class, QueryDslConfig.class})
+@Import({DbCleaner.class, ReviewService.class, JpaConfiguration.class, QueryDslConfig.class, MentoringPaginationHelper.class})
 @DataJpaTest
 class ReviewServiceTest {
 

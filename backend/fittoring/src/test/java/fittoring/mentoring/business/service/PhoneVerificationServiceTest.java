@@ -6,6 +6,7 @@ import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.PhoneVerification;
 import fittoring.mentoring.business.repository.PhoneVerificationRepository;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.infra.CodeGeneratorStub;
 import fittoring.mentoring.presentation.dto.VerificationCodeRequest;
 import fittoring.util.DbCleaner;
@@ -28,7 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, PhoneVerificationService.class, CodeGeneratorStub.class, QueryDslConfig.class})
+@Import({DbCleaner.class, PhoneVerificationService.class, CodeGeneratorStub.class, QueryDslConfig.class, MentoringPaginationHelper.class})
 @DataJpaTest
 class PhoneVerificationServiceTest {
 

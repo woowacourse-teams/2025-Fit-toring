@@ -45,21 +45,6 @@ public class MentoringController {
                 .build();
     }
 
-    @GetMapping("/mentorings")
-    public ResponseEntity<List<MentoringSummaryResponse>> getMentoringSummaries(
-            @RequestParam(required = false) String categoryTitle1,
-            @RequestParam(required = false) String categoryTitle2,
-            @RequestParam(required = false) String categoryTitle3
-    ) {
-        List<MentoringSummaryResponse> responseBody = mentoringService.findMentoringSummaries(
-                categoryTitle1,
-                categoryTitle2,
-                categoryTitle3
-        );
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(responseBody);
-    }
-
     @GetMapping("/mentorings-page")
     public ResponseEntity<MentoringSummaryPaginationResponse> getMentoringSummaryPages(
             @RequestParam(defaultValue = "CREATED_AT") SortKey sortKey,

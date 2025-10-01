@@ -7,11 +7,14 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
+@Import({MentoringPaginationHelper.class})
 class MentoringRepositoryTest extends RepositoryTestSupport {
 
     @Autowired
@@ -46,7 +49,7 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
         });
     }
 
-    @DisplayName("멘토링을 조회할 때 상태 상태의 멘토링은 제외하고 조회한다.")
+    @DisplayName("멘토링을 조회할 때 삭제 상태의 멘토링은 제외하고 조회한다.")
     @Test
     void findMentorings() {
         //given

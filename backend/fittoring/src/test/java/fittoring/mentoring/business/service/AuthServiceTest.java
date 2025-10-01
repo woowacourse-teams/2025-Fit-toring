@@ -13,6 +13,7 @@ import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.RefreshToken;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.infra.OauthClientService;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.util.DbCleaner;
@@ -35,7 +36,7 @@ import org.springframework.web.client.RestClient;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class, OauthClientService.class})
+@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class, OauthClientService.class, MentoringPaginationHelper.class})
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
 class AuthServiceTest {

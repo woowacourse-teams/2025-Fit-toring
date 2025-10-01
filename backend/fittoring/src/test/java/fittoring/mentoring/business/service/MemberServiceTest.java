@@ -7,6 +7,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.presentation.dto.MyInfoResponse;
 import fittoring.mentoring.presentation.dto.MyInfoSummaryResponse;
 import fittoring.util.DbCleaner;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -31,7 +33,9 @@ import org.springframework.test.context.ActiveProfiles;
         DbCleaner.class,
         MemberService.class,
         ImageService.class,
-        QueryDslConfig.class
+        QueryDslConfig.class,
+        QueryDslConfig.class,
+        MentoringPaginationHelper.class
 })
 @DataJpaTest
 class MemberServiceTest {
