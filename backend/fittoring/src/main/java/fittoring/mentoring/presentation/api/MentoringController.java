@@ -12,7 +12,6 @@ import fittoring.mentoring.presentation.dto.MentoringModifyRequest;
 import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,9 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -37,7 +34,7 @@ public class MentoringController {
     @PostMapping("/mentorings")
     public ResponseEntity<Void> registerMentoring(
             @Login LoginInfo loginInfo,
-            @Valid @RequestBody MentoringRegisterRequest requestBody
+            @RequestBody MentoringRegisterRequest requestBody
     ) {
         RegisterMentoringDto dto = RegisterMentoringDto.of(
                 loginInfo.memberId(),
@@ -92,16 +89,12 @@ public class MentoringController {
     public ResponseEntity<Void> modifyMentoring(
             @PathVariable("mentoringId") Long mentoringId,
             @Login LoginInfo loginInfo,
-            @RequestPart("data") MentoringModifyRequest requestBody,
-            @RequestPart(value = "image", required = false) MultipartFile profileImage,
-            @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
+            @RequestBody MentoringModifyRequest requestBody
     ) {
         ModifyMentoringDto mentoringModifyDto = ModifyMentoringDto.of(
                 mentoringId,
                 loginInfo.memberId(),
-                requestBody,
-                profileImage,
-                certificateImages
+                requestBody
         );
         mentoringService.modifyMentoring(mentoringModifyDto);
         return ResponseEntity.status(HttpStatus.OK)
