@@ -35,3 +35,8 @@ jwt:
 kakao:
   redirect-uri: ${KAKAO_REDIRECT_URI}
   client-id: ${KAKAO_CLIENT_ID}
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket-name: test-bucket
