@@ -31,13 +31,19 @@ public class CertificateService {
     private final MemberRepository memberRepository;
     private final CertificateRepository certificateRepository;
     private final ImageService imageService;
+    private final PresignedUrlService presignedUrlService;
 
     public void mapCertificatesToMentoring(
             List<CertificateInfo> certificateInfos,
             Mentoring mentoring
     ) {
-        // todo: S3 validate 추가
-        saveAllCertificates(certificateInfos, mentoring);
+        List<CertificateInfo> validCertificateInfos = new ArrayList<>();
+        for (CertificateInfo certificateInfo : certificateInfos) {
+            if (presignedUrlService.isObjectExists(certificateInfo.imageUrl())) {
+                validCertificateInfos.add(certificateInfo);
+            }
+        }
+        saveAllCertificates(validCertificateInfos, mentoring);
     }
 
     private void saveAllCertificates(
