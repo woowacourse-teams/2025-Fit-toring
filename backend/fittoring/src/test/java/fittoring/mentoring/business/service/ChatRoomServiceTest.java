@@ -2,7 +2,6 @@ package fittoring.mentoring.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
@@ -12,6 +11,7 @@ import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
 import fittoring.mentoring.business.model.ChatRoom;
+import fittoring.mentoring.business.model.ChatStatus;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.ImageVariant;
@@ -26,6 +26,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
 import fittoring.mentoring.presentation.dto.ChatRoomResponse;
 import fittoring.util.DbCleaner;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,13 +110,11 @@ class ChatRoomServiceTest {
         ChatRoomResponse chatRoomResponse = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
 
         //then
-        assertAll(
-                () -> assertThat(chatRoomResponse.participant()).isEqualTo(mentor.getName()),
-                () -> assertThat(chatRoomResponse.mentorName()).isEqualTo(mentor.getName()),
-                () -> assertThat(chatRoomResponse.mentorProfileImageUrl()).isEqualTo(image.getUrl()),
-                () -> assertThat(chatRoomResponse.mentoringPrice()).isEqualTo(mentoring.getPrice()),
-                () -> assertThat(chatRoomResponse.senderId()).isEqualTo(mentee.getId())
-        );
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(chatRoomResponse.mentoringId()).isEqualTo(1L);
+            assertThat(chatRoomResponse.opponentName()).isEqualTo("김트레이너");
+            assertThat(chatRoomResponse.status()).isEqualTo(ChatStatus.ACTIVATE.name());
+        });
     }
 
     @DisplayName("멘토는 채팅방 조회를 할 수 있다.")
@@ -170,13 +169,11 @@ class ChatRoomServiceTest {
         ChatRoomResponse chatRoomResponse = chatRoomService.findChatRoom(mentor.getId(), chatRoom.getId());
 
         //then
-        assertAll(
-                () -> assertThat(chatRoomResponse.participant()).isEqualTo(mentee.getName()),
-                () -> assertThat(chatRoomResponse.mentorName()).isEqualTo(mentor.getName()),
-                () -> assertThat(chatRoomResponse.mentorProfileImageUrl()).isEqualTo(image.getUrl()),
-                () -> assertThat(chatRoomResponse.mentoringPrice()).isEqualTo(mentoring.getPrice()),
-                () -> assertThat(chatRoomResponse.senderId()).isEqualTo(mentor.getId())
-        );
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(chatRoomResponse.mentoringId()).isEqualTo(1L);
+            assertThat(chatRoomResponse.opponentName()).isEqualTo("김멘티");
+            assertThat(chatRoomResponse.status()).isEqualTo(ChatStatus.ACTIVATE.name());
+        });
     }
 
     @DisplayName("존재하지 않는 채팅방을 조회하는 경우 예외가 발생한다.")
@@ -241,32 +238,6 @@ class ChatRoomServiceTest {
         //then
         assertThatThrownBy(() -> chatRoomService.findChatRoom(stranger.getId(), chatRoom.getId()))
                 .isInstanceOf(UnauthorizedChatRoomAccessException.class);
-    }
-
-    @DisplayName("존재하지 않는 프로필 이미지가 포함된 경우 프로필 이미지 URL은 빈 문자열로 반환된다.")
-    @Test
-    void findChatRoomNullProfileImage() {
-        //given
-        Member mentor = new Member("id3", "MALE", "최트레이너", new Phone("010-9999-8888"), Password.from("pw3"));
-        em.persist(mentor);
-
-        Mentoring mentoring = new Mentoring(mentor, 12000, 2, "테스트컨텐츠", "테스트소개", "카카오톡링크");
-        em.persist(mentoring);
-
-        Member mentee = new Member("멘티id3", "MALE", "이멘티", new Phone("010-8888-7777"), Password.from("password3"));
-        em.persist(mentee);
-
-        Reservation reservation = new Reservation("content", Status.APPROVED, mentoring, mentee);
-        em.persist(reservation);
-
-        ChatRoom chatRoom = new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId());
-        em.persist(chatRoom);
-
-        //when
-        ChatRoomResponse actual = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
-
-        //then
-        assertThat(actual.mentorProfileImageUrl()).isEqualTo("");
     }
 
     @DisplayName("삭제된 멘토링(Soft Delete)과 연결된 예약으로 채팅방을 생성하면 예외가 발생한다.")
@@ -346,6 +317,5 @@ class ChatRoomServiceTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.senderId()).isEqualTo(mentee.getId());
     }
 }

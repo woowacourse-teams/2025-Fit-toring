@@ -8,14 +8,10 @@ import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
 import fittoring.mentoring.business.model.ChatRoom;
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.ImageType;
-import fittoring.mentoring.business.model.ImageVariant;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.repository.ChatRoomRepository;
-import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
@@ -31,7 +27,6 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ReservationRepository reservationRepository;
-    private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
     private final MentoringRepository mentoringRepository;
 
@@ -73,18 +68,12 @@ public class ChatRoomService {
         validateReservationStatus(reservation);
 
         Member member = getMember(memberId);
+        String opponentName = getOpponentName(member, reservation);
 
-        String participant = getParticipantName(member, reservation);
-        String mentorName = reservation.getMentoring().getMentorName();
-        Mentoring mentoring = reservation.getMentoring();
-        Image profileImage = getImage(mentoring);
-
-        return ChatRoomResponse.of(
-                participant,
-                mentorName,
-                profileImage,
-                mentoring.getPrice(),
-                memberId
+        return new ChatRoomResponse(
+                reservation.getMentoring().getId(),
+                opponentName,
+                chatRoom.getStatus().name()
         );
     }
 
@@ -124,15 +113,7 @@ public class ChatRoomService {
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
-    private Image getImage(Mentoring mentoring) {
-        return imageRepository.findByImageTypeAndRelationIdAndImageVariant(
-                ImageType.MENTORING_PROFILE,
-                mentoring.getId(),
-                ImageVariant.THUMBNAIL
-        ).orElse(null);
-    }
-
-    private String getParticipantName(Member member, Reservation reservation) {
+    private String getOpponentName(Member member, Reservation reservation) {
         if (member.isMentee()) {
             return reservation.getMentorName();
         }
