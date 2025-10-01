@@ -6,11 +6,14 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
+@Import({MentoringPaginationHelper.class})
 class MemberRepositoryTest extends RepositoryTestSupport {
 
     @Autowired

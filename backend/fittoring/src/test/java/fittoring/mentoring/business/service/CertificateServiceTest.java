@@ -18,6 +18,7 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.business.service.dto.CertificateDeleteDto;
 import fittoring.mentoring.infra.image.ImageResizer;
 import fittoring.mentoring.infra.image.ImageTranscoder;
@@ -56,7 +57,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         ImageResizer.class,
         ImageTranscoder.class,
         JpaConfiguration.class,
-        QueryDslConfig.class
+        QueryDslConfig.class,
+        MentoringPaginationHelper.class
 })
 @DataJpaTest
 class CertificateServiceTest {

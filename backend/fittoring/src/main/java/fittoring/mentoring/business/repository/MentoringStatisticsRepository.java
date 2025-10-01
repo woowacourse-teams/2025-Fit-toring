@@ -1,14 +1,24 @@
 package fittoring.mentoring.business.repository;
 
 import fittoring.mentoring.business.model.MentoringStatistics;
+import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface MentoringStatisticsRepository extends ListCrudRepository<MentoringStatistics, Long> {
 
-    @Modifying
+    @Query("""
+            SELECT ms
+            FROM MentoringStatistics ms
+            WHERE ms.id IN :mentoringIds
+        """)
+    List<MentoringStatistics> findByIds(List<Long> mentoringIds);
+
+    @Transactional
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             UPDATE MentoringStatistics ms
             SET ms.reviewCount = ms.reviewCount + 1,
@@ -17,7 +27,8 @@ public interface MentoringStatisticsRepository extends ListCrudRepository<Mentor
         """)
     void updateReviewStatisticsPlus(@Param("mentoringId") Long mentoringId, @Param("rating") int rating);
 
-    @Modifying
+    @Transactional
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             UPDATE MentoringStatistics ms
             SET ms.reviewCount = ms.reviewCount - 1,
@@ -26,7 +37,8 @@ public interface MentoringStatisticsRepository extends ListCrudRepository<Mentor
         """)
     void updateReviewStatisticsMinus(@Param("mentoringId") Long mentoringId, @Param("rating") int rating);
 
-    @Modifying
+    @Transactional
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             UPDATE MentoringStatistics ms
             SET ms.reservationCount = ms.reservationCount + 1
@@ -34,7 +46,8 @@ public interface MentoringStatisticsRepository extends ListCrudRepository<Mentor
         """)
     void updateReservationCountPlus(@Param("mentoringId") Long mentoringId);
 
-    @Modifying
+    @Transactional
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             UPDATE MentoringStatistics ms
             SET ms.reservationCount = ms.reservationCount - 1

@@ -47,7 +47,5 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
             """)
     List<Reservation> findAllByMentorId(Long mentorId);
 
-    List<Reservation> findAllByMenteeId(Long menteeId);
-
     List<Reservation> findAllByMentoring(Mentoring mentoring);
 }
