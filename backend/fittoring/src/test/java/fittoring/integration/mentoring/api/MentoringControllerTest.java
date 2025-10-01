@@ -47,7 +47,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Deprecated
 class MentoringControllerTest extends AbstractApiDocumentationTest {
 
     @Autowired
@@ -189,8 +188,8 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
                 .given()
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .contentType(ContentType.MULTIPART)
-                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(requestBody))
                 .when()
                 .put("/mentorings/999")
                 .then().log().all()
