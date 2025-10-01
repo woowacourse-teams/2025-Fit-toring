@@ -174,6 +174,6 @@ public class MentoringPaginationHelper {
             nextAverageRating = (double) nextMentoringStatistics.getRatingSum() / nextMentoringStatistics.getReviewCount();
         }
         long nextAverageRatingBits = Double.doubleToLongBits(nextAverageRating);
-        return CursorCodec.encode(new Cursor(nextAverageRatingBits, nextMentoringStatistics.getId()));
+        return CursorCodec.encode(new Cursor(nextAverageRatingBits, nextMentoringStatistics.getMentoringId()));
     }
 }
