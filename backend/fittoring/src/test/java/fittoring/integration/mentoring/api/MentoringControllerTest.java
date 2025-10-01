@@ -2,6 +2,8 @@ package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
@@ -27,6 +29,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
+import fittoring.mentoring.business.service.PresignedUrlService;
 import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
@@ -46,8 +49,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class MentoringControllerTest extends AbstractApiDocumentationTest {
+
+    @MockitoBean
+    private PresignedUrlService presignedUrlService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -137,14 +144,17 @@ class MentoringControllerTest extends AbstractApiDocumentationTest {
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
+        given(presignedUrlService.isObjectExists(anyString()))
+                .willReturn(true);
+
         // when
         // then
         RestAssured
                 .given()
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .contentType(ContentType.MULTIPART)
-                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(requestBody))
                 .when()
                 .put("/mentorings/" + mentoring.getId())
                 .then().log().all()
