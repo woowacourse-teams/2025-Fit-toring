@@ -32,6 +32,10 @@ jwt:
   secret-key: my/test/secret/key/my/test/secret/key
   access-token-expiration-millis: 10000
   refresh-token-expiration-millis: 20000000
+kakao:
+  redirect-uri: ${KAKAO_REDIRECT_URI}
+  client-id: ${KAKAO_CLIENT_ID}
+
 aws:
   s3:
     region: ap-northeast-2
