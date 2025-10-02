@@ -29,7 +29,7 @@ import fittoring.application.repository.MentoringStatisticsRepository;
 import fittoring.application.repository.ReservationRepository;
 import fittoring.application.repository.ReviewRepository;
 import fittoring.application.repository.helper.MentoringPaginationHelper;
-import fittoring.application.service.JwtProvider;
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.application.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.application.presentation.dto.MentoringRegisterRequest;

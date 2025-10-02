@@ -14,7 +14,7 @@ import fittoring.application.repository.MentoringRepository;
 import fittoring.application.repository.MentoringStatisticsRepository;
 import fittoring.application.repository.ReservationRepository;
 import fittoring.application.repository.ReviewRepository;
-import fittoring.application.service.JwtProvider;
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.admin.presentation.dto.AdminReviewInfoResponse;
 import fittoring.admin.presentation.dto.AdminReviewResponse;
 import fittoring.util.DbCleaner;

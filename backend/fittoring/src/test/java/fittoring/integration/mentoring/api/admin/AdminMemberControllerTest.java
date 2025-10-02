@@ -5,7 +5,7 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
 import fittoring.application.repository.MemberRepository;
-import fittoring.application.service.JwtProvider;
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.admin.presentation.dto.AdminMemberResponse;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;

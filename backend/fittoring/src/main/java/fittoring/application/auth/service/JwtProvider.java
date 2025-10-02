@@ -1,4 +1,4 @@
-package fittoring.application.service;
+package fittoring.application.auth.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidTokenException;

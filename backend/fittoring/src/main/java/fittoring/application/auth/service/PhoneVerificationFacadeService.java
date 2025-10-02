@@ -1,4 +1,4 @@
-package fittoring.application.service;
+package fittoring.application.auth.service;
 
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.SmsMessageFormatter;

@@ -1,6 +1,6 @@
 package fittoring.application.service;
 
-import fittoring.application.service.PhoneVerificationService;
+import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.config.QueryDslConfig;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidPhoneVerificationException;
@@ -9,7 +9,7 @@ import fittoring.domain.model.PhoneVerification;
 import fittoring.application.repository.PhoneVerificationRepository;
 import fittoring.application.repository.helper.MentoringPaginationHelper;
 import fittoring.application.infra.CodeGeneratorStub;
-import fittoring.application.presentation.dto.VerificationCodeRequest;
+import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.util.DbCleaner;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

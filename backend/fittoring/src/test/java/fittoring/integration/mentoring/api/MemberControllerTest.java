@@ -4,7 +4,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
 import fittoring.application.repository.MemberRepository;
-import fittoring.application.service.JwtProvider;
+import fittoring.application.auth.service.JwtProvider;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;

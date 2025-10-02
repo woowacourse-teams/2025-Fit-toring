@@ -1,8 +1,8 @@
 package fittoring.config.auth;
 
 import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.service.JwtExtractor;
-import fittoring.application.service.JwtProvider;
+import fittoring.application.auth.service.JwtExtractor;
+import fittoring.application.auth.service.JwtProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

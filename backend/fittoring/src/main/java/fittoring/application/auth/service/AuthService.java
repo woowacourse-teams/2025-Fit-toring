@@ -1,4 +1,4 @@
-package fittoring.application.service;
+package fittoring.application.auth.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicateLoginIdException;
@@ -17,9 +17,9 @@ import fittoring.application.repository.RefreshTokenRepository;
 import fittoring.application.service.dto.KakaoTokenResponse;
 import fittoring.application.service.dto.KakaoUserInfoResponse;
 import fittoring.infrastructure.OauthClientService;
-import fittoring.application.presentation.dto.AuthTokenResponse;
-import fittoring.application.presentation.dto.OauthSignUpRequest;
-import fittoring.application.presentation.dto.SignUpRequest;
+import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
+import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

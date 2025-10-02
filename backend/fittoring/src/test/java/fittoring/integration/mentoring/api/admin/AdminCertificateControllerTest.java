@@ -14,7 +14,7 @@ import fittoring.application.repository.CertificateRepository;
 import fittoring.application.repository.ImageRepository;
 import fittoring.application.repository.MemberRepository;
 import fittoring.application.repository.MentoringRepository;
-import fittoring.application.service.JwtProvider;
+import fittoring.application.auth.service.JwtProvider;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,6 @@
 package fittoring.application.presentation;
 
-import fittoring.application.presentation.dto.AuthTokenResponse;
+import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -2,6 +2,8 @@ package fittoring.application.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import fittoring.application.auth.service.PhoneVerificationFacadeService;
+import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.SmsMessageFormatter;
 import fittoring.infrastructure.SmsRestClientService;

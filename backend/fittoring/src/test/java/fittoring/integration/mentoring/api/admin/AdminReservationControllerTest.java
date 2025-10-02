@@ -13,7 +13,7 @@ import fittoring.application.repository.MemberRepository;
 import fittoring.application.repository.MentoringRepository;
 import fittoring.application.repository.ReservationRepository;
 import fittoring.application.repository.ReviewRepository;
-import fittoring.application.service.JwtProvider;
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.presentation.dto.ReservationStatusUpdateRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
