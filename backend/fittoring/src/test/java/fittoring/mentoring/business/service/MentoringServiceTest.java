@@ -219,274 +219,6 @@ class MentoringServiceTest {
     }
 
     @Transactional
-    @DisplayName("멘토링 요약 조회")
-    @Nested
-    class FindMentoringSummary {
-
-        @DisplayName("필터링 설정이 없는 경우, 모든 멘토링의 요약 정보를 조회할 수 있다.")
-        @Test
-        void getAllMentoring1() {
-            // given
-            Member mentor1 = new Member("id1", "MALE", "김트레이너", new Phone("010-4321-9048"), Password.from("pw"));
-            Member mentor2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
-            em.persist(mentor1);
-            em.persist(mentor2);
-
-            Mentoring mentoring1 = new Mentoring(mentor1, 5000, 3, "컨텐츠1", "자기소개1", "가상의오픈채팅링크");
-            Mentoring mentoring2 = new Mentoring(mentor2, 5000, 3, "컨텐츠2", "자기소개2", "가상의오픈채팅링크");
-            em.persist(mentoring1);
-            em.persist(mentoring2);
-
-            Member mentee = new Member("id3", "MALE", "멘티", new Phone("010-3455-5678"), Password.from("pw"));
-            em.persist(mentee);
-
-            Category category1 = new Category("카테고리1");
-            Category category2 = new Category("카테고리2");
-            em.persist(category1);
-            em.persist(category2);
-
-            CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
-            CategoryMentoring categoryMentoring2_2 = new CategoryMentoring(category2, mentoring2);
-            em.persist(categoryMentoring1_1);
-            em.persist(categoryMentoring2_2);
-
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
-            em.persist(image1);
-
-            String categoryTitle1 = null;
-            String categoryTitle2 = null;
-            String categoryTitle3 = null;
-
-            //예약 생성
-            Reservation reservation = new Reservation("content", Status.COMPLETE, mentoring1, mentee);
-            em.persist(reservation);
-
-            Reservation reservation2 = new Reservation("content", Status.COMPLETE, mentoring1, mentee);
-            em.persist(reservation2);
-
-            Reservation reservation3 = new Reservation("content", Status.COMPLETE, mentoring2, mentee);
-            em.persist(reservation3);
-
-            //리뷰 생성
-            Review review = new Review(
-                    5,
-                    "최고의 멘토링이었습니다.",
-                    reservation,
-                    mentee
-            );
-            em.persist(review);
-
-            Review review2 = new Review(
-                    2,
-                    "별로의 멘토링이었습니다.",
-                    reservation2,
-                    mentee
-            );
-
-            em.persist(review2);
-            Review review3 = new Review(
-                    4,
-                    "최고의 멘토링이었습니다.",
-                    reservation3,
-                    mentee
-            );
-            em.persist(review3);
-
-            RatingStatsDto ratingStatsDto = new RatingStatsDto(mentoring1.getId(), 3.5, 2);
-            MentoringSummaryResponse expected = MentoringSummaryResponse.of(
-                    mentoring1,
-                    List.of(categoryMentoring1_1.getCategoryTitle()),
-                    image1,
-                    ratingStatsDto
-            );
-
-            RatingStatsDto ratingStatsDto2 = new RatingStatsDto(mentoring1.getId(), 4.0, 1);
-            MentoringSummaryResponse expected2 = MentoringSummaryResponse.of(
-                    mentoring2,
-                    List.of(categoryMentoring2_2.getCategoryTitle()),
-                    null,
-                    ratingStatsDto2
-            );
-
-            // when
-            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
-                    categoryTitle1,
-                    categoryTitle2,
-                    categoryTitle3
-            );
-
-            // then
-            assertThat(actual).containsExactly(expected, expected2);
-        }
-
-        @DisplayName("카테고리 필터링 조건을 만족하는 모든 멘토링의 요약 정보를 조회할 수 있다.")
-        @Test
-        void getAllMentoring2() {
-            // given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-3333-9048"), Password.from("pw"));
-            Member member2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
-            Member member3 = new Member("id3", "MALE", "이트레이너", new Phone("010-1234-5679"), Password.from("pw"));
-            em.persist(member1);
-            em.persist(member2);
-            em.persist(member3);
-
-            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
-            Mentoring mentoring2 = new Mentoring(member2, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
-            Mentoring mentoring3 = new Mentoring(member3, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
-            em.persist(mentoring1);
-            em.persist(mentoring2);
-            em.persist(mentoring3);
-
-            Category category1 = new Category("카테고리1");
-            Category category2 = new Category("카테고리2");
-            Category category3 = new Category("카테고리3");
-            em.persist(category1);
-            em.persist(category2);
-            em.persist(category3);
-
-            CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
-            CategoryMentoring categoryMentoring2_1 = new CategoryMentoring(category2, mentoring1);
-            CategoryMentoring categoryMentoring2_2 = new CategoryMentoring(category2, mentoring2);
-            CategoryMentoring categoryMentoring1_3 = new CategoryMentoring(category1, mentoring3);
-            CategoryMentoring categoryMentoring2_3 = new CategoryMentoring(category2, mentoring3);
-            CategoryMentoring categoryMentoring3_3 = new CategoryMentoring(category3, mentoring3);
-            em.persist(categoryMentoring1_1);
-            em.persist(categoryMentoring2_1);
-            em.persist(categoryMentoring2_2);
-            em.persist(categoryMentoring1_3);
-            em.persist(categoryMentoring2_3);
-            em.persist(categoryMentoring3_3);
-
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
-            Image image2 = new Image("멘토링이미지3url", ImageType.MENTORING_PROFILE, mentoring3.getId());
-            em.persist(image1);
-            em.persist(image2);
-
-            String categoryTitle1 = category1.getTitle();
-            String categoryTitle2 = category2.getTitle();
-            String categoryTitle3 = null;
-
-            MentoringSummaryResponse expected = MentoringSummaryResponse.of(
-                    mentoring1,
-                    List.of(categoryMentoring1_1.getCategoryTitle(),
-                            categoryMentoring2_1.getCategoryTitle()),
-                    image1,
-                    new RatingStatsDto(mentoring1.getId(), 0.0, 0)
-            );
-
-            MentoringSummaryResponse expected2 = MentoringSummaryResponse.of(
-                    mentoring3,
-                    List.of(categoryMentoring1_3.getCategoryTitle(),
-                            categoryMentoring2_3.getCategoryTitle(),
-                            categoryMentoring3_3.getCategoryTitle()
-                    ),
-                    image2,
-                    new RatingStatsDto(mentoring1.getId(), 0.0, 0)
-            );
-
-            // when
-            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
-                    categoryTitle1,
-                    categoryTitle2,
-                    categoryTitle3
-            );
-
-            // then
-            assertThat(actual).containsExactly(expected, expected2);
-        }
-
-        @DisplayName("존재하지 않는 카테고리 이름을 필터링하려는 경우 예외가 발생한다.")
-        @Test
-        void getAllMentoring5() {
-            // given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
-            Member member2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
-            em.persist(member1);
-            em.persist(member2);
-
-            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
-            Mentoring mentoring2 = new Mentoring(member2, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
-            em.persist(mentoring1);
-            em.persist(mentoring2);
-
-            Category category1 = new Category("카테고리1");
-            Category category2 = new Category("카테고리2");
-            em.persist(category1);
-            em.persist(category2);
-
-            CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
-            CategoryMentoring categoryMentoring1_2 = new CategoryMentoring(category1, mentoring2);
-            CategoryMentoring categoryMentoring2_2 = new CategoryMentoring(category2, mentoring2);
-            em.persist(categoryMentoring1_1);
-            em.persist(categoryMentoring1_2);
-            em.persist(categoryMentoring2_2);
-
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
-            em.persist(image1);
-
-            String categoryTitle1 = category1.getTitle();
-            String categoryTitle2 = "비정상카테고리";
-            String categoryTitle3 = null;
-
-            // when
-            // then
-            assertThatThrownBy(() -> mentoringService.findMentoringSummaries(
-                    categoryTitle1,
-                    categoryTitle2,
-                    categoryTitle3
-            )).isInstanceOf(CategoryNotFoundException.class)
-                    .hasMessage(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage());
-
-        }
-
-        @DisplayName("필터 조건에 해당하는 멘토링이 존재하지 않는 경우, 빈 리스트를 반환한다.")
-        @Test
-        void getAllMentoring6() {
-            // given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
-            Member member2 = new Member("id2", "MALE", "박트레이너", new Phone("010-1234-5678"), Password.from("pw"));
-            em.persist(member1);
-            em.persist(member2);
-
-            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
-            Mentoring mentoring2 = new Mentoring(member2, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
-            em.persist(mentoring1);
-            em.persist(mentoring2);
-
-            Category category1 = new Category("카테고리1");
-            Category category2 = new Category("카테고리2");
-            Category category3 = new Category("카테고리3");
-            em.persist(category1);
-            em.persist(category2);
-            em.persist(category3);
-
-            CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
-            CategoryMentoring categoryMentoring2_1 = new CategoryMentoring(category2, mentoring1);
-            CategoryMentoring categoryMentoring2_2 = new CategoryMentoring(category2, mentoring2);
-            em.persist(categoryMentoring1_1);
-            em.persist(categoryMentoring2_1);
-            em.persist(categoryMentoring2_2);
-
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
-            em.persist(image1);
-
-            String categoryTitle1 = null;
-            String categoryTitle2 = null;
-            String categoryTitle3 = category3.getTitle();
-
-            // when
-            List<MentoringSummaryResponse> actual = mentoringService.findMentoringSummaries(
-                    categoryTitle1,
-                    categoryTitle2,
-                    categoryTitle3
-            );
-
-            // then
-            assertThat(actual).isEmpty();
-        }
-    }
-
-    @Transactional
     @Nested
     @DisplayName("멘토링 정보 조회")
     class FindMentoring {
@@ -503,6 +235,7 @@ class MentoringServiceTest {
 
             Mentoring mentoring1 = new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
             em.persist(mentoring1);
+            mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring1));
 
             Category category1 = new Category("카테고리1");
             em.persist(category1);
@@ -517,11 +250,15 @@ class MentoringServiceTest {
             em.persist(reservation1);
             Reservation reservation2 = new Reservation("예약 코멘트2", Status.COMPLETE, mentoring1, mentee);
             em.persist(reservation2);
+            mentoringStatisticsRepository.updateReservationCountPlus(mentoring1.getId());
+            mentoringStatisticsRepository.updateReservationCountPlus(mentoring1.getId());
 
             Review review1 = new Review(4, "리뷰 코멘트", reservation1, mentee);
             em.persist(review1);
             Review review2 = new Review(5, "리뷰 코멘트", reservation2, mentee);
             em.persist(review2);
+            mentoringStatisticsRepository.updateReviewStatisticsPlus(mentoring1.getId(), 4);
+            mentoringStatisticsRepository.updateReviewStatisticsPlus(mentoring1.getId(), 5);
 
             MentoringResponse expected = MentoringResponse.of(
                     mentoring1,
@@ -1016,3 +753,4 @@ class MentoringServiceTest {
         }
     }
 }
+

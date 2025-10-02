@@ -3,6 +3,7 @@ package fittoring.integration.mentoring.api.admin;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.MentoringStatistics;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
@@ -10,6 +11,7 @@ import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
@@ -50,6 +52,9 @@ class AdminReviewControllerTest {
 
     @Autowired
     private MentoringRepository mentoringRepository;
+
+    @Autowired
+    private MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -143,6 +148,7 @@ class AdminReviewControllerTest {
                     "introduction",
                     "가상의카카오오픈채팅"
             ));
+            mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(savedMentoring));
             Reservation savedReservation = reservationRepository.save(
                     new Reservation(
                             "content",
@@ -150,7 +156,9 @@ class AdminReviewControllerTest {
                             savedMentoring,
                             user
                     ));
+            mentoringStatisticsRepository.updateReservationCountPlus(savedMentoring.getId());
             Review savedReview = reviewRepository.save(new Review(5, "좋았어요", savedReservation, user));
+            mentoringStatisticsRepository.updateReviewStatisticsPlus(savedMentoring.getId(), 5);
 
             // when
             // then
@@ -241,6 +249,7 @@ class AdminReviewControllerTest {
                             "introduction",
                             "가상의카카오오픈채팅"
                     ));
+            mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(savedMentoring));
             Reservation savedReservation = reservationRepository.save(
                     new Reservation(
                             "content",
@@ -248,7 +257,9 @@ class AdminReviewControllerTest {
                             savedMentoring,
                             user
                     ));
+            mentoringStatisticsRepository.updateReservationCountPlus(savedMentoring.getId());
             Review savedReview = reviewRepository.save(new Review(5, "좋았어요", savedReservation, user));
+            mentoringStatisticsRepository.updateReviewStatisticsPlus(savedMentoring.getId(), 5);
 
             // when
             // then

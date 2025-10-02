@@ -3,16 +3,12 @@ package fittoring.mentoring.business.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import java.time.LocalDateTime;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -28,8 +24,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class MentoringStatistics {
 
+    @Getter
+    @Column(name = "mentoring_id")
     @Id
-    private Long id;
+    private Long mentoringId;
 
     @Getter
     @Column(nullable = false)
@@ -55,21 +53,22 @@ public class MentoringStatistics {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @JoinColumn(name = "mentoring_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId()
-    private Mentoring mentoring;
-
     public static MentoringStatistics defaultOf(Mentoring mentoring) {
         return new MentoringStatistics(
-            null,
+            mentoring.getId(),
             0,
             0,
             0,
             null,
             false,
-            null,
-            mentoring
+            null
         );
+    }
+
+    public double calculateAverageRating() {
+        if (reviewCount == 0) {
+            return 0.0;
+        }
+        return (double) ratingSum / reviewCount;
     }
 }

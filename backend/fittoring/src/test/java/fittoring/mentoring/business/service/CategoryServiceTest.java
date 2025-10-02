@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.config.QueryDslConfig;
 import fittoring.mentoring.business.model.Category;
+import fittoring.mentoring.business.repository.helper.MentoringPaginationHelper;
 import fittoring.mentoring.presentation.dto.CategoryResponse;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.Assertions;
@@ -18,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, CategoryService.class, QueryDslConfig.class})
+@Import({DbCleaner.class, CategoryService.class, QueryDslConfig.class, MentoringPaginationHelper.class})
 @DataJpaTest
 class CategoryServiceTest {
 

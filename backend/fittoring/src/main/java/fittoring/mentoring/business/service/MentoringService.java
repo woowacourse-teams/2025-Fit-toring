@@ -38,7 +38,6 @@ import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.CursorCodec;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -158,9 +157,19 @@ public class MentoringService {
         );
     }
 
+    private Image getMentoringProfileImageOrNull(Mentoring mentoring) {
+        return imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
+            .orElse(null);
+    }
+
     private RatingStatsDto getRatingStatsDto(Long mentoringId) {
-        return reviewRepository.findRatingStatsByMentoringId(mentoringId)
-                .orElseGet(() -> RatingStatsDto.defaultOf(mentoringId));
+        MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.findById(mentoringId)
+            .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
+        return new RatingStatsDto(
+            mentoringId,
+            mentoringStatistics.calculateAverageRating(),
+            mentoringStatistics.getReviewCount()
+        );
     }
 
     private List<CertificateSpecAndImageResponse> getApprovedCertificates(Mentoring mentoring) {
@@ -199,102 +208,6 @@ public class MentoringService {
         }
 
         return response;
-    }
-
-    private Image getMentoringProfileImageOrNull(Mentoring mentoring) {
-        return imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
-                .orElse(null);
-    }
-
-    @Transactional(readOnly = true)
-    public List<MentoringSummaryResponse> findMentoringSummaries(
-            String categoryTitle1,
-            String categoryTitle2,
-            String categoryTitle3
-    ) {
-        List<Mentoring> mentorings = findMentorings(categoryTitle1, categoryTitle2, categoryTitle3);
-        List<Long> mentoringIds = createMentoringIdsByMentoring(mentorings);
-
-        List<RatingStatsDto> ratingStatsDtos = reviewRepository.findReviewStatsByMentoringIds(mentoringIds);
-        Map<Long, RatingStatsDto> ratingStatsDtoMap = createReviewStatsMap(ratingStatsDtos);
-        return mentorings.stream()
-                .map(mentoring -> {
-                            Image profileImage = getProfileImageOrNull(mentoring.getId());
-                            List<String> categoryTitles = getCategoryMentoringTitlesByMentoringId(mentoring);
-                            RatingStatsDto ratingStatsDto = getReviewStats(mentoring, ratingStatsDtoMap);
-                            return MentoringSummaryResponse.of(
-                                    mentoring,
-                                    categoryTitles,
-                                    profileImage,
-                                    ratingStatsDto
-                            );
-                        }
-                )
-                .toList();
-    }
-
-    private List<Mentoring> findMentorings(
-            String categoryTitle1,
-            String categoryTitle2,
-            String categoryTitle3
-    ) {
-        if (isNoCategoryFilter(categoryTitle1, categoryTitle2, categoryTitle3)) {
-            return mentoringRepository.findAll();
-        }
-        validateAllCategoryTitle(categoryTitle1, categoryTitle2, categoryTitle3);
-        return mentoringRepository.findAllMentoringWithFilter(
-                categoryTitle1,
-                categoryTitle2,
-                categoryTitle3
-        );
-    }
-
-    private List<Long> createMentoringIdsByMentoring(List<Mentoring> mentorings) {
-        return mentorings.stream()
-                .map(Mentoring::getId)
-                .toList();
-    }
-
-    private Map<Long, RatingStatsDto> createReviewStatsMap(List<RatingStatsDto> ratingStatsDto) {
-        return ratingStatsDto.stream()
-                .collect(Collectors.toMap(RatingStatsDto::mentoringId, Function.identity()));
-    }
-
-    private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
-        return categoryTitle1 == null
-                && categoryTitle2 == null
-                && categoryTitle3 == null;
-    }
-
-    private void validateAllCategoryTitle(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
-        validateExistCategoryTitle(categoryTitle1);
-        validateExistCategoryTitle(categoryTitle2);
-        validateExistCategoryTitle(categoryTitle3);
-    }
-
-    private void validateExistCategoryTitle(String categoryTitle) {
-        if (categoryTitle != null && !categoryRepository.existsByTitle(categoryTitle)) {
-            throw new CategoryNotFoundException(BusinessErrorMessage.CATEGORY_NOT_FOUND.getMessage());
-        }
-    }
-
-    private Image getProfileImageOrNull(Long mentoringId) {
-        return imageService.findByImageTypeAndRelationId(
-                ImageType.MENTORING_PROFILE,
-                mentoringId
-        ).orElse(null);
-    }
-
-    private List<String> getCategoryMentoringTitlesByMentoringId(Mentoring mentoring) {
-        return categoryMentoringRepository.findTitlesByMentoringId(
-                mentoring.getId());
-    }
-
-    private RatingStatsDto getReviewStats(Mentoring mentoring, Map<Long, RatingStatsDto> longRatingStatsDtoMap) {
-        return longRatingStatsDtoMap.getOrDefault(
-                mentoring.getId(),
-                RatingStatsDto.defaultOf(mentoring.getId())
-        );
     }
 
     @Transactional
@@ -380,8 +293,7 @@ public class MentoringService {
         List<Mentoring> mentorings = mentoringPaginationResult.mentorings();
 
         List<Long> mentoringIds = createMentoringIdsByMentoring(mentorings);
-
-        List<RatingStatsDto> ratingStatsDtos = reviewRepository.findReviewStatsByMentoringIds(mentoringIds);
+        List<RatingStatsDto> ratingStatsDtos = getRatingStatsDtos(mentoringIds);
 
         Map<Long, RatingStatsDto> ratingStatsDtoMap = createReviewStatsMap(ratingStatsDtos);
         List<MentoringSummaryResponse> mentoringSummaryResponses = mentorings.stream()
@@ -403,6 +315,43 @@ public class MentoringService {
                 mentoringSummaryResponses,
                 mentoringPaginationResult.nextCursorCode(),
                 mentoringPaginationResult.hasNext()
+        );
+    }
+
+    private List<Long> createMentoringIdsByMentoring(List<Mentoring> mentorings) {
+        return mentorings.stream()
+            .map(Mentoring::getId)
+            .toList();
+    }
+
+    private List<RatingStatsDto> getRatingStatsDtos(List<Long> mentoringIds) {
+        List<MentoringStatistics> mentoringStatistics = mentoringStatisticsRepository.findByIds(mentoringIds);
+        return mentoringStatistics.stream()
+            .map(ms -> new RatingStatsDto(ms.getMentoringId(), ms.calculateAverageRating(), ms.getReviewCount()))
+            .toList();
+    }
+
+    private Map<Long, RatingStatsDto> createReviewStatsMap(List<RatingStatsDto> ratingStatsDto) {
+        return ratingStatsDto.stream()
+            .collect(Collectors.toMap(RatingStatsDto::mentoringId, Function.identity()));
+    }
+
+    private Image getProfileImageOrNull(Long mentoringId) {
+        return imageService.findByImageTypeAndRelationId(
+            ImageType.MENTORING_PROFILE,
+            mentoringId
+        ).orElse(null);
+    }
+
+    private List<String> getCategoryMentoringTitlesByMentoringId(Mentoring mentoring) {
+        return categoryMentoringRepository.findTitlesByMentoringId(
+            mentoring.getId());
+    }
+
+    private RatingStatsDto getReviewStats(Mentoring mentoring, Map<Long, RatingStatsDto> longRatingStatsDtoMap) {
+        return longRatingStatsDtoMap.getOrDefault(
+            mentoring.getId(),
+            new RatingStatsDto(mentoring.getId(), 0.0, 0)
         );
     }
 }

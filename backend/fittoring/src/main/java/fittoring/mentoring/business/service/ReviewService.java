@@ -10,6 +10,7 @@ import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.MentoringStatistics;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.repository.MemberRepository;
@@ -118,8 +119,12 @@ public class ReviewService {
         validateAdmin(memberId);
         validateMentoringExists(mentoringId);
         List<AdminReviewResponse> reviewResponses = findReviewResponsesForAdmin(mentoringId);
-        RatingStatsDto reviewInfo = reviewRepository.findRatingStatsByMentoringId(mentoringId)
-                .orElse(RatingStatsDto.defaultOf(mentoringId));
+        MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.findById(mentoringId).get();
+        RatingStatsDto reviewInfo = new RatingStatsDto(
+            mentoringId,
+            mentoringStatistics.calculateAverageRating(),
+            mentoringStatistics.getReviewCount()
+        );
         return AdminReviewInfoResponse.of(reviewResponses, reviewInfo);
     }
 
@@ -132,9 +137,10 @@ public class ReviewService {
     }
 
     private void validateMentoringExists(Long mentoringId) {
-        if (!mentoringRepository.existsById(mentoringId)) {
-            throw new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
+        if (mentoringRepository.existsById(mentoringId) && mentoringStatisticsRepository.existsById(mentoringId)) {
+            return;
         }
+        throw new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
     }
 
     private List<AdminReviewResponse> findReviewResponsesForAdmin(Long mentoringId) {
