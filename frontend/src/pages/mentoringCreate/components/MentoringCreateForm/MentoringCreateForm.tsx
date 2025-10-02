@@ -12,6 +12,7 @@ import IntroduceSection from '../../../../common/components/mentoringForm/Introd
 import ProfileSection from '../../../../common/components/mentoringForm/ProfileSection/ProfileSection';
 import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
+import useS3Upload from '../../../../common/hooks/useS3Upload';
 import { addSentryBreadcrumb } from '../../../../common/utils/addSentryBreadcrumb';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { careerValidator } from '../../../../common/utils/careerValidator';
@@ -44,6 +45,9 @@ function MentoringCreateForm() {
   const careerErrorMessage = careerValidator(mentoringData.career);
   const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
   const detailErrorMessage = validateTextarea(mentoringData.content);
+
+  const { uploadFile: uploadImageFile } = useS3Upload();
+
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,
   ) => {
