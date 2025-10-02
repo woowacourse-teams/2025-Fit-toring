@@ -26,8 +26,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -96,17 +98,16 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/kakao/callback")
+    @GetMapping("/kakao/callback")
     public ResponseEntity<?> kakaoCallback(
-            @RequestBody KakaoCallBackRequest kakaoCallBackRequest,
+            @RequestParam String code,
+            @RequestParam String redirectUrl,
+            @RequestParam(required = false) String error,
+            @RequestParam(required = false, value = "error_description") String errorDescription,
+            @RequestParam(required = false) String state,
             HttpServletResponse httpResponse
     ) {
         // TODO : state 검증
-        String code = kakaoCallBackRequest.code();
-        String redirectUrl = kakaoCallBackRequest.redirectUrl();
-        String error = kakaoCallBackRequest.error();
-        String errorDescription = kakaoCallBackRequest.errorDescription();
-
         if (error !=null){
             throw new OauthLoginException("카카오 로그인 에러 : " + error + " : " + errorDescription);
         }
