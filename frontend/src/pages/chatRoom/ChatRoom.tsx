@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
+import { Client } from '@stomp/stompjs';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
+import SockJS from 'sockjs-client';
 
+import { captureSentryError } from '../../common/utils/captureSentryError';
+
+import { getChatRooms } from './apis/getChatRooms';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 
 import type { Message } from './types/message';
-import type SockJS from 'sockjs-client';
-import { useQuery } from '@tanstack/react-query';
-import { getChatRooms } from './apis/getChatRooms';
-import { useParams } from 'react-router-dom';
-import { captureSentryError } from '../../common/utils/captureSentryError';
+import type { IMessage } from '@stomp/stompjs';
 
 const DUMMY_MESSAGES = [
   {
@@ -143,7 +146,8 @@ function ChatRoom() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
 
-  const [socket, setSocket] = useState<SockJS | null>(null);
+  // const [socket, setSocket] = useState<SockJS | null>(null);
+  const stompClientRef = useRef<Client | null>(null);
 
   const { data, isError, error } = useQuery({
     queryKey: ['chatrooms', chatRoomId],
@@ -157,59 +161,73 @@ function ChatRoom() {
   }, [data]);
 
   useEffect(() => {
-    const ws = new WebSocket('wss://ws.postman-echo.com/raw');
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJS(`http://${window.location.hostname}:8080/ws-chat`, null, {
+          withCredentials: true, // 쿠키를 포함해서 요청
+        }),
+      onStompError: (frame) => console.error('STOMP protocol error:', frame),
+      onWebSocketError: (event) => console.error('WebSocket error:', event),
+      reconnectDelay: 5000,
+      onConnect: () => {
+        client.subscribe(
+          `/topic/chatroom/${chatRoomId}`,
+          (message: IMessage) => {
+            const parsedMessage = JSON.parse(message.body);
 
-    ws.onopen = () => console.log('✅ Connected');
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      setMessages((prev) => [...prev, { ...msg, senderId: 2 }]);
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.tempId && m.tempId === parsedMessage.tempId
+                  ? parsedMessage
+                  : m,
+              ),
+            );
+          },
+        );
+      },
+    });
+
+    stompClientRef.current = client;
+    client.activate();
+
+    return () => {
+      client.deactivate();
     };
-    ws.onclose = () => console.log('❌ Disconnected');
-
-    setSocket(ws);
-
-    return () => ws.close();
-  }, []);
+  }, [chatRoomId]);
 
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (socket && socket.readyState !== WebSocket.OPEN) {
+    const client = stompClientRef.current;
+    if (!client || !client.connected) {
       return;
     }
 
     const tempId = Date.now();
 
     const optimisticMsg = {
-      senderId: 1,
+      senderId: 1, // 로컬스토리지에 저장된 memberId
       content: message,
       createdAt: new Date().toString(),
       chatRoomId: Number(chatRoomId),
-      id: tempId,
+      chatMessageId: tempId,
+      tempId,
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
     setMessage('');
 
     try {
-      socket.send(JSON.stringify(optimisticMsg));
-
-      // POST요청 후 받은 응답값
-      const savedMessage = {
-        senderId: 1,
-        content: message,
-        createdAt: new Date().toString(),
-        chatRoomId: Number(chatRoomId),
-        id: tempId,
-      };
-
-      setMessages((prev) =>
-        prev.map((message) => (message.id === tempId ? savedMessage : message)),
-      );
+      client.publish({
+        destination: `/add/chatroom/${chatRoomId}`,
+        body: JSON.stringify({ content: message, chatRoomId, tempId }),
+      });
     } catch (error) {
       setMessages((prev) =>
         prev.map((message) =>
-          message.id === tempId ? { ...message, errored: true } : message,
+          message.chatMessageId === tempId
+            ? { ...message, status: 'fail' }
+            : message,
         ),
       );
 
