@@ -113,6 +113,7 @@ public class AuthService {
         refreshTokenRepository.deleteAllByMemberId(memberId);
     }
 
+    @Transactional
     public AuthTokenResponse kakaoLogin(String code) {
         KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code);
         String kakaoAccessToken = tokenResponse.access_token();
@@ -132,6 +133,7 @@ public class AuthService {
         return new AuthTokenResponse(null, null, oauthSignUpToken);
     }
 
+    @Transactional
     public MemberOauth registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
         String oauthId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
         String randomLoginId = RandomStringUtils.randomAlphanumeric(20);
