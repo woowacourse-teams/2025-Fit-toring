@@ -18,7 +18,6 @@ export const handlers = [
   ...authCodeHandler,
   ...authCodeVerifyHandler,
   ...signupHandler,
-  ...mentoringHandler,
   ...commonHandler,
   ...membersHandler,
   ...loginHandler,
