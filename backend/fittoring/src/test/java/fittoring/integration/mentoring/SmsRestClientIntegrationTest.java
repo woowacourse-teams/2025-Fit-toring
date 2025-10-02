@@ -3,8 +3,8 @@ package fittoring.integration.mentoring;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import fittoring.domain.model.Phone;
-import fittoring.application.infra.SmsAuthHeaderGenerator;
-import fittoring.application.infra.SmsRestClientService;
+import fittoring.infrastructure.SmsAuthHeaderGenerator;
+import fittoring.infrastructure.SmsRestClientService;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;

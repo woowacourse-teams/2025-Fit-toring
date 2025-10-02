@@ -1,7 +1,5 @@
 package fittoring.application.service;
 
-import fittoring.application.service.ImageService;
-import fittoring.application.service.MemberService;
 import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
@@ -10,13 +8,13 @@ import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
 import fittoring.application.repository.helper.MentoringPaginationHelper;
-import fittoring.application.infra.image.ImageResizer;
-import fittoring.application.infra.image.ImageTranscoder;
-import fittoring.application.infra.image.S3Uploader;
-import fittoring.application.infra.image.policy.CertificatePolicy;
-import fittoring.application.infra.image.policy.ImagePolicyRegistry;
-import fittoring.application.infra.image.policy.MentoringProfilePolicy;
-import fittoring.application.infra.image.policy.NonePolicy;
+import fittoring.infrastructure.image.ImageResizer;
+import fittoring.infrastructure.image.ImageTranscoder;
+import fittoring.infrastructure.image.S3Uploader;
+import fittoring.infrastructure.image.policy.CertificatePolicy;
+import fittoring.infrastructure.image.policy.ImagePolicyRegistry;
+import fittoring.infrastructure.image.policy.MentoringProfilePolicy;
+import fittoring.infrastructure.image.policy.NonePolicy;
 import fittoring.application.presentation.dto.MyInfoResponse;
 import fittoring.application.presentation.dto.MyInfoSummaryResponse;
 import fittoring.util.DbCleaner;

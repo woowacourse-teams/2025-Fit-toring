@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.application.service.AuthService;
-import fittoring.application.service.JwtProvider;
 import fittoring.config.QueryDslConfig;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
@@ -14,7 +12,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
-import fittoring.application.infra.OauthClientService;
+import fittoring.infrastructure.OauthClientService;
 import fittoring.application.repository.helper.MentoringPaginationHelper;
 import fittoring.application.presentation.dto.AuthTokenResponse;
 import fittoring.application.presentation.dto.SignUpRequest;

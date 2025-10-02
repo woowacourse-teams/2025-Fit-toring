@@ -10,7 +10,7 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.application.repository.MemberRepository;
 import fittoring.application.repository.MentoringRepository;
-import fittoring.application.presentation.dto.AdminMemberResponse;
+import fittoring.admin.presentation.dto.AdminMemberResponse;
 import fittoring.application.presentation.dto.MyInfoResponse;
 import fittoring.application.presentation.dto.MyInfoSummaryResponse;
 import java.util.List;

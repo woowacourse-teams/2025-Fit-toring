@@ -16,7 +16,7 @@ import fittoring.application.repository.MemberRepository;
 import fittoring.application.repository.RefreshTokenRepository;
 import fittoring.application.service.dto.KakaoTokenResponse;
 import fittoring.application.service.dto.KakaoUserInfoResponse;
-import fittoring.application.infra.OauthClientService;
+import fittoring.infrastructure.OauthClientService;
 import fittoring.application.presentation.dto.AuthTokenResponse;
 import fittoring.application.presentation.dto.OauthSignUpRequest;
 import fittoring.application.presentation.dto.SignUpRequest;

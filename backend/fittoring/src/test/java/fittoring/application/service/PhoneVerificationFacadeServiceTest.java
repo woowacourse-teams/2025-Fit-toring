@@ -2,11 +2,9 @@ package fittoring.application.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import fittoring.application.service.PhoneVerificationFacadeService;
-import fittoring.application.service.PhoneVerificationService;
 import fittoring.domain.model.Phone;
-import fittoring.application.infra.SmsMessageFormatter;
-import fittoring.application.infra.SmsRestClientService;
+import fittoring.infrastructure.SmsMessageFormatter;
+import fittoring.infrastructure.SmsRestClientService;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

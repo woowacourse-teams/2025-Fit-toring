@@ -3,7 +3,7 @@ package fittoring.domain.model.password;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.PasswordEncryptionException;
-import fittoring.application.infra.HexEncoder;
+import fittoring.infrastructure.HexEncoder;
 import jakarta.persistence.Embeddable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

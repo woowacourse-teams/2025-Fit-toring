@@ -24,7 +24,7 @@ import fittoring.application.repository.ReservationRepository;
 import fittoring.application.service.JwtProvider;
 import fittoring.application.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.service.dto.PhoneNumberResponse;
-import fittoring.application.infra.SmsRestClientService;
+import fittoring.infrastructure.SmsRestClientService;
 import fittoring.application.presentation.dto.ReservationCreateRequest;
 import fittoring.application.presentation.dto.ReservationCreateResponse;
 import fittoring.application.presentation.dto.ReservationStatusUpdateRequest;

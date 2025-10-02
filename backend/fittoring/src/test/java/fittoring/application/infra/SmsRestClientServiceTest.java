@@ -1,8 +1,10 @@
 package fittoring.application.infra;
 
 import fittoring.domain.model.Phone;
-import fittoring.application.infra.exception.InfraErrorMessage;
-import fittoring.application.infra.exception.SmsException;
+import fittoring.infrastructure.InfraErrorMessage;
+import fittoring.infrastructure.SmsAuthHeaderGenerator;
+import fittoring.infrastructure.SmsException;
+import fittoring.infrastructure.SmsRestClientService;
 import java.io.IOException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

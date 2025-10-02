@@ -3,8 +3,8 @@ package fittoring.application.service;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
-import fittoring.application.infra.SmsMessageFormatter;
-import fittoring.application.infra.SmsRestClientService;
+import fittoring.infrastructure.SmsMessageFormatter;
+import fittoring.infrastructure.SmsRestClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
