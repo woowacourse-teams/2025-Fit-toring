@@ -71,9 +71,9 @@ public class MentoringPaginationHelper {
         }
         if (sortKey == SortKey.AVERAGE_RATING && cursor != null) {
             double cursorAverageCount = Double.longBitsToDouble(cursor.sortValue());
-            return mentoringStatistics.ratingSum.doubleValue().divide(mentoringStatistics.reviewCount.doubleValue()).lt(cursorAverageCount)
-                .or(mentoringStatistics.ratingSum.doubleValue().divide(mentoringStatistics.reviewCount.doubleValue()).eq(cursorAverageCount)
-                    .and(mentoring.id.loe(cursor.id())));
+            return mentoringStatistics.averageRating.lt(cursorAverageCount)
+                    .or(mentoringStatistics.averageRating.eq(cursorAverageCount)
+                        .and(mentoring.id.loe(cursor.id())));
         }
         return null;
     }
@@ -117,7 +117,7 @@ public class MentoringPaginationHelper {
                 mentoring.id.desc()
             };
             case AVERAGE_RATING -> new OrderSpecifier[]{
-                mentoringStatistics.ratingSum.doubleValue().divide(mentoringStatistics.reviewCount.doubleValue()).desc(),
+                mentoringStatistics.averageRating.desc(),
                 mentoring.id.desc()
             };
         };
@@ -169,10 +169,7 @@ public class MentoringPaginationHelper {
      * double 타입의 다음 별점 평균을 바로 커서에 저장할 수 없으므로 double 타입을 bit화 하여 long 타입으로 변환하여 커서에 저장한다.
      */
     private String getNextCursorCodeOfAverageRating(MentoringStatistics nextMentoringStatistics) {
-        double nextAverageRating = 0.0;
-        if (nextMentoringStatistics.getReviewCount() > 0) {
-            nextAverageRating = (double) nextMentoringStatistics.getRatingSum() / nextMentoringStatistics.getReviewCount();
-        }
+        double nextAverageRating = nextMentoringStatistics.getAverageRating();
         long nextAverageRatingBits = Double.doubleToLongBits(nextAverageRating);
         return CursorCodec.encode(new Cursor(nextAverageRatingBits, nextMentoringStatistics.getMentoringId()));
     }

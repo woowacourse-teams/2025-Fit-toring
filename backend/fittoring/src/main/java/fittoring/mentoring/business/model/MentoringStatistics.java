@@ -41,6 +41,10 @@ public class MentoringStatistics {
     @Column(nullable = false)
     private long ratingSum;
 
+    @Getter
+    @Column(nullable = false)
+    private double averageRating;
+
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
@@ -59,16 +63,10 @@ public class MentoringStatistics {
             0,
             0,
             0,
+            0.0,
             null,
             false,
             null
         );
-    }
-
-    public double calculateAverageRating() {
-        if (reviewCount == 0) {
-            return 0.0;
-        }
-        return (double) ratingSum / reviewCount;
     }
 }

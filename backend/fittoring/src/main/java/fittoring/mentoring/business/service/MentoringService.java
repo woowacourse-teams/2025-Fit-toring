@@ -168,7 +168,7 @@ public class MentoringService {
             .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
         return new RatingStatsDto(
             mentoringId,
-            mentoringStatistics.calculateAverageRating(),
+            mentoringStatistics.getAverageRating(),
             mentoringStatistics.getReviewCount()
         );
     }
@@ -328,7 +328,7 @@ public class MentoringService {
     private List<RatingStatsDto> getRatingStatsDtos(List<Long> mentoringIds) {
         List<MentoringStatistics> mentoringStatistics = mentoringStatisticsRepository.findByIds(mentoringIds);
         return mentoringStatistics.stream()
-            .map(ms -> new RatingStatsDto(ms.getMentoringId(), ms.calculateAverageRating(), ms.getReviewCount()))
+            .map(ms -> new RatingStatsDto(ms.getMentoringId(), ms.getAverageRating(), ms.getReviewCount()))
             .toList();
     }
 
