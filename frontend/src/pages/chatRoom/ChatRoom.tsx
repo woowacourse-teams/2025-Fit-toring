@@ -122,6 +122,9 @@ function ChatRoom() {
 
   const { chatRoomId } = useParams();
 
+  const storedData = localStorage.getItem('memberId');
+  const memberId = storedData ? JSON.parse(storedData).memberId : null;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
@@ -164,7 +167,7 @@ function ChatRoom() {
     const client = new Client({
       webSocketFactory: () =>
         new SockJS(`http://${window.location.hostname}:8080/ws-chat`, null, {
-          withCredentials: true, // 쿠키를 포함해서 요청
+          withCredentials: true,
         }),
       onStompError: (frame) => console.error('STOMP protocol error:', frame),
       onWebSocketError: (event) => console.error('WebSocket error:', event),
@@ -199,14 +202,14 @@ function ChatRoom() {
     e.preventDefault();
 
     const client = stompClientRef.current;
-    if (!client || !client.connected) {
+    if (!client || !client.connected || memberId === null) {
       return;
     }
 
     const tempId = Date.now();
 
     const optimisticMsg = {
-      senderId: 1, // 로컬스토리지에 저장된 memberId
+      senderId: memberId,
       content: message,
       createdAt: new Date().toString(),
       chatRoomId: Number(chatRoomId),
