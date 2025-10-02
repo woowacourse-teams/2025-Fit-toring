@@ -98,10 +98,9 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("/kakao/callback")
+    @PostMapping("/kakao/callback")
     public ResponseEntity<?> kakaoCallback(
             @RequestParam String code,
-            @RequestParam String redirectUrl,
             @RequestParam(required = false) String error,
             @RequestParam(required = false, value = "error_description") String errorDescription,
             @RequestParam(required = false) String state,
@@ -112,7 +111,7 @@ public class AuthController {
             throw new OauthLoginException("카카오 로그인 에러 : " + error + " : " + errorDescription);
         }
 
-        AuthTokenResponse authTokenResponse = authService.kakaoLogin(code, redirectUrl);
+        AuthTokenResponse authTokenResponse = authService.kakaoLogin(code);
 
         if (authTokenResponse.isLoginSuccess()) {
             CookieWriter.write(httpResponse, authTokenResponse);

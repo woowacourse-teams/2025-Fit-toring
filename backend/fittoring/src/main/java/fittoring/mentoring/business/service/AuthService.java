@@ -113,8 +113,8 @@ public class AuthService {
         refreshTokenRepository.deleteAllByMemberId(memberId);
     }
 
-    public AuthTokenResponse kakaoLogin(String code, String redirectUrl) {
-        KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code, redirectUrl);
+    public AuthTokenResponse kakaoLogin(String code) {
+        KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code);
         String kakaoAccessToken = tokenResponse.access_token();
 
         KakaoUserInfoResponse userInfoResponse = oauthClientService.requestKakaoId(kakaoAccessToken);
