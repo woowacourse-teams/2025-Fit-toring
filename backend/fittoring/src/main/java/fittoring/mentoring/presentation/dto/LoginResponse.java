@@ -1,7 +1,7 @@
 package fittoring.mentoring.presentation.dto;
 
 public record LoginResponse(
-        Long memberId,
+        MemberLoginResponse memberLoginResponse,
         AuthTokenResponse authToken
 ) {
 }

@@ -13,6 +13,7 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.RefreshTokenRepository;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.LoginResponse;
+import fittoring.mentoring.presentation.dto.MemberLoginResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -59,8 +60,9 @@ public class AuthService {
         );
         refreshTokenRepository.save(saveRefreshToken);
 
+        MemberLoginResponse memberLogin = new MemberLoginResponse(member.getId());
         AuthTokenResponse authToken = new AuthTokenResponse(accessToken, refreshToken);
-        return new LoginResponse(member.getId(), authToken);
+        return new LoginResponse(memberLogin, authToken);
     }
 
     @Transactional

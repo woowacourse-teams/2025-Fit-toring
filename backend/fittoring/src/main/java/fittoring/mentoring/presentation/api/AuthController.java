@@ -9,6 +9,7 @@ import fittoring.mentoring.business.service.PhoneVerificationService;
 import fittoring.mentoring.presentation.CookieWriter;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.LoginResponse;
+import fittoring.mentoring.presentation.dto.MemberLoginResponse;
 import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;
@@ -42,10 +43,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Long> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
+    public ResponseEntity<MemberLoginResponse> login(@RequestBody @Valid SignInRequest request,
+                                                     HttpServletResponse httpResponse) {
         LoginResponse response = authService.login(request.loginId(), request.password());
         CookieWriter.write(httpResponse, response.authToken());
-        return ResponseEntity.ok(response.memberId());
+        return ResponseEntity.ok(response.memberLoginResponse());
     }
 
     @AuthRequired
