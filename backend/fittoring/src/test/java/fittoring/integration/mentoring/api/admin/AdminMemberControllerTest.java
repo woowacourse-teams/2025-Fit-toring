@@ -1,11 +1,11 @@
 package fittoring.integration.mentoring.api.admin;
 
-import fittoring.application.business.model.Member;
-import fittoring.application.business.model.MemberRole;
-import fittoring.application.business.model.Phone;
-import fittoring.application.business.model.password.Password;
-import fittoring.application.business.repository.MemberRepository;
-import fittoring.application.business.service.JwtProvider;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.password.Password;
+import fittoring.application.repository.MemberRepository;
+import fittoring.application.service.JwtProvider;
 import fittoring.application.presentation.dto.AdminMemberResponse;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;

@@ -1,8 +1,8 @@
 package fittoring.application.infra.image;
 
-import fittoring.application.business.exception.BusinessErrorMessage;
-import fittoring.application.business.exception.UnsupportedImageExtensionException;
-import fittoring.application.business.model.ImageExtension;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.UnsupportedImageExtensionException;
+import fittoring.domain.model.ImageExtension;
 import java.util.Locale;
 
 public class ContentType {

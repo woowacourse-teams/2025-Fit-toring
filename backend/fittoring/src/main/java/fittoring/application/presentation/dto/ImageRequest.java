@@ -1,6 +1,6 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.ImageType;
+import fittoring.domain.model.ImageType;
 
 public record ImageRequest(
         ImageType imageType,

@@ -3,7 +3,7 @@ package fittoring.application.presentation.api.admin;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.application.business.service.ReviewService;
+import fittoring.application.service.ReviewService;
 import fittoring.application.presentation.dto.AdminReviewInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

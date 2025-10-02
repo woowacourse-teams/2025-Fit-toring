@@ -1,6 +1,6 @@
 package fittoring.application.presentation.api;
 
-import fittoring.application.business.service.CategoryService;
+import fittoring.application.service.CategoryService;
 import fittoring.application.presentation.dto.CategoryResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

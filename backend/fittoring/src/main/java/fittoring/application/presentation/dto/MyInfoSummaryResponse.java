@@ -1,6 +1,6 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Member;
+import fittoring.domain.model.Member;
 
 public record MyInfoSummaryResponse(
     String name,

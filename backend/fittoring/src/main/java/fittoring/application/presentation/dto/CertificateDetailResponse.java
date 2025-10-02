@@ -1,9 +1,9 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Certificate;
-import fittoring.application.business.model.CertificateType;
-import fittoring.application.business.model.Image;
-import fittoring.application.business.model.Status;
+import fittoring.domain.model.Certificate;
+import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.Status;
 import java.time.LocalDateTime;
 
 public record CertificateDetailResponse(

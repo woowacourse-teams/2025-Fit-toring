@@ -1,8 +1,8 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Image;
-import fittoring.application.business.model.Mentoring;
-import fittoring.application.business.service.dto.RatingStatsDto;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.Mentoring;
+import fittoring.application.service.dto.RatingStatsDto;
 import java.util.List;
 
 public record MentoringSummaryResponse(

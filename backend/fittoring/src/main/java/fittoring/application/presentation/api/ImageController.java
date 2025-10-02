@@ -1,8 +1,8 @@
 package fittoring.application.presentation.api;
 
 import fittoring.config.auth.AuthRequired;
-import fittoring.application.business.service.PresignedUrlService;
-import fittoring.application.business.service.dto.IssuedPresignedDto;
+import fittoring.application.service.PresignedUrlService;
+import fittoring.application.service.dto.IssuedPresignedDto;
 import fittoring.application.presentation.dto.IssuedPresignedRequest;
 import fittoring.application.presentation.dto.PresignedIssueResponse;
 import jakarta.validation.Valid;

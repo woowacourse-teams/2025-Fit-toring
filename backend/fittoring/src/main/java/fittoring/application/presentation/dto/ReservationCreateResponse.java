@@ -1,6 +1,6 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Reservation;
+import fittoring.domain.model.Reservation;
 
 public record ReservationCreateResponse(
     String mentorName,

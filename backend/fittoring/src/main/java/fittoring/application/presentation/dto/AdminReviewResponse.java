@@ -1,7 +1,7 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Member;
-import fittoring.application.business.model.Review;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Review;
 import java.time.LocalDateTime;
 
 public record AdminReviewResponse(

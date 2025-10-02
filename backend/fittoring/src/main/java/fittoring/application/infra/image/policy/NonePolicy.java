@@ -1,6 +1,6 @@
 package fittoring.application.infra.image.policy;
 
-import fittoring.application.business.model.ImageVariant;
+import fittoring.domain.model.ImageVariant;
 import java.util.List;
 import org.springframework.stereotype.Component;
 

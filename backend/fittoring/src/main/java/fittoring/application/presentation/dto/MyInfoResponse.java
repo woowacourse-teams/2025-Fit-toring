@@ -1,7 +1,7 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Image;
-import fittoring.application.business.model.Member;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.Member;
 
 public record MyInfoResponse(
         String image,

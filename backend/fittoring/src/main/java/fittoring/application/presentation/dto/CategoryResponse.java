@@ -1,6 +1,6 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Category;
+import fittoring.domain.model.Category;
 
 public record CategoryResponse(
     Long id,

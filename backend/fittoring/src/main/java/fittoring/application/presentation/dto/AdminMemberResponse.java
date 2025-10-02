@@ -1,7 +1,7 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Member;
-import fittoring.application.business.model.MemberRole;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 
 public record AdminMemberResponse(
         String name,

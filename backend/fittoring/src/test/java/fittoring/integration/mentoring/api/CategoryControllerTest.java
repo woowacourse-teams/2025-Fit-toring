@@ -2,8 +2,8 @@ package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import fittoring.application.business.model.Category;
-import fittoring.application.business.repository.CategoryRepository;
+import fittoring.domain.model.Category;
+import fittoring.application.repository.CategoryRepository;
 import fittoring.application.presentation.dto.CategoryResponse;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;

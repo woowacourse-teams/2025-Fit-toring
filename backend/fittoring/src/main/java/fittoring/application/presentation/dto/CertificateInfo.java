@@ -1,6 +1,6 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.CertificateType;
+import fittoring.domain.model.CertificateType;
 
 public record CertificateInfo(
     CertificateType type,

@@ -1,7 +1,7 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.Certificate;
-import fittoring.application.business.model.CertificateType;
+import fittoring.domain.model.Certificate;
+import fittoring.domain.model.CertificateType;
 
 public record CertificateSpecAndImageResponse(
         Long certificateId,

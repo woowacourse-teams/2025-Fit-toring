@@ -1,6 +1,6 @@
 package fittoring.application.infra;
 
-import fittoring.application.business.model.Phone;
+import fittoring.domain.model.Phone;
 import fittoring.application.infra.exception.InfraErrorMessage;
 import fittoring.application.infra.exception.SmsException;
 import java.io.IOException;

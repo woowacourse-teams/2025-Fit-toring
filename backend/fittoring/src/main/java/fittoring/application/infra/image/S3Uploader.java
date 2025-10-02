@@ -1,6 +1,6 @@
 package fittoring.application.infra.image;
 
-import fittoring.application.business.model.ImageVariant;
+import fittoring.domain.model.ImageVariant;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,8 +1,8 @@
 package fittoring.application.infra;
 
-import fittoring.application.business.model.Phone;
-import fittoring.application.business.service.dto.LongSmsSendClientDto;
-import fittoring.application.business.service.dto.ShortSmsSendClientDto;
+import fittoring.domain.model.Phone;
+import fittoring.application.service.dto.LongSmsSendClientDto;
+import fittoring.application.service.dto.ShortSmsSendClientDto;
 import fittoring.application.infra.exception.InfraErrorMessage;
 import fittoring.application.infra.exception.SmsException;
 import java.util.List;

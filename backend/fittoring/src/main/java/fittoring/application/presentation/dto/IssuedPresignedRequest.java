@@ -1,7 +1,7 @@
 package fittoring.application.presentation.dto;
 
-import fittoring.application.business.model.ImageExtension;
-import fittoring.application.business.model.ImageType;
+import fittoring.domain.model.ImageExtension;
+import fittoring.domain.model.ImageType;
 import jakarta.validation.constraints.NotNull;
 
 public record IssuedPresignedRequest(

@@ -2,15 +2,15 @@ package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import fittoring.application.business.model.Member;
-import fittoring.application.business.model.Phone;
-import fittoring.application.business.model.PhoneVerification;
-import fittoring.application.business.model.RefreshToken;
-import fittoring.application.business.model.password.Password;
-import fittoring.application.business.repository.MemberRepository;
-import fittoring.application.business.repository.PhoneVerificationRepository;
-import fittoring.application.business.repository.RefreshTokenRepository;
-import fittoring.application.business.service.JwtProvider;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.PhoneVerification;
+import fittoring.domain.model.RefreshToken;
+import fittoring.domain.model.password.Password;
+import fittoring.application.repository.MemberRepository;
+import fittoring.application.repository.PhoneVerificationRepository;
+import fittoring.application.repository.RefreshTokenRepository;
+import fittoring.application.service.JwtProvider;
 import fittoring.application.presentation.dto.SignInRequest;
 import fittoring.application.presentation.dto.SignUpRequest;
 import fittoring.application.presentation.dto.ValidateDuplicateLoginIdRequest;

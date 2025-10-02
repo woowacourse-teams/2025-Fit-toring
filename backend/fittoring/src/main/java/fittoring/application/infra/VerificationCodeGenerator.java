@@ -1,6 +1,6 @@
 package fittoring.application.infra;
 
-import fittoring.application.business.service.CodeGenerator;
+import fittoring.application.service.CodeGenerator;
 import java.security.SecureRandom;
 import org.springframework.stereotype.Component;
 
