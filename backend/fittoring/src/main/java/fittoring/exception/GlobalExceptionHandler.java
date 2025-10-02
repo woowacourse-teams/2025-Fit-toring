@@ -1,7 +1,7 @@
 package fittoring.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fittoring.aspect.dto.ErrorLog;
+import fittoring.logging.dto.ErrorLog;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.CertificateNotFoundException;

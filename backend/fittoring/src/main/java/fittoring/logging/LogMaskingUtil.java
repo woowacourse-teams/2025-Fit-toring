@@ -1,4 +1,4 @@
-package fittoring.util;
+package fittoring.logging;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class JsonUtil {
+public class LogMaskingUtil {
 
     private final ObjectMapper objectMapper;
 

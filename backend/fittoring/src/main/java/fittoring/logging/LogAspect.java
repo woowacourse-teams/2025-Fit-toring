@@ -1,10 +1,9 @@
-package fittoring.aspect;
+package fittoring.logging;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fittoring.aspect.dto.RequestLog;
-import fittoring.aspect.dto.ResponseLog;
-import fittoring.util.JsonUtil;
+import fittoring.logging.dto.RequestLog;
+import fittoring.logging.dto.ResponseLog;
 import fittoring.util.ResponseDurationCalculator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class LogAspect {
     private static final String NORMALIZED_URI = "normalizedUri";
 
     private final ObjectMapper objectMapper;
-    private final JsonUtil jsonUtil;
+    private final LogMaskingUtil logMaskingUtil;
 
     @Pointcut("execution(* fittoring..*Controller.*(..))")
     public void controller() {
@@ -89,8 +88,8 @@ public class LogAspect {
 
     private void logRequest(ServletRequestAttributes attrs, String bodyString) {
         HttpServletRequest req = attrs.getRequest();
-        JsonNode rawNode = jsonUtil.toJsonNodeOrNull(bodyString);
-        JsonNode maskedNode = rawNode == null ? null : jsonUtil.maskNode(rawNode);
+        JsonNode rawNode = logMaskingUtil.toJsonNodeOrNull(bodyString);
+        JsonNode maskedNode = rawNode == null ? null : logMaskingUtil.maskNode(rawNode);
 
         RequestLog logDto = new RequestLog(
                 "REQUEST",
@@ -128,7 +127,7 @@ public class LogAspect {
             JsonNode rawNode = (rawBodyObj == null)
                     ? null
                     : objectMapper.valueToTree(rawBodyObj);
-            JsonNode maskedNode = (rawNode == null) ? null : jsonUtil.maskNode(rawNode);
+            JsonNode maskedNode = (rawNode == null) ? null : logMaskingUtil.maskNode(rawNode);
 
             ResponseLog logDto = new ResponseLog(
                     "RESPONSE",

@@ -1,4 +1,4 @@
-package fittoring.aspect.dto;
+package fittoring.logging.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.JsonNode;
