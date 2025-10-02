@@ -21,7 +21,7 @@ function KakaoCallback() {
           if (response.status === 200) {
             login();
             navigate(PAGE_URL.HOME);
-          } else if (response.status === 301) {
+          } else if (response.status === 204) {
             navigate(PAGE_URL.IDENTITY_VERIFICATION);
           } else {
             alert('로그인에 실패했습니다.');
