@@ -1,10 +1,10 @@
 package fittoring.integration.mentoring.api;
 
-import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.Phone;
-import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.repository.MemberRepository;
-import fittoring.mentoring.business.service.JwtProvider;
+import fittoring.application.business.model.Member;
+import fittoring.application.business.model.Phone;
+import fittoring.application.business.model.password.Password;
+import fittoring.application.business.repository.MemberRepository;
+import fittoring.application.business.service.JwtProvider;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
