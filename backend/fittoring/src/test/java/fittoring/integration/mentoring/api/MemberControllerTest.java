@@ -3,7 +3,7 @@ package fittoring.integration.mentoring.api;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
-import fittoring.application.repository.MemberRepository;
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.auth.service.JwtProvider;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;

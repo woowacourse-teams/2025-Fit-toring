@@ -2,10 +2,10 @@ package fittoring.application.auth.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidPhoneVerificationException;
-import fittoring.application.service.CodeGenerator;
+import fittoring.infrastructure.CodeGenerator;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.PhoneVerification;
-import fittoring.application.repository.PhoneVerificationRepository;
+import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

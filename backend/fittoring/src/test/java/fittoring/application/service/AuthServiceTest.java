@@ -15,7 +15,7 @@ import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
-import fittoring.application.repository.helper.MentoringPaginationHelper;
+import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.util.DbCleaner;

@@ -1,6 +1,5 @@
 package fittoring.infrastructure;
 
-import fittoring.application.service.CodeGenerator;
 import java.security.SecureRandom;
 import org.springframework.stereotype.Component;
 

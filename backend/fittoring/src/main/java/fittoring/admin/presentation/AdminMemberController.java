@@ -3,7 +3,7 @@ package fittoring.admin.presentation;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.application.service.MemberService;
+import fittoring.application.member.service.MemberService;
 import fittoring.admin.presentation.dto.AdminMemberResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

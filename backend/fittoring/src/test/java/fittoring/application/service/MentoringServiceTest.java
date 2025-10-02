@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import fittoring.application.mentoring.service.MentoringService;
 import fittoring.config.auth.LoginInfo;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
@@ -26,23 +27,23 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.application.repository.CategoryMentoringRepository;
-import fittoring.application.repository.CategoryRepository;
-import fittoring.application.repository.CertificateRepository;
-import fittoring.application.repository.ImageRepository;
-import fittoring.application.repository.MemberRepository;
-import fittoring.application.repository.MentoringRepository;
-import fittoring.application.repository.MentoringStatisticsRepository;
-import fittoring.application.repository.ReservationRepository;
-import fittoring.application.repository.ReviewRepository;
-import fittoring.application.service.dto.ModifyMentoringDto;
-import fittoring.application.service.dto.RegisterMentoringDto;
+import fittoring.application.mentoring.repository.CategoryMentoringRepository;
+import fittoring.application.mentoring.repository.CategoryRepository;
+import fittoring.application.mentoring.repository.CertificateRepository;
+import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.review.repository.ReviewRepository;
+import fittoring.application.mentoring.service.dto.ModifyMentoringDto;
+import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
 import fittoring.infrastructure.image.ImageConstants;
 import fittoring.infrastructure.image.S3Uploader;
 import fittoring.infrastructure.image.VariantUploadResult;
-import fittoring.application.presentation.dto.CertificateInfo;
-import fittoring.application.presentation.dto.MentoringRegisterRequest;
-import fittoring.application.presentation.dto.MentoringResponse;
+import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
+import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
+import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
 import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -415,8 +416,8 @@ class MentoringServiceTest {
             Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
             memberRepository.save(member1);
 
-            CertificateInfo certificateInfo1 = new CertificateInfo(CertificateType.LICENSE, "제1종 보통 운전면허");
-            CertificateInfo certificateInfo2 = new CertificateInfo(CertificateType.AWARD, "광진구 건강 청년 선발 대회 준우승");
+            CertificateInfoRequest certificateInfoRequest1 = new CertificateInfoRequest(CertificateType.LICENSE, "제1종 보통 운전면허");
+            CertificateInfoRequest certificateInfoRequest2 = new CertificateInfoRequest(CertificateType.AWARD, "광진구 건강 청년 선발 대회 준우승");
 
             MentoringRegisterRequest request = new MentoringRegisterRequest(
                     5000,
@@ -425,7 +426,7 @@ class MentoringServiceTest {
                     3,
                     "컨텐츠컨텐츠",
                     "가상의카카오오픈채팅",
-                    List.of(certificateInfo1, certificateInfo2)
+                    List.of(certificateInfoRequest1, certificateInfoRequest2)
             );
 
             Category category1 = new Category("근육증가");
@@ -623,7 +624,7 @@ class MentoringServiceTest {
                     "가상의오픈채팅링크",
                     null,
                     profileImageFile,
-                    List.of(new CertificateInfo(CertificateType.AWARD, "최우수상")),
+                    List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상")),
                     List.of(certificateImageFile)
             );
 

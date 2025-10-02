@@ -28,7 +28,7 @@ import fittoring.application.exception.ReviewNotFoundException;
 import fittoring.application.exception.UnsupportedImageExtensionException;
 import fittoring.infrastructure.S3UploadException;
 import fittoring.infrastructure.SmsException;
-import fittoring.application.presentation.exception.OauthLoginException;
+import fittoring.application.exception.OauthLoginException;
 import fittoring.util.ResponseDurationCalculator;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;

@@ -1,10 +1,10 @@
 package fittoring.application.service;
 
-import fittoring.application.service.CategoryService;
+import fittoring.application.mentoring.service.CategoryService;
 import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Category;
-import fittoring.application.repository.helper.MentoringPaginationHelper;
-import fittoring.application.presentation.dto.CategoryResponse;
+import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.application.mentoring.presentation.dto.response.CategoryResponse;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

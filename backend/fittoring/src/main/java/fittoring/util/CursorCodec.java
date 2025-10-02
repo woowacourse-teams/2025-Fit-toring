@@ -1,6 +1,5 @@
 package fittoring.util;
 
-import fittoring.application.Cursor;
 import fittoring.application.exception.InvalidCursorException;
 
 public class CursorCodec {

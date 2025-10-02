@@ -1,6 +1,6 @@
 package fittoring.admin.presentation.dto;
 
-import fittoring.application.service.dto.RatingStatsDto;
+import fittoring.application.mentoring.service.dto.RatingStatsDto;
 import java.util.List;
 
 public record AdminReviewInfoResponse(

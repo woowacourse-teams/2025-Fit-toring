@@ -1,5 +1,7 @@
 package fittoring.application.service;
 
+import fittoring.application.image.service.ImageService;
+import fittoring.application.member.service.MemberService;
 import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
@@ -7,7 +9,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
-import fittoring.application.repository.helper.MentoringPaginationHelper;
+import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.infrastructure.image.ImageResizer;
 import fittoring.infrastructure.image.ImageTranscoder;
 import fittoring.infrastructure.image.S3Uploader;
@@ -15,8 +17,8 @@ import fittoring.infrastructure.image.policy.CertificatePolicy;
 import fittoring.infrastructure.image.policy.ImagePolicyRegistry;
 import fittoring.infrastructure.image.policy.MentoringProfilePolicy;
 import fittoring.infrastructure.image.policy.NonePolicy;
-import fittoring.application.presentation.dto.MyInfoResponse;
-import fittoring.application.presentation.dto.MyInfoSummaryResponse;
+import fittoring.application.member.presentation.dto.response.MyInfoResponse;
+import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;

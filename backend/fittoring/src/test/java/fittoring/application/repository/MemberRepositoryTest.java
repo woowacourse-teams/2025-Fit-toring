@@ -3,10 +3,11 @@ package fittoring.application.repository;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
-import fittoring.application.repository.helper.MentoringPaginationHelper;
+import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

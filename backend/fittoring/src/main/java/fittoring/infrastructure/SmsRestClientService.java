@@ -1,8 +1,8 @@
 package fittoring.infrastructure;
 
 import fittoring.domain.model.Phone;
-import fittoring.application.service.dto.LongSmsSendClientDto;
-import fittoring.application.service.dto.ShortSmsSendClientDto;
+import fittoring.infrastructure.dto.LongSmsSendClientDto;
+import fittoring.infrastructure.dto.ShortSmsSendClientDto;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
