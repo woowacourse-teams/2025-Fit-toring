@@ -1,8 +1,9 @@
+import { useEffect, useRef } from 'react';
+
 import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
 import type { Message } from '../../types/message';
-import { useEffect, useRef } from 'react';
 
 type MessageType = {
   content: string;
