@@ -9,9 +9,9 @@ interface ApiClientGetType {
   withCredentials?: boolean;
 }
 
-interface ApiClientPostType {
+interface ApiClientPostType<T> {
   endpoint: string;
-  body?: Record<string, string | number> | FormData;
+  body?: Record<string, string | number> | FormData | T;
   withCredentials?: boolean;
 }
 
@@ -135,7 +135,7 @@ class ApiClient {
     }
   }
 
-  async post({ endpoint, body, withCredentials }: ApiClientPostType) {
+  async post<T>({ endpoint, body, withCredentials }: ApiClientPostType<T>) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
     const isFormData = body instanceof FormData;
 
