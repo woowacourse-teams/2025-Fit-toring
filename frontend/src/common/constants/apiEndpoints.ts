@@ -20,5 +20,5 @@ export const API_ENDPOINTS = {
   REVIEWS: '/reviews',
   CERTIFICATES: '/certificates',
   MENTORINGS_PAGE: '/mentorings-page',
-  CHATROOMS: '/chantrooms',
+  CHATROOMS: '/chatrooms',
 } as const;
