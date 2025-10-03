@@ -228,8 +228,7 @@ public class MentoringService {
         if (!presignedUrlService.isObjectExistsFromUrl(dto.profileImageUrl())) {
             return;
         }
-        imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
-        imageService.save(ImageType.MENTORING_PROFILE, mentoring.getId(), dto.profileImageUrl());
+        saveProfileImage(dto.profileImageUrl(), mentoring);
     }
 
     private Mentoring findMentoringOwnedByMentor(Long mentoringId, Long mentorId) {
