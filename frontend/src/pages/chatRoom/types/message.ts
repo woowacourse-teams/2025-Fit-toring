@@ -10,5 +10,5 @@ export interface Message {
   chatMessageId?: number;
 
   // 클라이언트의 상태 관리를 위한 속성
-  status?: 'success' | 'fail';
+  status?: 'success' | 'fail' | 'pending';
 }
