@@ -250,7 +250,7 @@ function ChatRoom() {
     });
 
     client.publish({
-      destination: `/add/chatroom/${chatRoomId}`,
+      destination: `/app/chatroom/${chatRoomId}`,
       body: JSON.stringify({ content: message, chatRoomId, tempId }),
       headers: { receipt: receiptId },
     });
