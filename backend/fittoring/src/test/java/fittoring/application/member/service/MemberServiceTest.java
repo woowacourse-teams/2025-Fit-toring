@@ -11,13 +11,6 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
-import fittoring.infrastructure.image.ImageResizer;
-import fittoring.infrastructure.image.ImageTranscoder;
-import fittoring.infrastructure.image.S3Uploader;
-import fittoring.infrastructure.image.policy.CertificatePolicy;
-import fittoring.infrastructure.image.policy.ImagePolicyRegistry;
-import fittoring.infrastructure.image.policy.MentoringProfilePolicy;
-import fittoring.infrastructure.image.policy.NonePolicy;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +23,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)

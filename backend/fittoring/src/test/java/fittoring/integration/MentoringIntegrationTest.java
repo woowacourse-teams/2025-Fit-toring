@@ -2,6 +2,8 @@ package fittoring.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.application.auth.service.JwtProvider;
@@ -23,7 +25,9 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
