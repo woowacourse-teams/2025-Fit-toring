@@ -2,6 +2,8 @@ package fittoring.infrastructure.image;
 
 import fittoring.domain.model.ImageVariant;
 import fittoring.infrastructure.InfraErrorMessage;
+import fittoring.infrastructure.S3UploadException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 

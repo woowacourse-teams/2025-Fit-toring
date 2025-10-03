@@ -1,7 +1,7 @@
 package fittoring.application.mentoring.service.dto;
 
+import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
 import fittoring.application.mentoring.presentation.dto.request.MentoringModifyRequest;
-import fittoring.mentoring.presentation.dto.CertificateInfo;
 import java.util.List;
 
 public record ModifyMentoringDto(
@@ -14,7 +14,7 @@ public record ModifyMentoringDto(
         String content,
         String chatUrl,
         String profileImageUrl,
-        List<CertificateInfo> certificateInfos
+        List<CertificateInfoRequest> certificateInfos
 ) {
 
     public static ModifyMentoringDto of(
@@ -32,7 +32,7 @@ public record ModifyMentoringDto(
                 request.content(),
                 request.chatUrl(),
                 request.profileImageUrl(),
-                request.certificateInfos()
+                request.certificateInfoRequests()
         );
     }
 }

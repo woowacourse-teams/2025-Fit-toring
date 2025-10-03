@@ -2,6 +2,7 @@ package fittoring.application.mentoring.service;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
@@ -11,6 +12,7 @@ import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
 import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
 import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
@@ -23,12 +25,14 @@ import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.config.auth.LoginInfo;
+import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
+import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.MentoringStatistics;
@@ -51,6 +55,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -65,9 +70,6 @@ class MentoringServiceTest {
 
     @Autowired
     private MentoringService mentoringService;
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -379,8 +381,10 @@ class MentoringServiceTest {
             Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
             memberRepository.save(member1);
 
-            CertificateInfo certificateInfo1 = new CertificateInfo(CertificateType.LICENSE, "제1종 보통 운전면허", "이미지 주소1");
-            CertificateInfo certificateInfo2 = new CertificateInfo(CertificateType.AWARD, "광진구 건강 청년 선발 대회 준우승",
+            CertificateInfoRequest certificateInfo1 = new CertificateInfoRequest(CertificateType.LICENSE, "제1종 보통 운전면허",
+                    "이미지 주소1");
+            CertificateInfoRequest certificateInfo2 = new CertificateInfoRequest(CertificateType.AWARD,
+                    "광진구 건강 청년 선발 대회 준우승",
                     "이미지 주소2");
 
             MentoringRegisterRequest request = new MentoringRegisterRequest(
@@ -491,7 +495,7 @@ class MentoringServiceTest {
                     newContent,
                     "가상의오픈채팅링크",
                     newImageUrl,
-                    List.of(new CertificateInfo(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
+                    List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
             given(presignedUrlService.isObjectExistsFromUrl(anyString()))

@@ -3,11 +3,11 @@ package fittoring.application.mentoring.service;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CategoryNotFoundException;
 import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MentoringAlreadyExistException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.image.service.ImageService;
+import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.presentation.dto.response.CertificateSpecAndImageResponse;
 import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
@@ -157,16 +157,17 @@ public class MentoringService {
 
     private Image getMentoringProfileImageOrNull(Mentoring mentoring) {
         return imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
-            .orElse(null);
+                .orElse(null);
     }
 
     private RatingStatsDto getRatingStatsDto(Long mentoringId) {
         MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.findById(mentoringId)
-            .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
+                .orElseThrow(
+                        () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
         return new RatingStatsDto(
-            mentoringId,
-            mentoringStatistics.calculateAverageRating(),
-            mentoringStatistics.getReviewCount()
+                mentoringId,
+                mentoringStatistics.calculateAverageRating(),
+                mentoringStatistics.getReviewCount()
         );
     }
 
@@ -308,38 +309,38 @@ public class MentoringService {
 
     private List<Long> createMentoringIdsByMentoring(List<Mentoring> mentorings) {
         return mentorings.stream()
-            .map(Mentoring::getId)
-            .toList();
+                .map(Mentoring::getId)
+                .toList();
     }
 
     private List<RatingStatsDto> getRatingStatsDtos(List<Long> mentoringIds) {
         List<MentoringStatistics> mentoringStatistics = mentoringStatisticsRepository.findByIds(mentoringIds);
         return mentoringStatistics.stream()
-            .map(ms -> new RatingStatsDto(ms.getMentoringId(), ms.calculateAverageRating(), ms.getReviewCount()))
-            .toList();
+                .map(ms -> new RatingStatsDto(ms.getMentoringId(), ms.calculateAverageRating(), ms.getReviewCount()))
+                .toList();
     }
 
     private Map<Long, RatingStatsDto> createReviewStatsMap(List<RatingStatsDto> ratingStatsDto) {
         return ratingStatsDto.stream()
-            .collect(Collectors.toMap(RatingStatsDto::mentoringId, Function.identity()));
+                .collect(Collectors.toMap(RatingStatsDto::mentoringId, Function.identity()));
     }
 
     private Image getProfileImageOrNull(Long mentoringId) {
         return imageService.findByImageTypeAndRelationId(
-            ImageType.MENTORING_PROFILE,
-            mentoringId
+                ImageType.MENTORING_PROFILE,
+                mentoringId
         ).orElse(null);
     }
 
     private List<String> getCategoryMentoringTitlesByMentoringId(Mentoring mentoring) {
         return categoryMentoringRepository.findTitlesByMentoringId(
-            mentoring.getId());
+                mentoring.getId());
     }
 
     private RatingStatsDto getReviewStats(Mentoring mentoring, Map<Long, RatingStatsDto> longRatingStatsDtoMap) {
         return longRatingStatsDtoMap.getOrDefault(
-            mentoring.getId(),
-            new RatingStatsDto(mentoring.getId(), 0.0, 0)
+                mentoring.getId(),
+                new RatingStatsDto(mentoring.getId(), 0.0, 0)
         );
     }
 }

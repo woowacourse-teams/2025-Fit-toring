@@ -30,7 +30,7 @@ public record RegisterMentoringDto(
                 request.content(),
                 request.chatUrl(),
                 request.profileImageUrl(),
-                request.certificateInfos()
+                request.certificateInfoRequests()
         );
     }
 }
