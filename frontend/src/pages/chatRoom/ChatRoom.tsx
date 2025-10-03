@@ -166,7 +166,7 @@ function ChatRoom() {
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () =>
-        new SockJS(`${window.location.host}/ws-chat`, null, {
+        new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
           withCredentials: true,
         }),
       onStompError: (frame) => console.error('STOMP protocol error:', frame),
