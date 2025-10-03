@@ -207,6 +207,7 @@ function ChatRoom() {
     }
 
     const tempId = Date.now();
+    const receiptId = `message-${tempId}`;
 
     const optimisticMsg = {
       senderId: memberId,
@@ -215,22 +216,18 @@ function ChatRoom() {
       chatRoomId: Number(chatRoomId),
       chatMessageId: tempId,
       tempId,
+      status: 'pending' as const,
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
     setMessage('');
 
-    try {
-      client.publish({
-        destination: `/add/chatroom/${chatRoomId}`,
-        body: JSON.stringify({ content: message, chatRoomId, tempId }),
-      });
-    } catch (error) {
+    const timeoutId = setTimeout(() => {
       setMessages((prev) =>
-        prev.map((message) =>
-          message.chatMessageId === tempId
-            ? { ...message, status: 'fail' }
-            : message,
+        prev.map((m) =>
+          m.tempId === tempId && m.status === 'pending'
+            ? { ...m, status: 'fail' }
+            : m,
         ),
       );
 
@@ -240,7 +237,23 @@ function ChatRoom() {
         feature: 'chat',
         step: 'chat-send',
       });
-    }
+    }, 5000);
+
+    client.watchForReceipt(receiptId, () => {
+      clearTimeout(timeoutId);
+
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.tempId === tempId ? { ...m, status: 'success' } : m,
+        ),
+      );
+    });
+
+    client.publish({
+      destination: `/add/chatroom/${chatRoomId}`,
+      body: JSON.stringify({ content: message, chatRoomId, tempId }),
+      headers: { receipt: receiptId },
+    });
   };
 
   return (
