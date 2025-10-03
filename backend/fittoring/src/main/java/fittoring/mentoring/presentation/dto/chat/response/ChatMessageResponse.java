@@ -15,8 +15,8 @@ public record ChatMessageResponse(
     public static ChatMessageResponse from(ChatMessage chatMessage, Long tempId) {
         return new ChatMessageResponse(
                 chatMessage.getId(),
-                chatMessage.getChatRoomId(),
                 tempId,
+                chatMessage.getChatRoomId(),
                 chatMessage.getSenderId(),
                 chatMessage.getContent(),
                 chatMessage.getCreatedAt()
