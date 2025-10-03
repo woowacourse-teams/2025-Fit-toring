@@ -201,11 +201,6 @@ function ChatRoom() {
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
-
     const tempId = Date.now();
     const receiptId = `message-${tempId}`;
 
@@ -221,6 +216,11 @@ function ChatRoom() {
 
     setMessages((prev) => [...prev, optimisticMsg]);
     setMessage('');
+
+    const client = stompClientRef.current;
+    if (!client || !client.connected || memberId === null) {
+      return;
+    }
 
     const timeoutId = setTimeout(() => {
       setMessages((prev) =>
