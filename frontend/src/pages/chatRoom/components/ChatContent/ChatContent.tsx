@@ -16,7 +16,8 @@ interface ChatContentProps {
 }
 
 function ChatContent({ messages }: ChatContentProps) {
-  const myId = '1';
+  const storedData = localStorage.getItem('memberId');
+  const memberId = storedData ? JSON.parse(storedData) : null;
 
   const messageEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -28,7 +29,7 @@ function ChatContent({ messages }: ChatContentProps) {
 
   return (
     <S_Container>
-      {messages.map(({ content, createdAt, senderId }, index) => {
+      {messages.map(({ content, createdAt, senderId, status }, index) => {
         const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
         const senderChanged = prevSenderId !== senderId;
 
@@ -37,7 +38,8 @@ function ChatContent({ messages }: ChatContentProps) {
             <ChatBubble
               content={content}
               createdAt={createdAt}
-              authored={senderId === myId}
+              authored={senderId === memberId}
+              status={status}
             />
           </S_ChatBubbleWrapper>
         );
