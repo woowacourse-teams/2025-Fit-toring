@@ -29,21 +29,26 @@ function ChatContent({ messages }: ChatContentProps) {
 
   return (
     <S_Container>
-      {messages.map(({ content, createdAt, senderId, status }, index) => {
-        const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
-        const senderChanged = prevSenderId !== senderId;
+      {messages.map(
+        ({ content, createdAt, senderId, status, chatMessageId }, index) => {
+          const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
+          const marginNeeded = prevSenderId !== senderId;
 
-        return (
-          <S_ChatBubbleWrapper key={index} senderChanged={senderChanged}>
-            <ChatBubble
-              content={content}
-              createdAt={createdAt}
-              authored={senderId === memberId}
-              status={status}
-            />
-          </S_ChatBubbleWrapper>
-        );
-      })}
+          return (
+            <S_ChatBubbleWrapper
+              key={chatMessageId}
+              marginNeeded={marginNeeded}
+            >
+              <ChatBubble
+                content={content}
+                createdAt={createdAt}
+                authored={senderId === memberId}
+                status={status}
+              />
+            </S_ChatBubbleWrapper>
+          );
+        },
+      )}
       <div ref={messageEndRef} />
     </S_Container>
   );
