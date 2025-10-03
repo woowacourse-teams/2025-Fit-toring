@@ -15,12 +15,12 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
 
-    public Optional<Image> save(ImageType type, Long relationId, String imageUrl) {
-        return Optional.of(imageRepository.save(new Image(
+    public Image save(ImageType type, Long relationId, String imageUrl) {
+        return imageRepository.save(new Image(
                 imageUrl,
                 type,
                 relationId
-        )));
+        ));
     }
 
     public List<Image> saveAll(List<Image> images) {
