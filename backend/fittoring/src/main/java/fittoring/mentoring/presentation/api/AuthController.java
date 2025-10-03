@@ -10,6 +10,7 @@ import fittoring.mentoring.presentation.CookieWriter;
 import fittoring.mentoring.presentation.dto.AuthTokenResponse;
 import fittoring.mentoring.presentation.dto.LoginResponse;
 import fittoring.mentoring.presentation.dto.MemberLoginResponse;
+import fittoring.mentoring.presentation.dto.OauthSignUpRequest;
 import fittoring.mentoring.presentation.dto.SignInRequest;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import fittoring.mentoring.presentation.dto.ValidateDuplicateLoginIdRequest;

@@ -16,6 +16,7 @@ import fittoring.mentoring.presentation.dto.LoginResponse;
 import fittoring.mentoring.presentation.dto.MemberLoginResponse;
 import fittoring.mentoring.presentation.dto.SignUpRequest;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
