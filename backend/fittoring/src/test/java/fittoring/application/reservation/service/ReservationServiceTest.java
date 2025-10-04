@@ -37,6 +37,7 @@ import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
 import fittoring.util.DbCleaner;
 import java.util.List;
+import java.util.TimeZone;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,6 +81,8 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         dbCleaner.clean();
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        System.setProperty("user.timezone", "Asia/Seoul");
     }
 
     @DisplayName("예약 생성이 성공하면 예약 객체를 반환하고, 예약 상태는 PENDING 상태이다.")
