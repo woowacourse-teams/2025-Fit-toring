@@ -39,7 +39,7 @@ function KakaoCallback() {
       alert('잘못된 접근입니다.');
       navigate(PAGE_URL.LOGIN);
     }
-  }, [navigate, login]);
+  }, [navigate]);
 
   return <LoadingSpinner />;
 }
