@@ -221,13 +221,16 @@ public class MentoringService {
     }
 
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {
+        // 수정 폼에 멘토링 이미지가 null 혹은 빈 문자열로 들어옴 -> 기존 이미지 삭제
         if (dto.profileImageUrl() == null || dto.profileImageUrl().isBlank()) {
             imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
             return;
         }
+        // 수정 폼에 이미지는 들어왔으나 해당 이미지가 S3에 없는 이미지임 -> 아무 처리 하지 않고 넘어감
         if (!presignedUrlService.isObjectExistsFromUrl(dto.profileImageUrl())) {
             return;
         }
+        // 수정 폼에 이미지도 들어오고 S3에 있는 이미지임 -> 기존 이미지를 삭제하고 새로 저장함
         saveProfileImage(dto.profileImageUrl(), mentoring);
     }
 
