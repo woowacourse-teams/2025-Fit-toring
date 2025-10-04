@@ -1,6 +1,7 @@
 package fittoring.application.auth;
 
 import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,11 @@ public class CookieWriter {
     public static void clearCookies(HttpServletResponse response) {
         ResponseCookie accessToken = CookieProvider.clearCookie("accessToken");
         ResponseCookie refreshToken = CookieProvider.clearCookie("refreshToken");
+        ResponseCookie oauthSignUpToken = CookieProvider.clearCookie("oauthSignUpToken");
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessToken.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshToken.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, oauthSignUpToken.toString());
     }
 }
 
