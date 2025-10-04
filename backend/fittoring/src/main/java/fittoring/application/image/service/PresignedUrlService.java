@@ -5,7 +5,7 @@ import fittoring.application.image.service.dto.IssuedPresignedDto;
 import fittoring.config.S3Properties;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
-import fittoring.infrastructure.S3UploadException;
+import fittoring.infrastructure.exception.S3UploadException;
 import fittoring.infrastructure.image.ContentType;
 import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.logging.JsonLogger;

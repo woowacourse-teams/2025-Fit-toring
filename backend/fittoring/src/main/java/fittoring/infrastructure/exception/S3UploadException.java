@@ -1,4 +1,4 @@
-package fittoring.infrastructure;
+package fittoring.infrastructure.exception;
 
 public class S3UploadException extends RuntimeException {
 
