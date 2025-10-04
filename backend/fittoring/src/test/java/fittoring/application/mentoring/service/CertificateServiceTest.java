@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.service;
+package fittoring.application.mentoring.service;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,7 +13,6 @@ import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
 import fittoring.application.mentoring.presentation.dto.response.CertificateResponse;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.application.mentoring.service.CertificateService;
 import fittoring.application.mentoring.service.dto.CertificateDeleteDto;
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
@@ -27,6 +26,7 @@ import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
+import fittoring.logging.JsonLogger;
 import fittoring.util.DbCleaner;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
@@ -61,6 +61,9 @@ class CertificateServiceTest {
     @MockitoBean
     private PresignedUrlService presignedUrlService;
 
+    @MockitoBean
+    private JsonLogger jsonLogger;
+
     @Autowired
     private TestEntityManager em;
 
@@ -92,6 +95,8 @@ class CertificateServiceTest {
         );
         em.persist(mentoring);
         given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                .willReturn(true);
+        given(presignedUrlService.isObjectExistsFromUrl(anyString()))
                 .willReturn(true);
     }
 
