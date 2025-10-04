@@ -345,11 +345,6 @@ class ReservationServiceTest {
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Image profileImageOfMentor1 = entityManager.persist(new Image(
-                "www.naver.com",
-                ImageType.MENTORING_PROFILE,
-                mentor1.getId()
-        ));
         Member mentor2 = entityManager.persist(new Member(
                 "mentorId2",
                 "남",
@@ -372,6 +367,11 @@ class ReservationServiceTest {
                 "한 줄 소개",
                 "긴 글 소개",
                 "가상의오픈채팅링크"
+        ));
+        Image profileImageOfMentor1 = entityManager.persist(new Image(
+                "www.naver.com",
+                ImageType.MENTORING_PROFILE,
+                mentoring1.getId()
         ));
         Category category1 = entityManager.persist(new Category("근육 증진"));
         Category category2 = entityManager.persist(new Category("다이어트"));
