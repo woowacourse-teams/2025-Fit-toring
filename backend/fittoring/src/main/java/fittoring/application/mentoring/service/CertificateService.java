@@ -20,8 +20,10 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Status;
+import fittoring.logging.JsonLogger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +36,20 @@ public class CertificateService {
     private final CertificateRepository certificateRepository;
     private final ImageService imageService;
     private final PresignedUrlService presignedUrlService;
+    private final JsonLogger jsonLogger;
 
     public void mapCertificatesToMentoring(
+            List<CertificateInfoRequest> certificateInfoRequests,
+            Mentoring mentoring
+    ) {
+        List<CertificateInfoRequest> validCertificateInfos = filterValidCertificates(
+                certificateInfoRequests,
+                mentoring
+        );
+        saveAllCertificates(validCertificateInfos, mentoring);
+    }
+
+    private List<CertificateInfoRequest> filterValidCertificates(
             List<CertificateInfoRequest> certificateInfoRequests,
             Mentoring mentoring
     ) {
@@ -43,9 +57,18 @@ public class CertificateService {
         for (CertificateInfoRequest certificateInfo : certificateInfoRequests) {
             if (presignedUrlService.isObjectExistsFromKey(certificateInfo.imageUrl())) {
                 validCertificateInfos.add(certificateInfo);
+            } else {
+                jsonLogger.warn(
+                        "자격증 이미지 검증 실패 (S3 객체 없음)",
+                        Map.of(
+                                "imageUrl", certificateInfo.imageUrl(),
+                                "mentoringId", mentoring.getId(),
+                                "certificateTitle", certificateInfo.title()
+                        )
+                );
             }
         }
-        saveAllCertificates(validCertificateInfos, mentoring);
+        return validCertificateInfos;
     }
 
     private void saveAllCertificates(
@@ -53,8 +76,7 @@ public class CertificateService {
             Mentoring savedMentoring
     ) {
         List<Image> certificateImages = new ArrayList<>();
-        for (int i = 0; i < certificateInfos.size(); i++) {
-            CertificateInfoRequest certificateInfo = certificateInfos.get(i);
+        for (CertificateInfoRequest certificateInfo : certificateInfos) {
             Long certificateId = saveCertificate(certificateInfo, savedMentoring);
             certificateImages.add(new Image(
                     certificateInfo.imageUrl(),
