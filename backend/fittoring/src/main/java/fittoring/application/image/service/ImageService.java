@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -15,6 +16,7 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
 
+    @Transactional
     public Image save(ImageType type, Long relationId, String imageUrl) {
         return imageRepository.save(new Image(
                 imageUrl,
@@ -23,6 +25,7 @@ public class ImageService {
         ));
     }
 
+    @Transactional
     public List<Image> saveAll(List<Image> images) {
         return imageRepository.saveAll(images);
     }
