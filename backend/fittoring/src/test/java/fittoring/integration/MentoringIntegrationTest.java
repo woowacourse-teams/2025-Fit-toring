@@ -55,7 +55,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @Import({MentoringPaginationHelper.class})
-class MentoringControllerTest extends AbstractApiDocumentationTest {
+class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
     @MockitoBean
     private PresignedUrlService presignedUrlService;
