@@ -125,7 +125,7 @@ public class AuthController {
         ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
                 authTokenResponse.oauthSignUpToken());
         httpResponse.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/oauth-signup")
