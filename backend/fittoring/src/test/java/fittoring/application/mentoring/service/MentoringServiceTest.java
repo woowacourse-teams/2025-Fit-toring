@@ -6,6 +6,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentoringNotFoundException;
@@ -157,8 +158,6 @@ class MentoringServiceTest {
 
         // when
         mentoringService.deleteMentoringByAdmin(adminLoginId, mentoringId);
-        em.flush();
-        em.clear();
 
         // then
         Review deletedReview = (Review) em.createNativeQuery(
@@ -275,20 +274,11 @@ class MentoringServiceTest {
         @Test
         void getMentoring2() {
             //given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
-            em.persist(member1);
+            Member member = FixtureUtil.getTestMember();
+            em.persist(member);
 
-            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
-            em.persist(mentoring1);
-
-            Category category1 = new Category("카테고리1");
-            em.persist(category1);
-
-            CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
-            em.persist(categoryMentoring1_1);
-
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
-            em.persist(image1);
+            Mentoring mentoring = FixtureUtil.getTestMentoring(member);
+            em.persist(mentoring);
 
             Long invalidId = 100L;
 
@@ -309,8 +299,7 @@ class MentoringServiceTest {
         @Test
         void registerMentoring() throws IOException {
             //given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
-            Member savedMentor = memberRepository.save(member1);
+            Member member = memberRepository.save(FixtureUtil.getTestMember());
 
             MentoringRegisterRequest request = new MentoringRegisterRequest(
                     5000,
@@ -325,7 +314,6 @@ class MentoringServiceTest {
 
             Category category1 = new Category("근육증가");
             Category category2 = new Category("다이어트");
-
             categoryRepository.save(category1);
             categoryRepository.save(category2);
 
@@ -334,7 +322,7 @@ class MentoringServiceTest {
             assertThatCode(() ->
                     mentoringService.registerMentoring(
                             RegisterMentoringDto.of(
-                                    savedMentor.getId(),
+                                    member.getId(),
                                     request
                             )))
                     .doesNotThrowAnyException();
@@ -344,14 +332,14 @@ class MentoringServiceTest {
         @Test
         void registerMentoringProfile() {
             // given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
-            memberRepository.save(member1);
+            Member member = memberRepository.save(FixtureUtil.getTestMember());
+            String profileImageUrl = "가상의 이미지 주소";
 
             MentoringRegisterRequest request = new MentoringRegisterRequest(
                     5000,
                     List.of("근육증가", "다이어트"),
                     "자기소개",
-                    "가상의 이미지 주소",
+                    profileImageUrl,
                     3,
                     "컨텐츠컨텐츠",
                     "가상의카카오오픈채팅",
@@ -363,13 +351,10 @@ class MentoringServiceTest {
             categoryRepository.save(category1);
             categoryRepository.save(category2);
 
-            MockMultipartFile imageFile = new MockMultipartFile("testProfile",
-                    "testProfile".getBytes(StandardCharsets.UTF_8));
-
             // when & then
             assertThatCode(() -> mentoringService.registerMentoring(
                     RegisterMentoringDto.of(
-                            member1.getId(),
+                            member.getId(),
                             request
                     ))).doesNotThrowAnyException();
         }
@@ -378,8 +363,7 @@ class MentoringServiceTest {
         @Test
         void registerMentoringProfileCertificates() throws IOException {
             // given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
-            memberRepository.save(member1);
+            Member member = memberRepository.save(FixtureUtil.getTestMember());
 
             CertificateInfoRequest certificateInfo1 = new CertificateInfoRequest(CertificateType.LICENSE, "제1종 보통 운전면허",
                     "이미지 주소1");
@@ -403,17 +387,10 @@ class MentoringServiceTest {
             categoryRepository.save(category1);
             categoryRepository.save(category2);
 
-            MockMultipartFile profileImageFile = new MockMultipartFile("testProfile",
-                    "testProfile".getBytes(StandardCharsets.UTF_8));
-            MockMultipartFile certificateImageFile1 = new MockMultipartFile("testCertificate1",
-                    "testCertificate1".getBytes(StandardCharsets.UTF_8));
-            MockMultipartFile certificateImageFile2 = new MockMultipartFile("testCertificate2",
-                    "testCertificate2".getBytes(StandardCharsets.UTF_8));
-
             // when & then
             assertThatCode(() -> mentoringService.registerMentoring(
                     RegisterMentoringDto.of(
-                            member1.getId(),
+                            member.getId(),
                             request
                     ))).doesNotThrowAnyException();
         }
@@ -422,8 +399,7 @@ class MentoringServiceTest {
         @Test
         void saveMentoringStatistics() {
             //given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
-            Member savedMentor = memberRepository.save(member1);
+            Member member = memberRepository.save(FixtureUtil.getTestMember());
 
             MentoringRegisterRequest request = new MentoringRegisterRequest(
                     5000,
@@ -445,7 +421,7 @@ class MentoringServiceTest {
             //when
             mentoringService.registerMentoring(
                     RegisterMentoringDto.of(
-                            savedMentor.getId(),
+                            member.getId(),
                             request
                     )
             );
@@ -464,37 +440,21 @@ class MentoringServiceTest {
         @Test
         void modifyMentoring() {
             // given
-            Member mentor = memberRepository.save(new Member(
-                    "id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw")
-            ));
-            Category category1 = categoryRepository.save(new Category("근육증가"));
+            Member mentor = memberRepository.save(FixtureUtil.getTestMember());
+            Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+
             categoryRepository.save(new Category("다이어트"));
-
-            Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                    mentor, 5000, 3, "한 줄 소개", "긴 글 소개", "가상의오픈채팅링크"
-            ));
-            categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
-            Certificate certificate = certificateRepository.save(new Certificate(
-                    CertificateType.LICENSE, "운전면허증", mentoring
-            ));
-
-            int newPrice = 1000;
-            String newCategory = "다이어트";
-            String newIntroduction = "수정된 긴 글 소개";
-            String newImageUrl = "수정된 이미지 주소";
-            int newCareer = 5;
-            String newContent = "수정된 한 줄 소개";
 
             ModifyMentoringDto modifyMentoringDto = new ModifyMentoringDto(
                     mentoring.getId(),
                     mentor.getId(),
-                    newPrice,
-                    List.of(newCategory),
-                    newIntroduction,
-                    newCareer,
-                    newContent,
+                    1000,
+                    List.of("다이어트"),
+                    "수정된 긴 글 소개",
+                    5,
+                    "수정된 한 줄 소개",
                     "가상의오픈채팅링크",
-                    newImageUrl,
+                    "수정된 이미지 주소",
                     List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
@@ -523,12 +483,12 @@ class MentoringServiceTest {
             ).get();
 
             SoftAssertions.assertSoftly(softAssertions -> {
-                softAssertions.assertThat(changedMentoring.getPrice()).isEqualTo(newPrice);
-                softAssertions.assertThat(changedMentoring.getIntroduction()).isEqualTo(newIntroduction);
-                softAssertions.assertThat(changedMentoring.getCareer()).isEqualTo(newCareer);
-                softAssertions.assertThat(changedMentoring.getContent()).isEqualTo(newContent);
+                softAssertions.assertThat(changedMentoring.getPrice()).isEqualTo(modifyMentoringDto.price());
+                softAssertions.assertThat(changedMentoring.getIntroduction()).isEqualTo(modifyMentoringDto.introduction());
+                softAssertions.assertThat(changedMentoring.getCareer()).isEqualTo(modifyMentoringDto.career());
+                softAssertions.assertThat(changedMentoring.getContent()).isEqualTo(modifyMentoringDto.content());
                 softAssertions.assertThat(changedCategories).containsExactlyInAnyOrder("다이어트");
-                softAssertions.assertThat(changedProfileImage.getUrl()).isEqualTo(newImageUrl);
+                softAssertions.assertThat(changedProfileImage.getUrl()).isEqualTo(modifyMentoringDto.profileImageUrl());
                 softAssertions.assertThat(certificateImage.getUrl()).isEqualTo("자격증명 이미지 1");
             });
         }
@@ -537,32 +497,21 @@ class MentoringServiceTest {
         @Test
         void modifyMentoringFail1() {
             // given
-            Member mentor = memberRepository.save(new Member(
-                    "id1",
-                    "MALE",
-                    "김트레이너",
-                    new Phone("010-1234-9048"),
-                    Password.from("pw")
-            ));
+            Member mentor = memberRepository.save(FixtureUtil.getTestMember());
 
-            int newPrice = 1000;
-            String newCategory = "다이어트";
-            String newIntroduction = "수정된 긴 글 소개";
-            String newImageUrl = "수정된 이미지 URL";
-            int newCareer = 5;
-            String newContent = "수정된 한 줄 소개";
+            categoryRepository.save(new Category("다이어트"));
 
             ModifyMentoringDto modifyMentoringDto = new ModifyMentoringDto(
-                    999L,
+                    900L,
                     mentor.getId(),
-                    newPrice,
-                    List.of(newCategory),
-                    newIntroduction,
-                    newCareer,
-                    newContent,
+                    1000,
+                    List.of("다이어트"),
+                    "수정된 긴 글 소개",
+                    5,
+                    "수정된 한 줄 소개",
                     "가상의오픈채팅링크",
-                    newImageUrl,
-                    null
+                    "수정된 이미지 주소",
+                    List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
             // when
@@ -576,21 +525,8 @@ class MentoringServiceTest {
         @Test
         void modifyMentoringFail2() {
             // given
-            Member mentor = memberRepository.save(new Member(
-                    "id1",
-                    "MALE",
-                    "김트레이너",
-                    new Phone("010-1234-9048"),
-                    Password.from("pw")
-            ));
-            Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                    mentor,
-                    5000,
-                    3,
-                    "한 줄 소개",
-                    "긴 글 소개",
-                    "가상의오픈채팅링크"
-            ));
+            Member mentor = memberRepository.save(FixtureUtil.getTestMember());
+            Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
             Member invalidMember = memberRepository.save(new Member(
                     "id2",
@@ -599,24 +535,20 @@ class MentoringServiceTest {
                     new Phone("010-1234-9021"),
                     Password.from("pw")
             ));
-            int newPrice = 1000;
-            String newCategory = "다이어트";
-            String newIntroduction = "수정된 긴 글 소개";
-            String newImageUrl = "수정된 이미지 URL";
-            int newCareer = 5;
-            String newContent = "수정된 한 줄 소개";
+
+            categoryRepository.save(new Category("다이어트"));
 
             ModifyMentoringDto modifyMentoringDto = new ModifyMentoringDto(
                     mentoring.getId(),
                     invalidMember.getId(),
-                    newPrice,
-                    List.of(newCategory),
-                    newIntroduction,
-                    newCareer,
-                    newContent,
+                    1000,
+                    List.of("다이어트"),
+                    "수정된 긴 글 소개",
+                    5,
+                    "수정된 한 줄 소개",
                     "가상의오픈채팅링크",
-                    newImageUrl,
-                    null
+                    "수정된 이미지 주소",
+                    List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
             // when
