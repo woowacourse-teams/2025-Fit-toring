@@ -76,7 +76,7 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithoutImage() {
         // given
-        Member member = FixtureUtil.getTestMentee();
+        Member member = FixtureUtil.getTestMentor();
         Mentoring mentoring = FixtureUtil.getTestMentoring(member);
 
         em.persist(member);

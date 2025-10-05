@@ -586,11 +586,11 @@ class ReviewServiceTest {
     void successReviewDelete() {
         // given
         Member admin = em.persist(FixtureUtil.getTestAdmin());
-        Member user = em.persist(FixtureUtil.getTestMentee());
+        Member mentee = em.persist(FixtureUtil.getTestMentee());
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(admin));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, user));
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, user));
+        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor()));
+        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
 
         em.flush();
         em.clear();
