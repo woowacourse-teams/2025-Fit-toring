@@ -3,9 +3,9 @@ import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
 import type { Message } from '../types/message';
 
-export const getChatRoom = async (chatroomId: number) => {
+export const getChatRoom = async (chatRoomId: number) => {
   return await apiClient.get<Message[]>({
-    endpoint: `${API_ENDPOINTS.CHATROOMS}/${chatroomId}/messages`,
+    endpoint: `${API_ENDPOINTS.CHATROOMS}/${chatRoomId}/messages`,
     withCredentials: true,
   });
 };

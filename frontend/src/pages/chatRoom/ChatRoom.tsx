@@ -153,7 +153,7 @@ function ChatRoom() {
   const stompClientRef = useRef<Client | null>(null);
 
   const { data, isError, error } = useQuery({
-    queryKey: ['chatroom', chatRoomId],
+    queryKey: ['chatRoom', chatRoomId],
     queryFn: () => getChatRoom(Number(chatRoomId!)),
   });
 
