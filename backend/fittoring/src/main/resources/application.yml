@@ -42,15 +42,11 @@ management:
         health: healthcheck
         prometheus: prometheus-provider
   metrics:
-    tags:
-      application: fittoring
-    export:
-      cloudwatch:
-        enabled: true
-        namespace: fittoring-backend-dev
-        step: 30s
-        batch-size: 20
-        region: ap-northeast-2
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5,0.95,0.99
 sms:
   base-url: https://api.solapi.com
   timeout:
