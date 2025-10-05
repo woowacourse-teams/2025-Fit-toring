@@ -55,7 +55,6 @@ public class MentoringService {
 
     private final ImageService imageService;
     private final CertificateService certificateService;
-
     private final MentoringRepository mentoringRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
@@ -354,3 +353,4 @@ public class MentoringService {
         );
     }
 }
+
