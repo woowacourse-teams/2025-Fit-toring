@@ -37,9 +37,10 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,metrics
+        include: health,info,prometheus
       path-mapping:
         health: healthcheck
+        prometheus: prometheus-provider
   metrics:
     tags:
       application: fittoring
