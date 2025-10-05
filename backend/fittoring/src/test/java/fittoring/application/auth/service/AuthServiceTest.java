@@ -64,15 +64,25 @@ class AuthServiceTest {
         dbCleaner.clean();
     }
 
+    private Member getTestMember(){
+        return new Member(
+                "loginId",
+                "MALE",
+                "이름",
+                new Phone("010-1234-5678"),
+                Password.from("password"));
+    }
+
     @DisplayName("회원을 저장할 때 암호화된 비밀번호가 저장된다.")
     @Test
     void register() {
         //given
         String password = "password";
+
         SignUpRequest request = new SignUpRequest(
                 "loginId",
                 "이름",
-                "남",
+                "MALE",
                 "010-1234-5678",
                 password);
 
@@ -88,16 +98,9 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId() {
         //given
-        String loginId = "loginId";
+        em.persist(getTestMember());
 
-        Member member = new Member(
-                loginId,
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        em.persist(member);
+        String loginId = "loginId";
 
         //when
         //then
@@ -110,16 +113,9 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId2() {
         //given
-        String loginId = "nonDuplicateId";
+        em.persist(getTestMember());
 
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        em.persist(member);
+        String loginId = "nonDuplicateId";
 
         //when
         //then
@@ -131,14 +127,7 @@ class AuthServiceTest {
     @Test
     void login() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        em.persist(member);
+        em.persist(getTestMember());
 
         String loginId = "wrongLoginId";
         String password = "password";
@@ -153,14 +142,7 @@ class AuthServiceTest {
     @Test
     void login2() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        em.persist(member);
+        em.persist(getTestMember());
 
         String loginId = "loginId";
         String password = "wongPassword";
@@ -175,14 +157,7 @@ class AuthServiceTest {
     @Test
     void login3() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member savedMember = em.persist(getTestMember());
 
         String loginId = "loginId";
         String password = "password";
@@ -206,14 +181,7 @@ class AuthServiceTest {
     @Test
     void reissue() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member savedMember = em.persist(getTestMember());
         em.flush();
         String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
@@ -246,14 +214,7 @@ class AuthServiceTest {
     @Test
     void logout() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member savedMember = em.persist(getTestMember());
 
         String refreshToken = jwtProvider.createRefreshToken();
         RefreshToken savedRefreshToken = em.persist(
