@@ -75,8 +75,12 @@ public class FixtureUtil {
         );
     }
 
-    public static Reservation getTestReservation(Mentoring mentoring, Member mentee) {
+    public static Reservation getTestPendingReservation(Mentoring mentoring, Member mentee) {
         return new Reservation("예약 내용", Status.PENDING, mentoring, mentee);
+    }
+
+    public static Reservation getTestCompletedReservation(Mentoring mentoring, Member mentee) {
+        return new Reservation("예약 내용", Status.COMPLETE, mentoring, mentee);
     }
 
     public static Review getTestReview(Reservation reservation, Member reviewer) {

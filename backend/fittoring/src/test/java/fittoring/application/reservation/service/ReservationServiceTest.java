@@ -28,20 +28,16 @@ import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.MentoringStatistics;
-import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
-import fittoring.domain.model.password.Password;
 import fittoring.util.DbCleaner;
 
 import java.util.List;
 import java.util.TimeZone;
 
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -142,7 +138,6 @@ class ReservationServiceTest {
                 .isInstanceOf(MentorAndMenteeIsSameException.class)
                 .hasMessage(BusinessErrorMessage.MENTOR_AND_MENTEE_IS_SAME.getMessage());
     }
-
 
     @DisplayName("존재하지 않는 멘토링이라면 예외가 발생한다.")
     @Test
@@ -328,8 +323,8 @@ class ReservationServiceTest {
         Member mentee1 = entityManager.persist(FixtureUtil.getTestMentee(1));
         Member mentee2 = entityManager.persist(FixtureUtil.getTestMentee(2));
 
-        Reservation reservation1 = entityManager.persist(FixtureUtil.getTestReservation(mentoring, mentee1));
-        Reservation reservation2 = entityManager.persist(FixtureUtil.getTestReservation(mentoring, mentee2));
+        Reservation reservation1 = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
+        Reservation reservation2 = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
 
         MentoringReservationGetDto dto =
                 new MentoringReservationGetDto(admin.getId(), mentoring.getId());
@@ -357,7 +352,6 @@ class ReservationServiceTest {
         );
     }
 
-
     @DisplayName("관리자가 아닌 회원은 관리자용 예약 조회 기능을 사용할 수 없다")
     @Test
     void findMentoringReservationsWithAdminAuthorizationFail() {
@@ -368,8 +362,8 @@ class ReservationServiceTest {
         Member mentee1 = entityManager.persist(FixtureUtil.getTestMentee(1));
         Member mentee2 = entityManager.persist(FixtureUtil.getTestMentee(2));
 
-        entityManager.persist(FixtureUtil.getTestReservation(mentoring, mentee1));
-        entityManager.persist(FixtureUtil.getTestReservation(mentoring, mentee2));
+        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
+        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
 
         MentoringReservationGetDto dto = new MentoringReservationGetDto(normalMember.getId(), mentoring.getId());
 
@@ -419,7 +413,6 @@ class ReservationServiceTest {
         assertThat(actual.getStatus()).isEqualTo(newStatus);
     }
 
-
     @DisplayName("관리자는 등록되어 있는 예약을 삭제하면 삭제 상태로 변경되고, 연관된 리뷰도 함께 삭제 상태가 된다.")
     @Test
     void deleteReservationWithAdminAuthorization() {
@@ -428,7 +421,7 @@ class ReservationServiceTest {
         Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
         Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
         Member mentee = entityManager.persist(FixtureUtil.getTestMentee());
-        Reservation reservation = entityManager.persist(FixtureUtil.getTestReservation(mentoring, mentee));
+        Reservation reservation = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee));
         Review review = entityManager.persist(FixtureUtil.getTestReview(reservation, mentee));
         MentoringStatistics stats = entityManager.persist(MentoringStatistics.defaultOf(mentoring));
         long originalReservationCount = stats.getReservationCount();
@@ -463,7 +456,6 @@ class ReservationServiceTest {
         });
     }
 
-
     @DisplayName("존재하지 않는 예약을 삭제하는 경우 예외가 발생한다.")
     @Test
     void deleteReservationWithAdminAuthorization2() {
@@ -482,5 +474,4 @@ class ReservationServiceTest {
                 .isInstanceOf(ReservationNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage());
     }
-
 }

@@ -90,7 +90,7 @@ class AuthServiceTest {
         //given
         em.persist(FixtureUtil.getTestMentee());
 
-        String loginId = "loginId";
+        String loginId = "menteeId";
 
         //when
         //then
@@ -134,7 +134,7 @@ class AuthServiceTest {
         //given
         em.persist(FixtureUtil.getTestMentee());
 
-        String loginId = "loginId";
+        String loginId = "menteeId";
         String password = "wongPassword";
 
         //when
@@ -149,7 +149,7 @@ class AuthServiceTest {
         //given
         Member savedMember = em.persist(FixtureUtil.getTestMentee());
 
-        String loginId = "loginId";
+        String loginId = "menteeId";
         String password = "password";
 
         //when
