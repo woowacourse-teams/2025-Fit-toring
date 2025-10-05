@@ -587,8 +587,9 @@ class ReviewServiceTest {
         // given
         Member admin = em.persist(FixtureUtil.getTestAdmin());
         Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Member mentor = em.persist(FixtureUtil.getTestMentor());
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor()));
+        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
         Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
         Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
 
