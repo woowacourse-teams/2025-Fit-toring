@@ -37,7 +37,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,prometheus
+        include: health,info,prometheus,metrics
       path-mapping:
         health: healthcheck
         prometheus: prometheus-provider
@@ -77,3 +77,12 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: techcourse-project-2025
+otel:
+  traces:
+    exporter: otlp
+  metrics:
+    exporter: none
+  exporter:
+    otlp:
+      endpoint: ${TEMPO_OTLP_RECEIVER_URL}
+      timeout: 10000

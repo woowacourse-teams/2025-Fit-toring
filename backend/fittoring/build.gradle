@@ -85,6 +85,11 @@ dependencies {
 
     // String util
     implementation 'org.apache.commons:commons-lang3:3.14.0'
+
+    // Tempo Exporter
+    implementation 'io.opentelemetry:opentelemetry-sdk:1.54.1'
+    implementation 'io.opentelemetry:opentelemetry-exporter-otlp:1.54.1'
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter:2.20.1'
 }
 
 openapi3 {
