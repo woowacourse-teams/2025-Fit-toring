@@ -6,19 +6,39 @@ import fittoring.domain.model.password.Password;
 public class FixtureUtil {
     public static Member getTestMentee() {
         return new Member(
-                "loginId",
+                "menteeId",
                 "MALE",
                 "이름",
-                new Phone("010-1234-5678"),
+                new Phone("010-1234-5670"),
+                Password.from("password"));
+    }
+
+    public static Member getTestMentee(int i) {
+        return new Member(
+                "menteeId"+i,
+                "MALE",
+                "이름",
+                new Phone("010-1234-567"+((i%9)+1)),
                 Password.from("password"));
     }
 
     public static Member getTestMentor() {
         return new Member(
-                "loginId2",
+                "mentorId",
                 "MALE",
                 "멘토이름",
-                new Phone("010-1234-5679"),
+                new Phone("010-1234-5680"),
+                Password.from("password"),
+                MemberRole.MENTOR
+        );
+    }
+
+    public static Member getTestMentor(int i) {
+        return new Member(
+                "mentorId"+i,
+                "MALE",
+                "멘토이름",
+                new Phone("010-1234-568"+((i%9)+1)),
                 Password.from("password"),
                 MemberRole.MENTOR
         );
@@ -53,6 +73,14 @@ public class FixtureUtil {
                 "자격증",
                 mentoring
         );
+    }
+
+    public static Reservation getTestReservation(Mentoring mentoring, Member mentee) {
+        return new Reservation("예약 내용", Status.PENDING, mentoring, mentee);
+    }
+
+    public static Review getTestReview(Reservation reservation, Member reviewer) {
+        return new Review(5, "좋았습니다.", reservation, reviewer);
     }
 
 }
