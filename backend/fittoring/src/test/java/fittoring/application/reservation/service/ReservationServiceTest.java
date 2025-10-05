@@ -374,7 +374,8 @@ class ReservationServiceTest {
         Image profileImageOfMentor1 = entityManager.persist(new Image(
                 "www.naver.com",
                 ImageType.MENTORING_PROFILE,
-                mentor1.getId()
+                mentor1.getId(),
+                null
         ));
         Category category1 = entityManager.persist(new Category("근육 증진"));
         Category category2 = entityManager.persist(new Category("다이어트"));

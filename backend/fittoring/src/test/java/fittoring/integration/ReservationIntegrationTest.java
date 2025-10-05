@@ -96,7 +96,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Category savedCategory = categoryRepository.save(new Category("체형교정"));
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
 
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId(), null));
 
         Long mentoringId = savedMentoring.getId();
 

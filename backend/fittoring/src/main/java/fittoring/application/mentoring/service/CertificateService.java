@@ -81,7 +81,8 @@ public class CertificateService {
             certificateImages.add(new Image(
                     certificateInfo.imageUrl(),
                     ImageType.CERTIFICATE,
-                    certificateId
+                    certificateId,
+                    null
             ));
         }
         imageService.saveAll(certificateImages);

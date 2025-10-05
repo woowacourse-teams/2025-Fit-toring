@@ -153,7 +153,8 @@ class MemberServiceTest {
         Image image = new Image(
                 "profileImageUrl",
                 ImageType.MENTORING_PROFILE,
-                mentoring.getId()
+                mentoring.getId(),
+                null
         );
         em.persist(image);
 

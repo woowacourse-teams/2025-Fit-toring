@@ -55,7 +55,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -138,7 +137,12 @@ class MentoringServiceTest {
         categoryMentoringRepository.save(categoryMentoring1_1);
         categoryMentoringRepository.save(categoryMentoring2_1);
 
-        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoringId);
+        Image image1 = new Image(
+                "멘토링이미지1url",
+                ImageType.MENTORING_PROFILE,
+                mentoringId,
+                null
+        );
         imageRepository.save(image1);
 
         Reservation reservation = new Reservation("예약내용", Status.PENDING, mentoring, mentor);
@@ -238,7 +242,12 @@ class MentoringServiceTest {
             CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
             em.persist(categoryMentoring1_1);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
+            Image image1 = new Image(
+                    "멘토링이미지1url",
+                    ImageType.MENTORING_PROFILE,
+                    mentoring1.getId(),
+                    null
+            );
             em.persist(image1);
 
             Reservation reservation1 = new Reservation("예약 코멘트1", Status.COMPLETE, mentoring1, mentee);
@@ -287,7 +296,12 @@ class MentoringServiceTest {
             CategoryMentoring categoryMentoring1_1 = new CategoryMentoring(category1, mentoring1);
             em.persist(categoryMentoring1_1);
 
-            Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
+            Image image1 = new Image(
+                    "멘토링이미지1url",
+                    ImageType.MENTORING_PROFILE,
+                    mentoring1.getId(),
+                    null
+            );
             em.persist(image1);
 
             Long invalidId = 100L;

@@ -197,7 +197,8 @@ class CertificateServiceTest {
         Image image = new Image(
                 "url",
                 ImageType.CERTIFICATE,
-                certificate.getId()
+                certificate.getId(),
+                null
         );
         em.persist(image);
 
