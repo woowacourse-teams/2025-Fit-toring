@@ -4,6 +4,7 @@ import fittoring.application.image.repository.ImageRepository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
+import fittoring.infrastructure.image.KeyBuilder;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,12 @@ public class ImageService {
 
     @Transactional
     public Image save(ImageType type, Long relationId, String imageUrl) {
+        String baseName = KeyBuilder.extractBaseNameFromUrl(imageUrl);
         return imageRepository.save(new Image(
                 imageUrl,
                 type,
-                relationId
+                relationId,
+                baseName
         ));
     }
 
