@@ -1,5 +1,6 @@
 package fittoring.application.member.service;
 
+import fittoring.application.FixtureUtil;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
@@ -54,32 +55,11 @@ class MemberServiceTest {
         dbCleaner.clean();
     }
 
-    private Member getTestMember(){
-        return new Member(
-                "loginId",
-                "MALE",
-                "이름",
-                new Phone("010-1234-5678"),
-                Password.from("password"));
-    }
-
-    private Mentoring getTestMentoring(Member member){
-        member.registerAsMentor();
-        return new Mentoring(
-                member,
-                5000,
-                5,
-                "content",
-                "introduction",
-                "https://chatRoomUrl"
-        );
-    }
-
     @DisplayName("멘티는 로그인 상태에서 내 정보를 조회할 수 있다.")
     @Test
     void successGetMyInfoForMentee() {
         // given
-        Member member = em.persist(getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMember());
 
         // when
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
@@ -98,8 +78,8 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithoutImage() {
         // given
-        Member member = getTestMember();
-        Mentoring mentoring = getTestMentoring(member);
+        Member member = FixtureUtil.getTestMember();
+        Mentoring mentoring = FixtureUtil.getTestMentoring(member);
 
         em.persist(member);
         em.persist(mentoring);
@@ -121,8 +101,8 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithImage() {
         // given
-        Member member = getTestMember();
-        Mentoring mentoring = getTestMentoring(member);
+        Member member = FixtureUtil.getTestMember();
+        Mentoring mentoring = FixtureUtil.getTestMentoring(member);
 
         em.persist(member);
         em.persist(mentoring);
@@ -151,7 +131,7 @@ class MemberServiceTest {
     @Test
     void getMyInfoSummary() {
         // given
-        Member member = em.persist(getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMember());
 
         // when
         MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(member.getId());

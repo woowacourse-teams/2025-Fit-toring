@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.application.FixtureUtil;
 import fittoring.config.QueryDslConfig;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
@@ -64,15 +65,6 @@ class AuthServiceTest {
         dbCleaner.clean();
     }
 
-    private Member getTestMember(){
-        return new Member(
-                "loginId",
-                "MALE",
-                "이름",
-                new Phone("010-1234-5678"),
-                Password.from("password"));
-    }
-
     @DisplayName("회원을 저장할 때 암호화된 비밀번호가 저장된다.")
     @Test
     void register() {
@@ -98,7 +90,7 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId() {
         //given
-        em.persist(getTestMember());
+        em.persist(FixtureUtil.getTestMember());
 
         String loginId = "loginId";
 
@@ -113,7 +105,7 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId2() {
         //given
-        em.persist(getTestMember());
+        em.persist(FixtureUtil.getTestMember());
 
         String loginId = "nonDuplicateId";
 
@@ -127,7 +119,7 @@ class AuthServiceTest {
     @Test
     void login() {
         //given
-        em.persist(getTestMember());
+        em.persist(FixtureUtil.getTestMember());
 
         String loginId = "wrongLoginId";
         String password = "password";
@@ -142,7 +134,7 @@ class AuthServiceTest {
     @Test
     void login2() {
         //given
-        em.persist(getTestMember());
+        em.persist(FixtureUtil.getTestMember());
 
         String loginId = "loginId";
         String password = "wongPassword";
@@ -157,7 +149,7 @@ class AuthServiceTest {
     @Test
     void login3() {
         //given
-        Member savedMember = em.persist(getTestMember());
+        Member savedMember = em.persist(FixtureUtil.getTestMember());
 
         String loginId = "loginId";
         String password = "password";
@@ -181,7 +173,7 @@ class AuthServiceTest {
     @Test
     void reissue() {
         //given
-        Member savedMember = em.persist(getTestMember());
+        Member savedMember = em.persist(FixtureUtil.getTestMember());
         em.flush();
         String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
@@ -214,7 +206,7 @@ class AuthServiceTest {
     @Test
     void logout() {
         //given
-        Member savedMember = em.persist(getTestMember());
+        Member savedMember = em.persist(FixtureUtil.getTestMember());
 
         String refreshToken = jwtProvider.createRefreshToken();
         RefreshToken savedRefreshToken = em.persist(
