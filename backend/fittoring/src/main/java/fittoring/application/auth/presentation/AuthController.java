@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -96,6 +97,11 @@ public class AuthController {
                 .build();
     }
 
+    @GetMapping("/kakao/callback")
+    public ResponseEntity<Void> kakaoCallBackSuccess() {
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     @PostMapping("/kakao/callback")
     public ResponseEntity<?> kakaoCallback(
             @RequestParam String code,
@@ -119,7 +125,7 @@ public class AuthController {
         ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
                 authTokenResponse.oauthSignUpToken());
         httpResponse.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/oauth-signup")
