@@ -4,28 +4,29 @@ import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CertificateNotFoundException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.ImageNotFoundException;
-import fittoring.application.exception.InvalidCertificateException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.image.service.ImageService;
+import fittoring.application.image.service.PresignedUrlService;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
+import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
+import fittoring.application.mentoring.presentation.dto.response.CertificateResponse;
+import fittoring.application.mentoring.repository.CertificateRepository;
+import fittoring.application.mentoring.service.dto.CertificateDeleteDto;
 import fittoring.domain.model.Certificate;
-import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Status;
-import fittoring.application.mentoring.repository.CertificateRepository;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.service.dto.CertificateDeleteDto;
-import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
-import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
-import fittoring.application.mentoring.presentation.dto.response.CertificateResponse;
+import fittoring.logging.JsonLogger;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -34,60 +35,65 @@ public class CertificateService {
     private final MemberRepository memberRepository;
     private final CertificateRepository certificateRepository;
     private final ImageService imageService;
+    private final PresignedUrlService presignedUrlService;
+    private final JsonLogger jsonLogger;
 
     public void mapCertificatesToMentoring(
             List<CertificateInfoRequest> certificateInfoRequests,
-            List<MultipartFile> certificateImageFiles,
             Mentoring mentoring
     ) {
-        if (validateCertificateRequestData(certificateInfoRequests, certificateImageFiles)) {
-            saveAllCertificates(certificateInfoRequests, certificateImageFiles, mentoring);
-        }
+        List<CertificateInfoRequest> validCertificateInfos = filterValidCertificates(
+                certificateInfoRequests,
+                mentoring
+        );
+        saveAllCertificates(validCertificateInfos, mentoring);
     }
 
-    private boolean validateCertificateRequestData(
-        List<CertificateInfoRequest> certificateInfoRequests,
-        List<MultipartFile> certificateImageFiles
+    private List<CertificateInfoRequest> filterValidCertificates(
+            List<CertificateInfoRequest> certificateInfoRequests,
+            Mentoring mentoring
     ) {
-        if (certificateInfoRequests == null || certificateImageFiles == null) {
-            return false;
-        }
-        if (certificateInfoRequests.size() != certificateImageFiles.size()) {
-            throw new InvalidCertificateException(BusinessErrorMessage.CERTIFICATE_INFO_IMAGE_MISMATCH.getMessage());
-        }
-        for (CertificateInfoRequest info : certificateInfoRequests) {
-            if (info.title().isEmpty() || CertificateType.inValidCertificateType(info.type().name())) {
-                throw new InvalidCertificateException(
-                        BusinessErrorMessage.INVALID_CERTIFICATE_INFO.getMessage() + info.type().name() + " "
-                        + info.title());
+        List<CertificateInfoRequest> validCertificateInfos = new ArrayList<>();
+        for (CertificateInfoRequest certificateInfo : certificateInfoRequests) {
+            if (presignedUrlService.isObjectExistsFromKey(certificateInfo.imageUrl())) {
+                validCertificateInfos.add(certificateInfo);
+            } else {
+                jsonLogger.warn(
+                        "자격증 이미지 검증 실패 (S3 객체 없음)",
+                        Map.of(
+                                "imageUrl", certificateInfo.imageUrl(),
+                                "mentoringId", mentoring.getId(),
+                                "certificateTitle", certificateInfo.title()
+                        )
+                );
             }
         }
-        return true;
+        return validCertificateInfos;
     }
 
     private void saveAllCertificates(
-        List<CertificateInfoRequest> certificateInfoRequests,
-        List<MultipartFile> certificateImageFiles,
-        Mentoring savedMentoring
+            List<CertificateInfoRequest> certificateInfos,
+            Mentoring savedMentoring
     ) {
-        for (int i = 0; i < certificateInfoRequests.size(); i++) {
-            CertificateInfoRequest certificateInfoRequest = certificateInfoRequests.get(i);
-            MultipartFile certificateImageFile = certificateImageFiles.get(i);
-
-            saveCertificate(certificateInfoRequest, certificateImageFile, savedMentoring);
+        List<Image> certificateImages = new ArrayList<>();
+        for (CertificateInfoRequest certificateInfo : certificateInfos) {
+            Long certificateId = saveCertificate(certificateInfo, savedMentoring);
+            certificateImages.add(new Image(
+                    certificateInfo.imageUrl(),
+                    ImageType.CERTIFICATE,
+                    certificateId
+            ));
         }
+        imageService.saveAll(certificateImages);
     }
 
-    private void saveCertificate(
-        CertificateInfoRequest request,
-        MultipartFile certificateImageFile,
-        Mentoring mentoring
+    private Long saveCertificate(
+            CertificateInfoRequest request,
+            Mentoring mentoring
     ) {
         final Certificate certificate = new Certificate(request.type(), request.title(), mentoring);
         final Certificate savedCertificate = certificateRepository.save(certificate);
-        Long certificateId = savedCertificate.getId();
-
-        imageService.uploadImageToS3(certificateImageFile, "certificate-image", ImageType.CERTIFICATE, certificateId);
+        return savedCertificate.getId();
     }
 
     public List<CertificateResponse> getAllCertificates(Long memberId, Status status) {

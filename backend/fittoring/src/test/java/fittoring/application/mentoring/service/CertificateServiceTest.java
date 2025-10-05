@@ -2,13 +2,20 @@ package fittoring.application.mentoring.service;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
-import fittoring.application.image.service.ImageService;
-import fittoring.config.JpaConfiguration;
-import fittoring.config.QueryDslConfig;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CertificateNotFoundException;
 import fittoring.application.exception.ForbiddenException;
+import fittoring.application.image.service.ImageService;
+import fittoring.application.image.service.PresignedUrlService;
+import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
+import fittoring.application.mentoring.presentation.dto.response.CertificateResponse;
+import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.application.mentoring.service.dto.CertificateDeleteDto;
+import fittoring.config.JpaConfiguration;
+import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.Image;
@@ -19,17 +26,7 @@ import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.application.mentoring.service.dto.CertificateDeleteDto;
-import fittoring.infrastructure.image.ImageResizer;
-import fittoring.infrastructure.image.ImageTranscoder;
-import fittoring.infrastructure.image.S3Uploader;
-import fittoring.infrastructure.image.policy.CertificatePolicy;
-import fittoring.infrastructure.image.policy.ImagePolicyRegistry;
-import fittoring.infrastructure.image.policy.MentoringProfilePolicy;
-import fittoring.infrastructure.image.policy.NonePolicy;
-import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
-import fittoring.application.mentoring.presentation.dto.response.CertificateResponse;
+import fittoring.logging.JsonLogger;
 import fittoring.util.DbCleaner;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
@@ -51,12 +48,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         DbCleaner.class,
         CertificateService.class,
         ImageService.class,
-        ImagePolicyRegistry.class,
-        CertificatePolicy.class,
-        MentoringProfilePolicy.class,
-        NonePolicy.class,
-        ImageResizer.class,
-        ImageTranscoder.class,
         JpaConfiguration.class,
         QueryDslConfig.class,
         MentoringPaginationHelper.class
@@ -68,10 +59,13 @@ class CertificateServiceTest {
     private Mentoring mentoring;
 
     @MockitoBean
-    private S3Uploader s3Uploader;
+    private PresignedUrlService presignedUrlService;
+
+    @MockitoBean
+    private JsonLogger jsonLogger;
 
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @Autowired
     private CertificateService certificateService;
@@ -100,6 +94,10 @@ class CertificateServiceTest {
                 "가상의오픈채팅링크"
         );
         em.persist(mentoring);
+        given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                .willReturn(true);
+        given(presignedUrlService.isObjectExistsFromUrl(anyString()))
+                .willReturn(true);
     }
 
     @DisplayName("관리자 권한이 없는 일반 사용자라면 자격증명 목록을 조회할 수 없다.")

@@ -4,14 +4,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import fittoring.application.image.service.ImageService;
-import fittoring.config.JpaConfiguration;
-import fittoring.config.QueryDslConfig;
+import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
+import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.image.service.ImageService;
+import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
+import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
+import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
+import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.service.dto.ReservationCreateDto;
+import fittoring.config.JpaConfiguration;
+import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Image;
@@ -25,25 +35,9 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
-import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
-import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
-import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
-import fittoring.application.reservation.service.dto.ReservationCreateDto;
-import fittoring.infrastructure.image.ImageResizer;
-import fittoring.infrastructure.image.ImageTranscoder;
-import fittoring.infrastructure.image.S3Uploader;
-import fittoring.infrastructure.image.policy.CertificatePolicy;
-import fittoring.infrastructure.image.policy.ImagePolicyRegistry;
-import fittoring.infrastructure.image.policy.MentoringProfilePolicy;
-import fittoring.infrastructure.image.policy.NonePolicy;
-import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.presentation.dto.AdminReservationResponse;
-import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
+import java.util.TimeZone;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,19 +52,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
         JpaConfiguration.class,
-        ImagePolicyRegistry.class,
-        ImageResizer.class,
-        ImageTranscoder.class,
-        CertificatePolicy.class,
-        MentoringProfilePolicy.class,
-        NonePolicy.class,
         ReservationService.class,
         ImageService.class,
         QueryDslConfig.class,
@@ -78,9 +65,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 })
 @DataJpaTest
 class ReservationServiceTest {
-
-    @MockitoBean
-    private S3Uploader s3Uploader;
 
     @Autowired
     private ReservationService reservationService;
@@ -97,6 +81,8 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         dbCleaner.clean();
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        System.setProperty("user.timezone", "Asia/Seoul");
     }
 
     @DisplayName("예약 생성이 성공하면 예약 객체를 반환하고, 예약 상태는 PENDING 상태이다.")
@@ -362,11 +348,6 @@ class ReservationServiceTest {
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
-        Image profileImageOfMentor1 = entityManager.persist(new Image(
-                "www.naver.com",
-                ImageType.MENTORING_PROFILE,
-                mentor1.getId()
-        ));
         Member mentor2 = entityManager.persist(new Member(
                 "mentorId2",
                 "남",
@@ -389,6 +370,11 @@ class ReservationServiceTest {
                 "한 줄 소개",
                 "긴 글 소개",
                 "가상의오픈채팅링크"
+        ));
+        Image profileImageOfMentor1 = entityManager.persist(new Image(
+                "www.naver.com",
+                ImageType.MENTORING_PROFILE,
+                mentor1.getId()
         ));
         Category category1 = entityManager.persist(new Category("근육 증진"));
         Category category2 = entityManager.persist(new Category("다이어트"));

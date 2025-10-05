@@ -1,5 +1,7 @@
 package fittoring.infrastructure;
 
+import fittoring.infrastructure.exception.InfraErrorMessage;
+import fittoring.infrastructure.exception.SmsException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

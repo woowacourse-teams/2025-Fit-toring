@@ -6,6 +6,7 @@ public record MentoringRegisterRequest(
         int price,
         List<String> category,
         String introduction,
+        String profileImageUrl,
         int career,
         String content,
         String chatUrl,

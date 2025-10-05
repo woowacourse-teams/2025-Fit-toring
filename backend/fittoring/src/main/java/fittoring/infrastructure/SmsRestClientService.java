@@ -3,6 +3,8 @@ package fittoring.infrastructure;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.dto.LongSmsSendClientDto;
 import fittoring.infrastructure.dto.ShortSmsSendClientDto;
+import fittoring.infrastructure.exception.InfraErrorMessage;
+import fittoring.infrastructure.exception.SmsException;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;

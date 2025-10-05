@@ -1,15 +1,30 @@
 package fittoring.application.mentoring.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
-import fittoring.config.auth.LoginInfo;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.image.service.PresignedUrlService;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
+import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
+import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
+import fittoring.application.mentoring.repository.CategoryMentoringRepository;
+import fittoring.application.mentoring.repository.CategoryRepository;
+import fittoring.application.mentoring.repository.CertificateRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.dto.ModifyMentoringDto;
+import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.review.repository.ReviewRepository;
+import fittoring.config.auth.LoginInfo;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Certificate;
@@ -26,23 +41,6 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.application.mentoring.repository.CategoryMentoringRepository;
-import fittoring.application.mentoring.repository.CategoryRepository;
-import fittoring.application.mentoring.repository.CertificateRepository;
-import fittoring.application.image.repository.ImageRepository;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.application.mentoring.service.dto.ModifyMentoringDto;
-import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
-import fittoring.infrastructure.image.ImageConstants;
-import fittoring.infrastructure.image.S3Uploader;
-import fittoring.infrastructure.image.VariantUploadResult;
-import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
-import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
-import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
 import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -56,8 +54,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -67,20 +65,17 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest
 class MentoringServiceTest {
 
+    @MockitoBean
+    private PresignedUrlService presignedUrlService;
+
     @Autowired
     private MentoringService mentoringService;
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
     private DbCleaner dbCleaner;
-
-    @MockitoBean
-    private S3Uploader s3Uploader;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -105,6 +100,9 @@ class MentoringServiceTest {
 
     @Autowired
     private MentoringStatisticsRepository mentoringStatisticsRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @BeforeEach
     void setUp() {
@@ -185,8 +183,8 @@ class MentoringServiceTest {
 
         MentoringStatistics deletedMentoringStatistics = (MentoringStatistics) em.createNativeQuery(
                         "SELECT * FROM mentoring_statistics WHERE mentoring_id = ?", MentoringStatistics.class)
-            .setParameter(1, mentoring.getId())
-            .getSingleResult();
+                .setParameter(1, mentoring.getId())
+                .getSingleResult();
 
         Mentoring deletedMentoring = (Mentoring) em.createNativeQuery(
                         "SELECT * FROM mentoring WHERE id = ?", Mentoring.class)
@@ -318,6 +316,7 @@ class MentoringServiceTest {
                     5000,
                     List.of("근육증가", "다이어트"),
                     "자기소개",
+                    null,
                     3,
                     "컨텐츠컨텐츠",
                     "가상의카카오오픈채팅",
@@ -336,16 +335,14 @@ class MentoringServiceTest {
                     mentoringService.registerMentoring(
                             RegisterMentoringDto.of(
                                     savedMentor.getId(),
-                                    request,
-                                    null,
-                                    null
+                                    request
                             )))
                     .doesNotThrowAnyException();
         }
 
         @DisplayName("프로필 이미지를 포함하여 멘토링을 등록할 수 있다.")
         @Test
-        void registerMentoringProfile() throws IOException {
+        void registerMentoringProfile() {
             // given
             Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
             memberRepository.save(member1);
@@ -354,6 +351,7 @@ class MentoringServiceTest {
                     5000,
                     List.of("근육증가", "다이어트"),
                     "자기소개",
+                    "가상의 이미지 주소",
                     3,
                     "컨텐츠컨텐츠",
                     "가상의카카오오픈채팅",
@@ -368,43 +366,11 @@ class MentoringServiceTest {
             MockMultipartFile imageFile = new MockMultipartFile("testProfile",
                     "testProfile".getBytes(StandardCharsets.UTF_8));
 
-            // 프로필 - DEFAULT
-            VariantUploadResult profileDefault =
-                    new VariantUploadResult(
-                            ImageVariant.DEFAULT,
-                            "https://s3.../profile-image/default/uuid.jpg");
-
-            // 프로필 - THUMBNAIL (추가)
-            VariantUploadResult profileThumb =
-                    new VariantUploadResult(
-                            ImageVariant.THUMBNAIL,
-                            "https://s3.../profile-image/thumbnail/uuid.jpg");
-
-            // 모킹: DEFAULT
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(imageFile),
-                    ArgumentMatchers.eq("profile-image"),
-                    ArgumentMatchers.eq(ImageVariant.DEFAULT),
-                    ArgumentMatchers.eq(ImageConstants.DEFAULT_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(profileDefault);
-
-            // 모킹: THUMBNAIL (누락 보완)
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(imageFile),
-                    ArgumentMatchers.eq("profile-image"),
-                    ArgumentMatchers.eq(ImageVariant.THUMBNAIL),
-                    ArgumentMatchers.eq(ImageConstants.THUMBNAIL_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(profileThumb);
-
             // when & then
             assertThatCode(() -> mentoringService.registerMentoring(
                     RegisterMentoringDto.of(
                             member1.getId(),
-                            request,
-                            imageFile,
-                            null
+                            request
                     ))).doesNotThrowAnyException();
         }
 
@@ -415,17 +381,21 @@ class MentoringServiceTest {
             Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
             memberRepository.save(member1);
 
-            CertificateInfoRequest certificateInfoRequest1 = new CertificateInfoRequest(CertificateType.LICENSE, "제1종 보통 운전면허");
-            CertificateInfoRequest certificateInfoRequest2 = new CertificateInfoRequest(CertificateType.AWARD, "광진구 건강 청년 선발 대회 준우승");
+            CertificateInfoRequest certificateInfo1 = new CertificateInfoRequest(CertificateType.LICENSE, "제1종 보통 운전면허",
+                    "이미지 주소1");
+            CertificateInfoRequest certificateInfo2 = new CertificateInfoRequest(CertificateType.AWARD,
+                    "광진구 건강 청년 선발 대회 준우승",
+                    "이미지 주소2");
 
             MentoringRegisterRequest request = new MentoringRegisterRequest(
                     5000,
                     List.of("근육증가", "다이어트"),
                     "자기소개",
+                    null,
                     3,
                     "컨텐츠컨텐츠",
                     "가상의카카오오픈채팅",
-                    List.of(certificateInfoRequest1, certificateInfoRequest2)
+                    List.of(certificateInfo1, certificateInfo2)
             );
 
             Category category1 = new Category("근육증가");
@@ -440,67 +410,11 @@ class MentoringServiceTest {
             MockMultipartFile certificateImageFile2 = new MockMultipartFile("testCertificate2",
                     "testCertificate2".getBytes(StandardCharsets.UTF_8));
 
-            VariantUploadResult profileDefault =
-                    new VariantUploadResult(
-                            ImageVariant.DEFAULT,
-                            "https://s3.../profile-image/default/uuid.jpg");
-            VariantUploadResult profileThumb =
-                    new VariantUploadResult(
-                            ImageVariant.THUMBNAIL,
-                            "https://s3.../profile-image/thumbnail/uuid.jpg");
-
-            // 자격증 - DEFAULT (썸네일 없음)
-            VariantUploadResult certResult1 =
-                    new VariantUploadResult(
-                            ImageVariant.DEFAULT,
-                            "https://s3.../certificate-image/default/uuid1.jpg");
-            VariantUploadResult certResult2 =
-                    new VariantUploadResult(
-                            ImageVariant.DEFAULT,
-                            "https://s3.../certificate-image/default/uuid2.jpg");
-
-            // 프로필 DEFAULT
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(profileImageFile),
-                    ArgumentMatchers.eq("profile-image"),
-                    ArgumentMatchers.eq(ImageVariant.DEFAULT),
-                    ArgumentMatchers.eq(ImageConstants.DEFAULT_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(profileDefault);
-
-            // 프로필 THUMBNAIL (누락 보완)
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(profileImageFile),
-                    ArgumentMatchers.eq("profile-image"),
-                    ArgumentMatchers.eq(ImageVariant.THUMBNAIL),
-                    ArgumentMatchers.eq(ImageConstants.THUMBNAIL_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(profileThumb);
-
-            // 자격증 DEFAULT (1,2)
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(certificateImageFile1),
-                    ArgumentMatchers.eq("certificate-image"),
-                    ArgumentMatchers.eq(ImageVariant.DEFAULT),
-                    ArgumentMatchers.eq(ImageConstants.DEFAULT_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(certResult1);
-
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(certificateImageFile2),
-                    ArgumentMatchers.eq("certificate-image"),
-                    ArgumentMatchers.eq(ImageVariant.DEFAULT),
-                    ArgumentMatchers.eq(ImageConstants.DEFAULT_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(certResult2);
-
             // when & then
             assertThatCode(() -> mentoringService.registerMentoring(
                     RegisterMentoringDto.of(
                             member1.getId(),
-                            request,
-                            profileImageFile,
-                            List.of(certificateImageFile1, certificateImageFile2)
+                            request
                     ))).doesNotThrowAnyException();
         }
 
@@ -515,6 +429,7 @@ class MentoringServiceTest {
                     5000,
                     List.of("근육증가", "다이어트"),
                     "자기소개",
+                    null,
                     3,
                     "컨텐츠컨텐츠",
                     "가상의카카오오픈채팅",
@@ -531,9 +446,7 @@ class MentoringServiceTest {
             mentoringService.registerMentoring(
                     RegisterMentoringDto.of(
                             savedMentor.getId(),
-                            request,
-                            null,
-                            null
+                            request
                     )
             );
 
@@ -549,7 +462,7 @@ class MentoringServiceTest {
 
         @DisplayName("개설된 멘토링을 수정할 수 있다.")
         @Test
-        void modifyMentoring() throws IOException {
+        void modifyMentoring() {
             // given
             Member mentor = memberRepository.save(new Member(
                     "id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw")
@@ -568,49 +481,9 @@ class MentoringServiceTest {
             int newPrice = 1000;
             String newCategory = "다이어트";
             String newIntroduction = "수정된 긴 글 소개";
+            String newImageUrl = "수정된 이미지 주소";
             int newCareer = 5;
             String newContent = "수정된 한 줄 소개";
-
-            MockMultipartFile profileImageFile = new MockMultipartFile(
-                    "testProfile", "testProfile".getBytes(StandardCharsets.UTF_8));
-            MockMultipartFile certificateImageFile = new MockMultipartFile(
-                    "testCertificate", "testCertificate".getBytes(StandardCharsets.UTF_8));
-
-            VariantUploadResult profileDefault =
-                    new VariantUploadResult(ImageVariant.DEFAULT,
-                            "https://s3.../profile-image/default/uuid.jpg");
-
-            VariantUploadResult profileThumb =
-                    new VariantUploadResult(ImageVariant.THUMBNAIL,
-                            "https://s3.../profile-image/thumbnail/uuid.jpg");
-
-            VariantUploadResult certDefault =
-                    new VariantUploadResult(ImageVariant.DEFAULT,
-                            "https://s3.../certificate-image/default/uuid.jpg");
-
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(profileImageFile),
-                    ArgumentMatchers.eq("profile-image"),
-                    ArgumentMatchers.eq(ImageVariant.DEFAULT),
-                    ArgumentMatchers.eq(ImageConstants.DEFAULT_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(profileDefault);
-
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(profileImageFile),
-                    ArgumentMatchers.eq("profile-image"),
-                    ArgumentMatchers.eq(ImageVariant.THUMBNAIL),
-                    ArgumentMatchers.eq(ImageConstants.THUMBNAIL_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(profileThumb);
-
-            when(s3Uploader.uploadVariant(
-                    ArgumentMatchers.eq(certificateImageFile),
-                    ArgumentMatchers.eq("certificate-image"),
-                    ArgumentMatchers.eq(ImageVariant.DEFAULT),
-                    ArgumentMatchers.eq(ImageConstants.DEFAULT_MAX_WIDTH),
-                    anyString()
-            )).thenReturn(certDefault);
 
             ModifyMentoringDto modifyMentoringDto = new ModifyMentoringDto(
                     mentoring.getId(),
@@ -621,11 +494,14 @@ class MentoringServiceTest {
                     newCareer,
                     newContent,
                     "가상의오픈채팅링크",
-                    null,
-                    profileImageFile,
-                    List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상")),
-                    List.of(certificateImageFile)
+                    newImageUrl,
+                    List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
+
+            given(presignedUrlService.isObjectExistsFromUrl(anyString()))
+                    .willReturn(true);
+            given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                    .willReturn(true);
 
             // when
             mentoringService.modifyMentoring(modifyMentoringDto);
@@ -634,12 +510,16 @@ class MentoringServiceTest {
             Mentoring changedMentoring = mentoringRepository.findById(mentoring.getId()).get();
             List<String> changedCategories = categoryMentoringRepository.findTitlesByMentoringId(mentoring.getId());
             Image changedProfileImage = imageRepository.findByImageTypeAndRelationIdAndImageVariant(
-                    ImageType.MENTORING_PROFILE, mentoring.getId(), ImageVariant.DEFAULT
+                    ImageType.MENTORING_PROFILE,
+                    mentoring.getId(),
+                    ImageVariant.DEFAULT
             ).get();
 
             Certificate changedCertificate = certificateRepository.findAllByMentoringId(mentoring.getId()).getLast();
             Image certificateImage = imageRepository.findByImageTypeAndRelationIdAndImageVariant(
-                    ImageType.CERTIFICATE, changedCertificate.getId(), ImageVariant.DEFAULT
+                    ImageType.CERTIFICATE,
+                    changedCertificate.getId(),
+                    ImageVariant.DEFAULT
             ).get();
 
             SoftAssertions.assertSoftly(softAssertions -> {
@@ -648,9 +528,8 @@ class MentoringServiceTest {
                 softAssertions.assertThat(changedMentoring.getCareer()).isEqualTo(newCareer);
                 softAssertions.assertThat(changedMentoring.getContent()).isEqualTo(newContent);
                 softAssertions.assertThat(changedCategories).containsExactlyInAnyOrder("다이어트");
-
-                softAssertions.assertThat(changedProfileImage.getUrl()).isEqualTo(profileDefault.originalUrl());
-                softAssertions.assertThat(certificateImage.getUrl()).isEqualTo(certDefault.originalUrl());
+                softAssertions.assertThat(changedProfileImage.getUrl()).isEqualTo(newImageUrl);
+                softAssertions.assertThat(certificateImage.getUrl()).isEqualTo("자격증명 이미지 1");
             });
         }
 
@@ -669,6 +548,7 @@ class MentoringServiceTest {
             int newPrice = 1000;
             String newCategory = "다이어트";
             String newIntroduction = "수정된 긴 글 소개";
+            String newImageUrl = "수정된 이미지 URL";
             int newCareer = 5;
             String newContent = "수정된 한 줄 소개";
 
@@ -681,9 +561,7 @@ class MentoringServiceTest {
                     newCareer,
                     newContent,
                     "가상의오픈채팅링크",
-                    null,
-                    null,
-                    null,
+                    newImageUrl,
                     null
             );
 
@@ -724,6 +602,7 @@ class MentoringServiceTest {
             int newPrice = 1000;
             String newCategory = "다이어트";
             String newIntroduction = "수정된 긴 글 소개";
+            String newImageUrl = "수정된 이미지 URL";
             int newCareer = 5;
             String newContent = "수정된 한 줄 소개";
 
@@ -736,9 +615,7 @@ class MentoringServiceTest {
                     newCareer,
                     newContent,
                     "가상의오픈채팅링크",
-                    null,
-                    null,
-                    null,
+                    newImageUrl,
                     null
             );
 
@@ -750,4 +627,3 @@ class MentoringServiceTest {
         }
     }
 }
-

@@ -1,53 +1,33 @@
 package fittoring.application.image.service;
 
+import fittoring.application.image.repository.ImageRepository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
-import fittoring.application.image.repository.ImageRepository;
-import fittoring.infrastructure.InfraErrorMessage;
-import fittoring.infrastructure.S3UploadException;
-import fittoring.infrastructure.image.S3Uploader;
-import fittoring.infrastructure.image.VariantUploadResult;
-import fittoring.infrastructure.image.policy.ImagePolicyRegistry;
-import fittoring.infrastructure.image.policy.ImageTypePolicy;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class ImageService {
 
     private final ImageRepository imageRepository;
-    private final S3Uploader s3Uploader;
-    private final ImagePolicyRegistry imagePolicyRegistry;
 
-    public List<Image> uploadImageToS3(MultipartFile imageFile, String dir, ImageType type, Long relationId) {
-        try {
-            ImageTypePolicy policy = imagePolicyRegistry.get(type);
-            String baseName = UUID.randomUUID().toString();
-            List<Image> images = new ArrayList<>();
+    @Transactional
+    public Image save(ImageType type, Long relationId, String imageUrl) {
+        return imageRepository.save(new Image(
+                imageUrl,
+                type,
+                relationId
+        ));
+    }
 
-            for (ImageVariant variant : policy.variants()) {
-                int maxWidth = policy.maxWidth(variant);
-                VariantUploadResult uploaded = s3Uploader.uploadVariant(
-                        imageFile,
-                        dir,
-                        variant,
-                        maxWidth,
-                        baseName
-                );
-                images.add(new Image(uploaded.originalUrl(), type, uploaded.variant(), relationId));
-            }
-            return imageRepository.saveAll(images);
-        } catch (IOException e) {
-            throw new S3UploadException(InfraErrorMessage.S3_UPLOAD_ERROR.getMessage());
-        }
+    @Transactional
+    public List<Image> saveAll(List<Image> images) {
+        return imageRepository.saveAll(images);
     }
 
     public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId) {

@@ -67,12 +67,16 @@ class ReviewServiceTest {
 
     @Autowired
     private DbCleaner dbCleaner;
+
     @Autowired
     private MentoringRepository mentoringRepository;
+
     @Autowired
     private ReservationRepository reservationRepository;
+
     @Autowired
     private ReviewRepository reviewRepository;
+
     @Autowired
     private MentoringStatisticsRepository mentoringStatisticsRepository;
 
@@ -137,8 +141,10 @@ class ReviewServiceTest {
             softAssertions.assertThat(reviewCreateResponse.mentoringId()).isEqualTo(mentoring.getId());
             softAssertions.assertThat(reviewCreateResponse.rating()).isEqualTo(rating);
             softAssertions.assertThat(reviewCreateResponse.content()).isEqualTo(content);
-            softAssertions.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReviewCount()).isEqualTo(originalReviewCount + 1);
-            softAssertions.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getRatingSum()).isEqualTo(originalRatingSum + rating);
+            softAssertions.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReviewCount())
+                    .isEqualTo(originalReviewCount + 1);
+            softAssertions.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getRatingSum())
+                    .isEqualTo(originalRatingSum + rating);
         });
     }
 
@@ -1113,8 +1119,10 @@ class ReviewServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(deletedReview.isDeleted()).isTrue();
             softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
-            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReviewCount()).isEqualTo(originalReviewCount - 1);
-            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getRatingSum()).isEqualTo(originalRatingSum - review.getRating());
+            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getReviewCount())
+                    .isEqualTo(originalReviewCount - 1);
+            softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getRatingSum())
+                    .isEqualTo(originalRatingSum - review.getRating());
         });
     }
 }
