@@ -20,6 +20,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Status;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.logging.JsonLogger;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,11 +79,12 @@ public class CertificateService {
         List<Image> certificateImages = new ArrayList<>();
         for (CertificateInfoRequest certificateInfo : certificateInfos) {
             Long certificateId = saveCertificate(certificateInfo, savedMentoring);
+            String baseName = KeyBuilder.extractBaseNameFromUrl(certificateInfo.imageUrl());
             certificateImages.add(new Image(
                     certificateInfo.imageUrl(),
                     ImageType.CERTIFICATE,
                     certificateId,
-                    null
+                    baseName
             ));
         }
         imageService.saveAll(certificateImages);
