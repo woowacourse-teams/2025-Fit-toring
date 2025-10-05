@@ -1,5 +1,6 @@
 import { authCodeHandler } from './authCode/authCode';
 import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
+import { chatRoomHandler } from './chatrooms/handlers';
 import { commonHandler } from './common/handlers';
 import { createdMentoringHandler } from './createdMentoring/handlers';
 import { editProfileHandlers } from './editProfile/handler';
@@ -10,7 +11,6 @@ import { mentoringDetailHandler } from './mentoringDetail/handler';
 import { participatedMentoringHandler } from './participatedMentoring/handler';
 import { signupHandler } from './signup/signup';
 import { validateIdHandler } from './validateId/validateId';
-import { chatRoomHandler } from './chatrooms/handlers';
 
 export const handlers = [
   ...mentoringHandler,

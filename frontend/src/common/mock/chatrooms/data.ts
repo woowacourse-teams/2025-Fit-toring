@@ -170,3 +170,9 @@ export const CHAT_MESSAGES: Message[] = [
     tempId: 21,
   },
 ];
+
+export const CHAT_ROOM_INFO = {
+  opponentName: '김멘티',
+  mentoringId: 1,
+  status: 'ACTIVATE',
+};
