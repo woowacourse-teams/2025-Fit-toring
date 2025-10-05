@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,7 +19,7 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
                         JOIN res.mentoring m
                     WHERE rv.id = :reviewId
             """)
-    Optional<Mentoring> findByReviewId(Long reviewId);
+    Optional<Mentoring> findByReviewId(@Param("reviewId") Long reviewId);
 
     @Query("""
               SELECT m
