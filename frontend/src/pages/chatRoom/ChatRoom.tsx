@@ -8,7 +8,7 @@ import SockJS from 'sockjs-client';
 
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
-import { getChatRooms } from './apis/getChatRooms';
+import { getChatRoom } from './apis/getChatRoom';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
@@ -153,8 +153,8 @@ function ChatRoom() {
   const stompClientRef = useRef<Client | null>(null);
 
   const { data, isError, error } = useQuery({
-    queryKey: ['chatrooms', chatRoomId],
-    queryFn: () => getChatRooms(Number(chatRoomId!)),
+    queryKey: ['chatroom', chatRoomId],
+    queryFn: () => getChatRoom(Number(chatRoomId!)),
   });
 
   useEffect(() => {
