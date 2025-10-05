@@ -55,9 +55,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DataJpaTest
 class CertificateServiceTest {
 
-    private Member admin;
-    private Mentoring mentoring;
-
     @MockitoBean
     private PresignedUrlService presignedUrlService;
 
@@ -73,27 +70,53 @@ class CertificateServiceTest {
     @Autowired
     private DbCleaner dbCleaner;
 
+    private Member admin;
+
+    private Member getTestMember(){
+        return new Member(
+                "loginId",
+                "MALE",
+                "이름",
+                new Phone("010-1234-5678"),
+                Password.from("password"));
+    }
+
+    private Member getTestAdmin(){
+        return new Member(
+                "adminId",
+                "FEMALE",
+                "관리자",
+                new Phone("010-9876-5432"),
+                Password.from("password"),
+                MemberRole.ADMIN
+        );
+    }
+
+    private Mentoring getTestMentoring(Member member){
+        member.registerAsMentor();
+        return new Mentoring(
+                member,
+                5000,
+                5,
+                "content",
+                "introduction",
+                "https://chatRoomUrl"
+        );
+    }
+
+    private Certificate getTestCertificate(Mentoring mentoring){
+        return new Certificate(
+                CertificateType.LICENSE,
+                "자격증",
+                mentoring
+        );
+    }
+
     @BeforeEach
     void setUp() {
         dbCleaner.clean();
-        admin = new Member(
-                "adminId",
-                "여",
-                "관리자",
-                new Phone("010-9999-9999"),
-                Password.from("admin123"),
-                MemberRole.ADMIN
-        );
+        admin = getTestAdmin();
         em.persist(admin);
-        mentoring = new Mentoring(
-                admin,
-                1000,
-                1,
-                "content",
-                "intro",
-                "가상의오픈채팅링크"
-        );
-        em.persist(mentoring);
         given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
         given(presignedUrlService.isObjectExistsFromUrl(anyString()))
@@ -104,13 +127,7 @@ class CertificateServiceTest {
     @Test
     void getAllWithoutAdminAuthority() {
         // given
-        Member user = new Member(
-                "userId",
-                "여",
-                "유저",
-                new Phone("010-1111-2222"),
-                Password.from("1234")
-        );
+        Member user = getTestMember();
         em.persist(user);
 
         // when
@@ -124,6 +141,8 @@ class CertificateServiceTest {
     @Test
     void getAllCertificates() {
         // given
+        Mentoring mentoring = getTestMentoring(getTestMember());
+
         Certificate certificate1 = new Certificate(
                 CertificateType.LICENSE,
                 "자격증",
@@ -152,6 +171,8 @@ class CertificateServiceTest {
     @Test
     void getAllCertificationWithStatus() {
         // given
+        Mentoring mentoring = getTestMentoring(getTestMember());
+
         Certificate certificate1 = new Certificate(
                 CertificateType.LICENSE,
                 "자격증",
@@ -186,6 +207,8 @@ class CertificateServiceTest {
     @Test
     void getOneForAdmin() {
         // given
+        Mentoring mentoring = getTestMentoring(getTestMember());
+
         CertificateType type = CertificateType.LICENSE;
         String name = "자격증";
         Certificate certificate = new Certificate(
@@ -218,14 +241,10 @@ class CertificateServiceTest {
     @Test
     void getOneWithoutAdminAuthority() {
         // given
-        Member user = new Member(
-                "userId",
-                "여",
-                "유저",
-                new Phone("010-1111-2222"),
-                Password.from("1234")
-        );
+        Member user = getTestMember();
         em.persist(user);
+
+        Mentoring mentoring = getTestMentoring(getTestMember());
 
         // when
         // then
@@ -241,13 +260,7 @@ class CertificateServiceTest {
     @Test
     void approveCertificateForAdmin() {
         // given
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
+        Certificate certificate = getTestCertificate(getTestMentoring(getTestMember()));
         em.persist(certificate);
 
         // when
@@ -256,25 +269,15 @@ class CertificateServiceTest {
                 .doesNotThrowAnyException();
     }
 
+
+
     @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 승인할 수 없다.")
     @Test
     void approveCertificateWithoutAdminAuthority() {
         // given
-        Member user = new Member(
-                "userId",
-                "여",
-                "유저",
-                new Phone("010-1111-2222"),
-                Password.from("1234")
-        );
+        Member user = getTestMember();
         em.persist(user);
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
+        Certificate certificate = getTestCertificate(getTestMentoring(getTestMember()));
         em.persist(certificate);
 
         // when
@@ -288,13 +291,7 @@ class CertificateServiceTest {
     @Test
     void rejectCertificateForAdmin() {
         // given
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
+        Certificate certificate = getTestCertificate(getTestMentoring(getTestMember()));
         em.persist(certificate);
 
         // when
@@ -307,21 +304,9 @@ class CertificateServiceTest {
     @Test
     void rejectCertificateWithoutAdminAuthority() {
         // given
-        Member user = new Member(
-                "userId",
-                "여",
-                "유저",
-                new Phone("010-1111-2222"),
-                Password.from("1234")
-        );
+        Member user = getTestMember();
         em.persist(user);
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
+        Certificate certificate = getTestCertificate(getTestMentoring(getTestMember()));
         em.persist(certificate);
 
         // when
@@ -335,13 +320,7 @@ class CertificateServiceTest {
     @Test
     void deleteCertificateFail1() {
         // given
-        Member mentee = em.persist(new Member(
-                "loginId",
-                "MALE",
-                "name",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        ));
+        Member mentee = em.persist(getTestMember());
         CertificateDeleteDto dto = new CertificateDeleteDto(mentee.getId(), 999L);
 
         // when
