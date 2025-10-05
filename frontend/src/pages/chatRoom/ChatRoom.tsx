@@ -6,14 +6,17 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
+import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import { getChatRoom } from './apis/getChatRoom';
+import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 
+import type { ChatRoomInfo } from './types/chatRoomInfo';
 import type { Message } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
 
@@ -157,6 +160,20 @@ function ChatRoom() {
     queryFn: () => getChatRoom(Number(chatRoomId!)),
   });
 
+  const ChatRoomInfoQuery = useQuery<ChatRoomInfo>({
+    queryKey: ['chatRoomInfo', chatRoomId],
+    queryFn: () => getChatRoomInfo(Number(chatRoomId!)),
+  });
+
+  const chantRoomInfo = ChatRoomInfoQuery.data;
+  const mentoringId = chantRoomInfo?.mentoringId;
+
+  const { data: mentoring, isPending } = useQuery({
+    queryKey: ['mentoring', mentoringId],
+    queryFn: () => getMentoringDetail(String(mentoringId)),
+    enabled: !!mentoringId,
+  });
+
   useEffect(() => {
     if (data) {
       setMessages(data);
@@ -258,22 +275,27 @@ function ChatRoom() {
 
   return (
     <S_Container>
-      <div>
-        <ChatRoomHeader name="김멘토" />
-        <MentoringActionPanel
-          mentorName="김멘토"
-          price={5000}
-          profileImageUrl="https://techcourse-project-2025.s3.amazonaws.com/fit-toring/profile-image/default/94a63bf8-4e70-40e2-a3fe-de2d7c7724c5.jpg"
-          mentorOwned={true}
-          onPaymentRequestClick={handlePaymentRequestClick}
-          onReviewRequestClick={handleReviewRequestClick}
-          onEndClick={handleEndClick}
-          onPaymentClick={handlePaymentClick}
-          onReviewClick={handleReviewClick}
-        />
-      </div>
-
-      <ChatContent messages={DUMMY_MESSAGES} />
+      {isPending && (
+        // TODO: 추후 스켈레톤으로 변경
+        <div>로딩중</div>
+      )}
+      {chantRoomInfo && mentoring && (
+        <div>
+          <ChatRoomHeader name={chantRoomInfo.opponentName} />
+          <MentoringActionPanel
+            mentorName={mentoring.mentorName}
+            price={mentoring.price}
+            profileImageUrl={mentoring.profileImageUrl}
+            mentorOwned={true}
+            onPaymentRequestClick={handlePaymentRequestClick}
+            onReviewRequestClick={handleReviewRequestClick}
+            onEndClick={handleEndClick}
+            onPaymentClick={handlePaymentClick}
+            onReviewClick={handleReviewClick}
+          />
+        </div>
+      )}
+      <ChatContent messages={messages} />
       <InputSection
         value={message}
         onChange={handleChange}

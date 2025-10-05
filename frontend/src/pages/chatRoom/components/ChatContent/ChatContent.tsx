@@ -3,16 +3,11 @@ import { useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
+
 import type { Message } from '../../types/message';
 
-type MessageType = {
-  content: string;
-  createdAt: string;
-  senderId: string;
-};
-
 interface ChatContentProps {
-  messages: MessageType[]; // 추후 타입 변경
+  messages: Message[];
 }
 
 function ChatContent({ messages }: ChatContentProps) {
@@ -32,12 +27,12 @@ function ChatContent({ messages }: ChatContentProps) {
       {messages.map(
         ({ content, createdAt, senderId, status, chatMessageId }, index) => {
           const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
-          const marginNeeded = prevSenderId !== senderId;
+          const senderChanged = prevSenderId !== senderId;
 
           return (
             <S_ChatBubbleWrapper
               key={chatMessageId}
-              marginNeeded={marginNeeded}
+              senderChanged={senderChanged}
             >
               <ChatBubble
                 content={content}
