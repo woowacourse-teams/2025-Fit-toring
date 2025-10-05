@@ -169,9 +169,9 @@ class ReservationServiceTest {
         Member mentee2 = entityManager.persist(FixtureUtil.getTestMentee(2));
         Member mentee3 = entityManager.persist(FixtureUtil.getTestMentee(3));
 
-        entityManager.persist(new Reservation("content", Status.PENDING, mentoring, mentee1));
-        entityManager.persist(new Reservation("content", Status.PENDING, mentoring, mentee2));
-        entityManager.persist(new Reservation("content", Status.PENDING, mentoring, mentee3));
+        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
+        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
+        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee3));
 
         // when
         List<MentorMentoringReservationResponse> actual =
