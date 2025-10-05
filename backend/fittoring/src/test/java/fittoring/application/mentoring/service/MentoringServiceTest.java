@@ -1,11 +1,5 @@
 package fittoring.application.mentoring.service;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-
 import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
@@ -16,40 +10,18 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
 import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
 import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
-import fittoring.application.mentoring.repository.CategoryMentoringRepository;
-import fittoring.application.mentoring.repository.CategoryRepository;
-import fittoring.application.mentoring.repository.CertificateRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.repository.*;
 import fittoring.application.mentoring.service.dto.ModifyMentoringDto;
 import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.config.auth.LoginInfo;
-import fittoring.domain.model.Category;
-import fittoring.domain.model.CategoryMentoring;
-import fittoring.domain.model.Certificate;
-import fittoring.domain.model.CertificateType;
-import fittoring.domain.model.Image;
-import fittoring.domain.model.ImageType;
-import fittoring.domain.model.ImageVariant;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.MentoringStatistics;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.Reservation;
-import fittoring.domain.model.Review;
-import fittoring.domain.model.Status;
+import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,6 +31,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -131,11 +113,11 @@ class MentoringServiceTest {
 
         imageRepository.save(new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoringId));
 
-        Reservation reservation = reservationRepository.save(new Reservation("예약내용", Status.PENDING, mentoring, mentor));
-        Reservation reservation2 = reservationRepository.save(new Reservation("예약내용", Status.PENDING, mentoring, mentor));
-
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
-        Review review = reviewRepository.save(new Review(1, "리뷰내용", reservation, mentee));
+        Reservation reservation1 = reservationRepository.save(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation1, mentee));
+
 
         Certificate certificate = certificateRepository.save(new Certificate(CertificateType.LICENSE, "자격증1", mentoring));
 
@@ -150,7 +132,7 @@ class MentoringServiceTest {
 
         Reservation deletedReservation = (Reservation) em.createNativeQuery(
                         "SELECT * FROM reservation WHERE id = ?", Reservation.class)
-                .setParameter(1, reservation.getId())
+                .setParameter(1, reservation1.getId())
                 .getSingleResult();
 
         Certificate deletedCertificate = (Certificate) em.createNativeQuery(
@@ -207,28 +189,33 @@ class MentoringServiceTest {
             Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
             Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
-            Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                    mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅"
-            ));
+            Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
             mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
 
-            Category category1 = categoryRepository.save(new Category("카테고리1"));
-            categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
-            Image profile = imageRepository.save(new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring.getId()));
+            Category category = categoryRepository.save(new Category("카테고리1"));
+            categoryMentoringRepository.save(new CategoryMentoring(category, mentoring));
 
-            Reservation r1 = reservationRepository.save(new Reservation("예약 코멘트1", Status.COMPLETE, mentoring, mentee));
-            Reservation r2 = reservationRepository.save(new Reservation("예약 코멘트2", Status.COMPLETE, mentoring, mentee));
+            Image profile = imageRepository.save(
+                    new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring.getId())
+            );
+
+            Reservation reservation1 = reservationRepository.save(
+                    FixtureUtil.getTestCompletedReservation(mentoring, mentee)
+            );
+            Reservation reservation2 = reservationRepository.save(
+                    FixtureUtil.getTestCompletedReservation(mentoring, mentee)
+            );
             mentoringStatisticsRepository.updateReservationCountPlus(mentoring.getId());
             mentoringStatisticsRepository.updateReservationCountPlus(mentoring.getId());
 
-            reviewRepository.save(new Review(4, "리뷰 코멘트", r1, mentee));
-            reviewRepository.save(new Review(5, "리뷰 코멘트", r2, mentee));
+            reviewRepository.save(FixtureUtil.getTestReview(reservation1, mentee));
+            reviewRepository.save(FixtureUtil.getTestReview(reservation2, mentee));
             mentoringStatisticsRepository.updateReviewStatisticsPlus(mentoring.getId(), 4);
             mentoringStatisticsRepository.updateReviewStatisticsPlus(mentoring.getId(), 5);
 
             MentoringResponse expected = MentoringResponse.of(
                     mentoring,
-                    List.of(category1.getTitle()),
+                    List.of(category.getTitle()),
                     profile,
                     List.of(),
                     4.5,
