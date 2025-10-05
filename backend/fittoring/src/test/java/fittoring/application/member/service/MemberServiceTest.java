@@ -54,33 +54,43 @@ class MemberServiceTest {
         dbCleaner.clean();
     }
 
+    private Member getTestMember(){
+        return new Member(
+                "loginId",
+                "MALE",
+                "이름",
+                new Phone("010-1234-5678"),
+                Password.from("password"));
+    }
+
+    private Mentoring getTestMentoring(Member member){
+        member.registerAsMentor();
+        return new Mentoring(
+                member,
+                5000,
+                5,
+                "content",
+                "introduction",
+                "https://chatRoomUrl"
+        );
+    }
+
     @DisplayName("멘티는 로그인 상태에서 내 정보를 조회할 수 있다.")
     @Test
     void successGetMyInfoForMentee() {
         // given
-        String loginId = "loginId";
-        String name = "사용자";
-        String gender = "MALE";
-        Phone phone = new Phone("010-1234-5678");
-        Member member = new Member(
-                loginId,
-                gender,
-                name,
-                phone,
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member member = em.persist(getTestMember());
 
         // when
-        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isNull();
-            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
-            softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
-            softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
+            softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
+            softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
 
@@ -88,39 +98,22 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithoutImage() {
         // given
-        String loginId = "loginId";
-        String name = "사용자";
-        String gender = "MALE";
-        Phone phone = new Phone("010-1234-5678");
-        Member member = new Member(
-                loginId,
-                gender,
-                name,
-                phone,
-                Password.from("password")
-        );
-        member.registerAsMentor();
-        Member savedMember = em.persist(member);
-        Mentoring mentoring = new Mentoring(
-                member,
-                2000,
-                3,
-                "content",
-                "introduction",
-                "가상의오픈채팅링크"
-        );
+        Member member = getTestMember();
+        Mentoring mentoring = getTestMentoring(member);
+
+        em.persist(member);
         em.persist(mentoring);
 
         // when
-        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isNull();
-            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
-            softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
-            softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
+            softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
+            softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
 
@@ -128,28 +121,12 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithImage() {
         // given
-        String loginId = "loginId";
-        String name = "사용자";
-        String gender = "MALE";
-        Phone phone = new Phone("010-1234-5678");
-        Member member = new Member(
-                loginId,
-                gender,
-                name,
-                phone,
-                Password.from("password")
-        );
-        member.registerAsMentor();
-        Member savedMember = em.persist(member);
-        Mentoring mentoring = new Mentoring(
-                member,
-                2000,
-                3,
-                "content",
-                "introduction",
-                "가상의오픈채팅링크"
-        );
+        Member member = getTestMember();
+        Mentoring mentoring = getTestMentoring(member);
+
+        em.persist(member);
         em.persist(mentoring);
+
         Image image = new Image(
                 "profileImageUrl",
                 ImageType.MENTORING_PROFILE,
@@ -158,15 +135,15 @@ class MemberServiceTest {
         em.persist(image);
 
         // when
-        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isEqualTo(image.getUrl());
-            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
-            softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
-            softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
+            softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
+            softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
 
@@ -174,26 +151,15 @@ class MemberServiceTest {
     @Test
     void getMyInfoSummary() {
         // given
-        String loginId = "loginId";
-        String name = "사용자";
-        String gender = "MALE";
-        Phone phone = new Phone("010-1234-5678");
-        Member member = new Member(
-                loginId,
-                gender,
-                name,
-                phone,
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member member = em.persist(getTestMember());
 
         // when
-        MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(savedMember.getId());
+        MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(member.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
-            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
 }
