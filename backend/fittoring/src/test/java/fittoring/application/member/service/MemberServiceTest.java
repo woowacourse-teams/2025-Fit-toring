@@ -10,8 +10,6 @@ import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.password.Password;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +57,7 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentee() {
         // given
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
 
         // when
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
@@ -78,7 +76,7 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithoutImage() {
         // given
-        Member member = FixtureUtil.getTestMember();
+        Member member = FixtureUtil.getTestMentee();
         Mentoring mentoring = FixtureUtil.getTestMentoring(member);
 
         em.persist(member);
@@ -101,7 +99,7 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithImage() {
         // given
-        Member member = FixtureUtil.getTestMember();
+        Member member = FixtureUtil.getTestMentee();
         Mentoring mentoring = FixtureUtil.getTestMentoring(member);
 
         em.persist(member);
@@ -131,7 +129,7 @@ class MemberServiceTest {
     @Test
     void getMyInfoSummary() {
         // given
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
 
         // when
         MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(member.getId());

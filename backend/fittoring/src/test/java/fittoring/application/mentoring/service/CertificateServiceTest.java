@@ -88,7 +88,7 @@ class CertificateServiceTest {
     @Test
     void getAllWithoutAdminAuthority() {
         // given
-        Member user = FixtureUtil.getTestMember();
+        Member user = FixtureUtil.getTestMentee();
         em.persist(user);
 
         // when
@@ -102,7 +102,7 @@ class CertificateServiceTest {
     @Test
     void getAllCertificates() {
         // given
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
         Certificate certificate1 = em.persist(FixtureUtil.getTestCertificate(mentoring));
         Certificate certificate2 = em.persist(FixtureUtil.getTestCertificate(mentoring));
@@ -122,7 +122,7 @@ class CertificateServiceTest {
     @Test
     void getAllCertificationWithStatus() {
         // given
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member)); // 부모 먼저
         Certificate certificate1 = em.persist(FixtureUtil.getTestCertificate(mentoring));
         Certificate certificate2 = em.persist(FixtureUtil.getTestCertificate(mentoring));
@@ -142,7 +142,7 @@ class CertificateServiceTest {
     @Test
     void getOneForAdmin() {
         // given
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
         Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
         // certificate가 영속화된 뒤에는 id 존재
@@ -162,7 +162,7 @@ class CertificateServiceTest {
     @Test
     void getOneWithoutAdminAuthority() {
         // given
-        Member member = FixtureUtil.getTestMember();
+        Member member = FixtureUtil.getTestMentee();
         em.persist(member);
 
         Mentoring mentoring = FixtureUtil.getTestMentoring(member);
@@ -180,7 +180,7 @@ class CertificateServiceTest {
     @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 승인할 수 있다.")
     @Test
     void approveCertificateForAdmin() {
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
         Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
 
@@ -193,7 +193,7 @@ class CertificateServiceTest {
     @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 승인할 수 없다.")
     @Test
     void approveCertificateWithoutAdminAuthority() {
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
         Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
 
@@ -205,7 +205,7 @@ class CertificateServiceTest {
     @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 거절할 수 있다.")
     @Test
     void rejectCertificateForAdmin() {
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
         Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
 
@@ -216,7 +216,7 @@ class CertificateServiceTest {
     @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 거절할 수 없다.")
     @Test
     void rejectCertificateWithoutAdminAuthority() {
-        Member member = em.persist(FixtureUtil.getTestMember());
+        Member member = em.persist(FixtureUtil.getTestMentee());
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
         Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
 
@@ -229,7 +229,7 @@ class CertificateServiceTest {
     @Test
     void deleteCertificateFail1() {
         // given
-        Member mentee = em.persist(FixtureUtil.getTestMember());
+        Member mentee = em.persist(FixtureUtil.getTestMentee());
         CertificateDeleteDto dto = new CertificateDeleteDto(mentee.getId(), 999L);
 
         // when

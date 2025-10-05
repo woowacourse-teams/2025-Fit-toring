@@ -4,7 +4,7 @@ import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 
 public class FixtureUtil {
-    public static Member getTestMember(){
+    public static Member getTestMentee() {
         return new Member(
                 "loginId",
                 "MALE",
@@ -13,7 +13,18 @@ public class FixtureUtil {
                 Password.from("password"));
     }
 
-    public static Member getTestAdmin(){
+    public static Member getTestMentor() {
+        return new Member(
+                "loginId2",
+                "MALE",
+                "멘토이름",
+                new Phone("010-1234-5679"),
+                Password.from("password"),
+                MemberRole.MENTOR
+        );
+    }
+
+    public static Member getTestAdmin() {
         return new Member(
                 "adminId",
                 "FEMALE",
@@ -24,7 +35,7 @@ public class FixtureUtil {
         );
     }
 
-    public static Mentoring getTestMentoring(Member member){
+    public static Mentoring getTestMentoring(Member member) {
         member.registerAsMentor();
         return new Mentoring(
                 member,
@@ -36,7 +47,7 @@ public class FixtureUtil {
         );
     }
 
-    public static Certificate getTestCertificate(Mentoring mentoring){
+    public static Certificate getTestCertificate(Mentoring mentoring) {
         return new Certificate(
                 CertificateType.LICENSE,
                 "자격증",

@@ -10,9 +10,7 @@ import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
-import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
@@ -90,7 +88,7 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId() {
         //given
-        em.persist(FixtureUtil.getTestMember());
+        em.persist(FixtureUtil.getTestMentee());
 
         String loginId = "loginId";
 
@@ -105,7 +103,7 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId2() {
         //given
-        em.persist(FixtureUtil.getTestMember());
+        em.persist(FixtureUtil.getTestMentee());
 
         String loginId = "nonDuplicateId";
 
@@ -119,7 +117,7 @@ class AuthServiceTest {
     @Test
     void login() {
         //given
-        em.persist(FixtureUtil.getTestMember());
+        em.persist(FixtureUtil.getTestMentee());
 
         String loginId = "wrongLoginId";
         String password = "password";
@@ -134,7 +132,7 @@ class AuthServiceTest {
     @Test
     void login2() {
         //given
-        em.persist(FixtureUtil.getTestMember());
+        em.persist(FixtureUtil.getTestMentee());
 
         String loginId = "loginId";
         String password = "wongPassword";
@@ -149,7 +147,7 @@ class AuthServiceTest {
     @Test
     void login3() {
         //given
-        Member savedMember = em.persist(FixtureUtil.getTestMember());
+        Member savedMember = em.persist(FixtureUtil.getTestMentee());
 
         String loginId = "loginId";
         String password = "password";
@@ -173,7 +171,7 @@ class AuthServiceTest {
     @Test
     void reissue() {
         //given
-        Member savedMember = em.persist(FixtureUtil.getTestMember());
+        Member savedMember = em.persist(FixtureUtil.getTestMentee());
         em.flush();
         String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
@@ -206,7 +204,7 @@ class AuthServiceTest {
     @Test
     void logout() {
         //given
-        Member savedMember = em.persist(FixtureUtil.getTestMember());
+        Member savedMember = em.persist(FixtureUtil.getTestMentee());
 
         String refreshToken = jwtProvider.createRefreshToken();
         RefreshToken savedRefreshToken = em.persist(
