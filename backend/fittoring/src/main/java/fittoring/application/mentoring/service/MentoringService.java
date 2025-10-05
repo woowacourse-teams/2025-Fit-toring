@@ -42,6 +42,7 @@ import fittoring.util.CursorCodec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -113,6 +114,13 @@ public class MentoringService {
 
     private void saveProfileImage(String profileImageUrl, Mentoring mentoring) {
         if (profileImageUrl == null || !presignedUrlService.isObjectExistsFromUrl(profileImageUrl)) {
+            return;
+        }
+        Optional<Image> nowProfileImage = imageService.findByImageTypeAndRelationId(
+                ImageType.MENTORING_PROFILE,
+                mentoring.getId()
+        );
+        if (nowProfileImage.isPresent() && profileImageUrl.equals(nowProfileImage.get().getUrl())) {
             return;
         }
         imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
