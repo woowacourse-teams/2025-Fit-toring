@@ -19,10 +19,10 @@ function ChatContent({ messages }: ChatContentProps) {
     <S_Container>
       {messages.map(({ content, createdAt, senderId }, index) => {
         const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
-        const marginNeeded = prevSenderId !== senderId;
+        const senderChanged = prevSenderId !== senderId;
 
         return (
-          <S_ChatBubbleWrapper key={index} marginNeeded={marginNeeded}>
+          <S_ChatBubbleWrapper key={index} senderChanged={senderChanged}>
             <ChatBubble
               content={content}
               createdAt={createdAt}
@@ -48,6 +48,6 @@ const S_Container = styled.div`
   overflow-y: auto;
 `;
 
-const S_ChatBubbleWrapper = styled.div<{ marginNeeded: boolean }>`
-  margin-top: ${({ marginNeeded }) => (marginNeeded ? '1.5rem' : '0.8rem')};
+const S_ChatBubbleWrapper = styled.div<{ senderChanged: boolean }>`
+  margin-top: ${({ senderChanged }) => (senderChanged ? '1.5rem' : '0.8rem')};
 `;
