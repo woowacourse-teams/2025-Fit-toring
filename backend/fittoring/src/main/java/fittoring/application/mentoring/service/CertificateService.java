@@ -76,6 +76,9 @@ public class CertificateService {
             List<CertificateInfoRequest> certificateInfos,
             Mentoring savedMentoring
     ) {
+        if (certificateInfos == null) {
+            return;
+        }
         List<Image> certificateImages = new ArrayList<>();
         for (CertificateInfoRequest certificateInfo : certificateInfos) {
             Long certificateId = saveCertificate(certificateInfo, savedMentoring);
