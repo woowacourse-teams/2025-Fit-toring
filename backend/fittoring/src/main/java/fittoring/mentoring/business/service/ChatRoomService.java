@@ -20,7 +20,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = new ChatRoom(
                 reservation.getId(),
                 reservation.getMentee().getId(),
-                reservation.getMentoring().getMentor().getId()
+                reservation.getMentor().getId()
         );
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
         String url = chatRoomUrlGenerator.generate(savedChatRoom.getId());
