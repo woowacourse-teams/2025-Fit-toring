@@ -94,13 +94,33 @@ function ChatRoom() {
           (message: IMessage) => {
             const parsedMessage = JSON.parse(message.body);
 
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.tempId && m.tempId === parsedMessage.tempId
-                  ? parsedMessage
-                  : m,
-              ),
-            );
+            setMessages((prev) => {
+              if (parsedMessage.tempId) {
+                const index = prev.findIndex(
+                  (m) => Number(m.tempId) === Number(parsedMessage.tempId),
+                );
+                if (index !== -1) {
+                  const newArr = [...prev];
+                  newArr[index] = {
+                    ...parsedMessage,
+                    tempId: prev[index].tempId,
+                    status: 'success',
+                  };
+                  return newArr;
+                }
+              }
+
+              const exists = prev.some(
+                (m) =>
+                  m.chatMessageId &&
+                  m.chatMessageId === parsedMessage.chatMessageId,
+              );
+              if (exists) {
+                return prev;
+              }
+
+              return [...prev, { ...parsedMessage, status: 'success' }];
+            });
           },
         );
       },
@@ -113,35 +133,6 @@ function ChatRoom() {
       client.deactivate();
     };
   }, [chatRoomId]);
-
-  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const tempId = Date.now();
-
-    const optimisticMsg = {
-      senderId: memberId,
-      content: message,
-      createdAt: new Date().toString(),
-      chatRoomId: Number(chatRoomId),
-      chatMessageId: tempId,
-      tempId,
-      status: 'pending' as const,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setMessage('');
-
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
-
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({ content: message, chatRoomId, tempId }),
-    });
-  };
 
   return (
     <S_Container>
