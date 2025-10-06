@@ -149,7 +149,7 @@ function ChatRoom() {
       );
 
       captureSentryError({
-        error,
+        error: new Error('채팅 전송에 실패했습니다.'),
         level: 'warning',
         feature: 'chat',
         step: 'chat-send',
