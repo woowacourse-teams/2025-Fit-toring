@@ -1,6 +1,7 @@
-package fittoring.application.image.service;
+package fittoring.infrastructure;
 
-import fittoring.application.image.presentation.dto.request.ImageReadyMessageRequest;
+import fittoring.application.image.service.ImageSessionService;
+import fittoring.infrastructure.dto.ImageReadyMessageDto;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,8 @@ public class ImageSqsListener {
 
     private final ImageSessionService imageSessionService;
 
-    @SqsListener("fittoring-image-queue")
-    public void handle(@Valid @Payload ImageReadyMessageRequest msg) {
+    @SqsListener("${aws.sqs.image-queue}")
+    public void handle(@Valid @Payload ImageReadyMessageDto message) {
+        imageSessionService.imageProcessor(message);
     }
 }

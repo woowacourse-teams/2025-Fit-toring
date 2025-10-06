@@ -40,3 +40,5 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: test-bucket
+  sqs:
+    image-queue: test-queue
