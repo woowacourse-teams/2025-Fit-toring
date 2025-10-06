@@ -165,7 +165,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         );
     }
 
-    @DisplayName("사용자가 로그인에 성공하면 상태코드 200을 응답하고, accessToken과 refreshToken을 쿠키에 저장한다.")
+    @DisplayName("사용자가 로그인에 성공하면 상태 코드 200을 응답하고, accessToken과 refreshToken을 쿠키에 저장한다.")
     @Test
     void login3() {
         //given
