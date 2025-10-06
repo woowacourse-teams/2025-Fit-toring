@@ -75,7 +75,8 @@ import org.springframework.test.context.ActiveProfiles;
         NonePolicy.class,
         ReservationService.class,
         ImageService.class,
-        QueryDslConfig.class
+        QueryDslConfig.class,
+        ChatRoomUrlGenerator.class
 })
 @DataJpaTest
 class ReservationServiceTest {
@@ -349,7 +350,7 @@ class ReservationServiceTest {
         entityManager.clear();
 
         //then
-        assertThat(actual.chatRoomUrl()).startsWith("https://www");
+        assertThat(actual.chatRoomUrl()).startsWith("https://");
     }
 
     @DisplayName("예약이 거절로 변경되었다면 빈 채팅방 URL을 반환한다.")
