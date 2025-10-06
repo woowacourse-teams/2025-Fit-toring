@@ -134,6 +134,35 @@ function ChatRoom() {
     };
   }, [chatRoomId]);
 
+  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const tempId = Date.now();
+
+    const optimisticMsg = {
+      senderId: memberId,
+      content: message,
+      createdAt: new Date().toString(),
+      chatRoomId: Number(chatRoomId),
+      chatMessageId: tempId,
+      tempId,
+      status: 'pending' as const,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessage('');
+
+    const client = stompClientRef.current;
+    if (!client || !client.connected || memberId === null) {
+      return;
+    }
+
+    client.publish({
+      destination: `/app/chatroom/${chatRoomId}`,
+      body: JSON.stringify({ content: message, chatRoomId, tempId }),
+    });
+  };
+
   return (
     <S_Container>
       {isPending && (
