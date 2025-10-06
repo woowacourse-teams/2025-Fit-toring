@@ -110,8 +110,9 @@ const customStyle = css`
 
 const S_Container = styled.div`
   display: flex;
-  flex-direction: column;
   gap: 1.2rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
 
   padding: 1.2rem;
   padding-top: 0;
