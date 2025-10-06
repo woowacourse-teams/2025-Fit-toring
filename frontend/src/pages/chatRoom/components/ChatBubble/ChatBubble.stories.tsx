@@ -22,7 +22,7 @@ export const SendBubble: Story = {
     docs: {
       description: {
         story:
-          'ChatBubble 컴포넌트는 채팅방의 입력된 말풍선?을 나타냅니다. 내가 작성한 말풍선은 왼쪽에 배치됩니다.',
+          'ChatBubble 컴포넌트는 채팅방의 입력된 말풍선을 나타냅니다. 내가 작성한 말풍선은 왼쪽에 배치됩니다.',
       },
     },
   },
@@ -38,7 +38,7 @@ export const ReceiveBubble: Story = {
     docs: {
       description: {
         story:
-          'ChatBubble 컴포넌트는 채팅방의 입력된 말풍선?을 나타냅니다. 상대가 작성한 말풍선은 오른쪽에 배치됩니다.',
+          'ChatBubble 컴포넌트는 채팅방의 입력된 말풍선을 나타냅니다. 상대가 작성한 말풍선은 오른쪽에 배치됩니다.',
       },
     },
   },
