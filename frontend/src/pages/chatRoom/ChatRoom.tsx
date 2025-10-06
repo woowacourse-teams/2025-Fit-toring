@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
 import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
-import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import { getChatRoom } from './apis/getChatRoom';
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
@@ -119,7 +118,6 @@ function ChatRoom() {
     e.preventDefault();
 
     const tempId = Date.now();
-    const receiptId = `message-${tempId}`;
 
     const optimisticMsg = {
       senderId: memberId,
@@ -139,37 +137,9 @@ function ChatRoom() {
       return;
     }
 
-    const timeoutId = setTimeout(() => {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.tempId === tempId && m.status === 'pending'
-            ? { ...m, status: 'fail' }
-            : m,
-        ),
-      );
-
-      captureSentryError({
-        error: new Error('채팅 전송에 실패했습니다.'),
-        level: 'warning',
-        feature: 'chat',
-        step: 'chat-send',
-      });
-    }, 5000);
-
-    client.watchForReceipt(receiptId, () => {
-      clearTimeout(timeoutId);
-
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.tempId === tempId ? { ...m, status: 'success' } : m,
-        ),
-      );
-    });
-
     client.publish({
       destination: `/app/chatroom/${chatRoomId}`,
       body: JSON.stringify({ content: message, chatRoomId, tempId }),
-      headers: { receipt: receiptId },
     });
   };
 
