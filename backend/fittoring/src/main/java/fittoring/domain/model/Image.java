@@ -48,4 +48,9 @@ public class Image {
     public Image(String url, ImageType imageType, Long relationId, String baseName) {
         this(null, url, imageType, ImageVariant.DEFAULT, relationId, baseName);
     }
+
+    public void updateUrlAndBaseName(String url, String baseName) {
+        this.url = url;
+        this.baseName = baseName;
+    }
 }

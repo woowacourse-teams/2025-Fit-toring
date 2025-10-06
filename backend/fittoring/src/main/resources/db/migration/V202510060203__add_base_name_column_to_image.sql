@@ -1,11 +1,6 @@
 ALTER TABLE image
     ADD COLUMN base_name VARCHAR(64) NULL;
 
-ALTER TABLE image DROP INDEX image_type;
-
-ALTER TABLE image
-    ADD CONSTRAINT uq_image_base_name_variant UNIQUE (base_name, image_variant);
-
 CREATE TABLE image_session
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -15,5 +10,5 @@ CREATE TABLE image_session
     url           TEXT        NOT NULL,
     payload_json  JSON NULL,
     created_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT uq_parking_base_variant UNIQUE (base_name, image_variant)
+    CONSTRAINT uq_image_session_base_name_variant UNIQUE (base_name, image_variant)
 );

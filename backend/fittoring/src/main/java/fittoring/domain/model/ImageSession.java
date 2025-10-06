@@ -42,9 +42,6 @@ public class ImageSession {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String url;
 
-    @Column(columnDefinition = "JSON")
-    private String payloadJson;
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -54,9 +51,13 @@ public class ImageSession {
             ImageType imageType,
             ImageVariant imageVariant,
             String url,
-            String payloadJson,
             LocalDateTime createdAt
     ) {
-        this(null, baseName, imageType, imageVariant, url, payloadJson, createdAt);
+        this(null, baseName, imageType, imageVariant, url, createdAt);
+    }
+
+    public void update(String url, ImageType imageType) {
+        this.url = url;
+        this.imageType = imageType;
     }
 }
