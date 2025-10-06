@@ -20,105 +20,6 @@ import type { ChatRoomInfo } from './types/chatRoomInfo';
 import type { Message } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
 
-const DUMMY_MESSAGES = [
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T14:35:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-27T14:36:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-27T14:37:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T16:35:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-27T16:05:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-27T17:10:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T17:22:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-27T17:38:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-27T17:40:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T17:42:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-27T17:45:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-27T17:47:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T17:55:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-28T10:35:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-28T14:07:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-28T14:01:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-28T14:35:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-28T21:35:03',
-    senderId: '2',
-  },
-];
-
 function ChatRoom() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState('');
@@ -152,10 +53,9 @@ function ChatRoom() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
 
-  // const [socket, setSocket] = useState<SockJS | null>(null);
   const stompClientRef = useRef<Client | null>(null);
 
-  const { data, isError, error } = useQuery({
+  const { data } = useQuery({
     queryKey: ['chatRoom', chatRoomId],
     queryFn: () => getChatRoom(Number(chatRoomId!)),
   });
