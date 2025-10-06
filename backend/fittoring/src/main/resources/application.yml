@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: fittoring
   config:
     import: optional:file:.env[.properties]
   datasource:
@@ -46,7 +48,23 @@ management:
       percentiles-histogram:
         http.server.requests: true
       percentiles:
-        http.server.requests: 0.5,0.95,0.99
+        http.server.requests: 0.95,0.99
+  tracing:
+    enabled: ${TRACING_ENABLE}
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      transport: grpc
+      endpoint: ${TEMPO_GRPC_LISTENER_URL}
+jdbc:
+  datasource-proxy:
+    enabled: ${DB_TRACING_ENABLE}
+    include-parameter-values: ${DB_TRACING_ENABLE}
+    query:
+      logger-name: my.query-logger
+  resultset-operations:
+    enabled: ${DB_TRACING_ENABLE}
 sms:
   base-url: https://api.solapi.com
   timeout:
@@ -77,12 +95,3 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: techcourse-project-2025
-otel:
-  traces:
-    exporter: otlp
-  metrics:
-    exporter: none
-  exporter:
-    otlp:
-      endpoint: ${TEMPO_OTLP_RECEIVER_URL}
-      timeout: 10000

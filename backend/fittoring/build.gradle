@@ -87,9 +87,9 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.14.0'
 
     // Tempo Exporter
-    implementation 'io.opentelemetry:opentelemetry-sdk:1.54.1'
-    implementation 'io.opentelemetry:opentelemetry-exporter-otlp:1.54.1'
-    implementation 'io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter:2.20.1'
+    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+    implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.2.0'
 }
 
 openapi3 {

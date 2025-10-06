@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: fittoring-test
   config:
     import: optional:file:.env[.properties]
   datasource:
@@ -40,10 +42,3 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: test-bucket
-
-otel:
-  traces:
-    exporter: none
-
-spring.autoconfigure.exclude:
-  - io.opentelemetry.instrumentation.spring.autoconfigure.OpenTelemetryAutoConfiguration
