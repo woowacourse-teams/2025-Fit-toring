@@ -83,3 +83,8 @@ aws:
     bucket-name: techcourse-project-2025
   sqs:
     image-queue: fittoring-image-queue
+image-session:
+  merge:
+    enabled: true
+    fixed-delay-ms: 300000 # 5분
+    batch-size: 200
