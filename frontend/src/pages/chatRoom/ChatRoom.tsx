@@ -107,10 +107,10 @@ const DUMMY_MESSAGES = [
 ];
 
 function ChatRoom() {
-  const [value, setValue] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    setMessage(e.target.value);
   };
 
   const handlePaymentRequestClick = (
@@ -151,7 +151,7 @@ function ChatRoom() {
       </div>
 
       <ChatContent messages={DUMMY_MESSAGES} />
-      <InputSection value={value} onChange={handleChange} />
+      <InputSection value={message} onChange={handleChange} />
     </S_Container>
   );
 }
