@@ -19,7 +19,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'InputSection 컴포넌트는 채팅방의 인풋섹션을 나타냅니다.',
+        story: 'InputSection 컴포넌트는 채팅방의 메시지 입력창을 나타냅니다',
       },
     },
   },
