@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ChatRoomService {
 
+    private final ChatRoomUrlGenerator chatRoomUrlGenerator;
     private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
@@ -22,7 +23,7 @@ public class ChatRoomService {
                 reservation.getMentoring().getMentor().getId()
         );
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
-        String url = ChatRoomUrlGenerator.generate(savedChatRoom.getId());
+        String url = chatRoomUrlGenerator.generate(savedChatRoom.getId());
         return new ChatRoomCreatedInfo(url);
     }
 }
