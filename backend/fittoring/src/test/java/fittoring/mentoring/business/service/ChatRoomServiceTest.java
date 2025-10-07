@@ -113,6 +113,7 @@ class ChatRoomServiceTest {
         SoftAssertions.assertSoftly(softly -> {
             assertThat(chatRoomResponse.mentoringId()).isEqualTo(1L);
             assertThat(chatRoomResponse.opponentName()).isEqualTo("김트레이너");
+            assertThat(chatRoomResponse.myRole()).isEqualTo("MENTEE");
             assertThat(chatRoomResponse.status()).isEqualTo(ChatStatus.ACTIVATE.name());
         });
     }
@@ -172,6 +173,7 @@ class ChatRoomServiceTest {
         SoftAssertions.assertSoftly(softly -> {
             assertThat(chatRoomResponse.mentoringId()).isEqualTo(1L);
             assertThat(chatRoomResponse.opponentName()).isEqualTo("김멘티");
+            assertThat(chatRoomResponse.myRole()).isEqualTo("MENTOR");
             assertThat(chatRoomResponse.status()).isEqualTo(ChatStatus.ACTIVATE.name());
         });
     }

@@ -73,6 +73,7 @@ public class ChatRoomService {
         return new ChatRoomResponse(
                 reservation.getMentoring().getId(),
                 opponentName,
+                member.getRole().name(),
                 chatRoom.getStatus().name()
         );
     }
