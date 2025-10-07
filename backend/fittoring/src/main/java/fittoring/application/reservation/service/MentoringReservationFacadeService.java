@@ -5,6 +5,7 @@ import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -19,6 +20,7 @@ public class MentoringReservationFacadeService {
         return ReservationCreateResponse.from(reservation);
     }
 
+    @Transactional
     public void updateReservationStatusAndSendSms(Long reservationId, String updatedStatus) {
         Reservation reservation = reservationService.updateStatus(reservationId, updatedStatus);
         reservationNotificationService.sendReservationStatusUpdateSmsMessage(reservation, updatedStatus);
