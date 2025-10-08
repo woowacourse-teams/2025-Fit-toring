@@ -12,6 +12,7 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
         RoutingDataSource routingDataSource = new RoutingDataSource();
         routingDataSource.setDefaultTargetDataSource(dataSources.get(DataSourceType.SOURCE));
         routingDataSource.setTargetDataSources(dataSources);
+        routingDataSource.afterPropertiesSet();
         return routingDataSource;
     }
 
