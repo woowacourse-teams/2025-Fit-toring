@@ -63,7 +63,7 @@ function LoginForm() {
     fetchLogin();
   };
 
-  const handleSocialLogin = () => {
+  const handleSocialLoginButtonClick = () => {
     window.location.href = KAKAO_URL;
   };
 
@@ -114,7 +114,7 @@ function LoginForm() {
         >
           로그인
         </Button>
-        <S_KakaoButton type="button" onClick={handleSocialLogin} />
+        <S_KakaoButton type="button" onClick={handleSocialLoginButtonClick} />
       </S_ButtonWrapper>
     </S_Container>
   );
