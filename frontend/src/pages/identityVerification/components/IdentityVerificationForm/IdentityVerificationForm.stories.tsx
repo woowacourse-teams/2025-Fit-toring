@@ -27,7 +27,7 @@ export const DefaultIdentityVerificationForm: Story = {
     docs: {
       description: {
         story:
-          'IdentityVerificationForm 컴포넌트는 본인 인증 페이지의 메인 폼을 구성합니다.',
+          'IdentityVerificationForm 컴포넌트는 사용자의 본인 인증 정보를 입력받는 폼 컴포넌트입니다.',
       },
     },
   },
