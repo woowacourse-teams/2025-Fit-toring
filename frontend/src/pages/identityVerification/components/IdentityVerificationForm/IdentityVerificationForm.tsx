@@ -133,13 +133,10 @@ function IdentityVerificationForm() {
   const verificationRequestButtonEnabled =
     phoneNumberErrorMessage === '' && phoneNumber !== '';
 
-  const getVerificationButtonEnabled = () => {
-    return (
-      matchConfirmedPhoneNumber &&
-      phoneNumberErrorMessage === '' &&
-      verificationCodeValidated
-    );
-  };
+  const verificationButtonEnabled =
+    matchConfirmedPhoneNumber &&
+    phoneNumberErrorMessage === '' &&
+    verificationCodeValidated;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -209,7 +206,7 @@ function IdentityVerificationForm() {
           onVerificationCodeChange={handleVerificationCodeChange}
           onAuthCodeVerifyClick={handleAuthCodeVerifyClick}
           onAuthCodeClick={handleAuthCodeClick}
-          verificationButtonEnabled={getVerificationButtonEnabled()}
+          verificationButtonEnabled={verificationButtonEnabled}
           verificationRequestButtonEnabled={verificationRequestButtonEnabled}
         />
       </S_FormFields>
