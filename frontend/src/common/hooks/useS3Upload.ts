@@ -23,19 +23,24 @@ const getExtension = (fileType: string) => {
 
 const useS3Upload = () => {
   const uploadFile = useCallback(async (file: File, imageType: ImageType) => {
-    const data = await postPresignedURL({
-      imageType,
-      extension: getExtension(file.type),
-    });
+    try {
+      const data = await postPresignedURL({
+        imageType,
+        extension: getExtension(file.type),
+      });
 
-    const { presignedUrl } = data;
+      const { presignedUrl } = data;
 
-    const response = await putImageToS3(presignedUrl, file);
+      await putImageToS3(presignedUrl, file);
 
-    if (response.ok) {
       return { uploadedUrl: presignedUrl.split('?')[0] };
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('S3 업로드 실패', error.message);
+      }
+
+      return { uploadedUrl: '' };
     }
-    return { uploadedUrl: '' };
   }, []);
 
   return { uploadFile };
