@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 import {
   createBrowserRouter,
   redirect,
@@ -6,9 +8,8 @@ import {
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
-import Landing from './pages/landing/Landing';
 import Home from './pages/home/Home';
-import { lazy } from 'react';
+import Landing from './pages/landing/Landing';
 
 const Login = lazy(() => import('./pages/login/Login'));
 const MentoringCreate = lazy(

@@ -1,7 +1,8 @@
 import styled from '@emotion/styled';
+
+import IdentityVerificationForm from './components/IdentityVerificationForm/IdentityVerificationForm';
 import IdentityVerificationHeader from './components/IdentityVerificationHeader/IdentityVerificationHeader';
 import IdentityVerificationIntro from './components/IdentityVerificationIntro/IdentityVerificationIntro';
-import IdentityVerificationForm from './components/IdentityVerificationForm/IdentityVerificationForm';
 
 function IdentityVerification() {
   return (

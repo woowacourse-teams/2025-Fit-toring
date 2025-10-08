@@ -2,8 +2,9 @@ import { MemoryRouter } from 'react-router-dom';
 
 import { PAGE_URL } from '../../../../common/constants/url';
 
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import IdentityVerificationForm from './IdentityVerificationForm';
+
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 const meta = {
   title: 'identityVerification/IdentityVerificationForm',

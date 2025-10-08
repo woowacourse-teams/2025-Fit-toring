@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 
 import beginnerAvif from '../../../../common/assets/images/beginner.avif';
-import expertAvif from '../../../../common/assets/images/expert.avif';
 import beginnerPng from '../../../../common/assets/images/beginner.png';
+import expertAvif from '../../../../common/assets/images/expert.avif';
 import expertPng from '../../../../common/assets/images/expert.png';
 
 function UserLevelGuide() {

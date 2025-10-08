@@ -2,25 +2,25 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
+import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
+import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
+import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
+import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
+import useVerificationCodeConfirm from '../../../../common/hooks/useVerificationCodeConfirm';
+import useVerificationCodeInput from '../../../../common/hooks/useVerificationCodeInput';
+import useVerificationCodeRequest from '../../../../common/hooks/useVerificationCodeRequest';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
+import { postIdentityVerification } from '../../apis/postIdentityVerification';
 import {
   Gender,
   IdentityVerificationInfo,
 } from '../types/IdentityVerificationInfo';
-import useVerificationCodeRequest from '../../../../common/hooks/useVerificationCodeRequest';
-import useVerificationCodeInput from '../../../../common/hooks/useVerificationCodeInput';
-import useVerificationCodeConfirm from '../../../../common/hooks/useVerificationCodeConfirm';
-import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
-import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
-import { postIdentityVerification } from '../../apis/postIdentityVerification';
-import { useNavigate } from 'react-router-dom';
-import { PAGE_URL } from '../../../../common/constants/url';
-import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 

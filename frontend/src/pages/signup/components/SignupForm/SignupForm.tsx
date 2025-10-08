@@ -6,10 +6,15 @@ import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../../common/apis/ApiError';
 import Button from '../../../../common/components/Button/Button';
+import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
+import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
 import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
+import useVerificationCodeConfirm from '../../../../common/hooks/useVerificationCodeConfirm';
+import useVerificationCodeInput from '../../../../common/hooks/useVerificationCodeInput';
+import useVerificationCodeRequest from '../../../../common/hooks/useVerificationCodeRequest';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postSignup } from '../../apis/postSignup';
@@ -19,11 +24,6 @@ import PasswordFields from '../PasswordFields/PasswordFields';
 import UserIdField from '../UserIdField/UserIdField';
 
 import type { Gender, SignupInfo } from '../../types/signupInfo';
-import useVerificationCodeRequest from '../../../../common/hooks/useVerificationCodeRequest';
-import useVerificationCodeInput from '../../../../common/hooks/useVerificationCodeInput';
-import useVerificationCodeConfirm from '../../../../common/hooks/useVerificationCodeConfirm';
-import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
-import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 

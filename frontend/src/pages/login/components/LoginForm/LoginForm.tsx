@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
+import kakaoLoginIcon from '../../../../common/assets/images/kakao_login_large_wide.png';
 import notBlind from '../../../../common/assets/images/notBlind.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
@@ -15,7 +16,6 @@ import usePasswordInput from '../../../../common/hooks/usePasswordInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { postLogin } from '../../apis/postLogin';
-import kakaoLoginIcon from '../../../../common/assets/images/kakao_login_large_wide.png';
 
 function LoginForm() {
   const [passwordVisible, setPasswordVisible] = useState(false);

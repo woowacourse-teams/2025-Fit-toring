@@ -6,9 +6,14 @@ import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../common/apis/ApiError';
 import Button from '../../../common/components/Button/Button';
+import PhoneFields from '../../../common/components/PhoneFields/PhoneFields';
+import UserInfoFields from '../../../common/components/UserInfoFields/UserInfoFields';
 import { PAGE_URL } from '../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../common/hooks/useNameInput';
+import useVerificationCodeConfirm from '../../../common/hooks/useVerificationCodeConfirm';
+import useVerificationCodeInput from '../../../common/hooks/useVerificationCodeInput';
+import useVerificationCodeRequest from '../../../common/hooks/useVerificationCodeRequest';
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../common/utils/phoneNumberValidator';
 import PasswordFields from '../../signup/components/PasswordFields/PasswordFields';
@@ -21,11 +26,6 @@ import type {
   PartialUserProfileRequest,
   UserProfileResponse,
 } from '../types/userProfile';
-import useVerificationCodeRequest from '../../../common/hooks/useVerificationCodeRequest';
-import useVerificationCodeInput from '../../../common/hooks/useVerificationCodeInput';
-import useVerificationCodeConfirm from '../../../common/hooks/useVerificationCodeConfirm';
-import UserInfoFields from '../../../common/components/UserInfoFields/UserInfoFields';
-import PhoneFields from '../../../common/components/PhoneFields/PhoneFields';
 
 interface EditProfileFormProps {
   myProfile: UserProfileResponse;
