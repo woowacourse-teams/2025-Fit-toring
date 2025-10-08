@@ -55,25 +55,30 @@ public class MentoringPaginationHelper {
      * 현재 커서의 위치에서 다음 값들을 가져오는 조건을 추가한다.
      */
     private BooleanExpression buildCursorCondition(SortKey sortKey, Cursor cursor) {
-        if (sortKey == SortKey.CREATED_AT && cursor != null) {
-            LocalDateTime cursorDateTime = Instant.ofEpochSecond(cursor.sortValue())
-                .atZone(ZoneId.of("Asia/Seoul"))
-                .toLocalDateTime();
-            return mentoring.createdAt.lt(cursorDateTime)
-                .or(mentoring.createdAt.eq(cursorDateTime)
-                        .and(mentoring.id.loe(cursor.id())));
+        if (cursor == null) {
+            return null;
         }
-        if (sortKey == SortKey.RESERVATION_COUNT && cursor != null) {
-            long cursorReservationCount = cursor.sortValue();
-            return mentoringStatistics.reservationCount.lt(cursorReservationCount)
-                .or(mentoringStatistics.reservationCount.eq(cursorReservationCount)
+        switch (sortKey) {
+            case CREATED_AT -> {
+                LocalDateTime cursorDateTime = Instant.ofEpochSecond(cursor.sortValue())
+                    .atZone(ZoneId.of("Asia/Seoul"))
+                    .toLocalDateTime();
+                return mentoring.createdAt.lt(cursorDateTime)
+                    .or(mentoring.createdAt.eq(cursorDateTime)
                         .and(mentoring.id.loe(cursor.id())));
-        }
-        if (sortKey == SortKey.AVERAGE_RATING && cursor != null) {
-            double cursorAverageCount = Double.longBitsToDouble(cursor.sortValue());
-            return mentoringStatistics.averageRating.lt(cursorAverageCount)
+            }
+            case RESERVATION_COUNT -> {
+                long cursorReservationCount = cursor.sortValue();
+                return mentoringStatistics.reservationCount.lt(cursorReservationCount)
+                    .or(mentoringStatistics.reservationCount.eq(cursorReservationCount)
+                        .and(mentoring.id.loe(cursor.id())));
+            }
+            case AVERAGE_RATING -> {
+                double cursorAverageCount = Double.longBitsToDouble(cursor.sortValue());
+                return mentoringStatistics.averageRating.lt(cursorAverageCount)
                     .or(mentoringStatistics.averageRating.eq(cursorAverageCount)
                         .and(mentoring.id.loe(cursor.id())));
+            }
         }
         return null;
     }
