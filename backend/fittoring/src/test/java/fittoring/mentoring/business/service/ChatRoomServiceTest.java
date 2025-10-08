@@ -185,7 +185,7 @@ class ChatRoomServiceTest {
         //when & then
         assertThatThrownBy(() -> chatRoomService.findChatRoom(1L, invalidChatRoomId))
                 .isInstanceOf(ChatRoomNotFoundException.class)
-                .hasMessage(BusinessErrorMessage.CHAT_ROOM_NOT_FOUNT.getMessage());
+                .hasMessage(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage());
     }
 
     @DisplayName("동일한 예약으로 두 번 채팅방을 생성하려고 할 때 예외가 발생한다.")

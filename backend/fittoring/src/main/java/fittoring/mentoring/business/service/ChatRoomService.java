@@ -80,7 +80,7 @@ public class ChatRoomService {
     private ChatRoom getChatRoom(Long chatroomId) {
         return chatRoomRepository.findById(chatroomId)
                 .orElseThrow(
-                        () -> new ChatRoomNotFoundException(BusinessErrorMessage.CHAT_ROOM_NOT_FOUNT.getMessage())
+                        () -> new ChatRoomNotFoundException(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage())
                 );
     }
 
