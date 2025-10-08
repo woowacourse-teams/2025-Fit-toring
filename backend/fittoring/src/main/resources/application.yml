@@ -37,9 +37,10 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,metrics
+        include: health,info,prometheus,metrics
       path-mapping:
         health: healthcheck
+        prometheus: prometheus-provider
   metrics:
     tags:
       application: fittoring
@@ -74,7 +75,7 @@ jwt:
   access-token-expiration-millis: ${ACCESS_TOKEN_EXPIRATION_MILLIS}
   refresh-token-expiration-millis: ${REFRESH_TOKEN_EXPIRATION_MILLIS}
 kakao:
-  redirect-uri: ${KAKAO_REDIRECT_URI}
+  redirect-url: ${KAKAO_REDIRECT_URL}
   client-id: ${KAKAO_CLIENT_ID}
 aws:
   s3:
