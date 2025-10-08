@@ -101,7 +101,7 @@ public class ChatRoomService {
     }
 
     private void validateReservationStatus(Reservation reservation) {
-        if (!reservation.isChatRoomAccessibleStatus()) {
+        if (!reservation.isAccessibleForChatRoom()) {
             throw new UnauthorizedChatRoomAccessException(
                     BusinessErrorMessage.INVALID_STATUS_CHAT_ROOM_ACCESS.getMessage()
             );

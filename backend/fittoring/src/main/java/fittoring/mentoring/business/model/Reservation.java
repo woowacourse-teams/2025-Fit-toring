@@ -89,6 +89,18 @@ public class Reservation {
         return this.status.isApprove();
     }
 
+    public boolean isComplete() {
+        return this.status.isComplete();
+    }
+
+    public boolean isPending() {
+        return this.status.isPending();
+    }
+
+    public boolean isAccessibleForChatRoom() {
+        return isApprove() || isComplete();
+    }
+
     public String getChatUrlOfMentoring() {
         return mentoring.getChatUrl();
     }
