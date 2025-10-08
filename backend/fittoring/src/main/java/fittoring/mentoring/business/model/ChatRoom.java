@@ -37,7 +37,7 @@ public class ChatRoom {
     private Long id;
 
     @Getter
-    @Column(name = "reservation_id", nullable = false)
+    @Column(name = "reservation_id", nullable = false, unique = true)
     private Long reservationId;
 
     @Column(name = "mentee_id", nullable = false)
