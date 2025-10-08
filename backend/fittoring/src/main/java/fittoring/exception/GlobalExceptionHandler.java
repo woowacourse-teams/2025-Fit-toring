@@ -211,7 +211,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ChatRoomAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handle(ChatRoomAlreadyExistsException e) {
-        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(UnauthorizedChatRoomAccessException.class)
