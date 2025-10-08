@@ -23,13 +23,5 @@ module.exports = merge(common, {
     new DotenvWebpackPlugin({
       path: path.resolve(__dirname, '.env.local'),
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'public/robots.dev.txt',
-          to: 'robots.txt',
-        },
-      ],
-    }),
   ],
 });
