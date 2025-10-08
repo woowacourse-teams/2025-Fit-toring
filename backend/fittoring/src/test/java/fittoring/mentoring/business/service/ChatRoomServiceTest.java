@@ -30,6 +30,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -295,8 +297,9 @@ class ChatRoomServiceTest {
     }
 
     @DisplayName("채팅방 조회시 승인(APPROVED), 완료(COMPLETED) 상태의 예약은 조회 가능하다")
-    @Test
-    void findChatRoomApprovedOrCompletedReservationStatus() {
+    @ParameterizedTest
+    @EnumSource(value = Status.class, names = {"APPROVED", "COMPLETE"})
+    void findChatRoomApprovedOrCompletedReservationStatus(Status status) {
         // given
         Member mentor = new Member("id7", "MALE", "멘토", new Phone("010-1234-0000"), Password.from("pw"));
         em.persist(mentor);
@@ -307,7 +310,7 @@ class ChatRoomServiceTest {
         Member mentee = new Member("mentee7", "MALE", "멘티", new Phone("010-0000-1111"), Password.from("pw2"));
         em.persist(mentee);
 
-        Reservation approvedReservation = new Reservation("승인된 예약", Status.APPROVED, mentoring, mentee);
+        Reservation approvedReservation = new Reservation("승인된 예약", status, mentoring, mentee);
         em.persist(approvedReservation);
 
         ChatRoom chatRoom = new ChatRoom(approvedReservation.getId(), mentee.getId(), mentor.getId());
@@ -317,6 +320,10 @@ class ChatRoomServiceTest {
         ChatRoomResponse response = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
 
         // then
-        assertThat(response).isNotNull();
+        SoftAssertions.assertSoftly(softly -> {
+                    softly.assertThat(response).isNotNull();
+                    softly.assertThat(response.status()).isEqualTo(ChatStatus.ACTIVATE.name());
+                }
+        );
     }
 }
