@@ -33,7 +33,7 @@ public class ChatRoomService {
     @Transactional
     public ChatRoomCreatedInfo registerChatRoom(Reservation reservation) {
         Mentoring mentoring = reservation.getMentoring();
-        validateMentoring(mentoring);
+        validateMentoringExists(mentoring);
         validateReservationExists(reservation);
 
         ChatRoom chatRoom = new ChatRoom(
@@ -46,7 +46,7 @@ public class ChatRoomService {
         return new ChatRoomCreatedInfo(url);
     }
 
-    private void validateMentoring(Mentoring mentoring) {
+    private void validateMentoringExists(Mentoring mentoring) {
         mentoringRepository.findById(mentoring.getId())
                 .orElseThrow(
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage())

@@ -261,7 +261,8 @@ class ChatRoomServiceTest {
         mentoringRepository.delete(persistedMentoring);
         em.flush();
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> chatRoomService.registerChatRoom(reservation))
                 .isInstanceOf(MentoringNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
