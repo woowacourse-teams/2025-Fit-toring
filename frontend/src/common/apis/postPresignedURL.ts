@@ -33,7 +33,9 @@ export const postPresignedURL = async (request: PostPresignedURLRequest) => {
   const data = await response.json();
 
   if (!isPostPresignedURLResponse(data)) {
-    throw new Error('presigned URL 응답 형식이 올바르지 않습니다.');
+    throw new Error(
+      `presigned URL 응답 형식이 올바르지 않습니다: ${JSON.stringify(data)}`,
+    );
   }
 
   return data;
