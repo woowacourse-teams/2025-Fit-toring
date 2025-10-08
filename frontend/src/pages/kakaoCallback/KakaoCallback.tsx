@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { PAGE_URL } from '../../common/constants/url';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import { postKakaoLogin } from './apis/postKakaoLogin';
-import { captureSentryError } from '../../common/utils/captureSentryError';
 
 function KakaoCallback() {
   const navigate = useNavigate();

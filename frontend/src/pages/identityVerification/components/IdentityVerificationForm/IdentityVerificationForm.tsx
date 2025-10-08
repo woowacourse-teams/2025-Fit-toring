@@ -17,7 +17,8 @@ import useVerificationCodeRequest from '../../../../common/hooks/useVerification
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postIdentityVerification } from '../../apis/postIdentityVerification';
-import {
+
+import type {
   Gender,
   IdentityVerificationInfo,
 } from '../types/IdentityVerificationInfo';
