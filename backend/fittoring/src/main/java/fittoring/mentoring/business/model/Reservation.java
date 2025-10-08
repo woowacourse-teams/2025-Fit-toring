@@ -64,12 +64,8 @@ public class Reservation {
         this(null, content, null, status, false, null, mentoring, mentee);
     }
 
-    public boolean isComplete() {
-        return this.status.isComplete();
-    }
-
-    public boolean isCreatedByMember(Long memberId) {
-        return this.mentee.isSameIdWith(memberId);
+    public void changeStatusWithoutValidation(Status updateStatus) {
+        this.status = updateStatus;
     }
 
     public void changeStatus(Status updateStatus) {
@@ -77,12 +73,8 @@ public class Reservation {
         this.status = updateStatus;
     }
 
-    public void changeStatusWithoutValidation(Status updateStatus) {
-        this.status = updateStatus;
-    }
-
-    public boolean isPending() {
-        return this.status.isPending();
+    public boolean isCreatedByMember(Long memberId) {
+        return this.mentee.isSameIdWith(memberId);
     }
 
     public boolean isApprove() {
@@ -123,9 +115,5 @@ public class Reservation {
 
     public String getStatus() {
         return status.name();
-    }
-
-    public boolean isChatRoomAccessibleStatus() {
-        return status.isApprove() || status.isComplete();
     }
 }
