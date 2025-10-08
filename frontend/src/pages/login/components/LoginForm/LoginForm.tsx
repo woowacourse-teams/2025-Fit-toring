@@ -177,7 +177,7 @@ const S_Img = styled.img`
   margin-right: 1rem;
 `;
 
-const S_KakaoButton = styled.button`
+const S_KakaoButton = styled.a`
   width: 100%;
   height: 4.3rem;
   padding: 0.6rem 1.1rem;
@@ -187,6 +187,7 @@ const S_KakaoButton = styled.button`
   background-image: url(${kakaoLoginIcon});
   background-size: cover;
   background-position: center;
+  text-decoration: none;
 `;
 
 const S_ButtonWrapper = styled.div`
