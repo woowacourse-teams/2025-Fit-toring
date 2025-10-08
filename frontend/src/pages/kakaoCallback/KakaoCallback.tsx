@@ -7,6 +7,7 @@ import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinne
 import { PAGE_URL } from '../../common/constants/url';
 
 import { postKakaoLogin } from './apis/postKakaoLogin';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 
 function KakaoCallback() {
   const navigate = useNavigate();
@@ -26,11 +27,25 @@ function KakaoCallback() {
           } else if (response.status === 204) {
             navigate(PAGE_URL.IDENTITY_VERIFICATION);
           } else {
+            captureSentryError({
+              error: new Error(
+                `Unexpected response status: ${response.status}`,
+              ),
+              level: 'warning',
+              feature: 'auth',
+              step: 'kakao-login',
+            });
             alert('로그인에 실패했습니다.');
             navigate(PAGE_URL.LOGIN);
           }
         } catch (error) {
           console.error('카카오 로그인 에러', error);
+          captureSentryError({
+            error,
+            level: 'warning',
+            feature: 'auth',
+            step: 'kakao-login',
+          });
           alert('로그인 중 오류가 발생했습니다.');
           navigate(PAGE_URL.LOGIN);
         }
