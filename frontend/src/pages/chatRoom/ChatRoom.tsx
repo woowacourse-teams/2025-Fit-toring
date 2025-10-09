@@ -103,7 +103,6 @@ function ChatRoom() {
                   const newArr = [...prev];
                   newArr[index] = {
                     ...parsedMessage,
-                    tempId: prev[index].tempId,
                     status: 'success',
                   };
                   return newArr;
