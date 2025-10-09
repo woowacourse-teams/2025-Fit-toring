@@ -25,7 +25,7 @@ public class ChatController {
             ChatMessageRequest request,
             @Header(AuthHandshakeInterceptor.LOGIN_INFO_KEY) LoginInfo loginInfo
     ) {
-        ChatMessageResponse response = chatMessageService.registerMessage(request, loginInfo.memberId());
+        ChatMessageResponse response = chatMessageService.registerMessage(chatRoomId, request, loginInfo.memberId());
 
         messagingTemplate.convertAndSend("/topic/chatroom/" + chatRoomId, response);
     }
