@@ -5,6 +5,7 @@ import fittoring.config.websocket.AuthHandshakeInterceptor;
 import fittoring.mentoring.business.service.ChatMessageService;
 import fittoring.mentoring.presentation.dto.chat.request.ChatMessageRequest;
 import fittoring.mentoring.presentation.dto.chat.response.ChatMessageResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
@@ -22,7 +23,7 @@ public class ChatController {
     @MessageMapping("/chatroom/{chatRoomId}")
     public void chat(
             @DestinationVariable Long chatRoomId,
-            ChatMessageRequest request,
+            @Valid ChatMessageRequest request,
             @Header(AuthHandshakeInterceptor.LOGIN_INFO_KEY) LoginInfo loginInfo
     ) {
         ChatMessageResponse response = chatMessageService.registerMessage(chatRoomId, request, loginInfo.memberId());
