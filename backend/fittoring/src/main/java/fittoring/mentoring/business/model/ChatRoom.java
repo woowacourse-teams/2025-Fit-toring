@@ -60,18 +60,6 @@ public class ChatRoom {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public ChatRoom(
-            Long reservationId,
-            Long menteeId,
-            Long mentorId,
-            LocalDateTime createdAt,
-            ChatStatus status,
-            boolean isDeleted,
-            LocalDateTime deletedAt
-    ) {
-        this(null, reservationId, menteeId, mentorId, createdAt, status, isDeleted, deletedAt);
-    }
-
     public ChatRoom(Long reservationId, Long menteeId, Long mentorId) {
         this(
                 null,

@@ -50,16 +50,6 @@ public class ChatMessage {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public ChatMessage(
-            Long chatRoomId,
-            Long senderId,
-            String content,
-            LocalDateTime createdAt,
-            boolean isDeleted,
-            LocalDateTime deletedAt
-    ) {
-        this(null, chatRoomId, senderId, content, createdAt, isDeleted, deletedAt);
-    }
 
     public ChatMessage(Long chatRoomId, Long senderId, String content) {
         this(null, chatRoomId, senderId, content, null, false, null);
