@@ -54,7 +54,7 @@ function ChatRoom() {
 
   const stompClientRef = useRef<Client | null>(null);
 
-  const { data } = useQuery({
+  const { data: chantRoomMessage } = useQuery({
     queryKey: ['chatRoom', chatRoomId],
     queryFn: () => getChatRoom(Number(chatRoomId!)),
   });
@@ -74,10 +74,10 @@ function ChatRoom() {
   });
 
   useEffect(() => {
-    if (data) {
-      setMessages(data);
+    if (chantRoomMessage) {
+      setMessages(chantRoomMessage);
     }
-  }, [data]);
+  }, [chantRoomMessage]);
 
   useEffect(() => {
     const client = new Client({
