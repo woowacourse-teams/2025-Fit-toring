@@ -1,6 +1,8 @@
 package fittoring.admin.service;
 
 import fittoring.admin.presentation.dto.AdminMemberResponse;
+import fittoring.admin.presentation.dto.PageResult;
+import fittoring.admin.repository.CustomMemberRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.NotFoundMemberException;
@@ -17,15 +19,15 @@ public class AdminMemberService {
 
     private final MemberRepository memberRepository;
 
-    public List<AdminMemberResponse> findAllForAdmin(Long memberId) {
+    public PageResult<AdminMemberResponse> findAllForAdminPaged(Long memberId, int page, int size) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        List<Member> members = memberRepository.findAllByOrderByRoleAsc();
-        return members.stream()
-                .map(AdminMemberResponse::from)
-                .toList();
+
+        List<Long> ids = memberRepository.findMemberIdsForAdmin(page, size);
+        List<AdminMemberResponse> responses = memberRepository.findMembersByIdsOrdered(ids);
+        return new PageResult<AdminMemberResponse>(responses, page, size, true);
     }
 }
