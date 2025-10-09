@@ -15,8 +15,8 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
-    public ChatMessageResponse registerMessage(ChatMessageRequest request, Long memberId) {
-        ChatMessage chatMessage = new ChatMessage(request.chatRoomId(), memberId, request.content());
+    public ChatMessageResponse registerMessage(ChatMessageRequest request, Long senderId) {
+        ChatMessage chatMessage = new ChatMessage(request.chatRoomId(), senderId, request.content());
         chatMessageRepository.save(chatMessage);
         return ChatMessageResponse.from(chatMessage, request.tempId());
     }
