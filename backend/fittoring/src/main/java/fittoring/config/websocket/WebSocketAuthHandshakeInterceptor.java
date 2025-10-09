@@ -18,7 +18,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 @RequiredArgsConstructor
 @Component
-public class AuthHandshakeInterceptor implements HandshakeInterceptor {
+public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
 
     public static final String LOGIN_INFO_KEY = "loginInfo";
     private static final String TOKEN_NAME = "accessToken";

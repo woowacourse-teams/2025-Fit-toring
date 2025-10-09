@@ -1,7 +1,7 @@
 package fittoring.mentoring.presentation.api;
 
 import fittoring.config.auth.LoginInfo;
-import fittoring.config.websocket.AuthHandshakeInterceptor;
+import fittoring.config.websocket.WebSocketAuthHandshakeInterceptor;
 import fittoring.mentoring.business.service.ChatMessageService;
 import fittoring.mentoring.presentation.dto.chat.request.ChatMessageRequest;
 import fittoring.mentoring.presentation.dto.chat.response.ChatMessageResponse;
@@ -24,7 +24,7 @@ public class ChatController {
     public void chat(
             @DestinationVariable("chatRoomId") Long chatRoomId,
             @Valid ChatMessageRequest request,
-            @Header(AuthHandshakeInterceptor.LOGIN_INFO_KEY) LoginInfo loginInfo
+            @Header(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY) LoginInfo loginInfo
     ) {
         ChatMessageResponse response = chatMessageService.registerMessage(chatRoomId, request, loginInfo.memberId());
 

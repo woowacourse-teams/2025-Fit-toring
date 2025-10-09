@@ -21,8 +21,8 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
 
         if (StompCommand.SEND.equals(accessor.getCommand())) {
             LoginInfo loginInfo = (LoginInfo) Objects.requireNonNull(accessor.getSessionAttributes())
-                    .get(AuthHandshakeInterceptor.LOGIN_INFO_KEY);
-            accessor.setHeader(AuthHandshakeInterceptor.LOGIN_INFO_KEY, loginInfo);
+                    .get(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY);
+            accessor.setHeader(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY, loginInfo);
         }
         return message;
     }
