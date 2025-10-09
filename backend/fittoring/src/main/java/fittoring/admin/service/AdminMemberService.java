@@ -2,7 +2,6 @@ package fittoring.admin.service;
 
 import fittoring.admin.presentation.dto.AdminMemberResponse;
 import fittoring.admin.presentation.dto.PageResult;
-import fittoring.admin.repository.CustomMemberRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.NotFoundMemberException;
@@ -28,6 +27,6 @@ public class AdminMemberService {
 
         List<Long> ids = memberRepository.findMemberIdsForAdmin(page, size);
         List<AdminMemberResponse> responses = memberRepository.findMembersByIdsOrdered(ids);
-        return new PageResult<AdminMemberResponse>(responses, page, size, true);
+        return new PageResult<>(responses, page, size, true);
     }
 }
