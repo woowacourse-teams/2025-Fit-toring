@@ -17,6 +17,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
@@ -26,24 +27,19 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class ChatMessage {
 
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @Getter
     @Column(name = "chat_room_id", nullable = false)
     private Long chatRoomId;
 
-    @Getter
     @Column(name = "sender_id", nullable = false)
     private Long senderId;
 
-    @Getter
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Getter
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
