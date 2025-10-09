@@ -17,14 +17,16 @@ function ChatBubble({ content, createdAt, authored, status }: ChatBubbleProps) {
         <S_Bubble authored={authored}>
           <S_Text authored={authored}>{content}</S_Text>
         </S_Bubble>
-        <S_Time>{formatToKoreanTime(createdAt)}</S_Time>
+        <S_Temp authored={authored}>
+          {status === 'fail' ? (
+            <S_RetryInfoWrapper>
+              <S_RetryIcon src={warningIcon} />
+              <S_RetryText>전송실패</S_RetryText>
+            </S_RetryInfoWrapper>
+          ) : null}
+          <S_Time>{formatToKoreanTime(createdAt)}</S_Time>
+        </S_Temp>
       </S_BubbleWrapper>
-      {status === 'fail' ? (
-        <S_RetryInfoWrapper>
-          <S_RetryIcon src={warningIcon} />
-          <S_RetryText>전송실패</S_RetryText>
-        </S_RetryInfoWrapper>
-      ) : null}
     </S_Container>
   );
 }
@@ -71,6 +73,12 @@ const S_Bubble = styled.div<Pick<ChatBubbleProps, 'authored'>>`
 
   background-color: ${({ theme, authored }) =>
     authored ? theme.SYSTEM.GRAY900 : theme.SYSTEM.GRAY50};
+`;
+
+const S_Temp = styled.div<Pick<ChatBubbleProps, 'authored'>>`
+  display: flex;
+  flex-direction: column;
+  align-items: ${({ authored }) => (authored ? 'flex-end' : 'flex-start')};
 `;
 
 const S_Text = styled.p<Pick<ChatBubbleProps, 'authored'>>`
