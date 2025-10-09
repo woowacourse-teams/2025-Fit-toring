@@ -29,7 +29,7 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
                         RESERVATION.id,
                         MENTEE.name,
                         RESERVATION.createdAt,
-                        RESERVATION.status.stringValue(),
+                        RESERVATION.status,
                         RESERVATION.content
                 ))
                 .from(RESERVATION)

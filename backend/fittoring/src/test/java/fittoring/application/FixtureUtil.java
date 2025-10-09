@@ -1,6 +1,14 @@
 package fittoring.application;
 
-import fittoring.domain.model.*;
+import fittoring.domain.model.Certificate;
+import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
 
 public class FixtureUtil {
@@ -16,10 +24,10 @@ public class FixtureUtil {
 
     public static Member getTestMentee(int i) {
         return new Member(
-                "menteeId"+i,
+                "menteeId" + i,
                 "MALE",
                 "이름",
-                new Phone("010-1234-567"+((i%9)+1)),
+                new Phone("010-1234-567" + ((i % 9) + 1)),
                 Password.from("password"));
     }
 
@@ -36,10 +44,10 @@ public class FixtureUtil {
 
     public static Member getTestMentor(int i) {
         return new Member(
-                "mentorId"+i,
+                "mentorId" + i,
                 "MALE",
                 "멘토이름",
-                new Phone("010-1234-568"+((i%9)+1)),
+                new Phone("010-1234-568" + ((i % 9) + 1)),
                 Password.from("password"),
                 MemberRole.MENTOR
         );
@@ -87,5 +95,4 @@ public class FixtureUtil {
     public static Review getTestReview(Reservation reservation, Member reviewer) {
         return new Review(5, "좋았습니다.", reservation, reviewer);
     }
-
 }
