@@ -11,6 +11,7 @@ import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.RefreshToken;
+import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
@@ -88,9 +89,9 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId() {
         //given
-        em.persist(FixtureUtil.getTestMentee());
+        Member mentee = em.persist(FixtureUtil.getTestMentee());
 
-        String loginId = "menteeId";
+        String loginId = mentee.getLoginId();
 
         //when
         //then
@@ -149,11 +150,11 @@ class AuthServiceTest {
         //given
         Member savedMember = em.persist(FixtureUtil.getTestMentee());
 
-        String loginId = "menteeId";
-        String password = "password";
+        String loginId = savedMember.getLoginId();
+        String rawPassword = "password";
 
         //when
-        AuthTokenResponse actual = authService.login(loginId, password);
+        AuthTokenResponse actual = authService.login(loginId, rawPassword);
 
         //then
         RefreshToken refreshToken = em.find(RefreshToken.class, savedMember.getId());

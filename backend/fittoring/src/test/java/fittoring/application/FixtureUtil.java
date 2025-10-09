@@ -4,6 +4,7 @@ import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 
 public class FixtureUtil {
+
     public static Member getTestMentee() {
         return new Member(
                 "menteeId",
