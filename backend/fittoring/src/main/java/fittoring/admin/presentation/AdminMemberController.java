@@ -1,5 +1,6 @@
 package fittoring.admin.presentation;
 
+import fittoring.admin.service.AdminMemberService;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AdminMemberController {
 
-    private final MemberService memberService;
+    private final AdminMemberService memberService;
 
     @AuthRequired
     @GetMapping
