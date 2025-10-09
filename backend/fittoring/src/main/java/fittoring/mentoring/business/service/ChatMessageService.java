@@ -38,7 +38,7 @@ public class ChatMessageService {
     }
 
     private void validateParticipant(Long senderId, ChatRoom chatRoom) {
-        if (!chatRoom.hasParticipant(senderId)) {
+        if (chatRoom.isNonParticipant(senderId)) {
             throw new UnauthorizedChatRoomAccessException(
                     BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage()
             );

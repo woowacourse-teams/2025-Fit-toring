@@ -73,7 +73,7 @@ public class ChatRoom {
         );
     }
 
-    public boolean hasParticipant(Long memberId) {
-        return mentorId.equals(memberId) || menteeId.equals(memberId);
+    public boolean isNonParticipant(Long memberId) {
+        return !mentorId.equals(memberId) && !menteeId.equals(memberId);
     }
 }
