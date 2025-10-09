@@ -7,6 +7,8 @@ import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
+import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
+import fittoring.mentoring.business.model.ChatRoom;
 import fittoring.mentoring.presentation.dto.chat.request.ChatMessageRequest;
 import fittoring.util.DbCleaner;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,5 +61,28 @@ class ChatMessageServiceTest {
                 chatMessageService.registerMessage(invalidChatRoomId, request, senderId))
                 .isInstanceOf(ChatRoomNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_ROOM_NOT_FOUNT.getMessage());
+    }
+
+    @DisplayName("참여자가 아닌 사용자가 메시지를 등록하려 할 때 예외가 발생한다.")
+    @Test
+    void registerMessageUnauthorizedMember() {
+        //given
+        Long reservationId = 1L;
+        Long menteeId = 1L;
+        Long mentorId = 2L;
+
+        ChatRoom chatRoom = new ChatRoom(reservationId, menteeId, mentorId);
+        em.persist(chatRoom);
+        em.persistAndFlush(chatRoom);
+
+        ChatMessageRequest request = new ChatMessageRequest("content", 1234L);
+        Long unauthorizedUserId = 999L;
+
+        //when
+        //then
+        assertThatThrownBy(() ->
+                chatMessageService.registerMessage(chatRoom.getId(), request, unauthorizedUserId))
+                .isInstanceOf(UnauthorizedChatRoomAccessException.class)
+                .hasMessage(BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage());
     }
 }
