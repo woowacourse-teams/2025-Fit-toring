@@ -22,7 +22,7 @@ public class ChatController {
 
     @MessageMapping("/chatroom/{chatRoomId}")
     public void chat(
-            @DestinationVariable Long chatRoomId,
+            @DestinationVariable("chatRoomId") Long chatRoomId,
             @Valid ChatMessageRequest request,
             @Header(AuthHandshakeInterceptor.LOGIN_INFO_KEY) LoginInfo loginInfo
     ) {
