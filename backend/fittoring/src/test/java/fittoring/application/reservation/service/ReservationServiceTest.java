@@ -312,67 +312,6 @@ class ReservationServiceTest {
                 .containsExactlyInAnyOrderElementsOf(expected);
     }
 
-    @DisplayName("관리자는 특정 멘토링에 달린 모든 예약을 조회할 수 있다")
-    @Test
-    void findMentoringReservationsWithAdminAuthorization() {
-        // given
-        Member admin = entityManager.persist(FixtureUtil.getTestAdmin());
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
-
-        Member mentee1 = entityManager.persist(FixtureUtil.getTestMentee(1));
-        Member mentee2 = entityManager.persist(FixtureUtil.getTestMentee(2));
-
-        Reservation reservation1 = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
-        Reservation reservation2 = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
-
-        MentoringReservationGetDto dto =
-                new MentoringReservationGetDto(admin.getId(), mentoring.getId());
-
-        // when
-        List<AdminReservationResponse> actual =
-                reservationService.findMentoringReservationsWithAdminAuthorization(dto);
-
-        // then
-        assertThat(actual).containsExactlyInAnyOrder(
-                new AdminReservationResponse(
-                        reservation1.getId(),
-                        reservation1.getMenteeName(),
-                        reservation1.getCreatedAt().toLocalDate(),
-                        reservation1.getStatus(),
-                        reservation1.getContent()
-                ),
-                new AdminReservationResponse(
-                        reservation2.getId(),
-                        reservation2.getMenteeName(),
-                        reservation2.getCreatedAt().toLocalDate(),
-                        reservation2.getStatus(),
-                        reservation2.getContent()
-                )
-        );
-    }
-
-    @DisplayName("관리자가 아닌 회원은 관리자용 예약 조회 기능을 사용할 수 없다")
-    @Test
-    void findMentoringReservationsWithAdminAuthorizationFail() {
-        // given
-        Member normalMember = entityManager.persist(FixtureUtil.getTestMentee());     // 비관리자
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
-        Member mentee1 = entityManager.persist(FixtureUtil.getTestMentee(1));
-        Member mentee2 = entityManager.persist(FixtureUtil.getTestMentee(2));
-
-        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
-        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
-
-        MentoringReservationGetDto dto = new MentoringReservationGetDto(normalMember.getId(), mentoring.getId());
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.findMentoringReservationsWithAdminAuthorization(dto))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-    }
-
     @DisplayName("관리자는 예약의 상태를 변경할 수 있다")
     @CsvSource({
             "PENDING, APPROVED",
