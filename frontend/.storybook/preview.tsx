@@ -2,7 +2,6 @@ import { Global, ThemeProvider } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import AuthProvider from '../src/common/components/AuthProvider/AuthProvider';
-import { fonts } from '../src/common/styles/fonts';
 import { resetCss } from '../src/common/styles/reset';
 import { THEME } from '../src/common/styles/theme';
 
@@ -24,7 +23,7 @@ const preview: Preview = {
       return (
         <ThemeProvider theme={THEME}>
           <AuthProvider>
-            <Global styles={[resetCss, fonts]} />
+            <Global styles={[resetCss]} />
             <S_Container>
               <S_Contents>
                 <Story />
