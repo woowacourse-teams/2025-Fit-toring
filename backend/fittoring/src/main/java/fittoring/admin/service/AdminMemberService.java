@@ -18,8 +18,8 @@ public class AdminMemberService {
 
     private final MemberRepository memberRepository;
 
-    public PageResult<AdminMemberResponse> findAllForAdminPaged(Long memberId, int page, int size) {
-        Member member = memberRepository.findById(memberId)
+    public PageResult<AdminMemberResponse> findAllForAdminPaged(Long adminId, int page, int size) {
+        Member member = memberRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());

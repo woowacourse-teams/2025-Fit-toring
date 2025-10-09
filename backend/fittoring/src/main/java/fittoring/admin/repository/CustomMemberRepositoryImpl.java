@@ -32,6 +32,8 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository {
                         Projections.constructor(AdminMemberResponse.class,
                                 member.name, member.loginId, member.gender, member.phone.number, member.role)
                 ).from(member)
+                .where(member.id.in(ids))
+                .orderBy(member.id.desc())
                 .fetch();
     }
 }
