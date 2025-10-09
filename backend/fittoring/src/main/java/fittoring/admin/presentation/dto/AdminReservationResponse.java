@@ -1,13 +1,13 @@
 package fittoring.admin.presentation.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record AdminReservationResponse(
-    Long reservationId,
-    String menteeName,
-    LocalDate createdAt,
-    String status,
-    String content
+        Long reservationId,
+        String menteeName,
+        LocalDateTime createdAt,
+        String status,
+        String content
 ) {
 
 }
