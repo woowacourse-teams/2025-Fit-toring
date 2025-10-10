@@ -7,16 +7,20 @@ import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
+import fittoring.mentoring.business.model.ChatMessage;
 import fittoring.mentoring.business.model.ChatRoom;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.repository.ChatMessageRepository;
 import fittoring.mentoring.business.repository.ChatRoomRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
 import fittoring.mentoring.presentation.dto.ChatRoomResponse;
+import fittoring.mentoring.presentation.dto.chat.response.ChatMessageResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final MentoringRepository mentoringRepository;
@@ -75,6 +80,17 @@ public class ChatRoomService {
                 opponentName,
                 chatRoom.getStatus().name()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatMessageResponse> findChatMessages(Long chatRoomId, Long memberId) {
+        ChatRoom chatRoom = getChatRoom(chatRoomId);
+        validateParticipant(memberId, chatRoom);
+
+        List<ChatMessage> findChatMessages = chatMessageRepository.findAllByChatRoomId(chatRoomId);
+        return findChatMessages.stream()
+                .map(chatMessage -> ChatMessageResponse.from(chatMessage, null))
+                .toList();
     }
 
     private ChatRoom getChatRoom(Long chatroomId) {
