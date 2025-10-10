@@ -118,7 +118,7 @@ class ChatRoomServiceTest {
             assertThat(chatRoomInfoDto.mentoringId()).isEqualTo(1L);
             assertThat(chatRoomInfoDto.myRole()).isEqualTo(MemberRole.MENTEE);
             assertThat(chatRoomInfoDto.opponentName()).isEqualTo("김트레이너");
-            assertThat(chatRoomInfoDto.status()).isEqualTo(ChatStatus.ACTIVATE.name());
+            assertThat(chatRoomInfoDto.status()).isEqualTo(ChatStatus.ACTIVATE);
         });
     }
 
@@ -178,7 +178,7 @@ class ChatRoomServiceTest {
             assertThat(chatRoomInfoDto.mentoringId()).isEqualTo(1L);
             assertThat(chatRoomInfoDto.myRole()).isEqualTo(MemberRole.MENTOR);
             assertThat(chatRoomInfoDto.opponentName()).isEqualTo("김멘티");
-            assertThat(chatRoomInfoDto.status()).isEqualTo(ChatStatus.ACTIVATE.name());
+            assertThat(chatRoomInfoDto.status()).isEqualTo(ChatStatus.ACTIVATE);
         });
     }
 

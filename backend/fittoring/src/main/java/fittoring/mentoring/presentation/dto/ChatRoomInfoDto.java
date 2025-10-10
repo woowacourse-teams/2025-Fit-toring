@@ -7,6 +7,6 @@ public record ChatRoomInfoDto(
         Long mentoringId,
         MemberRole myRole,
         String opponentName,
-        String status
+        ChatStatus status
 ) {
 }
