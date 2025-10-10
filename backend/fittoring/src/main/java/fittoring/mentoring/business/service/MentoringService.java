@@ -34,11 +34,11 @@ import fittoring.mentoring.business.service.dto.MentoringSummaryPaginationRespon
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
+import fittoring.mentoring.business.service.dto.chat.ChatRoomMentoringInfoDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.CursorCodec;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -263,8 +263,8 @@ public class MentoringService {
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-                && categoryTitle2 == null
-                && categoryTitle3 == null;
+               && categoryTitle2 == null
+               && categoryTitle3 == null;
     }
 
     private void validateAllCategoryTitle(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
@@ -405,5 +405,12 @@ public class MentoringService {
                 mentoringPaginationResult.nextCursorCode(),
                 mentoringPaginationResult.hasNext()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public ChatRoomMentoringInfoDto findMentoringInfoForChatRoom(Long mentoringId) {
+        return mentoringRepository.findByIdForChatRoom(mentoringId)
+                .orElseThrow(
+                        () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
     }
 }

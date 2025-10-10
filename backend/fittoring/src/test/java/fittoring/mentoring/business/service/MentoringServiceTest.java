@@ -39,6 +39,7 @@ import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
+import fittoring.mentoring.business.service.dto.chat.ChatRoomMentoringInfoDto;
 import fittoring.mentoring.infra.image.ImageConstants;
 import fittoring.mentoring.infra.image.S3Uploader;
 import fittoring.mentoring.infra.image.VariantUploadResult;
@@ -188,8 +189,8 @@ class MentoringServiceTest {
 
         MentoringStatistics deletedMentoringStatistics = (MentoringStatistics) em.createNativeQuery(
                         "SELECT * FROM mentoring_statistics WHERE mentoring_id = ?", MentoringStatistics.class)
-            .setParameter(1, mentoring.getId())
-            .getSingleResult();
+                .setParameter(1, mentoring.getId())
+                .getSingleResult();
 
         Mentoring deletedMentoring = (Mentoring) em.createNativeQuery(
                         "SELECT * FROM mentoring WHERE id = ?", Mentoring.class)
@@ -1014,5 +1015,34 @@ class MentoringServiceTest {
                     .isInstanceOf(ForbiddenException.class)
                     .hasMessage(BusinessErrorMessage.MENTOR_NOT_SAME.getMessage());
         }
+    }
+
+    @DisplayName("채팅방에 필요한 멘토링 정보를 조회할 수 있다.")
+    @Test
+    void findMentoringInfoForChatRoom() {
+        //given
+        Member mentor = memberRepository.save(
+                new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw")));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개", "chatUrl"));
+
+        Category category1 = new Category("근육증가");
+        Category category2 = new Category("다이어트");
+
+        categoryRepository.save(category1);
+        categoryRepository.save(category2);
+
+        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId());
+        imageRepository.save(image1);
+
+        //when
+        ChatRoomMentoringInfoDto actual = mentoringService.findMentoringInfoForChatRoom(
+                mentoring.getId());
+
+        //then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(actual.mentorName()).isEqualTo("김트레이너");
+            softAssertions.assertThat(actual.price()).isEqualTo(1000);
+            softAssertions.assertThat(actual.profileImageUrl()).isEqualTo("멘토링이미지1url");
+        });
     }
 }

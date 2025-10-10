@@ -2,6 +2,7 @@ package fittoring.mentoring.business.repository;
 
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.service.dto.chat.ChatRoomMentoringInfoDto;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +21,21 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
                     WHERE rv.id = :reviewId
             """)
     Optional<Mentoring> findByReviewId(Long reviewId);
+
+    @Query("""
+            SELECT new fittoring.mentoring.business.service.dto.chat.ChatRoomMentoringInfoDto(
+                m.mentor.name,
+                m.price,
+                (SELECT img.url
+                   FROM Image img
+                  WHERE img.relationId = m.id
+                    AND img.imageType = 'MENTORING_PROFILE'
+                    AND img.imageVariant = 'THUMBNAIL')
+            )
+            FROM Mentoring m
+            WHERE m.id = :mentoringId
+            """)
+    Optional<ChatRoomMentoringInfoDto> findByIdForChatRoom(Long mentoringId);
 
     @Query("""
             SELECT m
