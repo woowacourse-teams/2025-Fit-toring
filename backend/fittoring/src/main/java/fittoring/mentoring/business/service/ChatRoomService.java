@@ -72,6 +72,7 @@ public class ChatRoomService {
 
         return new ChatRoomInfoDto(
                 reservation.getMentoring().getId(),
+                member.getRole(),
                 opponentName,
                 chatRoom.getStatus().name()
         );

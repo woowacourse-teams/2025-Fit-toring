@@ -107,6 +107,8 @@ class ChatRoomServiceTest {
 
         ChatRoom chatRoom = new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId());
         em.persist(chatRoom);
+        em.flush();
+        em.clear();
 
         //when
         ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
@@ -114,6 +116,7 @@ class ChatRoomServiceTest {
         //then
         SoftAssertions.assertSoftly(softly -> {
             assertThat(chatRoomInfoDto.mentoringId()).isEqualTo(1L);
+            assertThat(chatRoomInfoDto.myRole()).isEqualTo(MemberRole.MENTEE);
             assertThat(chatRoomInfoDto.opponentName()).isEqualTo("김트레이너");
             assertThat(chatRoomInfoDto.status()).isEqualTo(ChatStatus.ACTIVATE.name());
         });
@@ -173,6 +176,7 @@ class ChatRoomServiceTest {
         //then
         SoftAssertions.assertSoftly(softly -> {
             assertThat(chatRoomInfoDto.mentoringId()).isEqualTo(1L);
+            assertThat(chatRoomInfoDto.myRole()).isEqualTo(MemberRole.MENTOR);
             assertThat(chatRoomInfoDto.opponentName()).isEqualTo("김멘티");
             assertThat(chatRoomInfoDto.status()).isEqualTo(ChatStatus.ACTIVATE.name());
         });
@@ -322,7 +326,7 @@ class ChatRoomServiceTest {
         // then
         SoftAssertions.assertSoftly(softly -> {
                     softly.assertThat(response).isNotNull();
-                    softly.assertThat(response.status()).isEqualTo(ChatStatus.ACTIVATE.name());
+                    softly.assertThat(response.status()).isEqualTo(ChatStatus.ACTIVATE);
                 }
         );
     }
