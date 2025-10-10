@@ -12,12 +12,12 @@ import useNameInput from '../../../../common/hooks/useNameInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
+import { postAuthCode } from '../../apis/postAuthCode';
+import { postAuthCodeVerify } from '../../apis/postAuthCodeVerify';
 import { postSignup } from '../../apis/postSignup';
 import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput';
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
-import useVerificationCodeConfirm from '../../hooks/useVerificationCodeConfirm';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
-import useVerificationCodeRequest from '../../hooks/useVerificationCodeRequest';
 import PasswordFields from '../PasswordFields/PasswordFields';
 import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
@@ -97,6 +97,8 @@ function SignupForm() {
     passwordConfirmValidated,
   } = usePasswordWithConfirmInput();
 
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
   const {
     phoneNumber,
     inputRef,
@@ -121,16 +123,32 @@ function SignupForm() {
 
   const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
 
-  const {
-    shouldBlockSubmitByPhoneNumberCheck,
-    handleAuthCodeClick,
-    getFinalPhoneNumberErrorMessage,
-    matchConfirmedPhoneNumber,
-  } = useVerificationCodeRequest({
-    phoneNumber,
-    phoneNumberErrorMessage,
-    completeRequest,
-  });
+  const handleAuthCodeClick = async (phoneNumber: string) => {
+    try {
+      const response = await postAuthCode(phoneNumber);
+      if (response.status === 201) {
+        alert('인증요청 성공');
+        completeRequest();
+      }
+    } catch (error) {
+      console.error('인증요청 실패', error);
+
+      captureSentryError({
+        error,
+        level: 'error',
+        feature: 'sms',
+        step: 'send-code',
+      });
+    }
+  };
+
+  const getFinalPhoneNumberErrorMessage = () => {
+    if (submitAttempted && verificationStep === 'idle') {
+      return '인증요청을 해주세요.';
+    }
+
+    return phoneNumberErrorMessage;
+  };
 
   const {
     verificationCode,
@@ -139,19 +157,50 @@ function SignupForm() {
     validated: verificationCodeValidated,
   } = useVerificationCodeInput();
 
-  const [submitVerificationErrorMessage, setSubmitVerificationErrorMessage] =
-    useState('');
+  const [verificationCodeError, setVerificationCodeError] = useState(false);
 
-  const {
-    verificationCodeError,
-    handleAuthCodeVerifyClick,
-    getFinalVerificationCodeErrorMessage,
-    shouldBlockSubmitByVerificationCode,
-  } = useVerificationCodeConfirm({
-    verificationCode,
-    verificationCodeErrorMessage,
-    completeVerification,
-  });
+  const onVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleVerificationCodeChange(e);
+    setVerificationCodeError(false);
+  };
+
+  const handleAuthCodeVerifyClick = async (phoneNumber: string) => {
+    setVerificationCodeError(false);
+    try {
+      const response = await postAuthCodeVerify(phoneNumber, verificationCode);
+      if (response.status === 200) {
+        alert('인증 성공');
+      }
+    } catch (error) {
+      setVerificationCodeError(true);
+      console.error('인증 실패', error);
+
+      captureSentryError({
+        error,
+        level: 'error',
+        feature: 'sms',
+        step: 'verify-code',
+      });
+    } finally {
+      completeVerification();
+    }
+  };
+
+  const getFinalVerificationCodeErrorMessage = () => {
+    if (verificationCodeErrorMessage) {
+      return verificationCodeErrorMessage;
+    }
+
+    if (verificationStep === 'verified' && verificationCodeError) {
+      return '인증 실패';
+    }
+
+    if (submitAttempted && verificationStep === 'requested') {
+      return '인증을 해주세요';
+    }
+
+    return '';
+  };
 
   const getDisplayedVerificationErrorMessage = () => {
     const errorMessage = getFinalVerificationCodeErrorMessage();
@@ -160,7 +209,7 @@ function SignupForm() {
       return errorMessage;
     }
 
-    return errorMessage === '' ? submitVerificationErrorMessage : errorMessage;
+    return errorMessage;
   };
 
   const validateForm = () => {
@@ -181,13 +230,12 @@ function SignupForm() {
 
   const getVerificationButtonEnabled = () => {
     return (
-      matchConfirmedPhoneNumber &&
-      phoneNumberErrorMessage === '' &&
-      verificationCodeValidated
+      verificationStep === 'requested' ||
+      (verificationStep === 'verified' &&
+        phoneNumberErrorMessage === '' &&
+        verificationCodeValidated)
     );
   };
-
-  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const getFinalUserIdErrorMessage = () => {
     if (userIdErrorMessage !== '') {
@@ -213,16 +261,7 @@ function SignupForm() {
       return;
     }
 
-    if (shouldBlockSubmitByVerificationCode()) {
-      return;
-    }
-
-    if (shouldBlockSubmitByPhoneNumberCheck()) {
-      return;
-    }
-
     if (verificationStep !== 'verified') {
-      setSubmitVerificationErrorMessage('인증을 다시 해주세요.');
       return;
     }
 
@@ -299,7 +338,7 @@ function SignupForm() {
           phoneNumberErrorMessage={getFinalPhoneNumberErrorMessage()}
           onPhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
-          onVerificationCodeChange={handleVerificationCodeChange}
+          onVerificationCodeChange={onVerificationCodeChange}
           onAuthCodeVerifyClick={handleAuthCodeVerifyClick}
           onAuthCodeClick={handleAuthCodeClick}
           verificationButtonEnabled={getVerificationButtonEnabled()}
