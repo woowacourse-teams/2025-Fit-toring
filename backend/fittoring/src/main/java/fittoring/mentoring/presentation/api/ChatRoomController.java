@@ -3,8 +3,8 @@ package fittoring.mentoring.presentation.api;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.mentoring.business.service.ChatRoomService;
-import fittoring.mentoring.presentation.dto.ChatRoomResponse;
+import fittoring.mentoring.business.service.ChatRoomFacadeService;
+import fittoring.mentoring.business.service.ChatRoomInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ChatRoomController {
 
-    private final ChatRoomService chatRoomService;
+    private final ChatRoomFacadeService chatRoomFacadeService;
 
     @AuthRequired
     @GetMapping("/chatrooms/{chatroomId}")
-    public ResponseEntity<ChatRoomResponse> getChatRoom(
+    public ResponseEntity<ChatRoomInfoResponse> getChatRoom(
             @Login LoginInfo loginInfo,
             @PathVariable("chatroomId") Long chatroomId
     ) {
-        ChatRoomResponse chatRoom = chatRoomService.findChatRoom(loginInfo.memberId(), chatroomId);
-        return ResponseEntity.ok(chatRoom);
+        ChatRoomInfoResponse response = chatRoomFacadeService.getChatRoom(chatroomId, loginInfo.memberId());
+        return ResponseEntity.ok(response);
     }
 }
