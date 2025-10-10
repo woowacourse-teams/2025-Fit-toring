@@ -4,31 +4,30 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-import ApiError from '../../../../common/apis/ApiError';
+import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
 import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
 import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
-import useUserIdInput from '../../../../common/hooks/useUserIdInput';
 import useVerificationCodeConfirm from '../../../../common/hooks/useVerificationCodeConfirm';
 import useVerificationCodeInput from '../../../../common/hooks/useVerificationCodeInput';
 import useVerificationCodeRequest from '../../../../common/hooks/useVerificationCodeRequest';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
-import { postSignup } from '../../apis/postSignup';
-import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput';
-import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
-import PasswordFields from '../PasswordFields/PasswordFields';
-import UserIdField from '../UserIdField/UserIdField';
+import { postIdentityVerification } from '../../apis/postIdentityVerification';
 
-import type { Gender, SignupInfo } from '../../types/signupInfo';
+import type {
+  Gender,
+  IdentityVerificationInfo,
+} from '../types/IdentityVerificationInfo';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 
-function SignupForm() {
+function IdentityVerificationForm() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const {
     name,
@@ -42,7 +41,9 @@ function SignupForm() {
   const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
-    const isGenderType = (value: string): value is SignupInfo['gender'] => {
+    const isGenderType = (
+      value: string,
+    ): value is IdentityVerificationInfo['gender'] => {
       const genders = ['남', '여'];
       return genders.includes(value);
     };
@@ -53,41 +54,6 @@ function SignupForm() {
 
     setGender(value);
   };
-
-  const {
-    userId,
-    handleUserIdChange,
-    errorMessage: userIdErrorMessage,
-    validated: userIdValidated,
-  } = useUserIdInput();
-
-  const {
-    duplicateError,
-    handleDuplicateConfirmClick,
-    shouldBlockSubmitByUserId,
-    getFinalUserIdErrorMessage,
-    resetDuplicateCheck,
-    duplicateChecked,
-  } = useUserIdDuplicateCheck({ userId, userIdErrorMessage });
-
-  const onUserIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleUserIdChange(e);
-
-    if (duplicateChecked) {
-      resetDuplicateCheck();
-    }
-  };
-
-  const {
-    password,
-    passwordConfirm,
-    passwordErrorMessage,
-    passwordConfirmErrorMessage,
-    handlePasswordChange,
-    handlePasswordConfirmChange,
-    passwordValidated,
-    passwordConfirmValidated,
-  } = usePasswordWithConfirmInput();
 
   const {
     phoneNumber,
@@ -158,9 +124,6 @@ function SignupForm() {
   const validateForm = () => {
     const validations = [
       nameValidated,
-      userIdValidated && !duplicateError,
-      passwordValidated,
-      passwordConfirmValidated,
       phoneNumber !== '' && phoneNumberErrorMessage === '',
       verificationCodeValidated && !verificationCodeError,
     ];
@@ -171,20 +134,13 @@ function SignupForm() {
   const verificationRequestButtonEnabled =
     phoneNumberErrorMessage === '' && phoneNumber !== '';
 
-  const getVerificationButtonEnabled = () => {
-    return (
-      matchConfirmedPhoneNumber &&
-      phoneNumberErrorMessage === '' &&
-      verificationCodeValidated
-    );
-  };
+  const verificationButtonEnabled =
+    matchConfirmedPhoneNumber &&
+    phoneNumberErrorMessage === '' &&
+    verificationCodeValidated;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (shouldBlockSubmitByUserId()) {
-      return;
-    }
 
     if (shouldBlockSubmitByVerificationCode()) {
       return;
@@ -199,42 +155,34 @@ function SignupForm() {
       return;
     }
 
-    const invalidSignupInfo =
-      !name ||
-      (gender !== '남' && gender !== '여') ||
-      !password ||
-      !userId ||
-      !phoneNumber;
+    const invalidIdentityVerificationInfo =
+      !name || (gender !== '남' && gender !== '여') || !phoneNumber;
 
-    if (invalidSignupInfo) {
+    if (invalidIdentityVerificationInfo) {
       return;
     }
 
-    const signupInfo: SignupInfo = {
+    const userInfo = {
       name,
-      loginId: userId,
       gender,
       phone: phoneNumber,
-      password,
     };
 
     try {
-      const response = await postSignup(signupInfo);
+      const response = await postIdentityVerification(userInfo);
       if (response.status === 201) {
-        alert('가입에 성공했습니다.');
-        navigate(PAGE_URL.LOGIN);
+        alert('본인 인증이 완료되었습니다.');
+        login();
+        navigate(PAGE_URL.HOME);
       }
     } catch (error) {
-      console.error('회원가입 실패', error);
-      if (error instanceof ApiError) {
-        alert(error.message);
-      }
+      console.error('본인 인증 실패', error);
 
       captureSentryError({
         error,
         level: 'warning',
-        feature: 'signup',
-        step: 'signup',
+        feature: 'identityVerification',
+        step: 'identityVerification',
       });
     }
   };
@@ -249,22 +197,6 @@ function SignupForm() {
           gender={gender}
           onGenderChange={handleGenderChange}
         />
-        <UserIdField
-          userId={userId}
-          onUserIdChange={onUserIdChange}
-          onDuplicateConfrimClick={handleDuplicateConfirmClick}
-          errorMessage={getFinalUserIdErrorMessage()}
-          isUserIdInputValid={userIdErrorMessage === ''}
-          duplicateChecked={duplicateChecked}
-        />
-        <PasswordFields
-          password={password}
-          passwordConfirm={passwordConfirm}
-          passwordErrorMessage={passwordErrorMessage}
-          passwordConfirmErrorMessage={passwordConfirmErrorMessage}
-          onPasswordChange={handlePasswordChange}
-          onPasswordConfirmChange={handlePasswordConfirmChange}
-        />
         <PhoneFields
           phoneNumber={phoneNumber}
           verificationCode={verificationCode}
@@ -275,7 +207,7 @@ function SignupForm() {
           onVerificationCodeChange={handleVerificationCodeChange}
           onAuthCodeVerifyClick={handleAuthCodeVerifyClick}
           onAuthCodeClick={handleAuthCodeClick}
-          verificationButtonEnabled={getVerificationButtonEnabled()}
+          verificationButtonEnabled={verificationButtonEnabled}
           verificationRequestButtonEnabled={verificationRequestButtonEnabled}
         />
       </S_FormFields>
@@ -291,13 +223,13 @@ function SignupForm() {
           font-size: 1.6rem;
         `}
       >
-        회원가입
+        본인 인증 완료
       </Button>
     </S_Container>
   );
 }
 
-export default SignupForm;
+export default IdentityVerificationForm;
 
 const S_Container = styled.form`
   display: flex;
