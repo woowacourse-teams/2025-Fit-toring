@@ -1,5 +1,6 @@
 package fittoring.admin.presentation;
 
+import fittoring.admin.service.AdminCertificateService;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AdminCertificateController {
 
-    private final CertificateService certificateService;
+    private final AdminCertificateService adminCertificateService;
 
     @AuthRequired
     @GetMapping
@@ -31,7 +32,7 @@ public class AdminCertificateController {
             @Login LoginInfo loginInfo,
             @RequestParam(value = "type", required = false) Status status
     ) {
-        List<CertificateResponse> certificates = certificateService.getAllCertificates(
+        List<CertificateResponse> certificates = adminCertificateService.getAllCertificates(
                 loginInfo.memberId(),
                 status
         );
@@ -45,7 +46,7 @@ public class AdminCertificateController {
             @Login LoginInfo loginInfo,
             @PathVariable("certificateId") Long certificateId
     ) {
-        CertificateDetailResponse response = certificateService.getCertificate(
+        CertificateDetailResponse response = adminCertificateService.getCertificate(
                 loginInfo.memberId(),
                 certificateId
         );
@@ -59,7 +60,7 @@ public class AdminCertificateController {
             @Login LoginInfo loginInfo,
             @PathVariable("certificateId") Long certificateId
     ) {
-        certificateService.approveCertificate(
+        adminCertificateService.approveCertificate(
                 loginInfo.memberId(),
                 certificateId
         );
@@ -73,7 +74,7 @@ public class AdminCertificateController {
             @Login LoginInfo loginInfo,
             @PathVariable("certificateId") Long certificateId
     ) {
-        certificateService.rejectCertificate(
+        adminCertificateService.rejectCertificate(
                 loginInfo.memberId(),
                 certificateId
         );
