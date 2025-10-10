@@ -10,6 +10,9 @@ const config: StorybookConfig = {
   env: (config) => ({
     ...config,
     API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:6006',
+    SENTRY_DSN: process.env.SENTRY_DSN || '',
+    NODE_ENV: process.env.NODE_ENV || 'development',
+    GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID || '',
   }),
 };
 export default config;
