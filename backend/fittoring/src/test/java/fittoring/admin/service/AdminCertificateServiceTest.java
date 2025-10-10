@@ -5,15 +5,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import fittoring.admin.presentation.dto.AdminCertificateResponse;
+import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
-import fittoring.application.mentoring.presentation.dto.response.CertificateResponse;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.application.mentoring.service.CertificateService;
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Certificate;
@@ -25,7 +25,6 @@ import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Status;
 import fittoring.logging.JsonLogger;
 import fittoring.util.DbCleaner;
-import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -89,48 +88,130 @@ class AdminCertificateServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> adminCertificateService.getAllCertificates(user.getId(), null))
+        assertThatThrownBy(() -> adminCertificateService.getAllCertificatesPaged(user.getId(), null, 1))
             .isInstanceOf(ForbiddenException.class)
             .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
-    @DisplayName("상태가 없는 자격증명 목록 조회는 모든 값을 반환한다.")
+    @DisplayName("상태가 없는 자격증명을 페이지네이션하여 반환한다.")
     @Test
-    void getAllCertificates() {
+    void getAllCertificatesPaged() {
         // given
         Member member = em.persist(FixtureUtil.getTestMentee());
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
-        Certificate certificate1 = em.persist(FixtureUtil.getTestCertificate(mentoring));
-        Certificate certificate2 = em.persist(FixtureUtil.getTestCertificate(mentoring));
+        for (int i=0; i<35; i++) {
+            // APPROVED 자격증명 35개
+            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            certificate.approve();
+            em.persist(certificate);
+        }
+        for (int i=0; i<35; i++) {
+            // REJECTED 자격증명 35개
+            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            certificate.reject();
+            em.persist(certificate);
+        }
+        for (int i=0; i<35; i++) {
+            // PENDING 자격증명 35개
+            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            em.persist(certificate);
+        }
+        em.flush();
+        em.clear();
 
         // when
-        List<CertificateResponse> certificates = adminCertificateService.getAllCertificates(admin.getId(), null);
+        PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 1);
+        PageResult<AdminCertificateResponse> secondResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 2);
+        PageResult<AdminCertificateResponse> thirdResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 3);
+        PageResult<AdminCertificateResponse> fourthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 4);
+        PageResult<AdminCertificateResponse> fifthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 5);
+        PageResult<AdminCertificateResponse> sixthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 6);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(certificates).hasSize(2);
-            softAssertions.assertThat(certificates.get(0).id()).isEqualTo(certificate1.getId());
-            softAssertions.assertThat(certificates.get(1).id()).isEqualTo(certificate2.getId());
+            softAssertions.assertThat(firstResponse.content()).hasSize(20);
+            softAssertions.assertThat(firstResponse.size()).isEqualTo(20);
+            softAssertions.assertThat(firstResponse.total()).isEqualTo(105);
+            softAssertions.assertThat(firstResponse.totalPages()).isEqualTo(6);
+            softAssertions.assertThat(firstResponse.page()).isEqualByComparingTo(1);
+            softAssertions.assertThat(firstResponse.hasNext()).isTrue();
+            softAssertions.assertThat(secondResponse.content()).hasSize(20);
+            softAssertions.assertThat(secondResponse.size()).isEqualTo(20);
+            softAssertions.assertThat(secondResponse.total()).isEqualTo(105);
+            softAssertions.assertThat(secondResponse.totalPages()).isEqualTo(6);
+            softAssertions.assertThat(secondResponse.page()).isEqualByComparingTo(2);
+            softAssertions.assertThat(secondResponse.hasNext()).isTrue();
+            softAssertions.assertThat(thirdResponse.content()).hasSize(20);
+            softAssertions.assertThat(thirdResponse.size()).isEqualTo(20);
+            softAssertions.assertThat(thirdResponse.total()).isEqualTo(105);
+            softAssertions.assertThat(thirdResponse.totalPages()).isEqualTo(6);
+            softAssertions.assertThat(thirdResponse.page()).isEqualByComparingTo(3);
+            softAssertions.assertThat(thirdResponse.hasNext()).isTrue();
+            softAssertions.assertThat(fourthResponse.content()).hasSize(20);
+            softAssertions.assertThat(fourthResponse.size()).isEqualTo(20);
+            softAssertions.assertThat(fourthResponse.total()).isEqualTo(105);
+            softAssertions.assertThat(fourthResponse.totalPages()).isEqualTo(6);
+            softAssertions.assertThat(fourthResponse.page()).isEqualByComparingTo(4);
+            softAssertions.assertThat(fourthResponse.hasNext()).isTrue();
+            softAssertions.assertThat(fifthResponse.content()).hasSize(20);
+            softAssertions.assertThat(fifthResponse.size()).isEqualTo(20);
+            softAssertions.assertThat(fifthResponse.total()).isEqualTo(105);
+            softAssertions.assertThat(fifthResponse.totalPages()).isEqualTo(6);
+            softAssertions.assertThat(fifthResponse.page()).isEqualByComparingTo(5);
+            softAssertions.assertThat(fifthResponse.hasNext()).isTrue();
+            softAssertions.assertThat(sixthResponse.content()).hasSize(5);
+            softAssertions.assertThat(sixthResponse.size()).isEqualTo(5);
+            softAssertions.assertThat(sixthResponse.total()).isEqualTo(105);
+            softAssertions.assertThat(sixthResponse.totalPages()).isEqualTo(6);
+            softAssertions.assertThat(sixthResponse.page()).isEqualByComparingTo(6);
+            softAssertions.assertThat(sixthResponse.hasNext()).isFalse();
         });
     }
 
-    @DisplayName("상태가 있는 자격증명 목록을 필터링해서 반환한다.")
+    @DisplayName("상태 필터링을 거친 자격증명을 페이지네이션하여 반환한다.")
     @Test
-    void getAllCertificationWithStatus() {
+    void getAllCertificatesPaged2() {
         // given
         Member member = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member)); // 부모 먼저
-        Certificate certificate1 = em.persist(FixtureUtil.getTestCertificate(mentoring));
-        Certificate certificate2 = em.persist(FixtureUtil.getTestCertificate(mentoring));
+        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
+        for (int i=0; i<35; i++) {
+            // APPROVED 자격증명 35개
+            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            certificate.approve();
+            em.persist(certificate);
+        }
+        for (int i=0; i<35; i++) {
+            // REJECTED 자격증명 35개
+            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            certificate.reject();
+            em.persist(certificate);
+        }
+        for (int i=0; i<35; i++) {
+            // PENDING 자격증명 35개
+            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            em.persist(certificate);
+        }
+        em.flush();
+        em.clear();
 
         // when
-        List<CertificateResponse> pending = adminCertificateService.getAllCertificates(admin.getId(), Status.PENDING);
-        List<CertificateResponse> approved = adminCertificateService.getAllCertificates(admin.getId(), Status.APPROVED);
+        PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), Status.REJECTED, 1);
+        PageResult<AdminCertificateResponse> secondResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), Status.REJECTED, 2);
 
         // then
-        SoftAssertions.assertSoftly(s -> {
-            s.assertThat(pending).hasSize(2);
-            s.assertThat(approved).hasSize(0);
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(firstResponse.content()).hasSize(20);
+            softAssertions.assertThat(firstResponse.size()).isEqualTo(20);
+            softAssertions.assertThat(firstResponse.total()).isEqualTo(35);
+            softAssertions.assertThat(firstResponse.totalPages()).isEqualTo(2);
+            softAssertions.assertThat(firstResponse.page()).isEqualByComparingTo(1);
+            softAssertions.assertThat(firstResponse.hasNext()).isTrue();
+            softAssertions.assertThat(secondResponse.content()).hasSize(15);
+            softAssertions.assertThat(secondResponse.size()).isEqualTo(15);
+            softAssertions.assertThat(secondResponse.total()).isEqualTo(35);
+            softAssertions.assertThat(secondResponse.totalPages()).isEqualTo(2);
+            softAssertions.assertThat(secondResponse.page()).isEqualByComparingTo(2);
+            softAssertions.assertThat(secondResponse.hasNext()).isFalse();
         });
     }
 

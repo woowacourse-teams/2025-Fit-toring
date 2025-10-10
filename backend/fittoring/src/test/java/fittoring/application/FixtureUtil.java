@@ -1,6 +1,14 @@
 package fittoring.application;
 
-import fittoring.domain.model.*;
+import fittoring.domain.model.Certificate;
+import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
 
 public class FixtureUtil {
@@ -59,20 +67,20 @@ public class FixtureUtil {
     public static Mentoring getTestMentoring(Member member) {
         member.registerAsMentor();
         return new Mentoring(
-                member,
-                5000,
-                5,
-                "content",
-                "introduction",
-                "https://chatRoomUrl"
+            member,
+            5000,
+            5,
+            "content",
+            "introduction",
+            "https://chatRoomUrl"
         );
     }
 
     public static Certificate getTestCertificate(Mentoring mentoring) {
         return new Certificate(
-                CertificateType.LICENSE,
-                "자격증",
-                mentoring
+            CertificateType.LICENSE,
+            "자격증",
+            mentoring
         );
     }
 
