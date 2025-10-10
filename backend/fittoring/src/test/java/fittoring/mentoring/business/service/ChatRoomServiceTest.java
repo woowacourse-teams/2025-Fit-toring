@@ -24,7 +24,7 @@ import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
-import fittoring.mentoring.presentation.dto.ChatRoomResponse;
+import fittoring.mentoring.presentation.dto.ChatRoomInfoDto;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,13 +109,13 @@ class ChatRoomServiceTest {
         em.persist(chatRoom);
 
         //when
-        ChatRoomResponse chatRoomResponse = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
+        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
 
         //then
         SoftAssertions.assertSoftly(softly -> {
-            assertThat(chatRoomResponse.mentoringId()).isEqualTo(1L);
-            assertThat(chatRoomResponse.opponentName()).isEqualTo("김트레이너");
-            assertThat(chatRoomResponse.status()).isEqualTo(ChatStatus.ACTIVATE.name());
+            assertThat(chatRoomInfoDto.mentoringId()).isEqualTo(1L);
+            assertThat(chatRoomInfoDto.opponentName()).isEqualTo("김트레이너");
+            assertThat(chatRoomInfoDto.status()).isEqualTo(ChatStatus.ACTIVATE.name());
         });
     }
 
@@ -168,13 +168,13 @@ class ChatRoomServiceTest {
         em.persist(chatRoom);
 
         //when
-        ChatRoomResponse chatRoomResponse = chatRoomService.findChatRoom(mentor.getId(), chatRoom.getId());
+        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(mentor.getId(), chatRoom.getId());
 
         //then
         SoftAssertions.assertSoftly(softly -> {
-            assertThat(chatRoomResponse.mentoringId()).isEqualTo(1L);
-            assertThat(chatRoomResponse.opponentName()).isEqualTo("김멘티");
-            assertThat(chatRoomResponse.status()).isEqualTo(ChatStatus.ACTIVATE.name());
+            assertThat(chatRoomInfoDto.mentoringId()).isEqualTo(1L);
+            assertThat(chatRoomInfoDto.opponentName()).isEqualTo("김멘티");
+            assertThat(chatRoomInfoDto.status()).isEqualTo(ChatStatus.ACTIVATE.name());
         });
     }
 
@@ -317,7 +317,7 @@ class ChatRoomServiceTest {
         em.persist(chatRoom);
 
         // when
-        ChatRoomResponse response = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
+        ChatRoomInfoDto response = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
 
         // then
         SoftAssertions.assertSoftly(softly -> {

@@ -16,7 +16,7 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
-import fittoring.mentoring.presentation.dto.ChatRoomResponse;
+import fittoring.mentoring.presentation.dto.ChatRoomInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +60,7 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public ChatRoomResponse findChatRoom(Long memberId, Long chatroomId) {
+    public ChatRoomInfoDto findChatRoom(Long memberId, Long chatroomId) {
         ChatRoom chatRoom = getChatRoom(chatroomId);
         validateParticipant(memberId, chatRoom);
 
@@ -70,7 +70,7 @@ public class ChatRoomService {
         Member member = getMember(memberId);
         String opponentName = getOpponentName(member, reservation);
 
-        return new ChatRoomResponse(
+        return new ChatRoomInfoDto(
                 reservation.getMentoring().getId(),
                 opponentName,
                 chatRoom.getStatus().name()

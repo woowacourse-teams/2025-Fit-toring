@@ -1,6 +1,6 @@
 package fittoring.mentoring.presentation.dto;
 
-public record ChatRoomResponse(
+public record ChatRoomInfoDto(
         Long mentoringId,
         String opponentName,
         String status
