@@ -22,6 +22,7 @@ import { postMentoringCreate } from '../../apis/postMentoringCreate';
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { mentoringCreateFormData } from '../../../../common/types/mentoringCreateFormData';
+import { useMutation } from '@tanstack/react-query';
 
 function MentoringCreateForm() {
   const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
@@ -78,6 +79,27 @@ function MentoringCreateForm() {
     });
   };
 
+  const mutation = useMutation({
+    mutationFn: postMentoringCreate,
+    onSuccess: (response) => {
+      if (response.status === 201) {
+        alert('멘토링 등록 성공');
+      }
+    },
+    onError: (error, variables) => {
+      console.error('멘토링 등록 실패');
+      captureSentryError({
+        error,
+        level: 'error',
+        feature: 'mentoring',
+        step: 'mentoring-create',
+        extras: {
+          ...variables,
+        },
+      });
+    },
+  });
+
   const submitMentoringForm = async () => {
     const filteredCertificateInfos = mentoringData.certificateInfos.map(
       (certificateInfo) => ({
@@ -85,34 +107,16 @@ function MentoringCreateForm() {
         title: certificateInfo.title,
       }),
     );
-    try {
-      const response = await postMentoringCreate(
-        { ...mentoringData, certificateInfos: filteredCertificateInfos },
-        profileImageFile,
-        certificateImageFiles,
-      );
 
-      if (response.status === 201) {
-        alert('멘토링 등록 성공');
-      }
-    } catch (error) {
-      console.error('멘토링 등록 실패');
+    mutation.mutate({
+      mentoringData: {
+        ...mentoringData,
+        certificateInfos: filteredCertificateInfos,
+      },
 
-      captureSentryError({
-        error,
-        level: 'error',
-        feature: 'mentoring',
-        step: 'mentoring-create',
-        extras: {
-          mentoringData: {
-            ...mentoringData,
-            certificateInfos: filteredCertificateInfos,
-          },
-          profileImageFile,
-          certificateImageFiles,
-        },
-      });
-    }
+      profileImageFile,
+      certificateImageFiles,
+    });
   };
 
   const navigate = useNavigate();

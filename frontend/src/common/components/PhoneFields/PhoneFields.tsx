@@ -101,8 +101,9 @@ const S_InputAndBtnWrapper = styled.div`
 `;
 
 const buttonCustomStyle = css`
+  flex-shrink: 0;
+
   height: 4rem;
-  min-width: 6.44rem;
   padding: 1.1rem 0.8rem;
 
   font-size: 1.4rem;

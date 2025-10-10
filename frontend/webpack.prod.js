@@ -10,6 +10,26 @@ module.exports = merge(common, {
   optimization: {
     splitChunks: {
       chunks: 'all',
+      cacheGroups: {
+        sentryVendor: {
+          test: /[\\/]node_modules[\\/](@sentry|@sentry-internal)[\\/]/,
+          name: 'vendor-sentry',
+          chunks: 'all',
+          priority: 10,
+        },
+        reactVendor: {
+          test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom)[\\/]/,
+          name: 'vendor-react',
+          chunks: 'all',
+          priority: 10,
+        },
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor-else',
+          chunks: 'initial',
+          priority: -10,
+        },
+      },
     },
   },
   plugins: [

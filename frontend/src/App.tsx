@@ -29,6 +29,7 @@ const CreatedMentoring = lazy(
   () => import('./pages/createdMentoring/CreatedMentoring'),
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
+const ChatRoom = lazy(() => import('./pages/chatRoom/ChatRoom'));
 const IdentityVerification = lazy(
   () => import('./pages/identityVerification/IdentityVerification'),
 );
@@ -57,6 +58,7 @@ const router = createBrowserRouter([
     element: <MentoringUpdate />,
   },
   { path: PAGE_URL.LOGIN, element: <Login /> },
+  { path: `${PAGE_URL.CHAT_ROOM}/:roomId`, element: <ChatRoom /> },
   { path: PAGE_URL.IDENTITY_VERIFICATION, element: <IdentityVerification /> },
   { path: PAGE_URL.KAKAO_CALLBACK, element: <KakaoCallback /> },
   {
