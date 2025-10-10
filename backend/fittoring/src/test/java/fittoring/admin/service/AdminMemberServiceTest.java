@@ -8,7 +8,9 @@ import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Member;
 import fittoring.util.DbCleaner;
+
 import java.util.List;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,6 +80,9 @@ class AdminMemberServiceTest {
                         "menteeId10",
                         "menteeId9",
                         "menteeId8");
+                softAssertions.assertThat(pageResult.total()).isEqualTo(13);
+                softAssertions.assertThat(pageResult.totalPages()).isEqualTo(3);
+                softAssertions.assertThat(pageResult.hasNext()).isEqualTo(true);
             });
         }
 
@@ -104,6 +109,9 @@ class AdminMemberServiceTest {
                         "menteeId5",
                         "menteeId4",
                         "menteeId3");
+                softAssertions.assertThat(pageResult.total()).isEqualTo(13);
+                softAssertions.assertThat(pageResult.totalPages()).isEqualTo(3);
+                softAssertions.assertThat(pageResult.hasNext()).isEqualTo(true);
             });
         }
 
@@ -128,6 +136,9 @@ class AdminMemberServiceTest {
                         "menteeId2",
                         "menteeId1",
                         "adminId");
+                softAssertions.assertThat(pageResult.total()).isEqualTo(13);
+                softAssertions.assertThat(pageResult.totalPages()).isEqualTo(3);
+                softAssertions.assertThat(pageResult.hasNext()).isEqualTo(false);
             });
         }
     }

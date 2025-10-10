@@ -27,6 +27,9 @@ public class AdminMemberService {
 
         List<Long> ids = memberRepository.findMemberIdsForAdmin(page, size);
         List<AdminMemberResponse> responses = memberRepository.findMembersByIdsOrdered(ids);
-        return new PageResult<>(responses, page, size, true);
+        long total = memberRepository.count();
+        int totalPages = (int)Math.max(1, (total + size - 1) / size);
+        boolean hasNext = responses.size() == size;
+        return new PageResult<>(responses, page, size, total, totalPages, hasNext);
     }
 }
