@@ -4,44 +4,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
+import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
+import fittoring.application.chatroom.service.ChatRoomService;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.MentorAndMenteeIsSameException;
+import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.image.service.ImageService;
+import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.ChatRoomUrlGenerator;
+import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
+import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
+import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
+import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.service.ReservationService;
+import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
-import fittoring.config.S3Configuration;
-import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.ForbiddenException;
-import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
-import fittoring.mentoring.business.exception.MentoringNotFoundException;
-import fittoring.mentoring.business.exception.ReservationNotFoundException;
-import fittoring.mentoring.business.model.Category;
-import fittoring.mentoring.business.model.CategoryMentoring;
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.ImageType;
-import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.MemberRole;
-import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.model.MentoringStatistics;
-import fittoring.mentoring.business.model.Phone;
-import fittoring.mentoring.business.model.Reservation;
-import fittoring.mentoring.business.model.Review;
-import fittoring.mentoring.business.model.Status;
-import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
-import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
-import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
-import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
-import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
-import fittoring.mentoring.business.service.dto.ReservationCreateDto;
-import fittoring.mentoring.business.service.dto.ReservationInfo;
-import fittoring.mentoring.infra.image.ImageResizer;
-import fittoring.mentoring.infra.image.ImageTranscoder;
-import fittoring.mentoring.infra.image.S3Uploader;
-import fittoring.mentoring.infra.image.policy.CertificatePolicy;
-import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
-import fittoring.mentoring.infra.image.policy.MentoringProfilePolicy;
-import fittoring.mentoring.infra.image.policy.NonePolicy;
-import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
-import fittoring.mentoring.presentation.dto.AdminReservationResponse;
-import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
+import fittoring.domain.model.Category;
+import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.MentoringStatistics;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import fittoring.domain.model.Status;
+import fittoring.domain.model.password.Password;
 import fittoring.util.DbCleaner;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -62,21 +58,14 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
-        ChatRoomService.class,
         DbCleaner.class,
         JpaConfiguration.class,
-        S3Uploader.class,
-        ImagePolicyRegistry.class,
-        ImageResizer.class,
-        ImageTranscoder.class,
-        S3Configuration.class,
-        CertificatePolicy.class,
-        MentoringProfilePolicy.class,
-        NonePolicy.class,
         ReservationService.class,
         ImageService.class,
         QueryDslConfig.class,
-        ChatRoomUrlGenerator.class
+        MentoringPaginationHelper.class,
+        ChatRoomUrlGenerator.class,
+        ChatRoomService.class,
 })
 @DataJpaTest
 class ReservationServiceTest {
@@ -317,74 +306,6 @@ class ReservationServiceTest {
         //then
         Reservation actual = entityManager.find(Reservation.class, savedReservation.getId());
         assertThat(actual.getStatus()).isEqualTo(expectedStatusValue);
-    }
-
-    @DisplayName("예약이 승인으로 변경되었다면 채팅방 URL을 반환한다.")
-    @Test
-    void updateStatusApprove() {
-        //given
-        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
-        Member savedMentor = entityManager.persist(mentor);
-
-        Mentoring mentoring = new Mentoring(
-                mentor,
-                5000,
-                5,
-                "content",
-                "introduction",
-                "가상의오픈채팅링크"
-        );
-        entityManager.persist(mentoring);
-
-        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
-        Member savedMentee = entityManager.persist(mentee);
-
-        Reservation reservation = new Reservation("content", Status.PENDING, mentoring, savedMentee);
-        Reservation savedReservation = entityManager.persist(reservation);
-
-        String requestStatus = "APPROVED";
-
-        //when
-        ReservationInfo actual = reservationService.updateStatus(reservation.getId(), requestStatus);
-        entityManager.flush();
-        entityManager.clear();
-
-        //then
-        assertThat(actual.chatRoomUrl()).startsWith("https://");
-    }
-
-    @DisplayName("예약이 거절로 변경되었다면 빈 채팅방 URL을 반환한다.")
-    @Test
-    void updateStatusReject() {
-        //given
-        Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
-        Member savedMentor = entityManager.persist(mentor);
-
-        Mentoring mentoring = new Mentoring(
-                mentor,
-                5000,
-                5,
-                "content",
-                "introduction",
-                "가상의오픈채팅링크"
-        );
-        entityManager.persist(mentoring);
-
-        Member mentee = new Member("id2", "MALE", "멘토1", new Phone("010-3455-5678"), Password.from("pw"));
-        Member savedMentee = entityManager.persist(mentee);
-
-        Reservation reservation = new Reservation("content", Status.PENDING, mentoring, savedMentee);
-        Reservation savedReservation = entityManager.persist(reservation);
-
-        String requestStatus = "REJECTED";
-
-        //when
-        ReservationInfo actual = reservationService.updateStatus(reservation.getId(), requestStatus);
-        entityManager.flush();
-        entityManager.clear();
-
-        //then
-        assertThat(actual.chatRoomUrl()).isEqualTo("");
     }
 
     @DisplayName("예약자(멘티)의 전화번호를 반환할 수 있다.")
