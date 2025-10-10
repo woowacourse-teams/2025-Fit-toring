@@ -246,8 +246,7 @@ describe('SignUpForm', () => {
       expect(errorMessage).toBeInTheDocument();
     });
 
-    // TODO: 현재는 회원가입 버튼 누르면 걍 아무것도 안뜨는 문제 발생. 버그 수정 필요
-    it('인증하기 완료후 다시 전화번호를 변경한후 인증요청을 하면 회원가입 버튼 및 인증하기 버튼이 비활성화 된다.', async () => {
+    it('인증하기 완료후 다시 전화번호를 변경한후 인증요청을 하면 인증을 해주세요라는 에러메시지가 뜬다.', async () => {
       // given
       renderSignupForm();
       await fillSignUpFormExceptPhone();
@@ -265,19 +264,10 @@ describe('SignUpForm', () => {
       await userEvent.type(phoneNumberInput, '123-4567-8900');
 
       await userEvent.click(screen.getByRole('button', { name: /인증요청/i }));
+      await userEvent.click(screen.getByRole('button', { name: /회원가입/i }));
 
-      // then
-      const submitButton = await screen.findByRole('button', {
-        name: /회원가입/i,
-      });
-      const verificationButton = await screen.findByRole('button', {
-        name: /인증하기/i,
-      });
-
-      expect(submitButton).toHaveStyle(`background-color: ${THEME.BG.GRAY}`);
-      expect(verificationButton).toHaveStyle(
-        `background-color: ${THEME.BG.GRAY}`,
-      );
+      const errorMessage = await screen.findByText(/인증을 해주세요/i);
+      expect(errorMessage).toBeInTheDocument();
     });
 
     it('인증하기 완료후 다시 전화번호를 변경한후 인증요청 후 올바른 인증번호 입력하고 인증하기 누르면 회원가입이 성공한다.', async () => {
