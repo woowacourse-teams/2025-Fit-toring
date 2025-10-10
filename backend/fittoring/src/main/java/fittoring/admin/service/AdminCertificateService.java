@@ -1,5 +1,7 @@
 package fittoring.admin.service;
 
+import fittoring.admin.presentation.dto.AdminCertificateResponse;
+import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CertificateNotFoundException;
 import fittoring.application.exception.ForbiddenException;
@@ -8,7 +10,6 @@ import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
-import fittoring.application.mentoring.presentation.dto.response.CertificateResponse;
 import fittoring.application.mentoring.repository.CertificateRepository;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.Image;
@@ -25,23 +26,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminCertificateService {
 
+    public static final int PAGE_SIZE_OF_CERTIFICATE = 20;
     private final ImageService imageService;
     private final CertificateRepository certificateRepository;
     private final MemberRepository memberRepository;
 
-    public List<CertificateResponse> getAllCertificates(Long memberId, Status status) {
+    public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Long memberId, Status status, int page) {
         checkAdminAuthority(memberId);
-        List<Certificate> certificates = findCertificates(status);
-        return certificates.stream()
-            .map(CertificateResponse::from)
-            .toList();
-    }
-
-    private List<Certificate> findCertificates(Status status) {
-        if (status == null) {
-            return certificateRepository.findAll();
-        }
-        return certificateRepository.findByVerificationStatus(status);
+        List<AdminCertificateResponse> certificates = certificateRepository.findAllWithFilterAndPagination(status, page, PAGE_SIZE_OF_CERTIFICATE);
+        long total = certificateRepository.countByStatus(status);
+        int totalPages = (int) Math.max(1, (total + PAGE_SIZE_OF_CERTIFICATE - 1) / PAGE_SIZE_OF_CERTIFICATE);
+        boolean hasNext = (certificates.size() == PAGE_SIZE_OF_CERTIFICATE) && (page != totalPages);
+        return new PageResult<>(certificates, page, certificates.size(), total, totalPages, hasNext);
     }
 
     private void checkAdminAuthority(Long memberId) {
@@ -67,10 +63,6 @@ public class AdminCertificateService {
             .orElseThrow(() -> new CertificateNotFoundException(
                 BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage()
             ));
-    }
-
-    public List<Certificate> findAllByMentoringId(Long mentoringId) {
-        return certificateRepository.findAllByMentoringId(mentoringId);
     }
 
     @Transactional
