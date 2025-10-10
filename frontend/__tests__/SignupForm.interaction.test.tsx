@@ -143,8 +143,11 @@ describe('SignUpForm', () => {
       renderSignupForm();
 
       const codeInput = screen.getByLabelText(/인증번호/i);
+      const phoneNumberInput = screen.getByLabelText(/전화번호/i);
 
       // when
+      await userEvent.type(phoneNumberInput, '123-4567-8901');
+      fireEvent.click(screen.getByRole('button', { name: /인증요청/i }));
       await userEvent.type(codeInput, '123456');
 
       // then
@@ -329,7 +332,6 @@ describe('SignUpForm', () => {
       await userEvent.type(phoneNumberInput, '123-4567-8900');
       await userEvent.click(screen.getByRole('button', { name: /인증요청/i }));
 
-      await userEvent.clear(phoneNumberInput);
       await userEvent.type(confirmCodeInput, '123458');
       await userEvent.click(screen.getByRole('button', { name: /인증하기/i }));
 
