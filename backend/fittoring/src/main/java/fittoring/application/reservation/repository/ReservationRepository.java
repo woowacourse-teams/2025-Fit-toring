@@ -1,8 +1,9 @@
 package fittoring.application.reservation.repository;
 
+import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
-import fittoring.application.reservation.service.dto.ParticipatedReservationDto;
+
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
@@ -19,7 +20,6 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
                   r.id as reservationId,
                   m.id as mentoringId,
                   mentor.name as mentorName,
-                  img.url as mentorProfileImage,
                   FUNCTION('date', r.createdAt) as reservedAt,
                   r.content as content,
                   r.status as status,
@@ -29,14 +29,11 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
                 from Reservation r
                   join r.mentoring m
                   join m.mentor mentor
-                  left join Image img on
-                       img.imageType = fittoring.domain.model.ImageType.MENTORING_PROFILE
-                       and img.relationId = m.id
                 where r.isDeleted = false
                     and r.mentee.id = :memberId
                 order by r.createdAt desc, r.id desc
             """)
-    List<ParticipatedReservationDto> findMemberReservationDtos(@Param("memberId") Long menteeId);
+    List<ParticipatedReservationWithoutProfileImageDto> findMemberReservationDtos(@Param("memberId") Long menteeId);
 
     @Query("""
             SELECT r

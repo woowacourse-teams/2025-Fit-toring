@@ -2,11 +2,10 @@ package fittoring.application.reservation.service.dto;
 
 import java.time.LocalDate;
 
-public interface ParticipatedReservationDto {
+public interface ParticipatedReservationWithoutProfileImageDto {
     Long getReservationId();
     Long getMentoringId();
     String getMentorName();
-    String getMentorProfileImage();
     LocalDate getReservedAt();
     String getContent();
     String getStatus();

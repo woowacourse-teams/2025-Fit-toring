@@ -11,4 +11,7 @@ export const PAGE_URL = {
   LOGIN: '/login',
   LANDING: '/landing',
   EDIT_PROFILE: '/my-page/edit-profile',
+  IDENTITY_VERIFICATION: '/identity-verification',
+  KAKAO_CALLBACK: '/kakao/callback',
+  CHAT_ROOM: '/chat/room',
 } as const;

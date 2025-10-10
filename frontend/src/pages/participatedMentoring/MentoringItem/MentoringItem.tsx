@@ -1,16 +1,16 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import MentoringApplicationStatus from '../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import MentoringStepper from '../../../common/components/mentoringStepper/MentoringStepper/MentoringStepper';
+import { PAGE_URL } from '../../../common/constants/url';
 import { StatusTypeEnum } from '../../../common/types/statusType';
 import ReviewButton from '../ReviewButton/ReviewButton';
 import ReviewModal from '../ReviewModal/ReviewModal';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
-import { useNavigate } from 'react-router-dom';
-import { PAGE_URL } from '../../../common/constants/url';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
   handleReviewSubmitButtonClick: (reservationId: number) => void;
@@ -51,7 +51,7 @@ function MentoringItem({
       </S_SummaryWrapper>
       <S_ReservedAt>신청일: {reservedAt}</S_ReservedAt>
       <S_MentorCardWrapper>
-        <S_ProfileImage src={mentorProfileImage}></S_ProfileImage>
+        <S_ProfileImage src={mentorProfileImage} />
         <S_MessageAndReviewWrapper>
           <S_Message>
             <p>{content}</p>
