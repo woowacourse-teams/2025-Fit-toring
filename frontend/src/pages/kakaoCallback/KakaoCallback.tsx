@@ -23,8 +23,10 @@ function KakaoCallback() {
 
           if (response.status === 200) {
             login();
+            window.history.replaceState(null, '', PAGE_URL.HOME);
             navigate(PAGE_URL.HOME);
           } else if (response.status === 204) {
+            window.history.replaceState(null, '', PAGE_URL.HOME);
             navigate(PAGE_URL.IDENTITY_VERIFICATION);
           } else {
             captureSentryError({
