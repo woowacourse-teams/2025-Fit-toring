@@ -172,7 +172,15 @@ export const CHAT_MESSAGES: Message[] = [
 ];
 
 export const CHAT_ROOM_INFO = {
-  opponentName: '김멘티',
-  mentoringId: 1,
-  status: 'ACTIVATE',
+  mentoringInfoDto: {
+    mentorName: '김트레이너',
+    price: 1000,
+    profileImageUrl: '멘토링이미지1url',
+  },
+  chatRoomInfoDto: {
+    mentoringId: 1,
+    myRole: 'MENTEE',
+    opponentName: '김멘티',
+    status: 'ACTIVATE',
+  },
 };
