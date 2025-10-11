@@ -6,8 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
-import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
-
 import { getChatRoom } from './apis/getChatRoom';
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
@@ -64,14 +62,7 @@ function ChatRoom() {
     queryFn: () => getChatRoomInfo(Number(chatRoomId!)),
   });
 
-  const chantRoomInfo = ChatRoomInfoQuery.data;
-  const mentoringId = chantRoomInfo?.mentoringId;
-
-  const { data: mentoring, isPending } = useQuery({
-    queryKey: ['mentoring', mentoringId],
-    queryFn: () => getMentoringDetail(String(mentoringId)),
-    enabled: !!mentoringId,
-  });
+  const chatRoomInfo = ChatRoomInfoQuery.data;
 
   useEffect(() => {
     if (chantRoomMessage) {
@@ -162,28 +153,37 @@ function ChatRoom() {
     });
   };
 
+  if (ChatRoomInfoQuery.isPending) {
+    return (
+      <S_Container>
+        <div>로딩중</div>
+      </S_Container>
+    );
+  }
+
+  if (!chatRoomInfo) {
+    return null;
+  }
+
+  const { chatRoomInfoDto, mentoringInfoDto } = chatRoomInfo;
+
   return (
     <S_Container>
-      {isPending && (
-        // TODO: 추후 스켈레톤으로 변경
-        <div>로딩중</div>
-      )}
-      {chantRoomInfo && mentoring && (
-        <div>
-          <ChatRoomHeader name={chantRoomInfo.opponentName} />
-          <MentoringActionPanel
-            mentorName={mentoring.mentorName}
-            price={mentoring.price}
-            profileImageUrl={mentoring.profileImageUrl}
-            mentorOwned={true}
-            onPaymentRequestClick={handlePaymentRequestClick}
-            onReviewRequestClick={handleReviewRequestClick}
-            onEndClick={handleEndClick}
-            onPaymentClick={handlePaymentClick}
-            onReviewClick={handleReviewClick}
-          />
-        </div>
-      )}
+      <div>
+        <ChatRoomHeader name={chatRoomInfoDto.opponentName} />
+        <MentoringActionPanel
+          mentorName={mentoringInfoDto.mentorName}
+          price={mentoringInfoDto.price}
+          profileImageUrl={mentoringInfoDto.profileImageUrl}
+          mentorOwned={chatRoomInfoDto.myRole === 'MENTOR'}
+          onPaymentRequestClick={handlePaymentRequestClick}
+          onReviewRequestClick={handleReviewRequestClick}
+          onEndClick={handleEndClick}
+          onPaymentClick={handlePaymentClick}
+          onReviewClick={handleReviewClick}
+        />
+      </div>
+
       <ChatContent messages={messages} />
       <InputSection
         value={message}
