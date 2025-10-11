@@ -3,6 +3,7 @@ package fittoring.mentoring.presentation.api;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
+import fittoring.mentoring.business.service.ChatMessageService;
 import fittoring.mentoring.business.service.ChatRoomService;
 import fittoring.mentoring.presentation.dto.ChatRoomResponse;
 import fittoring.mentoring.presentation.dto.chat.response.ChatMessageResponse;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final ChatMessageService chatMessageService;
 
     @AuthRequired
     @GetMapping("/{chatroomId}")
@@ -37,7 +39,7 @@ public class ChatRoomController {
             @Login LoginInfo loginInfo,
             @PathVariable("chatroomId") Long chatRoomId
     ) {
-        List<ChatMessageResponse> response = chatRoomService.findChatMessages(chatRoomId, loginInfo.memberId());
+        List<ChatMessageResponse> response = chatMessageService.findChatMessages(chatRoomId, loginInfo.memberId());
         return ResponseEntity.ok(response);
     }
 }
