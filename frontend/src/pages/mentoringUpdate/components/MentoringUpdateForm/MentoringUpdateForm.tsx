@@ -18,6 +18,7 @@ import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
 import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
+import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { deleteCertificate } from '../../apis/deleteCertificate';
 import { putMentoring } from '../../apis/putMentoring';
 import {
@@ -27,7 +28,6 @@ import {
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
-import { validateTextarea } from '../../../../common/utils/validateDetail';
 
 function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(

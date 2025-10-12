@@ -122,7 +122,7 @@ public class ReviewService {
         MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.findById(mentoringId).get();
         RatingStatsDto reviewInfo = new RatingStatsDto(
             mentoringId,
-            mentoringStatistics.calculateAverageRating(),
+            mentoringStatistics.getAverageRating(),
             mentoringStatistics.getReviewCount()
         );
         return AdminReviewInfoResponse.of(reviewResponses, reviewInfo);
