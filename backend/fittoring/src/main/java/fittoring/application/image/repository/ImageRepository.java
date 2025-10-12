@@ -3,12 +3,14 @@ package fittoring.application.image.repository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ImageRepository extends ListCrudRepository<Image, Long> {
@@ -45,4 +47,7 @@ public interface ImageRepository extends ListCrudRepository<Image, Long> {
     );
 
     void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId);
+
+
+    List<Image> findByImageTypeAndRelationIdIn(ImageType imageType, Collection<Long> relationIds);
 }
