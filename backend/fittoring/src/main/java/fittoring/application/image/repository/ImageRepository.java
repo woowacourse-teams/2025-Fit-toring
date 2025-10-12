@@ -3,6 +3,7 @@ package fittoring.application.image.repository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
@@ -28,6 +29,8 @@ public interface ImageRepository extends ListCrudRepository<Image, Long> {
             String baseName,
             ImageVariant imageVariant
     );
+
+    List<Image> findByImageTypeAndRelationIdIn(ImageType imageType, Collection<Long> relationIds);
 
     @Query("""
               SELECT i
