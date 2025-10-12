@@ -5,6 +5,8 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../../common/apis/ApiError';
+import { postAuthCode } from '../../../../common/apis/postAuthCode';
+import { postAuthCodeVerify } from '../../../../common/apis/postAuthCodeVerify';
 import Button from '../../../../common/components/Button/Button';
 import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
 import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
@@ -12,14 +14,12 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
+import useVerificationCodeInput from '../../../../common/hooks/useVerificationCodeInput';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
-import { postAuthCode } from '../../apis/postAuthCode';
-import { postAuthCodeVerify } from '../../apis/postAuthCodeVerify';
 import { postSignup } from '../../apis/postSignup';
 import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput';
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
-import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
 import PasswordFields from '../PasswordFields/PasswordFields';
 import UserIdField from '../UserIdField/UserIdField';
 
