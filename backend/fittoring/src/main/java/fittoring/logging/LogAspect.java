@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -50,7 +49,6 @@ public class LogAspect {
             return;
         }
         HttpServletRequest req = attrs.getRequest();
-        MDC.put(TRACE_ID, UUID.randomUUID().toString());
         MDC.put(METHOD, req.getMethod());
         MDC.put(URI, req.getRequestURI());
         String bestPattern = (String) req.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
