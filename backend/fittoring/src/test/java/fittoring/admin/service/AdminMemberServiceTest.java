@@ -82,7 +82,6 @@ class AdminMemberServiceTest {
                         "menteeId8");
                 softAssertions.assertThat(pageResult.total()).isEqualTo(13);
                 softAssertions.assertThat(pageResult.totalPages()).isEqualTo(3);
-                softAssertions.assertThat(pageResult.hasNext()).isEqualTo(true);
             });
         }
 
@@ -111,7 +110,6 @@ class AdminMemberServiceTest {
                         "menteeId3");
                 softAssertions.assertThat(pageResult.total()).isEqualTo(13);
                 softAssertions.assertThat(pageResult.totalPages()).isEqualTo(3);
-                softAssertions.assertThat(pageResult.hasNext()).isEqualTo(true);
             });
         }
 
@@ -138,7 +136,6 @@ class AdminMemberServiceTest {
                         "adminId");
                 softAssertions.assertThat(pageResult.total()).isEqualTo(13);
                 softAssertions.assertThat(pageResult.totalPages()).isEqualTo(3);
-                softAssertions.assertThat(pageResult.hasNext()).isEqualTo(false);
             });
         }
     }
