@@ -4,6 +4,7 @@ import fittoring.admin.presentation.dto.AdminReservationResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.dto.AdminMentoringReservationDto;
 import fittoring.application.reservation.repository.ReservationRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +21,12 @@ public class AdminReservationQueryService {
             AdminMentoringReservationDto dto
     ) {
         memberService.validateAdminAuthorization(dto.memberId());
-        return reservationRepository.findReservationsForAdmin(
+        List<AdminReservationResponse> content = reservationRepository.findReservationsForAdmin(
                 dto.page(),
                 dto.size()
         );
+        long total = reservationRepository.count();
+        int totalPages = (int) Math.max(1, (total + dto.size() - 1) / dto.size());
+        return new PageResult<>(content, dto.page(), dto.size(), total, totalPages);
     }
 }

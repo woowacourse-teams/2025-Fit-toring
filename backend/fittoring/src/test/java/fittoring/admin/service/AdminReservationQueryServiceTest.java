@@ -13,7 +13,6 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.util.DbCleaner;
-import java.time.temporal.ChronoUnit;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,8 +76,6 @@ class AdminReservationQueryServiceTest {
             Reservation reservation2 = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
 
             entityManager.flush();
-            entityManager.refresh(reservation1);
-            entityManager.refresh(reservation2);
 
             AdminMentoringReservationDto dto = new AdminMentoringReservationDto(
                     admin.getId(),
@@ -96,7 +93,7 @@ class AdminReservationQueryServiceTest {
                     .extracting(
                             AdminReservationResponse::reservationId,
                             AdminReservationResponse::menteeName,
-                            r -> r.createdAt().truncatedTo(ChronoUnit.SECONDS),
+                            AdminReservationResponse::createdAt,
                             AdminReservationResponse::status,
                             AdminReservationResponse::content
                     )
@@ -104,14 +101,14 @@ class AdminReservationQueryServiceTest {
                             AssertionsForClassTypes.tuple(
                                     reservation2.getId(),
                                     reservation2.getMenteeName(),
-                                    reservation2.getCreatedAt().truncatedTo(ChronoUnit.SECONDS),
+                                    reservation2.getCreatedAt(),
                                     reservation2.getOriginalStatus(),
                                     reservation2.getContent()
                             ),
                             AssertionsForClassTypes.tuple(
                                     reservation1.getId(),
                                     reservation1.getMenteeName(),
-                                    reservation1.getCreatedAt().truncatedTo(ChronoUnit.SECONDS),
+                                    reservation1.getCreatedAt(),
                                     reservation1.getOriginalStatus(),
                                     reservation1.getContent()
                             )

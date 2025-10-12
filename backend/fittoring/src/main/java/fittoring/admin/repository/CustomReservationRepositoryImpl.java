@@ -3,7 +3,6 @@ package fittoring.admin.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import fittoring.admin.presentation.dto.AdminReservationResponse;
-import fittoring.admin.presentation.dto.PageResult;
 import fittoring.domain.model.QMember;
 import fittoring.domain.model.QMentoring;
 import fittoring.domain.model.QReservation;
@@ -20,11 +19,10 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public PageResult<AdminReservationResponse> findReservationsForAdmin(int page, int size) {
-        int limitPlusOne = size + 1;
+    public List<AdminReservationResponse> findReservationsForAdmin(int page, int size) {
         int offset = Math.max(0, (page - 1) * size);
 
-        List<AdminReservationResponse> body = jpaQueryFactory.select(Projections.constructor(
+        return jpaQueryFactory.select(Projections.constructor(
                         AdminReservationResponse.class,
                         RESERVATION.id,
                         MENTEE.name,
@@ -37,14 +35,7 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
                 .join(RESERVATION.mentee, MENTEE)
                 .orderBy(RESERVATION.createdAt.desc(), RESERVATION.id.desc())
                 .offset(offset)
-                .limit(limitPlusOne)
+                .limit(size)
                 .fetch();
-
-        boolean hasNext = body.size() > size;
-        if (hasNext) {
-            body = body.subList(0, size);
-        }
-
-        return new PageResult<>(body, page, size, hasNext);
     }
 }

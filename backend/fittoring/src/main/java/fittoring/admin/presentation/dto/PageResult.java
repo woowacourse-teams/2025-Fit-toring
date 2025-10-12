@@ -6,6 +6,7 @@ public record PageResult<T>(
         List<T> content,
         int page,
         int size,
-        boolean hasNext
+        long total,
+        int totalPages
 ) {
 }

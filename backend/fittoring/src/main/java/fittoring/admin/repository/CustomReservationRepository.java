@@ -1,9 +1,9 @@
 package fittoring.admin.repository;
 
 import fittoring.admin.presentation.dto.AdminReservationResponse;
-import fittoring.admin.presentation.dto.PageResult;
+import java.util.List;
 
 public interface CustomReservationRepository {
 
-    PageResult<AdminReservationResponse> findReservationsForAdmin(int page, int size);
+    List<AdminReservationResponse> findReservationsForAdmin(int page, int size);
 }
