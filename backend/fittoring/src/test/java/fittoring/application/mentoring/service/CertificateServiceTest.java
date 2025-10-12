@@ -22,7 +22,6 @@ import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Status;
@@ -147,7 +146,12 @@ class CertificateServiceTest {
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
         Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
         // certificate가 영속화된 뒤에는 id 존재
-        Image image = em.persist(new Image("url", ImageType.CERTIFICATE, certificate.getId()));
+        Image image = em.persist(new Image(
+                "url",
+                ImageType.CERTIFICATE,
+                certificate.getId(),
+                null
+        ));
 
         // when
         CertificateDetailResponse detail = certificateService.getCertificate(admin.getId(), mentoring.getId());
@@ -156,6 +160,7 @@ class CertificateServiceTest {
         SoftAssertions.assertSoftly(s -> {
             s.assertThat(detail.certificateName()).isEqualTo("자격증");
             s.assertThat(detail.certificateType()).isEqualTo(CertificateType.LICENSE);
+            s.assertThat(detail.imageUrl()).isEqualTo(image.getUrl());
         });
     }
 
@@ -188,7 +193,6 @@ class CertificateServiceTest {
         assertThatCode(() -> certificateService.approveCertificate(admin.getId(), certificate.getId()))
                 .doesNotThrowAnyException();
     }
-
 
 
     @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 승인할 수 없다.")

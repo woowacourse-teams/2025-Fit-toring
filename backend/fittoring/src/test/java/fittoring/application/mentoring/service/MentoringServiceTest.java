@@ -126,14 +126,21 @@ class MentoringServiceTest {
         categoryMentoringRepository.save(categoryMentoring);
         categoryMentoringRepository.save(new CategoryMentoring(category2, mentoring));
 
-        imageRepository.save(new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoringId, null));
+        imageRepository.save(new Image(
+                "멘토링이미지1url",
+                ImageType.MENTORING_PROFILE,
+                mentoringId,
+                null
+        ));
 
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
-        Reservation reservation1 = reservationRepository.save(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Reservation reservation1 = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
         reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
         Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation1, mentee));
 
-        Certificate certificate = certificateRepository.save(new Certificate(CertificateType.LICENSE, "자격증1", mentoring));
+        Certificate certificate = certificateRepository.save(
+                new Certificate(CertificateType.LICENSE, "자격증1", mentoring));
 
         // when
         mentoringService.deleteMentoringByAdmin(adminLoginId, mentoringId);
@@ -457,7 +464,8 @@ class MentoringServiceTest {
 
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(changedMentoring.getPrice()).isEqualTo(modifyMentoringDto.price());
-                softAssertions.assertThat(changedMentoring.getIntroduction()).isEqualTo(modifyMentoringDto.introduction());
+                softAssertions.assertThat(changedMentoring.getIntroduction())
+                        .isEqualTo(modifyMentoringDto.introduction());
                 softAssertions.assertThat(changedMentoring.getCareer()).isEqualTo(modifyMentoringDto.career());
                 softAssertions.assertThat(changedMentoring.getContent()).isEqualTo(modifyMentoringDto.content());
                 softAssertions.assertThat(changedCategories).containsExactlyInAnyOrder("다이어트");
