@@ -19,7 +19,7 @@ public interface CertificateRepository extends ListCrudRepository<Certificate, L
             JOIN FETCH c.mentoring.mentor
             WHERE c.verificationStatus=:status
             """)
-    List<Certificate> findByVerificationStatus(@Param("status") Status status);
+    List<Certificate> findByVerificationStatus(@Param("status") Status verificationStatus);
 
     @Query("""
             SELECT c
