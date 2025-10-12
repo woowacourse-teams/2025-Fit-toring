@@ -2,6 +2,8 @@ spring:
   autoconfigure:
     exclude:
       - io.awspring.cloud.autoconfigure.sqs.SqsAutoConfiguration
+  application:
+    name: fittoring-test
   config:
     import: optional:file:.env[.properties]
   datasource:

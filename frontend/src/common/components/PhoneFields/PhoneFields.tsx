@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import Button from '../../../../common/components/Button/Button';
-import FormField from '../../../../common/components/FormField/FormField';
-import Input from '../../../../common/components/Input/Input';
+import Button from '../Button/Button';
+import FormField from '../FormField/FormField';
+import Input from '../Input/Input';
 
 interface PhoneFieldsProps {
   phoneNumber: string;

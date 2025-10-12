@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postAuthCodeVerify } from '../apis/postAuthCodeVerify';
+import { captureSentryError } from '../utils/captureSentryError';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 
