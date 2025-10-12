@@ -10,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomMemberRepositoryImpl implements CustomMemberRepository {
 
-    private static final QMember member = QMember.member;
-
+    private final QMember member = QMember.member;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -29,8 +28,14 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository {
     @Override
     public List<AdminMemberResponse> findMembersByIdsOrdered(List<Long> ids) {
         return jpaQueryFactory.select(
-                        Projections.constructor(AdminMemberResponse.class,
-                                member.name, member.loginId, member.gender, member.phone.number, member.role)
+                        Projections.constructor(
+                                AdminMemberResponse.class,
+                                member.name,
+                                member.loginId,
+                                member.gender,
+                                member.phone.number,
+                                member.role
+                        )
                 ).from(member)
                 .where(member.id.in(ids))
                 .orderBy(member.id.desc())
