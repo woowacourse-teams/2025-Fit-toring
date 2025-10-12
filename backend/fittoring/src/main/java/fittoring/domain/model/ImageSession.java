@@ -19,7 +19,6 @@ import org.springframework.data.annotation.CreatedDate;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @Table(name = "image_session")
 @Entity
 public class ImageSession {
