@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
-import downIcon from '../../common/assets/images/downIcon.svg';
 
+import downIcon from '../../common/assets/images/downIcon.svg';
 import { StatusTypeEnum } from '../../common/types/statusType';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 

@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../../common/apis/ApiError';
 import Button from '../../../../common/components/Button/Button';
+import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
+import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
 import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
@@ -19,9 +21,7 @@ import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
 import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
 import PasswordFields from '../PasswordFields/PasswordFields';
-import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
-import UserInfoFields from '../UserInfoFields/UserInfoFields';
 
 import type { Gender, SignupInfo } from '../../types/signupInfo';
 

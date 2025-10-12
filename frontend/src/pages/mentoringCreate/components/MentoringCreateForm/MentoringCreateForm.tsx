@@ -17,11 +17,11 @@ import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
 import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
+import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { mentoringCreateFormData } from '../../../../common/types/mentoringCreateFormData';
-import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { useMutation } from '@tanstack/react-query';
 
 function MentoringCreateForm() {
