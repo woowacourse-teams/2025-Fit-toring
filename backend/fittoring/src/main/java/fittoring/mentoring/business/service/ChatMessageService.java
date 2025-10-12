@@ -1,14 +1,19 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
 import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
 import fittoring.mentoring.business.model.ChatMessage;
 import fittoring.mentoring.business.model.ChatRoom;
+import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.repository.ChatMessageRepository;
 import fittoring.mentoring.business.repository.ChatRoomRepository;
+import fittoring.mentoring.business.service.dto.chat.ChatMessagePaginationResult;
 import fittoring.mentoring.presentation.dto.chat.request.ChatMessageRequest;
+import fittoring.mentoring.presentation.dto.chat.response.ChatMessagePaginationResponse;
 import fittoring.mentoring.presentation.dto.chat.response.ChatMessageResponse;
+import fittoring.util.CursorCodec;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,14 +34,30 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatMessageResponse> findChatMessages(Long chatRoomId, Long memberId) {
+    public ChatMessagePaginationResponse findChatMessages(
+            Long chatRoomId,
+            Long memberId,
+            SortKey sortKey,
+            String cursorCode
+    ) {
         ChatRoom chatRoom = getChatRoom(chatRoomId);
         validateParticipant(memberId, chatRoom);
 
-        List<ChatMessage> findChatMessages = chatMessageRepository.findAllByChatRoomId(chatRoomId);
-        return findChatMessages.stream()
-                .map(chatMessage -> ChatMessageResponse.from(chatMessage, null))
-                .toList();
+        Cursor cursor = CursorCodec.decode(cursorCode);
+
+        ChatMessagePaginationResult paginationResult = chatMessageRepository.findChatMessagesWithPagination(
+                chatRoomId,
+                sortKey,
+                cursor
+        );
+
+        List<ChatMessageResponse> responses = getChatMessageResponses(paginationResult);
+
+        return new ChatMessagePaginationResponse(
+                responses,
+                paginationResult.nextCursorCode(),
+                paginationResult.hasNext()
+        );
     }
 
     private ChatRoom getChatRoom(Long chatroomId) {
@@ -52,5 +73,12 @@ public class ChatMessageService {
                     BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage()
             );
         }
+    }
+
+    private List<ChatMessageResponse> getChatMessageResponses(final ChatMessagePaginationResult paginationResult) {
+        return paginationResult.chatMessages()
+                .stream()
+                .map(chatMessage -> ChatMessageResponse.from(chatMessage, null))
+                .toList();
     }
 }
