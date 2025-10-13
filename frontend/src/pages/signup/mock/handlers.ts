@@ -1,12 +1,18 @@
 import { http, HttpResponse } from 'msw';
 
-import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
+import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
+
+const BASE_URL = process.env.API_BASE_URL;
+const SIGNUP_URL = `${BASE_URL}${API_ENDPOINTS.SIGNUP}`;
+
+const postSignup = http.post(SIGNUP_URL, async () => {
+  return await HttpResponse.json({ message: '회원가입 성공' }, { status: 201 });
+});
 
 interface AuthCodeBody {
   loginId: string;
 }
 
-const BASE_URL = process.env.API_BASE_URL;
 const AUTH_CODE_URL = `${BASE_URL}${API_ENDPOINTS.VALIDATE_ID}`;
 
 const DUMMY_DUPLICATE_USER_ID = 'test1234';
@@ -33,4 +39,4 @@ const postValidateId = http.post(AUTH_CODE_URL, async ({ request }) => {
   );
 });
 
-export const validateIdHandler = [postValidateId];
+export const signupHandler = [postSignup, postValidateId];
