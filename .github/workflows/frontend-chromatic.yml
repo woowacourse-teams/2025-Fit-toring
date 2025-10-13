@@ -34,10 +34,12 @@ jobs:
             echo "✅ Environment: DEVELOPMENT"
             echo "API_BASE_URL=${{ secrets.FE_DEV_API_BASE_URL }}" >> .env.dev
             echo "SENTRY_DSN=${{ secrets.FE_DEV_SENTRY_DSN }}" >> .env.dev
+            echo "KAKAO_REDIRECT_URL=${{ secrets.FE_DEV_KAKAO_REDIRECT_URL }}" >> .env.dev
           elif [[ "${{ github.base_ref }}" == "release-dev" || "${{ github.base_ref }}" == "release-prod" ]]; then
             echo "✅ Environment: PRODUCTION"
             echo "API_BASE_URL=${{ secrets.FE_PROD_API_BASE_URL }}" >> .env.prod
             echo "SENTRY_DSN=${{ secrets.FE_PROD_SENTRY_DSN }}" >> .env.prod
+            echo "KAKAO_REDIRECT_URL=${{ secrets.FE_PROD_KAKAO_REDIRECT_URL }}" >> .env.prod
           else
             echo "❌ Error: Unsupported target branch for CI."
             exit 1
@@ -45,6 +47,7 @@ jobs:
 
           echo "SENTRY_AUTH_TOKEN=${{ secrets.FE_SENTRY_AUTH_TOKEN }}" >> .env
           echo "GOOGLE_ANALYTICS_ID=${{ secrets.FE_GOOGLE_ANALYTICS_ID }}" >> .env
+          echo "KAKAO_REST_API_KEY=${{ secrets.FE_KAKAO_REST_API_KEY }}" >> .env
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Build Storybook
