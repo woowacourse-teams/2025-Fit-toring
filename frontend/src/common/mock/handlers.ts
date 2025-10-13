@@ -1,6 +1,8 @@
 import { createdMentoringHandler } from '../../pages/createdMentoring/mock/handlers';
 import { editProfileHandlers } from '../../pages/editProfile/mock/handler';
 import { loginHandler } from '../../pages/login/mock/handler';
+import { mentoringCreateHandler } from '../../pages/mentoringCreate/mock/handlers';
+import { mentoringUpdateHandler } from '../../pages/mentoringUpdate/mock/handlers';
 import { validateIdHandler } from '../../pages/signup/mock/validateId/handler';
 
 import { authCodeHandler } from './authCode/authCode';
@@ -8,7 +10,6 @@ import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
 import { commonHandler } from './common/handlers';
 import { membersHandler } from './members/handlers';
 import { mentoringHandler } from './mentoring/handlers';
-import { mentoringDetailHandler } from './mentoringDetail/handler';
 import { participatedMentoringHandler } from './participatedMentoring/handler';
 import { signupHandler } from './signup/signup';
 
@@ -23,7 +24,8 @@ export const handlers = [
   ...membersHandler,
   ...loginHandler,
   ...createdMentoringHandler,
-  ...mentoringDetailHandler,
+  ...mentoringCreateHandler,
+  ...mentoringUpdateHandler,
   ...participatedMentoringHandler,
   ...editProfileHandlers,
 ];
