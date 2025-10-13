@@ -38,6 +38,7 @@ public class CertificateService {
     private final ImageService imageService;
     private final PresignedUrlService presignedUrlService;
     private final JsonLogger jsonLogger;
+    private final KeyBuilder keyBuilder;
 
     public void mapCertificatesToMentoring(
             List<CertificateInfoRequest> certificateInfoRequests,
@@ -82,7 +83,7 @@ public class CertificateService {
         List<Image> certificateImages = new ArrayList<>();
         for (CertificateInfoRequest certificateInfo : certificateInfos) {
             Long certificateId = saveCertificate(certificateInfo, savedMentoring);
-            String baseName = KeyBuilder.extractBaseNameFromUrl(certificateInfo.imageUrl());
+            String baseName = keyBuilder.extractBaseNameFromUrl(certificateInfo.imageUrl());
             certificateImages.add(new Image(
                     certificateInfo.imageUrl(),
                     ImageType.CERTIFICATE,

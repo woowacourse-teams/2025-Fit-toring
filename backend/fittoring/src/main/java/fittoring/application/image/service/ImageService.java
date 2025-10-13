@@ -4,14 +4,12 @@ import fittoring.application.image.repository.ImageRepository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
-
-import java.util.Collection;
 import fittoring.infrastructure.image.KeyBuilder;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+    private final KeyBuilder keyBuilder;
 
     @Transactional
     public Image save(ImageType type, Long relationId, String imageUrl) {
-        String baseName = KeyBuilder.extractBaseNameFromUrl(imageUrl);
+        String baseName = keyBuilder.extractBaseNameFromUrl(imageUrl);
         return imageRepository.save(new Image(
                 imageUrl,
                 type,
