@@ -1,8 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-import { API_ENDPOINTS } from '../../constants/apiEndpoints';
-
-import { SPECIALTIES, USER_INFO } from './data';
+import { SPECIALTIES } from './data';
 
 export const testStateStore = {
   shouldFail: false,
@@ -29,19 +27,4 @@ const getSpecialties = http.get(SPECIALTIES_URL, () => {
   return HttpResponse.json(response);
 });
 
-const USER_INFO_URL = `${BASE_URL}${API_ENDPOINTS.MEMBERS_ME}`;
-
-const getUserInfo = http.get(USER_INFO_URL, () => {
-  const response = { ...USER_INFO };
-
-  if (testStateStore.shouldFail) {
-    return new HttpResponse(null, {
-      status: 500,
-      statusText: 'userInfo fetch Failed',
-    });
-  }
-
-  return HttpResponse.json(response);
-});
-
-export const commonHandler = [getSpecialties, getUserInfo];
+export const commonHandler = [getSpecialties];
