@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 import { postAuthCode } from '../../../common/mock/authCode/handlers';
+import { postAuthCodeVerify } from '../../../common/mock/authCodeVerify/handlers';
 
 const BASE_URL = process.env.API_BASE_URL;
 const SIGNUP_URL = `${BASE_URL}${API_ENDPOINTS.SIGNUP}`;
@@ -40,4 +41,9 @@ const postValidateId = http.post(AUTH_CODE_URL, async ({ request }) => {
   );
 });
 
-export const signupHandler = [postSignup, postValidateId, postAuthCode];
+export const signupHandler = [
+  postSignup,
+  postValidateId,
+  postAuthCode,
+  postAuthCodeVerify,
+];

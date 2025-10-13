@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 import { postAuthCode } from '../../../common/mock/authCode/handlers';
+import { postAuthCodeVerify } from '../../../common/mock/authCodeVerify/handlers';
 import { getUserInfo } from '../../../common/mock/getUserInfo/handler';
 
 import type { PartialUserProfileRequest } from '../../../pages/editProfile/types/userProfile';
@@ -37,4 +38,9 @@ const patchMyProfile = http.patch(EDIT_PROFILE_URL, async ({ request }) => {
   );
 });
 
-export const editProfileHandlers = [patchMyProfile, getUserInfo, postAuthCode];
+export const editProfileHandlers = [
+  patchMyProfile,
+  getUserInfo,
+  postAuthCode,
+  postAuthCodeVerify,
+];
