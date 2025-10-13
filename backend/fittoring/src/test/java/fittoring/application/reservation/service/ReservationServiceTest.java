@@ -32,6 +32,7 @@ import fittoring.domain.model.MentoringStatistics;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.util.DbCleaner;
 import java.util.List;
 import java.util.TimeZone;
@@ -56,6 +57,7 @@ import org.springframework.test.context.ActiveProfiles;
         JpaConfiguration.class,
         ReservationService.class,
         ImageService.class,
+        KeyBuilder.class,
         QueryDslConfig.class,
         MentoringPaginationHelper.class,
         ChatRoomUrlGenerator.class,
