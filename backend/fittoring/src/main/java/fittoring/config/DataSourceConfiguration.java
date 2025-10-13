@@ -1,9 +1,5 @@
 package fittoring.config;
 
-import static fittoring.infrastructure.database.DataSourceType.Key.REPLICA_NAME;
-import static fittoring.infrastructure.database.DataSourceType.Key.ROUTING_NAME;
-import static fittoring.infrastructure.database.DataSourceType.Key.SOURCE_NAME;
-
 import com.zaxxer.hikari.HikariDataSource;
 import fittoring.infrastructure.database.DataSourceType;
 import fittoring.infrastructure.database.RoutingDataSource;
@@ -23,7 +19,7 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 public class DataSourceConfiguration {
 
     @Bean
-    @Qualifier(SOURCE_NAME)
+    @Qualifier(DataSourceType.Key.SOURCE_NAME)
     @ConfigurationProperties(prefix = "spring.datasources.writer")
     public HikariDataSource sourceDataSource() {
         return DataSourceBuilder.create()
@@ -32,7 +28,7 @@ public class DataSourceConfiguration {
     }
 
     @Bean
-    @Qualifier(REPLICA_NAME)
+    @Qualifier(DataSourceType.Key.REPLICA_NAME)
     @ConfigurationProperties(prefix = "spring.datasources.reader")
     public HikariDataSource replicaDataSource() {
         return DataSourceBuilder.create()
@@ -41,10 +37,10 @@ public class DataSourceConfiguration {
     }
 
     @Bean
-    @Qualifier(ROUTING_NAME)
+    @Qualifier(DataSourceType.Key.ROUTING_NAME)
     public DataSource routingDataSource(
-            @Qualifier(SOURCE_NAME) DataSource sourceDataSource,
-            @Qualifier(REPLICA_NAME) DataSource replicaDataSource
+            @Qualifier(DataSourceType.Key.SOURCE_NAME) DataSource sourceDataSource,
+            @Qualifier(DataSourceType.Key.REPLICA_NAME) DataSource replicaDataSource
     ) {
         return RoutingDataSource.from(Map.of(
                 DataSourceType.SOURCE, sourceDataSource,
@@ -55,7 +51,7 @@ public class DataSourceConfiguration {
     @Bean
     @Primary
     public DataSource dataSource(
-            @Qualifier(ROUTING_NAME) DataSource routingDataSource
+            @Qualifier(DataSourceType.Key.ROUTING_NAME) DataSource routingDataSource
     ) {
         return new LazyConnectionDataSourceProxy(routingDataSource);
     }
