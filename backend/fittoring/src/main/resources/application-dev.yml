@@ -1,0 +1,20 @@
+spring:
+  datasources:
+    writer:
+      jdbc-url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      username: ${DEV_WRITER_USER}
+      password: ${DEV_WRITER_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    reader:
+      jdbc-url: jdbc:mysql://${DEV_REPLICA_HOST}:${DEV_REPLICA_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      username: ${DEV_REPLICA_USER}
+      password: ${DEV_REPLICA_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+  flyway:
+    enabled: true
+    url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    user: ${DEV_WRITER_USER}
+    password: ${DEV_WRITER_PASSWORD}
+    baseline-on-migrate: true

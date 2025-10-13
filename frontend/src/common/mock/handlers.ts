@@ -8,6 +8,8 @@ import { mentoringUpdateHandler } from '../../pages/mentoringUpdate/mock/handler
 import { participatedMentoringHandler } from '../../pages/participatedMentoring/mock/handler';
 import { signupHandler } from '../../pages/signup/mock/handlers';
 
+import { imageUploadHandler } from './imageUpload/handler';
+
 export const handlers = [
   ...signupHandler,
   ...loginHandler,
@@ -18,4 +20,5 @@ export const handlers = [
   ...editProfileHandlers,
   ...identityVerificationHandlers,
   ...homeHandler,
+  ...imageUploadHandler,
 ];
