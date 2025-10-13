@@ -5,30 +5,12 @@ import type { mentoringCreateFormData } from '../../../common/types/mentoringCre
 
 export const postMentoringCreate = async ({
   mentoringData,
-  profileImageFile,
-  certificateImageFiles,
 }: {
   mentoringData: mentoringCreateFormData;
-  profileImageFile: File | null;
-  certificateImageFiles: File[];
 }) => {
-  const formData = new FormData();
-
-  const jsonBlob = new Blob([JSON.stringify(mentoringData)], {
-    type: 'application/json',
-  });
-  formData.append('data', jsonBlob);
-
-  if (profileImageFile) {
-    formData.append('image', profileImageFile);
-  }
-  certificateImageFiles.forEach((file) =>
-    formData.append('certificateImages', file),
-  );
-
-  return await apiClient.post({
+  return await apiClient.post<mentoringCreateFormData>({
     endpoint: API_ENDPOINTS.MENTORINGS,
-    body: formData,
+    body: { ...mentoringData },
     withCredentials: true,
   });
 };
