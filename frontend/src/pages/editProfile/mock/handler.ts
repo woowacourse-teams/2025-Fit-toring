@@ -1,8 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
-import { API_ENDPOINTS } from '../../constants/apiEndpoints';
-
-import { USER_PROFILE } from './data';
+import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
+import { getUserInfo } from '../../../common/mock/getUserInfo/handler';
 
 import type { PartialUserProfileRequest } from '../../../pages/editProfile/types/userProfile';
 
@@ -35,17 +34,6 @@ const patchMyProfile = http.patch(EDIT_PROFILE_URL, async ({ request }) => {
     { message: `내 정보 수정 성공`, data: profileData },
     { status: 204 },
   );
-});
-
-const USER_INFO_URL = `${BASE_URL}${API_ENDPOINTS.MEMBERS_ME}`;
-const getUserInfo = http.get(`${USER_INFO_URL}`, () => {
-  const response = { ...USER_PROFILE };
-
-  if (testStateStore.shouldFail) {
-    return new HttpResponse({ message: '내 정보 조회 실패' }, { status: 500 });
-  }
-
-  return HttpResponse.json(response, { status: 200 });
 });
 
 export const editProfileHandlers = [patchMyProfile, getUserInfo];

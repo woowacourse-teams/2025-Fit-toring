@@ -1,10 +1,10 @@
 import { createdMentoringHandler } from '../../pages/createdMentoring/mock/handlers';
+import { editProfileHandlers } from '../../pages/editProfile/mock/handler';
 import { validateIdHandler } from '../../pages/signup/mock/validateId/handler';
 
 import { authCodeHandler } from './authCode/authCode';
 import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
 import { commonHandler } from './common/handlers';
-import { editProfileHandlers } from './editProfile/handler';
 import { loginHandler } from './login/handler';
 import { membersHandler } from './members/handlers';
 import { mentoringHandler } from './mentoring/handlers';
