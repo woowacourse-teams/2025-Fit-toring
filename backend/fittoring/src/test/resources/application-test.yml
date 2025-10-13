@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: fittoring-test
   config:
     import: optional:file:.env[.properties]
   datasource:
@@ -32,3 +34,13 @@ jwt:
   secret-key: my/test/secret/key/my/test/secret/key
   access-token-expiration-millis: 10000
   refresh-token-expiration-millis: 20000000
+kakao:
+  redirect-url: ${KAKAO_REDIRECT_URL}
+  client-id: ${KAKAO_CLIENT_ID}
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket-name: test-bucket
+domain:
+  sub-domain: test-sub-domain

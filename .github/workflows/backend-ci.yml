@@ -59,7 +59,11 @@ jobs:
           echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
           echo "ACCESS_TOKEN_EXPIRATION_MILLIS=${{ secrets.ACCESS_TOKEN_EXPIRATION_MILLIS }}" >> .env
           echo "REFRESH_TOKEN_EXPIRATION_MILLIS=${{ secrets.REFRESH_TOKEN_EXPIRATION_MILLIS }}" >> .env
-
+          echo "KAKAO_REDIRECT_URL=https://dev.fittoring.com/kakao/callback" >> .env
+          echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+          echo "TRACING_ENABLE=${{ secrets.TRACING_ENABLE }}" >> .env
+          echo "TEMPO_GRPC_LISTENER_URL=${{ secrets.TEMPO_GRPC_LISTENER_URL }}" >> .env
+          echo "DB_TRACING_ENABLE=${{ secrets.DB_TRACING_ENABLE }}" >> .env
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
