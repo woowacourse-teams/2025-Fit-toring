@@ -1,4 +1,4 @@
-import webpack from 'webpack';
+// import webpack from 'webpack';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
@@ -16,24 +16,24 @@ const config: StorybookConfig = {
     NODE_ENV: process.env.NODE_ENV || 'development',
     GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID || '',
   }),
-  webpackFinal: async (config) => {
-    config.plugins = config.plugins || [];
-    config.plugins.push(
-      new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
-          SENTRY_DSN: JSON.stringify(process.env.SENTRY_DSN || ''),
-          API_BASE_URL: JSON.stringify(
-            process.env.API_BASE_URL || 'http://localhost:6006',
-          ),
-          GOOGLE_ANALYTICS_ID: JSON.stringify(
-            process.env.GOOGLE_ANALYTICS_ID || '',
-          ),
-        },
-      }),
-    );
+  // webpackFinal: async (config) => {
+  //   config.plugins = config.plugins || [];
+  //   config.plugins.push(
+  //     new webpack.DefinePlugin({
+  //       'process.env': {
+  //         NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+  //         SENTRY_DSN: JSON.stringify(process.env.SENTRY_DSN || ''),
+  //         API_BASE_URL: JSON.stringify(
+  //           process.env.API_BASE_URL || 'http://localhost:6006',
+  //         ),
+  //         GOOGLE_ANALYTICS_ID: JSON.stringify(
+  //           process.env.GOOGLE_ANALYTICS_ID || '',
+  //         ),
+  //       },
+  //     }),
+  //   );
 
-    return config;
-  },
+  //   return config;
+  // },
 };
 export default config;
