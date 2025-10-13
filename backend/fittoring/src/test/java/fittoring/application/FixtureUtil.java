@@ -23,11 +23,12 @@ public class FixtureUtil {
     }
 
     public static Member getTestMentee(int i) {
+        String phoneSuffix = String.format("%02d", i);
         return new Member(
                 "menteeId" + i,
                 "MALE",
                 "이름",
-                new Phone("010-1234-567" + ((i % 9) + 1)),
+                new Phone("010-1234-56" + phoneSuffix),
                 Password.from("password"));
     }
 
@@ -43,13 +44,14 @@ public class FixtureUtil {
     }
 
     public static Member getTestMentor(int i) {
+        String phoneSuffix = String.format("%02d", i);
         return new Member(
                 "mentorId" + i,
                 "MALE",
                 "멘토이름",
-                new Phone("010-1234-568" + ((i % 9) + 1)),
+                new Phone("010-1234-56" + phoneSuffix),
                 Password.from("password"),
-                MemberRole.MENTOR
+                MemberRole.MENTEE
         );
     }
 

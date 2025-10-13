@@ -1,5 +1,6 @@
 package fittoring.integration.admin;
 
+import fittoring.admin.presentation.dto.PageResult;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
@@ -91,7 +92,6 @@ public class AdminMemberIntegrationTest {
         void successFindMembersForAdminWithAdmin() {
             // given
             // when
-            // then
             var actual = RestAssured
                     .given()
                     .log().all().contentType(ContentType.JSON)
@@ -101,8 +101,10 @@ public class AdminMemberIntegrationTest {
                     .then().log().all()
                     .statusCode(200)
                     .extract()
-                    .as(new TypeRef<List<AdminMemberResponse>>() {
+                    .as(new TypeRef<PageResult<AdminMemberResponse>>() {
                     });
+            List<AdminMemberResponse> content = actual.content();
+            // then
             var expected = List.of(
                     new AdminMemberResponse(
                             admin.getName(),
@@ -119,7 +121,7 @@ public class AdminMemberIntegrationTest {
                             user.getRole()
                     )
             );
-            Assertions.assertThat(actual)
+            Assertions.assertThat(content)
                     .containsExactlyInAnyOrderElementsOf(expected);
         }
     }

@@ -1,6 +1,10 @@
 package fittoring.application.reservation.service;
 
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
+import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
+import fittoring.application.chatroom.service.ChatRoomService;
+import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
@@ -14,6 +18,9 @@ import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
+import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
+import fittoring.application.mentoring.service.dto.ReservationInfo;
+import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
@@ -25,6 +32,14 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
+import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Status;
+import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReservationService {
 
+    private final ChatRoomService chatRoomService;
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
@@ -112,7 +128,9 @@ public class ReservationService {
                 .collect(Collectors.toSet());
 
         Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(
-                ImageType.MENTORING_PROFILE, mentoringIds);
+                ImageType.MENTORING_PROFILE,
+                mentoringIds
+        );
 
         return rows.stream()
                 .map(r -> new ParticipatedReservationResponse(
@@ -127,6 +145,22 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<AdminReservationResponse> findMentoringReservationsWithAdminAuthorization(
+            MentoringReservationGetDto dto) {
+        checkAdminAuthority(dto.memberId());
+        List<Reservation> reservations = reservationRepository.findAllByMentoringId(dto.mentoringId());
+        return reservations.stream()
+                .map(reservation -> new AdminReservationResponse(
+                        reservation.getId(),
+                        reservation.getMenteeName(),
+                        reservation.getCreatedAt(),
+                        reservation.getStatus(),
+                        reservation.getContent()
+                ))
+                .toList();
+    }
+
     private void checkAdminAuthority(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
@@ -136,11 +170,18 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation updateStatus(Long reservationId, String updateStatus) {
+    public ReservationInfo updateStatus(Long reservationId, String updateStatus) {
         Reservation reservation = getReservation(reservationId);
         Status status = Status.of(updateStatus);
         reservation.changeStatus(status);
-        return reservation;
+
+        String url = "";
+        if (reservation.isApprove()) {
+            ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
+            url = chatRoomCreatedInfo.url();
+        }
+
+        return new ReservationInfo(reservation, url);
     }
 
     private Reservation getReservation(Long reservationId) {

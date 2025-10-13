@@ -7,6 +7,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
+import fittoring.application.chatroom.service.ChatRoomService;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
@@ -14,6 +15,7 @@ import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.ChatRoomUrlGenerator;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
@@ -55,7 +57,9 @@ import org.springframework.test.context.ActiveProfiles;
         ReservationService.class,
         ImageService.class,
         QueryDslConfig.class,
-        MentoringPaginationHelper.class
+        MentoringPaginationHelper.class,
+        ChatRoomUrlGenerator.class,
+        ChatRoomService.class,
 })
 @DataJpaTest
 class ReservationServiceTest {

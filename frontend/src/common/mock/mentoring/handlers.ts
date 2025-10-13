@@ -59,14 +59,10 @@ const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
 });
 
 const postMentoringCreate = http.post(MENTORING_URL, async ({ request }) => {
-  const formData = await request.formData();
+  const data = await request.json();
 
-  const dataJson = formData.get('data');
-
-  const parsedData = JSON.parse(dataJson as string);
-
-  if (!parsedData) {
-    return HttpResponse.json({ message: 'Bad Request' }, { status: 400 });
+  if (!data) {
+    return HttpResponse.json({ message: '멘토링 개설 실패' }, { status: 400 });
   }
 
   return HttpResponse.json({ message: true }, { status: 201 });
