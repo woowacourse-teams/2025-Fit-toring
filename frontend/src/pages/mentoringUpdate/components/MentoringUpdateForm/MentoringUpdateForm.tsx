@@ -55,12 +55,6 @@ function MentoringUpdateForm() {
       ...prevData,
       ...newData,
     }));
-
-    addSentryBreadcrumb({
-      category: 'ui.change',
-      message: `멘토링 수정 데이터 변경`,
-      data: { newData },
-    });
   };
 
   const handleProfileImageChange = async (file: File | null) => {
@@ -68,10 +62,7 @@ function MentoringUpdateForm() {
       handleMentoringDataChange({
         profileImageUrl: null,
       });
-      addSentryBreadcrumb({
-        category: 'ui.change',
-        message: `프로필 이미지 제거`,
-      });
+
       return;
     }
 
@@ -84,12 +75,6 @@ function MentoringUpdateForm() {
 
       handleMentoringDataChange({
         profileImageUrl: uploadedUrl,
-      });
-
-      addSentryBreadcrumb({
-        category: 'ui.change',
-        message: `프로필 이미지 변경 성공`,
-        data: { fileName: file.name, fileSize: file.size },
       });
     } catch (error) {
       const errorMessage =
@@ -209,12 +194,6 @@ function MentoringUpdateForm() {
         imageUrl: undefined,
       },
     ]);
-
-    addSentryBreadcrumb({
-      category: 'ui.click',
-      message: '자격증 항목 추가',
-      data: { newTotalCertificates: certificates.length + 1 },
-    });
   };
 
   const onDeleteButtonClick = (id: string) => {
@@ -231,15 +210,6 @@ function MentoringUpdateForm() {
     handleMentoringDataChange({ certificateInfos: finalCertificates });
 
     setDeletedCertificateIds((prev) => [...prev, id]);
-
-    addSentryBreadcrumb({
-      category: 'ui.click',
-      message: '자격증 항목 삭제',
-      data: {
-        deletedCertificateId: id,
-        newTotalCertificates: certificates.length - 1,
-      },
-    });
   };
 
   const onCertificateChangeById = async (
@@ -258,16 +228,6 @@ function MentoringUpdateForm() {
         }
 
         changed.imageUrl = uploadedUrl;
-
-        addSentryBreadcrumb({
-          category: 'ui.change',
-          message: '자격증 이미지 업로드 성공',
-          data: {
-            certificateId: id,
-            fileName: changed.file.name,
-            fileSize: changed.file.size,
-          },
-        });
       } catch (error) {
         const errorMessage =
           error instanceof Error
@@ -305,17 +265,6 @@ function MentoringUpdateForm() {
       imageUrl,
     }));
     handleMentoringDataChange({ certificateInfos: finalCertificates });
-
-    if (!changed.file) {
-      addSentryBreadcrumb({
-        category: 'ui.change',
-        message: '자격증 정보 변경',
-        data: {
-          certificateId: id,
-          changedFields: Object.keys(changed),
-        },
-      });
-    }
   };
 
   useEffect(() => {
