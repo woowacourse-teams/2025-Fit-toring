@@ -35,7 +35,8 @@ public class AdminCertificateService {
     @Transactional(readOnly = true)
     public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Long memberId, Status status, int page) {
         checkAdminAuthority(memberId);
-        List<AdminCertificateResponse> certificates = certificateRepository.findAllWithFilterAndPagination(status, page, PAGE_SIZE_OF_CERTIFICATE);
+        List<Long> certificateIds = certificateRepository.findCertificateIdsForAdmin(status, page, PAGE_SIZE_OF_CERTIFICATE);
+        List<AdminCertificateResponse> certificates = certificateRepository.findCertificatesByIdsOrdered(certificateIds);
         long total = certificateRepository.countByStatus(status);
         int totalPages = (int) Math.max(1, (total + PAGE_SIZE_OF_CERTIFICATE - 1) / PAGE_SIZE_OF_CERTIFICATE);
         return new PageResult<>(certificates, page, certificates.size(), total, totalPages);
