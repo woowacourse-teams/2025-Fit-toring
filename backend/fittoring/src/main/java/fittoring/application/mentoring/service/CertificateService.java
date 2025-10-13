@@ -87,66 +87,6 @@ public class CertificateService {
         return savedCertificate.getId();
     }
 
-    @Transactional(readOnly = true)
-    public List<CertificateResponse> getAllCertificates(Long memberId, Status status) {
-        checkAdminAuthority(memberId);
-        List<Certificate> certificates = findCertificates(status);
-        return certificates.stream()
-                .map(CertificateResponse::from)
-                .toList();
-    }
-
-    private List<Certificate> findCertificates(Status status) {
-        if (status == null) {
-            return certificateRepository.findAll();
-        }
-        return certificateRepository.findByVerificationStatus(status);
-    }
-
-    private void checkAdminAuthority(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        if (MemberRole.isNotAdmin(member.getRole())) {
-            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public CertificateDetailResponse getCertificate(Long memberId, Long certificateId) {
-        checkAdminAuthority(memberId);
-        Certificate certificate = getCertificateOne(certificateId);
-        Image certificateImage = imageService.findByImageTypeAndRelationId(ImageType.CERTIFICATE, certificateId)
-                .orElseThrow(() -> new ImageNotFoundException(
-                        BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage()
-                ));
-        return CertificateDetailResponse.of(certificate, certificateImage);
-    }
-
-    private Certificate getCertificateOne(Long certificateId) {
-        return certificateRepository.findById(certificateId)
-                .orElseThrow(() -> new CertificateNotFoundException(
-                        BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage()
-                ));
-    }
-
-    public List<Certificate> findAllByMentoringId(Long mentoringId) {
-        return certificateRepository.findAllByMentoringId(mentoringId);
-    }
-
-    @Transactional
-    public void approveCertificate(Long memberId, Long certificateId) {
-        checkAdminAuthority(memberId);
-        Certificate certificate = getCertificateOne(certificateId);
-        certificate.approve();
-    }
-
-    @Transactional
-    public void rejectCertificate(Long memberId, Long certificateId) {
-        checkAdminAuthority(memberId);
-        Certificate certificate = getCertificateOne(certificateId);
-        certificate.reject();
-    }
-
     @Transactional
     public void deleteCertificate(CertificateDeleteDto dto) {
         Certificate certificate = certificateRepository.findById(dto.certificateId())
