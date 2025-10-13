@@ -9,7 +9,7 @@ import { mentoringHandler } from './mentoring/handlers';
 import { mentoringDetailHandler } from './mentoringDetail/handler';
 import { participatedMentoringHandler } from './participatedMentoring/handler';
 import { signupHandler } from './signup/signup';
-import { validateIdHandler } from './validateId/validateId';
+import { validateIdHandler } from '../../pages/signup/mock/validateId/validateId';
 
 export const handlers = [
   ...mentoringHandler,
