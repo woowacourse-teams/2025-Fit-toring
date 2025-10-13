@@ -106,11 +106,11 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
 
         //then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(response.mentoringInfoDto().mentorName()).isEqualTo("김트레이너");
-            softAssertions.assertThat(response.mentoringInfoDto().price()).isEqualTo(1000);
-            softAssertions.assertThat(response.mentoringInfoDto().profileImageUrl()).isEqualTo("멘토링이미지1url");
-            softAssertions.assertThat(response.chatRoomInfoDto().opponentName()).isEqualTo("김멘티");
-            softAssertions.assertThat(response.chatRoomInfoDto().status()).isEqualTo(ChatStatus.ACTIVATE);
+            softAssertions.assertThat(response.mentorName()).isEqualTo("김트레이너");
+            softAssertions.assertThat(response.price()).isEqualTo(1000);
+            softAssertions.assertThat(response.profileImageUrl()).isEqualTo("멘토링이미지1url");
+            softAssertions.assertThat(response.opponentName()).isEqualTo("김멘티");
+            softAssertions.assertThat(response.status()).isEqualTo(ChatStatus.ACTIVATE);
         });
     }
 
@@ -166,11 +166,11 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
 
         //then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(response.mentoringInfoDto().mentorName()).isEqualTo("김트레이너");
-            softAssertions.assertThat(response.mentoringInfoDto().price()).isEqualTo(1000);
-            softAssertions.assertThat(response.mentoringInfoDto().profileImageUrl()).isNull();
-            softAssertions.assertThat(response.chatRoomInfoDto().opponentName()).isEqualTo("김멘티");
-            softAssertions.assertThat(response.chatRoomInfoDto().status()).isEqualTo(ChatStatus.ACTIVATE);
+            softAssertions.assertThat(response.mentorName()).isEqualTo("김트레이너");
+            softAssertions.assertThat(response.price()).isEqualTo(1000);
+            softAssertions.assertThat(response.profileImageUrl()).isNull();
+            softAssertions.assertThat(response.opponentName()).isEqualTo("김멘티");
+            softAssertions.assertThat(response.status()).isEqualTo(ChatStatus.ACTIVATE);
         });
     }
 }

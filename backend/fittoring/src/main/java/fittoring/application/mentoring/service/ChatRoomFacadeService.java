@@ -18,6 +18,6 @@ public class ChatRoomFacadeService {
         ChatRoomMentoringInfoDto mentoringInfo = mentoringService.findMentoringInfoForChatRoom(
                 chatRoomInfo.mentoringId()
         );
-        return new ChatRoomInfoResponse(mentoringInfo, chatRoomInfo);
+        return ChatRoomInfoResponse.of(mentoringInfo, chatRoomInfo);
     }
 }
