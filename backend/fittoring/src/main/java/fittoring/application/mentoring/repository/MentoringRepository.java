@@ -33,6 +33,7 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
                     AND img.imageVariant = 'THUMBNAIL')
             )
             FROM Mentoring m
+            JOIN m.mentor
             WHERE m.id = :mentoringId
             """)
     Optional<ChatRoomMentoringInfoDto> findByIdForChatRoom(Long mentoringId);
