@@ -1,5 +1,6 @@
 import { createdMentoringHandler } from '../../pages/createdMentoring/mock/handlers';
 import { editProfileHandlers } from '../../pages/editProfile/mock/handler';
+import { homeHandler } from '../../pages/home/mock/handlers';
 import { identityVerificationHandlers } from '../../pages/identityVerification/mock/handlers';
 import { loginHandler } from '../../pages/login/mock/handler';
 import { mentoringCreateHandler } from '../../pages/mentoringCreate/mock/handlers';
@@ -7,14 +8,12 @@ import { mentoringUpdateHandler } from '../../pages/mentoringUpdate/mock/handler
 import { participatedMentoringHandler } from '../../pages/participatedMentoring/mock/handler';
 import { signupHandler } from '../../pages/signup/mock/handlers';
 
-import { commonHandler } from './getSpecialties/handlers';
 import { mentoringHandler } from './mentoring/handlers';
 
 export const handlers = [
   ...mentoringHandler,
   ...signupHandler,
   ...mentoringHandler,
-  ...commonHandler,
   ...loginHandler,
   ...createdMentoringHandler,
   ...mentoringCreateHandler,
@@ -22,4 +21,5 @@ export const handlers = [
   ...participatedMentoringHandler,
   ...editProfileHandlers,
   ...identityVerificationHandlers,
+  ...homeHandler,
 ];

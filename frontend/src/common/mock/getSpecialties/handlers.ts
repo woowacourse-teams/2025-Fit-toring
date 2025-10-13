@@ -14,7 +14,7 @@ export const testStateStore = {
 const BASE_URL = process.env.API_BASE_URL;
 const SPECIALTIES_URL = `${BASE_URL}/categories`;
 
-const getSpecialties = http.get(SPECIALTIES_URL, () => {
+export const getSpecialties = http.get(SPECIALTIES_URL, () => {
   const response = [...SPECIALTIES];
 
   if (testStateStore.shouldFail) {
@@ -26,5 +26,3 @@ const getSpecialties = http.get(SPECIALTIES_URL, () => {
 
   return HttpResponse.json(response);
 });
-
-export const commonHandler = [getSpecialties];
