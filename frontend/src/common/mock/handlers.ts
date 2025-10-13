@@ -7,7 +7,7 @@ import { mentoringUpdateHandler } from '../../pages/mentoringUpdate/mock/handler
 import { participatedMentoringHandler } from '../../pages/participatedMentoring/mock/handler';
 import { signupHandler } from '../../pages/signup/mock/handlers';
 
-import { commonHandler } from './common/handlers';
+import { commonHandler } from './getSpecialties/handlers';
 import { mentoringHandler } from './mentoring/handlers';
 
 export const handlers = [
