@@ -8,12 +8,8 @@ import { mentoringUpdateHandler } from '../../pages/mentoringUpdate/mock/handler
 import { participatedMentoringHandler } from '../../pages/participatedMentoring/mock/handler';
 import { signupHandler } from '../../pages/signup/mock/handlers';
 
-import { mentoringHandler } from './mentoring/handlers';
-
 export const handlers = [
-  ...mentoringHandler,
   ...signupHandler,
-  ...mentoringHandler,
   ...loginHandler,
   ...createdMentoringHandler,
   ...mentoringCreateHandler,

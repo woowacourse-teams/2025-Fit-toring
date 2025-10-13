@@ -1,4 +1,4 @@
-import type { MentorInformation } from '../../../pages/home/types/MentorInformation';
+import type { MentorInformation } from '../types/MentorInformation';
 
 export const MENTORINGS: MentorInformation[] = [
   {
