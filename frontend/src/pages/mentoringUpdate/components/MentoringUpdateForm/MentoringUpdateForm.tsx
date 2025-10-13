@@ -14,7 +14,6 @@ import ProfileSection from '../../../../common/components/mentoringForm/ProfileS
 import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
 import useS3Upload from '../../../../common/hooks/useS3Upload';
-import { addSentryBreadcrumb } from '../../../../common/utils/addSentryBreadcrumb';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
@@ -85,15 +84,18 @@ function MentoringUpdateForm() {
       console.error('프로필 이미지 업로드 실패:', errorMessage);
       alert('프로필 이미지 업로드에 실패했습니다. 다시 시도해주세요.');
 
-      addSentryBreadcrumb({
-        category: 'ui.error',
-        message: `프로필 이미지 업로드 실패`,
-        data: {
-          fileName: file.name,
-          fileSize: file.size,
-          error: errorMessage,
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'mentoring',
+        step: 'mentoring-update-profile-image',
+        extras: {
+          message: `프로필 이미지 업로드 실패`,
+          data: {
+            fileName: file.name,
+            fileSize: file.size,
+          },
         },
-        level: 'error',
       });
     }
   };
@@ -237,16 +239,19 @@ function MentoringUpdateForm() {
         console.error('자격증 이미지 업로드 실패:', errorMessage);
         alert('자격증 이미지 업로드에 실패했습니다. 다시 시도해주세요.');
 
-        addSentryBreadcrumb({
-          category: 'ui.error',
-          message: '자격증 이미지 업로드 실패',
-          data: {
-            certificateId: id,
-            fileName: changed.file?.name,
-            fileSize: changed.file?.size,
-            error: errorMessage,
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'mentoring',
+          step: 'mentoring-update-certificate-image',
+          extras: {
+            message: '자격증 이미지 업로드 실패',
+            data: {
+              certificateId: id,
+              fileName: changed.file?.name,
+              fileSize: changed.file?.size,
+            },
           },
-          level: 'error',
         });
 
         return;
