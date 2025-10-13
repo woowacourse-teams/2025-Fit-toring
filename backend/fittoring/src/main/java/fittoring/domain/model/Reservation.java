@@ -85,6 +85,10 @@ public class Reservation {
         return this.status.isPending();
     }
 
+    public boolean isApprove() {
+        return this.status.isApprove();
+    }
+
     public String getChatUrlOfMentoring() {
         return mentoring.getChatUrl();
     }
@@ -97,6 +101,10 @@ public class Reservation {
         return mentoring.getMentorName();
     }
 
+    public Member getMentor() {
+        return mentoring.getMentor();
+    }
+
     public String getMenteePhone() {
         return mentee.getPhoneNumber();
     }
@@ -107,5 +115,9 @@ public class Reservation {
 
     public String getStatus() {
         return status.name();
+    }
+
+    public Status getOriginalStatus() {
+        return status;
     }
 }

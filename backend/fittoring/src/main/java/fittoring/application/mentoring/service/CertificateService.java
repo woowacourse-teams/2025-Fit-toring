@@ -102,6 +102,7 @@ public class CertificateService {
         return savedCertificate.getId();
     }
 
+    @Transactional(readOnly = true)
     public List<CertificateResponse> getAllCertificates(Long memberId, Status status) {
         checkAdminAuthority(memberId);
         List<Certificate> certificates = findCertificates(status);
@@ -125,6 +126,7 @@ public class CertificateService {
         }
     }
 
+    @Transactional(readOnly = true)
     public CertificateDetailResponse getCertificate(Long memberId, Long certificateId) {
         checkAdminAuthority(memberId);
         Certificate certificate = getCertificateOne(certificateId);

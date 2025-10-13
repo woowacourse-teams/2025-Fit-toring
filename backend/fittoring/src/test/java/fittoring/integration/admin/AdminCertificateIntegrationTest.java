@@ -112,6 +112,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
     @DisplayName("관리자 자격증명 상세 조회")
     @Nested
     class OneCertificate {
+
         @DisplayName("관리자는 자격 증명 상세 조회에 성공한다.")
         @Test
         void getCertificateWithAuthority() {

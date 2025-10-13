@@ -1,12 +1,13 @@
 package fittoring.application.member.repository;
 
+import fittoring.admin.repository.CustomMemberRepository;
 import fittoring.domain.model.Member;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 
-public interface MemberRepository extends ListCrudRepository<Member, Long> {
+public interface MemberRepository extends ListCrudRepository<Member, Long>, CustomMemberRepository {
 
     Optional<Member> findByLoginId(String loginId);
 

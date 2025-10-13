@@ -29,10 +29,6 @@ import org.springframework.test.context.ActiveProfiles;
         DbCleaner.class,
         MemberService.class,
         ImageService.class,
-        DbCleaner.class,
-        MemberService.class,
-        ImageService.class,
-        QueryDslConfig.class,
         QueryDslConfig.class,
         MentoringPaginationHelper.class
 })

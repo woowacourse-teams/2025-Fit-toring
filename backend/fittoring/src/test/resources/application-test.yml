@@ -20,6 +20,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -53,3 +54,6 @@ image-session:
     enabled: true
     fixed-delay-ms: 300000 # 5분
     batch-size: 200
+
+domain:
+  sub-domain: test-sub-domain
