@@ -1,7 +1,6 @@
 package fittoring.application.reservation.service;
 
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.presentation.dto.AdminReservationResponse;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chatroom.service.ChatRoomService;
 import fittoring.application.exception.BusinessErrorMessage;
@@ -15,7 +14,6 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
-import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
 import fittoring.application.mentoring.service.dto.ReservationInfo;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
@@ -43,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReservationService {
 
     private final ChatRoomService chatRoomService;
-
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
@@ -111,14 +108,17 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ParticipatedReservationResponse> findMemberReservations(Long memberId) {
         List<ParticipatedReservationWithoutProfileImageDto> rows = reservationRepository.findMemberReservationDtos(
-                memberId);
+                memberId
+        );
 
         Set<Long> mentoringIds = rows.stream()
                 .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
                 .collect(Collectors.toSet());
 
         Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(
-                ImageType.MENTORING_PROFILE, mentoringIds);
+                ImageType.MENTORING_PROFILE,
+                mentoringIds
+        );
 
         return rows.stream()
                 .map(r -> new ParticipatedReservationResponse(
@@ -130,22 +130,6 @@ public class ReservationService {
                         r.getContent(),
                         r.getStatus(),
                         r.getIsReviewed()))
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<AdminReservationResponse> findMentoringReservationsWithAdminAuthorization(
-            MentoringReservationGetDto dto) {
-        checkAdminAuthority(dto.memberId());
-        List<Reservation> reservations = reservationRepository.findAllByMentoringId(dto.mentoringId());
-        return reservations.stream()
-                .map(reservation -> new AdminReservationResponse(
-                        reservation.getId(),
-                        reservation.getMenteeName(),
-                        reservation.getCreatedAt().toLocalDate(),
-                        reservation.getStatus(),
-                        reservation.getContent()
-                ))
                 .toList();
     }
 
