@@ -12,3 +12,8 @@ spring:
     user: ${PROD_DATABASE_USER}
     password: ${PROD_DATABASE_PASSWORD}
     baseline-on-migrate: true
+aws:
+  s3:
+    env-prefix: prod/
+  sqs:
+    image-queue: fittoring-prod-image-queue

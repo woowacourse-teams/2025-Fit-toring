@@ -18,3 +18,8 @@ spring:
     user: ${DEV_WRITER_USER}
     password: ${DEV_WRITER_PASSWORD}
     baseline-on-migrate: true
+aws:
+  s3:
+    env-prefix: dev/
+  sqs:
+    image-queue: fittoring-image-queue
