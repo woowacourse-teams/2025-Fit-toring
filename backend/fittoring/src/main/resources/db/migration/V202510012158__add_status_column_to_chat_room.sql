@@ -1,2 +1,0 @@
-ALTER TABLE chat_room
-ADD COLUMN status VARCHAR(20) NOT NULL;
