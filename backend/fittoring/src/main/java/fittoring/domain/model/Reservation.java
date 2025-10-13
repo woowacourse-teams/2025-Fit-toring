@@ -1,5 +1,7 @@
 package fittoring.domain.model;
 
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.InvalidStatusException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -69,8 +71,17 @@ public class Reservation {
     }
 
     public void changeStatus(Status updateStatus) {
-        this.status.validateReservation(updateStatus);
+        validateReservation(updateStatus);
         this.status = updateStatus;
+    }
+
+    private void validateReservation(Status updateStatus) {
+        if (this.status.isReject() || this.status.isComplete()) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
+        }
+        if (this.status.equals(updateStatus)) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
+        }
     }
 
     public boolean isCreatedByMember(Long memberId) {
