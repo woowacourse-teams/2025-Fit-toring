@@ -1,11 +1,8 @@
 package fittoring.application.reservation.service;
 
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.presentation.dto.AdminReservationResponse;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chatroom.service.ChatRoomService;
-import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
@@ -17,21 +14,12 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
-import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
-import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
 import fittoring.application.mentoring.service.dto.ReservationInfo;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.domain.model.ImageType;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
-import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Reservation;
-import fittoring.domain.model.Status;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -142,22 +130,6 @@ public class ReservationService {
                         r.getContent(),
                         r.getStatus(),
                         r.getIsReviewed()))
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<AdminReservationResponse> findMentoringReservationsWithAdminAuthorization(
-            MentoringReservationGetDto dto) {
-        checkAdminAuthority(dto.memberId());
-        List<Reservation> reservations = reservationRepository.findAllByMentoringId(dto.mentoringId());
-        return reservations.stream()
-                .map(reservation -> new AdminReservationResponse(
-                        reservation.getId(),
-                        reservation.getMenteeName(),
-                        reservation.getCreatedAt(),
-                        reservation.getStatus(),
-                        reservation.getContent()
-                ))
                 .toList();
     }
 
