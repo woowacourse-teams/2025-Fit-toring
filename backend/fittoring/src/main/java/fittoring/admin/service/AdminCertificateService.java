@@ -27,10 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminCertificateService {
 
     public static final int PAGE_SIZE_OF_CERTIFICATE = 20;
+
     private final ImageService imageService;
     private final CertificateRepository certificateRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional(readOnly = true)
     public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Long memberId, Status status, int page) {
         checkAdminAuthority(memberId);
         List<AdminCertificateResponse> certificates = certificateRepository.findAllWithFilterAndPagination(status, page, PAGE_SIZE_OF_CERTIFICATE);
@@ -47,6 +49,7 @@ public class AdminCertificateService {
         }
     }
 
+    @Transactional(readOnly = true)
     public CertificateDetailResponse getCertificate(Long memberId, Long certificateId) {
         checkAdminAuthority(memberId);
         Certificate certificate = getCertificateOne(certificateId);
