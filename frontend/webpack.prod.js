@@ -1,6 +1,8 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
+const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const DotenvWebpackPlugin = require('dotenv-webpack');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 
 module.exports = merge(common, {
@@ -32,6 +34,9 @@ module.exports = merge(common, {
     },
   },
   plugins: [
+    new DotenvWebpackPlugin({
+      path: path.resolve(__dirname, '.env.prod'),
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {

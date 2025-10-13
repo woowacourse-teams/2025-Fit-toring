@@ -1,33 +1,39 @@
 package fittoring.application.reservation.service;
 
+import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
+import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
+import fittoring.application.chatroom.service.ChatRoomService;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.exception.ReservationNotFoundException;
-import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.image.service.ImageService;
-import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
-import fittoring.domain.model.*;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
-import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
-import fittoring.application.reservation.service.dto.ReservationCreateDto;
-import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.application.mentoring.service.dto.ReservationInfo;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
+import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
+import fittoring.application.reservation.service.dto.ReservationCreateDto;
+import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Status;
+import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class ReservationService {
+
+    private final ChatRoomService chatRoomService;
 
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
@@ -102,13 +110,15 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ParticipatedReservationResponse> findMemberReservations(Long memberId) {
-        List<ParticipatedReservationWithoutProfileImageDto> rows = reservationRepository.findMemberReservationDtos(memberId);
+        List<ParticipatedReservationWithoutProfileImageDto> rows = reservationRepository.findMemberReservationDtos(
+                memberId);
 
         Set<Long> mentoringIds = rows.stream()
                 .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
                 .collect(Collectors.toSet());
 
-        Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(ImageType.MENTORING_PROFILE, mentoringIds);
+        Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(
+                ImageType.MENTORING_PROFILE, mentoringIds);
 
         return rows.stream()
                 .map(r -> new ParticipatedReservationResponse(
@@ -148,11 +158,18 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation updateStatus(Long reservationId, String updateStatus) {
+    public ReservationInfo updateStatus(Long reservationId, String updateStatus) {
         Reservation reservation = getReservation(reservationId);
         Status status = Status.of(updateStatus);
         reservation.changeStatus(status);
-        return reservation;
+
+        String url = "";
+        if (reservation.isApprove()) {
+            ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
+            url = chatRoomCreatedInfo.url();
+        }
+
+        return new ReservationInfo(reservation, url);
     }
 
     private Reservation getReservation(Long reservationId) {
