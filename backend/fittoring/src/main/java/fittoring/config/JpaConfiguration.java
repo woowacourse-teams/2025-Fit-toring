@@ -2,6 +2,7 @@ package fittoring.config;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,6 @@ public class JpaConfiguration {
 
     @Bean
     public Clock systemClock() {
-        return Clock.systemUTC();
+        return Clock.system(ZoneId.of("Asia/Seoul"));
     }
 }
