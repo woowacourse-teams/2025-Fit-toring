@@ -1,10 +1,10 @@
 import { http, HttpResponse } from 'msw';
 
-import { API_ENDPOINTS } from '../../constants/apiEndpoints';
+import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
 import { MENTORING_APPLICATIONS } from './data';
 
-import type { MENTORING_APPLICATION_STATUS } from '../../../pages/createdMentoring/types/mentoringApplicationStatus';
+import type { MENTORING_APPLICATION_STATUS } from '../types/mentoringApplicationStatus';
 
 export const testStateStore = {
   shouldFail: false,
