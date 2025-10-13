@@ -26,11 +26,18 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
             SELECT new fittoring.application.mentoring.service.dto.chat.ChatRoomMentoringInfoDto(
                 m.mentor.name,
                 m.price,
-                (SELECT img.url
-                   FROM Image img
-                  WHERE img.relationId = m.id
-                    AND img.imageType = 'MENTORING_PROFILE'
-                    AND img.imageVariant = 'THUMBNAIL')
+                COALESCE(
+                    (SELECT img.url
+                       FROM Image img
+                      WHERE img.relationId = m.id
+                        AND img.imageType = 'MENTORING_PROFILE'
+                        AND img.imageVariant = 'THUMBNAIL'),
+                    (SELECT img.url
+                       FROM Image img
+                      WHERE img.relationId = m.id
+                        AND img.imageType = 'MENTORING_PROFILE'
+                        AND img.imageVariant = 'DEFAULT')
+                )
             )
             FROM Mentoring m
             JOIN m.mentor
