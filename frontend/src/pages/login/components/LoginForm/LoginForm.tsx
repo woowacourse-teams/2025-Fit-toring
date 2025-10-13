@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
@@ -34,15 +35,16 @@ function LoginForm() {
 
   const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code`;
 
-  const fetchLogin = async () => {
-    try {
-      const response = await postLogin(userId, password);
+  const loginMutation = useMutation({
+    mutationFn: postLogin,
+    onSuccess: (response) => {
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
         navigate(PAGE_URL.HOME);
         login();
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error('로그인 실패', error);
       if (error instanceof Error) {
         setErrorMessage(error.message);
@@ -54,13 +56,13 @@ function LoginForm() {
         feature: 'login',
         step: 'login',
       });
-    }
-  };
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    fetchLogin();
+    loginMutation.mutate({ loginId: userId, password });
   };
 
   const handleSocialLoginButtonClick = () => {
