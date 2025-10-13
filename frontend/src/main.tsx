@@ -8,7 +8,6 @@ import ReactGA from 'react-ga4';
 
 import App from './App';
 import AuthProvider from './common/components/AuthProvider/AuthProvider';
-import { fonts } from './common/styles/fonts';
 import { resetCss } from './common/styles/reset';
 import { THEME } from './common/styles/theme';
 
@@ -46,7 +45,7 @@ enableMocking().then(() => {
       <ThemeProvider theme={THEME}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <Global styles={[resetCss, fonts]} />
+            <Global styles={[resetCss]} />
             <App />
           </AuthProvider>
         </QueryClientProvider>

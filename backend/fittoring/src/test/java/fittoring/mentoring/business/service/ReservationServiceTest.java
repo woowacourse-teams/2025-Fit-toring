@@ -4,42 +4,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
+import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
+import fittoring.application.chatroom.service.ChatRoomService;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.MentorAndMenteeIsSameException;
+import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.image.service.ImageService;
+import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.ChatRoomUrlGenerator;
+import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
+import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
+import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
+import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.service.ReservationService;
+import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
-import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.ForbiddenException;
-import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
-import fittoring.mentoring.business.exception.MentoringNotFoundException;
-import fittoring.mentoring.business.exception.ReservationNotFoundException;
-import fittoring.mentoring.business.model.Category;
-import fittoring.mentoring.business.model.CategoryMentoring;
-import fittoring.mentoring.business.model.Image;
-import fittoring.mentoring.business.model.ImageType;
-import fittoring.mentoring.business.model.Member;
-import fittoring.mentoring.business.model.MemberRole;
-import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.model.MentoringStatistics;
-import fittoring.mentoring.business.model.Phone;
-import fittoring.mentoring.business.model.Reservation;
-import fittoring.mentoring.business.model.Review;
-import fittoring.mentoring.business.model.Status;
-import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.repository.MentoringStatisticsRepository;
-import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
-import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
-import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
-import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
-import fittoring.mentoring.business.service.dto.ReservationCreateDto;
-import fittoring.mentoring.infra.image.ImageResizer;
-import fittoring.mentoring.infra.image.ImageTranscoder;
-import fittoring.mentoring.infra.image.S3Uploader;
-import fittoring.mentoring.infra.image.policy.CertificatePolicy;
-import fittoring.mentoring.infra.image.policy.ImagePolicyRegistry;
-import fittoring.mentoring.infra.image.policy.MentoringProfilePolicy;
-import fittoring.mentoring.infra.image.policy.NonePolicy;
-import fittoring.mentoring.presentation.dto.AdminReservationDeleteDto;
-import fittoring.mentoring.presentation.dto.AdminReservationResponse;
-import fittoring.mentoring.presentation.dto.ParticipatedReservationResponse;
+import fittoring.domain.model.Category;
+import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.MentoringStatistics;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import fittoring.domain.model.Status;
+import fittoring.domain.model.password.Password;
 import fittoring.util.DbCleaner;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -56,28 +54,21 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
         JpaConfiguration.class,
-        ImagePolicyRegistry.class,
-        ImageResizer.class,
-        ImageTranscoder.class,
-        CertificatePolicy.class,
-        MentoringProfilePolicy.class,
-        NonePolicy.class,
         ReservationService.class,
         ImageService.class,
-        QueryDslConfig.class
+        QueryDslConfig.class,
+        MentoringPaginationHelper.class,
+        ChatRoomUrlGenerator.class,
+        ChatRoomService.class,
 })
 @DataJpaTest
 class ReservationServiceTest {
-
-    @MockitoBean
-    private S3Uploader s3Uploader;
 
     @Autowired
     private ReservationService reservationService;

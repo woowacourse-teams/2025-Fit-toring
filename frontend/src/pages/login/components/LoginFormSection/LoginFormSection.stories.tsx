@@ -1,5 +1,6 @@
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
+import { PAGE_URL } from '../../../../common/constants/url';
 import LoginFormSection from '../LoginFormSection/LoginFormSection';
 
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
@@ -10,9 +11,9 @@ const meta = {
 
   decorators: [
     (Story) => (
-      <BrowserRouter>
+      <MemoryRouter initialEntries={[PAGE_URL.LOGIN]}>
         <Story />
-      </BrowserRouter>
+      </MemoryRouter>
     ),
   ],
 } satisfies Meta<typeof LoginFormSection>;
