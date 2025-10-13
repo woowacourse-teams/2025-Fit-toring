@@ -8,7 +8,6 @@ import { validateIdHandler } from '../../pages/signup/mock/validateId/handler';
 import { authCodeHandler } from './authCode/authCode';
 import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
 import { commonHandler } from './common/handlers';
-import { membersHandler } from './members/handlers';
 import { mentoringHandler } from './mentoring/handlers';
 import { participatedMentoringHandler } from './participatedMentoring/handler';
 import { signupHandler } from './signup/signup';
@@ -21,7 +20,6 @@ export const handlers = [
   ...signupHandler,
   ...mentoringHandler,
   ...commonHandler,
-  ...membersHandler,
   ...loginHandler,
   ...createdMentoringHandler,
   ...mentoringCreateHandler,
