@@ -40,6 +40,7 @@ jobs:
           fi
 
           echo "SENTRY_AUTH_TOKEN=${{ secrets.FE_SENTRY_AUTH_TOKEN }}" >> .env
+          echo "GOOGLE_ANALYTICS_ID=${{ secrets.FE_GOOGLE_ANALYTICS_ID }}" >> .env
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Run Vitest
