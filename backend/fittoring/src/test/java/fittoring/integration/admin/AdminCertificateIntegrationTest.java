@@ -1,6 +1,10 @@
 package fittoring.integration.admin;
 
-import fittoring.integration.AbstractApiDocumentationTest;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.CertificateRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.Image;
@@ -10,11 +14,7 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
-import fittoring.application.mentoring.repository.CertificateRepository;
-import fittoring.application.image.repository.ImageRepository;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.auth.service.JwtProvider;
+import fittoring.integration.AbstractApiDocumentationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -112,6 +112,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
     @DisplayName("관리자 자격증명 상세 조회")
     @Nested
     class OneCertificate {
+
         @DisplayName("관리자는 자격 증명 상세 조회에 성공한다.")
         @Test
         void getCertificateWithAuthority() {

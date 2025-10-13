@@ -14,6 +14,15 @@ import org.springframework.stereotype.Repository;
 public interface CertificateRepository extends ListCrudRepository<Certificate, Long>, CustomCertificateRepository {
 
     @Query("""
+            SELECT DISTINCT c
+            FROM Certificate c
+            JOIN FETCH c.mentoring
+            JOIN FETCH c.mentoring.mentor
+            WHERE c.verificationStatus=:status
+            """)
+    List<Certificate> findByVerificationStatus(@Param("status") Status verificationStatus);
+
+    @Query("""
             SELECT c
             FROM Certificate c
             JOIN FETCH c.mentoring m

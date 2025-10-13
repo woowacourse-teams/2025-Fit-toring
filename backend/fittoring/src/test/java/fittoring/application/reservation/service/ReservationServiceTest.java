@@ -8,6 +8,7 @@ import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.presentation.dto.AdminReservationResponse;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
+import fittoring.application.chatroom.service.ChatRoomService;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
@@ -16,6 +17,7 @@ import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.ChatRoomUrlGenerator;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
@@ -34,10 +36,8 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.util.DbCleaner;
-
 import java.util.List;
 import java.util.TimeZone;
-
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +60,9 @@ import org.springframework.test.context.ActiveProfiles;
         ReservationService.class,
         ImageService.class,
         QueryDslConfig.class,
-        MentoringPaginationHelper.class
+        MentoringPaginationHelper.class,
+        ChatRoomUrlGenerator.class,
+        ChatRoomService.class,
 })
 @DataJpaTest
 class ReservationServiceTest {
