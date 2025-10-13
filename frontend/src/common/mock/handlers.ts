@@ -10,7 +10,7 @@ import { authCodeHandler } from './authCode/authCode';
 import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
 import { commonHandler } from './common/handlers';
 import { mentoringHandler } from './mentoring/handlers';
-import { participatedMentoringHandler } from './participatedMentoring/handler';
+import { participatedMentoringHandler } from '../../pages/participatedMentoring/mock/handler';
 
 export const handlers = [
   ...mentoringHandler,
