@@ -30,32 +30,32 @@ public class ReservationNotificationService {
     }
 
     public void sendReservationStatusUpdateSmsMessage(
-        Reservation reservation,
-        String updateStatus
+            Reservation reservation,
+            String updateStatus,
+            String chatRoomUrl
     ) {
         Status status = Status.of(updateStatus);
         String mentorName = reservation.getMentorName();
         String context = reservation.getContent();
-        String chatUrl = reservation.getChatUrlOfMentoring();
 
         if (status.isNotifiable()) {
-            String message = createMessage(status, mentorName, context, chatUrl);
+            String message = createMessage(status, mentorName, context, chatRoomUrl);
             Phone menteePhone = reservation.getMentee().getPhone();
             smsRestClientService.sendSms(menteePhone, message, RESERVATION_SUBJECT);
         }
     }
 
     private String createMessage(
-        Status updateStatus,
-        String mentorName,
-        String context,
-        String chatUrl
+            Status updateStatus,
+            String mentorName,
+            String context,
+            String chatRoomUrl
     ) {
         if (updateStatus.isApprove()) {
             return smsMessageFormatter.approvedReservationMessage(
                     mentorName,
                     context,
-                    chatUrl
+                    chatRoomUrl
             );
         }
         return smsMessageFormatter.rejectedReservationMessage(mentorName);

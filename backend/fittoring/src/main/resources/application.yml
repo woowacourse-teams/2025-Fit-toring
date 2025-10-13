@@ -98,3 +98,5 @@ image-session:
     enabled: true
     fixed-delay-ms: 300000 # 5분
     batch-size: 200
+domain:
+  sub-domain: ${SUB_DOMAIN}
