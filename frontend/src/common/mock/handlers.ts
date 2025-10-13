@@ -1,3 +1,5 @@
+import { validateIdHandler } from '../../pages/signup/mock/validateId/handler';
+
 import { authCodeHandler } from './authCode/authCode';
 import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
 import { commonHandler } from './common/handlers';
@@ -9,7 +11,6 @@ import { mentoringHandler } from './mentoring/handlers';
 import { mentoringDetailHandler } from './mentoringDetail/handler';
 import { participatedMentoringHandler } from './participatedMentoring/handler';
 import { signupHandler } from './signup/signup';
-import { validateIdHandler } from '../../pages/signup/mock/validateId/validateId';
 
 export const handlers = [
   ...mentoringHandler,
