@@ -35,7 +35,8 @@ public class AdminCertificateController {
         PageResult<AdminCertificateResponse> certificates = adminCertificateService.getAllCertificatesPaged(
                 loginInfo.memberId(),
                 status,
-                page
+                page,
+            20
         );
         return ResponseEntity.status(HttpStatus.OK)
             .body(certificates);

@@ -26,19 +26,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminCertificateService {
 
-    public static final int PAGE_SIZE_OF_CERTIFICATE = 20;
-
     private final ImageService imageService;
     private final CertificateRepository certificateRepository;
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Long memberId, Status status, int page) {
+    public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Long memberId, Status status, int page, int size) {
         checkAdminAuthority(memberId);
-        List<Long> certificateIds = certificateRepository.findCertificateIdsForAdmin(status, page, PAGE_SIZE_OF_CERTIFICATE);
+        List<Long> certificateIds = certificateRepository.findCertificateIdsForAdmin(status, page, size);
         List<AdminCertificateResponse> certificates = certificateRepository.findCertificatesByIdsOrdered(certificateIds);
         long total = certificateRepository.countByStatus(status);
-        int totalPages = (int) Math.max(1, (total + PAGE_SIZE_OF_CERTIFICATE - 1) / PAGE_SIZE_OF_CERTIFICATE);
+        int totalPages = (int) Math.max(1, (total + size - 1) / size);
         return new PageResult<>(certificates, page, certificates.size(), total, totalPages);
     }
 

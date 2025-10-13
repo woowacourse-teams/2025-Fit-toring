@@ -88,7 +88,7 @@ class AdminCertificateServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> adminCertificateService.getAllCertificatesPaged(user.getId(), null, 1))
+        assertThatThrownBy(() -> adminCertificateService.getAllCertificatesPaged(user.getId(), null, 1, 20))
             .isInstanceOf(ForbiddenException.class)
             .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
@@ -120,12 +120,12 @@ class AdminCertificateServiceTest {
         em.clear();
 
         // when
-        PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 1);
-        PageResult<AdminCertificateResponse> secondResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 2);
-        PageResult<AdminCertificateResponse> thirdResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 3);
-        PageResult<AdminCertificateResponse> fourthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 4);
-        PageResult<AdminCertificateResponse> fifthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 5);
-        PageResult<AdminCertificateResponse> sixthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 6);
+        PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 1, 20);
+        PageResult<AdminCertificateResponse> secondResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 2, 20);
+        PageResult<AdminCertificateResponse> thirdResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 3, 20);
+        PageResult<AdminCertificateResponse> fourthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 4, 20);
+        PageResult<AdminCertificateResponse> fifthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 5, 20);
+        PageResult<AdminCertificateResponse> sixthResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), null, 6, 20);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -134,37 +134,31 @@ class AdminCertificateServiceTest {
             softAssertions.assertThat(firstResponse.total()).isEqualTo(105);
             softAssertions.assertThat(firstResponse.totalPages()).isEqualTo(6);
             softAssertions.assertThat(firstResponse.page()).isEqualByComparingTo(1);
-            softAssertions.assertThat(firstResponse.hasNext()).isTrue();
             softAssertions.assertThat(secondResponse.content()).hasSize(20);
             softAssertions.assertThat(secondResponse.size()).isEqualTo(20);
             softAssertions.assertThat(secondResponse.total()).isEqualTo(105);
             softAssertions.assertThat(secondResponse.totalPages()).isEqualTo(6);
             softAssertions.assertThat(secondResponse.page()).isEqualByComparingTo(2);
-            softAssertions.assertThat(secondResponse.hasNext()).isTrue();
             softAssertions.assertThat(thirdResponse.content()).hasSize(20);
             softAssertions.assertThat(thirdResponse.size()).isEqualTo(20);
             softAssertions.assertThat(thirdResponse.total()).isEqualTo(105);
             softAssertions.assertThat(thirdResponse.totalPages()).isEqualTo(6);
             softAssertions.assertThat(thirdResponse.page()).isEqualByComparingTo(3);
-            softAssertions.assertThat(thirdResponse.hasNext()).isTrue();
             softAssertions.assertThat(fourthResponse.content()).hasSize(20);
             softAssertions.assertThat(fourthResponse.size()).isEqualTo(20);
             softAssertions.assertThat(fourthResponse.total()).isEqualTo(105);
             softAssertions.assertThat(fourthResponse.totalPages()).isEqualTo(6);
             softAssertions.assertThat(fourthResponse.page()).isEqualByComparingTo(4);
-            softAssertions.assertThat(fourthResponse.hasNext()).isTrue();
             softAssertions.assertThat(fifthResponse.content()).hasSize(20);
             softAssertions.assertThat(fifthResponse.size()).isEqualTo(20);
             softAssertions.assertThat(fifthResponse.total()).isEqualTo(105);
             softAssertions.assertThat(fifthResponse.totalPages()).isEqualTo(6);
             softAssertions.assertThat(fifthResponse.page()).isEqualByComparingTo(5);
-            softAssertions.assertThat(fifthResponse.hasNext()).isTrue();
             softAssertions.assertThat(sixthResponse.content()).hasSize(5);
             softAssertions.assertThat(sixthResponse.size()).isEqualTo(5);
             softAssertions.assertThat(sixthResponse.total()).isEqualTo(105);
             softAssertions.assertThat(sixthResponse.totalPages()).isEqualTo(6);
             softAssertions.assertThat(sixthResponse.page()).isEqualByComparingTo(6);
-            softAssertions.assertThat(sixthResponse.hasNext()).isFalse();
         });
     }
 
@@ -195,8 +189,8 @@ class AdminCertificateServiceTest {
         em.clear();
 
         // when
-        PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), Status.REJECTED, 1);
-        PageResult<AdminCertificateResponse> secondResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), Status.REJECTED, 2);
+        PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), Status.REJECTED, 1, 20);
+        PageResult<AdminCertificateResponse> secondResponse = adminCertificateService.getAllCertificatesPaged(admin.getId(), Status.REJECTED, 2, 20);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -205,13 +199,11 @@ class AdminCertificateServiceTest {
             softAssertions.assertThat(firstResponse.total()).isEqualTo(35);
             softAssertions.assertThat(firstResponse.totalPages()).isEqualTo(2);
             softAssertions.assertThat(firstResponse.page()).isEqualByComparingTo(1);
-            softAssertions.assertThat(firstResponse.hasNext()).isTrue();
             softAssertions.assertThat(secondResponse.content()).hasSize(15);
             softAssertions.assertThat(secondResponse.size()).isEqualTo(15);
             softAssertions.assertThat(secondResponse.total()).isEqualTo(35);
             softAssertions.assertThat(secondResponse.totalPages()).isEqualTo(2);
             softAssertions.assertThat(secondResponse.page()).isEqualByComparingTo(2);
-            softAssertions.assertThat(secondResponse.hasNext()).isFalse();
         });
     }
 
