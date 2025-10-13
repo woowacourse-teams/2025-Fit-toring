@@ -14,23 +14,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomCertificateRepositoryImpl implements CustomCertificateRepository {
 
-    private static final QCertificate certificate = QCertificate.certificate;
-    private static final QMentoring mentoring = QMentoring.mentoring;
-    private static final QMember member = QMember.member;
+    private static final QCertificate CERTIFICATE = QCertificate.certificate;
+    private static final QMentoring MENTORING = QMentoring.mentoring;
+    private static final QMember MEMBER = QMember.member;
+
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public List<AdminCertificateResponse> findAllWithFilterAndPagination(Status status, int page, int size) {
         long offset = (long) (page - 1) * size;
 
-        return jpaQueryFactory.select(Projections.constructor(AdminCertificateResponse.class,
-                certificate.id, certificate.mentoring.mentor.name, certificate.title, certificate.type, certificate.verificationStatus, certificate.createdAt)
+        return jpaQueryFactory.select(
+            Projections.constructor(AdminCertificateResponse.class,
+                CERTIFICATE.id, CERTIFICATE.mentoring.mentor.name, CERTIFICATE.title, CERTIFICATE.type, CERTIFICATE.verificationStatus, CERTIFICATE.createdAt)
             )
-            .from(certificate)
-            .join(certificate.mentoring, mentoring)
-            .join(mentoring.mentor, member)
+            .from(CERTIFICATE)
+            .join(CERTIFICATE.mentoring, MENTORING)
+            .join(MENTORING.mentor, MEMBER)
             .where(buildStatusFilterCondition(status))
-            .orderBy(certificate.createdAt.desc())
+            .orderBy(CERTIFICATE.createdAt.desc())
             .offset(offset)
             .limit(size)
             .fetch();
@@ -40,14 +42,14 @@ public class CustomCertificateRepositoryImpl implements CustomCertificateReposit
         if (status == null) {
             return null;
         }
-        return certificate.verificationStatus.eq(status);
+        return CERTIFICATE.verificationStatus.eq(status);
     }
 
     @Override
     public long countByStatus(Status status) {
         return jpaQueryFactory
-            .select(certificate.count())
-            .from(certificate)
+            .select(CERTIFICATE.count())
+            .from(CERTIFICATE)
             .where(buildStatusFilterCondition(status))
             .fetchOne();
     }
