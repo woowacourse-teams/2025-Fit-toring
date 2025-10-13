@@ -1,10 +1,9 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-
-import { ERROR_MESSAGE } from '../src/pages/signup/constants/errorMessage';
 import useVerificationCodeInput, {
   VERIFICATION_CODE_LENGTH,
-} from '../src/pages/signup/hooks/useVerificationCodeInput';
+} from '../src/common/hooks/useVerificationCodeInput';
+import { ERROR_MESSAGE } from '../src/common/constants/errorMessage';
 
 const createFakeChangeEvent = (
   value: string,

@@ -21,4 +21,6 @@ export const API_ENDPOINTS = {
   CERTIFICATES: '/certificates',
   MENTORINGS_PAGE: '/mentorings-page',
   REQUEST_PRESIGNED_URL: '/images/presigned',
+  KAKAO_LOGIN: '/kakao/callback',
+  IDENTITY_VERIFICATION: '/oauth-signup',
 } as const;
