@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-import { API_ENDPOINTS } from '../../constants/apiEndpoints';
+import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 
 const BASE_URL = process.env.API_BASE_URL;
 const SIGNUP_URL = `${BASE_URL}${API_ENDPOINTS.SIGNUP}`;
