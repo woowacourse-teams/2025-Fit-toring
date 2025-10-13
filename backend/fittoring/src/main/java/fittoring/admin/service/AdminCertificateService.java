@@ -36,8 +36,7 @@ public class AdminCertificateService {
         List<AdminCertificateResponse> certificates = certificateRepository.findAllWithFilterAndPagination(status, page, PAGE_SIZE_OF_CERTIFICATE);
         long total = certificateRepository.countByStatus(status);
         int totalPages = (int) Math.max(1, (total + PAGE_SIZE_OF_CERTIFICATE - 1) / PAGE_SIZE_OF_CERTIFICATE);
-        boolean hasNext = (certificates.size() == PAGE_SIZE_OF_CERTIFICATE) && (page != totalPages);
-        return new PageResult<>(certificates, page, certificates.size(), total, totalPages, hasNext);
+        return new PageResult<>(certificates, page, certificates.size(), total, totalPages);
     }
 
     private void checkAdminAuthority(Long memberId) {
