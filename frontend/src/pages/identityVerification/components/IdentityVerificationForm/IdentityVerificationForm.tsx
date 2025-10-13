@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
@@ -139,6 +140,30 @@ function IdentityVerificationForm() {
     phoneNumberErrorMessage === '' &&
     verificationCodeValidated;
 
+  const identityVerificationMutation = useMutation({
+    mutationFn: postIdentityVerification,
+    onSuccess: (response) => {
+      if (response.status === 201) {
+        alert('본인 인증이 완료되었습니다.');
+        login();
+        navigate(PAGE_URL.HOME);
+      }
+    },
+    onError: (error, variables) => {
+      console.error('본인 인증 실패', error);
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'identityVerification',
+        step: 'identityVerification',
+        extras: {
+          ...variables,
+        },
+      });
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -168,23 +193,7 @@ function IdentityVerificationForm() {
       phone: phoneNumber,
     };
 
-    try {
-      const response = await postIdentityVerification(userInfo);
-      if (response.status === 201) {
-        alert('본인 인증이 완료되었습니다.');
-        login();
-        navigate(PAGE_URL.HOME);
-      }
-    } catch (error) {
-      console.error('본인 인증 실패', error);
-
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'identityVerification',
-        step: 'identityVerification',
-      });
-    }
+    identityVerificationMutation.mutate(userInfo);
   };
 
   return (
