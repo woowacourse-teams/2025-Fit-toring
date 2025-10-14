@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
@@ -14,8 +14,15 @@ import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
-import type { Message } from './types/message';
+import type { Message, MessageResponse } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
+import type { InfiniteData, QueryKey } from '@tanstack/react-query';
+
+interface ChatRoomPageParam {
+  chatRoomId: number;
+  sortKey: string;
+  cursorCode?: string;
+}
 
 function ChatRoom() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -52,9 +59,31 @@ function ChatRoom() {
 
   const stompClientRef = useRef<Client | null>(null);
 
-  const { data: chantRoomMessage } = useQuery({
+  const { data: chantRoomMessage } = useInfiniteQuery<
+    MessageResponse,
+    Error,
+    InfiniteData<MessageResponse>,
+    QueryKey,
+    ChatRoomPageParam
+  >({
     queryKey: ['chatRoom', chatRoomId],
-    queryFn: () => getChatRoom(Number(chatRoomId!)),
+    queryFn: async ({ pageParam }) => {
+      return getChatRoom(pageParam);
+    },
+    initialPageParam: {
+      chatRoomId: Number(chatRoomId),
+      sortKey: 'CREATED_AT',
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.nextCursorCode) {
+        return {
+          chatRoomId: Number(chatRoomId),
+          cursorCode: lastPage.nextCursorCode,
+          sortKey: 'CREATED_AT',
+        };
+      }
+      return undefined;
+    },
   });
 
   const ChatRoomInfoQuery = useQuery<ChatRoomInfo>({
@@ -66,7 +95,7 @@ function ChatRoom() {
 
   useEffect(() => {
     if (chantRoomMessage) {
-      setMessages(chantRoomMessage);
+      setMessages(chantRoomMessage.pages[0].chatMessages);
     }
   }, [chantRoomMessage]);
 
