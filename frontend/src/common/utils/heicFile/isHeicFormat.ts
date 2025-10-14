@@ -1,11 +1,4 @@
-const HEIC_SIGNATURES = [
-  'heic',
-  'heix',
-  'hevc',
-  'heim',
-  'mif1',
-  'msf1',
-] as const;
+const HEIC_SIGNATURES = ['heic', 'heix', 'hevc', 'heim'] as const;
 
 export function isHeicFile(file: File): Promise<boolean> {
   return new Promise((resolve) => {
