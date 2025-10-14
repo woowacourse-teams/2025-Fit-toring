@@ -3,6 +3,11 @@ spring:
     name: fittoring
   config:
     import: optional:file:.env[.properties]
+  datasource:
+    hikari:
+      maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
+      minimum-idle: ${HIKARI_MINIMUM_IDLE}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -48,6 +53,10 @@ management:
     tracing:
       transport: grpc
       endpoint: ${TEMPO_GRPC_LISTENER_URL}
+  prometheus:
+    metrics:
+      export:
+        step: ${METRICS_EXPORT_TIME_TO_PROMETHEUS}
 jdbc:
   datasource-proxy:
     enabled: ${DB_TRACING_ENABLE}
