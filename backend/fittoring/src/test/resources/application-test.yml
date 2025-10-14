@@ -17,6 +17,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -42,3 +43,5 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: test-bucket
+domain:
+  sub-domain: test-sub-domain

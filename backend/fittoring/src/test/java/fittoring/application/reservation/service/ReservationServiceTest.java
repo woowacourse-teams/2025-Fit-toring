@@ -5,19 +5,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.presentation.dto.AdminReservationResponse;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
+import fittoring.application.chatroom.service.ChatRoomService;
 import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.ChatRoomUrlGenerator;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
-import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
@@ -34,10 +33,8 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.util.DbCleaner;
-
 import java.util.List;
 import java.util.TimeZone;
-
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +57,9 @@ import org.springframework.test.context.ActiveProfiles;
         ReservationService.class,
         ImageService.class,
         QueryDslConfig.class,
-        MentoringPaginationHelper.class
+        MentoringPaginationHelper.class,
+        ChatRoomUrlGenerator.class,
+        ChatRoomService.class,
 })
 @DataJpaTest
 class ReservationServiceTest {
@@ -310,67 +309,6 @@ class ReservationServiceTest {
         assertThat(actual)
                 .usingRecursiveFieldByFieldElementComparator()
                 .containsExactlyInAnyOrderElementsOf(expected);
-    }
-
-    @DisplayName("관리자는 특정 멘토링에 달린 모든 예약을 조회할 수 있다")
-    @Test
-    void findMentoringReservationsWithAdminAuthorization() {
-        // given
-        Member admin = entityManager.persist(FixtureUtil.getTestAdmin());
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
-
-        Member mentee1 = entityManager.persist(FixtureUtil.getTestMentee(1));
-        Member mentee2 = entityManager.persist(FixtureUtil.getTestMentee(2));
-
-        Reservation reservation1 = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
-        Reservation reservation2 = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
-
-        MentoringReservationGetDto dto =
-                new MentoringReservationGetDto(admin.getId(), mentoring.getId());
-
-        // when
-        List<AdminReservationResponse> actual =
-                reservationService.findMentoringReservationsWithAdminAuthorization(dto);
-
-        // then
-        assertThat(actual).containsExactlyInAnyOrder(
-                new AdminReservationResponse(
-                        reservation1.getId(),
-                        reservation1.getMenteeName(),
-                        reservation1.getCreatedAt().toLocalDate(),
-                        reservation1.getStatus(),
-                        reservation1.getContent()
-                ),
-                new AdminReservationResponse(
-                        reservation2.getId(),
-                        reservation2.getMenteeName(),
-                        reservation2.getCreatedAt().toLocalDate(),
-                        reservation2.getStatus(),
-                        reservation2.getContent()
-                )
-        );
-    }
-
-    @DisplayName("관리자가 아닌 회원은 관리자용 예약 조회 기능을 사용할 수 없다")
-    @Test
-    void findMentoringReservationsWithAdminAuthorizationFail() {
-        // given
-        Member normalMember = entityManager.persist(FixtureUtil.getTestMentee());     // 비관리자
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
-        Member mentee1 = entityManager.persist(FixtureUtil.getTestMentee(1));
-        Member mentee2 = entityManager.persist(FixtureUtil.getTestMentee(2));
-
-        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
-        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
-
-        MentoringReservationGetDto dto = new MentoringReservationGetDto(normalMember.getId(), mentoring.getId());
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.findMentoringReservationsWithAdminAuthorization(dto))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
     @DisplayName("관리자는 예약의 상태를 변경할 수 있다")

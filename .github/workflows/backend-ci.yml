@@ -64,6 +64,10 @@ jobs:
           echo "TRACING_ENABLE=${{ secrets.TRACING_ENABLE }}" >> .env
           echo "TEMPO_GRPC_LISTENER_URL=${{ secrets.TEMPO_GRPC_LISTENER_URL }}" >> .env
           echo "DB_TRACING_ENABLE=${{ secrets.DB_TRACING_ENABLE }}" >> .env
+          echo "METRICS_EXPORT_TIME_TO_PROMETHEUS=${{ secrets.METRICS_EXPORT_TIME_TO_PROMETHEUS }}" >> .env
+          echo "HIKARI_MAXIMUM_POOL_SIZE=${{ secrets.HIKARI_MAXIMUM_POOL_SIZE }}" >> .env
+          echo "HIKARI_MINIMUM_IDLE=${{ secrets.HIKARI_MINIMUM_IDLE }}" >> .env
+          echo "HIKARI_CONNECTION_TIMEOUT=${{ secrets.HIKARI_CONNECTION_TIMEOUT }}" >> .env
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:

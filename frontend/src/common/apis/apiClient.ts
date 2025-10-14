@@ -9,9 +9,9 @@ interface ApiClientGetType {
   withCredentials?: boolean;
 }
 
-interface ApiClientPostType {
+interface ApiClientPostType<T> {
   endpoint: string;
-  body?: Record<string, string | number> | FormData;
+  body?: Record<string, string | number> | FormData | T;
   withCredentials?: boolean;
 }
 
@@ -26,10 +26,12 @@ interface ApiClientPatchType<T> {
   withCredentials?: boolean;
 }
 
-interface ApiClientPutType {
+interface ApiClientPutType<T> {
   endpoint: string;
-  body: Record<string, string | number> | FormData;
+  headers?: Record<string, string>;
+  body: Record<string, string | number> | FormData | File | T;
   withCredentials?: boolean;
+  useBaseUrl?: boolean;
 }
 
 type RequestCredentials = 'omit' | 'same-origin' | 'include';
@@ -133,7 +135,7 @@ class ApiClient {
     }
   }
 
-  async post({ endpoint, body, withCredentials }: ApiClientPostType) {
+  async post<T>({ endpoint, body, withCredentials }: ApiClientPostType<T>) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
     const isFormData = body instanceof FormData;
 
@@ -210,14 +212,21 @@ class ApiClient {
     return this.requestWithRefresh(sendRequest);
   }
 
-  async put({ endpoint, body, withCredentials }: ApiClientPutType) {
-    const url = new URL(`${this.#baseUrl}${endpoint}`);
+  async put<T>({
+    endpoint,
+    headers = { 'Content-Type': 'application/json' },
+    body,
+    withCredentials,
+    useBaseUrl = true,
+  }: ApiClientPutType<T>) {
+    const url = new URL(`${useBaseUrl ? this.#baseUrl : ''}${endpoint}`);
     const isFormData = body instanceof FormData;
+    const isFile = body instanceof File;
 
     const options = {
       method: 'PUT',
-      headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
-      body: isFormData ? body : JSON.stringify(body),
+      headers: isFormData ? undefined : headers,
+      body: isFormData || isFile ? body : JSON.stringify(body),
       credentials: withCredentials
         ? 'include'
         : ('same-origin' as RequestCredentials),
