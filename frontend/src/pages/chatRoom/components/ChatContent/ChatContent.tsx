@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import styled from '@emotion/styled';
 
@@ -14,16 +14,18 @@ function ChatContent({ messages }: ChatContentProps) {
   const storedData = localStorage.getItem('memberId');
   const memberId = storedData ? JSON.parse(storedData) : null;
 
-  const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (messageEndRef.current) {
-      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  useLayoutEffect(() => {
+    const element = containerRef.current;
+    if (!element) {
+      return;
     }
-  }, [messages]);
+    element.scrollTop = element.scrollHeight;
+  }, [messages.length]);
 
   return (
-    <S_Container>
+    <S_Container ref={containerRef}>
       {messages.map(
         ({ content, createdAt, senderId, status, chatMessageId }, index) => {
           const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
@@ -44,7 +46,6 @@ function ChatContent({ messages }: ChatContentProps) {
           );
         },
       )}
-      <div ref={messageEndRef} />
     </S_Container>
   );
 }
