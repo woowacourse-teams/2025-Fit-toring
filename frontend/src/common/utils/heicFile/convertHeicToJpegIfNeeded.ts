@@ -1,5 +1,5 @@
 import { convertHeicToJpeg } from './convertHeicToJpeg';
-import { isHeicFile } from './isHeicFormat';
+import { isHeicFile } from './isHeicFile';
 
 export const convertHeicToJpegIfNeeded = async (file: File) => {
   const correctHeicFile = await isHeicFile(file);
