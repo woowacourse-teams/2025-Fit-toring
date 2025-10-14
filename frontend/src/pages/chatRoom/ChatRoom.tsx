@@ -59,7 +59,11 @@ function ChatRoom() {
 
   const stompClientRef = useRef<Client | null>(null);
 
-  const { data: chantRoomMessage } = useInfiniteQuery<
+  const {
+    data: chatRoomMessage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<
     MessageResponse,
     Error,
     InfiniteData<MessageResponse>,
@@ -84,7 +88,47 @@ function ChatRoom() {
       }
       return undefined;
     },
+    select: (data) => ({
+      ...data,
+      pages: data.pages
+        .slice()
+        .reverse()
+        .map((page) => ({
+          ...page,
+          chatMessages: [...page.chatMessages].reverse(),
+        })),
+    }),
   });
+
+  const pageFirstRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!pageFirstRef.current) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        root: null,
+        threshold: 0.1,
+        rootMargin: '100px 0px 0px 0px',
+      },
+    );
+
+    observer.observe(pageFirstRef.current);
+
+    return () => observer.disconnect();
+  }, [
+    chatRoomMessage?.pages?.length,
+    fetchNextPage,
+    isFetchingNextPage,
+    messages.length,
+  ]);
 
   const ChatRoomInfoQuery = useQuery<ChatRoomInfo>({
     queryKey: ['chatRoomInfo', chatRoomId],
@@ -94,10 +138,10 @@ function ChatRoom() {
   const chatRoomInfo = ChatRoomInfoQuery.data;
 
   useEffect(() => {
-    if (chantRoomMessage) {
-      setMessages(chantRoomMessage.pages[0].chatMessages);
+    if (chatRoomMessage) {
+      setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
     }
-  }, [chantRoomMessage]);
+  }, [chatRoomMessage]);
 
   useEffect(() => {
     const client = new Client({
@@ -213,7 +257,7 @@ function ChatRoom() {
         />
       </div>
 
-      <ChatContent messages={messages} />
+      <ChatContent messages={messages} pageFirstRef={pageFirstRef} />
       <InputSection
         value={message}
         onChange={handleChange}
