@@ -101,6 +101,7 @@ function ChatRoom() {
   });
 
   const pageFirstRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!pageFirstRef.current) {
@@ -108,15 +109,29 @@ function ChatRoom() {
     }
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isFetchingNextPage) {
-          fetchNextPage();
+      async (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          !isFetchingNextPage &&
+          listRef.current
+        ) {
+          const el = listRef.current;
+          const prevScrollHeight = el.scrollHeight;
+          const prevTop = el.scrollTop;
+
+          await fetchNextPage();
+
+          requestAnimationFrame(() => {
+            const newScrollHeight = el.scrollHeight;
+            const delta = newScrollHeight - prevScrollHeight;
+            el.scrollTop = prevTop + delta;
+          });
         }
       },
       {
-        root: null,
+        root: listRef.current,
         threshold: 0.1,
-        rootMargin: '100px 0px 0px 0px',
+        rootMargin: '20px 0px 0px 0px',
       },
     );
 
@@ -257,7 +272,11 @@ function ChatRoom() {
         />
       </div>
 
-      <ChatContent messages={messages} pageFirstRef={pageFirstRef} />
+      <ChatContent
+        messages={messages}
+        pageFirstRef={pageFirstRef}
+        listRef={listRef}
+      />
       <InputSection
         value={message}
         onChange={handleChange}

@@ -9,17 +9,17 @@ import type { Message } from '../../types/message';
 interface ChatContentProps {
   messages: Message[];
   pageFirstRef: React.RefObject<HTMLDivElement | null>;
+  listRef: React.RefObject<HTMLDivElement | null>;
 }
 
-function ChatContent({ messages, pageFirstRef }: ChatContentProps) {
+function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
   const storedData = localStorage.getItem('memberId');
   const memberId = storedData ? JSON.parse(storedData) : null;
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const initialScrolledRef = useRef(false);
 
   useLayoutEffect(() => {
-    const element = containerRef.current;
+    const element = listRef.current;
     if (!element) {
       return;
     }
@@ -28,10 +28,10 @@ function ChatContent({ messages, pageFirstRef }: ChatContentProps) {
       element.scrollTop = element.scrollHeight;
       initialScrolledRef.current = true;
     }
-  }, [messages]);
+  }, [listRef, messages]);
 
   useEffect(() => {
-    const element = containerRef.current;
+    const element = listRef.current;
     if (!element) {
       return;
     }
@@ -42,10 +42,10 @@ function ChatContent({ messages, pageFirstRef }: ChatContentProps) {
     if (isAtBottom) {
       element.scrollTop = element.scrollHeight;
     }
-  }, [messages.length]);
+  }, [listRef, messages.length]);
 
   return (
-    <S_Container ref={containerRef}>
+    <S_Container ref={listRef}>
       <div ref={pageFirstRef} />
 
       <S_BubbleList>
