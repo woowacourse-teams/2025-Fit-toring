@@ -29,22 +29,17 @@
     <title>핏토링</title>
     <link rel="icon" href="/favicon-logo.svg" />
     <link rel="canonical" href="https://www.fittoring.com" />
-
     <link
       rel="preload"
-      href="/assets/fonts/Pretendard-Bold.subset.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
-    <link
-      rel="preload"
-      href="/assets/fonts/Pretendard-Regular.subset.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
-
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css"
+    /></noscript>
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=<%= GOOGLE_ANALYTICS_ID %>"

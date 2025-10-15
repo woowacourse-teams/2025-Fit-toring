@@ -131,4 +131,8 @@ public class Reservation {
     public String getStatus() {
         return status.name();
     }
+
+    public Status getOriginalStatus() {
+        return status;
+    }
 }
