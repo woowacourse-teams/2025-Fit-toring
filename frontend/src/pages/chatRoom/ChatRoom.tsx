@@ -57,12 +57,11 @@ function ChatRoom() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
 
-  const stompClientRef = useRef<Client | null>(null);
-
   const {
     data: chatRoomMessage,
     fetchNextPage,
     isFetchingNextPage,
+    hasNextPage,
   } = useInfiniteQuery<
     MessageResponse,
     Error,
@@ -79,7 +78,7 @@ function ChatRoom() {
       sortKey: 'CREATED_AT',
     },
     getNextPageParam: (lastPage) => {
-      if (lastPage.nextCursorCode) {
+      if (lastPage.hasNext) {
         return {
           chatRoomId: Number(chatRoomId),
           cursorCode: lastPage.nextCursorCode,
@@ -112,6 +111,7 @@ function ChatRoom() {
       async (entries) => {
         if (
           entries[0].isIntersecting &&
+          hasNextPage &&
           !isFetchingNextPage &&
           listRef.current
         ) {
@@ -139,11 +139,18 @@ function ChatRoom() {
 
     return () => observer.disconnect();
   }, [
-    chatRoomMessage?.pages?.length,
+    chatRoomMessage?.pages.length,
     fetchNextPage,
+    hasNextPage,
     isFetchingNextPage,
     messages.length,
   ]);
+
+  useEffect(() => {
+    if (chatRoomMessage) {
+      setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
+    }
+  }, [chatRoomMessage]);
 
   const ChatRoomInfoQuery = useQuery<ChatRoomInfo>({
     queryKey: ['chatRoomInfo', chatRoomId],
@@ -152,11 +159,7 @@ function ChatRoom() {
 
   const chatRoomInfo = ChatRoomInfoQuery.data;
 
-  useEffect(() => {
-    if (chatRoomMessage) {
-      setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
-    }
-  }, [chatRoomMessage]);
+  const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
     const client = new Client({
