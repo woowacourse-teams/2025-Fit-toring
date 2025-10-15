@@ -30,7 +30,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,prometheus, metrics
+        include: heapdump, health,info,prometheus, metrics
       path-mapping:
         health: healthcheck
         prometheus: prometheus-provider
@@ -40,6 +40,8 @@ management:
         http.server.requests: true
       percentiles:
         http.server.requests: 0.95,0.99
+    tags:
+      environment: ${SPRING_PROFILES_ACTIVE}
   tracing:
     enabled: ${TRACING_ENABLE}
     sampling:
@@ -48,6 +50,10 @@ management:
     tracing:
       transport: grpc
       endpoint: ${TEMPO_GRPC_LISTENER_URL}
+  prometheus:
+    metrics:
+      export:
+        step: ${METRICS_EXPORT_TIME_TO_PROMETHEUS}
 jdbc:
   datasource-proxy:
     enabled: ${DB_TRACING_ENABLE}
@@ -59,8 +65,8 @@ jdbc:
 sms:
   base-url: https://api.solapi.com
   timeout:
-    connect: 1_200
-    read: 5_000
+    connect: 1200
+    read: 5000
 
 logging:
   file:
@@ -96,7 +102,7 @@ aws:
 image-session:
   merge:
     enabled: true
-    fixed-delay-ms: 300000 # 5분
+    fixed-delay-ms: 300000
     batch-size: 200
 domain:
   sub-domain: ${SUB_DOMAIN}

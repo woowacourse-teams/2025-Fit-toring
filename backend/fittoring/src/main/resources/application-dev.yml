@@ -5,11 +5,21 @@ spring:
       username: ${DEV_WRITER_USER}
       password: ${DEV_WRITER_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
+      pool-name: source-hikari-pool
+      maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
+      minimum-idle: ${HIKARI_MINIMUM_IDLE}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
+      max-lifetime: ${HIKARI_MAX_LIFETIME}
     reader:
       jdbc-url: jdbc:mysql://${DEV_REPLICA_HOST}:${DEV_REPLICA_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       username: ${DEV_REPLICA_USER}
       password: ${DEV_REPLICA_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
+      pool-name: replica-hikari-pool
+      maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
+      minimum-idle: ${HIKARI_MINIMUM_IDLE}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
+      max-lifetime: ${HIKARI_MAX_LIFETIME}
   jpa:
     show-sql: true
   flyway:
