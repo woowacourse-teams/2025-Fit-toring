@@ -79,6 +79,7 @@ jobs:
           echo "HIKARI_MAXIMUM_POOL_SIZE=${{ secrets.HIKARI_MAXIMUM_POOL_SIZE }}" >> .env
           echo "HIKARI_MINIMUM_IDLE=${{ secrets.HIKARI_MINIMUM_IDLE }}" >> .env
           echo "HIKARI_CONNECTION_TIMEOUT=${{ secrets.HIKARI_CONNECTION_TIMEOUT }}" >> .env
+          echo "HIKARI_MAX_LIFETIME=${{ secrets.HIKARI_MAX_LIFETIME }}" >> .env
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
