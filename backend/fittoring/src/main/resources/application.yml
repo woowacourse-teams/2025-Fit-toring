@@ -34,6 +34,9 @@ management:
       path-mapping:
         health: healthcheck
         prometheus: prometheus-provider
+  endpoint:
+    heapdump:
+      enabled: true
   metrics:
     distribution:
       percentiles-histogram:
