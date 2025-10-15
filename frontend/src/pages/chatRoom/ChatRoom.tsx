@@ -138,13 +138,7 @@ function ChatRoom() {
     observer.observe(pageFirstRef.current);
 
     return () => observer.disconnect();
-  }, [
-    chatRoomMessage?.pages.length,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    messages.length,
-  ]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
     if (chatRoomMessage) {
