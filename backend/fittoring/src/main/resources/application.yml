@@ -71,8 +71,8 @@ jdbc:
 sms:
   base-url: https://api.solapi.com
   timeout:
-    connect: 1_200
-    read: 5_000
+    connect: 1200
+    read: 5000
 
 logging:
   file:
