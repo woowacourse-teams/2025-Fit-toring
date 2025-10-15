@@ -8,6 +8,12 @@ spring:
     username: ${TEST_DATABASE_USER}
     password: ${TEST_DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    datasource:
+      hikari:
+        pool-name: test-hikari
+        maximum-pool-size: 10
+        connection-timeout: 30000
+        max-lifetime: 1800000
   sql:
     init:
       mode: never

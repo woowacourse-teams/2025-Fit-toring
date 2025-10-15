@@ -8,6 +8,7 @@ spring:
       maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
       minimum-idle: ${HIKARI_MINIMUM_IDLE}
       connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
+      max-lifetime: ${HIKARI_MAX_LIFETIME}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -45,6 +46,8 @@ management:
         http.server.requests: true
       percentiles:
         http.server.requests: 0.95,0.99
+    tags:
+      environment: ${SPRING_PROFILES_ACTIVE}
   tracing:
     enabled: ${TRACING_ENABLE}
     sampling:
@@ -68,8 +71,8 @@ jdbc:
 sms:
   base-url: https://api.solapi.com
   timeout:
-    connect: 1_200
-    read: 5_000
+    connect: 1200
+    read: 5000
 
 logging:
   file:
@@ -105,7 +108,7 @@ aws:
 image-session:
   merge:
     enabled: true
-    fixed-delay-ms: 300000 # 5분
+    fixed-delay-ms: 300000
     batch-size: 200
 domain:
   sub-domain: ${SUB_DOMAIN}
