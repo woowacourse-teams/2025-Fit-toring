@@ -3,12 +3,6 @@ spring:
     name: fittoring
   config:
     import: optional:file:.env[.properties]
-  datasource:
-    hikari:
-      maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
-      minimum-idle: ${HIKARI_MINIMUM_IDLE}
-      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
-      max-lifetime: ${HIKARI_MAX_LIFETIME}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -36,7 +30,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,prometheus, metrics
+        include: heapdump, health,info,prometheus, metrics
       path-mapping:
         health: healthcheck
         prometheus: prometheus-provider
