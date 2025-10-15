@@ -55,6 +55,16 @@ class ChatRoomControllerTest extends AbstractApiDocumentationTest {
         chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content10"));
         chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content11"));
         chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content12"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content13"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content14"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content15"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content16"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content17"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content18"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content19"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content20"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content21"));
+        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content22"));
 
         String accessToken = jwtProvider.createAccessToken(mentee.getId());
 
@@ -75,7 +85,7 @@ class ChatRoomControllerTest extends AbstractApiDocumentationTest {
 
         //then
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(firstResponse.chatMessages()).hasSize(10);
+            softly.assertThat(firstResponse.chatMessages()).hasSize(20);
             softly.assertThat(firstResponse.hasNext()).isTrue();
             softly.assertThat(firstResponse.nextCursorCode()).isNotNull();
         });

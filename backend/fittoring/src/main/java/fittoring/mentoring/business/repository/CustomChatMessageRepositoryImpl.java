@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomChatMessageRepositoryImpl implements CustomChatMessageRepository {
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 20;
     private static final QChatMessage chatMessage = QChatMessage.chatMessage;
 
     private final JPAQueryFactory jpaQueryFactory;
