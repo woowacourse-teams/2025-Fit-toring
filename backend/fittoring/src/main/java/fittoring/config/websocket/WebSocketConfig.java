@@ -16,8 +16,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static final String PROD = "https://www.fittoring.com";
     private static final String DEV = "https://dev.fittoring.com";
     private static final String LOCAL = "http://localhost:3000";
-    private static final String ADMIN_PROD = "https://api.fittoring.com/web-admin";
-    private static final String ADMIN_DEV = "https://devapi.fittoring.com/web-admin";
 
     private final StompAuthChannelInterceptor stompAuthChannelInterceptor;
     private final WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor;
@@ -34,9 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns(
                         PROD,
                         DEV,
-                        LOCAL,
-                        ADMIN_PROD,
-                        ADMIN_DEV
+                        LOCAL
                 )
                 .addInterceptors(webSocketAuthHandshakeInterceptor)
                 .withSockJS();
