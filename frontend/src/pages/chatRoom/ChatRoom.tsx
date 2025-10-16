@@ -127,7 +127,7 @@ function ChatRoom() {
 
   const topKey = messages[0]?.chatMessageId;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const list = listRef.current;
     const snap = expectPrependRef.current;
     if (!list || !snap) {
@@ -140,7 +140,7 @@ function ChatRoom() {
     expectPrependRef.current = null;
   }, [topKey]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (chatRoomMessage) {
       setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
     }
