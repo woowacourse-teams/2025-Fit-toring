@@ -11,7 +11,7 @@ import type { MessageResponse } from '../types/message';
 interface ChatRoomPageParam {
   chatRoomId: number;
   sortKey: string;
-  cursorCode?: string;
+  cursorCode?: string | null;
 }
 
 const useInfiniteChatRoomMessage = (chatRoomId: number) => {

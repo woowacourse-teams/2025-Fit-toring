@@ -15,6 +15,6 @@ export interface Message {
 
 export interface MessageResponse {
   chatMessages: Message[];
-  nextCursorCode: string;
+  nextCursorCode: string | null;
   hasNext: boolean;
 }

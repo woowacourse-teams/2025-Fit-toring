@@ -10,7 +10,7 @@ export const getChatRoom = async ({
 }: {
   chatRoomId: number;
   sortKey: string;
-  cursorCode?: string;
+  cursorCode?: string | null;
 }) => {
   const searchParams: Record<string, string> = { sortKey };
 
