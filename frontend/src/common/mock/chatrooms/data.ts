@@ -175,7 +175,7 @@ export const CHAT_MESSAGES1 = {
   chatMessages: [
     {
       chatMessageId: 40,
-      tempId: null,
+      tempId: 1,
       chatRoomId: 1,
       senderId: 1,
       content: 'content40',
@@ -183,7 +183,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 39,
-      tempId: null,
+      tempId: 2,
       chatRoomId: 1,
       senderId: 2,
       content: 'content39',
@@ -191,7 +191,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 38,
-      tempId: null,
+      tempId: 3,
       chatRoomId: 1,
       senderId: 1,
       content: 'content38',
@@ -199,7 +199,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 37,
-      tempId: null,
+      tempId: 4,
       chatRoomId: 1,
       senderId: 2,
       content: 'content37',
@@ -207,7 +207,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 36,
-      tempId: null,
+      tempId: 5,
       chatRoomId: 1,
       senderId: 1,
       content: 'content36',
@@ -215,7 +215,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 35,
-      tempId: null,
+      tempId: 6,
       chatRoomId: 1,
       senderId: 2,
       content: 'content35',
@@ -223,7 +223,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 34,
-      tempId: null,
+      tempId: 7,
       chatRoomId: 1,
       senderId: 1,
       content: 'content34',
@@ -231,7 +231,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 33,
-      tempId: null,
+      tempId: 8,
       chatRoomId: 1,
       senderId: 2,
       content: 'content33',
@@ -239,7 +239,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 32,
-      tempId: null,
+      tempId: 9,
       chatRoomId: 1,
       senderId: 1,
       content: 'content32',
@@ -247,7 +247,7 @@ export const CHAT_MESSAGES1 = {
     },
     {
       chatMessageId: 31,
-      tempId: null,
+      tempId: 10,
       chatRoomId: 1,
       senderId: 2,
       content: 'content31',
@@ -262,7 +262,7 @@ export const CHAT_MESSAGES2 = {
   chatMessages: [
     {
       chatMessageId: 30,
-      tempId: null,
+      tempId: 11,
       chatRoomId: 1,
       senderId: 1,
       content: 'content30',
@@ -270,7 +270,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 29,
-      tempId: null,
+      tempId: 12,
       chatRoomId: 1,
       senderId: 2,
       content: 'content29',
@@ -278,7 +278,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 28,
-      tempId: null,
+      tempId: 13,
       chatRoomId: 1,
       senderId: 1,
       content: 'content28',
@@ -286,7 +286,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 27,
-      tempId: null,
+      tempId: 14,
       chatRoomId: 1,
       senderId: 2,
       content: 'content27',
@@ -294,7 +294,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 26,
-      tempId: null,
+      tempId: 15,
       chatRoomId: 1,
       senderId: 1,
       content: 'content26',
@@ -302,7 +302,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 25,
-      tempId: null,
+      tempId: 16,
       chatRoomId: 1,
       senderId: 2,
       content: 'content25',
@@ -310,7 +310,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 24,
-      tempId: null,
+      tempId: 17,
       chatRoomId: 1,
       senderId: 1,
       content: 'content24',
@@ -318,7 +318,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 23,
-      tempId: null,
+      tempId: 18,
       chatRoomId: 1,
       senderId: 2,
       content: 'content23',
@@ -326,7 +326,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 22,
-      tempId: null,
+      tempId: 19,
       chatRoomId: 1,
       senderId: 1,
       content: 'content22',
@@ -334,7 +334,7 @@ export const CHAT_MESSAGES2 = {
     },
     {
       chatMessageId: 21,
-      tempId: null,
+      tempId: 20,
       chatRoomId: 1,
       senderId: 2,
       content: 'content21',
@@ -349,7 +349,7 @@ export const CHAT_MESSAGES3 = {
   chatMessages: [
     {
       chatMessageId: 20,
-      tempId: null,
+      tempId: 21,
       chatRoomId: 1,
       senderId: 1,
       content: 'content20',
@@ -357,7 +357,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 19,
-      tempId: null,
+      tempId: 22,
       chatRoomId: 1,
       senderId: 2,
       content: 'content19',
@@ -365,7 +365,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 18,
-      tempId: null,
+      tempId: 23,
       chatRoomId: 1,
       senderId: 1,
       content: 'content18',
@@ -373,7 +373,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 17,
-      tempId: null,
+      tempId: 24,
       chatRoomId: 1,
       senderId: 2,
       content: 'content17',
@@ -381,7 +381,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 16,
-      tempId: null,
+      tempId: 25,
       chatRoomId: 1,
       senderId: 1,
       content: 'content16',
@@ -389,7 +389,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 15,
-      tempId: null,
+      tempId: 26,
       chatRoomId: 1,
       senderId: 2,
       content: 'content15',
@@ -397,7 +397,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 14,
-      tempId: null,
+      tempId: 27,
       chatRoomId: 1,
       senderId: 1,
       content: 'content14',
@@ -405,7 +405,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 13,
-      tempId: null,
+      tempId: 28,
       chatRoomId: 1,
       senderId: 2,
       content: 'content13',
@@ -413,7 +413,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 12,
-      tempId: null,
+      tempId: 29,
       chatRoomId: 1,
       senderId: 1,
       content: 'content12',
@@ -421,7 +421,7 @@ export const CHAT_MESSAGES3 = {
     },
     {
       chatMessageId: 11,
-      tempId: null,
+      tempId: 30,
       chatRoomId: 1,
       senderId: 2,
       content: 'content11',
@@ -436,7 +436,7 @@ export const CHAT_MESSAGES4 = {
   chatMessages: [
     {
       chatMessageId: 10,
-      tempId: null,
+      tempId: 31,
       chatRoomId: 1,
       senderId: 1,
       content: 'content10',
@@ -444,7 +444,7 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 9,
-      tempId: null,
+      tempId: 32,
       chatRoomId: 1,
       senderId: 2,
       content: 'content9',
@@ -452,7 +452,7 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 8,
-      tempId: null,
+      tempId: 33,
       chatRoomId: 1,
       senderId: 1,
       content: 'content8',
@@ -460,7 +460,7 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 7,
-      tempId: null,
+      tempId: 34,
       chatRoomId: 1,
       senderId: 2,
       content: 'content7',
@@ -468,7 +468,7 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 6,
-      tempId: null,
+      tempId: 35,
       chatRoomId: 1,
       senderId: 1,
       content: 'content6',
@@ -476,7 +476,7 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 5,
-      tempId: null,
+      tempId: 36,
       chatRoomId: 1,
       senderId: 2,
       content: 'content5',
@@ -484,7 +484,7 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 4,
-      tempId: null,
+      tempId: 37,
       chatRoomId: 1,
       senderId: 1,
       content: 'content4',
@@ -492,7 +492,7 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 3,
-      tempId: null,
+      tempId: 38,
       chatRoomId: 1,
       senderId: 2,
       content: 'content3',
@@ -500,7 +500,7 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 2,
-      tempId: null,
+      tempId: 39,
       chatRoomId: 1,
       senderId: 1,
       content: 'content2',
@@ -508,10 +508,97 @@ export const CHAT_MESSAGES4 = {
     },
     {
       chatMessageId: 1,
-      tempId: null,
+      tempId: 40,
       chatRoomId: 1,
       senderId: 2,
       content: 'content1',
+      createdAt: '2025-10-14T10:20:32',
+    },
+  ],
+  nextCursorCode: '1758712152|0',
+  hasNext: true,
+};
+
+export const CHAT_MESSAGES5 = {
+  chatMessages: [
+    {
+      chatMessageId: -10,
+      tempId: 41,
+      chatRoomId: 1,
+      senderId: 1,
+      content: 'content-10',
+      createdAt: '2025-10-14T10:29:32',
+    },
+    {
+      chatMessageId: -9,
+      tempId: 42,
+      chatRoomId: 1,
+      senderId: 2,
+      content: 'content-9',
+      createdAt: '2025-10-14T10:28:32',
+    },
+    {
+      chatMessageId: -8,
+      tempId: 43,
+      chatRoomId: 1,
+      senderId: 1,
+      content: 'content-8',
+      createdAt: '2025-10-14T10:27:32',
+    },
+    {
+      chatMessageId: -7,
+      tempId: 44,
+      chatRoomId: 1,
+      senderId: 2,
+      content: 'content-7',
+      createdAt: '2025-10-14T10:26:32',
+    },
+    {
+      chatMessageId: -6,
+      tempId: 45,
+      chatRoomId: 1,
+      senderId: 1,
+      content: 'content-6',
+      createdAt: '2025-10-14T10:25:32',
+    },
+    {
+      chatMessageId: -5,
+      tempId: 46,
+      chatRoomId: 1,
+      senderId: 2,
+      content: 'content-5',
+      createdAt: '2025-10-14T10:24:32',
+    },
+    {
+      chatMessageId: -4,
+      tempId: 47,
+      chatRoomId: 1,
+      senderId: 1,
+      content: 'content-4',
+      createdAt: '2025-10-14T10:23:32',
+    },
+    {
+      chatMessageId: -3,
+      tempId: 48,
+      chatRoomId: 1,
+      senderId: 2,
+      content: 'content-3',
+      createdAt: '2025-10-14T10:22:32',
+    },
+    {
+      chatMessageId: -2,
+      tempId: 49,
+      chatRoomId: 1,
+      senderId: 1,
+      content: 'content-2',
+      createdAt: '2025-10-14T10:21:32',
+    },
+    {
+      chatMessageId: -1,
+      tempId: 50,
+      chatRoomId: 1,
+      senderId: 2,
+      content: 'content-1',
       createdAt: '2025-10-14T10:20:32',
     },
   ],
