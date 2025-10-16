@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
@@ -12,6 +18,7 @@ import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
 import type { Message } from './types/message';
@@ -53,14 +60,9 @@ function ChatRoom() {
   const { chatRoomMessage, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteChatRoomMessage(Number(chatRoomId!));
 
-  const pageFirstRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
-
   const initialScrolledRef = useRef(false);
   const ioReadyRef = useRef(false);
-  const expectPrependRef = useRef<null | { prevH: number; prevTop: number }>(
-    null,
-  );
 
   useLayoutEffect(() => {
     const element = listRef.current;
@@ -71,6 +73,7 @@ function ChatRoom() {
     if (!initialScrolledRef.current && messages.length > 0) {
       element.scrollTop = element.scrollHeight;
       initialScrolledRef.current = true;
+
       requestAnimationFrame(() => {
         ioReadyRef.current = true;
       });
@@ -87,58 +90,26 @@ function ChatRoom() {
     stateRef.current.isFetchingNextPage = !!isFetchingNextPage;
   }, [hasNextPage, isFetchingNextPage]);
 
-  useEffect(() => {
-    const target = pageFirstRef.current;
-    const list = listRef.current;
+  const anchorKey = messages[0]?.chatMessageId;
 
-    if (!target || !list) {
-      return;
-    }
+  const shouldTrigger = useCallback(
+    () =>
+      ioReadyRef.current &&
+      stateRef.current.hasNextPage &&
+      !stateRef.current.isFetchingNextPage,
+    [],
+  );
 
-    const observer = new IntersectionObserver(
-      async (entries) => {
-        const { hasNextPage, isFetchingNextPage } = stateRef.current;
-        if (
-          !entries[0].isIntersecting ||
-          !ioReadyRef.current ||
-          !hasNextPage ||
-          isFetchingNextPage
-        ) {
-          return;
-        }
+  const onIntersect = useCallback(async () => {
+    await fetchNextPage();
+  }, [fetchNextPage]);
 
-        expectPrependRef.current = {
-          prevH: list.scrollHeight,
-          prevTop: list.scrollTop,
-        };
-        await fetchNextPage();
-      },
-      {
-        root: listRef.current,
-        threshold: 0.1,
-        rootMargin: '20px 0px 0px 0px',
-      },
-    );
-
-    observer.observe(target);
-
-    return () => observer.disconnect();
-  }, [fetchNextPage, pageFirstRef.current, listRef.current]);
-
-  const topKey = messages[0]?.chatMessageId;
-
-  useLayoutEffect(() => {
-    const list = listRef.current;
-    const snap = expectPrependRef.current;
-    if (!list || !snap) {
-      return;
-    }
-
-    const delta = list.scrollHeight - snap.prevH;
-    list.scrollTop = snap.prevTop + delta;
-
-    expectPrependRef.current = null;
-  }, [topKey]);
+  const { pageFirstRef } = useUpwardInfiniteScroll({
+    shouldTrigger: shouldTrigger,
+    onIntersect,
+    anchorKey: anchorKey!,
+    listRef,
+  });
 
   useEffect(() => {
     if (chatRoomMessage) {
