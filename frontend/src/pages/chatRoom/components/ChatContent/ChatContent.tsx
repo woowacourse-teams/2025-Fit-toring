@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import styled from '@emotion/styled';
 
@@ -16,20 +16,6 @@ function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
   const storedData = localStorage.getItem('memberId');
   const memberId = storedData ? JSON.parse(storedData) : null;
 
-  const initialScrolledRef = useRef(false);
-
-  useLayoutEffect(() => {
-    const element = listRef.current;
-    if (!element) {
-      return;
-    }
-
-    if (!initialScrolledRef.current && messages.length > 0) {
-      element.scrollTop = element.scrollHeight;
-      initialScrolledRef.current = true;
-    }
-  }, [listRef, messages]);
-
   useEffect(() => {
     const element = listRef.current;
     if (!element) {
@@ -46,7 +32,7 @@ function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
 
   return (
     <S_Container ref={listRef}>
-      <div ref={pageFirstRef} />
+      <div ref={pageFirstRef} style={{ height: 1, flex: '0 0 1px' }} />
 
       <S_BubbleList>
         {messages.map(
@@ -56,17 +42,19 @@ function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
             const senderChanged = prevSenderId !== senderId;
 
             return (
-              <S_ChatBubbleWrapper
-                key={chatMessageId}
-                senderChanged={senderChanged}
-              >
-                <ChatBubble
-                  content={content}
-                  createdAt={createdAt}
-                  authored={senderId === memberId}
-                  status={status}
-                />
-              </S_ChatBubbleWrapper>
+              <div>
+                <S_ChatBubbleWrapper
+                  key={chatMessageId}
+                  senderChanged={senderChanged}
+                >
+                  <ChatBubble
+                    content={content}
+                    createdAt={createdAt}
+                    authored={senderId === memberId}
+                    status={status}
+                  />
+                </S_ChatBubbleWrapper>
+              </div>
             );
           },
         )}
@@ -78,18 +66,19 @@ function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
 export default ChatContent;
 
 const S_Container = styled.div`
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+
+  min-height: 0;
+  padding: 1.6rem;
+
   background-color: ${({ theme }) => theme.BG.WHITE};
 
   overflow-y: auto;
 `;
 
-const S_BubbleList = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-
-  padding: 1.6rem;
-`;
+const S_BubbleList = styled.div``;
 
 const S_ChatBubbleWrapper = styled.div<{ senderChanged: boolean }>`
   margin-top: ${({ senderChanged }) => (senderChanged ? '1.5rem' : '0.8rem')};

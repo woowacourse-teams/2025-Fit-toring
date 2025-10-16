@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
@@ -102,30 +102,62 @@ function ChatRoom() {
   const pageFirstRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
+  const initialScrolledRef = useRef(false);
+  const ioReadyRef = useRef(false);
+  const expectPrependRef = useRef<null | { prevH: number; prevTop: number }>(
+    null,
+  );
+
+  useLayoutEffect(() => {
+    const element = listRef.current;
+    if (!element) {
+      return;
+    }
+
+    if (!initialScrolledRef.current && messages.length > 0) {
+      element.scrollTop = element.scrollHeight;
+      initialScrolledRef.current = true;
+      requestAnimationFrame(() => {
+        ioReadyRef.current = true;
+      });
+    }
+  }, [listRef, messages]);
+
+  const stateRef = useRef({
+    hasNextPage: false,
+    isFetchingNextPage: false,
+  });
+
   useEffect(() => {
-    if (!pageFirstRef.current) {
+    stateRef.current.hasNextPage = !!hasNextPage;
+    stateRef.current.isFetchingNextPage = !!isFetchingNextPage;
+  }, [hasNextPage, isFetchingNextPage]);
+
+  useEffect(() => {
+    const target = pageFirstRef.current;
+    const list = listRef.current;
+
+    if (!target || !list) {
       return;
     }
 
     const observer = new IntersectionObserver(
       async (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          hasNextPage &&
-          !isFetchingNextPage &&
-          listRef.current
-        ) {
-          const el = listRef.current;
-          const prevScrollHeight = el.scrollHeight;
-          const prevTop = el.scrollTop;
+        const { hasNextPage, isFetchingNextPage } = stateRef.current;
+        if (entries[0].isIntersecting) {
+          if (!ioReadyRef.current) {
+            return;
+          }
 
+          if (!hasNextPage || isFetchingNextPage) {
+            return;
+          }
+
+          expectPrependRef.current = {
+            prevH: list.scrollHeight,
+            prevTop: list.scrollTop,
+          };
           await fetchNextPage();
-
-          requestAnimationFrame(() => {
-            const newScrollHeight = el.scrollHeight;
-            const delta = newScrollHeight - prevScrollHeight;
-            el.scrollTop = prevTop + delta;
-          });
         }
       },
       {
@@ -135,12 +167,27 @@ function ChatRoom() {
       },
     );
 
-    observer.observe(pageFirstRef.current);
+    observer.observe(target);
 
     return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage, pageFirstRef.current, listRef.current]);
+
+  const topKey = messages[0]?.chatMessageId;
 
   useEffect(() => {
+    const list = listRef.current;
+    const snap = expectPrependRef.current;
+    if (!list || !snap) {
+      return;
+    }
+
+    const delta = list.scrollHeight - snap.prevH;
+    list.scrollTop = snap.prevTop + delta;
+
+    expectPrependRef.current = null;
+  }, [topKey]);
+
+  useLayoutEffect(() => {
     if (chatRoomMessage) {
       setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
     }
