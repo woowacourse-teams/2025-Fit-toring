@@ -98,21 +98,20 @@ function ChatRoom() {
     const observer = new IntersectionObserver(
       async (entries) => {
         const { hasNextPage, isFetchingNextPage } = stateRef.current;
-        if (entries[0].isIntersecting) {
-          if (!ioReadyRef.current) {
-            return;
-          }
-
-          if (!hasNextPage || isFetchingNextPage) {
-            return;
-          }
-
-          expectPrependRef.current = {
-            prevH: list.scrollHeight,
-            prevTop: list.scrollTop,
-          };
-          await fetchNextPage();
+        if (
+          !entries[0].isIntersecting ||
+          !ioReadyRef.current ||
+          !hasNextPage ||
+          isFetchingNextPage
+        ) {
+          return;
         }
+
+        expectPrependRef.current = {
+          prevH: list.scrollHeight,
+          prevTop: list.scrollTop,
+        };
+        await fetchNextPage();
       },
       {
         root: listRef.current,
