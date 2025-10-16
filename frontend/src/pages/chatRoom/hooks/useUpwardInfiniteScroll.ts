@@ -1,5 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 
+import { captureSentryError } from '../../../common/utils/captureSentryError';
+
 interface useUpwardInfiniteScrollParams {
   onIntersect: () => void | Promise<void>;
   anchorKey: number | string;
@@ -38,7 +40,18 @@ const useUpwardInfiniteScroll = ({
           prevTop: list.scrollTop,
         };
 
-        await onIntersect();
+        try {
+          await onIntersect();
+        } catch (error) {
+          console.error(error);
+
+          captureSentryError({
+            error,
+            level: 'warning',
+            feature: 'chat',
+            step: 'chat-history',
+          });
+        }
       },
       {
         root: listRef.current,
