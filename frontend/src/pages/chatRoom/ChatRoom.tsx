@@ -57,8 +57,12 @@ function ChatRoom() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
 
-  const { chatRoomMessage, fetchNextPage, isFetchingNextPage, hasNextPage } =
-    useInfiniteChatRoomMessage(Number(chatRoomId!));
+  const {
+    data: chatRoomMessage,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteChatRoomMessage(Number(chatRoomId!));
 
   const listRef = useRef<HTMLDivElement>(null);
   const initialScrolledRef = useRef(false);

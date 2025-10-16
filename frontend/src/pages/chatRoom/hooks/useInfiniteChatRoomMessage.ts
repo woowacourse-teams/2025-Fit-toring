@@ -15,12 +15,7 @@ interface ChatRoomPageParam {
 }
 
 const useInfiniteChatRoomMessage = (chatRoomId: number) => {
-  const {
-    data: chatRoomMessage,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteQuery<
+  return useInfiniteQuery<
     MessageResponse,
     Error,
     InfiniteData<MessageResponse>,
@@ -56,13 +51,6 @@ const useInfiniteChatRoomMessage = (chatRoomId: number) => {
         })),
     }),
   });
-
-  return {
-    chatRoomMessage,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  };
 };
 
 export default useInfiniteChatRoomMessage;
