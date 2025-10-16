@@ -2,27 +2,20 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
-import { getChatRoom } from './apis/getChatRoom';
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
+import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
-import type { Message, MessageResponse } from './types/message';
+import type { Message } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
-import type { InfiniteData, QueryKey } from '@tanstack/react-query';
-
-interface ChatRoomPageParam {
-  chatRoomId: number;
-  sortKey: string;
-  cursorCode?: string;
-}
 
 function ChatRoom() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -57,47 +50,8 @@ function ChatRoom() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
 
-  const {
-    data: chatRoomMessage,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useInfiniteQuery<
-    MessageResponse,
-    Error,
-    InfiniteData<MessageResponse>,
-    QueryKey,
-    ChatRoomPageParam
-  >({
-    queryKey: ['chatRoom', chatRoomId],
-    queryFn: async ({ pageParam }) => {
-      return getChatRoom(pageParam);
-    },
-    initialPageParam: {
-      chatRoomId: Number(chatRoomId),
-      sortKey: 'CREATED_AT',
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.hasNext) {
-        return {
-          chatRoomId: Number(chatRoomId),
-          cursorCode: lastPage.nextCursorCode,
-          sortKey: 'CREATED_AT',
-        };
-      }
-      return undefined;
-    },
-    select: (data) => ({
-      ...data,
-      pages: data.pages
-        .slice()
-        .reverse()
-        .map((page) => ({
-          ...page,
-          chatMessages: [...page.chatMessages].reverse(),
-        })),
-    }),
-  });
+  const { chatRoomMessage, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useInfiniteChatRoomMessage(Number(chatRoomId!));
 
   const pageFirstRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
