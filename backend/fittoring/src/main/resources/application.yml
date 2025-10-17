@@ -109,8 +109,7 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: techcourse-project-2025
-  sqs:
-    image-queue: fittoring-image-queue
+    project-prefix: fit-toring/
 
 image-session:
   merge:

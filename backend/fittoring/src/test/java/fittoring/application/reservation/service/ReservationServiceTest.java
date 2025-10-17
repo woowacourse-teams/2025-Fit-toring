@@ -32,6 +32,7 @@ import fittoring.domain.model.MentoringStatistics;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.util.DbCleaner;
 import java.util.List;
 import java.util.TimeZone;
@@ -56,6 +57,7 @@ import org.springframework.test.context.ActiveProfiles;
         JpaConfiguration.class,
         ReservationService.class,
         ImageService.class,
+        KeyBuilder.class,
         QueryDslConfig.class,
         MentoringPaginationHelper.class,
         ChatRoomUrlGenerator.class,
@@ -176,7 +178,7 @@ class ReservationServiceTest {
         List<MentorMentoringReservationResponse> actual =
                 reservationService.getReservationsByMentor(mentor.getId());
 
-        // then
+        //then
         assertThat(actual).hasSize(3);
     }
 
@@ -255,7 +257,7 @@ class ReservationServiceTest {
 
         // 멘토링1 프로필 이미지
         Image profileImageOfMentor1 = entityManager.persist(
-                new Image("www.naver.com", ImageType.MENTORING_PROFILE, mentoring1.getId())
+                new Image("www.naver.com", ImageType.MENTORING_PROFILE, mentoring1.getId(), null)
         );
 
         // 카테고리

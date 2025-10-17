@@ -121,7 +121,8 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         imageRepository.save(new Image(
                 "originalProfileImage",
                 ImageType.MENTORING_PROFILE,
-                mentoring.getId()
+                mentoring.getId(),
+                null
         ));
         categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
         Certificate certificate = certificateRepository.save(new Certificate(
@@ -132,7 +133,8 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         imageRepository.save(new Image(
                 "originalCertificateImage",
                 ImageType.CERTIFICATE,
-                certificate.getId()
+                certificate.getId(),
+                null
         ));
 
         int newPrice = 1000;
@@ -324,8 +326,10 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
 
-            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
-            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
+            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId(),
+                    null));
+            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId(),
+                    null));
 
             Reservation savedReservation1 = reservationRepository.save(
                     new Reservation("예약 코멘트1", Status.COMPLETE, savedMentoring, mentee));
@@ -407,7 +411,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             //멘토링 프로필 이미지 생성
             Image savedImage = imageRepository.save(
-                    new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+                    new Image(
+                            "image1.jpg",
+                            ImageType.MENTORING_PROFILE,
+                            savedMentoring.getId(),
+                            null
+                    ));
 
             //자격증 생성
             Certificate certificate = new Certificate(
@@ -430,14 +439,16 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             Image savedCetificateImage = imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    savedCertificate.getId())
-            );
+                    savedCertificate.getId(),
+                    null
+            ));
 
             Image savedCertificateImage2 = imageRepository.save(new Image(
                     "profileImageUrl2",
                     ImageType.CERTIFICATE,
-                    savedCertificate2.getId())
-            );
+                    savedCertificate2.getId(),
+                    null
+            ));
 
             //when
             MentoringResponse response = RestAssured
@@ -515,8 +526,18 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
 
-            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
-            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
+            imageRepository.save(new Image(
+                    "image1.jpg",
+                    ImageType.MENTORING_PROFILE,
+                    savedMentoring.getId(),
+                    null
+            ));
+            imageRepository.save(new Image(
+                    "image2.jpg",
+                    ImageType.MENTORING_PROFILE,
+                    savedMentoring2.getId(),
+                    null
+            ));
 
             long invalidId = 100L;
 
@@ -611,7 +632,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -746,7 +772,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -863,7 +894,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -996,7 +1032,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -1136,7 +1177,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -1273,7 +1319,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -1416,7 +1467,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
