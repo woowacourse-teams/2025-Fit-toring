@@ -215,7 +215,7 @@ class AdminCertificateServiceTest {
         Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
         Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
         // certificate가 영속화된 뒤에는 id 존재
-        Image image = em.persist(new Image("url", ImageType.CERTIFICATE, certificate.getId()));
+        Image image = em.persist(new Image("url", ImageType.CERTIFICATE, certificate.getId(), "baseName"));
 
         // when
         CertificateDetailResponse detail = adminCertificateService.getCertificate(admin.getId(), mentoring.getId());
