@@ -1,10 +1,10 @@
 package fittoring.config.websocket;
 
+import fittoring.application.auth.service.JwtExtractor;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.InvalidTokenException;
 import fittoring.config.auth.LoginInfo;
-import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.InvalidTokenException;
-import fittoring.mentoring.business.service.JwtExtractor;
-import fittoring.mentoring.business.service.JwtProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;

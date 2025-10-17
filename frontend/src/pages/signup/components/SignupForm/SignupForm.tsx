@@ -6,22 +6,22 @@ import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../../common/apis/ApiError';
 import Button from '../../../../common/components/Button/Button';
+import PhoneFields from '../../../../common/components/PhoneFields/PhoneFields';
+import UserInfoFields from '../../../../common/components/UserInfoFields/UserInfoFields';
 import { PAGE_URL } from '../../../../common/constants/url';
 import useFormattedPhoneNumber from '../../../../common/hooks/useFormattedPhoneNumber';
 import useNameInput from '../../../../common/hooks/useNameInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
+import useVerificationCodeConfirm from '../../../../common/hooks/useVerificationCodeConfirm';
+import useVerificationCodeInput from '../../../../common/hooks/useVerificationCodeInput';
+import useVerificationCodeRequest from '../../../../common/hooks/useVerificationCodeRequest';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postSignup } from '../../apis/postSignup';
 import usePasswordWithConfirmInput from '../../hooks/usePasswordWithConfirmInput';
 import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
-import useVerificationCodeConfirm from '../../hooks/useVerificationCodeConfirm';
-import useVerificationCodeInput from '../../hooks/useVerificationCodeInput';
-import useVerificationCodeRequest from '../../hooks/useVerificationCodeRequest';
 import PasswordFields from '../PasswordFields/PasswordFields';
-import PhoneFields from '../PhoneFields/PhoneFields';
 import UserIdField from '../UserIdField/UserIdField';
-import UserInfoFields from '../UserInfoFields/UserInfoFields';
 
 import type { Gender, SignupInfo } from '../../types/signupInfo';
 

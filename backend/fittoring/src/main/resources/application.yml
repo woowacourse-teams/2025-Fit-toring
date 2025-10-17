@@ -1,10 +1,8 @@
 spring:
+  application:
+    name: fittoring
   config:
     import: optional:file:.env[.properties]
-  datasource:
-    url: jdbc:mysql://${PROD_DATABASE_HOST}:${PROD_DATABASE_PORT}/${PROD_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${PROD_DATABASE_USER}
-    password: ${PROD_DATABASE_PASSWORD}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -18,13 +16,7 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    url: jdbc:mysql://${PROD_DATABASE_HOST}:${PROD_DATABASE_PORT}/${PROD_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    user: ${PROD_DATABASE_USER}
-    password: ${PROD_DATABASE_PASSWORD}
-    baseline-on-migrate: true
+    open-in-view: false
   web:
     resources:
       add-mappings: false
@@ -32,29 +24,50 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 20MB
+
 management:
   endpoints:
     web:
       base-path: /
       exposure:
-        include: health,info,metrics
+        include: heapdump, health,info,prometheus, metrics
       path-mapping:
         health: healthcheck
+        prometheus: prometheus-provider
   metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.95,0.99
     tags:
-      application: fittoring
-    export:
-      cloudwatch:
-        enabled: true
-        namespace: fittoring-backend-dev
-        step: 30s
-        batch-size: 20
-        region: ap-northeast-2
+      environment: ${SPRING_PROFILES_ACTIVE}
+  tracing:
+    enabled: ${TRACING_ENABLE}
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      transport: grpc
+      endpoint: ${TEMPO_GRPC_LISTENER_URL}
+  prometheus:
+    metrics:
+      export:
+        step: ${METRICS_EXPORT_TIME_TO_PROMETHEUS}
+jdbc:
+  datasource-proxy:
+    enabled: ${DB_TRACING_ENABLE}
+    include-parameter-values: ${DB_TRACING_ENABLE}
+    query:
+      logger-name: my.query-logger
+  resultset-operations:
+    enabled: ${DB_TRACING_ENABLE}
 sms:
   base-url: https://api.solapi.com
   timeout:
-    connect: 1_200
-    read: 5_000
+    connect: 1200
+    read: 5000
+
 logging:
   file:
     name: /logs/application.log
@@ -69,7 +82,27 @@ logging:
       file-name-pattern: logs/application.%d{yyyy-MM}.%i.log
       max-history: 2
       max-file-size: 10MB
+
 jwt:
   secret-key: ${JWT_SECRET_KEY}
   access-token-expiration-millis: ${ACCESS_TOKEN_EXPIRATION_MILLIS}
   refresh-token-expiration-millis: ${REFRESH_TOKEN_EXPIRATION_MILLIS}
+
+kakao:
+  redirect-url: ${KAKAO_REDIRECT_URL}
+  client-id: ${KAKAO_CLIENT_ID}
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket-name: techcourse-project-2025
+  sqs:
+    image-queue: fittoring-image-queue
+
+image-session:
+  merge:
+    enabled: true
+    fixed-delay-ms: 300000
+    batch-size: 200
+domain:
+  sub-domain: ${SUB_DOMAIN}
