@@ -1,10 +1,12 @@
 package fittoring.application.auth.service;
 
+import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.AuthProvider;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberOauth;
@@ -58,10 +60,11 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthTokenResponse login(String loginId, String password) {
+    public LoginResponse login(String loginId, String password) {
         Member member = getMemberByLoginId(loginId);
         member.matchPassword(password);
-        return getAuthorizedTokenResponse(member);
+        AuthTokenResponse authToken = getAuthorizedTokenResponse(member);
+        return new LoginResponse(member.getId(), authToken);
     }
 
     private AuthTokenResponse getAuthorizedTokenResponse(Member member) {

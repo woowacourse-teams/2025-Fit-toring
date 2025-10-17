@@ -1,4 +1,7 @@
 spring:
+  autoconfigure:
+    exclude:
+      - io.awspring.cloud.autoconfigure.sqs.SqsAutoConfiguration
   application:
     name: fittoring-test
   config:
@@ -49,5 +52,16 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: test-bucket
+    project-prefix: fit-toring/
+    env-prefix: local/
+  sqs:
+    listener:
+      auto-startup: false
+image-session:
+  merge:
+    enabled: true
+    fixed-delay-ms: 300000 # 5분
+    batch-size: 200
+
 domain:
   sub-domain: test-sub-domain

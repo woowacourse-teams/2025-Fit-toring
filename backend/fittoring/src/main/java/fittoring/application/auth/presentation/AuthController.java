@@ -1,22 +1,23 @@
 package fittoring.application.auth.presentation;
 
-import fittoring.config.auth.AuthRequired;
-import fittoring.config.auth.Login;
-import fittoring.config.auth.LoginInfo;
-import fittoring.domain.model.MemberOauth;
-import fittoring.application.auth.service.AuthService;
-import fittoring.application.auth.service.PhoneVerificationFacadeService;
-import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.CookieProvider;
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
+import fittoring.application.auth.presentation.dto.response.LoginResponse;
+import fittoring.application.auth.service.AuthService;
+import fittoring.application.auth.service.PhoneVerificationFacadeService;
+import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.exception.OauthLoginException;
+import fittoring.config.auth.AuthRequired;
+import fittoring.config.auth.Login;
+import fittoring.config.auth.LoginInfo;
+import fittoring.domain.model.MemberOauth;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,11 +50,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
-        AuthTokenResponse response = authService.login(request.loginId(), request.password());
-        CookieWriter.write(httpResponse, response);
-        return ResponseEntity.status(HttpStatus.OK)
-                .build();
+    public ResponseEntity<Long> login(@RequestBody @Valid SignInRequest request, HttpServletResponse httpResponse) {
+        LoginResponse response = authService.login(request.loginId(), request.password());
+        CookieWriter.write(httpResponse, response.authToken());
+        return ResponseEntity.ok(response.memberId());
     }
 
     @AuthRequired

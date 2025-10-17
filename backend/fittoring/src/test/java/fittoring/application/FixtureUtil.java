@@ -69,20 +69,20 @@ public class FixtureUtil {
     public static Mentoring getTestMentoring(Member member) {
         member.registerAsMentor();
         return new Mentoring(
-                member,
-                5000,
-                5,
-                "content",
-                "introduction",
-                "https://chatRoomUrl"
+            member,
+            5000,
+            5,
+            "content",
+            "introduction",
+            "https://chatRoomUrl"
         );
     }
 
     public static Certificate getTestCertificate(Mentoring mentoring) {
         return new Certificate(
-                CertificateType.LICENSE,
-                "자격증",
-                mentoring
+            CertificateType.LICENSE,
+            "자격증",
+            mentoring
         );
     }
 
