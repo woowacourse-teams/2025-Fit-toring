@@ -1,12 +1,13 @@
 package fittoring.application.chatroom.service;
 
+import fittoring.application.chatroom.repository.ChatRoomRepository;
+import fittoring.application.chatroom.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.chatroom.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.chatroom.repository.ChatRoomRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.ChatRoom;
@@ -15,7 +16,6 @@ import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.mentoring.business.exception.ChatRoomAlreadyExistsException;
 import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
-import fittoring.application.chatroom.service.dto.ChatRoomCreatedInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

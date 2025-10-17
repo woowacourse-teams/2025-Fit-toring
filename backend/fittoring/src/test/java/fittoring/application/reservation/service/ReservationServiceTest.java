@@ -47,7 +47,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
@@ -73,9 +72,6 @@ class ReservationServiceTest {
 
     @Autowired
     private TestEntityManager entityManager;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -377,31 +373,21 @@ class ReservationServiceTest {
         entityManager.clear();
 
         // then
-//        Reservation deletedReservation = (Reservation) entityManager.getEntityManager()
-//                .createNativeQuery("SELECT * FROM reservation WHERE id = ?", Reservation.class)
-//                .setParameter(1, reservation.getId())
-//                .getSingleResult();
-//
-//        Review deletedReview = (Review) entityManager.getEntityManager()
-//                .createNativeQuery("SELECT * FROM review WHERE id = ?", Review.class)
-//                .setParameter(1, review.getId())
-//                .getSingleResult();
+        Reservation deletedReservation = (Reservation) entityManager.getEntityManager()
+                .createNativeQuery("SELECT * FROM reservation WHERE id = ?", Reservation.class)
+                .setParameter(1, reservation.getId())
+                .getSingleResult();
 
-        Boolean deletedReservation = jdbcTemplate.queryForObject(
-                "SELECT is_deleted FROM reservation WHERE id = ?", Boolean.class, reservation.getId()
-        );
-
-        Boolean deletedReview = jdbcTemplate.queryForObject(
-                "SELECT is_deleted FROM review WHERE id = ?", Boolean.class, review.getId()
-        );
+        Review deletedReview = (Review) entityManager.getEntityManager()
+                .createNativeQuery("SELECT * FROM review WHERE id = ?", Review.class)
+                .setParameter(1, review.getId())
+                .getSingleResult();
 
         assertSoftly(softly -> {
-//            softly.assertThat(deletedReview.isDeleted()).isTrue();
-//            softly.assertThat(deletedReservation.isDeleted()).isTrue();
-//            softly.assertThat(deletedReservation.getDeletedAt()).isNotNull();
-//            softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
-            softly.assertThat(deletedReservation).isTrue();
-            softly.assertThat(deletedReview).isTrue();
+            softly.assertThat(deletedReview.isDeleted()).isTrue();
+            softly.assertThat(deletedReservation.isDeleted()).isTrue();
+            softly.assertThat(deletedReservation.getDeletedAt()).isNotNull();
+            softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
             softly.assertThat(
                     mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount()
             ).isEqualTo(originalReservationCount - 1);
