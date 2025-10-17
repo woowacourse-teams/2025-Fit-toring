@@ -4,6 +4,7 @@ import fittoring.application.chatroom.repository.ChatRoomRepository;
 import fittoring.application.chatroom.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.chatroom.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.ReservationNotFoundException;
@@ -14,8 +15,6 @@ import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
-import fittoring.mentoring.business.exception.ChatRoomAlreadyExistsException;
-import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,12 +80,13 @@ public class ChatRoomService {
     private ChatRoom getChatRoom(Long chatroomId) {
         return chatRoomRepository.findById(chatroomId)
                 .orElseThrow(
-                        () -> new ChatRoomNotFoundException(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage())
+                        () -> new fittoring.mentoring.business.exception.ChatRoomNotFoundException(
+                                BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage())
                 );
     }
 
     private void validateParticipant(Long memberId, ChatRoom chatRoom) {
-        if (chatRoom.isNonParticipant(memberId)) {
+        if (!chatRoom.hasParticipant(memberId)) {
             throw new fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException(
                     BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage()
             );

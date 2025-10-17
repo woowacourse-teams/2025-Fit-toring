@@ -126,7 +126,12 @@ class MentoringServiceTest {
         categoryMentoringRepository.save(categoryMentoring);
         categoryMentoringRepository.save(new CategoryMentoring(category2, mentoring));
 
-        imageRepository.save(new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoringId));
+        imageRepository.save(new Image(
+                "멘토링이미지1url",
+                ImageType.MENTORING_PROFILE,
+                mentoringId,
+                null
+        ));
 
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
         Reservation reservation1 = reservationRepository.save(
@@ -212,7 +217,7 @@ class MentoringServiceTest {
             categoryMentoringRepository.save(new CategoryMentoring(category, mentoring));
 
             Image profile = imageRepository.save(
-                    new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring.getId())
+                    new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring.getId(), null)
             );
 
             Reservation reservation1 = reservationRepository.save(
