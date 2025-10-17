@@ -12,6 +12,8 @@ import fittoring.domain.model.Certificate;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Status;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.logging.JsonLogger;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ public class CertificateService {
     private final ImageService imageService;
     private final PresignedUrlService presignedUrlService;
     private final JsonLogger jsonLogger;
+    private final KeyBuilder keyBuilder;
 
     public void mapCertificatesToMentoring(
             List<CertificateInfoRequest> certificateInfoRequests,
@@ -66,13 +69,18 @@ public class CertificateService {
             List<CertificateInfoRequest> certificateInfos,
             Mentoring savedMentoring
     ) {
+        if (certificateInfos == null) {
+            return;
+        }
         List<Image> certificateImages = new ArrayList<>();
         for (CertificateInfoRequest certificateInfo : certificateInfos) {
             Long certificateId = saveCertificate(certificateInfo, savedMentoring);
+            String baseName = keyBuilder.extractBaseNameFromUrl(certificateInfo.imageUrl());
             certificateImages.add(new Image(
                     certificateInfo.imageUrl(),
                     ImageType.CERTIFICATE,
-                    certificateId
+                    certificateId,
+                    baseName
             ));
         }
         imageService.saveAll(certificateImages);

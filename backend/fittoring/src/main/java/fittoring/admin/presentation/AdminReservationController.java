@@ -1,16 +1,17 @@
 package fittoring.admin.presentation;
 
+import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
+import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.admin.presentation.dto.PageResult;
+import fittoring.admin.service.AdminReservationQueryService;
+import fittoring.admin.service.dto.AdminMentoringReservationDto;
+import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
+import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
+import fittoring.application.reservation.service.ReservationService;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.application.reservation.service.ReservationService;
-import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
-import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
-import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.presentation.dto.AdminReservationResponse;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,24 +20,32 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
 public class AdminReservationController {
 
-    private final ReservationService reservationService;
+    private final AdminReservationQueryService reservationQueryService;
+    private final ReservationService reservationCommandService;
 
     @AuthRequired
     @GetMapping("/admin/mentorings/{mentoringId}/reservations")
-    public ResponseEntity<List<AdminReservationResponse>> findMentoringReservations(
+    public ResponseEntity<PageResult<AdminReservationResponse>> findMentoringReservations(
             @Login LoginInfo loginInfo,
-            @PathVariable("mentoringId") Long mentoringId
+            @PathVariable("mentoringId") Long mentoringId,
+            @RequestParam(defaultValue = "1") int page
     ) {
-        MentoringReservationGetDto mentoringReservationGetDto
-                = new MentoringReservationGetDto(loginInfo.memberId(), mentoringId);
-        List<AdminReservationResponse> responseBody = reservationService.findMentoringReservationsWithAdminAuthorization(
-                mentoringReservationGetDto);
+        AdminMentoringReservationDto mentoringReservationGetDto = new AdminMentoringReservationDto(
+                loginInfo.memberId(),
+                mentoringId,
+                page,
+                20
+        );
+        PageResult<AdminReservationResponse> responseBody = reservationQueryService.findMentoringReservationsForAdmin(
+                mentoringReservationGetDto
+        );
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseBody);
     }
@@ -50,9 +59,9 @@ public class AdminReservationController {
     ) {
         AdminReservationStatusUpdateDto adminReservationStatusUpdateDto
                 = AdminReservationStatusUpdateDto.of(loginInfo.memberId(), reservationId, request.status());
-        reservationService.updateStatusWithAdminAuthorization(adminReservationStatusUpdateDto);
+        reservationCommandService.updateStatusWithAdminAuthorization(adminReservationStatusUpdateDto);
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
     }
 
     @AuthRequired
@@ -63,7 +72,7 @@ public class AdminReservationController {
     ) {
         AdminReservationDeleteDto adminReservationDeleteDto
                 = new AdminReservationDeleteDto(loginInfo.memberId(), reservationId);
-        reservationService.deleteReservationWithAdminAuthorization(adminReservationDeleteDto);
+        reservationCommandService.deleteReservationWithAdminAuthorization(adminReservationDeleteDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }

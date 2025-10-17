@@ -32,7 +32,6 @@ public class FixtureUtil {
                 Password.from("password"));
     }
 
-
     public static Member getTestMentor() {
         return new Member(
                 "mentorId",
@@ -98,5 +97,4 @@ public class FixtureUtil {
     public static Review getTestReview(Reservation reservation, Member reviewer) {
         return new Review(5, "좋았습니다.", reservation, reviewer);
     }
-
 }

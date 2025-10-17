@@ -20,6 +20,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.logging.JsonLogger;
 import fittoring.util.DbCleaner;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
+        KeyBuilder.class,
         CertificateService.class,
         ImageService.class,
         JpaConfiguration.class,

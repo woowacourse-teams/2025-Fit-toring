@@ -1,4 +1,7 @@
 spring:
+  autoconfigure:
+    exclude:
+      - io.awspring.cloud.autoconfigure.sqs.SqsAutoConfiguration
   application:
     name: fittoring-test
   config:
@@ -8,6 +11,12 @@ spring:
     username: ${TEST_DATABASE_USER}
     password: ${TEST_DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    datasource:
+      hikari:
+        pool-name: test-hikari
+        maximum-pool-size: 10
+        connection-timeout: 30000
+        max-lifetime: 1800000
   sql:
     init:
       mode: never
@@ -43,5 +52,16 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: test-bucket
+    project-prefix: fit-toring/
+    env-prefix: local/
+  sqs:
+    listener:
+      auto-startup: false
+image-session:
+  merge:
+    enabled: true
+    fixed-delay-ms: 300000 # 5분
+    batch-size: 200
+
 domain:
   sub-domain: test-sub-domain

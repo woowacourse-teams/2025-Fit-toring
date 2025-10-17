@@ -26,10 +26,10 @@ interface ApiClientPatchType<T> {
   withCredentials?: boolean;
 }
 
-interface ApiClientPutType {
+interface ApiClientPutType<T> {
   endpoint: string;
   headers?: Record<string, string>;
-  body: Record<string, string | number> | FormData | File;
+  body: Record<string, string | number> | FormData | File | T;
   withCredentials?: boolean;
   useBaseUrl?: boolean;
 }
@@ -212,13 +212,13 @@ class ApiClient {
     return this.requestWithRefresh(sendRequest);
   }
 
-  async put({
+  async put<T>({
     endpoint,
     headers = { 'Content-Type': 'application/json' },
     body,
     withCredentials,
     useBaseUrl = true,
-  }: ApiClientPutType) {
+  }: ApiClientPutType<T>) {
     const url = new URL(`${useBaseUrl ? this.#baseUrl : ''}${endpoint}`);
     const isFormData = body instanceof FormData;
     const isFile = body instanceof File;
