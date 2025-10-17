@@ -42,6 +42,8 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     // AWS S3
     implementation 'software.amazon.awssdk:s3:2.32.14'
+    // AWS SQS
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs:3.2.0'
     // AWS CloudWatch
     implementation 'io.micrometer:micrometer-registry-cloudwatch2'
 

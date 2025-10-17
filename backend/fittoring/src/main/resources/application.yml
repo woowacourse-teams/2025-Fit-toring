@@ -25,6 +25,16 @@ spring:
       max-file-size: 5MB
       max-request-size: 20MB
 
+server:
+  tomcat:
+    threads:
+      max: ${TOMCAT_MAX_THREADS}
+    max-connections: ${TOMCAT_MAX_CONNECTIONS}
+    connection-timeout: ${TOMCAT_CONNECTION_TIMEOUT}
+    keep-alive-timeout: ${TOMCAT_KEEP_ALIVE_TIMEOUT}
+    mbeanregistry:
+      enabled: true
+
 management:
   endpoints:
     web:
@@ -34,6 +44,9 @@ management:
       path-mapping:
         health: healthcheck
         prometheus: prometheus-provider
+  endpoint:
+    heapdump:
+      enabled: true
   metrics:
     distribution:
       percentiles-histogram:
@@ -96,8 +109,7 @@ aws:
   s3:
     region: ap-northeast-2
     bucket-name: techcourse-project-2025
-  sqs:
-    image-queue: fittoring-image-queue
+    project-prefix: fit-toring/
 
 image-session:
   merge:

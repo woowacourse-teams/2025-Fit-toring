@@ -133,8 +133,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -170,8 +171,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -212,8 +214,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -249,8 +252,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -291,8 +295,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -328,8 +333,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then

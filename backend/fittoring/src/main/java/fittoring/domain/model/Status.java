@@ -24,15 +24,6 @@ public enum Status {
                 );
     }
 
-    public void validateReservation(Status updateStatus) {
-        if (this == REJECTED || this == COMPLETE) {
-            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
-        }
-        if (this.equals(updateStatus)) {
-            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
-        }
-    }
-
     public boolean isNotifiable() {
         return this.isApprove() || this.isReject();
     }
