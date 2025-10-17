@@ -1,5 +1,6 @@
 package fittoring.application.mentoring.repository;
 
+import fittoring.admin.repository.CustomCertificateRepository;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Status;
@@ -10,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CertificateRepository extends ListCrudRepository<Certificate, Long> {
+public interface CertificateRepository extends ListCrudRepository<Certificate, Long>, CustomCertificateRepository {
 
     @Query("""
             SELECT DISTINCT c
