@@ -23,6 +23,7 @@ import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Status;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.logging.JsonLogger;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.SoftAssertions;
@@ -46,7 +47,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
     ImageService.class,
     JpaConfiguration.class,
     QueryDslConfig.class,
-    MentoringPaginationHelper.class
+    MentoringPaginationHelper.class,
+    KeyBuilder.class
 })
 @DataJpaTest
 class AdminCertificateServiceTest {
