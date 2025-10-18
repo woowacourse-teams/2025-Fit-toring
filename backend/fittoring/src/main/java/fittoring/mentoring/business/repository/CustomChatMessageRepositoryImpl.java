@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomChatMessageRepositoryImpl implements CustomChatMessageRepository {
 
     private static final int PAGE_SIZE = 20;
+    private static final ZoneId DEFAULT_ZONE_ID = ZoneId.of("Asia/Seoul");
     private static final QChatMessage chatMessage = QChatMessage.chatMessage;
 
     private final JPAQueryFactory jpaQueryFactory;
@@ -55,7 +56,7 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
     private BooleanExpression buildCursorCondition(Cursor cursor) {
         if (cursor != null) {
             LocalDateTime cursorDateTime = Instant.ofEpochSecond(cursor.sortValue())
-                    .atZone(ZoneId.of("Asia/Seoul"))
+                    .atZone(DEFAULT_ZONE_ID)
                     .toLocalDateTime();
             return chatMessage.createdAt.lt(cursorDateTime)
                     .or(
