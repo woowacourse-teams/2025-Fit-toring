@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
@@ -13,11 +13,12 @@ function KakaoCallback() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const didLoginRef = useRef(false);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const authCode = new URLSearchParams(window.location.search).get('code');
+    const authCode = searchParams.get('code');
 
-    if (!authCode || didLoginRef.current) {return;}
+    if (!authCode || didLoginRef.current) return;
     didLoginRef.current = true;
 
     const handleLogin = async (authCode: string) => {
