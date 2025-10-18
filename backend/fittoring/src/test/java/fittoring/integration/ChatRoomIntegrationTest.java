@@ -75,7 +75,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         categoryRepository.save(category1);
         categoryRepository.save(category2);
 
-        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId());
+        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId(), "baseName");
         imageRepository.save(image1);
 
         Member mentee = memberRepository.save(

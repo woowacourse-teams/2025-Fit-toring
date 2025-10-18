@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fittoring.application.chatroom.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.chatroom.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.mentoring.repository.MentoringRepository;
@@ -23,7 +24,6 @@ import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.mentoring.business.exception.ChatRoomAlreadyExistsException;
 import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
 import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
 import fittoring.util.DbCleaner;
@@ -104,7 +104,8 @@ class ChatRoomServiceTest {
         Mentoring mentoring = new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의카카오오픈채팅");
         em.persist(mentoring);
 
-        Image image = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId());
+        Image image = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId(),
+                "baseName");
         em.persist(image);
 
         Member mentee = new Member("멘티id", "MALE", "김멘티", new Phone("010-1234-1234"), Password.from("password"));
@@ -158,7 +159,8 @@ class ChatRoomServiceTest {
                 "멘토링이미지1url",
                 ImageType.MENTORING_PROFILE,
                 ImageVariant.THUMBNAIL,
-                mentoring.getId()
+                mentoring.getId(),
+                "baseName"
         );
         em.persist(image);
 
