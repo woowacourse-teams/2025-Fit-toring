@@ -72,7 +72,7 @@ public class ChatMessageService {
         }
     }
 
-    private List<ChatMessageResponse> getChatMessageResponses(final ChatMessagePaginationResult paginationResult) {
+    private List<ChatMessageResponse> getChatMessageResponses(ChatMessagePaginationResult paginationResult) {
         return paginationResult.chatMessages()
                 .stream()
                 .map(chatMessage -> ChatMessageResponse.from(chatMessage, null))
