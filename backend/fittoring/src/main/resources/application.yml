@@ -1,6 +1,8 @@
 spring:
   application:
     name: fittoring
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
   config:
     import: optional:file:.env[.properties]
   mvc:
