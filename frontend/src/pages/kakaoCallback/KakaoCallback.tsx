@@ -45,7 +45,7 @@ function KakaoCallback() {
     };
 
     handleLogin(authCode);
-  }, [navigate]);
+  }, [navigate, searchParams, login]);
 
   return <LoadingSpinner />;
 }
