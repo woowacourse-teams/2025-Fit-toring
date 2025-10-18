@@ -31,15 +31,6 @@ function KakaoCallback() {
         } else if (response.status === 204) {
           window.history.replaceState(null, '', PAGE_URL.IDENTITY_VERIFICATION);
           navigate(PAGE_URL.IDENTITY_VERIFICATION);
-        } else {
-          captureSentryError({
-            error: new Error(`Unexpected response status: ${response.status}`),
-            level: 'warning',
-            feature: 'auth',
-            step: 'kakao-login',
-          });
-          alert('로그인에 실패했습니다.');
-          navigate(PAGE_URL.LOGIN);
         }
       } catch (error) {
         console.error('카카오 로그인 에러', error);
