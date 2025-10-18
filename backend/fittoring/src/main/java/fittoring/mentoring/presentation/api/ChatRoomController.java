@@ -3,7 +3,6 @@ package fittoring.mentoring.presentation.api;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.service.ChatMessageService;
 import fittoring.mentoring.business.service.ChatRoomService;
 import fittoring.mentoring.presentation.dto.ChatRoomResponse;
@@ -39,13 +38,11 @@ public class ChatRoomController {
     public ResponseEntity<ChatMessagePaginationResponse> getChatMessages(
             @Login LoginInfo loginInfo,
             @PathVariable("chatroomId") Long chatRoomId,
-            @RequestParam(defaultValue = "CREATED_AT") SortKey sortKey,
             @RequestParam(required = false) String cursorCode
     ) {
         ChatMessagePaginationResponse response = chatMessageService.findChatMessages(
                 chatRoomId,
                 loginInfo.memberId(),
-                sortKey,
                 cursorCode
         );
         return ResponseEntity.ok(response);

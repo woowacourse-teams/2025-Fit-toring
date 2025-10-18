@@ -7,7 +7,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.model.ChatMessage;
 import fittoring.mentoring.business.model.QChatMessage;
-import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.service.dto.chat.ChatMessagePaginationResult;
 import fittoring.util.CursorCodec;
 import java.time.Instant;
@@ -25,12 +24,12 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public ChatMessagePaginationResult findChatMessagesWithPagination(Long chatRoomId, SortKey sortKey, Cursor cursor) {
-        BooleanBuilder where = buildWhereCondition(chatRoomId, sortKey, cursor);
+    public ChatMessagePaginationResult findChatMessagesWithPagination(Long chatRoomId, Cursor cursor) {
+        BooleanBuilder where = buildWhereCondition(chatRoomId, cursor);
 
         List<ChatMessage> rows = jpaQueryFactory.selectFrom(chatMessage)
                 .where(where)
-                .orderBy(orderSpecifiers(sortKey))
+                .orderBy(orderSpecifiers())
                 .limit(PAGE_SIZE + 1L)
                 .fetch();
 
@@ -39,25 +38,22 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
         if (hasNext) {
             ChatMessage nextChatMessage = rows.getLast();
             rows = rows.subList(0, PAGE_SIZE);
-            nextCursorCode = switch (sortKey) {
-                case CREATED_AT -> getNextCursorCode(nextChatMessage);
-                // 다른 정렬 기준이 추가될 수 있습니다.
-            };
+            nextCursorCode = getNextCursorCode(nextChatMessage);
         }
         return new ChatMessagePaginationResult(rows, nextCursorCode, hasNext);
     }
 
-    private BooleanBuilder buildWhereCondition(final Long chatRoomId, final SortKey sortKey, final Cursor cursor) {
+    private BooleanBuilder buildWhereCondition(Long chatRoomId, Cursor cursor) {
         BooleanBuilder where = new BooleanBuilder();
-        BooleanExpression cursorCondition = buildCursorCondition(sortKey, cursor);
+        BooleanExpression cursorCondition = buildCursorCondition(cursor);
 
         where.and(chatMessage.chatRoomId.eq(chatRoomId))
                 .and(cursorCondition);
         return where;
     }
 
-    private BooleanExpression buildCursorCondition(SortKey sortKey, Cursor cursor) {
-        if (sortKey.equals(SortKey.CREATED_AT) && cursor != null) {
+    private BooleanExpression buildCursorCondition(Cursor cursor) {
+        if (cursor != null) {
             LocalDateTime cursorDateTime = Instant.ofEpochSecond(cursor.sortValue())
                     .atZone(ZoneId.of("Asia/Seoul"))
                     .toLocalDateTime();
@@ -77,12 +73,10 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
         return nextCursorCode;
     }
 
-    private OrderSpecifier<?>[] orderSpecifiers(SortKey sortKey) {
-        return switch (sortKey) {
-            case CREATED_AT -> new OrderSpecifier<?>[]{
-                    chatMessage.createdAt.desc(),
-                    chatMessage.id.desc()
-            };
+    private OrderSpecifier<?>[] orderSpecifiers() {
+        return new OrderSpecifier<?>[]{
+                chatMessage.createdAt.desc(),
+                chatMessage.id.desc()
         };
     }
 }

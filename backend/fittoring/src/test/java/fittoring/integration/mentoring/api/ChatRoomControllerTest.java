@@ -75,7 +75,6 @@ class ChatRoomControllerTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("chatMessage/get-chatMessage-page-success-first"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .queryParam("sortKey", "CREATED_AT")
                 .when()
                 .get("/chatrooms/" + chatRoom.getId() + "/messages")
                 .then().log().all()

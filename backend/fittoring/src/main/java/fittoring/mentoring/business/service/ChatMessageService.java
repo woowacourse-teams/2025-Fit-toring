@@ -6,7 +6,6 @@ import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
 import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
 import fittoring.mentoring.business.model.ChatMessage;
 import fittoring.mentoring.business.model.ChatRoom;
-import fittoring.mentoring.business.model.SortKey;
 import fittoring.mentoring.business.repository.ChatMessageRepository;
 import fittoring.mentoring.business.repository.ChatRoomRepository;
 import fittoring.mentoring.business.service.dto.chat.ChatMessagePaginationResult;
@@ -37,7 +36,6 @@ public class ChatMessageService {
     public ChatMessagePaginationResponse findChatMessages(
             Long chatRoomId,
             Long memberId,
-            SortKey sortKey,
             String cursorCode
     ) {
         ChatRoom chatRoom = getChatRoom(chatRoomId);
@@ -47,7 +45,6 @@ public class ChatMessageService {
 
         ChatMessagePaginationResult paginationResult = chatMessageRepository.findChatMessagesWithPagination(
                 chatRoomId,
-                sortKey,
                 cursor
         );
 
