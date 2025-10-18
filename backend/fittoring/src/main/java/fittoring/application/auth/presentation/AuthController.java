@@ -136,7 +136,6 @@ public class AuthController {
         AuthTokenResponse authTokenResponse = authService.loginOauthMember(memberOauth);
         CookieWriter.clearCookies(httpResponse);
         CookieWriter.write(httpResponse, authTokenResponse);
-        //
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
