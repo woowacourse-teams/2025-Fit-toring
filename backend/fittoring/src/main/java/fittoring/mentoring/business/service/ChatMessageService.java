@@ -8,7 +8,7 @@ import fittoring.mentoring.business.model.ChatMessage;
 import fittoring.mentoring.business.model.ChatRoom;
 import fittoring.mentoring.business.repository.ChatMessageRepository;
 import fittoring.mentoring.business.repository.ChatRoomRepository;
-import fittoring.mentoring.business.service.dto.chat.ChatMessagePaginationResult;
+import fittoring.mentoring.business.service.dto.chat.ChatMessagePaginationResultDto;
 import fittoring.mentoring.presentation.dto.chat.request.ChatMessageRequest;
 import fittoring.mentoring.presentation.dto.chat.response.ChatMessagePaginationResponse;
 import fittoring.mentoring.presentation.dto.chat.response.ChatMessageResponse;
@@ -43,7 +43,7 @@ public class ChatMessageService {
 
         Cursor cursor = CursorCodec.decode(cursorCode);
 
-        ChatMessagePaginationResult paginationResult = chatMessageRepository.findChatMessagesWithPagination(
+        ChatMessagePaginationResultDto paginationResult = chatMessageRepository.findChatMessagesWithPagination(
                 chatRoomId,
                 cursor
         );
@@ -72,7 +72,7 @@ public class ChatMessageService {
         }
     }
 
-    private List<ChatMessageResponse> getChatMessageResponses(ChatMessagePaginationResult paginationResult) {
+    private List<ChatMessageResponse> getChatMessageResponses(ChatMessagePaginationResultDto paginationResult) {
         return paginationResult.chatMessages()
                 .stream()
                 .map(ChatMessageResponse::fromHistory)

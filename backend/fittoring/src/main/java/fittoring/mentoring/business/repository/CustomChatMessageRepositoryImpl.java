@@ -7,7 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import fittoring.mentoring.Cursor;
 import fittoring.mentoring.business.model.ChatMessage;
 import fittoring.mentoring.business.model.QChatMessage;
-import fittoring.mentoring.business.service.dto.chat.ChatMessagePaginationResult;
+import fittoring.mentoring.business.service.dto.chat.ChatMessagePaginationResultDto;
 import fittoring.util.CursorCodec;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public ChatMessagePaginationResult findChatMessagesWithPagination(Long chatRoomId, Cursor cursor) {
+    public ChatMessagePaginationResultDto findChatMessagesWithPagination(Long chatRoomId, Cursor cursor) {
         BooleanBuilder where = buildWhereCondition(chatRoomId, cursor);
 
         List<ChatMessage> rows = jpaQueryFactory.selectFrom(chatMessage)
@@ -41,7 +41,7 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
             rows = rows.subList(0, PAGE_SIZE);
             nextCursorCode = getNextCursorCode(nextChatMessage);
         }
-        return new ChatMessagePaginationResult(rows, nextCursorCode, hasNext);
+        return new ChatMessagePaginationResultDto(rows, nextCursorCode, hasNext);
     }
 
     private BooleanBuilder buildWhereCondition(Long chatRoomId, Cursor cursor) {
