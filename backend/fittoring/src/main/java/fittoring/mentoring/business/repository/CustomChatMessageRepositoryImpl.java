@@ -26,12 +26,7 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
 
     @Override
     public ChatMessagePaginationResult findChatMessagesWithPagination(Long chatRoomId, SortKey sortKey, Cursor cursor) {
-
-        BooleanBuilder where = new BooleanBuilder();
-        BooleanExpression cursorCondition = buildCursorCondition(sortKey, cursor);
-
-        where.and(chatMessage.chatRoomId.eq(chatRoomId))
-                .and(cursorCondition);
+        BooleanBuilder where = buildWhereCondition(chatRoomId, sortKey, cursor);
 
         List<ChatMessage> rows = jpaQueryFactory.selectFrom(chatMessage)
                 .where(where)
@@ -52,11 +47,13 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
         return new ChatMessagePaginationResult(rows, nextCursorCode, hasNext);
     }
 
-    private String getNextCursorCode(ChatMessage nextChatMessage) {
-        String nextCursorCode;
-        long nextSortValue = nextChatMessage.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
-        nextCursorCode = CursorCodec.encode(new Cursor(nextSortValue, nextChatMessage.getId()));
-        return nextCursorCode;
+    private BooleanBuilder buildWhereCondition(final Long chatRoomId, final SortKey sortKey, final Cursor cursor) {
+        BooleanBuilder where = new BooleanBuilder();
+        BooleanExpression cursorCondition = buildCursorCondition(sortKey, cursor);
+
+        where.and(chatMessage.chatRoomId.eq(chatRoomId))
+                .and(cursorCondition);
+        return where;
     }
 
     private BooleanExpression buildCursorCondition(SortKey sortKey, Cursor cursor) {
@@ -71,6 +68,13 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
                     );
         }
         return null;
+    }
+
+    private String getNextCursorCode(ChatMessage nextChatMessage) {
+        String nextCursorCode;
+        long nextSortValue = nextChatMessage.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
+        nextCursorCode = CursorCodec.encode(new Cursor(nextSortValue, nextChatMessage.getId()));
+        return nextCursorCode;
     }
 
     private OrderSpecifier<?>[] orderSpecifiers(SortKey sortKey) {
