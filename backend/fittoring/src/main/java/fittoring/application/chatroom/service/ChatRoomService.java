@@ -86,7 +86,7 @@ public class ChatRoomService {
     }
 
     private void validateParticipant(Long memberId, ChatRoom chatRoom) {
-        if (!chatRoom.hasParticipant(memberId)) {
+        if (chatRoom.isNonParticipant(memberId)) {
             throw new fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException(
                     BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage()
             );
