@@ -11,7 +11,6 @@ import fittoring.mentoring.business.model.ChatRoom;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Reservation;
-import fittoring.mentoring.business.repository.ChatMessageRepository;
 import fittoring.mentoring.business.repository.ChatRoomRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
@@ -27,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatMessageRepository chatMessageRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final MentoringRepository mentoringRepository;
