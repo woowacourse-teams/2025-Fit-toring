@@ -67,10 +67,8 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
     }
 
     private String getNextCursorCode(ChatMessage nextChatMessage) {
-        String nextCursorCode;
         long nextSortValue = nextChatMessage.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
-        nextCursorCode = CursorCodec.encode(new Cursor(nextSortValue, nextChatMessage.getId()));
-        return nextCursorCode;
+        return CursorCodec.encode(new Cursor(nextSortValue, nextChatMessage.getId()));
     }
 
     private OrderSpecifier<?>[] orderSpecifiers() {
