@@ -27,11 +27,9 @@ function KakaoCallback() {
 
         if (response.status === 200) {
           login();
-          window.history.replaceState(null, '', PAGE_URL.HOME);
-          navigate(PAGE_URL.HOME);
+          navigate(PAGE_URL.HOME, { replace: true });
         } else if (response.status === 204) {
-          window.history.replaceState(null, '', PAGE_URL.IDENTITY_VERIFICATION);
-          navigate(PAGE_URL.IDENTITY_VERIFICATION);
+          navigate(PAGE_URL.IDENTITY_VERIFICATION, { replace: true });
         }
       } catch (error) {
         console.error('카카오 로그인 에러', error);
