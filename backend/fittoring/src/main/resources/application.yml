@@ -57,26 +57,10 @@ management:
         http.server.requests: 0.95,0.99
     tags:
       environment: ${SPRING_PROFILES_ACTIVE}
-  tracing:
-    enabled: ${TRACING_ENABLE}
-    sampling:
-      probability: 1.0
-  otlp:
-    tracing:
-      transport: grpc
-      endpoint: ${TEMPO_GRPC_LISTENER_URL}
   prometheus:
     metrics:
       export:
         step: ${METRICS_EXPORT_TIME_TO_PROMETHEUS}
-jdbc:
-  datasource-proxy:
-    enabled: ${DB_TRACING_ENABLE}
-    include-parameter-values: ${DB_TRACING_ENABLE}
-    query:
-      logger-name: my.query-logger
-  resultset-operations:
-    enabled: ${DB_TRACING_ENABLE}
 sms:
   base-url: https://api.solapi.com
   timeout:
@@ -118,5 +102,22 @@ image-session:
     enabled: true
     fixed-delay-ms: 300000
     batch-size: 200
+
 domain:
   sub-domain: ${SUB_DOMAIN}
+
+otel:
+  resource:
+    attributes:
+      deployment.environment: ${SPRING_PROFILES_ACTIVE}
+  metrics:
+    exporter: none
+  logs:
+    exporter: none
+  traces:
+    exporter: ${TRACING_EXPORTER}
+  exporter:
+    otlp:
+      traces:
+        endpoint: ${TEMPO_GRPC_LISTENER_URL}
+        protocol: grpc
