@@ -22,4 +22,15 @@ public record ChatMessageResponse(
                 chatMessage.getCreatedAt()
         );
     }
+
+    public static ChatMessageResponse fromHistory(ChatMessage chatMessage) {
+        return new ChatMessageResponse(
+                chatMessage.getId(),
+                null,
+                chatMessage.getChatRoomId(),
+                chatMessage.getSenderId(),
+                chatMessage.getContent(),
+                chatMessage.getCreatedAt()
+        );
+    }
 }
