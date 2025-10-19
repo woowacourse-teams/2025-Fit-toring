@@ -6,7 +6,7 @@ import downIcon from '../../../../common/assets/images/downIcon.svg';
 
 import type { SortKey } from '../../hooks/useSortKey';
 interface SortButtonProps {
-  handleSortButtonClick: (option: SortKey) => void;
+  onSortButtonClick: (option: SortKey) => void;
   currentSortKey: SortKey;
 }
 
@@ -16,10 +16,7 @@ const SORT_KEYS = [
   { value: 'AVERAGE_RATING', label: '평점순' },
 ] as const;
 
-function SortDropDown({
-  handleSortButtonClick,
-  currentSortKey,
-}: SortButtonProps) {
+function SortDropDown({ onSortButtonClick, currentSortKey }: SortButtonProps) {
   const [opened, setOpened] = useState(false);
   const handleMenuButtonClick = () => {
     setOpened((prev) => !prev);
@@ -57,7 +54,7 @@ function SortDropDown({
         {SORT_KEYS.map(({ value, label }) => (
           <S_SortItem
             key={value}
-            onClick={() => handleSortButtonClick(value)}
+            onClick={() => onSortButtonClick(value)}
             selected={currentSortKey === value}
           >
             {label}

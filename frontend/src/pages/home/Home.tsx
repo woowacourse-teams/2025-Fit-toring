@@ -227,7 +227,7 @@ function Home() {
             handleApplyFinalSpecialties={handleApply}
           />
           <SortDropDown
-            handleSortButtonClick={handleSortButtonClick}
+            onSortButtonClick={handleSortButtonClick}
             currentSortKey={sortKey}
           />
         </S_FilterWrapper>
