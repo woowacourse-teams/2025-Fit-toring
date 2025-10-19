@@ -4,6 +4,9 @@ import prevImg from '../../../../common/assets/images/chevron-left.svg';
 import nextImg from '../../../../common/assets/images/chevron-right.svg';
 import closeImg from '../../../../common/assets/images/white-x-mark.svg';
 import Modal from '../../../../common/components/Modal/Modal';
+import { useRef } from 'react';
+import { useFocusTrap } from '../../../../common/hooks/useFocusTrap';
+import { createPortal } from 'react-dom';
 
 interface CertificatesImageModalProps {
   opened: boolean;
@@ -22,21 +25,24 @@ function CertificatesImageModal({
   onNextButtonClick,
   onPrevButtonClick,
 }: CertificatesImageModalProps) {
-  return (
+  const containerRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(containerRef, opened, onCloseClick);
+  return createPortal(
     <Modal opened={opened} onCloseClick={onCloseClick}>
-      <S_Container>
+      <S_Container ref={containerRef}>
         <S_CloseButton onClick={onCloseClick}>
           <S_CloseImage src={closeImg} alt="모달 닫기 버튼" />
         </S_CloseButton>
         <S_PrevButton onClick={onPrevButtonClick}>
           <S_PrevImage src={prevImg} alt="이전 이미지 버튼" />
         </S_PrevButton>
+        <S_Image src={imageUrl} alt={`${title}`} />
         <S_NextButton onClick={onNextButtonClick}>
           <S_NextImage src={nextImg} alt="다음 이미지 버튼" />
         </S_NextButton>
-        <S_Image src={imageUrl} alt={`${title}`} />
       </S_Container>
-    </Modal>
+    </Modal>,
+    document.body,
   );
 }
 
