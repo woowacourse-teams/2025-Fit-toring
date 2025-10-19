@@ -81,7 +81,7 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
                 .from(mentoring)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(mentoring.createdAt.desc())
+                .orderBy(mentoring.createdAt.desc(), mentoring.id.desc())
                 .fetch();
 
         return jpaQueryFactory
@@ -91,7 +91,7 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
                 .on(categoryMentoring.mentoring.id.eq(mentoring.id))
                 .join(categoryMentoring.category)
                 .where(mentoring.id.in(ids))
-                .orderBy(mentoring.createdAt.desc())
+                .orderBy(mentoring.createdAt.desc(), mentoring.id.desc())
                 .transform(
                         groupBy(mentoring.id)
                                 .list(
