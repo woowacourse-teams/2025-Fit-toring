@@ -97,34 +97,25 @@ class AdminMentoringServiceTest {
         Member testAdmin = memberRepository.save(FixtureUtil.getTestAdmin());
 
         //when
-        PageResult<AdminMentoringResponse> allForAdminPaged = adminMentoringService.findAllForAdminPaged(
-                testAdmin.getId(), 1);
         PageResult<AdminMentoringResponse> allForAdminPaged1 = adminMentoringService.findAllForAdminPaged(
-                testAdmin.getId(), 2);
+                testAdmin.getId(), 1);
         PageResult<AdminMentoringResponse> allForAdminPaged2 = adminMentoringService.findAllForAdminPaged(
-                testAdmin.getId(), 3);
+                testAdmin.getId(), 2);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(allForAdminPaged.content()).hasSize(10);
-            softly.assertThat(allForAdminPaged1.content()).hasSize(10);
+            softly.assertThat(allForAdminPaged1.content()).hasSize(20);
             softly.assertThat(allForAdminPaged2.content()).hasSize(10);
 
-            softly.assertThat(allForAdminPaged.page()).isEqualTo(0);
-            softly.assertThat(allForAdminPaged1.page()).isEqualTo(1);
-            softly.assertThat(allForAdminPaged2.page()).isEqualTo(2);
+            softly.assertThat(allForAdminPaged1.page()).isEqualTo(0);
+            softly.assertThat(allForAdminPaged2.page()).isEqualTo(1);
 
-            softly.assertThat(allForAdminPaged.total()).isEqualTo(30);
             softly.assertThat(allForAdminPaged1.total()).isEqualTo(30);
             softly.assertThat(allForAdminPaged2.total()).isEqualTo(30);
 
-            softly.assertThat(allForAdminPaged.totalPages()).isEqualTo(3);
-            softly.assertThat(allForAdminPaged1.totalPages()).isEqualTo(3);
-            softly.assertThat(allForAdminPaged2.totalPages()).isEqualTo(3);
+            softly.assertThat(allForAdminPaged1.totalPages()).isEqualTo(2);
+            softly.assertThat(allForAdminPaged2.totalPages()).isEqualTo(2);
 
-            softly.assertThat(allForAdminPaged.content())
-                    .extracting(AdminMentoringResponse::mentoringId)
-                    .isSortedAccordingTo(Comparator.reverseOrder());
             softly.assertThat(allForAdminPaged1.content())
                     .extracting(AdminMentoringResponse::mentoringId)
                     .isSortedAccordingTo(Comparator.reverseOrder());
