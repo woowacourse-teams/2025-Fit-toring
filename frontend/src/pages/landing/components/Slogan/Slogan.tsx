@@ -17,8 +17,11 @@ function Slogan() {
     <S_Container>
       <S_SloganSection>
         <S_SloganWrapper>
-          <S_SloganText>일대일 온라인 운동 상담 플랫폼</S_SloganText>
-          <S_TextWrapper>
+          <S_SrOnly>일대일 온라인 운동 상담 플랫폼 핏토링</S_SrOnly>
+          <S_SloganText aria-hidden="true">
+            일대일 온라인 운동 상담 플랫폼
+          </S_SloganText>
+          <S_TextWrapper aria-hidden="true">
             <S_NameText highlight>Fit</S_NameText>
             <S_NameText>toring</S_NameText>
           </S_TextWrapper>
@@ -57,6 +60,23 @@ const S_SloganWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  position: relative;
+`;
+
+const S_SrOnly = styled.span`
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 `;
 
 const S_SloganText = styled.h1`

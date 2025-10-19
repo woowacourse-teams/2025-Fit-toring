@@ -7,10 +7,9 @@ function Introduce() {
   return (
     <S_Container>
       <S_TextWrapper>
-        <S_Title>
-          온라인 운동 멘토링
-          <br />
-          중개 플랫폼
+        <S_Title aria-label="온라인 운동 멘토링 중개 플랫폼">
+          <span aria-hidden="true">온라인 운동 멘토링</span>
+          <span aria-hidden="true">중개 플랫폼</span>
         </S_Title>
         <S_Texts>
           <S_Text>
@@ -53,6 +52,10 @@ const S_Container = styled.section`
 `;
 
 const S_Title = styled.h2`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
   font-weight: bold;
   font-size: 2.5rem;
 `;
