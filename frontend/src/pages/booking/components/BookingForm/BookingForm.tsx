@@ -81,7 +81,9 @@ function BookingForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (detailErrorMessage) {return;}
+    if (detailErrorMessage) {
+      return;
+    }
 
     handleBooking();
   };
@@ -116,9 +118,13 @@ function BookingForm({
 더 정확한 조언을 받을 수 있습니다."
             onChange={handleCounselContentChange}
             errored={errored.textarea}
+            aria-describedby="details-limit"
             value={counselContent}
           />
         </FormField>
+        <S_ScreenReaderOnly id="details-limit">
+          최대 5000자까지 입력할 수 있습니다.
+        </S_ScreenReaderOnly>
       </S_UserInfoWrapper>
 
       <BookingSummarySection price={mentoringPrice} />
@@ -185,4 +191,18 @@ const S_Textarea = styled.textarea<{ errored: boolean }>`
   }
 
   color: ${({ theme }) => theme.FONT.B01};
+`;
+
+const S_ScreenReaderOnly = styled.span`
+  overflow: hidden;
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 `;
