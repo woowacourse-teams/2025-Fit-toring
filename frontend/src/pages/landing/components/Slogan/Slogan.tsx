@@ -28,7 +28,7 @@ function Slogan() {
         </S_SloganWrapper>
         <S_Tags>
           {TAGS.map((tag) => (
-            <S_Tag key={tag}>#{tag}</S_Tag>
+            <S_Tag key={tag}>{`#${tag}`}</S_Tag>
           ))}
         </S_Tags>
         <S_Button onClick={handleStartButtonClick}>시작하기</S_Button>
