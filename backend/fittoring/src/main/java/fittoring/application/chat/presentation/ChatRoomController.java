@@ -1,9 +1,9 @@
-package fittoring.application.chatroom.presentation;
+package fittoring.application.chat.presentation;
 
-import fittoring.application.chatroom.presentation.dto.response.ChatMessagePaginationResponse;
-import fittoring.application.chatroom.service.ChatMessageService;
-import fittoring.application.chatroom.service.ChatRoomFacadeService;
-import fittoring.application.chatroom.service.dto.ChatRoomInfoResponse;
+import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
+import fittoring.application.chat.service.ChatMessageService;
+import fittoring.application.chat.service.ChatRoomFacadeService;
+import fittoring.application.chat.service.dto.ChatRoomInfoResponse;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;

@@ -1,4 +1,4 @@
-package fittoring.application.chatroom.presentation.dto.response;
+package fittoring.application.chat.presentation.dto.response;
 
 import fittoring.domain.model.ChatMessage;
 import java.time.LocalDateTime;

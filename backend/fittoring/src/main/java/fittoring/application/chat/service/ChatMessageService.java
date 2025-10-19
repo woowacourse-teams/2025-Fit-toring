@@ -1,11 +1,11 @@
-package fittoring.application.chatroom.service;
+package fittoring.application.chat.service;
 
-import fittoring.application.chatroom.presentation.dto.request.ChatMessageRequest;
-import fittoring.application.chatroom.presentation.dto.response.ChatMessagePaginationResponse;
-import fittoring.application.chatroom.presentation.dto.response.ChatMessageResponse;
-import fittoring.application.chatroom.repository.ChatMessageRepository;
-import fittoring.application.chatroom.repository.ChatRoomRepository;
-import fittoring.application.chatroom.service.dto.ChatMessagePaginationResultDto;
+import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
+import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
+import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
+import fittoring.application.chat.repository.ChatMessageRepository;
+import fittoring.application.chat.repository.ChatRoomRepository;
+import fittoring.application.chat.service.dto.ChatMessagePaginationResultDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;

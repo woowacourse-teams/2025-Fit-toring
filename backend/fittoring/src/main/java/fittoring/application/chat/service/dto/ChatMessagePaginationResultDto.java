@@ -1,4 +1,4 @@
-package fittoring.application.chatroom.service.dto;
+package fittoring.application.chat.service.dto;
 
 import fittoring.domain.model.ChatMessage;
 import java.util.List;

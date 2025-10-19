@@ -1,10 +1,10 @@
-package fittoring.application.chatroom.service;
+package fittoring.application.chat.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.application.chatroom.service.dto.ChatRoomCreatedInfo;
-import fittoring.application.chatroom.service.dto.ChatRoomInfoDto;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
+import fittoring.application.chat.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.MentoringNotFoundException;

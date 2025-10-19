@@ -1,9 +1,9 @@
 package fittoring.integration;
 
 import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.chatroom.presentation.dto.response.ChatMessagePaginationResponse;
-import fittoring.application.chatroom.repository.ChatMessageRepository;
-import fittoring.application.chatroom.repository.ChatRoomRepository;
+import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
+import fittoring.application.chat.repository.ChatMessageRepository;
+import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;

@@ -4,7 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import fittoring.application.chatroom.service.dto.ChatMessagePaginationResultDto;
+import fittoring.application.chat.service.dto.ChatMessagePaginationResultDto;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.QChatMessage;
 import fittoring.util.Cursor;

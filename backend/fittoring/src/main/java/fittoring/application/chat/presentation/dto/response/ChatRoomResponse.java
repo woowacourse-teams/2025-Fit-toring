@@ -1,4 +1,4 @@
-package fittoring.application.chatroom.presentation.dto.response;
+package fittoring.application.chat.presentation.dto.response;
 
 public record ChatRoomResponse(
         Long mentoringId,

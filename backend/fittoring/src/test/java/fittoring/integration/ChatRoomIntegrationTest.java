@@ -1,12 +1,12 @@
 package fittoring.integration;
 
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.chat.repository.ChatRoomRepository;
+import fittoring.application.chat.service.dto.ChatRoomInfoResponse;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryRepository;
-import fittoring.application.chatroom.repository.ChatRoomRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.chatroom.service.dto.ChatRoomInfoResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.ChatRoom;
@@ -75,7 +75,8 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         categoryRepository.save(category1);
         categoryRepository.save(category2);
 
-        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId(), "baseName");
+        Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId(),
+                "baseName");
         imageRepository.save(image1);
 
         Member mentee = memberRepository.save(
