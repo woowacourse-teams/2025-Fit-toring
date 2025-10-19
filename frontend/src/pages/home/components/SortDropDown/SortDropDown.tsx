@@ -44,6 +44,11 @@ function SortDropDown({ onSortButtonClick, currentSortKey }: SortButtonProps) {
     };
   }, []);
 
+  const handleSortButtonClick = (sortKey: SortKey) => {
+    onSortButtonClick(sortKey);
+    handleMenuButtonClick();
+  };
+
   return (
     <S_Container ref={containerRef}>
       <S_Button onClick={handleMenuButtonClick} type="button">
@@ -54,7 +59,7 @@ function SortDropDown({ onSortButtonClick, currentSortKey }: SortButtonProps) {
         {SORT_KEYS.map(({ value, label }) => (
           <S_SortItem
             key={value}
-            onClick={() => onSortButtonClick(value)}
+            onClick={() => handleSortButtonClick(value)}
             selected={currentSortKey === value}
           >
             {label}
