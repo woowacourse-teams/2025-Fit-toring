@@ -1,4 +1,4 @@
-package fittoring.application.chatroom.repository;
+package fittoring.application.chat.repository;
 
 import fittoring.domain.model.ChatRoom;
 import org.springframework.data.repository.ListCrudRepository;

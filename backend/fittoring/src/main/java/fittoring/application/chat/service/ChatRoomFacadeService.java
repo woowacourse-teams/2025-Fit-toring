@@ -1,7 +1,7 @@
-package fittoring.application.chatroom.service;
+package fittoring.application.chat.service;
 
-import fittoring.application.chatroom.service.dto.ChatRoomInfoDto;
-import fittoring.application.chatroom.service.dto.ChatRoomInfoResponse;
+import fittoring.application.chat.service.dto.ChatRoomInfoDto;
+import fittoring.application.chat.service.dto.ChatRoomInfoResponse;
 import fittoring.application.mentoring.service.MentoringService;
 import fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto;
 import lombok.RequiredArgsConstructor;

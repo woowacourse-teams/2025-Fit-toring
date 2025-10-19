@@ -1,8 +1,8 @@
-package fittoring.application.chatroom.presentation;
+package fittoring.application.chat.presentation;
 
-import fittoring.application.chatroom.presentation.dto.request.ChatMessageRequest;
-import fittoring.application.chatroom.presentation.dto.response.ChatMessageResponse;
-import fittoring.application.chatroom.service.ChatMessageService;
+import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
+import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
+import fittoring.application.chat.service.ChatMessageService;
 import fittoring.config.auth.LoginInfo;
 import fittoring.config.websocket.WebSocketAuthHandshakeInterceptor;
 import jakarta.validation.Valid;

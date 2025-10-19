@@ -1,4 +1,4 @@
-package fittoring.application.chatroom.service.dto;
+package fittoring.application.chat.service.dto;
 
 import fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto;
 import fittoring.domain.model.ChatStatus;

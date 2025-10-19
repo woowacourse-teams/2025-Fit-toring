@@ -1,4 +1,4 @@
-package fittoring.application.chatroom.presentation.dto.request;
+package fittoring.application.chat.presentation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

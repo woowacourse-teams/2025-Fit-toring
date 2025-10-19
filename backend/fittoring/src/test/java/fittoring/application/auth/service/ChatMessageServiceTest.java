@@ -3,8 +3,8 @@ package fittoring.application.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.application.chatroom.presentation.dto.request.ChatMessageRequest;
-import fittoring.application.chatroom.service.ChatMessageService;
+import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
+import fittoring.application.chat.service.ChatMessageService;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.config.JpaConfiguration;
