@@ -139,27 +139,32 @@ jobs:
 
   deploy-prod:
     needs: build-and-push
-    runs-on:
-      - self-hosted
-      - prod
-    env:
-      IMAGE: fittoring/fittoring
-      TAG: ${{ needs.build-and-push.outputs.image_tag }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Docker hub login
-        run: |
-          sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-      - name: Write .env for deploy
-        run: |
-          cd /home/ssm-user/fittoring
-          sudo sh -c 'echo "IMAGE=${{ env.IMAGE }}" > .env.deploy'
-          sudo sh -c 'echo "TAG=${{ env.TAG }}" >> .env.deploy'
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-northeast-2
 
-      - name: Run deploy script
+      - name: Make deployment package
+        run: cd backend/fittoring && zip -r ../../deploy.zip .
+
+      - name: Upload to S3
         run: |
-          cd /home/ssm-user
-          ./deploy-be.sh
+          aws s3 cp \
+            ./deploy.zip \
+            s3://${{ secrets.S3_BUCKET_NAME }}/fittoring/codeDeploy/deploy-${{ github.sha }}.zip
+            
+      - name: Deploy with AWS CodeDeploy
+        run: |
+          aws deploy create-deployment \
+            --application-name fittoring-backend \
+            --deployment-group-name fittoring-backend-prod \
+            --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=fittoring/codeDeploy/deploy-${{ github.sha }}.zip
 
   test-report:
     if: failure()
