@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ssm-user/codedeploy
+hooks:
+  ApplicationStop:
+    - location: stop.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: start.sh
+      timeout: 300
+      runas: root
+  ValidateService:
+    - location: validate.sh
+      timeout: 300
+      runas: root
