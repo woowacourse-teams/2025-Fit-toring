@@ -15,7 +15,7 @@ import { getMentorListByPage } from './apis/getMentorListByPage';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
-import SortButton from './components/SortButton/SortButton';
+import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
@@ -226,7 +226,7 @@ function Home() {
             selectedSpecialties={selectedSpecialties}
             handleApplyFinalSpecialties={handleApply}
           />
-          <SortButton
+          <SortDropDown
             handleSortButtonClick={handleSortButtonClick}
             currentSortKey={sortKey}
           />

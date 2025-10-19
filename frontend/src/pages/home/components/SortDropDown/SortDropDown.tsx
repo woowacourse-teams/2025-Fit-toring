@@ -16,7 +16,7 @@ const SORT_KEYS = [
   { value: 'AVERAGE_RATING', label: '평점순' },
 ] as const;
 
-function SortButton({
+function SortDropDown({
   handleSortButtonClick,
   currentSortKey,
 }: SortButtonProps) {
@@ -49,7 +49,7 @@ function SortButton({
   );
 }
 
-export default SortButton;
+export default SortDropDown;
 
 const S_Container = styled.div`
   display: flex;
