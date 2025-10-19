@@ -13,17 +13,20 @@ function ReviewItem({ review }: { review: ReviewResponse }) {
     <S_Container>
       <S_NameAndRatingWrapper>
         <S_Name>{reviewerName}</S_Name>
-        <S_Rating>
+        <S_Rating role="text" aria-label={`별점 ${rating}점`}>
           {Array.from({ length: 5 }).map((_, index) => {
             const score = index + 1;
             if (score <= rating) {
-              return <img key={index} src={filledStar} />;
+              return <img key={index} src={filledStar} aria-hidden="true" />;
             }
-            return <img key={index} src={emptyStar} />;
+            return <img key={index} src={emptyStar} aria-hidden="true" />;
           })}
         </S_Rating>
       </S_NameAndRatingWrapper>
-      <S_Date>
+      <S_Date
+        role="text"
+        aria-label={`리뷰 작성일: ${year}년 ${month}월 ${day}일`}
+      >
         {year}년 {month}월 {day}일
       </S_Date>
       <S_Content>{content}</S_Content>

@@ -51,10 +51,13 @@ function DetailReview({
 
   return (
     <S_Container>
-      <S_TotalWrapper>
+      <S_TotalWrapper
+        role="text"
+        aria-label={`${ratingCount}개의 리뷰, 평균 ${ratingAverage}점`}
+      >
         <img src={filledStar} />
-        <strong>{ratingAverage}</strong>
-        <p>({ratingCount}개 리뷰)</p>
+        <strong aria-hidden="true">{ratingAverage}</strong>
+        <p aria-hidden="true">({ratingCount}개 리뷰)</p>
       </S_TotalWrapper>
       <S_ReviewList>
         {totalReviewInfo.map((review) => (
