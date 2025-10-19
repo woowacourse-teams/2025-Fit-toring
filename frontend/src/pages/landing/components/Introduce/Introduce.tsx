@@ -42,7 +42,7 @@ function Introduce() {
 
 export default Introduce;
 
-const S_Container = styled.div`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -52,7 +52,7 @@ const S_Container = styled.div`
   line-height: normal;
 `;
 
-const S_Title = styled.p`
+const S_Title = styled.h2`
   font-weight: bold;
   font-size: 2.5rem;
 `;

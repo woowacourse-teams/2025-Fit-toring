@@ -36,7 +36,7 @@ function Slogan() {
 
 export default Slogan;
 
-const S_Container = styled.div`
+const S_Container = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +59,7 @@ const S_SloganWrapper = styled.div`
   gap: 1rem;
 `;
 
-const S_SloganText = styled.p`
+const S_SloganText = styled.h1`
   color: #000;
   font-weight: 700;
   font-size: 2.5rem;

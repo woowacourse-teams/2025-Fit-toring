@@ -43,7 +43,7 @@ function FitnessQuestionFlow() {
 
 export default FitnessQuestionFlow;
 
-const S_Container = styled.div`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 3rem;

@@ -8,6 +8,8 @@ import expertPng from '../../../../common/assets/images/expert.png';
 function UserLevelGuide() {
   return (
     <S_Container>
+      <S_Heading id="user-level-title">사용자별 가이드</S_Heading>
+
       <S_UserWrapper>
         <picture>
           <source srcSet={beginnerAvif} type="image/avif" />
@@ -36,15 +38,31 @@ function UserLevelGuide() {
 
 export default UserLevelGuide;
 
-const S_Container = styled.div`
+const S_Container = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 3.5rem;
+  position: relative;
 
   padding: 7rem 3rem;
 
   line-height: normal;
+`;
+
+const S_Heading = styled.h2`
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 `;
 
 const S_UserWrapper = styled.div`
