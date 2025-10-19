@@ -213,7 +213,7 @@ function ChatRoom() {
     });
   };
 
-  if (ChatRoomInfoQuery.isPending) {
+  if (ChatRoomInfoQuery.isPending || !chatRoomInfo) {
     return (
       <S_Container>
         <div>로딩중</div>
@@ -221,21 +221,15 @@ function ChatRoom() {
     );
   }
 
-  if (!chatRoomInfo) {
-    return null;
-  }
-
-  const { chatRoomInfoDto, mentoringInfoDto } = chatRoomInfo;
-
   return (
     <S_Container>
       <div>
-        <ChatRoomHeader name={chatRoomInfoDto.opponentName} />
+        <ChatRoomHeader name={chatRoomInfo.opponentName} />
         <MentoringActionPanel
-          mentorName={mentoringInfoDto.mentorName}
-          price={mentoringInfoDto.price}
-          profileImageUrl={mentoringInfoDto.profileImageUrl}
-          mentorOwned={chatRoomInfoDto.myRole === 'MENTOR'}
+          mentorName={chatRoomInfo.mentorName}
+          price={chatRoomInfo.price}
+          profileImageUrl={chatRoomInfo.profileImageUrl}
+          mentorOwned={chatRoomInfo.myRole === 'MENTOR'}
           onPaymentRequestClick={handlePaymentRequestClick}
           onReviewRequestClick={handleReviewRequestClick}
           onEndClick={handleEndClick}
