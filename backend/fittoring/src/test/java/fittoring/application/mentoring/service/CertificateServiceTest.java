@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CertificateNotFoundException;
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class CertificateServiceTest extends SpringBootTestSupport {
+class CertificateServiceTest extends IntegrationTestSupport {
 
     private Member admin;
 

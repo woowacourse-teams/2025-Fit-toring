@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
@@ -39,7 +39,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-class ReviewServiceTest extends SpringBootTestSupport {
+class ReviewServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ReviewService reviewService;

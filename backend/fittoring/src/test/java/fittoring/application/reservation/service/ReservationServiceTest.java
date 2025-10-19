@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
@@ -45,7 +45,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-class ReservationServiceTest extends SpringBootTestSupport {
+class ReservationServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ReservationService reservationService;

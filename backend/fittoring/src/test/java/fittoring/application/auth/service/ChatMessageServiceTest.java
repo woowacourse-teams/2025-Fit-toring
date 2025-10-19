@@ -3,7 +3,7 @@ package fittoring.application.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.ChatMessageService;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class ChatMessageServiceTest extends SpringBootTestSupport {
+class ChatMessageServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ChatMessageService chatMessageService;

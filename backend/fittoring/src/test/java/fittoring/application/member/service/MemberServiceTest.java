@@ -1,6 +1,6 @@
 package fittoring.application.member.service;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class MemberServiceTest extends SpringBootTestSupport {
+class MemberServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private MemberRepository memberRepository;

@@ -1,6 +1,6 @@
 package fittoring.application.mentoring.service;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.application.mentoring.presentation.dto.response.CategoryResponse;
 import fittoring.application.mentoring.repository.CategoryRepository;
 import fittoring.domain.model.Category;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class CategoryServiceTest extends SpringBootTestSupport {
+class CategoryServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private CategoryService categoryService;

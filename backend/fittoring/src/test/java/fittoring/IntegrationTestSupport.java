@@ -13,7 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-public abstract class SpringBootTestSupport {
+public abstract class IntegrationTestSupport {
 
     @MockitoBean
     protected PresignedUrlService presignedUrlService;

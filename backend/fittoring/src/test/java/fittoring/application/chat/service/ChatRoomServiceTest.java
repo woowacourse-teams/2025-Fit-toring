@@ -3,7 +3,7 @@ package fittoring.application.chat.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
@@ -31,7 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class ChatRoomServiceTest extends SpringBootTestSupport {
+class ChatRoomServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ChatRoomService chatRoomService;

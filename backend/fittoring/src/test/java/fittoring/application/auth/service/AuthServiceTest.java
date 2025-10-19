@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class AuthServiceTest extends SpringBootTestSupport {
+class AuthServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private AuthService authService;

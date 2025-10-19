@@ -1,6 +1,6 @@
 package fittoring.application.auth.service;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.exception.BusinessErrorMessage;
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-class PhoneVerificationServiceTest extends SpringBootTestSupport {
+class PhoneVerificationServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private PhoneVerificationService phoneVerificationService;

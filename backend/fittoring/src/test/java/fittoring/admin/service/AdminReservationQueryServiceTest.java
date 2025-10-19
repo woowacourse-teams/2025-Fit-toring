@@ -1,6 +1,6 @@
 package fittoring.admin.service;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.admin.presentation.dto.AdminReservationResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.dto.AdminMentoringReservationDto;
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class AdminReservationQueryServiceTest extends SpringBootTestSupport {
+class AdminReservationQueryServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private AdminReservationQueryService reservationService;

@@ -2,7 +2,7 @@ package fittoring.integration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.SmsAuthHeaderGenerator;
 import fittoring.infrastructure.SmsRestClientService;
@@ -21,7 +21,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-class SmsRestClientIntegrationTest extends SpringBootTestSupport {
+class SmsRestClientIntegrationTest extends IntegrationTestSupport {
 
     private static MockWebServer mockWebServer;
 

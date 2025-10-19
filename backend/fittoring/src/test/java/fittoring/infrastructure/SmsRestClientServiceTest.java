@@ -1,6 +1,6 @@
 package fittoring.infrastructure;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.exception.InfraErrorMessage;
 import fittoring.infrastructure.exception.SmsException;
@@ -16,7 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 
-class SmsRestClientServiceTest extends SpringBootTestSupport {
+class SmsRestClientServiceTest extends IntegrationTestSupport {
 
     private static MockWebServer mockWebServer;
 

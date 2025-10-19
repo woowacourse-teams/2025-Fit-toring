@@ -1,6 +1,6 @@
 package fittoring.admin.service;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.admin.presentation.dto.AdminMentoringResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.FixtureUtil;
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class AdminMentoringServiceTest extends SpringBootTestSupport {
+class AdminMentoringServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private AdminMentoringService adminMentoringService;

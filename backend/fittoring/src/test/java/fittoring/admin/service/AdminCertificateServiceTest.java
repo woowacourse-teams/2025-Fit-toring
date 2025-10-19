@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
-import fittoring.SpringBootTestSupport;
+import fittoring.IntegrationTestSupport;
 import fittoring.admin.presentation.dto.AdminCertificateResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.FixtureUtil;
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class AdminCertificateServiceTest extends SpringBootTestSupport {
+class AdminCertificateServiceTest extends IntegrationTestSupport {
 
     private Member admin;
 
