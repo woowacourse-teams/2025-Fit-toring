@@ -1,6 +1,6 @@
-import { StatusTypeEnum } from '../../types/statusType';
+import { StatusTypeEnum } from '../../../common/types/statusType';
 
-import type { MentoringApplication } from '../../../pages/createdMentoring/types/mentoringApplication';
+import type { MentoringApplication } from '../types/mentoringApplication';
 
 export const MENTORING_APPLICATIONS: MentoringApplication[] = [
   {

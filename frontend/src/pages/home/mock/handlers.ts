@@ -1,5 +1,8 @@
 import { http, HttpResponse } from 'msw';
 
+import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
+import { getSpecialties } from '../../../common/mock/getSpecialties/handlers';
+
 import { MENTORINGS } from './data';
 
 export const testStateStore = {
@@ -12,8 +15,8 @@ export const testStateStore = {
 };
 
 const BASE_URL = process.env.API_BASE_URL;
-const MENTORING_URL = `${BASE_URL}/mentorings`;
-const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
+const MENTORING_URL = `${BASE_URL}${API_ENDPOINTS.MENTORINGS}`;
+const getMentorList = http.get(MENTORING_URL, ({ request }) => {
   const url = new URL(request.url);
   const { searchParams } = url;
 
@@ -58,14 +61,4 @@ const getMentoringItems = http.get(MENTORING_URL, ({ request }) => {
   }
 });
 
-const postMentoringCreate = http.post(MENTORING_URL, async ({ request }) => {
-  const data = await request.json();
-
-  if (!data) {
-    return HttpResponse.json({ message: '멘토링 개설 실패' }, { status: 400 });
-  }
-
-  return HttpResponse.json({ message: true }, { status: 201 });
-});
-
-export const mentoringHandler = [getMentoringItems, postMentoringCreate];
+export const homeHandler = [getSpecialties, getMentorList];

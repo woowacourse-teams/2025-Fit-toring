@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-import { API_ENDPOINTS } from '../../constants/apiEndpoints';
+import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
 interface LoginBody {
   loginId: string;

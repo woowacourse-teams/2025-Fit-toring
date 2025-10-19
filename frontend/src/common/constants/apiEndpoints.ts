@@ -16,7 +16,6 @@ export const API_ENDPOINTS = {
   MEMBERS: '/members/summary',
   REISSUE: '/reissue',
   PATCH_MENTORING_STATUS: '/status',
-  MENTEE_PHONE_NUMBER: '/phone',
   REVIEWS: '/reviews',
   CERTIFICATES: '/certificates',
   MENTORINGS_PAGE: '/mentorings-page',

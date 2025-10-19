@@ -1,6 +1,6 @@
-import { StatusTypeEnum } from '../../types/statusType';
+import { StatusTypeEnum } from '../../../common/types/statusType';
 
-import type { ParticipatedMentoringType } from '../../../pages/participatedMentoring/types/participatedMentoring';
+import type { ParticipatedMentoringType } from '../types/participatedMentoring';
 
 export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
   {
