@@ -85,8 +85,10 @@ class MentoringServiceTest extends IntegrationTestSupport {
     @Test
     void deleteByAdmin() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member admin = FixtureUtil.getTestAdmin();
+        memberRepository.saveAll(List.of(mentor, admin));
+
         LoginInfo adminLoginId = new LoginInfo(admin.getId());
 
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
@@ -94,8 +96,9 @@ class MentoringServiceTest extends IntegrationTestSupport {
 
         mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
 
-        Category category1 = categoryRepository.save(new Category("카테고리1"));
-        Category category2 = categoryRepository.save(new Category("카테고리2"));
+        Category category1 = new Category("카테고리1");
+        Category category2 = new Category("카테고리2");
+        categoryRepository.saveAll(List.of(category1, category2));
 
         CategoryMentoring categoryMentoring = new CategoryMentoring(category1, mentoring);
         categoryMentoringRepository.save(categoryMentoring);
@@ -158,8 +161,10 @@ class MentoringServiceTest extends IntegrationTestSupport {
         @Test
         void getMentoring() {
             // given
-            Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-            Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+            List<Member> savedMembers = memberRepository.saveAll(
+                    List.of(FixtureUtil.getTestMentor(), FixtureUtil.getTestMentee()));
+            Member mentor = savedMembers.get(0);
+            Member mentee = savedMembers.get(1);
 
             Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
             mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));

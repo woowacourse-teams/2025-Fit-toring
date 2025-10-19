@@ -14,11 +14,9 @@ import fittoring.application.mentoring.repository.CertificateRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.service.dto.CertificateDeleteDto;
 import fittoring.domain.model.Certificate;
-import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.password.Password;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,32 +67,16 @@ class CertificateServiceTest extends IntegrationTestSupport {
     @Test
     void deleteReviewFail2() {
         // given
-        Member mentorKim = memberRepository.save(new Member(
-                "mentorId",
-                "MALE",
-                "김트레이너",
-                new Phone("010-1111-2222"),
-                Password.from("password")
-        ));
-        Member mentorPark = memberRepository.save(new Member(
-                "mentorId2",
-                "MALE",
-                "박트레이너",
-                new Phone("010-1111-2223"),
-                Password.from("password")
-        ));
-        Mentoring parkMentoring = mentoringRepository.save(new Mentoring(
-                mentorPark,
-                5000,
-                10,
-                "박트레이너의 멘토링",
-                "박트레이너는 컴퓨터에 빠삭합니다.",
-                "가상의오픈채팅링크"
-        ));
-        Certificate parkLicense = certificateRepository.save(
-                new Certificate(CertificateType.LICENSE, "정보처리기사", parkMentoring));
+        Member mentor1 = FixtureUtil.getTestMentor(1);
+        Member mentor2 = FixtureUtil.getTestMentor(2);
+        memberRepository.saveAll(List.of(mentor1, mentor2));
 
-        CertificateDeleteDto dto = new CertificateDeleteDto(mentorKim.getId(), parkLicense.getId());
+        Mentoring mentoringForMentor2 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor2));
+
+        Certificate certificateForMentor2 = certificateRepository.save(
+                FixtureUtil.getTestCertificate(mentoringForMentor2));
+
+        CertificateDeleteDto dto = new CertificateDeleteDto(mentor1.getId(), certificateForMentor2.getId());
 
         // when
         // then
