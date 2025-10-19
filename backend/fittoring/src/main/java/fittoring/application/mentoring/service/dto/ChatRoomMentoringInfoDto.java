@@ -1,4 +1,4 @@
-package fittoring.application.mentoring.service.dto.chat;
+package fittoring.application.mentoring.service.dto;
 
 public record ChatRoomMentoringInfoDto(
         String mentorName,

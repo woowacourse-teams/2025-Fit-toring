@@ -1,8 +1,9 @@
-package fittoring.application.mentoring.service;
+package fittoring.application.chat.service;
 
-import fittoring.application.chatroom.service.ChatRoomService;
-import fittoring.application.chatroom.service.dto.ChatRoomInfoDto;
-import fittoring.application.mentoring.service.dto.chat.ChatRoomMentoringInfoDto;
+import fittoring.application.chat.service.dto.ChatRoomInfoDto;
+import fittoring.application.chat.service.dto.ChatRoomInfoResponse;
+import fittoring.application.mentoring.service.MentoringService;
+import fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

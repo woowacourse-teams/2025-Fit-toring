@@ -160,7 +160,7 @@ class AuthServiceTest {
         //then
         RefreshToken refreshToken = em.find(RefreshToken.class, savedMember.getId());
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(actual.memberId()).isEqualTo(savedMember.getId());
+                    assertThat(actual.memberLoginResponse().memberId()).isEqualTo(savedMember.getId());
                     assertThat(actual.authToken().accessToken()).isNotNull();
                     assertThat(actual.authToken().refreshToken()).isNotNull();
                     assertThat(refreshToken).isNotNull();

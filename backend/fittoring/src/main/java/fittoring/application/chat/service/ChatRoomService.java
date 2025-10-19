@@ -1,22 +1,20 @@
-package fittoring.application.chatroom.service;
+package fittoring.application.chat.service;
 
-import fittoring.application.chatroom.service.dto.ChatRoomInfoDto;
+import fittoring.application.chat.repository.ChatRoomRepository;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
+import fittoring.application.chat.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.ChatRoomRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.mentoring.service.ChatRoomUrlGenerator;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
-import fittoring.mentoring.business.exception.ChatRoomAlreadyExistsException;
-import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
-import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,12 +80,13 @@ public class ChatRoomService {
     private ChatRoom getChatRoom(Long chatroomId) {
         return chatRoomRepository.findById(chatroomId)
                 .orElseThrow(
-                        () -> new ChatRoomNotFoundException(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage())
+                        () -> new fittoring.mentoring.business.exception.ChatRoomNotFoundException(
+                                BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage())
                 );
     }
 
     private void validateParticipant(Long memberId, ChatRoom chatRoom) {
-        if (!chatRoom.hasParticipant(memberId)) {
+        if (chatRoom.isNonParticipant(memberId)) {
             throw new fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException(
                     BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage()
             );

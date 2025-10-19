@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.service.dto.chat;
+package fittoring.application.chat.service.dto;
 
 public record ChatRoomCreatedInfo(
         String url
