@@ -67,6 +67,7 @@ function ProfileSection({
         </S_InfoHeader>
 
         <TextWithIcon
+          ariaLabel={`(${ratingCount})개의 리뷰, 평균 ${ratingAverage}점`}
           text={`${ratingAverage} (${ratingCount})`}
           iconSrc={starIcon}
           iconName="별점"
