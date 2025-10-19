@@ -156,12 +156,16 @@ function Home() {
         ? {
             ...convertSelectedSpecialtiesToParams(selectedSpecialties),
             cursorCode,
+            sortKey,
           }
-        : convertSelectedSpecialtiesToParams(selectedSpecialties),
+        : {
+            ...convertSelectedSpecialtiesToParams(selectedSpecialties),
+            sortKey,
+          },
     });
 
     return data;
-  }, [cursorCode, selectedSpecialties]);
+  }, [cursorCode, selectedSpecialties, sortKey]);
 
   useEffect(() => {
     const callback = async (entries: IntersectionObserverEntry[]) => {
