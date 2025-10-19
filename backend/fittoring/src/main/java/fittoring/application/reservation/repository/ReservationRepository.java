@@ -13,6 +13,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservationRepository extends ListCrudRepository<Reservation, Long>, CustomReservationRepository {
 
+    @Query(value = "SELECT * FROM reservation WHERE id = :id AND is_deleted = true;", nativeQuery = true)
+    Reservation findDeletedById(@Param("id") Long id);
+
     List<Reservation> findAllByMentoringId(Long id);
 
     @Query("""
