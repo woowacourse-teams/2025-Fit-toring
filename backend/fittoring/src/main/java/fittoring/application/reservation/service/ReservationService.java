@@ -1,31 +1,37 @@
 package fittoring.application.reservation.service;
 
+import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
+import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
+import fittoring.application.chat.service.ChatRoomService;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.image.service.ImageService;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
+import fittoring.application.mentoring.service.dto.ReservationInfo;
+import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
+import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
+import fittoring.application.reservation.service.dto.ReservationCreateDto;
+import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
-import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
-import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
-import fittoring.application.reservation.service.dto.ParticipatedReservationDto;
-import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
-import fittoring.application.reservation.service.dto.ReservationCreateDto;
-import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.presentation.dto.AdminReservationResponse;
-import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +40,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReservationService {
 
+    private final ChatRoomService chatRoomService;
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     private final MentoringStatisticsRepository mentoringStatisticsRepository;
+    private final ImageService imageService;
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
@@ -99,33 +107,29 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ParticipatedReservationResponse> findMemberReservations(Long memberId) {
-        List<ParticipatedReservationDto> views = reservationRepository.findMemberReservationDtos(memberId);
-        return views.stream()
-                .map(dto -> new ParticipatedReservationResponse(
-                        dto.getReservationId(),
-                        dto.getMentoringId(),
-                        dto.getMentorName(),
-                        dto.getMentorProfileImage(),
-                        dto.getReservedAt(),
-                        dto.getContent(),
-                        dto.getStatus(),
-                        dto.getIsReviewed()))
-                .toList();
-    }
+        List<ParticipatedReservationWithoutProfileImageDto> rows = reservationRepository.findMemberReservationDtos(
+                memberId
+        );
 
-    @Transactional(readOnly = true)
-    public List<AdminReservationResponse> findMentoringReservationsWithAdminAuthorization(
-            MentoringReservationGetDto dto) {
-        checkAdminAuthority(dto.memberId());
-        List<Reservation> reservations = reservationRepository.findAllByMentoringId(dto.mentoringId());
-        return reservations.stream()
-                .map(reservation -> new AdminReservationResponse(
-                        reservation.getId(),
-                        reservation.getMenteeName(),
-                        reservation.getCreatedAt().toLocalDate(),
-                        reservation.getStatus(),
-                        reservation.getContent()
-                ))
+        Set<Long> mentoringIds = rows.stream()
+                .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
+                .collect(Collectors.toSet());
+
+        Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(
+                ImageType.MENTORING_PROFILE,
+                mentoringIds
+        );
+
+        return rows.stream()
+                .map(r -> new ParticipatedReservationResponse(
+                        r.getReservationId(),
+                        r.getMentoringId(),
+                        r.getMentorName(),
+                        profileImageByMentoring.get(r.getMentoringId()),
+                        r.getReservedAt(),
+                        r.getContent(),
+                        r.getStatus(),
+                        r.getIsReviewed()))
                 .toList();
     }
 
@@ -138,11 +142,18 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation updateStatus(Long reservationId, String updateStatus) {
+    public ReservationInfo updateStatus(Long reservationId, String updateStatus) {
         Reservation reservation = getReservation(reservationId);
         Status status = Status.of(updateStatus);
         reservation.changeStatus(status);
-        return reservation;
+
+        String url = "";
+        if (reservation.isApprove()) {
+            ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
+            url = chatRoomCreatedInfo.url();
+        }
+
+        return new ReservationInfo(reservation, url);
     }
 
     private Reservation getReservation(Long reservationId) {

@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${PROD_DATABASE_HOST}:${PROD_DATABASE_PORT}/${PROD_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${PROD_DATABASE_USER}
+    password: ${PROD_DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
+      minimum-idle: ${HIKARI_MINIMUM_IDLE}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
+      max-lifetime: ${HIKARI_MAX_LIFETIME}
+  jpa:
+    show-sql: false
+  flyway:
+    enabled: true
+    url: jdbc:mysql://${PROD_DATABASE_HOST}:${PROD_DATABASE_PORT}/${PROD_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    user: ${PROD_DATABASE_USER}
+    password: ${PROD_DATABASE_PASSWORD}
+    baseline-on-migrate: true
+aws:
+  s3:
+    env-prefix: local/
+  sqs:
+    image-queue: fittoring-image-queue

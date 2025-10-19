@@ -1,25 +1,27 @@
 package fittoring.application.auth.service;
 
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
+import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
+import fittoring.application.auth.presentation.dto.response.LoginResponse;
+import fittoring.application.auth.repository.MemberOauthRepository;
+import fittoring.application.auth.repository.RefreshTokenRepository;
+import fittoring.application.auth.service.dto.KakaoTokenResponse;
+import fittoring.application.auth.service.dto.KakaoUserInfoResponse;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.presentation.dto.response.MemberLoginResponse;
 import fittoring.domain.model.AuthProvider;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
-import fittoring.application.auth.repository.MemberOauthRepository;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.auth.repository.RefreshTokenRepository;
-import fittoring.application.auth.service.dto.KakaoTokenResponse;
-import fittoring.application.auth.service.dto.KakaoUserInfoResponse;
 import fittoring.infrastructure.OauthClientService;
-import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
-import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -58,10 +60,13 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthTokenResponse login(String loginId, String password) {
+    public LoginResponse login(String loginId, String password) {
         Member member = getMemberByLoginId(loginId);
         member.matchPassword(password);
-        return getAuthorizedTokenResponse(member);
+        AuthTokenResponse authTokenResponse = getAuthorizedTokenResponse(member);
+        MemberLoginResponse memberLoginResponse = new MemberLoginResponse(member.getId());
+
+        return new LoginResponse(memberLoginResponse, authTokenResponse);
     }
 
     private AuthTokenResponse getAuthorizedTokenResponse(Member member) {

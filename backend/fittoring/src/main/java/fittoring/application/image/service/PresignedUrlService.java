@@ -35,12 +35,13 @@ public class PresignedUrlService {
     private final S3Presigner presigner;
     private final S3Properties properties;
     private final JsonLogger jsonLogger;
+    private final KeyBuilder keyBuilder;
 
     public PresignedIssueResponse issuePresignedUrl(
             IssuedPresignedDto dto
     ) {
         String baseName = UUID.randomUUID().toString();
-        String key = KeyBuilder.buildKey(ImageType.getDir(dto.imageType()), ImageVariant.DEFAULT, baseName,
+        String key = keyBuilder.buildKey(ImageType.getDir(dto.imageType()), ImageVariant.DEFAULT, baseName,
                 "." + dto.extension());
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -94,7 +95,7 @@ public class PresignedUrlService {
 
     public boolean isObjectExistsFromUrl(String url) {
         try {
-            String key = KeyBuilder.extractFromUrl(url);
+            String key = keyBuilder.extractKeyFromUrl(url);
             return isObjectExistsFromKey(key);
         } catch (S3UploadException e) {
             jsonLogger.warn("S3 키 추출 실패 (잘못된 URL)", Map.of("url", url), e);

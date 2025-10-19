@@ -1,16 +1,17 @@
 package fittoring.application.member.service;
 
+import fittoring.application.FixtureUtil;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.password.Password;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,13 +29,11 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
-        MemberService.class,
-        ImageService.class,
-        DbCleaner.class,
+        KeyBuilder.class,
         MemberService.class,
         ImageService.class,
         QueryDslConfig.class,
-        QueryDslConfig.class,
+        JpaConfiguration.class,
         MentoringPaginationHelper.class
 })
 @DataJpaTest
@@ -58,29 +57,18 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentee() {
         // given
-        String loginId = "loginId";
-        String name = "사용자";
-        String gender = "MALE";
-        Phone phone = new Phone("010-1234-5678");
-        Member member = new Member(
-                loginId,
-                gender,
-                name,
-                phone,
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member member = em.persist(FixtureUtil.getTestMentee());
 
         // when
-        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isNull();
-            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
-            softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
-            softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
+            softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
+            softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
 
@@ -88,39 +76,22 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithoutImage() {
         // given
-        String loginId = "loginId";
-        String name = "사용자";
-        String gender = "MALE";
-        Phone phone = new Phone("010-1234-5678");
-        Member member = new Member(
-                loginId,
-                gender,
-                name,
-                phone,
-                Password.from("password")
-        );
-        member.registerAsMentor();
-        Member savedMember = em.persist(member);
-        Mentoring mentoring = new Mentoring(
-                member,
-                2000,
-                3,
-                "content",
-                "introduction",
-                "가상의오픈채팅링크"
-        );
+        Member member = FixtureUtil.getTestMentor();
+        Mentoring mentoring = FixtureUtil.getTestMentoring(member);
+
+        em.persist(member);
         em.persist(mentoring);
 
         // when
-        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isNull();
-            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
-            softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
-            softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
+            softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
+            softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
 
@@ -128,45 +99,30 @@ class MemberServiceTest {
     @Test
     void successGetMyInfoForMentorWithImage() {
         // given
-        String loginId = "loginId";
-        String name = "사용자";
-        String gender = "MALE";
-        Phone phone = new Phone("010-1234-5678");
-        Member member = new Member(
-                loginId,
-                gender,
-                name,
-                phone,
-                Password.from("password")
-        );
-        member.registerAsMentor();
-        Member savedMember = em.persist(member);
-        Mentoring mentoring = new Mentoring(
-                member,
-                2000,
-                3,
-                "content",
-                "introduction",
-                "가상의오픈채팅링크"
-        );
+        Member member = FixtureUtil.getTestMentee();
+        Mentoring mentoring = FixtureUtil.getTestMentoring(member);
+
+        em.persist(member);
         em.persist(mentoring);
+
         Image image = new Image(
                 "profileImageUrl",
                 ImageType.MENTORING_PROFILE,
-                mentoring.getId()
+                mentoring.getId(),
+                null
         );
         em.persist(image);
 
         // when
-        MyInfoResponse memberInfo = memberService.getMemberInfo(savedMember.getId());
+        MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isEqualTo(image.getUrl());
-            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(loginId);
-            softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
-            softAssertions.assertThat(memberInfo.gender()).isEqualTo(gender);
-            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
+            softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
+            softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
 
@@ -174,26 +130,15 @@ class MemberServiceTest {
     @Test
     void getMyInfoSummary() {
         // given
-        String loginId = "loginId";
-        String name = "사용자";
-        String gender = "MALE";
-        Phone phone = new Phone("010-1234-5678");
-        Member member = new Member(
-                loginId,
-                gender,
-                name,
-                phone,
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member member = em.persist(FixtureUtil.getTestMentee());
 
         // when
-        MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(savedMember.getId());
+        MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(member.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(memberInfo.name()).isEqualTo(name);
-            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(phone.getNumber());
+            softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
+            softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
 }

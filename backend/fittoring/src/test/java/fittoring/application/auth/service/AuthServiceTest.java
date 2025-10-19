@@ -4,18 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.config.QueryDslConfig;
+import fittoring.application.FixtureUtil;
+import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
+import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.RefreshToken;
-import fittoring.domain.model.password.Password;
-import fittoring.infrastructure.OauthClientService;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.config.QueryDslConfig;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.RefreshToken;
+import fittoring.infrastructure.OauthClientService;
 import fittoring.util.DbCleaner;
 import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
@@ -36,7 +36,8 @@ import org.springframework.web.client.RestClient;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class, OauthClientService.class, MentoringPaginationHelper.class})
+@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class, OauthClientService.class,
+        MentoringPaginationHelper.class})
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
 class AuthServiceTest {
@@ -69,10 +70,11 @@ class AuthServiceTest {
     void register() {
         //given
         String password = "password";
+
         SignUpRequest request = new SignUpRequest(
                 "loginId",
                 "이름",
-                "남",
+                "MALE",
                 "010-1234-5678",
                 password);
 
@@ -88,16 +90,9 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId() {
         //given
-        String loginId = "loginId";
+        Member mentee = em.persist(FixtureUtil.getTestMentee());
 
-        Member member = new Member(
-                loginId,
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        em.persist(member);
+        String loginId = mentee.getLoginId();
 
         //when
         //then
@@ -110,16 +105,9 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId2() {
         //given
-        String loginId = "nonDuplicateId";
+        em.persist(FixtureUtil.getTestMentee());
 
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        em.persist(member);
+        String loginId = "nonDuplicateId";
 
         //when
         //then
@@ -131,14 +119,7 @@ class AuthServiceTest {
     @Test
     void login() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        em.persist(member);
+        em.persist(FixtureUtil.getTestMentee());
 
         String loginId = "wrongLoginId";
         String password = "password";
@@ -153,16 +134,9 @@ class AuthServiceTest {
     @Test
     void login2() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        em.persist(member);
+        em.persist(FixtureUtil.getTestMentee());
 
-        String loginId = "loginId";
+        String loginId = "menteeId";
         String password = "wongPassword";
 
         //when
@@ -171,33 +145,27 @@ class AuthServiceTest {
                 .isInstanceOf(MisMatchPasswordException.class);
     }
 
-    @DisplayName("정상적인 로그인이 성공하면 토큰을 반환한다.")
+    @DisplayName("정상적인 로그인이 성공하면 member 식별자와 토큰을 반환한다.")
     @Test
     void login3() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member savedMember = em.persist(FixtureUtil.getTestMentee());
 
-        String loginId = "loginId";
-        String password = "password";
+        String loginId = savedMember.getLoginId();
+        String rawPassword = "password";
 
         //when
-        AuthTokenResponse actual = authService.login(loginId, password);
+        LoginResponse actual = authService.login(loginId, rawPassword);
 
         //then
         RefreshToken refreshToken = em.find(RefreshToken.class, savedMember.getId());
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(actual.accessToken()).isNotNull();
-                    assertThat(actual.refreshToken()).isNotNull();
+                    assertThat(actual.memberLoginResponse().memberId()).isEqualTo(savedMember.getId());
+                    assertThat(actual.authToken().accessToken()).isNotNull();
+                    assertThat(actual.authToken().refreshToken()).isNotNull();
                     assertThat(refreshToken).isNotNull();
                     assertThat(refreshToken.getMember().getId()).isEqualTo(savedMember.getId());
-                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.refreshToken());
+                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.authToken().refreshToken());
                 }
         );
     }
@@ -206,14 +174,7 @@ class AuthServiceTest {
     @Test
     void reissue() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member savedMember = em.persist(FixtureUtil.getTestMentee());
         em.flush();
         String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
@@ -246,14 +207,7 @@ class AuthServiceTest {
     @Test
     void logout() {
         //given
-        Member member = new Member(
-                "loginId",
-                "이름",
-                "남",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        Member savedMember = em.persist(member);
+        Member savedMember = em.persist(FixtureUtil.getTestMentee());
 
         String refreshToken = jwtProvider.createRefreshToken();
         RefreshToken savedRefreshToken = em.persist(

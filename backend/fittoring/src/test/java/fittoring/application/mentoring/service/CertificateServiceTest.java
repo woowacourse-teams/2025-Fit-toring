@@ -1,35 +1,28 @@
 package fittoring.application.mentoring.service;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CertificateNotFoundException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.image.service.PresignedUrlService;
-import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
-import fittoring.application.mentoring.presentation.dto.response.CertificateResponse;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.mentoring.service.dto.CertificateDeleteDto;
 import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
-import fittoring.domain.model.Image;
-import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
-import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.logging.JsonLogger;
 import fittoring.util.DbCleaner;
-import java.util.List;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +39,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
+        KeyBuilder.class,
         CertificateService.class,
         ImageService.class,
         JpaConfiguration.class,
@@ -54,9 +48,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 })
 @DataJpaTest
 class CertificateServiceTest {
-
-    private Member admin;
-    private Mentoring mentoring;
 
     @MockitoBean
     private PresignedUrlService presignedUrlService;
@@ -73,275 +64,24 @@ class CertificateServiceTest {
     @Autowired
     private DbCleaner dbCleaner;
 
+    private Member admin;
+
     @BeforeEach
     void setUp() {
         dbCleaner.clean();
-        admin = new Member(
-                "adminId",
-                "여",
-                "관리자",
-                new Phone("010-9999-9999"),
-                Password.from("admin123"),
-                MemberRole.ADMIN
-        );
+        admin = FixtureUtil.getTestAdmin();
         em.persist(admin);
-        mentoring = new Mentoring(
-                admin,
-                1000,
-                1,
-                "content",
-                "intro",
-                "가상의오픈채팅링크"
-        );
-        em.persist(mentoring);
         given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
         given(presignedUrlService.isObjectExistsFromUrl(anyString()))
                 .willReturn(true);
     }
 
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 자격증명 목록을 조회할 수 없다.")
-    @Test
-    void getAllWithoutAdminAuthority() {
-        // given
-        Member user = new Member(
-                "userId",
-                "여",
-                "유저",
-                new Phone("010-1111-2222"),
-                Password.from("1234")
-        );
-        em.persist(user);
-
-        // when
-        // then
-        assertThatThrownBy(() -> certificateService.getAllCertificates(user.getId(), null))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-    }
-
-    @DisplayName("상태가 없는 자격증명 목록 조회는 모든 값을 반환한다.")
-    @Test
-    void getAllCertificates() {
-        // given
-        Certificate certificate1 = new Certificate(
-                CertificateType.LICENSE,
-                "자격증",
-                mentoring
-        );
-        em.persist(certificate1);
-        Certificate certificate2 = new Certificate(
-                CertificateType.LICENSE,
-                "자격증",
-                mentoring
-        );
-        em.persist(certificate2);
-
-        // when
-        List<CertificateResponse> certificates = certificateService.getAllCertificates(admin.getId(), null);
-
-        // then
-        SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(certificates).hasSize(2);
-            softAssertions.assertThat(certificates.get(0).id()).isEqualTo(certificate1.getId());
-            softAssertions.assertThat(certificates.get(1).id()).isEqualTo(certificate2.getId());
-        });
-    }
-
-    @DisplayName("상태가 있는 자격증명 목록을 필터링해서 반환한다.")
-    @Test
-    void getAllCertificationWithStatus() {
-        // given
-        Certificate certificate1 = new Certificate(
-                CertificateType.LICENSE,
-                "자격증",
-                mentoring
-        );
-        em.persist(certificate1);
-        Certificate certificate2 = new Certificate(
-                CertificateType.LICENSE,
-                "자격증",
-                mentoring
-        );
-        em.persist(certificate2);
-
-        // when
-        List<CertificateResponse> certificatesExpectedPending = certificateService.getAllCertificates(
-                admin.getId(),
-                Status.PENDING
-        );
-        List<CertificateResponse> certificatesExpectedApproved = certificateService.getAllCertificates(
-                admin.getId(),
-                Status.APPROVED
-        );
-
-        // then
-        SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(certificatesExpectedPending).hasSize(2);
-            softAssertions.assertThat(certificatesExpectedApproved).hasSize(0);
-        });
-    }
-
-    @DisplayName("관리자 권한이 있다면 자격증명을 상세조회할 수 있다.")
-    @Test
-    void getOneForAdmin() {
-        // given
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
-        em.persist(certificate);
-        Image image = new Image(
-                "url",
-                ImageType.CERTIFICATE,
-                certificate.getId()
-        );
-        em.persist(image);
-
-        // when
-        CertificateDetailResponse certificateDetailResponse = certificateService.getCertificate(
-                admin.getId(),
-                mentoring.getId()
-        );
-
-        // then
-        SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(certificateDetailResponse.certificateName()).isEqualTo(name);
-            softAssertions.assertThat(certificateDetailResponse.certificateType()).isEqualTo(CertificateType.LICENSE);
-        });
-    }
-
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 자격증명을 상세조회 할 수 없다.")
-    @Test
-    void getOneWithoutAdminAuthority() {
-        // given
-        Member user = new Member(
-                "userId",
-                "여",
-                "유저",
-                new Phone("010-1111-2222"),
-                Password.from("1234")
-        );
-        em.persist(user);
-
-        // when
-        // then
-        assertThatThrownBy(() -> certificateService.getCertificate(
-                user.getId(),
-                mentoring.getId()
-        ))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-    }
-
-    @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 승인할 수 있다.")
-    @Test
-    void approveCertificateForAdmin() {
-        // given
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
-        em.persist(certificate);
-
-        // when
-        // then
-        assertThatCode(() -> certificateService.approveCertificate(admin.getId(), certificate.getId()))
-                .doesNotThrowAnyException();
-    }
-
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 승인할 수 없다.")
-    @Test
-    void approveCertificateWithoutAdminAuthority() {
-        // given
-        Member user = new Member(
-                "userId",
-                "여",
-                "유저",
-                new Phone("010-1111-2222"),
-                Password.from("1234")
-        );
-        em.persist(user);
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
-        em.persist(certificate);
-
-        // when
-        // then
-        assertThatThrownBy(() -> certificateService.approveCertificate(user.getId(), certificate.getId()))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-    }
-
-    @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 거절할 수 있다.")
-    @Test
-    void rejectCertificateForAdmin() {
-        // given
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
-        em.persist(certificate);
-
-        // when
-        // then
-        assertThatCode(() -> certificateService.rejectCertificate(admin.getId(), certificate.getId()))
-                .doesNotThrowAnyException();
-    }
-
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 거절할 수 없다.")
-    @Test
-    void rejectCertificateWithoutAdminAuthority() {
-        // given
-        Member user = new Member(
-                "userId",
-                "여",
-                "유저",
-                new Phone("010-1111-2222"),
-                Password.from("1234")
-        );
-        em.persist(user);
-        CertificateType type = CertificateType.LICENSE;
-        String name = "자격증";
-        Certificate certificate = new Certificate(
-                type,
-                name,
-                mentoring
-        );
-        em.persist(certificate);
-
-        // when
-        // then
-        assertThatThrownBy(() -> certificateService.rejectCertificate(user.getId(), certificate.getId()))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-    }
-
     @DisplayName("존재하지 않는 자격 사항 삭제 요청 시 예외가 발생한다.")
     @Test
     void deleteCertificateFail1() {
         // given
-        Member mentee = em.persist(new Member(
-                "loginId",
-                "MALE",
-                "name",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        ));
+        Member mentee = em.persist(FixtureUtil.getTestMentee());
         CertificateDeleteDto dto = new CertificateDeleteDto(mentee.getId(), 999L);
 
         // when

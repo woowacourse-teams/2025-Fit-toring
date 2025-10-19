@@ -1,5 +1,7 @@
 package fittoring.domain.model;
 
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.InvalidStatusException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -64,25 +66,42 @@ public class Reservation {
         this(null, content, null, status, false, null, mentoring, mentee);
     }
 
-    public boolean isComplete() {
-        return this.status.isComplete();
+    public void changeStatusWithoutValidation(Status updateStatus) {
+        this.status = updateStatus;
+    }
+
+    public void changeStatus(Status updateStatus) {
+        validateReservation(updateStatus);
+        this.status = updateStatus;
+    }
+
+    private void validateReservation(Status updateStatus) {
+        if (this.status.isReject() || this.status.isComplete()) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
+        }
+        if (this.status.equals(updateStatus)) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
+        }
     }
 
     public boolean isCreatedByMember(Long memberId) {
         return this.mentee.isSameIdWith(memberId);
     }
 
-    public void changeStatus(Status updateStatus) {
-        this.status.validateReservation(updateStatus);
-        this.status = updateStatus;
+    public boolean isApprove() {
+        return this.status.isApprove();
     }
 
-    public void changeStatusWithoutValidation(Status updateStatus) {
-        this.status = updateStatus;
+    public boolean isComplete() {
+        return this.status.isComplete();
     }
 
     public boolean isPending() {
         return this.status.isPending();
+    }
+
+    public boolean isAccessibleForChatRoom() {
+        return isApprove() || isComplete();
     }
 
     public String getChatUrlOfMentoring() {
@@ -97,6 +116,10 @@ public class Reservation {
         return mentoring.getMentorName();
     }
 
+    public Member getMentor() {
+        return mentoring.getMentor();
+    }
+
     public String getMenteePhone() {
         return mentee.getPhoneNumber();
     }
@@ -107,5 +130,9 @@ public class Reservation {
 
     public String getStatus() {
         return status.name();
+    }
+
+    public Status getOriginalStatus() {
+        return status;
     }
 }

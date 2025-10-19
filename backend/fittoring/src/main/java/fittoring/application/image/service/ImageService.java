@@ -4,8 +4,12 @@ import fittoring.application.image.repository.ImageRepository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
+import fittoring.infrastructure.image.KeyBuilder;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+    private final KeyBuilder keyBuilder;
 
     @Transactional
     public Image save(ImageType type, Long relationId, String imageUrl) {
+        String baseName = keyBuilder.extractBaseNameFromUrl(imageUrl);
         return imageRepository.save(new Image(
                 imageUrl,
                 type,
-                relationId
+                relationId,
+                baseName
         ));
     }
 
@@ -51,6 +58,28 @@ public class ImageService {
                         .filter(img -> img.getImageVariant() == ImageVariant.DEFAULT)
                         .findFirst()
                 );
+    }
+
+    public Map<Long, String> findMentoringThumbnailMapByImageTypeAndRelationIds(
+            ImageType imageType, Collection<Long> relationIds
+    ) {
+        List<Image> images = imageRepository.findByImageTypeAndRelationIdIn(
+                imageType, relationIds
+        );
+
+        return images.stream()
+                .collect(Collectors.groupingBy(
+                        Image::getRelationId,
+                        Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
+                                .filter(img -> img.getImageVariant() == ImageVariant.THUMBNAIL)
+                                .findFirst()
+                                .or(() -> list.stream()
+                                        .filter(img -> img.getImageVariant() == ImageVariant.DEFAULT)
+                                        .findFirst()
+                                )
+                                .map(Image::getUrl)
+                                .orElse(null))
+                ));
     }
 
     public List<Image> findByRelationIdsAndImageType(List<Long> certificateIds, ImageType imageType) {
