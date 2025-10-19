@@ -226,7 +226,10 @@ function Home() {
             selectedSpecialties={selectedSpecialties}
             handleApplyFinalSpecialties={handleApply}
           />
-          <SortButton handleSortButtonClick={handleSortButtonClick} />
+          <SortButton
+            handleSortButtonClick={handleSortButtonClick}
+            currentSortKey={sortKey}
+          />
         </S_FilterWrapper>
         <Button onClick={handleMentoringCreation} customStyle={customStyle}>
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
