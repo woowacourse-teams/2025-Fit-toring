@@ -11,13 +11,16 @@ import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
+import fittoring.util.DbCleaner;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,14 @@ class AdminMentoringServiceTest {
 
     @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
+
+    @Autowired
+    private DbCleaner dbCleaner;
+
+    @BeforeEach
+    void setUp() {
+        dbCleaner.clean();
+    }
 
     @DisplayName("관리자는 멘토링 목록을 조회할 수 있다. 조회시 페이지네이션으로 조회하게 된다. 한 페이지당 10개로 제한한다.")
     @Test
@@ -83,7 +94,7 @@ class AdminMentoringServiceTest {
         }
         categoryMentoringRepository.saveAll(categoryMentorings);
 
-        Member testAdmin = FixtureUtil.getTestAdmin();
+        Member testAdmin = memberRepository.save(FixtureUtil.getTestAdmin());
 
         //when
         PageResult<AdminMentoringResponse> allForAdminPaged = adminMentoringService.findAllForAdminPaged(
@@ -110,7 +121,16 @@ class AdminMentoringServiceTest {
             softly.assertThat(allForAdminPaged.totalPages()).isEqualTo(3);
             softly.assertThat(allForAdminPaged1.totalPages()).isEqualTo(3);
             softly.assertThat(allForAdminPaged2.totalPages()).isEqualTo(3);
+
+            softly.assertThat(allForAdminPaged.content())
+                    .extracting(AdminMentoringResponse::id)
+                    .isSortedAccordingTo(Comparator.reverseOrder());
+            softly.assertThat(allForAdminPaged1.content())
+                    .extracting(AdminMentoringResponse::id)
+                    .isSortedAccordingTo(Comparator.reverseOrder());
+            softly.assertThat(allForAdminPaged2.content())
+                    .extracting(AdminMentoringResponse::id)
+                    .isSortedAccordingTo(Comparator.reverseOrder());
         });
     }
-
 }
