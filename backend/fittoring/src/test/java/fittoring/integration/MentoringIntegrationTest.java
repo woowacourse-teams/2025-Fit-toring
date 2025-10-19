@@ -565,7 +565,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
     @Nested
     @DisplayName("멘토링 페이징 조회")
     class getMentoringWithPagination {
-
         @DisplayName("첫 멘토링 목록 페이지를 조회하고, 반환된 커서를 사용하면 나머지 목록을 조회할 수 있다.")
         @Test
         void getMentoringSummaryPages() {

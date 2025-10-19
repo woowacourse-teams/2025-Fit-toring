@@ -1,4 +1,4 @@
-package fittoring.mentoring.business.exception;
+package fittoring.application.exception;
 
 public class ChatRoomAlreadyExistsException extends RuntimeException {
 
