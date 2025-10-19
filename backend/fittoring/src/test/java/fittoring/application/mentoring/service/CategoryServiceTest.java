@@ -1,49 +1,32 @@
 package fittoring.application.mentoring.service;
 
-import fittoring.config.QueryDslConfig;
-import fittoring.domain.model.Category;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.application.SpringBootTestSupport;
 import fittoring.application.mentoring.presentation.dto.response.CategoryResponse;
-import fittoring.util.DbCleaner;
+import fittoring.application.mentoring.repository.CategoryRepository;
+import fittoring.domain.model.Category;
+import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, CategoryService.class, QueryDslConfig.class, MentoringPaginationHelper.class})
-@DataJpaTest
-class CategoryServiceTest {
+class CategoryServiceTest extends SpringBootTestSupport {
 
     @Autowired
     private CategoryService categoryService;
 
     @Autowired
-    private TestEntityManager testEntityManager;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp() {
-        dbCleaner.clean();
-    }
+    private CategoryRepository categoryRepository;
 
     @DisplayName("카테고리 전체 조회가 성공하면 모든 카테고리 목록을 반환한다.")
     @Test
     void getAllCategories() {
         // given
-        Category category1 = testEntityManager.persist(new Category("체형교정"));
-        Category category2 = testEntityManager.persist(new Category("근육증가"));
-        Category category3 = testEntityManager.persist(new Category("다이어트"));
+        Category category1 = new Category("체형교정");
+        Category category2 = new Category("근육증가");
+        Category category3 = new Category("다이어트");
+
+        categoryRepository.saveAll(List.of(category1, category2, category3));
 
         // when
         // then

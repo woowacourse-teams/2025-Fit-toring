@@ -1,9 +1,19 @@
 package fittoring.application.review.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 import fittoring.application.FixtureUtil;
-import fittoring.application.exception.*;
+import fittoring.application.SpringBootTestSupport;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.MemberNotFoundException;
+import fittoring.application.exception.ReservationNotCompletedException;
+import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.exception.ReviewAlreadyExistsException;
+import fittoring.application.exception.ReviewNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
 import fittoring.application.reservation.repository.ReservationRepository;
@@ -14,47 +24,28 @@ import fittoring.application.review.repository.ReviewRepository;
 import fittoring.application.review.service.dto.ReviewCreateDto;
 import fittoring.application.review.service.dto.ReviewDeleteDto;
 import fittoring.application.review.service.dto.ReviewModifyDto;
-import fittoring.config.JpaConfiguration;
-import fittoring.config.QueryDslConfig;
-import fittoring.domain.model.*;
-import fittoring.util.DbCleaner;
-import org.junit.jupiter.api.BeforeEach;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.MentoringStatistics;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, ReviewService.class, JpaConfiguration.class, QueryDslConfig.class, MentoringPaginationHelper.class})
-@DataJpaTest
-class ReviewServiceTest {
+class ReviewServiceTest extends SpringBootTestSupport {
 
     @Autowired
     private ReviewService reviewService;
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private TestEntityManager em;
-
-    @Autowired
-    private DbCleaner dbCleaner;
 
     @Autowired
     private MentoringRepository mentoringRepository;
@@ -68,20 +59,20 @@ class ReviewServiceTest {
     @Autowired
     private MentoringStatisticsRepository mentoringStatisticsRepository;
 
-    @BeforeEach
-    void setUp() {
-        dbCleaner.clean();
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("리뷰 작성을 성공하면 별점과 리뷰 내용, 리뷰를 작성한 멘토링의 id을 반환한다")
     @Test
     void createReview() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        MentoringStatistics mentoringStatistics = em.persist(MentoringStatistics.defaultOf(mentoring));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.save(
+                MentoringStatistics.defaultOf(mentoring));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
 
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
                 mentee.getId(),
@@ -94,8 +85,6 @@ class ReviewServiceTest {
 
         // when
         ReviewCreateResponse reviewCreateResponse = reviewService.createReview(reviewCreateDto);
-        em.flush();
-        em.clear();
 
         // then
         assertSoftly(softly -> {
@@ -115,11 +104,12 @@ class ReviewServiceTest {
     @Test
     void createReviewFail1() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
 
         Long invalidMemberId = 999L;
         ReviewCreateDto dto = new ReviewCreateDto(
@@ -129,7 +119,8 @@ class ReviewServiceTest {
                 "최고의 멘토링이었습니다."
         );
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.createReview(dto))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
@@ -139,13 +130,14 @@ class ReviewServiceTest {
     @Test
     void createReviewFail2() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
 
-        Member anotherMember = em.persist(FixtureUtil.getTestMentee(2));
+        Member anotherMember = memberRepository.save(FixtureUtil.getTestMentee(2));
 
         ReviewCreateDto dto = new ReviewCreateDto(
                 anotherMember.getId(),
@@ -154,7 +146,8 @@ class ReviewServiceTest {
                 "최고의 멘토링이었습니다."
         );
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.createReview(dto))
                 .isInstanceOf(ReservationNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());
@@ -164,10 +157,11 @@ class ReviewServiceTest {
     @Test
     void createReviewFail3() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
 
         ReviewCreateDto dto = new ReviewCreateDto(
                 mentee.getId(),
@@ -178,7 +172,8 @@ class ReviewServiceTest {
 
         reviewService.createReview(dto);
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.createReview(dto))
                 .isInstanceOf(ReviewAlreadyExistsException.class)
                 .hasMessage(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
@@ -188,10 +183,10 @@ class ReviewServiceTest {
     @Test
     void createReviewFail4() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
 
         ReviewCreateDto dto = new ReviewCreateDto(
                 mentee.getId(),
@@ -200,7 +195,8 @@ class ReviewServiceTest {
                 "최고의 멘토링이었습니다."
         );
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.createReview(dto))
                 .isInstanceOf(ReservationNotCompletedException.class)
                 .hasMessage(BusinessErrorMessage.RESERVATION_NOT_COMPLETED.getMessage());
@@ -210,18 +206,20 @@ class ReviewServiceTest {
     @Test
     void findMemberReviews() {
         // given
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Member mentor1 = em.persist(FixtureUtil.getTestMentor());
-        Member mentor2 = em.persist(FixtureUtil.getTestMentor(2));
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor1 = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentor2 = memberRepository.save(FixtureUtil.getTestMentor(2));
 
-        Mentoring mentoring1 = em.persist(FixtureUtil.getTestMentoring(mentor1));
-        Mentoring mentoring2 = em.persist(FixtureUtil.getTestMentoring(mentor2));
+        Mentoring mentoring1 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor1));
+        Mentoring mentoring2 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor2));
 
-        Reservation reservation1 = em.persist(FixtureUtil.getTestCompletedReservation(mentoring1, mentee));
-        Reservation reservation2 = em.persist(FixtureUtil.getTestCompletedReservation(mentoring2, mentee));
+        Reservation reservation1 = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring1, mentee));
+        Reservation reservation2 = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring2, mentee));
 
-        Review review1 = em.persist(FixtureUtil.getTestReview(reservation1, mentee));
-        Review review2 = em.persist(FixtureUtil.getTestReview(reservation2, mentee));
+        Review review1 = reviewRepository.save(FixtureUtil.getTestReview(reservation1, mentee));
+        Review review2 = reviewRepository.save(FixtureUtil.getTestReview(reservation2, mentee));
 
         List<MemberReviewGetResponse> expected = List.of(
                 new MemberReviewGetResponse(
@@ -249,33 +247,37 @@ class ReviewServiceTest {
     @Test
     void findMentoringReviews() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Member mentee1 = em.persist(FixtureUtil.getTestMentee(1));
-        Member mentee2 = em.persist(FixtureUtil.getTestMentee(2));
+        Member mentee1 = memberRepository.save(FixtureUtil.getTestMentee(1));
+        Member mentee2 = memberRepository.save(FixtureUtil.getTestMentee(2));
 
-        Reservation reservation1 = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee1));
-        Reservation reservation2 = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee1));
-        Reservation reservation3 = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee2));
-        Reservation reservation4 = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee2));
+        Reservation reservation1 = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee1));
+        Reservation reservation2 = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee1));
+        Reservation reservation3 = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee2));
+        Reservation reservation4 = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee2));
 
-        Review review1 = insertReviewUsingNativeQuery(
+        insertReviewUsingNativeQuery(
                 2, "최고의 멘토링이었습니다.",
                 LocalDateTime.of(2025, 9, 1, 10, 0, 0),
                 reservation1, mentee1
         );
-        Review review2 = insertReviewUsingNativeQuery(
+        insertReviewUsingNativeQuery(
                 2, "최고의 멘토링이었습니다.",
                 LocalDateTime.of(2025, 9, 2, 9, 0, 0),
                 reservation2, mentee1
         );
-        Review review3 = insertReviewUsingNativeQuery(
+        insertReviewUsingNativeQuery(
                 2, "최고의 멘토링이었습니다.",
                 LocalDateTime.of(2025, 9, 3, 10, 0, 0),
                 reservation3, mentee2
         );
-        Review review4 = insertReviewUsingNativeQuery(
+        insertReviewUsingNativeQuery(
                 2, "최고의 멘토링이었습니다.",
                 LocalDateTime.of(2025, 9, 3, 9, 0, 0),
                 reservation4, mentee2
@@ -288,32 +290,32 @@ class ReviewServiceTest {
         assertSoftly(softly -> {
             assertThat(actual).containsExactly(
                     new ReviewGetResponse(
-                            review3.getId(),
-                            review3.getMenteeName(),
-                            review3.getCreatedAt().toLocalDate(),
-                            review3.getRating(),
-                            review3.getContent()
+                            3L,
+                            "이름",
+                            LocalDate.of(2025, 9, 3),
+                            2,
+                            "최고의 멘토링이었습니다."
                     ),
                     new ReviewGetResponse(
-                            review4.getId(),
-                            review4.getMenteeName(),
-                            review4.getCreatedAt().toLocalDate(),
-                            review4.getRating(),
-                            review4.getContent()
+                            4L,
+                            "이름",
+                            LocalDate.of(2025, 9, 3),
+                            2,
+                            "최고의 멘토링이었습니다."
                     ),
                     new ReviewGetResponse(
-                            review2.getId(),
-                            review2.getMenteeName(),
-                            review2.getCreatedAt().toLocalDate(),
-                            review2.getRating(),
-                            review2.getContent()
+                            2L,
+                            "이름",
+                            LocalDate.of(2025, 9, 2),
+                            2,
+                            "최고의 멘토링이었습니다."
                     ),
                     new ReviewGetResponse(
-                            review1.getId(),
-                            review1.getMenteeName(),
-                            review1.getCreatedAt().toLocalDate(),
-                            review1.getRating(),
-                            review1.getContent()
+                            1L,
+                            "이름",
+                            LocalDate.of(2025, 9, 1),
+                            2,
+                            "최고의 멘토링이었습니다."
                     )
             );
         });
@@ -326,38 +328,33 @@ class ReviewServiceTest {
             Reservation reservation,
             Member mentee
     ) {
-        em.getEntityManager().createNativeQuery("""
-                        INSERT INTO review (
-                            rating, content, created_at, is_deleted, deleted_at, reservation_id, mentee_id
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?)
-                        """)
-                .setParameter(1, rating)
-                .setParameter(2, content)
-                .setParameter(3, createdAt)
-                .setParameter(4, false)
-                .setParameter(5, null)
-                .setParameter(6, reservation.getId())
-                .setParameter(7, mentee.getId())
-                .executeUpdate();
+        jdbcTemplate.update(
+                "INSERT INTO review (rating, content, created_at, is_deleted, deleted_at, reservation_id, mentee_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                rating,
+                content,
+                createdAt,
+                false,
+                null,
+                reservation.getId(),
+                mentee.getId()
+        );
 
-        Long insertedId = ((Number) em.getEntityManager()
-                .createNativeQuery("SELECT LAST_INSERT_ID()")
-                .getSingleResult())
-                .longValue();
+        Long insertedId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
 
-        return em.find(Review.class, insertedId);
+        return reviewRepository.findById(insertedId).orElseThrow();
     }
 
     @DisplayName("본인이 남긴 리뷰의 별점을 수정한다")
     @Test
     void modifyReview1() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
 
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
         String originalContent = review.getContent();
 
         int newRating = 2;
@@ -370,11 +367,10 @@ class ReviewServiceTest {
 
         // when
         reviewService.modifyReview(dto);
-        em.flush();
-        em.clear();
 
         // then
-        Review updated = em.find(Review.class, review.getId());
+        Review updated = reviewRepository.findById(review.getId())
+                .orElseThrow(null);
         assertSoftly(softly -> {
             softly.assertThat(updated.getRating()).isEqualTo(newRating);
             softly.assertThat(updated.getContent()).isEqualTo(originalContent);
@@ -386,12 +382,13 @@ class ReviewServiceTest {
     @ParameterizedTest
     void modifyReview2(String newString) {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
 
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
         String originalContent = review.getContent();
 
         int newRating = 2;
@@ -404,11 +401,10 @@ class ReviewServiceTest {
 
         // when
         reviewService.modifyReview(dto);
-        em.flush();
-        em.clear();
 
         // then
-        Review updated = em.find(Review.class, review.getId());
+        Review updated = reviewRepository.findById(review.getId())
+                .orElseThrow(null);
         assertSoftly(softly -> {
             softly.assertThat(updated.getRating()).isEqualTo(newRating);
             softly.assertThat(updated.getContent()).isEqualTo(originalContent);
@@ -419,12 +415,13 @@ class ReviewServiceTest {
     @Test
     void modifyReview3() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
 
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
         int originalRating = review.getRating();
 
         String newContent = "생각해 보니 비용이 너무 비쌌던 것 같아요";
@@ -437,11 +434,10 @@ class ReviewServiceTest {
 
         // when
         reviewService.modifyReview(dto);
-        em.flush();
-        em.clear();
 
         // then
-        Review updated = em.find(Review.class, review.getId());
+        Review updated = reviewRepository.findById(review.getId())
+                .orElseThrow(null);
         assertSoftly(softly -> {
             softly.assertThat(updated.getRating()).isEqualTo(originalRating);
             softly.assertThat(updated.getContent()).isEqualTo(newContent);
@@ -452,11 +448,12 @@ class ReviewServiceTest {
     @Test
     void modifyReview4() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
         int newRating = 2;
         String newContent = "생각해 보니 비용이 너무 비쌌던 것 같아요";
@@ -469,11 +466,10 @@ class ReviewServiceTest {
 
         // when
         reviewService.modifyReview(dto);
-        em.flush();
-        em.clear();
 
         // then
-        Review updated = em.find(Review.class, review.getId());
+        Review updated = reviewRepository.findById(review.getId())
+                .orElseThrow(null);
         assertSoftly(softly -> {
             softly.assertThat(updated.getRating()).isEqualTo(newRating);
             softly.assertThat(updated.getContent()).isEqualTo(newContent);
@@ -484,7 +480,7 @@ class ReviewServiceTest {
     @Test
     void modifyReviewFail1() {
         // given
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
         ReviewModifyDto dto = new ReviewModifyDto(
                 mentee.getId(),
                 999L,
@@ -492,7 +488,8 @@ class ReviewServiceTest {
                 "생각해 보니 비용이 너무 비쌌던 것 같아요"
         );
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.modifyReview(dto))
                 .isInstanceOf(ReviewNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
@@ -502,14 +499,15 @@ class ReviewServiceTest {
     @Test
     void modifyReviewFail2() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
         // 리뷰 작성자가 아닌 다른 멤버
-        Member invalidMember = em.persist(FixtureUtil.getTestMentee(2));
+        Member invalidMember = memberRepository.save(FixtureUtil.getTestMentee(2));
 
         ReviewModifyDto dto = new ReviewModifyDto(
                 invalidMember.getId(),
@@ -518,7 +516,8 @@ class ReviewServiceTest {
                 "생각해 보니 비용이 너무 비쌌던 것 같아요"
         );
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.modifyReview(dto))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
@@ -528,10 +527,11 @@ class ReviewServiceTest {
     @Test
     void deleteReviewFail1() {
         // given
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
         ReviewDeleteDto dto = new ReviewDeleteDto(mentee.getId(), 999L); // 존재하지 않는 리뷰 ID
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.deleteReview(dto))
                 .isInstanceOf(ReviewNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
@@ -541,17 +541,19 @@ class ReviewServiceTest {
     @Test
     void deleteReviewFail2() {
         // given
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
-        Member invalidMember = em.persist(FixtureUtil.getTestMentee(2));
+        Member invalidMember = memberRepository.save(FixtureUtil.getTestMentee(2));
 
         ReviewDeleteDto dto = new ReviewDeleteDto(invalidMember.getId(), review.getId());
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.deleteReview(dto))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
@@ -561,7 +563,7 @@ class ReviewServiceTest {
     @Test
     void failNotFoundReviewDelete() {
         // given
-        Member admin = em.persist(FixtureUtil.getTestAdmin());
+        Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
 
         // when & then
         assertThatThrownBy(() -> reviewService.deleteForAdmin(admin.getId(), 1L))
@@ -573,9 +575,10 @@ class ReviewServiceTest {
     @Test
     void failReviewDeleteWithoutAdmin() {
         // given
-        Member notAdmin = em.persist(FixtureUtil.getTestMentee());
+        Member notAdmin = memberRepository.save(FixtureUtil.getTestMentee());
 
-        // when & then
+        // when
+        // then
         assertThatThrownBy(() -> reviewService.deleteForAdmin(notAdmin.getId(), 1L))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
@@ -585,21 +588,17 @@ class ReviewServiceTest {
     @Test
     void successReviewDelete() {
         // given
-        Member admin = em.persist(FixtureUtil.getTestAdmin());
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
+        Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
-
-        em.flush();
-        em.clear();
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
         // when
         reviewService.deleteForAdmin(admin.getId(), review.getId());
-        em.flush();
-        em.clear();
 
         // then
         assertThat(reviewRepository.findById(review.getId())).isEmpty();
@@ -609,13 +608,14 @@ class ReviewServiceTest {
     @Test
     void deleteReview() {
         // given
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
-        MentoringStatistics stats = em.persist(MentoringStatistics.defaultOf(mentoring));
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        MentoringStatistics stats = mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
-        Review review = em.persist(FixtureUtil.getTestReview(reservation, mentee));
+        Reservation reservation = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
         ReviewDeleteDto dto = new ReviewDeleteDto(mentee.getId(), review.getId());
         long originalReviewCount = stats.getReviewCount();
@@ -623,14 +623,8 @@ class ReviewServiceTest {
 
         // when
         reviewService.deleteReview(dto);
-        em.flush();
-        em.clear();
 
-        // then (소프트 삭제 확인을 위해 네이티브 조회)
-        Review deletedReview = (Review) em.getEntityManager()
-                .createNativeQuery("SELECT * FROM review WHERE id = ?", Review.class)
-                .setParameter(1, review.getId())
-                .getSingleResult();
+        Review deletedReview = reviewRepository.findDeletedById(review.getId());
 
         assertSoftly(softly -> {
             softly.assertThat(deletedReview.isDeleted()).isTrue();

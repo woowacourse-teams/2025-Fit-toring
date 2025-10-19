@@ -1,54 +1,33 @@
 package fittoring.application.auth.service;
 
-import fittoring.config.QueryDslConfig;
+import fittoring.application.SpringBootTestSupport;
+import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
+import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidPhoneVerificationException;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.PhoneVerification;
-import fittoring.application.auth.repository.PhoneVerificationRepository;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.infrastructure.CodeGeneratorStub;
-import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
-import fittoring.util.DbCleaner;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, PhoneVerificationService.class, CodeGeneratorStub.class, QueryDslConfig.class, MentoringPaginationHelper.class})
-@DataJpaTest
-class PhoneVerificationServiceTest {
+class PhoneVerificationServiceTest extends SpringBootTestSupport {
 
     @Autowired
     private PhoneVerificationService phoneVerificationService;
 
     @Autowired
-    private TestEntityManager em;
-
-    @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
 
     @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp() {
-        dbCleaner.clean();
-    }
+    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("전화번호 인증번호 발급")
     @Nested
@@ -63,10 +42,15 @@ class PhoneVerificationServiceTest {
 
             // when
             String phoneVerificationCode = phoneVerificationService.createPhoneVerification(phone);
-            List<PhoneVerification> phoneVerifications = em.getEntityManager()
-                    .createQuery("select p from PhoneVerification p where p.phone = :phone", PhoneVerification.class)
-                    .setParameter("phone", phone)
-                    .getResultList();
+            List<PhoneVerification> phoneVerifications = jdbcTemplate.query(
+                    "SELECT * FROM phone_verification WHERE phone_number = ?",
+                    (rs, rowNum) -> new PhoneVerification(
+                            new Phone(rs.getString("phone_number")),
+                            rs.getString("code"),
+                            rs.getTimestamp("expire_at").toLocalDateTime()
+                    ),
+                    phone.getNumber()
+            );
 
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
@@ -92,10 +76,15 @@ class PhoneVerificationServiceTest {
 
             // when
             String phoneVerificationCode = phoneVerificationService.createPhoneVerification(phone);
-            List<PhoneVerification> phoneVerifications = em.getEntityManager()
-                    .createQuery("select p from PhoneVerification p where p.phone = :phone", PhoneVerification.class)
-                    .setParameter("phone", phone)
-                    .getResultList();
+            List<PhoneVerification> phoneVerifications = jdbcTemplate.query(
+                    "SELECT * FROM phone_verification WHERE phone_number = ?",
+                    (rs, rowNum) -> new PhoneVerification(
+                            new Phone(rs.getString("phone_number")),
+                            rs.getString("code"),
+                            rs.getTimestamp("expire_at").toLocalDateTime()
+                    ),
+                    phone.getNumber()
+            );
 
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
@@ -120,7 +109,7 @@ class PhoneVerificationServiceTest {
                     "123456",
                     LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusMinutes(5)
             );
-            em.persist(phoneVerification);
+            phoneVerificationRepository.save(phoneVerification);
             VerificationCodeRequest request = new VerificationCodeRequest(
                     phone.getNumber(),
                     phoneVerification.getCode()
@@ -142,7 +131,7 @@ class PhoneVerificationServiceTest {
                     "123456",
                     LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusMinutes(5)
             );
-            em.persist(phoneVerification);
+            phoneVerificationRepository.save(phoneVerification);
             VerificationCodeRequest request = new VerificationCodeRequest(
                     phone.getNumber(),
                     "invalidCode"
@@ -165,7 +154,7 @@ class PhoneVerificationServiceTest {
                     "123456",
                     LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusMinutes(5)
             );
-            em.persist(phoneVerification);
+            phoneVerificationRepository.save(phoneVerification);
             VerificationCodeRequest request = new VerificationCodeRequest(
                     phone.getNumber(),
                     phoneVerification.getCode()

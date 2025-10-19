@@ -8,14 +8,14 @@ import static org.mockito.BDDMockito.given;
 import fittoring.admin.presentation.dto.AdminCertificateResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.FixtureUtil;
+import fittoring.application.SpringBootTestSupport;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
-import fittoring.application.image.service.ImageService;
-import fittoring.application.image.service.PresignedUrlService;
+import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.config.JpaConfiguration;
-import fittoring.config.QueryDslConfig;
+import fittoring.application.mentoring.repository.CertificateRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.Image;
@@ -23,58 +23,36 @@ import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Status;
-import fittoring.infrastructure.image.KeyBuilder;
-import fittoring.logging.JsonLogger;
-import fittoring.util.DbCleaner;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({
-        DbCleaner.class,
-        AdminCertificateService.class,
-        ImageService.class,
-        JpaConfiguration.class,
-        QueryDslConfig.class,
-        MentoringPaginationHelper.class,
-        KeyBuilder.class
-})
-@DataJpaTest
-class AdminCertificateServiceTest {
+class AdminCertificateServiceTest extends SpringBootTestSupport {
 
-    @MockitoBean
-    private PresignedUrlService presignedUrlService;
-
-    @MockitoBean
-    private JsonLogger jsonLogger;
-
-    @Autowired
-    private TestEntityManager em;
+    private Member admin;
 
     @Autowired
     private AdminCertificateService adminCertificateService;
 
     @Autowired
-    private DbCleaner dbCleaner;
+    private MemberRepository memberRepository;
 
-    private Member admin;
+    @Autowired
+    private CertificateRepository certificateRepository;
+
+    @Autowired
+    private MentoringRepository mentoringRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
 
     @BeforeEach
     void setUp() {
-        dbCleaner.clean();
         admin = FixtureUtil.getTestAdmin();
-        em.persist(admin);
+        memberRepository.save(admin);
         given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
         given(presignedUrlService.isObjectExistsFromUrl(anyString()))
@@ -85,8 +63,7 @@ class AdminCertificateServiceTest {
     @Test
     void getAllWithoutAdminAuthority() {
         // given
-        Member user = FixtureUtil.getTestMentee();
-        em.persist(user);
+        Member user = memberRepository.save(FixtureUtil.getTestMentee());
 
         // when
         // then
@@ -99,27 +76,25 @@ class AdminCertificateServiceTest {
     @Test
     void getAllCertificatesPaged() {
         // given
-        Member member = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
         for (int i = 0; i < 35; i++) {
             // APPROVED 자격증명 35개
             Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
             certificate.approve();
-            em.persist(certificate);
+            certificateRepository.save(certificate);
         }
         for (int i = 0; i < 35; i++) {
             // REJECTED 자격증명 35개
             Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
             certificate.reject();
-            em.persist(certificate);
+            certificateRepository.save(certificate);
         }
         for (int i = 0; i < 35; i++) {
             // PENDING 자격증명 35개
             Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
-            em.persist(certificate);
+            certificateRepository.save(certificate);
         }
-        em.flush();
-        em.clear();
 
         // when
         PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(
@@ -174,27 +149,25 @@ class AdminCertificateServiceTest {
     @Test
     void getAllCertificatesPaged2() {
         // given
-        Member member = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
         for (int i = 0; i < 35; i++) {
             // APPROVED 자격증명 35개
             Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
             certificate.approve();
-            em.persist(certificate);
+            certificateRepository.save(certificate);
         }
         for (int i = 0; i < 35; i++) {
             // REJECTED 자격증명 35개
             Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
             certificate.reject();
-            em.persist(certificate);
+            certificateRepository.save(certificate);
         }
         for (int i = 0; i < 35; i++) {
             // PENDING 자격증명 35개
             Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
-            em.persist(certificate);
+            certificateRepository.save(certificate);
         }
-        em.flush();
-        em.clear();
 
         // when
         PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(
@@ -221,11 +194,11 @@ class AdminCertificateServiceTest {
     @Test
     void getOneForAdmin() {
         // given
-        Member member = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
+        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
         // certificate가 영속화된 뒤에는 id 존재
-        Image image = em.persist(new Image("url", ImageType.CERTIFICATE, certificate.getId(), "baseName"));
+        Image image = imageRepository.save(new Image("url", ImageType.CERTIFICATE, certificate.getId(), "baseName"));
 
         // when
         CertificateDetailResponse detail = adminCertificateService.getCertificate(admin.getId(), mentoring.getId());
@@ -241,10 +214,9 @@ class AdminCertificateServiceTest {
     @Test
     void getOneWithoutAdminAuthority() {
         // given
-        Member member = FixtureUtil.getTestMentee();
-        em.persist(member);
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
 
-        Mentoring mentoring = FixtureUtil.getTestMentoring(member);
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
 
         // when
         // then
@@ -259,21 +231,20 @@ class AdminCertificateServiceTest {
     @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 승인할 수 있다.")
     @Test
     void approveCertificateForAdmin() {
-        Member member = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
+        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
 
         assertThatCode(() -> adminCertificateService.approveCertificate(admin.getId(), certificate.getId()))
                 .doesNotThrowAnyException();
     }
 
-
     @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 승인할 수 없다.")
     @Test
     void approveCertificateWithoutAdminAuthority() {
-        Member member = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
+        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
 
         assertThatThrownBy(() -> adminCertificateService.approveCertificate(member.getId(), certificate.getId()))
                 .isInstanceOf(ForbiddenException.class)
@@ -283,9 +254,9 @@ class AdminCertificateServiceTest {
     @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 거절할 수 있다.")
     @Test
     void rejectCertificateForAdmin() {
-        Member member = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
+        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
 
         assertThatCode(() -> adminCertificateService.rejectCertificate(admin.getId(), certificate.getId()))
                 .doesNotThrowAnyException();
@@ -294,9 +265,9 @@ class AdminCertificateServiceTest {
     @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 거절할 수 없다.")
     @Test
     void rejectCertificateWithoutAdminAuthority() {
-        Member member = em.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = em.persist(FixtureUtil.getTestCertificate(mentoring));
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
+        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
 
         assertThatThrownBy(() -> adminCertificateService.rejectCertificate(member.getId(), certificate.getId()))
                 .isInstanceOf(ForbiddenException.class)

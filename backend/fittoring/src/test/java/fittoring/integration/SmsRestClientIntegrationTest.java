@@ -2,6 +2,7 @@ package fittoring.integration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import fittoring.application.SpringBootTestSupport;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.SmsAuthHeaderGenerator;
 import fittoring.infrastructure.SmsRestClientService;
@@ -16,19 +17,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class SmsRestClientIntegrationTest {
+class SmsRestClientIntegrationTest extends SpringBootTestSupport {
 
     private static MockWebServer mockWebServer;
 

@@ -3,6 +3,7 @@ package fittoring.admin.service;
 import fittoring.admin.presentation.dto.AdminMentoringResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.FixtureUtil;
+import fittoring.application.SpringBootTestSupport;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
 import fittoring.application.mentoring.repository.CategoryRepository;
@@ -11,7 +12,6 @@ import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
-import fittoring.util.DbCleaner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,17 +20,11 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class AdminMentoringServiceTest {
+class AdminMentoringServiceTest extends SpringBootTestSupport {
 
     @Autowired
     private AdminMentoringService adminMentoringService;
@@ -46,14 +40,6 @@ class AdminMentoringServiceTest {
 
     @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp() {
-        dbCleaner.clean();
-    }
 
     @DisplayName("관리자는 멘토링 목록을 조회할 수 있다. 조회시 페이지네이션으로 조회하게 된다. 한 페이지당 10개로 제한한다.")
     @Test

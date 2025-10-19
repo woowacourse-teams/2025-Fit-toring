@@ -7,21 +7,23 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
-import fittoring.application.chat.service.ChatRoomService;
-import fittoring.application.chat.service.ChatRoomUrlGenerator;
+import fittoring.application.SpringBootTestSupport;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.ReservationNotFoundException;
-import fittoring.application.image.service.ImageService;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.CategoryMentoringRepository;
+import fittoring.application.mentoring.repository.CategoryRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
-import fittoring.config.JpaConfiguration;
-import fittoring.config.QueryDslConfig;
+import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Image;
@@ -32,8 +34,6 @@ import fittoring.domain.model.MentoringStatistics;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
-import fittoring.infrastructure.image.KeyBuilder;
-import fittoring.util.DbCleaner;
 import java.util.List;
 import java.util.TimeZone;
 import org.assertj.core.api.SoftAssertions;
@@ -43,28 +43,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({
-        DbCleaner.class,
-        JpaConfiguration.class,
-        ReservationService.class,
-        ImageService.class,
-        KeyBuilder.class,
-        QueryDslConfig.class,
-        MentoringPaginationHelper.class,
-        ChatRoomUrlGenerator.class,
-        ChatRoomService.class,
-})
-@DataJpaTest
-class ReservationServiceTest {
+class ReservationServiceTest extends SpringBootTestSupport {
 
     @Autowired
     private ReservationService reservationService;
@@ -73,14 +54,31 @@ class ReservationServiceTest {
     private MentoringStatisticsRepository mentoringStatisticsRepository;
 
     @Autowired
-    private TestEntityManager entityManager;
+    private MemberRepository memberRepository;
 
     @Autowired
-    private DbCleaner dbCleaner;
+    private MentoringRepository mentoringRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private CategoryMentoringRepository categoryMentoringRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        dbCleaner.clean();
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
         System.setProperty("user.timezone", "Asia/Seoul");
     }
@@ -89,15 +87,12 @@ class ReservationServiceTest {
     @Test
     void createReservation() {
         // given
-        Member mentee = entityManager.persist(FixtureUtil.getTestMentee());
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
         MentoringStatistics mentoringStatistics =
-                entityManager.persist(MentoringStatistics.defaultOf(mentoring));
+                mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
         long originalReservationCount = mentoringStatistics.getReservationCount();
-
-        entityManager.flush();
-        entityManager.clear();
 
         ReservationCreateDto dto = new ReservationCreateDto(
                 mentee.getId(),
@@ -125,8 +120,8 @@ class ReservationServiceTest {
     @Test
     void createReservationFail1() {
         // given
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
         ReservationCreateDto dto = new ReservationCreateDto(
                 mentor.getId(),          // menteeId == mentorId → 동일인 예약 시도
@@ -144,7 +139,7 @@ class ReservationServiceTest {
     @Test
     void createReservationFail2() {
         // given
-        Member mentee = entityManager.persist(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
         long invalidMentoringId = 100L;
 
         ReservationCreateDto dto = new ReservationCreateDto(
@@ -163,22 +158,22 @@ class ReservationServiceTest {
     @Test
     void getAllReservationByMentor() {
         // given
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Member mentee1 = entityManager.persist(FixtureUtil.getTestMentee(1));
-        Member mentee2 = entityManager.persist(FixtureUtil.getTestMentee(2));
-        Member mentee3 = entityManager.persist(FixtureUtil.getTestMentee(3));
+        Member mentee1 = memberRepository.save(FixtureUtil.getTestMentee(1));
+        Member mentee2 = memberRepository.save(FixtureUtil.getTestMentee(2));
+        Member mentee3 = memberRepository.save(FixtureUtil.getTestMentee(3));
 
-        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
-        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
-        entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee3));
+        reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
+        reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
+        reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee3));
 
         // when
         List<MentorMentoringReservationResponse> actual =
                 reservationService.getReservationsByMentor(mentor.getId());
 
-        //then
+        // then
         assertThat(actual).hasSize(3);
     }
 
@@ -186,8 +181,8 @@ class ReservationServiceTest {
     @Test
     void getAllReservationByMentor2() {
         // given
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        entityManager.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
         // 예약 생성 없음!
 
         // when
@@ -207,21 +202,20 @@ class ReservationServiceTest {
     })
     void updateStatus(String requestStatus, String expectedStatusValue) {
         // given
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Member mentee = entityManager.persist(FixtureUtil.getTestMentee());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Reservation reservation = entityManager.persist(
+        Reservation reservation = reservationRepository.save(
                 new Reservation("content", Status.PENDING, mentoring, mentee)
         );
 
         // when
         reservationService.updateStatus(reservation.getId(), requestStatus);
-        entityManager.flush();
-        entityManager.clear();
 
         // then
-        Reservation actual = entityManager.find(Reservation.class, reservation.getId());
+        Reservation actual = reservationRepository.findById(reservation.getId())
+                .orElse(null);
         assertThat(actual.getStatus()).isEqualTo(expectedStatusValue);
     }
 
@@ -229,14 +223,13 @@ class ReservationServiceTest {
     @Test
     void getPhone() {
         // given
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
-        Member mentee = entityManager.persist(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
-        Reservation reservation = entityManager.persist(
+        Reservation reservation = reservationRepository.save(
                 new Reservation("content", Status.PENDING, mentoring, mentee)
         );
-        entityManager.clear();
 
         // when
         PhoneNumberResponse actual = reservationService.getPhone(reservation.getId());
@@ -249,36 +242,36 @@ class ReservationServiceTest {
     @Test
     void findMemberReservations() {
         // given
-        Member mentor1 = entityManager.persist(FixtureUtil.getTestMentor(1));
-        Member mentor2 = entityManager.persist(FixtureUtil.getTestMentor(2));
+        Member mentor1 = memberRepository.save(FixtureUtil.getTestMentor(1));
+        Member mentor2 = memberRepository.save(FixtureUtil.getTestMentor(2));
 
-        Mentoring mentoring1 = entityManager.persist(FixtureUtil.getTestMentoring(mentor1));
-        Mentoring mentoring2 = entityManager.persist(FixtureUtil.getTestMentoring(mentor2));
+        Mentoring mentoring1 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor1));
+        Mentoring mentoring2 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor2));
 
         // 멘토링1 프로필 이미지
-        Image profileImageOfMentor1 = entityManager.persist(
-                new Image("www.naver.com", ImageType.MENTORING_PROFILE, mentoring1.getId(), null)
+        Image profileImageOfMentor1 = imageRepository.save(
+                new Image("www.naver.com", ImageType.MENTORING_PROFILE, mentoring1.getId(), "baseName")
         );
 
         // 카테고리
-        Category c1 = entityManager.persist(new Category("근육 증진"));
-        Category c2 = entityManager.persist(new Category("다이어트"));
-        Category c3 = entityManager.persist(new Category("보디빌딩"));
-        entityManager.persist(new CategoryMentoring(c1, mentoring1));
-        entityManager.persist(new CategoryMentoring(c2, mentoring1));
-        entityManager.persist(new CategoryMentoring(c3, mentoring2));
+        Category c1 = categoryRepository.save(new Category("근육 증진"));
+        Category c2 = categoryRepository.save(new Category("다이어트"));
+        Category c3 = categoryRepository.save(new Category("보디빌딩"));
+        categoryMentoringRepository.save(new CategoryMentoring(c1, mentoring1));
+        categoryMentoringRepository.save(new CategoryMentoring(c2, mentoring1));
+        categoryMentoringRepository.save(new CategoryMentoring(c3, mentoring2));
 
-        Member mentee = entityManager.persist(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
-        Reservation reservation1 = entityManager.persist(
+        Reservation reservation1 = reservationRepository.save(
                 new Reservation("신청 내용1", Status.PENDING, mentoring1, mentee)
         );
-        Reservation reservation2 = entityManager.persist(
+        Reservation reservation2 = reservationRepository.save(
                 new Reservation("신청 내용2", Status.PENDING, mentoring2, mentee)
         );
 
         // 리뷰는 두 번째 예약에만 달림 → expected의 마지막 boolean = true
-        entityManager.persist(new Review(4, "좋았습니다.", reservation2, mentee));
+        reviewRepository.save(new Review(4, "좋았습니다.", reservation2, mentee));
 
         List<ParticipatedReservationResponse> expected = List.of(
                 new ParticipatedReservationResponse(
@@ -331,12 +324,12 @@ class ReservationServiceTest {
     @ParameterizedTest
     void updateStatusWithAdminAuthorization(Status originalStatus, String newStatus) {
         // given
-        Member admin = entityManager.persist(FixtureUtil.getTestAdmin());
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
-        Member mentee = entityManager.persist(FixtureUtil.getTestMentee());
+        Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
-        Reservation reservation = entityManager.persist(
+        Reservation reservation = reservationRepository.save(
                 new Reservation("예약 내용", originalStatus, mentoring, mentee)
         );
 
@@ -345,11 +338,10 @@ class ReservationServiceTest {
 
         // when
         reservationService.updateStatusWithAdminAuthorization(dto);
-        entityManager.flush();
-        entityManager.clear();
 
         // then
-        Reservation actual = entityManager.find(Reservation.class, reservation.getId());
+        Reservation actual = reservationRepository.findById(reservation.getId())
+                .orElse(null);
         assertThat(actual.getStatus()).isEqualTo(newStatus);
     }
 
@@ -357,13 +349,13 @@ class ReservationServiceTest {
     @Test
     void deleteReservationWithAdminAuthorization() {
         // given
-        Member admin = entityManager.persist(FixtureUtil.getTestAdmin());
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = entityManager.persist(FixtureUtil.getTestMentoring(mentor));
-        Member mentee = entityManager.persist(FixtureUtil.getTestMentee());
-        Reservation reservation = entityManager.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee));
-        Review review = entityManager.persist(FixtureUtil.getTestReview(reservation, mentee));
-        MentoringStatistics stats = entityManager.persist(MentoringStatistics.defaultOf(mentoring));
+        Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
+        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
+        MentoringStatistics stats = mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
         long originalReservationCount = stats.getReservationCount();
 
         AdminReservationDeleteDto dto =
@@ -371,25 +363,19 @@ class ReservationServiceTest {
 
         // when
         reservationService.deleteReservationWithAdminAuthorization(dto);
-        entityManager.flush();
-        entityManager.clear();
 
         // then
-        Reservation deletedReservation = (Reservation) entityManager.getEntityManager()
-                .createNativeQuery("SELECT * FROM reservation WHERE id = ?", Reservation.class)
-                .setParameter(1, reservation.getId())
-                .getSingleResult();
+        Boolean deletedReservation = jdbcTemplate.queryForObject(
+                "SELECT is_deleted FROM reservation WHERE id = ?", Boolean.class, reservation.getId()
+        );
 
-        Review deletedReview = (Review) entityManager.getEntityManager()
-                .createNativeQuery("SELECT * FROM review WHERE id = ?", Review.class)
-                .setParameter(1, review.getId())
-                .getSingleResult();
+        Boolean deletedReview = jdbcTemplate.queryForObject(
+                "SELECT is_deleted FROM review WHERE id = ?", Boolean.class, review.getId()
+        );
 
         assertSoftly(softly -> {
-            softly.assertThat(deletedReview.isDeleted()).isTrue();
-            softly.assertThat(deletedReservation.isDeleted()).isTrue();
-            softly.assertThat(deletedReservation.getDeletedAt()).isNotNull();
-            softly.assertThat(deletedReview.getDeletedAt()).isNotNull();
+            softly.assertThat(deletedReservation).isTrue();
+            softly.assertThat(deletedReview).isTrue();
             softly.assertThat(
                     mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount()
             ).isEqualTo(originalReservationCount - 1);
@@ -400,10 +386,10 @@ class ReservationServiceTest {
     @Test
     void deleteReservationWithAdminAuthorization2() {
         // given
-        Member admin = entityManager.persist(FixtureUtil.getTestAdmin());
-        Member mentor = entityManager.persist(FixtureUtil.getTestMentor());
-        entityManager.persist(FixtureUtil.getTestMentoring(mentor));
-        entityManager.persist(FixtureUtil.getTestMentee());
+        Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        memberRepository.save(FixtureUtil.getTestMentee());
 
         Long invalidReservationId = 999L;
         AdminReservationDeleteDto dto =

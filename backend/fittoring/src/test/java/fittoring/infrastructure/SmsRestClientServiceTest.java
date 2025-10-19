@@ -1,5 +1,6 @@
 package fittoring.infrastructure;
 
+import fittoring.application.SpringBootTestSupport;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.exception.InfraErrorMessage;
 import fittoring.infrastructure.exception.SmsException;
@@ -11,19 +12,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClient;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-class SmsRestClientServiceTest {
+class SmsRestClientServiceTest extends SpringBootTestSupport {
 
     private static MockWebServer mockWebServer;
 
