@@ -38,11 +38,19 @@ public class Image {
     @Column(nullable = false)
     private Long relationId;
 
-    public Image(String url, ImageType imageType, ImageVariant imageVariant, Long relationId) {
-        this(null, url, imageType, imageVariant, relationId);
+    @Column(length = 64)
+    private String baseName;
+
+    public Image(String url, ImageType imageType, ImageVariant imageVariant, Long relationId, String baseName) {
+        this(null, url, imageType, imageVariant, relationId, baseName);
     }
 
-    public Image(String url, ImageType imageType, Long relationId) {
-        this(null, url, imageType, ImageVariant.DEFAULT, relationId);
+    public Image(String url, ImageType imageType, Long relationId, String baseName) {
+        this(null, url, imageType, ImageVariant.DEFAULT, relationId, baseName);
+    }
+
+    public void updateUrlAndBaseName(String url, String baseName) {
+        this.url = url;
+        this.baseName = baseName;
     }
 }

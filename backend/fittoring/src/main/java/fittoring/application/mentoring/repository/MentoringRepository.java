@@ -1,5 +1,6 @@
 package fittoring.application.mentoring.repository;
 
+import fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import java.util.List;
@@ -20,6 +21,29 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
                     WHERE rv.id = :reviewId
             """)
     Optional<Mentoring> findByReviewId(@Param("reviewId") Long reviewId);
+
+    @Query("""
+            SELECT new fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto(
+                m.mentor.name,
+                m.price,
+                COALESCE(
+                    (SELECT img.url
+                       FROM Image img
+                      WHERE img.relationId = m.id
+                        AND img.imageType = 'MENTORING_PROFILE'
+                        AND img.imageVariant = 'THUMBNAIL'),
+                    (SELECT img.url
+                       FROM Image img
+                      WHERE img.relationId = m.id
+                        AND img.imageType = 'MENTORING_PROFILE'
+                        AND img.imageVariant = 'DEFAULT')
+                )
+            )
+            FROM Mentoring m
+            JOIN m.mentor
+            WHERE m.id = :mentoringId
+            """)
+    Optional<ChatRoomMentoringInfoDto> findByIdForChatRoom(Long mentoringId);
 
     @Query("""
               SELECT m

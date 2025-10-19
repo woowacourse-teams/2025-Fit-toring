@@ -2,6 +2,10 @@ package fittoring.application;
 
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.ImageVariant;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
@@ -23,6 +27,7 @@ public class FixtureUtil {
     }
 
     public static Member getTestMentee(int i) {
+        String phoneSuffix = String.format("%02d", i);
         return new Member(
                 "menteeId" + i,
                 "MALE",
@@ -43,13 +48,14 @@ public class FixtureUtil {
     }
 
     public static Member getTestMentor(int i) {
+        String phoneSuffix = String.format("%02d", i);
         return new Member(
                 "mentorId" + i,
                 "MALE",
                 "멘토이름",
                 new Phone("010-1234-" + String.format("%04d", i)),
                 Password.from("password"),
-                MemberRole.MENTOR
+                MemberRole.MENTEE
         );
     }
 
@@ -92,7 +98,24 @@ public class FixtureUtil {
         return new Reservation("예약 내용", Status.COMPLETE, mentoring, mentee);
     }
 
+    public static Reservation getTestApprovedReservation(Mentoring mentoring, Member mentee) {
+        return new Reservation("예약 내용", Status.APPROVED, mentoring, mentee);
+    }
+
     public static Review getTestReview(Reservation reservation, Member reviewer) {
         return new Review(5, "좋았습니다.", reservation, reviewer);
+    }
+
+    public static Image getTestImageForMentoringProfile(Mentoring mentoring) {
+        return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId(),
+                "baseName");
+    }
+
+    public static ChatRoom getTestChatRoom(Long reservationId, Long menteeId, Long mentorId) {
+        return new ChatRoom(
+                reservationId,
+                menteeId,
+                mentorId
+        );
     }
 }

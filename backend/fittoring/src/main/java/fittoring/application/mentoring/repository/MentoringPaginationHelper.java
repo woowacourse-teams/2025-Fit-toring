@@ -7,13 +7,13 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
-import fittoring.util.Cursor;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.MentoringStatistics;
 import fittoring.domain.model.QCategoryMentoring;
 import fittoring.domain.model.QMentoring;
 import fittoring.domain.model.QMentoringStatistics;
 import fittoring.domain.model.SortKey;
+import fittoring.util.Cursor;
 import fittoring.util.CursorCodec;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -60,7 +60,7 @@ public class MentoringPaginationHelper {
         }
         switch (sortKey) {
             case CREATED_AT -> {
-                LocalDateTime cursorDateTime = Instant.ofEpochSecond(cursor.sortValue())
+                LocalDateTime cursorDateTime = Instant.ofEpochMilli(cursor.sortValue())
                     .atZone(ZoneId.of("Asia/Seoul"))
                     .toLocalDateTime();
                 return mentoring.createdAt.lt(cursorDateTime)
@@ -156,7 +156,10 @@ public class MentoringPaginationHelper {
      */
     private String getNextCursorCodeOfCreatedAt(Mentoring nextMentoring) {
         String nextCursorCode;
-        long nextSortValue = nextMentoring.getCreatedAt().atZone(ZoneId.of("Asia/Seoul")).toEpochSecond();
+        long nextSortValue = nextMentoring.getCreatedAt()
+                .atZone(ZoneId.of("Asia/Seoul"))
+                .toInstant()
+                .toEpochMilli();
         nextCursorCode = CursorCodec.encode(new Cursor(nextSortValue, nextMentoring.getId()));
         return nextCursorCode;
     }

@@ -5,11 +5,13 @@ import fittoring.application.image.service.ImageService;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.config.JpaConfiguration;
 import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
+import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.util.DbCleaner;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +29,11 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
         DbCleaner.class,
-        MemberService.class,
-        ImageService.class,
-        DbCleaner.class,
+        KeyBuilder.class,
         MemberService.class,
         ImageService.class,
         QueryDslConfig.class,
-        QueryDslConfig.class,
+        JpaConfiguration.class,
         MentoringPaginationHelper.class
 })
 @DataJpaTest
@@ -108,7 +108,8 @@ class MemberServiceTest {
         Image image = new Image(
                 "profileImageUrl",
                 ImageType.MENTORING_PROFILE,
-                mentoring.getId()
+                mentoring.getId(),
+                null
         );
         em.persist(image);
 
