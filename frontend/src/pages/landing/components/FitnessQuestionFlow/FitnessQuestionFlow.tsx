@@ -5,7 +5,7 @@ import QuestionBubble from '../QuestionBubble/QuestionBubble';
 function FitnessQuestionFlow() {
   return (
     <S_Container>
-      <S_SrOnly>이런 고민, 있으셨죠?</S_SrOnly>
+      <S_ScreenReaderOnly>이런 고민, 있으셨죠?</S_ScreenReaderOnly>
 
       <S_QuestionBubbles>
         <S_Wrapper direction="left" padding={8}>
@@ -62,7 +62,7 @@ const S_Container = styled.section`
 `};
 `;
 
-const S_SrOnly = styled.h2`
+const S_ScreenReaderOnly = styled.h2`
   overflow: hidden;
   position: absolute;
   top: 0;

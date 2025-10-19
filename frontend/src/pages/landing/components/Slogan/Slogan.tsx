@@ -17,7 +17,9 @@ function Slogan() {
     <S_Container>
       <S_SloganSection>
         <S_SloganWrapper>
-          <S_SrOnly>일대일 온라인 운동 상담 플랫폼 핏토링</S_SrOnly>
+          <S_ScreenReaderOnly>
+            일대일 온라인 운동 상담 플랫폼 핏토링
+          </S_ScreenReaderOnly>
           <S_SloganText aria-hidden="true">
             일대일 온라인 운동 상담 플랫폼
           </S_SloganText>
@@ -63,7 +65,7 @@ const S_SloganWrapper = styled.div`
   position: relative;
 `;
 
-const S_SrOnly = styled.span`
+const S_ScreenReaderOnly = styled.span`
   overflow: hidden;
   position: absolute;
   top: 0;
