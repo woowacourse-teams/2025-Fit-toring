@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
   REVIEWS: '/reviews',
   CERTIFICATES: '/certificates',
   MENTORINGS_PAGE: '/mentorings-page',
+  CHATROOMS: '/chatrooms',
   REQUEST_PRESIGNED_URL: '/images/presigned',
   KAKAO_LOGIN: '/kakao/callback',
   IDENTITY_VERIFICATION: '/oauth-signup',
