@@ -91,7 +91,7 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
                 .on(categoryMentoring.mentoring.id.eq(mentoring.id))
                 .join(categoryMentoring.category)
                 .where(mentoring.id.in(ids))
-                .orderBy(mentoring.id.desc())
+                .orderBy(mentoring.createdAt.desc())
                 .transform(
                         groupBy(mentoring.id)
                                 .list(
