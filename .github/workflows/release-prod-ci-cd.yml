@@ -153,9 +153,9 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ap-northeast-2
-      # backend/fittoring 하위를 deploy.zip으로 압축합니다.
+      # backend/fittoring/deploysettings 하위의 배포 설정을 deploy.zip으로 압축합니다.
       - name: Make deployment package
-        run: cd backend/fittoring && zip -r ../../deploy.zip .
+        run: cd backend/fittoring/deploysettings && zip -r ../../../deploy.zip .
       # 압축한 파일을 S3의 버킷으로 업로드 합니다.
       - name: Upload to S3
         run: |
