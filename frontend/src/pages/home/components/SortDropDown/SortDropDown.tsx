@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
 
@@ -28,8 +28,27 @@ function SortDropDown({
   const currentSortLabel =
     SORT_KEYS.find(({ value }) => value === currentSortKey)?.label || '기본순';
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const handleClickOutside = (e: MouseEvent) => {
+    if (
+      !containerRef.current ||
+      containerRef.current.contains(e.target as Node)
+    ) {
+      return;
+    }
+
+    setOpened(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <S_Container>
+    <S_Container ref={containerRef}>
       <S_Button onClick={handleMenuButtonClick} type="button">
         <S_Text>{currentSortLabel}</S_Text>
         <S_GoIcon src={downIcon} alt="정렬 아이콘" />
