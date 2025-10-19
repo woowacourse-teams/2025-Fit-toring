@@ -98,11 +98,11 @@ class AdminMentoringServiceTest {
 
         //when
         PageResult<AdminMentoringResponse> allForAdminPaged = adminMentoringService.findAllForAdminPaged(
-                testAdmin.getId(), 0);
-        PageResult<AdminMentoringResponse> allForAdminPaged1 = adminMentoringService.findAllForAdminPaged(
                 testAdmin.getId(), 1);
-        PageResult<AdminMentoringResponse> allForAdminPaged2 = adminMentoringService.findAllForAdminPaged(
+        PageResult<AdminMentoringResponse> allForAdminPaged1 = adminMentoringService.findAllForAdminPaged(
                 testAdmin.getId(), 2);
+        PageResult<AdminMentoringResponse> allForAdminPaged2 = adminMentoringService.findAllForAdminPaged(
+                testAdmin.getId(), 3);
 
         //then
         SoftAssertions.assertSoftly(softly -> {

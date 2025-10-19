@@ -29,7 +29,7 @@ public class AdminMentoringController {
     @GetMapping
     public ResponseEntity<PageResult<AdminMentoringResponse>> getMentorings(
             @Login LoginInfo loginInfo,
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(defaultValue = "1") int page
     ) {
         PageResult<AdminMentoringResponse> response = adminMentoringService.findAllForAdminPaged(
                 loginInfo.memberId(),

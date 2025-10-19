@@ -21,7 +21,7 @@ public class AdminMentoringService {
 
     @Transactional(readOnly = true)
     public PageResult<AdminMentoringResponse> findAllForAdminPaged(Long memberId, int page) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE, Sort.by("createdAt").descending());
         Page<AdminMentoringResponse> allPagination = mentoringRepository.findAllWithPagination(pageable);
 
         return new PageResult<>(
