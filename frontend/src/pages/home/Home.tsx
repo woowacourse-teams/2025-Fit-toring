@@ -192,7 +192,10 @@ function Home() {
 
   const getFilteredMentors = async (selectedSpecialties: Specialty[]) => {
     const data = await getMentorListByPage({
-      params: convertSelectedSpecialtiesToParams(selectedSpecialties),
+      params: {
+        ...convertSelectedSpecialtiesToParams(selectedSpecialties),
+        sortKey,
+      },
     });
 
     return data;
