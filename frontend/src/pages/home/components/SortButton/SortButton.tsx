@@ -1,16 +1,34 @@
 import styled from '@emotion/styled';
 
 import downIcon from '../../../../common/assets/images/downIcon.svg';
+
+import type { SortKey } from '../../hooks/useSortKey';
 interface SortButtonProps {
-  handleSortButtonClick: () => void;
+  handleSortButtonClick: (option: SortKey) => void;
 }
+
+const sortKeys = [
+  { value: 'CREATED_AT', label: '기본순' },
+  { value: 'RESERVATION_COUNT', label: '예약순' },
+  { value: 'AVERAGE_RATING', label: '평점순' },
+] as const;
 
 function SortButton({ handleSortButtonClick }: SortButtonProps) {
   return (
-    <S_Button onClick={handleSortButtonClick} type="button">
-      <S_Text>기본순</S_Text>
-      <S_GoIcon src={downIcon} alt="정렬 아이콘" />
-    </S_Button>
+    <>
+      {sortKeys.map(({ value, label }) => {
+        return (
+          <S_Button
+            key={value}
+            onClick={() => handleSortButtonClick(value)}
+            type="button"
+          >
+            <S_Text>{label}</S_Text>
+            <S_GoIcon src={downIcon} alt="정렬 아이콘" />
+          </S_Button>
+        );
+      })}
+    </>
   );
 }
 
