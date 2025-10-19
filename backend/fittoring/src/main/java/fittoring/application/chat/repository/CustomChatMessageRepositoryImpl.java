@@ -1,4 +1,4 @@
-package fittoring.application.mentoring.repository;
+package fittoring.application.chat.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;

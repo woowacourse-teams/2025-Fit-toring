@@ -1,4 +1,4 @@
-package fittoring.application.mentoring.repository;
+package fittoring.application.chat.repository;
 
 import fittoring.application.chat.service.dto.ChatMessagePaginationResultDto;
 import fittoring.util.Cursor;
