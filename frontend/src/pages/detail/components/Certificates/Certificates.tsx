@@ -63,7 +63,9 @@ function Certificates({ certificates }: CertificatesProps) {
 
   return (
     <S_Container>
-      <S_Title id="certificate-section">자격 사항</S_Title>
+      <S_Title id="certificate-section" tabIndex={-1}>
+        자격 사항
+      </S_Title>
       {certificates.length > 0 ? (
         <S_List>
           {certificates.map((item) => (

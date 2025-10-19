@@ -57,17 +57,13 @@ function ProfileSection({
       <S_InfoWrapper>
         <S_InfoHeader>
           <S_Title>{mentorName}</S_Title>
-          <Button
-            variant="newPrimary"
-            customStyle={css`
-              padding: 1rem 1.35rem;
-            `}
+
+          <S_MoveLink
+            href="#certificate-section"
             onClick={onCertificateShowButton}
           >
-            <S_MoveLink href="#certificate-section">
-              자격사항 보러가기
-            </S_MoveLink>
-          </Button>
+            자격사항 보러가기
+          </S_MoveLink>
         </S_InfoHeader>
 
         <TextWithIcon
@@ -127,7 +123,17 @@ const S_Title = styled.h3`
 const S_MoveLink = styled.a`
   display: block;
 
+  padding: 1rem 1.35rem;
+  border: none;
+  border: ${({ theme }) => `1px solid ${theme.SYSTEM.GRAY300}`};
+  border-radius: 0.7rem;
+
+  background-color: transparent;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY600};
   color: inherit;
+  font-size: 1.6rem;
+  cursor: pointer;
   text-decoration: none;
 `;
 

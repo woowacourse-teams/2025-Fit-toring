@@ -50,6 +50,7 @@ function Detail() {
 
   const handleCertificateShowButton = () => {
     setSelected('detail');
+    document.getElementById('certificate-section')?.focus();
   };
 
   if (!data) {
