@@ -20,7 +20,7 @@ function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
         <>
           <S_MentorProfileWrapper>
             <ProfileImg src={mentorDetail.profileImageUrl} />
-            <S_MetorNameText>{mentorDetail.mentorName}</S_MetorNameText>
+            <S_MentorNameText>{mentorDetail.mentorName}</S_MentorNameText>
           </S_MentorProfileWrapper>
           <S_InfoWithTags>
             <S_InfoWrapper>
@@ -71,7 +71,7 @@ const S_MentorProfileWrapper = styled.div`
   gap: 1.4rem;
 `;
 
-const S_MetorNameText = styled.span`
+const S_MentorNameText = styled.span`
   color: ${({ theme }) => theme.FONT.B01};
   font-size: 1.6rem;
 `;
