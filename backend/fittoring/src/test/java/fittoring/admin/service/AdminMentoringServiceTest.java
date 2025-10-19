@@ -1,9 +1,9 @@
 package fittoring.admin.service;
 
+import fittoring.SpringBootTestSupport;
 import fittoring.admin.presentation.dto.AdminMentoringResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.FixtureUtil;
-import fittoring.application.SpringBootTestSupport;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
 import fittoring.application.mentoring.repository.CategoryRepository;

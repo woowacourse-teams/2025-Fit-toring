@@ -1,4 +1,4 @@
-package fittoring.application.reservation.repository;
+package fittoring;
 
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.config.JpaConfiguration;

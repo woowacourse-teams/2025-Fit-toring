@@ -2,10 +2,10 @@ package fittoring.application.review.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import fittoring.RepositoryTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.reservation.repository.RepositoryTestSupport;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;

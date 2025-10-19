@@ -1,4 +1,4 @@
-package fittoring.application;
+package fittoring;
 
 import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;

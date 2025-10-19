@@ -2,8 +2,8 @@ package fittoring.application.mentoring.repository;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import fittoring.RepositoryTestSupport;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.reservation.repository.RepositoryTestSupport;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Member;

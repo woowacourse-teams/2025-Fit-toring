@@ -1,6 +1,12 @@
 package fittoring.integration.admin;
 
-import fittoring.integration.AbstractApiDocumentationTest;
+import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
@@ -9,12 +15,6 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;

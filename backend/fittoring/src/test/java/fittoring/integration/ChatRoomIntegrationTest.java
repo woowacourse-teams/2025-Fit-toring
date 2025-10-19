@@ -1,5 +1,6 @@
 package fittoring.integration;
 
+import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.repository.ChatMessageRepository;

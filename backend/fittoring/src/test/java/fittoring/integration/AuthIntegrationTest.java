@@ -2,20 +2,21 @@ package fittoring.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import fittoring.domain.model.Member;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.PhoneVerification;
-import fittoring.domain.model.RefreshToken;
-import fittoring.domain.model.password.Password;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.auth.repository.PhoneVerificationRepository;
-import fittoring.application.auth.repository.RefreshTokenRepository;
-import fittoring.application.auth.service.JwtProvider;
+import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.repository.PhoneVerificationRepository;
+import fittoring.application.auth.repository.RefreshTokenRepository;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.PhoneVerification;
+import fittoring.domain.model.RefreshToken;
+import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -236,18 +237,18 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.statusCode()).isEqualTo(204);
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("accessToken=;")
-                            && cookie.contains("Max-Age=0")
-                            && cookie.contains("Path=/")
-                            && cookie.contains("SameSite=None")
-                            && cookie.contains("HttpOnly")
-                            && cookie.contains("Secure"));
+                    && cookie.contains("Max-Age=0")
+                    && cookie.contains("Path=/")
+                    && cookie.contains("SameSite=None")
+                    && cookie.contains("HttpOnly")
+                    && cookie.contains("Secure"));
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("refreshToken=;")
-                            && cookie.contains("Max-Age=0")
-                            && cookie.contains("Path=/")
-                            && cookie.contains("SameSite=None")
-                            && cookie.contains("HttpOnly")
-                            && cookie.contains("Secure"));
+                    && cookie.contains("Max-Age=0")
+                    && cookie.contains("Path=/")
+                    && cookie.contains("SameSite=None")
+                    && cookie.contains("HttpOnly")
+                    && cookie.contains("Secure"));
         });
     }
 

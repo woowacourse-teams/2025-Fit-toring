@@ -1,6 +1,6 @@
 package fittoring.infrastructure;
 
-import fittoring.application.SpringBootTestSupport;
+import fittoring.SpringBootTestSupport;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.exception.InfraErrorMessage;
 import fittoring.infrastructure.exception.SmsException;

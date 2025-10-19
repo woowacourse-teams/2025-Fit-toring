@@ -3,7 +3,7 @@ package fittoring.application.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.application.SpringBootTestSupport;
+import fittoring.SpringBootTestSupport;
 import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.ChatMessageService;

@@ -1,6 +1,6 @@
 package fittoring.application.mentoring.service;
 
-import fittoring.application.SpringBootTestSupport;
+import fittoring.SpringBootTestSupport;
 import fittoring.application.mentoring.presentation.dto.response.CategoryResponse;
 import fittoring.application.mentoring.repository.CategoryRepository;
 import fittoring.domain.model.Category;

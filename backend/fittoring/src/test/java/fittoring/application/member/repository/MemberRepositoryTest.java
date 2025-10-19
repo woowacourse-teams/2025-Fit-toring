@@ -3,7 +3,7 @@ package fittoring.application.member.repository;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import fittoring.application.reservation.repository.RepositoryTestSupport;
+import fittoring.RepositoryTestSupport;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;

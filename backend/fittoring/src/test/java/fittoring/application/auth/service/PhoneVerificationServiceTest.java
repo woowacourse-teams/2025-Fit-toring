@@ -1,6 +1,6 @@
 package fittoring.application.auth.service;
 
-import fittoring.application.SpringBootTestSupport;
+import fittoring.SpringBootTestSupport;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.exception.BusinessErrorMessage;

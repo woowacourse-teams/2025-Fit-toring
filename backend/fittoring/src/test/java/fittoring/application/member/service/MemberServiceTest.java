@@ -1,7 +1,7 @@
 package fittoring.application.member.service;
 
+import fittoring.SpringBootTestSupport;
 import fittoring.application.FixtureUtil;
-import fittoring.application.SpringBootTestSupport;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;

@@ -1,10 +1,10 @@
 package fittoring.admin.service;
 
+import fittoring.SpringBootTestSupport;
 import fittoring.admin.presentation.dto.AdminReservationResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.dto.AdminMentoringReservationDto;
 import fittoring.application.FixtureUtil;
-import fittoring.application.SpringBootTestSupport;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.member.repository.MemberRepository;

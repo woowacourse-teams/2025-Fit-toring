@@ -1,5 +1,6 @@
 package fittoring.integration.admin;
 
+import fittoring.AbstractApiDocumentationTest;
 import fittoring.admin.presentation.dto.AdminMemberResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.auth.service.JwtProvider;
@@ -8,7 +9,6 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
-import fittoring.integration.AbstractApiDocumentationTest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;

@@ -2,7 +2,7 @@ package fittoring.integration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import fittoring.application.SpringBootTestSupport;
+import fittoring.SpringBootTestSupport;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.SmsAuthHeaderGenerator;
 import fittoring.infrastructure.SmsRestClientService;

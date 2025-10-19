@@ -3,8 +3,8 @@ package fittoring.application.chat.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.SpringBootTestSupport;
 import fittoring.application.FixtureUtil;
-import fittoring.application.SpringBootTestSupport;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.chat.service.dto.ChatRoomInfoDto;
