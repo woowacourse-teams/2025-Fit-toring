@@ -121,10 +121,10 @@ function BookingForm({
             aria-describedby="details-limit"
             value={counselContent}
           />
+          <S_ScreenReaderOnly id="details-limit" hidden>
+            최대 5000자까지 입력할 수 있습니다.
+          </S_ScreenReaderOnly>
         </FormField>
-        <S_ScreenReaderOnly id="details-limit">
-          최대 5000자까지 입력할 수 있습니다.
-        </S_ScreenReaderOnly>
       </S_UserInfoWrapper>
 
       <BookingSummarySection price={mentoringPrice} />
