@@ -76,13 +76,7 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
     }
 
     private List<AdminMentoringResponse> getAdminMentoringResponses(Pageable pageable) {
-        List<Long> ids = jpaQueryFactory
-                .select(mentoring.id)
-                .from(mentoring)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(mentoring.createdAt.desc(), mentoring.id.desc())
-                .fetch();
+        List<Long> ids = findMentoringIds(pageable);
 
         return jpaQueryFactory
                 .from(mentoring)
@@ -104,6 +98,16 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
                                         )
                                 )
                 );
+    }
+
+    private List<Long> findMentoringIds(Pageable pageable) {
+        return jpaQueryFactory
+                .select(mentoring.id)
+                .from(mentoring)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(mentoring.createdAt.desc(), mentoring.id.desc())
+                .fetch();
     }
 
     private Long getTotalCount() {
