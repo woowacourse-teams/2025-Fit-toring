@@ -123,13 +123,13 @@ class AdminMentoringServiceTest {
             softly.assertThat(allForAdminPaged2.totalPages()).isEqualTo(3);
 
             softly.assertThat(allForAdminPaged.content())
-                    .extracting(AdminMentoringResponse::id)
+                    .extracting(AdminMentoringResponse::mentoringId)
                     .isSortedAccordingTo(Comparator.reverseOrder());
             softly.assertThat(allForAdminPaged1.content())
-                    .extracting(AdminMentoringResponse::id)
+                    .extracting(AdminMentoringResponse::mentoringId)
                     .isSortedAccordingTo(Comparator.reverseOrder());
             softly.assertThat(allForAdminPaged2.content())
-                    .extracting(AdminMentoringResponse::id)
+                    .extracting(AdminMentoringResponse::mentoringId)
                     .isSortedAccordingTo(Comparator.reverseOrder());
         });
     }
