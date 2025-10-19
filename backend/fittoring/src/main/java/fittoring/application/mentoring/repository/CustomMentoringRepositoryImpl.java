@@ -110,8 +110,6 @@ public class CustomMentoringRepositoryImpl implements CustomMentoringRepository 
         return jpaQueryFactory
                 .select(mentoring.countDistinct())
                 .from(mentoring)
-                .join(categoryMentoring)
-                .on(categoryMentoring.mentoring.id.eq(mentoring.id))
                 .fetchOne();
     }
 }
