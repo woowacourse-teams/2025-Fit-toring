@@ -1,0 +1,23 @@
+package fittoring.application.auth.service;
+
+import fittoring.domain.model.Phone;
+import fittoring.infrastructure.SmsMessageFormatter;
+import fittoring.infrastructure.SmsRestClientService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor
+@Service
+public class PhoneVerificationFacadeService {
+
+    private final PhoneVerificationService phoneVerificationService;
+    private final SmsRestClientService smsRestClientService;
+    private final SmsMessageFormatter smsMessageFormatter;
+
+    public void sendPhoneVerificationCode(String phoneNumber) {
+        Phone phone = new Phone(phoneNumber);
+        String code = phoneVerificationService.createPhoneVerification(phone);
+        String text = smsMessageFormatter.verificationCodeMessage(code);
+        smsRestClientService.sendSms(phone, text);
+    }
+}

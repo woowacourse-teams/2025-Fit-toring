@@ -8,3 +8,6 @@ CREATE TABLE chat_message
     is_deleted   BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at   DATETIME NULL
 );
+
+CREATE INDEX idx_chat_message_room_created_at
+    ON chat_message (chat_room_id, created_at DESC);

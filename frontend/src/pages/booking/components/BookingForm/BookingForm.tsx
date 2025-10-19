@@ -7,9 +7,8 @@ import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
-import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
-import Checkbox from '../Checkbox/Checkbox';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
+import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
 interface BookingFormProps {
   handleBookingButtonClick: () => void;
@@ -82,7 +81,7 @@ function BookingForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!!detailErrorMessage) return;
+    if (detailErrorMessage) {return;}
 
     handleBooking();
   };

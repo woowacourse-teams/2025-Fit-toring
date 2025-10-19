@@ -37,10 +37,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    // health-check api
+    // actuator & metrics
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
     // AWS S3
     implementation 'software.amazon.awssdk:s3:2.32.14'
+    // AWS SQS
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs:3.2.0'
     // AWS CloudWatch
     implementation 'io.micrometer:micrometer-registry-cloudwatch2'
     // websocket
@@ -77,12 +80,20 @@ dependencies {
     testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
     testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
 
-    // image
+    // image resize
     implementation 'net.coobird:thumbnailator:0.4.20'
     implementation 'com.twelvemonkeys.imageio:imageio-core:3.12.0'
     implementation 'com.twelvemonkeys.imageio:imageio-metadata:3.12.0'
     implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.12.0'
     implementation 'com.github.gotson.nightmonkeys:imageio-heif:1.1.0'
+
+    // String util
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+
+    // Tempo Exporter
+    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+    implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.2.0'
 }
 
 openapi3 {

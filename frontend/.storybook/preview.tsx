@@ -1,12 +1,14 @@
 import { Global, ThemeProvider } from '@emotion/react';
 import styled from '@emotion/styled';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import AuthProvider from '../src/common/components/AuthProvider/AuthProvider';
-import { fonts } from '../src/common/styles/fonts';
 import { resetCss } from '../src/common/styles/reset';
 import { THEME } from '../src/common/styles/theme';
 
 import type { Preview } from '@storybook/react-webpack5';
+
+const queryClient = new QueryClient();
 
 const preview: Preview = {
   parameters: {
@@ -23,14 +25,16 @@ const preview: Preview = {
     (Story) => {
       return (
         <ThemeProvider theme={THEME}>
-          <AuthProvider>
-            <Global styles={[resetCss, fonts]} />
-            <S_Container>
-              <S_Contents>
-                <Story />
-              </S_Contents>
-            </S_Container>
-          </AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <Global styles={[resetCss]} />
+              <S_Container>
+                <S_Contents>
+                  <Story />
+                </S_Contents>
+              </S_Container>
+            </AuthProvider>
+          </QueryClientProvider>
         </ThemeProvider>
       );
     },

@@ -13,8 +13,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private static final String PROD = "https://www.fittoring.com";
+    private static final String DEV = "https://dev.fittoring.com";
+    private static final String LOCAL = "http://localhost:3000";
+
     private final StompAuthChannelInterceptor stompAuthChannelInterceptor;
-    private final AuthHandshakeInterceptor authHandshakeInterceptor;
+    private final WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -25,8 +29,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-chat")
-                .setAllowedOriginPatterns("*")
-                .addInterceptors(authHandshakeInterceptor)
+                .setAllowedOriginPatterns(
+                        PROD,
+                        DEV,
+                        LOCAL
+                )
+                .addInterceptors(webSocketAuthHandshakeInterceptor)
                 .withSockJS();
     }
 

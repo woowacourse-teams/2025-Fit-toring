@@ -290,6 +290,16 @@ export const THEME = {
       font-size: 1.2rem;
       line-height: normal;
     `,
+    C5_R: css`
+      font-weight: 400;
+      font-size: 1.1rem;
+      line-height: normal;
+    `,
+    C5_SB: css`
+      font-weight: 600;
+      font-size: 1.1rem;
+      line-height: normal;
+    `,
 
     BTN1_B: css`
       font-weight: 700;

@@ -1,35 +1,37 @@
 package fittoring.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fittoring.aspect.dto.ErrorLog;
-import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.CategoryNotFoundException;
-import fittoring.mentoring.business.exception.CertificateNotFoundException;
-import fittoring.mentoring.business.exception.ChatRoomAlreadyExistsException;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.CategoryNotFoundException;
+import fittoring.application.exception.CertificateNotFoundException;
+import fittoring.application.exception.ChatRoomAlreadyExistsException;
+import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.InvalidCertificateException;
+import fittoring.application.exception.InvalidCursorException;
+import fittoring.application.exception.InvalidPhoneVerificationException;
+import fittoring.application.exception.InvalidStatusException;
+import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.MemberNotFoundException;
+import fittoring.application.exception.MentorAndMenteeIsSameException;
+import fittoring.application.exception.MentoringAlreadyExistException;
+import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.exception.MisMatchPasswordException;
+import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.exception.NotFoundStatusException;
+import fittoring.application.exception.OauthLoginException;
+import fittoring.application.exception.PasswordEncryptionException;
+import fittoring.application.exception.ReservationNotCompletedException;
+import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.exception.ReviewAlreadyExistsException;
+import fittoring.application.exception.ReviewNotFoundException;
+import fittoring.application.exception.UnsupportedImageExtensionException;
+import fittoring.infrastructure.exception.S3UploadException;
+import fittoring.infrastructure.exception.SmsException;
+import fittoring.logging.dto.ErrorLog;
 import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
-import fittoring.mentoring.business.exception.DuplicateLoginIdException;
-import fittoring.mentoring.business.exception.DuplicatePhoneException;
-import fittoring.mentoring.business.exception.ForbiddenException;
-import fittoring.mentoring.business.exception.InvalidCertificateException;
-import fittoring.mentoring.business.exception.InvalidCursorException;
-import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
-import fittoring.mentoring.business.exception.InvalidStatusException;
-import fittoring.mentoring.business.exception.InvalidTokenException;
-import fittoring.mentoring.business.exception.MemberNotFoundException;
-import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
-import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
-import fittoring.mentoring.business.exception.MentoringNotFoundException;
-import fittoring.mentoring.business.exception.MisMatchPasswordException;
-import fittoring.mentoring.business.exception.NotFoundMemberException;
-import fittoring.mentoring.business.exception.NotFoundStatusException;
-import fittoring.mentoring.business.exception.PasswordEncryptionException;
-import fittoring.mentoring.business.exception.ReservationNotCompletedException;
-import fittoring.mentoring.business.exception.ReservationNotFoundException;
-import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
-import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
-import fittoring.mentoring.infra.exception.S3UploadException;
-import fittoring.mentoring.infra.exception.SmsException;
 import fittoring.util.ResponseDurationCalculator;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -204,6 +206,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
     }
 
+    @ExceptionHandler(UnsupportedImageExtensionException.class)
+    public ResponseEntity<ErrorResponse> handle(UnsupportedImageExtensionException e) {
+        return buildErrorResponse(e, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
+    }
+
+    @ExceptionHandler(OauthLoginException.class)
+    public ResponseEntity<ErrorResponse> handle(OauthLoginException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(ChatRoomNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(ChatRoomNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
@@ -211,7 +223,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ChatRoomAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handle(ChatRoomAlreadyExistsException e) {
-        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(UnauthorizedChatRoomAccessException.class)
