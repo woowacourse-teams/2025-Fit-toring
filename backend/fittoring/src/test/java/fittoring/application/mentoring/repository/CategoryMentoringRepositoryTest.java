@@ -14,10 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 
-@Import({MentoringPaginationHelper.class})
 class CategoryMentoringRepositoryTest extends RepositoryTestSupport {
 
     @Autowired
@@ -31,9 +28,6 @@ class CategoryMentoringRepositoryTest extends RepositoryTestSupport {
 
     @Autowired
     private CategoryMentoringRepository categoryMentoringRepository;
-
-    @Autowired
-    private TestEntityManager em;
 
     @DisplayName("카테고리_멘토링을 삭제하면 삭제가 일어난 시간과 함께 삭제상태로 변경된다.")
     @Test
@@ -59,7 +53,6 @@ class CategoryMentoringRepositoryTest extends RepositoryTestSupport {
 
         //when
         categoryMentoringRepository.delete(categoryMentoring);
-
         em.flush();
         em.clear();
 

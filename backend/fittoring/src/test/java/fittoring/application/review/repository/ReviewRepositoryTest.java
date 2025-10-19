@@ -1,8 +1,9 @@
 package fittoring.application.review.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import fittoring.application.FixtureUtil;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.reservation.repository.RepositoryTestSupport;
 import fittoring.application.reservation.repository.ReservationRepository;
@@ -10,16 +11,11 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@Import({MentoringPaginationHelper.class})
 class ReviewRepositoryTest extends RepositoryTestSupport {
 
     @Autowired
