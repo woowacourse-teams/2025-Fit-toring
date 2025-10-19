@@ -6,6 +6,8 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import fittoring.application.image.service.PresignedUrlService;
+import fittoring.infrastructure.SmsRestClientService;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -20,6 +22,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
@@ -31,6 +34,12 @@ public abstract class AbstractApiDocumentationTest {
 
     @Autowired
     protected DbCleaner dbCleaner;
+
+    @MockitoBean
+    protected PresignedUrlService presignedUrlService;
+
+    @MockitoBean
+    protected SmsRestClientService smsRestClientService;
 
     protected RequestSpecification spec;
 

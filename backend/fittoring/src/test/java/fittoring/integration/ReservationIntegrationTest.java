@@ -27,7 +27,6 @@ import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.infrastructure.SmsRestClientService;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -37,12 +36,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class ReservationIntegrationTest extends AbstractApiDocumentationTest {
-
-    @MockitoBean
-    private SmsRestClientService smsRestClientService;
 
     @Autowired
     private ReservationRepository reservationRepository;

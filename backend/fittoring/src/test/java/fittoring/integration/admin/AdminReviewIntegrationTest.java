@@ -1,5 +1,13 @@
 package fittoring.integration.admin;
 
+import fittoring.admin.presentation.dto.AdminReviewInfoResponse;
+import fittoring.admin.presentation.dto.AdminReviewResponse;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
@@ -9,15 +17,7 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.application.auth.service.JwtProvider;
-import fittoring.admin.presentation.dto.AdminReviewInfoResponse;
-import fittoring.admin.presentation.dto.AdminReviewResponse;
-import fittoring.util.DbCleaner;
+import fittoring.integration.AbstractApiDocumentationTest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -30,22 +30,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class AdminReviewIntegrationTest {
+class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
 
     private Member admin;
     private Member user;
     private String adminAccessToken;
     private String userAccessToken;
-
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -65,13 +56,8 @@ class AdminReviewIntegrationTest {
     @Autowired
     private JwtProvider jwtProvider;
 
-    @Autowired
-    private DbCleaner dbCleaner;
-
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-        dbCleaner.clean();
         admin = memberRepository.save(new Member(
                 "adminId",
                 "남",

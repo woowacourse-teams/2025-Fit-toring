@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.image.repository.ImageRepository;
-import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
 import fittoring.application.mentoring.presentation.dto.response.CertificateSpecAndImageResponse;
@@ -39,8 +38,6 @@ import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,12 +47,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class MentoringIntegrationTest extends AbstractApiDocumentationTest {
-
-    @MockitoBean
-    private PresignedUrlService presignedUrlService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -89,9 +82,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private ReviewRepository reviewRepository;
-
-    @PersistenceContext
-    private EntityManager em;
 
     @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
     @Test
