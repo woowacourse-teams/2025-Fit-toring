@@ -1,36 +1,64 @@
+import { useEffect } from 'react';
+
 import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
 
-type MessageType = {
-  content: string;
-  createdAt: string;
-  senderId: string;
-};
+import type { Message } from '../../types/message';
 
 interface ChatContentProps {
-  messages: MessageType[]; // 추후 타입 변경
+  messages: Message[];
+  pageFirstRef: React.RefObject<HTMLDivElement | null>;
+  listRef: React.RefObject<HTMLDivElement | null>;
 }
 
-function ChatContent({ messages }: ChatContentProps) {
-  const myId = '1';
+function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
+  const storedData = localStorage.getItem('memberId');
+  const memberId = storedData ? JSON.parse(storedData) : null;
+
+  useEffect(() => {
+    const element = listRef.current;
+    if (!element) {
+      return;
+    }
+
+    const isAtBottom =
+      element.scrollHeight - element.scrollTop - element.clientHeight < 50;
+
+    if (isAtBottom) {
+      element.scrollTop = element.scrollHeight;
+    }
+  }, [listRef, messages.length]);
 
   return (
-    <S_Container>
-      {messages.map(({ content, createdAt, senderId }, index) => {
-        const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
-        const senderChanged = prevSenderId !== senderId;
+    <S_Container ref={listRef}>
+      <div ref={pageFirstRef} style={{ height: 1, flex: '0 0 1px' }} />
 
-        return (
-          <S_ChatBubbleWrapper key={index} senderChanged={senderChanged}>
-            <ChatBubble
-              content={content}
-              createdAt={createdAt}
-              authored={senderId === myId}
-            />
-          </S_ChatBubbleWrapper>
-        );
-      })}
+      <S_BubbleList>
+        {messages.map(
+          ({ content, createdAt, senderId, status, chatMessageId }, index) => {
+            const prevSenderId =
+              index > 0 ? messages[index - 1].senderId : null;
+            const senderChanged = prevSenderId !== senderId;
+
+            return (
+              <div>
+                <S_ChatBubbleWrapper
+                  key={chatMessageId}
+                  senderChanged={senderChanged}
+                >
+                  <ChatBubble
+                    content={content}
+                    createdAt={createdAt}
+                    authored={senderId === memberId}
+                    status={status}
+                  />
+                </S_ChatBubbleWrapper>
+              </div>
+            );
+          },
+        )}
+      </S_BubbleList>
     </S_Container>
   );
 }
@@ -39,14 +67,18 @@ export default ChatContent;
 
 const S_Container = styled.div`
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
-  flex-grow: 1;
 
+  min-height: 0;
   padding: 1.6rem;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
+
   overflow-y: auto;
 `;
+
+const S_BubbleList = styled.div``;
 
 const S_ChatBubbleWrapper = styled.div<{ senderChanged: boolean }>`
   margin-top: ${({ senderChanged }) => (senderChanged ? '1.5rem' : '0.8rem')};

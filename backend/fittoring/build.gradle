@@ -46,6 +46,8 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs:3.2.0'
     // AWS CloudWatch
     implementation 'io.micrometer:micrometer-registry-cloudwatch2'
+    // websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

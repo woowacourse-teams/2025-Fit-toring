@@ -7,11 +7,12 @@ import sendIcon from '../../../../common/assets/images/sendIcon.svg';
 interface InputSectionProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-function InputSection({ value, onChange }: InputSectionProps) {
+function InputSection({ value, onChange, onSubmit }: InputSectionProps) {
   return (
-    <S_Container>
+    <S_Container onSubmit={onSubmit}>
       <S_Input
         placeholder="메시지를 입력하세요"
         value={value}
@@ -26,7 +27,7 @@ function InputSection({ value, onChange }: InputSectionProps) {
 
 export default InputSection;
 
-const S_Container = styled.div`
+const S_Container = styled.form`
   display: flex;
   gap: 1rem;
 
