@@ -15,7 +15,6 @@ import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
 
-
 type TapType = 'detail' | 'review';
 
 function Detail() {
@@ -59,7 +58,9 @@ function Detail() {
 
   return (
     <>
+      <S_SkipLink href="#apply-section">신청 버튼 바로가기</S_SkipLink>
       <DetailHeader />
+
       <S_Container>
         <S_MentorInfoWrapper>
           <ProfileSection
@@ -107,7 +108,11 @@ function Detail() {
           )}
         </S_ContentWrapper>
       </S_Container>
-      <ApplySection price={data.price} mentoringId={mentoringId} />
+      <ApplySection
+        id="apply-section"
+        price={data.price}
+        mentoringId={mentoringId}
+      />
     </>
   );
 }
@@ -188,4 +193,28 @@ const S_SpinnerWrapper = styled.div<{ height: number }>`
   justify-content: center;
 
   height: ${({ height }) => `${height}px`};
+`;
+
+const S_SkipLink = styled.a`
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-100%);
+
+  z-index: 9999;
+
+  padding: 1.2rem 2rem;
+  border-radius: 0 0 0.8rem 0.8rem;
+
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY800};
+
+  color: ${({ theme }) => theme.BG.WHITE};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+
+  transition: transform 0.2s ease;
+
+  &:focus {
+    transform: translateY(0);
+  }
 `;
