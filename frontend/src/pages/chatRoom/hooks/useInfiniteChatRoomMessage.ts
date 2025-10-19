@@ -4,7 +4,7 @@ import {
   type QueryKey,
 } from '@tanstack/react-query';
 
-import { getChatRoom } from '../apis/getChatRoom';
+import { getChatRoomMessages } from '../apis/getChatRoom';
 
 import type { MessageResponse } from '../types/message';
 
@@ -24,7 +24,7 @@ const useInfiniteChatRoomMessage = (chatRoomId: number) => {
   >({
     queryKey: ['chatRoom', chatRoomId],
     queryFn: async ({ pageParam }) => {
-      return getChatRoom(pageParam);
+      return getChatRoomMessages(pageParam);
     },
     initialPageParam: {
       chatRoomId: Number(chatRoomId),

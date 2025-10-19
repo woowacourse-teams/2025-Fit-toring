@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
 import type { MessageResponse } from '../types/message';
 
-export const getChatRoom = async ({
+export const getChatRoomMessages = async ({
   chatRoomId,
   cursorCode,
 }: {
