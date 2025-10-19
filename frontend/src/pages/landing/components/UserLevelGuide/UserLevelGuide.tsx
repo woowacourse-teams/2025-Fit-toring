@@ -10,24 +10,32 @@ function UserLevelGuide() {
     <S_Container>
       <S_Heading id="user-level-title">사용자별 가이드</S_Heading>
 
-      <S_UserWrapper>
-        <picture>
+      <S_UserWrapper
+        role="region"
+        aria-label="운동 초보자 소액으로 1회성 온라인 운동 멘토링"
+        tabIndex={0}
+      >
+        <picture aria-hidden="true">
           <source srcSet={beginnerAvif} type="image/avif" />
           <S_Img src={beginnerPng} alt="초보자 이미지" loading="lazy" />
         </picture>
-        <S_Name>운동 초보자</S_Name>
-        <S_Description>
+        <S_Name aria-hidden="true">운동 초보자</S_Name>
+        <S_Description aria-hidden="true">
           소액으로 1회성 <br />
           온라인 운동 멘토링
         </S_Description>
       </S_UserWrapper>
-      <S_UserWrapper>
-        <picture>
+      <S_UserWrapper
+        role="region"
+        aria-label="운동 숙련자 전문성과 경험을 공유해 추가 수익 창출"
+        tabIndex={0}
+      >
+        <picture aria-hidden="true">
           <source srcSet={expertAvif} type="image/avif" />
           <S_Img src={expertPng} alt="숙련자 이미지" loading="lazy" />
         </picture>
-        <S_Name>운동 숙련자</S_Name>
-        <S_Description>
+        <S_Name aria-hidden="true">운동 숙련자</S_Name>
+        <S_Description aria-hidden="true">
           전문성과 경험을 공유해 <br />
           추가 수익 창출
         </S_Description>
