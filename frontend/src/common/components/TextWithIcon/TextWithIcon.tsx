@@ -9,7 +9,7 @@ interface TextWithIconProps {
 function TextWithIcon({ text, iconSrc, iconName }: TextWithIconProps) {
   return (
     <S_Container>
-      <S_Img alt={`${iconName} 아이콘`} src={iconSrc} />
+      <S_Img alt={`${iconName} 아이콘`} src={iconSrc} aria-hidden="true" />
       <S_Span>{text}</S_Span>
     </S_Container>
   );
