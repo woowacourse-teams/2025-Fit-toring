@@ -214,6 +214,10 @@ function ChatRoom() {
     });
   };
 
+  if (!memberId) {
+    return <div>로그인 후 이용 가능합니다.</div>;
+  }
+
   if (ChatRoomInfoQuery.isPending || !chatRoomInfo) {
     return (
       <S_Container>
