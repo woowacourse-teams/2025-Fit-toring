@@ -34,7 +34,7 @@ function MentoringCreateForm() {
     career: 0,
     content: '',
     chatUrl: '',
-    certificateInfos: [],
+    certificateInfoRequests: [],
   });
 
   const priceErrorMessage = priceValidator(mentoringData.price);
@@ -207,7 +207,7 @@ function MentoringCreateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
 
     addSentryBreadcrumb({
       category: 'ui.click',
@@ -281,7 +281,7 @@ function MentoringCreateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
   };
 
   return (

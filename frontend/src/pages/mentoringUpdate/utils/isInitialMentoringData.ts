@@ -8,7 +8,7 @@ export const INITIAL_UPDATE_MENTORING_DATA = {
   content: '',
   profileImageUrl: '',
   chatUrl: '',
-  certificateInfos: [
+  certificateInfoRequests: [
     {
       id: '0',
       title: null,
@@ -25,12 +25,12 @@ export const isInitialMentoringData = (data: MentoringUpdateFormData) => {
     data.career === INITIAL_UPDATE_MENTORING_DATA.career &&
     data.content === INITIAL_UPDATE_MENTORING_DATA.content &&
     data.chatUrl === INITIAL_UPDATE_MENTORING_DATA.chatUrl &&
-    data.certificateInfos.length === 1 &&
-    data.certificateInfos[0].id ===
-      INITIAL_UPDATE_MENTORING_DATA.certificateInfos[0].id &&
-    data.certificateInfos[0].title ===
-      INITIAL_UPDATE_MENTORING_DATA.certificateInfos[0].title &&
-    data.certificateInfos[0].type ===
-      INITIAL_UPDATE_MENTORING_DATA.certificateInfos[0].type
+    data.certificateInfoRequests.length === 1 &&
+    data.certificateInfoRequests[0].id ===
+      INITIAL_UPDATE_MENTORING_DATA.certificateInfoRequests[0].id &&
+    data.certificateInfoRequests[0].title ===
+      INITIAL_UPDATE_MENTORING_DATA.certificateInfoRequests[0].title &&
+    data.certificateInfoRequests[0].type ===
+      INITIAL_UPDATE_MENTORING_DATA.certificateInfoRequests[0].type
   );
 };
