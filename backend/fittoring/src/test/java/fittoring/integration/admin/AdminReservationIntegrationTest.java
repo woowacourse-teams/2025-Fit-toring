@@ -63,8 +63,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "Last Fantasy",
-                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록",
-                "가상의카카오오픈채팅"
+                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
         Member mentee1 = memberRepository.save(new Member(
                 "menteeId1",
@@ -135,8 +134,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "Last Fantasy",
-                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록",
-                "가상의카카오오픈채팅"
+                "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
         String normalAccessToken = jwtProvider.createAccessToken(normalMember.getId());
 
@@ -179,8 +177,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "살별",
-                "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게",
-                "가상의카카오오픈채팅"
+                "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게"
         ));
         Member mentee = memberRepository.save(new Member(
                 "menteeId1",
@@ -241,8 +238,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "잘 지내자, 우리",
-                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~",
-                "가상의카카오오픈채팅"
+                "분명 언젠가 다시 스칠 날 있겠지만 모른척 지나가겠지~"
         ));
         Member mentee = memberRepository.save(new Member(
                 "menteeId1",

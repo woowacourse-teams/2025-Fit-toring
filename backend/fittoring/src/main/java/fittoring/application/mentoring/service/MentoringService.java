@@ -75,8 +75,7 @@ public class MentoringService {
                 dto.price(),
                 dto.career(),
                 dto.content(),
-                dto.introduction(),
-                dto.chatUrl()
+                dto.introduction()
         );
 
         final Mentoring savedMentoring = mentoringRepository.save(mentoring);
@@ -226,7 +225,7 @@ public class MentoringService {
         fetchProfileImage(dto, mentoring);
 
         certificateService.mapCertificatesToMentoring(dto.certificateInfos(), mentoring);
-        mentoring.modify(dto.price(), dto.career(), dto.content(), dto.introduction(), dto.chatUrl());
+        mentoring.modify(dto.price(), dto.career(), dto.content(), dto.introduction());
     }
 
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {

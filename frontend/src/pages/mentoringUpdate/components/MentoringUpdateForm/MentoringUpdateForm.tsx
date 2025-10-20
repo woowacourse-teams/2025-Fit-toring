@@ -18,7 +18,6 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
-import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { deleteCertificate } from '../../apis/deleteCertificate';
 import { putMentoring } from '../../apis/putMentoring';
@@ -44,7 +43,6 @@ function MentoringUpdateForm() {
   const priceErrorMessage = priceValidator(mentoringData.price);
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
-  const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
   const detailErrorMessage = validateTextarea(mentoringData.content);
 
   const handleMentoringDataChange = (
@@ -107,7 +105,7 @@ function MentoringUpdateForm() {
       return;
     }
 
-    const addedCertifications = mentoringData.certificateInfos.filter(
+    const addedCertifications = mentoringData.certificateInfoRequests.filter(
       (info) => !initialCertificatesIdRef.current.includes(info.id),
     );
 
@@ -169,7 +167,6 @@ function MentoringUpdateForm() {
       priceErrorMessage ||
       introduceErrorMessage ||
       careerErrorMessage ||
-      chatUrlErrorMessage ||
       detailErrorMessage
     ) {
       alert('입력값을 확인해주세요.');
@@ -209,7 +206,7 @@ function MentoringUpdateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
 
     setDeletedCertificateIds((prev) => [...prev, id]);
   };
@@ -269,7 +266,7 @@ function MentoringUpdateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
   };
 
   useEffect(() => {
@@ -284,22 +281,15 @@ function MentoringUpdateForm() {
           type: info.type,
           imageUrl: info.imageUrl,
         }));
-        const {
-          price,
-          career,
-          introduction,
-          content,
-          profileImageUrl,
-          chatUrl,
-        } = mentoring;
+        const { price, career, introduction, content, profileImageUrl } =
+          mentoring;
         setMentoringData({
           price,
           career,
           introduction,
           content,
           category: categories,
-          chatUrl,
-          certificateInfos: certificateInfosData,
+          certificateInfoRequests: certificateInfosData,
           profileImageUrl,
         });
         setCertificates(certificateInfosData);
@@ -321,8 +311,6 @@ function MentoringUpdateForm() {
             onBaseInfoChange={handleMentoringDataChange}
             priceErrorMessage={priceErrorMessage}
             price={mentoringData.price}
-            chatUrlErrorMessage={chatUrlErrorMessage}
-            chatUrl={mentoringData.chatUrl}
           />
           <ProfileSection
             profileImageUrl={mentoringData.profileImageUrl}

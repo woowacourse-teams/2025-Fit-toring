@@ -90,8 +90,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction",
-                    "가상의카카오오픈채팅"
+                    "introduction"
             ));
 
             // when
@@ -131,8 +130,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction",
-                    "가상의카카오오픈채팅"
+                    "introduction"
             ));
             mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(savedMentoring));
             Reservation savedReservation = reservationRepository.save(
@@ -232,8 +230,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
                             1000,
                             1,
                             "content",
-                            "introduction",
-                            "가상의카카오오픈채팅"
+                            "introduction"
                     ));
             mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(savedMentoring));
             Reservation savedReservation = reservationRepository.save(
