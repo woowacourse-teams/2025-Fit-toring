@@ -38,7 +38,7 @@ class CategoryMentoringRepositoryTest extends RepositoryTestSupport {
         );
 
         Mentoring savedMentoring = mentoringRepository.save(
-                new Mentoring(savedMentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개", "가상의오픈채팅링크")
+                new Mentoring(savedMentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개")
         );
 
         Category savedCategory = categoryRepository.save(new Category("체형교정"));

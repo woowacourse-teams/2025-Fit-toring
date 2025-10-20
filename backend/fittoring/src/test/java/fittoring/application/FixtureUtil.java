@@ -77,8 +77,7 @@ public class FixtureUtil {
                 5000,
                 5,
                 "content",
-                "introduction",
-                "https://chatRoomUrl"
+                "introduction"
         );
     }
 

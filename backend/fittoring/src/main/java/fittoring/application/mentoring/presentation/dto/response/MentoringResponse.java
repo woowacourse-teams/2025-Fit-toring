@@ -13,7 +13,6 @@ public record MentoringResponse(
         String profileImageUrl,
         String introduction,
         String content,
-        String chatUrl,
         List<CertificateSpecAndImageResponse> certificates,
         String ratingAverage,
         long ratingCount
@@ -39,7 +38,6 @@ public record MentoringResponse(
                 image.getUrl(),
                 mentoring.getIntroduction(),
                 mentoring.getContent(),
-                mentoring.getChatUrl(),
                 certificates,
                 String.format("%.1f", ratingAverage),
                 ratingCount
@@ -62,7 +60,6 @@ public record MentoringResponse(
                 null,
                 mentoring.getIntroduction(),
                 mentoring.getContent(),
-                mentoring.getChatUrl(),
                 certificates,
                 String.format("%.1f", ratingAverage),
                 ratingCount

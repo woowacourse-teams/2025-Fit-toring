@@ -31,8 +31,13 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
         );
 
         Mentoring mentoring = mentoringRepository.save(
-                new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개",
-                        "가상의카카오오픈채팅")
+                new Mentoring(
+                        mentor,
+                        5000,
+                        3,
+                        "컨텐츠컨텐츠",
+                        "자기소개자기소개"
+                )
         );
 
         //when
@@ -57,8 +62,7 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
         );
 
         mentoringRepository.save(
-                new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개",
-                        "가상의카카오오픈채팅")
+                new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개")
         );
 
         Member mentor2 = memberRepository.save(
@@ -66,8 +70,7 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
         );
 
         Mentoring mentoring2 = mentoringRepository.save(
-                new Mentoring(mentor2, 5000, 5, "컨텐츠컨텐츠", "자기소개자기소개",
-                        "가상의카카오오픈채팅")
+                new Mentoring(mentor2, 5000, 5, "컨텐츠컨텐츠", "자기소개자기소개")
         );
 
         mentoringRepository.delete(mentoring2);

@@ -74,7 +74,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
 
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
-        Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개", "chatUrl"));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개"));
 
         Category category1 = new Category("근육증가");
         Category category2 = new Category("다이어트");
@@ -138,7 +138,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
 
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
-        Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개", "chatUrl"));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개"));
 
         Category category1 = new Category("근육증가");
         Category category2 = new Category("다이어트");
