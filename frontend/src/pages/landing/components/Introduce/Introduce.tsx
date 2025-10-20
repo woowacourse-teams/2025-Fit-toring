@@ -8,8 +8,7 @@ function Introduce() {
     <S_Container>
       <S_TextWrapper>
         <S_Title aria-label="온라인 운동 멘토링 중개 플랫폼">
-          <span aria-hidden="true">온라인 운동 멘토링</span>
-          <span aria-hidden="true">중개 플랫폼</span>
+          <span aria-hidden="true">온라인 운동 멘토링 플랫폼</span>
         </S_Title>
         <S_Texts
           role="region"
@@ -27,9 +26,9 @@ function Introduce() {
             1회성 멘토링을 받을 수 있습니다.
           </S_Text>
           <S_Text aria-hidden="true">
-            원하는 멘토에게 신청하여 카카오톡
+            원하는 멘토에게 신청하여
             <br />
-            오픈 채팅을 통해 상담을 받을 수 있어요
+            채팅을 통해 상담을 받을 수 있어요
           </S_Text>
         </S_Texts>
       </S_TextWrapper>
