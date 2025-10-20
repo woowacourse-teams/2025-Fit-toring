@@ -244,7 +244,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     null,
                     3,
                     "컨텐츠컨텐츠",
-                    "가상의카카오오픈채팅",
                     List.of()
             );
 
@@ -277,7 +276,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     profileImageUrl,
                     3,
                     "컨텐츠컨텐츠",
-                    "가상의카카오오픈채팅",
                     List.of()
             );
 
@@ -313,7 +311,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     null,
                     3,
                     "컨텐츠컨텐츠",
-                    "가상의카카오오픈채팅",
                     List.of(certificateInfo1, certificateInfo2)
             );
 
@@ -342,7 +339,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     null,
                     3,
                     "컨텐츠컨텐츠",
-                    "가상의카카오오픈채팅",
                     List.of()
             );
 
@@ -386,7 +382,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     5,
                     "수정된 한 줄 소개",
                     "가상의오픈채팅링크",
-                    "수정된 이미지 주소",
                     List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
@@ -443,7 +438,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     5,
                     "수정된 한 줄 소개",
                     "가상의오픈채팅링크",
-                    "수정된 이미지 주소",
                     List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
@@ -480,7 +474,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     5,
                     "수정된 한 줄 소개",
                     "가상의오픈채팅링크",
-                    "수정된 이미지 주소",
                     List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
