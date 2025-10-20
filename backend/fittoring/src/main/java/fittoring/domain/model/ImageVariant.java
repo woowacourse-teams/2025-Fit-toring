@@ -1,19 +1,24 @@
 package fittoring.domain.model;
 
-import java.util.List;
-
 public enum ImageVariant {
 
-    DEFAULT,
-    THUMBNAIL,
+    DEFAULT("default"),
+    THUMBNAIL("thumbnail"),
     ;
 
-    public static List<ImageVariant> getThumbnailRequiredTypes() {
-        return List.of(DEFAULT, THUMBNAIL);
+    private final String alias;
+
+    ImageVariant(String alias) {
+        this.alias = alias;
     }
 
-    public static List<ImageVariant> getDefaultType() {
-        return List.of(DEFAULT);
+    public static ImageVariant from(String imageVariant) {
+        for (ImageVariant value : values()) {
+            if (value.alias.equalsIgnoreCase(imageVariant)) {
+                return value;
+            }
+        }
+        return DEFAULT;
     }
 
     public String getName() {

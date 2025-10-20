@@ -17,6 +17,7 @@ import fittoring.application.mentoring.repository.CategoryRepository;
 import fittoring.application.mentoring.repository.CertificateRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto;
 import fittoring.application.mentoring.service.dto.MentoringPaginationResult;
 import fittoring.application.mentoring.service.dto.MentoringSummaryPaginationResponse;
 import fittoring.application.mentoring.service.dto.ModifyMentoringDto;
@@ -77,6 +78,7 @@ public class MentoringService {
                 dto.introduction(),
                 dto.chatUrl()
         );
+
         final Mentoring savedMentoring = mentoringRepository.save(mentoring);
         MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(mentoring);
         mentoringStatisticsRepository.save(mentoringStatistics);
@@ -172,9 +174,9 @@ public class MentoringService {
                 .orElseThrow(
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
         return new RatingStatsDto(
-            mentoringId,
-            mentoringStatistics.getAverageRating(),
-            mentoringStatistics.getReviewCount()
+                mentoringId,
+                mentoringStatistics.getAverageRating(),
+                mentoringStatistics.getReviewCount()
         );
     }
 
@@ -325,8 +327,8 @@ public class MentoringService {
     private List<RatingStatsDto> getRatingStatsDtos(List<Long> mentoringIds) {
         List<MentoringStatistics> mentoringStatistics = mentoringStatisticsRepository.findByIds(mentoringIds);
         return mentoringStatistics.stream()
-            .map(ms -> new RatingStatsDto(ms.getMentoringId(), ms.getAverageRating(), ms.getReviewCount()))
-            .toList();
+                .map(ms -> new RatingStatsDto(ms.getMentoringId(), ms.getAverageRating(), ms.getReviewCount()))
+                .toList();
     }
 
     private Map<Long, RatingStatsDto> createReviewStatsMap(List<RatingStatsDto> ratingStatsDto) {
@@ -351,5 +353,12 @@ public class MentoringService {
                 mentoring.getId(),
                 new RatingStatsDto(mentoring.getId(), 0.0, 0)
         );
+    }
+
+    @Transactional(readOnly = true)
+    public ChatRoomMentoringInfoDto findMentoringInfoForChatRoom(Long mentoringId) {
+        return mentoringRepository.findByIdForChatRoom(mentoringId)
+                .orElseThrow(
+                        () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
     }
 }

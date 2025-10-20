@@ -11,6 +11,7 @@ import fittoring.domain.model.MemberRole;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -18,6 +19,7 @@ public class AdminMemberService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional(readOnly = true)
     public PageResult<AdminMemberResponse> findAllForAdminPaged(Long adminId, int page, int size) {
         Member member = memberRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));

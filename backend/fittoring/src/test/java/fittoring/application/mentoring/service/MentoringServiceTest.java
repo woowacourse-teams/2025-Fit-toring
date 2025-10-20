@@ -1,62 +1,61 @@
 package fittoring.application.mentoring.service;
 
-import fittoring.application.FixtureUtil;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.MentoringNotFoundException;
-import fittoring.application.image.repository.ImageRepository;
-import fittoring.application.image.service.PresignedUrlService;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
-import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
-import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
-import fittoring.application.mentoring.repository.*;
-import fittoring.application.mentoring.service.dto.ModifyMentoringDto;
-import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.config.auth.LoginInfo;
-import fittoring.domain.model.*;
-import fittoring.domain.model.password.Password;
-import fittoring.util.DbCleaner;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
-@ActiveProfiles("test")
-@SpringBootTest
-class MentoringServiceTest {
+import fittoring.IntegrationTestSupport;
+import fittoring.application.FixtureUtil;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
+import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
+import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
+import fittoring.application.mentoring.repository.CategoryMentoringRepository;
+import fittoring.application.mentoring.repository.CategoryRepository;
+import fittoring.application.mentoring.repository.CertificateRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.dto.ModifyMentoringDto;
+import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.review.repository.ReviewRepository;
+import fittoring.config.auth.LoginInfo;
+import fittoring.domain.model.Category;
+import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.Certificate;
+import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.ImageVariant;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.MentoringStatistics;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import fittoring.domain.model.password.Password;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-    @MockitoBean
-    private PresignedUrlService presignedUrlService;
+class MentoringServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private MentoringService mentoringService;
 
     @Autowired
     private CategoryRepository categoryRepository;
-
-    @Autowired
-    private DbCleaner dbCleaner;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -82,21 +81,14 @@ class MentoringServiceTest {
     @Autowired
     private MentoringStatisticsRepository mentoringStatisticsRepository;
 
-    @PersistenceContext
-    private EntityManager em;
-
-    @BeforeEach
-    void setUp() {
-        dbCleaner.clean();
-    }
-
-    @Transactional
     @DisplayName("관리자가 멘토링을 삭제하면 연관된 객체도 함께 삭제 상태가 된다.")
     @Test
     void deleteByAdmin() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member admin = FixtureUtil.getTestAdmin();
+        memberRepository.saveAll(List.of(mentor, admin));
+
         LoginInfo adminLoginId = new LoginInfo(admin.getId());
 
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
@@ -104,58 +96,42 @@ class MentoringServiceTest {
 
         mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
 
-        Category category1 = categoryRepository.save(new Category("카테고리1"));
-        Category category2 = categoryRepository.save(new Category("카테고리2"));
+        Category category1 = new Category("카테고리1");
+        Category category2 = new Category("카테고리2");
+        categoryRepository.saveAll(List.of(category1, category2));
 
         CategoryMentoring categoryMentoring = new CategoryMentoring(category1, mentoring);
         categoryMentoringRepository.save(categoryMentoring);
         categoryMentoringRepository.save(new CategoryMentoring(category2, mentoring));
 
-        imageRepository.save(new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoringId));
+        imageRepository.save(new Image(
+                "멘토링이미지1url",
+                ImageType.MENTORING_PROFILE,
+                mentoringId,
+                null
+        ));
 
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
-        Reservation reservation1 = reservationRepository.save(FixtureUtil.getTestCompletedReservation(mentoring, mentee));
+        Reservation reservation1 = reservationRepository.save(
+                FixtureUtil.getTestCompletedReservation(mentoring, mentee));
         reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
         Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation1, mentee));
 
-
-        Certificate certificate = certificateRepository.save(new Certificate(CertificateType.LICENSE, "자격증1", mentoring));
+        Certificate certificate = certificateRepository.save(
+                new Certificate(CertificateType.LICENSE, "자격증1", mentoring));
 
         // when
         mentoringService.deleteMentoringByAdmin(adminLoginId, mentoringId);
 
         // then
-        Review deletedReview = (Review) em.createNativeQuery(
-                        "SELECT * FROM review WHERE id = ?", Review.class)
-                .setParameter(1, review.getId())
-                .getSingleResult();
-
-        Reservation deletedReservation = (Reservation) em.createNativeQuery(
-                        "SELECT * FROM reservation WHERE id = ?", Reservation.class)
-                .setParameter(1, reservation1.getId())
-                .getSingleResult();
-
-        Certificate deletedCertificate = (Certificate) em.createNativeQuery(
-                        "SELECT * FROM certificate WHERE id = ?", Certificate.class)
-                .setParameter(1, certificate.getId())
-                .getSingleResult();
-
-        CategoryMentoring deletedCategoryMentoring = (CategoryMentoring) em.createNativeQuery(
-                        "SELECT * FROM category_mentoring WHERE id = ?", CategoryMentoring.class)
-                .setParameter(1, categoryMentoring.getId())
-                .getSingleResult();
-
-        MentoringStatistics deletedMentoringStatistics = (MentoringStatistics) em.createNativeQuery(
-                        "SELECT * FROM mentoring_statistics WHERE mentoring_id = ?", MentoringStatistics.class)
-                .setParameter(1, mentoring.getId())
-                .getSingleResult();
-
-        Mentoring deletedMentoring = (Mentoring) em.createNativeQuery(
-                        "SELECT * FROM mentoring WHERE id = ?", Mentoring.class)
-                .setParameter(1, mentoring.getId())
-                .getSingleResult();
-        em.flush();
-        em.clear();
+        Review deletedReview = reviewRepository.findDeletedById(review.getId());
+        Reservation deletedReservation = reservationRepository.findDeletedById(reservation1.getId());
+        Certificate deletedCertificate = certificateRepository.findDeletedById(certificate.getId());
+        CategoryMentoring deletedCategoryMentoring = categoryMentoringRepository.findDeletedById(
+                categoryMentoring.getId());
+        MentoringStatistics deletedMentoringStatistics = mentoringStatisticsRepository.findDeletedByMentoringId(
+                mentoring.getId());
+        Mentoring deletedMentoring = mentoringRepository.findDeletedById(mentoring.getId());
 
         SoftAssertions.assertSoftly(softly -> {
                     assertThatThrownBy(() -> mentoringService.getMentoringWithRelationsById(mentoringId))
@@ -177,7 +153,6 @@ class MentoringServiceTest {
         );
     }
 
-    @Transactional
     @Nested
     @DisplayName("멘토링 정보 조회")
     class FindMentoring {
@@ -186,8 +161,10 @@ class MentoringServiceTest {
         @Test
         void getMentoring() {
             // given
-            Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-            Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+            List<Member> savedMembers = memberRepository.saveAll(
+                    List.of(FixtureUtil.getTestMentor(), FixtureUtil.getTestMentee()));
+            Member mentor = savedMembers.get(0);
+            Member mentee = savedMembers.get(1);
 
             Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
             mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
@@ -196,7 +173,7 @@ class MentoringServiceTest {
             categoryMentoringRepository.save(new CategoryMentoring(category, mentoring));
 
             Image profile = imageRepository.save(
-                    new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring.getId())
+                    new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring.getId(), "baseName")
             );
 
             Reservation reservation1 = reservationRepository.save(
@@ -234,10 +211,10 @@ class MentoringServiceTest {
         void getMentoring2() {
             //given
             Member member = FixtureUtil.getTestMentee();
-            em.persist(member);
+            memberRepository.save(member);
 
             Mentoring mentoring = FixtureUtil.getTestMentoring(member);
-            em.persist(mentoring);
+            mentoringRepository.save(mentoring);
 
             Long invalidId = 100L;
 
@@ -256,7 +233,7 @@ class MentoringServiceTest {
 
         @DisplayName("아무 이미지 없이 멘토링을 등록할 수 있다.")
         @Test
-        void registerMentoring() throws IOException {
+        void registerMentoring() {
             //given
             Member member = memberRepository.save(FixtureUtil.getTestMentee());
 
@@ -273,8 +250,7 @@ class MentoringServiceTest {
 
             Category category1 = new Category("근육증가");
             Category category2 = new Category("다이어트");
-            categoryRepository.save(category1);
-            categoryRepository.save(category2);
+            categoryRepository.saveAll(List.of(category1, category2));
 
             // when
             // then
@@ -307,8 +283,7 @@ class MentoringServiceTest {
 
             Category category1 = new Category("근육증가");
             Category category2 = new Category("다이어트");
-            categoryRepository.save(category1);
-            categoryRepository.save(category2);
+            categoryRepository.saveAll(List.of(category1, category2));
 
             // when & then
             assertThatCode(() -> mentoringService.registerMentoring(
@@ -324,7 +299,8 @@ class MentoringServiceTest {
             // given
             Member member = memberRepository.save(FixtureUtil.getTestMentee());
 
-            CertificateInfoRequest certificateInfo1 = new CertificateInfoRequest(CertificateType.LICENSE, "제1종 보통 운전면허",
+            CertificateInfoRequest certificateInfo1 = new CertificateInfoRequest(CertificateType.LICENSE,
+                    "제1종 보통 운전면허",
                     "이미지 주소1");
             CertificateInfoRequest certificateInfo2 = new CertificateInfoRequest(CertificateType.AWARD,
                     "광진구 건강 청년 선발 대회 준우승",
@@ -343,8 +319,7 @@ class MentoringServiceTest {
 
             Category category1 = new Category("근육증가");
             Category category2 = new Category("다이어트");
-            categoryRepository.save(category1);
-            categoryRepository.save(category2);
+            categoryRepository.saveAll(List.of(category1, category2));
 
             // when & then
             assertThatCode(() -> mentoringService.registerMentoring(
@@ -373,9 +348,7 @@ class MentoringServiceTest {
 
             Category category1 = new Category("근육증가");
             Category category2 = new Category("다이어트");
-
-            categoryRepository.save(category1);
-            categoryRepository.save(category2);
+            categoryRepository.saveAll(List.of(category1, category2));
 
             //when
             mentoringService.registerMentoring(
@@ -443,7 +416,8 @@ class MentoringServiceTest {
 
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(changedMentoring.getPrice()).isEqualTo(modifyMentoringDto.price());
-                softAssertions.assertThat(changedMentoring.getIntroduction()).isEqualTo(modifyMentoringDto.introduction());
+                softAssertions.assertThat(changedMentoring.getIntroduction())
+                        .isEqualTo(modifyMentoringDto.introduction());
                 softAssertions.assertThat(changedMentoring.getCareer()).isEqualTo(modifyMentoringDto.career());
                 softAssertions.assertThat(changedMentoring.getContent()).isEqualTo(modifyMentoringDto.content());
                 softAssertions.assertThat(changedCategories).containsExactlyInAnyOrder("다이어트");

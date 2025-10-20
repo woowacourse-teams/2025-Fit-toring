@@ -4,6 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doNothing;
 
+import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.CategoryMentoringRepository;
+import fittoring.application.mentoring.repository.CategoryRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
+import fittoring.application.reservation.presentation.dto.request.ReservationCreateRequest;
+import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
+import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
+import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Image;
@@ -15,19 +28,6 @@ import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.application.mentoring.repository.CategoryMentoringRepository;
-import fittoring.application.mentoring.repository.CategoryRepository;
-import fittoring.application.image.repository.ImageRepository;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
-import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
-import fittoring.infrastructure.SmsRestClientService;
-import fittoring.application.reservation.presentation.dto.request.ReservationCreateRequest;
-import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -37,12 +37,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class ReservationIntegrationTest extends AbstractApiDocumentationTest {
-
-    @MockitoBean
-    private SmsRestClientService smsRestClientService;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -96,7 +92,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Category savedCategory = categoryRepository.save(new Category("체형교정"));
         categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
 
-        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+        imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId(), null));
 
         Long mentoringId = savedMentoring.getId();
 

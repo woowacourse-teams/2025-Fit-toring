@@ -12,11 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
@@ -26,6 +29,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 public class Member {
 
+    @Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -63,12 +67,12 @@ public class Member {
     }
 
     public Member(
-        String loginId,
-        String gender,
-        String name,
-        Phone phone,
-        Password password,
-        MemberRole role
+            String loginId,
+            String gender,
+            String name,
+            Phone phone,
+            Password password,
+            MemberRole role
     ) {
         this(null, loginId, gender, name, phone, password, role, false, null);
     }
@@ -81,6 +85,10 @@ public class Member {
         if (this.role != MemberRole.ADMIN) {
             this.role = MemberRole.MENTOR;
         }
+    }
+
+    public boolean isMentee() {
+        return MemberRole.isMentee(this.role);
     }
 
     public boolean isSameIdWith(Long memberId) {
