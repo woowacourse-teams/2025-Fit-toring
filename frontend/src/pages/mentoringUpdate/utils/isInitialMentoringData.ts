@@ -7,7 +7,6 @@ export const INITIAL_UPDATE_MENTORING_DATA = {
   career: 0,
   content: '',
   profileImageUrl: '',
-  chatUrl: '',
   certificateInfoRequests: [
     {
       id: '0',
@@ -24,7 +23,6 @@ export const isInitialMentoringData = (data: MentoringUpdateFormData) => {
     data.introduction === INITIAL_UPDATE_MENTORING_DATA.introduction &&
     data.career === INITIAL_UPDATE_MENTORING_DATA.career &&
     data.content === INITIAL_UPDATE_MENTORING_DATA.content &&
-    data.chatUrl === INITIAL_UPDATE_MENTORING_DATA.chatUrl &&
     data.certificateInfoRequests.length === 1 &&
     data.certificateInfoRequests[0].id ===
       INITIAL_UPDATE_MENTORING_DATA.certificateInfoRequests[0].id &&
