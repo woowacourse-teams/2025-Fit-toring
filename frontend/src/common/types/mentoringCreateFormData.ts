@@ -5,7 +5,6 @@ export interface mentoringCreateFormData {
   profileImageUrl: string | null;
   career: number;
   content: string;
-  chatUrl: string;
   certificateInfoRequests: {
     type: string | null;
     title: string | null;

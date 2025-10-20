@@ -14,19 +14,15 @@ import type { UserInfoResponse } from '../../../types/userInfoResponse';
 interface BaseInfoSectionProps {
   priceErrorMessage: string;
   onBaseInfoChange: (
-    newData: Partial<Pick<mentoringCreateFormData, 'price' | 'chatUrl'>>,
+    newData: Partial<Pick<mentoringCreateFormData, 'price'>>,
   ) => void;
   price: number;
-  chatUrlErrorMessage: string;
-  chatUrl: string;
 }
 
 function BaseInfoSection({
   onBaseInfoChange,
   priceErrorMessage,
   price,
-  chatUrlErrorMessage,
-  chatUrl,
 }: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
@@ -56,10 +52,6 @@ function BaseInfoSection({
     onBaseInfoChange({ price: Number(e.target.value) });
   };
 
-  const handleChatUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onBaseInfoChange({ chatUrl: e.target.value });
-  };
-
   return (
     <section>
       <TitleSeparator>기본 정보</TitleSeparator>
@@ -70,19 +62,7 @@ function BaseInfoSection({
         <FormField label="전화번호 *">
           <Input value={userInfo.phoneNumber} id="phone" disabled />
         </FormField>
-        <FormField
-          label="카카오톡 오픈 채팅 주소 *"
-          errorMessage={chatUrlErrorMessage}
-        >
-          <Input
-            placeholder="https://open.kakao.com/o/xxxxxx"
-            id="chatUrl"
-            required
-            onChange={handleChatUrlChange}
-            value={chatUrl}
-            errored={chatUrlErrorMessage !== ''}
-          />
-        </FormField>
+
         <FormField label="15분 상담료 (원) *" errorMessage={priceErrorMessage}>
           <Input
             placeholder="5000"
