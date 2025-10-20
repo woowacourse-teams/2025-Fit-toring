@@ -20,8 +20,6 @@ export const DefaultBaseInfoSection: Story = {
     onBaseInfoChange: () => {},
     priceErrorMessage: '',
     price: 3000,
-    chatUrlErrorMessage: '',
-    chatUrl: 'https://open.kakao.com/o/xxxxxx',
   },
   parameters: {
     docs: {
@@ -38,30 +36,11 @@ export const PriceErrorBaseInfoSection: Story = {
     onBaseInfoChange: () => {},
     priceErrorMessage: PRICE_ERROR_MESSAGE.PRICE_TOO_HIGH,
     price: 10000,
-    chatUrlErrorMessage: '',
-    chatUrl: 'https://open.kakao.com/o/xxxxxx',
   },
   parameters: {
     docs: {
       description: {
         story: '가격 에러 상태의 BaseInfoSection 컴포넌트입니다.',
-      },
-    },
-  },
-};
-
-export const ChatUrlErrorBaseInfoSection: Story = {
-  args: {
-    onBaseInfoChange: () => {},
-    priceErrorMessage: '',
-    price: 3000,
-    chatUrlErrorMessage: ERROR_MESSAGE.INVALID_CHAT_URL,
-    chatUrl: '1234',
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '채팅 URL 에러 상태의 BaseInfoSection 컴포넌트입니다.',
       },
     },
   },
