@@ -71,11 +71,11 @@ public class ChatRoomService {
 
         Member member = getMember(memberId);
         String opponentName = getOpponentName(member, reservation);
-        MemberRole memberRole = resolveChatMemberRole(member, reservation);
+        MemberRole memberRoleInChat = resolveChatMemberRole(member, reservation);
 
         return new ChatRoomInfoDto(
                 reservation.getMentoring().getId(),
-                memberRole,
+                memberRoleInChat,
                 opponentName,
                 chatRoom.getStatus()
         );
