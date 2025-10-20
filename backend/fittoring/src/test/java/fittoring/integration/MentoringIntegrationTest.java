@@ -130,7 +130,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         String newProfileImageUrl = "수정된 새로운 프로필 이미지";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
-        String chatUrl = "가상의카카오오픈채팅";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
                 newPrice,
                 List.of(newCategory),
@@ -177,7 +176,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         String newProfileImageUrl = "수정된 새로운 프로필 이미지";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
-        String chatUrl = "가상의카카오오픈채팅";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
                 newPrice,
                 List.of(newCategory),
