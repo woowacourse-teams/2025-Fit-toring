@@ -22,6 +22,9 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
             """)
     Optional<Mentoring> findByReviewId(@Param("reviewId") Long reviewId);
 
+    @Query(value = "SELECT * FROM mentoring WHERE id = :id AND is_deleted = true;", nativeQuery = true)
+    Mentoring findDeletedById(@Param("id") Long id);
+
     @Query("""
             SELECT new fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto(
                 m.mentor.name,

@@ -4,66 +4,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
+import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.config.QueryDslConfig;
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.RefreshToken;
-import fittoring.infrastructure.OauthClientService;
-import fittoring.util.DbCleaner;
 import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.web.client.RestClient;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({DbCleaner.class, AuthService.class, JwtProvider.class, QueryDslConfig.class, OauthClientService.class,
-        MentoringPaginationHelper.class})
-@ExtendWith(MockitoExtension.class)
-@DataJpaTest
-class AuthServiceTest {
+class AuthServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private AuthService authService;
 
-    @MockitoBean
-    OauthClientService oauthClientService;
-
-    @MockitoBean
-    RestClient restClient;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
-    private TestEntityManager em;
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     private JwtProvider jwtProvider;
-
-    @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp() {
-        dbCleaner.clean();
-    }
 
     @DisplayName("회원을 저장할 때 암호화된 비밀번호가 저장된다.")
     @Test
@@ -82,7 +53,8 @@ class AuthServiceTest {
         authService.register(request);
 
         //then
-        String actual = em.find(Member.class, 1L).getPassword();
+        String actual = memberRepository.findById(1L)
+                .orElseThrow(null).getPassword();
         assertThat(actual).isNotEqualTo(password);
     }
 
@@ -90,7 +62,7 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId() {
         //given
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
         String loginId = mentee.getLoginId();
 
@@ -105,7 +77,8 @@ class AuthServiceTest {
     @Test
     void validateDuplicateLoginId2() {
         //given
-        em.persist(FixtureUtil.getTestMentee());
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.save(mentee);
 
         String loginId = "nonDuplicateId";
 
@@ -119,7 +92,8 @@ class AuthServiceTest {
     @Test
     void login() {
         //given
-        em.persist(FixtureUtil.getTestMentee());
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.save(mentee);
 
         String loginId = "wrongLoginId";
         String password = "password";
@@ -134,7 +108,8 @@ class AuthServiceTest {
     @Test
     void login2() {
         //given
-        em.persist(FixtureUtil.getTestMentee());
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.save(mentee);
 
         String loginId = "menteeId";
         String password = "wongPassword";
@@ -149,22 +124,24 @@ class AuthServiceTest {
     @Test
     void login3() {
         //given
-        Member savedMember = em.persist(FixtureUtil.getTestMentee());
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.save(mentee);
 
-        String loginId = savedMember.getLoginId();
+        String loginId = mentee.getLoginId();
         String rawPassword = "password";
 
         //when
         LoginResponse actual = authService.login(loginId, rawPassword);
 
         //then
-        RefreshToken refreshToken = em.find(RefreshToken.class, savedMember.getId());
+        RefreshToken refreshToken = refreshTokenRepository.findByTokenValue(actual.authToken().refreshToken())
+                .orElseThrow(null);
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(actual.memberLoginResponse().memberId()).isEqualTo(savedMember.getId());
+                    assertThat(actual.memberLoginResponse().memberId()).isEqualTo(mentee.getId());
                     assertThat(actual.authToken().accessToken()).isNotNull();
                     assertThat(actual.authToken().refreshToken()).isNotNull();
                     assertThat(refreshToken).isNotNull();
-                    assertThat(refreshToken.getMember().getId()).isEqualTo(savedMember.getId());
+                    assertThat(refreshToken.getMember().getId()).isEqualTo(mentee.getId());
                     assertThat(refreshToken.getTokenValue()).isEqualTo(actual.authToken().refreshToken());
                 }
         );
@@ -174,8 +151,7 @@ class AuthServiceTest {
     @Test
     void reissue() {
         //given
-        Member savedMember = em.persist(FixtureUtil.getTestMentee());
-        em.flush();
+        Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
         String accessToken = jwtProvider.createAccessToken(1L);
         String refreshToken = jwtProvider.createRefreshToken();
 
@@ -183,13 +159,14 @@ class AuthServiceTest {
                 refreshToken, LocalDateTime.now().minusDays(1), savedMember
         );
 
-        em.persist(savedRefreshToken);
+        refreshTokenRepository.save(savedRefreshToken);
 
         //when
         AuthTokenResponse actual = authService.reissue(refreshToken);
 
         //then
-        RefreshToken newRefreshToken = em.find(RefreshToken.class, 1L);
+        RefreshToken newRefreshToken = refreshTokenRepository.findById(savedRefreshToken.getId())
+                .orElse(null);
 
         SoftAssertions.assertSoftly(softly -> {
                     assertThat(actual.accessToken()).isNotNull();
@@ -207,20 +184,19 @@ class AuthServiceTest {
     @Test
     void logout() {
         //given
-        Member savedMember = em.persist(FixtureUtil.getTestMentee());
+        Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
 
         String refreshToken = jwtProvider.createRefreshToken();
-        RefreshToken savedRefreshToken = em.persist(
+        RefreshToken savedRefreshToken = refreshTokenRepository.save(
                 new RefreshToken(refreshToken, LocalDateTime.now(), savedMember)
         );
 
         //when
         authService.logout(savedMember.getId());
-        em.flush();
-        em.clear();
 
         //then
-        RefreshToken refreshToken1 = em.find(RefreshToken.class, savedRefreshToken.getId());
+        RefreshToken refreshToken1 = refreshTokenRepository.findById(savedRefreshToken.getId())
+                .orElse(null);
         assertThat(refreshToken1).isNull();
     }
 
