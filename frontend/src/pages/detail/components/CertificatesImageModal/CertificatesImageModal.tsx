@@ -29,14 +29,18 @@ function CertificatesImageModal({
   useFocusTrap(containerRef, opened, onCloseClick);
   return createPortal(
     <Modal opened={opened} onCloseClick={onCloseClick}>
-      <S_Container ref={containerRef}>
+      <S_Container
+        role="region"
+        aria-label="자격증 이미지 미리보기"
+        ref={containerRef}
+      >
         <S_CloseButton onClick={onCloseClick}>
           <S_CloseImage src={closeImg} alt="모달 닫기 버튼" />
         </S_CloseButton>
         <S_PrevButton onClick={onPrevButtonClick}>
           <S_PrevImage src={prevImg} alt="이전 이미지 버튼" />
         </S_PrevButton>
-        <S_Image src={imageUrl} alt={`${title}`} />
+        <S_Image aria-live="polite" src={imageUrl} alt={`${title}`} />
         <S_NextButton onClick={onNextButtonClick}>
           <S_NextImage src={nextImg} alt="다음 이미지 버튼" />
         </S_NextButton>
