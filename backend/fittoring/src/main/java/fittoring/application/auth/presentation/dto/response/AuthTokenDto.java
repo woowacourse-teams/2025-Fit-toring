@@ -1,13 +1,13 @@
 package fittoring.application.auth.presentation.dto.response;
 
-public record AuthTokenResponse(
+public record AuthTokenDto(
     String accessToken,
     String refreshToken,
     String oauthSignUpToken
 ) {
 
-    public AuthTokenResponse updateSignUpToken(String token){
-        return new AuthTokenResponse(accessToken, refreshToken, token);
+    public AuthTokenDto updateSignUpToken(String token){
+        return new AuthTokenDto(accessToken, refreshToken, token);
     }
 
     public boolean isLoginSuccess(){

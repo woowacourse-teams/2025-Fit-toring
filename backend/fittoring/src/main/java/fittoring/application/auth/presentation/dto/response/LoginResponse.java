@@ -4,6 +4,6 @@ import fittoring.application.mentoring.presentation.dto.response.MemberLoginResp
 
 public record LoginResponse(
         MemberLoginResponse memberLoginResponse,
-        AuthTokenResponse authToken
+        AuthTokenDto authTokenDto
 ) {
 }

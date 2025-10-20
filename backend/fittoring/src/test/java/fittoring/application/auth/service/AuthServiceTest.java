@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
+import fittoring.application.auth.presentation.dto.response.AuthTokenDto;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.exception.DuplicateLoginIdException;
@@ -134,15 +134,15 @@ class AuthServiceTest extends IntegrationTestSupport {
         LoginResponse actual = authService.login(loginId, rawPassword);
 
         //then
-        RefreshToken refreshToken = refreshTokenRepository.findByTokenValue(actual.authToken().refreshToken())
+        RefreshToken refreshToken = refreshTokenRepository.findByTokenValue(actual.authTokenDto().refreshToken())
                 .orElseThrow(null);
         SoftAssertions.assertSoftly(softly -> {
                     assertThat(actual.memberLoginResponse().memberId()).isEqualTo(mentee.getId());
-                    assertThat(actual.authToken().accessToken()).isNotNull();
-                    assertThat(actual.authToken().refreshToken()).isNotNull();
+                    assertThat(actual.authTokenDto().accessToken()).isNotNull();
+                    assertThat(actual.authTokenDto().refreshToken()).isNotNull();
                     assertThat(refreshToken).isNotNull();
                     assertThat(refreshToken.getMember().getId()).isEqualTo(mentee.getId());
-                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.authToken().refreshToken());
+                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.authTokenDto().refreshToken());
                 }
         );
     }
@@ -162,7 +162,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         refreshTokenRepository.save(savedRefreshToken);
 
         //when
-        AuthTokenResponse actual = authService.reissue(refreshToken);
+        AuthTokenDto actual = authService.reissue(refreshToken);
 
         //then
         RefreshToken newRefreshToken = refreshTokenRepository.findById(savedRefreshToken.getId())

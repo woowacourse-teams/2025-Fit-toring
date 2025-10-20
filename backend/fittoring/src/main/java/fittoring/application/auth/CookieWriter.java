@@ -1,7 +1,6 @@
 package fittoring.application.auth;
 
-import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
-import jakarta.servlet.http.Cookie;
+import fittoring.application.auth.presentation.dto.response.AuthTokenDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,7 @@ import org.springframework.http.ResponseCookie;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CookieWriter {
 
-    public static void write(HttpServletResponse response, AuthTokenResponse tokens) {
+    public static void write(HttpServletResponse response, AuthTokenDto tokens) {
         ResponseCookie accessToken = CookieProvider.createCookie("accessToken", tokens.accessToken());
         ResponseCookie refreshToken = CookieProvider.createCookie("refreshToken", tokens.refreshToken());
         response.addHeader(HttpHeaders.SET_COOKIE, accessToken.toString());
