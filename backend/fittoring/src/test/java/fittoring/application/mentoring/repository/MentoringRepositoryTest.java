@@ -3,8 +3,8 @@ package fittoring.application.mentoring.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import fittoring.RepositoryTestSupport;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.reservation.repository.RepositoryTestSupport;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
@@ -13,9 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
-@Import({MentoringPaginationHelper.class})
 class MentoringRepositoryTest extends RepositoryTestSupport {
 
     @Autowired

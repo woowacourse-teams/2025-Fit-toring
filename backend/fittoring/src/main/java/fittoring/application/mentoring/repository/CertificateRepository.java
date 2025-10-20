@@ -13,6 +13,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CertificateRepository extends ListCrudRepository<Certificate, Long>, CustomCertificateRepository {
 
+    @Query(value = "SELECT * FROM certificate WHERE id = :id AND is_deleted = true;", nativeQuery = true)
+    Certificate findDeletedById(@Param("id") Long id);
+
     @Query("""
             SELECT DISTINCT c
             FROM Certificate c

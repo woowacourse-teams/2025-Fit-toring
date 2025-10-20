@@ -12,11 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
@@ -26,6 +29,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 public class Member {
 
+    @Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;

@@ -3,52 +3,25 @@ package fittoring.application.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.IntegrationTestSupport;
 import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
+import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.ChatMessageService;
 import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
-import fittoring.config.JpaConfiguration;
-import fittoring.config.QueryDslConfig;
 import fittoring.domain.model.ChatRoom;
 import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
 import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
-import fittoring.util.DbCleaner;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({
-        DbCleaner.class,
-        JpaConfiguration.class,
-        QueryDslConfig.class,
-        ChatMessageService.class,
-        MentoringPaginationHelper.class
-})
-@DataJpaTest
-class ChatMessageServiceTest {
-
-    @Autowired
-    private TestEntityManager em;
+class ChatMessageServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ChatMessageService chatMessageService;
 
     @Autowired
-    private DbCleaner dbCleaner;
-
-    @BeforeEach
-    void setUp() {
-        dbCleaner.clean();
-    }
+    private ChatRoomRepository chatRoomRepository;
 
     @DisplayName("존재하지 않는 채팅방에 대한 저장의 경우 예외가 발생한다.")
     @Test
@@ -75,8 +48,7 @@ class ChatMessageServiceTest {
         Long mentorId = 2L;
 
         ChatRoom chatRoom = new ChatRoom(reservationId, menteeId, mentorId);
-        em.persist(chatRoom);
-        em.persistAndFlush(chatRoom);
+        chatRoomRepository.save(chatRoom);
 
         ChatMessageRequest request = new ChatMessageRequest("content", 1234L);
         Long unauthorizedUserId = 999L;
