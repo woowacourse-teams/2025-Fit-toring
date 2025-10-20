@@ -115,7 +115,7 @@ public class Reservation {
     public Member getMentor() {
         return mentoring.getMentor();
     }
-
+    
     public String getMenteePhone() {
         return mentee.getPhoneNumber();
     }
