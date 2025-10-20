@@ -1,6 +1,6 @@
 import { MemoryRouter } from 'react-router-dom';
 
-import { USER_PROFILE } from '../../../common/mock/editProfile/data';
+import { USER_PROFILE } from '../../../common/mock/getUserInfo/data';
 
 import EditProfileForm from './EditProfileForm';
 

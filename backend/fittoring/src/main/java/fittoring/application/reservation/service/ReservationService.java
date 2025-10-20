@@ -2,7 +2,8 @@ package fittoring.application.reservation.service;
 
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
-import fittoring.application.chatroom.service.ChatRoomService;
+import fittoring.application.chat.service.ChatRoomService;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
@@ -27,7 +28,6 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
-import fittoring.mentoring.business.service.dto.chat.ChatRoomCreatedInfo;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

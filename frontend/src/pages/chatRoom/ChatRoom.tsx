@@ -1,113 +1,37 @@
-import React, { useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import styled from '@emotion/styled';
+import { Client } from '@stomp/stompjs';
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
+import SockJS from 'sockjs-client';
 
+import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
+import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 
-const DUMMY_MESSAGES = [
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T14:35:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-27T14:36:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-27T14:37:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T16:35:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-27T16:05:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-27T17:10:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T17:22:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-27T17:38:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-27T17:40:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T17:42:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-27T17:45:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-27T17:47:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-27T17:55:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-28T10:35:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-28T14:07:03',
-    senderId: '2',
-  },
-  {
-    content:
-      '안녕하세요 회원님 멘토링 시작하겠습니다! 저는 멘토 김멘토입니다 어쩌구 저쩌구',
-    createdAt: '2025-09-28T14:01:03',
-    senderId: '1',
-  },
-  {
-    content: '어떤 내용이 궁금하실까요?',
-    createdAt: '2025-09-28T14:35:03',
-    senderId: '1',
-  },
-  {
-    content: '넵 안녕하세요 몇시쯤 어디서 만날까요?',
-    createdAt: '2025-09-28T21:35:03',
-    senderId: '2',
-  },
-];
+import type { ChatRoomInfo } from './types/chatRoomInfo';
+import type { Message } from './types/message';
+import type { IMessage } from '@stomp/stompjs';
 
 function ChatRoom() {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState('');
+
+  const { chatRoomId } = useParams();
+
+  const storedData = localStorage.getItem('memberId');
+  const memberId = storedData ? JSON.parse(storedData) : null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -133,15 +57,179 @@ function ChatRoom() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
 
+  const {
+    data: chatRoomMessage,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useInfiniteChatRoomMessage(Number(chatRoomId!));
+
+  const listRef = useRef<HTMLDivElement>(null);
+  const initialScrolledRef = useRef(false);
+  const ioReadyRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const element = listRef.current;
+    if (!element) {
+      return;
+    }
+
+    if (!initialScrolledRef.current && messages.length > 0) {
+      element.scrollTop = element.scrollHeight;
+      initialScrolledRef.current = true;
+
+      requestAnimationFrame(() => {
+        ioReadyRef.current = true;
+      });
+    }
+  }, [listRef, messages]);
+
+  const stateRef = useRef({
+    hasNextPage: false,
+    isFetchingNextPage: false,
+  });
+
+  useEffect(() => {
+    stateRef.current.hasNextPage = !!hasNextPage;
+    stateRef.current.isFetchingNextPage = !!isFetchingNextPage;
+  }, [hasNextPage, isFetchingNextPage]);
+
+  const anchorKey = messages[0]?.chatMessageId;
+
+  const shouldTrigger = useCallback(
+    () =>
+      ioReadyRef.current &&
+      stateRef.current.hasNextPage &&
+      !stateRef.current.isFetchingNextPage,
+    [],
+  );
+
+  const onIntersect = useCallback(async () => {
+    await fetchNextPage();
+  }, [fetchNextPage]);
+
+  const { pageFirstRef } = useUpwardInfiniteScroll({
+    shouldTrigger: shouldTrigger,
+    onIntersect,
+    anchorKey: anchorKey!,
+    listRef,
+  });
+
+  useEffect(() => {
+    if (chatRoomMessage) {
+      setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
+    }
+  }, [chatRoomMessage]);
+
+  const ChatRoomInfoQuery = useQuery<ChatRoomInfo>({
+    queryKey: ['chatRoomInfo', chatRoomId],
+    queryFn: () => getChatRoomInfo(Number(chatRoomId!)),
+  });
+
+  const chatRoomInfo = ChatRoomInfoQuery.data;
+
+  const stompClientRef = useRef<Client | null>(null);
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
+          withCredentials: true,
+        }),
+      onStompError: (frame) => console.error('STOMP protocol error:', frame),
+      onWebSocketError: (event) => console.error('WebSocket error:', event),
+      reconnectDelay: 5000,
+      onConnect: () => {
+        client.subscribe(
+          `/topic/chatroom/${chatRoomId}`,
+          (message: IMessage) => {
+            const parsedMessage = JSON.parse(message.body);
+
+            setMessages((prev) => {
+              if (parsedMessage.tempId) {
+                const index = prev.findIndex(
+                  (m) => Number(m.tempId) === Number(parsedMessage.tempId),
+                );
+                if (index !== -1) {
+                  const newArr = [...prev];
+                  newArr[index] = {
+                    ...parsedMessage,
+                    status: 'success',
+                  };
+                  return newArr;
+                }
+              }
+
+              const exists = prev.some(
+                (m) =>
+                  m.chatMessageId &&
+                  m.chatMessageId === parsedMessage.chatMessageId,
+              );
+              if (exists) {
+                return prev;
+              }
+
+              return [...prev, { ...parsedMessage, status: 'success' }];
+            });
+          },
+        );
+      },
+    });
+
+    stompClientRef.current = client;
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
+  }, [chatRoomId]);
+
+  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const tempId = Date.now();
+
+    const optimisticMsg = {
+      senderId: memberId,
+      content: message,
+      createdAt: new Date().toString(),
+      chatRoomId: Number(chatRoomId),
+      chatMessageId: tempId,
+      tempId,
+      status: 'pending' as const,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessage('');
+
+    const client = stompClientRef.current;
+    if (!client || !client.connected || memberId === null) {
+      return;
+    }
+
+    client.publish({
+      destination: `/app/chatroom/${chatRoomId}`,
+      body: JSON.stringify({ content: message, tempId }),
+    });
+  };
+
+  if (ChatRoomInfoQuery.isPending || !chatRoomInfo) {
+    return (
+      <S_Container>
+        <div>로딩중</div>
+      </S_Container>
+    );
+  }
+
   return (
     <S_Container>
       <div>
-        <ChatRoomHeader name="김멘토" />
+        <ChatRoomHeader name={chatRoomInfo.opponentName} />
         <MentoringActionPanel
-          mentorName="김멘토"
-          price={5000}
-          profileImageUrl="https://techcourse-project-2025.s3.amazonaws.com/fit-toring/profile-image/default/94a63bf8-4e70-40e2-a3fe-de2d7c7724c5.jpg"
-          mentorOwned={true}
+          mentorName={chatRoomInfo.mentorName}
+          price={chatRoomInfo.price}
+          profileImageUrl={chatRoomInfo.profileImageUrl}
+          mentorOwned={chatRoomInfo.myRole === 'MENTOR'}
           onPaymentRequestClick={handlePaymentRequestClick}
           onReviewRequestClick={handleReviewRequestClick}
           onEndClick={handleEndClick}
@@ -150,8 +238,16 @@ function ChatRoom() {
         />
       </div>
 
-      <ChatContent messages={DUMMY_MESSAGES} />
-      <InputSection value={message} onChange={handleChange} />
+      <ChatContent
+        messages={messages}
+        pageFirstRef={pageFirstRef}
+        listRef={listRef}
+      />
+      <InputSection
+        value={message}
+        onChange={handleChange}
+        onSubmit={handleMessageSubmit}
+      />
     </S_Container>
   );
 }

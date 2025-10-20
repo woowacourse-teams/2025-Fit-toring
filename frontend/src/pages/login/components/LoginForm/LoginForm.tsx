@@ -37,6 +37,15 @@ function LoginForm() {
   const fetchLogin = async () => {
     try {
       const response = await postLogin(userId, password);
+      const data = await response.json();
+
+      if (data?.memberId) {
+        localStorage.setItem(
+          'memberId',
+          JSON.stringify({ memberId: data.memberId }),
+        );
+      }
+
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
         navigate(PAGE_URL.HOME);
