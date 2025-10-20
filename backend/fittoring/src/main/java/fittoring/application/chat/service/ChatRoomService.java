@@ -61,7 +61,7 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public ChatRoomInfoDto findChatRoom(Long memberId, Long chatroomId) {
+    public ChatRoomInfoDto findChatRoom(Long chatroomId, Long memberId) {
         ChatRoom chatRoom = getChatRoom(chatroomId);
         validateParticipant(memberId, chatRoom);
 
