@@ -45,9 +45,6 @@ public class Mentoring {
     @Column(nullable = false)
     private String introduction;
 
-    @Column(name = "chat_url", columnDefinition = "TEXT", nullable = false)
-    private String chatUrl;
-
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -69,24 +66,21 @@ public class Mentoring {
             int price,
             Integer career,
             String content,
-            String introduction,
-            String chatUrl
+            String introduction
     ) {
-        this(null, price, career, content, introduction, chatUrl, null, false, null, member);
+        this(null, price, career, content, introduction, null, false, null, member);
     }
 
     public void modify(
             int price,
             Integer career,
             String content,
-            String introduction,
-            String chatUrl
+            String introduction
     ) {
         this.price = price;
         this.career = career;
         this.content = content;
         this.introduction = introduction;
-        this.chatUrl = chatUrl;
     }
 
     public boolean isCreatedByMember(Long memberId) {
