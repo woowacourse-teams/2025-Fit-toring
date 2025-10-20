@@ -32,7 +32,7 @@ public class FixtureUtil {
                 "menteeId" + i,
                 "MALE",
                 "이름",
-                new Phone("010-1234-56" + phoneSuffix),
+                new Phone("010-1234-" + String.format("%04d", i)),
                 Password.from("password"));
     }
 
@@ -53,7 +53,7 @@ public class FixtureUtil {
                 "mentorId" + i,
                 "MALE",
                 "멘토이름",
-                new Phone("010-1234-56" + phoneSuffix),
+                new Phone("010-1234-" + String.format("%04d", i)),
                 Password.from("password"),
                 MemberRole.MENTEE
         );
