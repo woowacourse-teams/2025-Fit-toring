@@ -14,7 +14,8 @@ interface ChatContentProps {
 
 function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
   const storedData = localStorage.getItem('memberId');
-  const memberId = storedData ? JSON.parse(storedData) : null;
+  const parsedData = storedData ? JSON.parse(storedData) : null;
+  const memberId = parsedData ? parsedData.memberId : null;
 
   useEffect(() => {
     const element = listRef.current;
@@ -29,6 +30,10 @@ function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
       element.scrollTop = element.scrollHeight;
     }
   }, [listRef, messages.length]);
+
+  if (!memberId) {
+    return null; // TODO: 에러 UI로 변경할 예정
+  }
 
   return (
     <S_Container ref={listRef}>
