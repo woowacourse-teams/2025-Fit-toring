@@ -107,7 +107,7 @@ function MentoringUpdateForm() {
       return;
     }
 
-    const addedCertifications = mentoringData.certificateInfos.filter(
+    const addedCertifications = mentoringData.certificateInfoRequests.filter(
       (info) => !initialCertificatesIdRef.current.includes(info.id),
     );
 
@@ -209,7 +209,7 @@ function MentoringUpdateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
 
     setDeletedCertificateIds((prev) => [...prev, id]);
   };
@@ -269,7 +269,7 @@ function MentoringUpdateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
   };
 
   useEffect(() => {
@@ -299,7 +299,7 @@ function MentoringUpdateForm() {
           content,
           category: categories,
           chatUrl,
-          certificateInfos: certificateInfosData,
+          certificateInfoRequests: certificateInfosData,
           profileImageUrl,
         });
         setCertificates(certificateInfosData);
