@@ -33,12 +33,15 @@ function MentoringItem({
 
   const navigate = useNavigate();
 
-  const handleReviewModalToggle = () => {
+  const handleReviewModalToggle = (
+    event?: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event?.stopPropagation();
+
     setOpened((prev) => !prev);
   };
 
-  const handleMentoringCardClick = (event: React.MouseEvent<HTMLLIElement>) => {
-    event.stopPropagation();
+  const handleMentoringCardClick = () => {
     navigate(`${PAGE_URL.DETAIL}/${mentoringId}`);
   };
 
@@ -52,34 +55,36 @@ function MentoringItem({
   };
 
   return (
-    <S_Container key={reservationId} onClick={handleMentoringCardClick}>
-      <S_SummaryWrapper>
-        <S_Name>{mentorName}</S_Name>
-        <MentoringApplicationStatus status={status} type="PARTICIPATED" />
-      </S_SummaryWrapper>
-      <S_ReservedAt>신청일: {reservedAt}</S_ReservedAt>
-      <S_MentorCardWrapper>
-        <S_ProfileImage src={mentorProfileImage} />
-        <S_MessageAndReviewWrapper>
-          <S_Message>
-            <p>{content}</p>
-          </S_Message>
-          {status === StatusTypeEnum.COMPLETE ? (
-            <ReviewButton
-              isReviewed={isReviewed}
-              status={status}
-              onReviewButtonClick={handleReviewModalToggle}
-              onReviewCompleteButtonClick={handleReviewCompleteButtonClick}
-            />
-          ) : null}
-        </S_MessageAndReviewWrapper>
-      </S_MentorCardWrapper>
-      {status !== StatusTypeEnum.REJECTED &&
-      status !== StatusTypeEnum.COMPLETE ? (
-        <S_StepperWrapper>
-          <MentoringStepper status={status} />
-        </S_StepperWrapper>
-      ) : null}
+    <>
+      <S_Container key={reservationId} onClick={handleMentoringCardClick}>
+        <S_SummaryWrapper>
+          <S_Name>{mentorName}</S_Name>
+          <MentoringApplicationStatus status={status} type="PARTICIPATED" />
+        </S_SummaryWrapper>
+        <S_ReservedAt>신청일: {reservedAt}</S_ReservedAt>
+        <S_MentorCardWrapper>
+          <S_ProfileImage src={mentorProfileImage} />
+          <S_MessageAndReviewWrapper>
+            <S_Message>
+              <p>{content}</p>
+            </S_Message>
+            {status === StatusTypeEnum.COMPLETE ? (
+              <ReviewButton
+                isReviewed={isReviewed}
+                status={status}
+                onReviewButtonClick={handleReviewModalToggle}
+                onReviewCompleteButtonClick={handleReviewCompleteButtonClick}
+              />
+            ) : null}
+          </S_MessageAndReviewWrapper>
+        </S_MentorCardWrapper>
+        {status !== StatusTypeEnum.REJECTED &&
+        status !== StatusTypeEnum.COMPLETE ? (
+          <S_StepperWrapper>
+            <MentoringStepper status={status} />
+          </S_StepperWrapper>
+        ) : null}
+      </S_Container>
       <ReviewModal
         reservationId={reservationId}
         mentorName={mentorName}
@@ -87,7 +92,7 @@ function MentoringItem({
         onCloseClick={handleReviewModalToggle}
         onReviewSubmitButtonClick={handleReviewSubmitButtonClick}
       />
-    </S_Container>
+    </>
   );
 }
 
