@@ -37,14 +37,22 @@ function MentoringItem({
     setOpened((prev) => !prev);
   };
 
-  const handleReviewCompleteButtonClick = () => {
+  const handleMentoringCardClick = (event: React.MouseEvent<HTMLLIElement>) => {
+    event.stopPropagation();
+    navigate(`${PAGE_URL.DETAIL}/${mentoringId}`);
+  };
+
+  const handleReviewCompleteButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.stopPropagation();
     navigate(`${PAGE_URL.DETAIL}/${mentoringId}`, {
       state: { tab: 'review' },
     });
   };
 
   return (
-    <S_Container key={reservationId}>
+    <S_Container key={reservationId} onClick={handleMentoringCardClick}>
       <S_SummaryWrapper>
         <S_Name>{mentorName}</S_Name>
         <MentoringApplicationStatus status={status} type="PARTICIPATED" />
@@ -94,6 +102,8 @@ const S_Container = styled.li`
   border-radius: 5px;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+
+  cursor: pointer;
 `;
 
 const S_SummaryWrapper = styled.div`
