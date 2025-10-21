@@ -74,5 +74,13 @@ public interface ImageRepository extends ListCrudRepository<Image, Long> {
             @Param("baseName") String baseName
     );
 
-    void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId);
+    @Modifying(flushAutomatically = true)
+    @Query("""
+            DELETE FROM Image i
+            WHERE i.imageType = :type and i.relationId = :relationId
+            """)
+    void deleteByImageTypeAndRelationId(
+            @Param("type") ImageType imageType,
+            @Param("relationId") Long relationId
+    );
 }
