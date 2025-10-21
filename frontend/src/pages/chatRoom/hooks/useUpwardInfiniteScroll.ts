@@ -1,31 +1,55 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 
 interface useUpwardInfiniteScrollParams {
   onIntersect: () => void | Promise<void>;
   anchorKey: number | string;
-  listRef: React.RefObject<HTMLDivElement | null>;
+  listElRef: React.RefObject<HTMLDivElement | null>;
   shouldTrigger: () => boolean;
 }
 
 const useUpwardInfiniteScroll = ({
   onIntersect,
   anchorKey,
-  listRef,
+  listElRef,
   shouldTrigger,
 }: useUpwardInfiniteScrollParams) => {
-  const pageFirstRef = useRef<HTMLDivElement | null>(null);
+  const pageFirstElRef = useRef<HTMLDivElement | null>(null);
 
   const expectPrependRef = useRef<null | { prevH: number; prevTop: number }>(
     null,
   );
 
-  useEffect(() => {
-    const target = pageFirstRef.current;
-    const list = listRef.current;
+  const [ready, setReady] = useState(false);
 
-    if (!target || !list) {
+  const listReadyRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      listElRef.current = node;
+      setReady(!!node && !!pageFirstElRef.current);
+    },
+    [listElRef],
+  );
+
+  const pageFirstReadyRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      pageFirstElRef.current = node;
+      setReady(!!node && !!listElRef.current);
+    },
+    [listElRef],
+  );
+
+  useEffect(() => {
+    const target = pageFirstElRef.current;
+    const list = listElRef.current;
+
+    if (!ready || !target || !list) {
       return;
     }
 
@@ -54,7 +78,7 @@ const useUpwardInfiniteScroll = ({
         }
       },
       {
-        root: listRef.current,
+        root: listElRef.current,
         threshold: 0.1,
         rootMargin: '20px 0px 0px 0px',
       },
@@ -63,10 +87,10 @@ const useUpwardInfiniteScroll = ({
     observer.observe(target);
 
     return () => observer.disconnect();
-  }, [onIntersect, shouldTrigger, pageFirstRef.current, listRef.current]);
+  }, [onIntersect, shouldTrigger, listElRef, ready]);
 
   useLayoutEffect(() => {
-    const list = listRef.current;
+    const list = listElRef.current;
     const snap = expectPrependRef.current;
     if (!list || !snap) {
       return;
@@ -76,9 +100,9 @@ const useUpwardInfiniteScroll = ({
     list.scrollTop = snap.prevTop + delta;
 
     expectPrependRef.current = null;
-  }, [listRef, anchorKey]);
+  }, [listElRef, anchorKey]);
 
-  return { pageFirstRef };
+  return { listReadyRef, pageFirstReadyRef };
 };
 
 export default useUpwardInfiniteScroll;
