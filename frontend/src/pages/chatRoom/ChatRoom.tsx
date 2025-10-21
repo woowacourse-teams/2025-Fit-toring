@@ -188,6 +188,10 @@ function ChatRoom() {
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (message === '') {
+      return;
+    }
+
     const tempId = Date.now();
 
     const optimisticMsg = {
