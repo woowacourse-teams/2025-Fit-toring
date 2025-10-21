@@ -56,7 +56,7 @@ function MentoringItem({
           <S_Message>
             <p>{content}</p>
           </S_Message>
-          {status !== StatusTypeEnum.REJECTED ? (
+          {status === StatusTypeEnum.COMPLETE ? (
             <ReviewButton
               isReviewed={isReviewed}
               status={status}
