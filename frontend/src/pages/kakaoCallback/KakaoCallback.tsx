@@ -24,6 +24,14 @@ function KakaoCallback() {
     const handleLogin = async (authCode: string) => {
       try {
         const response = await postKakaoLogin(authCode);
+        const data = await response.json();
+
+        if (data?.memberId) {
+          localStorage.setItem(
+            'memberId',
+            JSON.stringify({ memberId: data.memberId }),
+          );
+        }
 
         if (response.status === 200) {
           login();
