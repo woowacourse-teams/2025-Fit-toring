@@ -102,7 +102,7 @@ const useUpwardInfiniteScroll = ({
     expectPrependRef.current = null;
   }, [listElRef, anchorKey]);
 
-  return { listReadyRef, pageFirstReadyRef };
+  return { listReadyRef, pageFirstReadyRef, ready };
 };
 
 export default useUpwardInfiniteScroll;

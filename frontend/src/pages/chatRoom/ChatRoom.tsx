@@ -69,22 +69,6 @@ function ChatRoom() {
   const initialScrolledRef = useRef(false);
   const ioReadyRef = useRef(false);
 
-  useLayoutEffect(() => {
-    const element = listElRef.current;
-    if (!element) {
-      return;
-    }
-
-    if (!initialScrolledRef.current && messages.length > 0) {
-      element.scrollTop = element.scrollHeight;
-      initialScrolledRef.current = true;
-
-      requestAnimationFrame(() => {
-        ioReadyRef.current = true;
-      });
-    }
-  }, [listElRef, messages]);
-
   const stateRef = useRef({
     hasNextPage: false,
     isFetchingNextPage: false,
@@ -109,12 +93,28 @@ function ChatRoom() {
     await fetchNextPage();
   }, [fetchNextPage]);
 
-  const { listReadyRef, pageFirstReadyRef } = useUpwardInfiniteScroll({
+  const { listReadyRef, pageFirstReadyRef, ready } = useUpwardInfiniteScroll({
     shouldTrigger: shouldTrigger,
     onIntersect,
     anchorKey: anchorKey!,
     listElRef,
   });
+
+  useLayoutEffect(() => {
+    const element = listElRef.current;
+    if (!element || !ready) {
+      return;
+    }
+
+    if (!initialScrolledRef.current && messages.length > 0) {
+      element.scrollTop = element.scrollHeight;
+      initialScrolledRef.current = true;
+
+      requestAnimationFrame(() => {
+        ioReadyRef.current = true;
+      });
+    }
+  }, [listElRef, messages, ready]);
 
   useEffect(() => {
     if (chatRoomMessage) {
