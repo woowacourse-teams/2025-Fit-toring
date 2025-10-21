@@ -20,8 +20,6 @@ function SpecialtyCheckbox({
         checked={checked}
         onChange={onChange}
         disabled={disabled}
-        aria-checked={checked}
-        aria-disabled={disabled}
       />
       {specialty}
     </S_Container>
