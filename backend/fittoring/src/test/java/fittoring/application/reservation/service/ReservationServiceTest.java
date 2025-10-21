@@ -8,6 +8,7 @@ import fittoring.IntegrationTestSupport;
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
+import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
@@ -26,6 +27,7 @@ import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -72,6 +74,9 @@ class ReservationServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
 
     @BeforeEach
     void setUp() {
@@ -161,19 +166,31 @@ class ReservationServiceTest extends IntegrationTestSupport {
         Member mentee1 = FixtureUtil.getTestMentee(1);
         Member mentee2 = FixtureUtil.getTestMentee(2);
         Member mentee3 = FixtureUtil.getTestMentee(3);
-        memberRepository.saveAll(List.of(mentee1, mentee2, mentee3));
+        List<Member> savedMentees = memberRepository.saveAll(List.of(mentee1, mentee2, mentee3));
 
         Reservation reservation1 = FixtureUtil.getTestPendingReservation(mentoring, mentee1);
+        reservation1.changeStatus(Status.APPROVED);
         Reservation reservation2 = FixtureUtil.getTestPendingReservation(mentoring, mentee2);
+        reservation2.changeStatus(Status.APPROVED);
         Reservation reservation3 = FixtureUtil.getTestPendingReservation(mentoring, mentee3);
-        reservationRepository.saveAll(List.of(reservation1, reservation2, reservation3));
+        reservation3.changeStatus(Status.APPROVED);
+        List<Reservation> savedReservations = reservationRepository.saveAll(List.of(reservation1, reservation2, reservation3));
+
+        ChatRoom chatRoom1 = FixtureUtil.getTestChatRoom(savedReservations.get(0).getId(), savedMentees.get(0).getId(), mentor.getId());
+        ChatRoom chatRoom2 = FixtureUtil.getTestChatRoom(savedReservations.get(1).getId(), savedMentees.get(1).getId(), mentor.getId());
+        ChatRoom chatRoom3 = FixtureUtil.getTestChatRoom(savedReservations.get(2).getId(), savedMentees.get(2).getId(), mentor.getId());
+        List<ChatRoom> savedChatRooms = chatRoomRepository.saveAll(List.of(chatRoom1, chatRoom2, chatRoom3));
 
         // when
-        List<MentorMentoringReservationResponse> actual =
-                reservationService.getReservationsByMentor(mentor.getId());
+        List<MentorMentoringReservationResponse> actual = reservationService.getReservationsByMentor(mentor.getId());
 
         // then
-        assertThat(actual).hasSize(3);
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(actual).hasSize(3);
+            softAssertions.assertThat(actual.get(0).chatRoomId()).isEqualTo(savedChatRooms.get(0).getId());
+            softAssertions.assertThat(actual.get(1).chatRoomId()).isEqualTo(savedChatRooms.get(1).getId());
+            softAssertions.assertThat(actual.get(2).chatRoomId()).isEqualTo(savedChatRooms.get(2).getId());
+        });
     }
 
     @DisplayName("특정 멘토가 개설한 멘토링의 예약이 존재하지 않으면 빈 리스트를 반환한다.")
@@ -269,6 +286,9 @@ class ReservationServiceTest extends IntegrationTestSupport {
                 new Reservation("신청 내용2", Status.PENDING, mentoring2, mentee)
         );
 
+        ChatRoom chatRoom1 = chatRoomRepository.save(new ChatRoom(reservation1.getId(), mentee.getId(), mentor1.getId()));
+        ChatRoom chatRoom2 = chatRoomRepository.save(new ChatRoom(reservation2.getId(), mentee.getId(), mentor2.getId()));
+
         // 리뷰는 두 번째 예약에만 달림 → expected의 마지막 boolean = true
         reviewRepository.save(new Review(4, "좋았습니다.", reservation2, mentee));
 
@@ -281,6 +301,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
                         reservation1.getCreatedAt().toLocalDate(),
                         reservation1.getContent(),
                         Status.PENDING.name(),
+                        chatRoom1.getId(),
                         false
                 ),
                 new ParticipatedReservationResponse(
@@ -291,6 +312,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
                         reservation2.getCreatedAt().toLocalDate(),
                         reservation2.getContent(),
                         Status.PENDING.name(),
+                        chatRoom2.getId(),
                         true
                 )
         );

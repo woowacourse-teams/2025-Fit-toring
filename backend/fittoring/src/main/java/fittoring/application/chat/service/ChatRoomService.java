@@ -18,6 +18,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,5 +130,9 @@ public class ChatRoomService {
             return MemberRole.MENTOR;
         }
         return MemberRole.MENTEE;
+    }
+
+    public Optional<ChatRoom> findByReservationId(Long reservationId) {
+        return chatRoomRepository.findByReservationId(reservationId);
     }
 }

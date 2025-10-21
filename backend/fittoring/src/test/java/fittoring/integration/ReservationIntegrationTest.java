@@ -33,6 +33,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -347,10 +348,10 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 });
 
         //then
-        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation);
-        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2);
-        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
-        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
+        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation, Optional.ofNullable(null));
+        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2, Optional.ofNullable(null));
+        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3, Optional.ofNullable(null));
+        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4, Optional.ofNullable(null));
 
         assertThat(response)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
@@ -437,12 +438,12 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 });
 
         //then
-        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation);
-        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2);
-        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
-        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
-        MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5);
-        MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6);
+        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation, Optional.ofNullable(null));
+        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2, Optional.ofNullable(null));
+        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3, Optional.ofNullable(null));
+        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4, Optional.ofNullable(null));
+        MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5, Optional.ofNullable(null));
+        MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6, Optional.ofNullable(null));
 
         assertThat(response)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")

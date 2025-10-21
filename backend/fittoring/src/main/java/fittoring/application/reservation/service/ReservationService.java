@@ -22,14 +22,17 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -94,9 +97,13 @@ public class ReservationService {
 
     private List<MentorMentoringReservationResponse> getMentorMentoringReservationResponses(
             List<Reservation> reservations) {
-        return reservations.stream()
-                .map(MentorMentoringReservationResponse::of)
-                .toList();
+        List<MentorMentoringReservationResponse> reservationResponses = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            Optional<ChatRoom> chatRoom = chatRoomService.findByReservationId(reservation.getId());
+            MentorMentoringReservationResponse reservationResponse = MentorMentoringReservationResponse.of(reservation, chatRoom);
+            reservationResponses.add(reservationResponse);
+        }
+        return reservationResponses;
     }
 
     @Transactional(readOnly = true)
@@ -121,7 +128,9 @@ public class ReservationService {
         );
 
         return rows.stream()
-                .map(r -> new ParticipatedReservationResponse(
+                .map(r -> {
+                    Optional<ChatRoom> chatRoom = chatRoomService.findByReservationId(r.getReservationId());
+                    return new ParticipatedReservationResponse(
                         r.getReservationId(),
                         r.getMentoringId(),
                         r.getMentorName(),
@@ -129,7 +138,9 @@ public class ReservationService {
                         r.getReservedAt(),
                         r.getContent(),
                         r.getStatus(),
-                        r.getIsReviewed()))
+                        chatRoom.map(ChatRoom::getId).orElse(null),
+                        r.getIsReviewed());
+                })
                 .toList();
     }
 
