@@ -85,7 +85,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
 
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        imageRepository.save(FixtureUtil.getTestImageForMentoringProfile(mentoring));
+        imageRepository.save(FixtureUtil.getTestImageForMentoringProfileDefault(mentoring));
 
         Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
@@ -114,7 +114,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
 
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        imageRepository.save(FixtureUtil.getTestImageForMentoringProfile(mentoring));
+        imageRepository.save(FixtureUtil.getTestImageForMentoringProfileDefault(mentoring));
 
         Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 

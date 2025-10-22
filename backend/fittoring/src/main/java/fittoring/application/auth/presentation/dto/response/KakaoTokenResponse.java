@@ -1,4 +1,4 @@
-package fittoring.application.auth.service.dto;
+package fittoring.application.auth.presentation.dto.response;
 
 public record KakaoTokenResponse(
         String access_token,

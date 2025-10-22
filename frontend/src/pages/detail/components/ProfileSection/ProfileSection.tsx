@@ -1,11 +1,9 @@
 import { useState } from 'react';
 
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import defaultProfileImg from '../../../../common/assets/images/profileImg.svg';
 import starIcon from '../../../../common/assets/images/starIcon.svg';
-import Button from '../../../../common/components/Button/Button';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import useEscapeKeyDown from '../../../../common/hooks/useEscapeKeyDown';
@@ -57,20 +55,17 @@ function ProfileSection({
       <S_InfoWrapper>
         <S_InfoHeader>
           <S_Title>{mentorName}</S_Title>
-          <Button
-            variant="newPrimary"
-            customStyle={css`
-              padding: 1rem 1.35rem;
-            `}
+
+          <S_MoveLink
+            href="#certificate-section"
             onClick={onCertificateShowButton}
           >
-            <S_MoveLink href="#certificate-section">
-              자격사항 보러가기
-            </S_MoveLink>
-          </Button>
+            자격사항 보러가기
+          </S_MoveLink>
         </S_InfoHeader>
 
         <TextWithIcon
+          ariaLabel={`(${ratingCount})개의 리뷰, 평균 ${ratingAverage}점`}
           text={`${ratingAverage} (${ratingCount})`}
           iconSrc={starIcon}
           iconName="별점"
@@ -127,7 +122,17 @@ const S_Title = styled.h3`
 const S_MoveLink = styled.a`
   display: block;
 
+  padding: 1rem 1.35rem;
+  border: none;
+  border: ${({ theme }) => `1px solid ${theme.SYSTEM.GRAY300}`};
+  border-radius: 0.7rem;
+
+  background-color: transparent;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY600};
   color: inherit;
+  font-size: 1.6rem;
+  cursor: pointer;
   text-decoration: none;
 `;
 
