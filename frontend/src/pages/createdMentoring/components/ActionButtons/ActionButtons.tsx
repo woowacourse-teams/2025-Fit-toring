@@ -9,14 +9,24 @@ import { patchReservationStatus } from '../../apis/patchReservationStatus';
 import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
 
 import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
+import { useNavigate } from 'react-router-dom';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 interface ActionButtonsProps {
   reservationId: number;
   status: StatusType;
+  chatRoomId: number | null;
   onClick: (status: StatusType) => void;
 }
 
-function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
+function ActionButtons({
+  reservationId,
+  status,
+  chatRoomId,
+  onClick,
+}: ActionButtonsProps) {
+  const navigate = useNavigate();
+
   const updateStatus = async (newStatus: MENTORING_APPLICATION_STATUS) => {
     try {
       const response = await patchReservationStatus(reservationId, {
@@ -75,6 +85,10 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
     }
   };
 
+  const handleChatButtonClick = async () => {
+    navigate(`${PAGE_URL.CHAT_ROOM}/${chatRoomId}`);
+  };
+
   const handleCompleteButtonClick = async () => {
     try {
       if (
@@ -109,6 +123,9 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
   if (status === StatusTypeEnum.APPROVED) {
     return (
       <S_Container>
+        <S_SecondaryButton onClick={handleChatButtonClick}>
+          채팅방으로 이동
+        </S_SecondaryButton>
         <S_PrimaryButton onClick={handleCompleteButtonClick}>
           완료
         </S_PrimaryButton>
