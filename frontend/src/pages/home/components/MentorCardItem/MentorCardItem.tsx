@@ -34,7 +34,12 @@ function MentorCardItem({
   };
 
   return (
-    <S_Container onClick={handleDetailInfoButtonClick}>
+    <S_Container
+      onClick={handleDetailInfoButtonClick}
+      tabIndex={0}
+      role="link"
+      aria-label={`${mentorName}님, 가격: 15분당 ${price.toLocaleString()}원, 평점 ${ratingAverage}점, 리뷰 ${ratingCount}개, ${categories.join(', ')}, ${introduction}`}
+    >
       <S_ImageBox>
         <S_ProfileImg
           src={profileImageUrl || profileImg}
