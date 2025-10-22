@@ -148,6 +148,8 @@ public class AuthService {
                 new Phone(request.phone()),
                 Password.from(randomPw)
         );
+        validateDuplicateLoginId(randomLoginId);
+        validateDuplicatePhone(request.phone());
         memberRepository.save(member);
         MemberOauth memberOauth = new MemberOauth(member, AuthProvider.KAKAO, oauthId);
         memberOauthRepository.save(memberOauth);
