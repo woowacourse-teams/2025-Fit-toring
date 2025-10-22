@@ -89,25 +89,6 @@ function ActionButtons({
     navigate(`${PAGE_URL.CHAT_ROOM}/${chatRoomId}`);
   };
 
-  // const handleCompleteButtonClick = async () => {
-  //   try {
-  //     if (
-  //       confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
-  //     ) {
-  //       await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
-  //       onClick(StatusTypeEnum.COMPLETE);
-  //     }
-  //   } catch (error) {
-  //     console.error(`Error handling complete button click:`, error);
-  //     captureSentryError({
-  //       error,
-  //       level: 'warning',
-  //       feature: 'createdMentoring',
-  //       step: 'complete-button-click',
-  //     });
-  //   }
-  // };
-
   if (status === StatusTypeEnum.PENDING) {
     return (
       <S_Container>
@@ -129,9 +110,6 @@ function ActionButtons({
         <S_PrimaryButton onClick={handleChatButtonClick}>
           채팅방으로 이동
         </S_PrimaryButton>
-        {/* <S_PrimaryButton onClick={handleCompleteButtonClick}>
-          완료
-        </S_PrimaryButton> */}
       </S_Container>
     );
   }
