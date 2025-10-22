@@ -19,6 +19,10 @@ spring:
     user: ${PROD_DATABASE_USER}
     password: ${PROD_DATABASE_PASSWORD}
     baseline-on-migrate: true
+  cloud:
+    aws:
+      sqs:
+        enabled: false
 aws:
   s3:
     env-prefix: local/
