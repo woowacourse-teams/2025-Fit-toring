@@ -24,12 +24,23 @@ function KakaoCallback() {
     const handleLogin = async (authCode: string) => {
       try {
         const response = await postKakaoLogin(authCode);
+        const data = await response.json();
+
+        if (data?.memberId) {
+          localStorage.setItem(
+            'memberId',
+            JSON.stringify({ memberId: data.memberId }),
+          );
+        }
 
         if (response.status === 200) {
           login();
           navigate(PAGE_URL.HOME, { replace: true });
         } else if (response.status === 204) {
           navigate(PAGE_URL.IDENTITY_VERIFICATION, { replace: true });
+        } else if (response.status === 400) {
+          alert('이미 가입된 회원입니다. 다른 로그인 방식을 이용해주세요.');
+          navigate(PAGE_URL.LOGIN, { replace: true });
         }
       } catch (error) {
         console.error('카카오 로그인 에러', error);
