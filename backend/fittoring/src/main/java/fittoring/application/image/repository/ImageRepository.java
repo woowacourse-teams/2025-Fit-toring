@@ -75,6 +75,7 @@ public interface ImageRepository extends ListCrudRepository<Image, Long> {
     );
 
     @Modifying(flushAutomatically = true)
+    @Transactional
     @Query("""
             DELETE FROM Image i
             WHERE i.imageType = :type and i.relationId = :relationId
