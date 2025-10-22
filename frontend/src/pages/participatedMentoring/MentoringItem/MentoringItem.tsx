@@ -11,6 +11,7 @@ import ReviewButton from '../ReviewButton/ReviewButton';
 import ReviewModal from '../ReviewModal/ReviewModal';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
+import Button from '../../../common/components/Button/Button';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
   handleReviewSubmitButtonClick: (reservationId: number) => void;
@@ -26,6 +27,7 @@ function MentoringItem({
     reservedAt,
     isReviewed,
     status,
+    chatRoomId,
   },
   handleReviewSubmitButtonClick,
 }: MentoringItemProps) {
@@ -43,6 +45,13 @@ function MentoringItem({
     });
   };
 
+  const handleChatButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.stopPropagation();
+    navigate(`${PAGE_URL.CHAT_ROOM}/${chatRoomId}`);
+  };
+
   return (
     <S_Container key={reservationId}>
       <S_SummaryWrapper>
@@ -52,26 +61,31 @@ function MentoringItem({
       <S_ReservedAt>신청일: {reservedAt}</S_ReservedAt>
       <S_MentorCardWrapper>
         <S_ProfileImage src={mentorProfileImage} />
-        <S_MessageAndReviewWrapper>
-          <S_Message>
-            <p>{content}</p>
-          </S_Message>
-          {status !== StatusTypeEnum.REJECTED ? (
-            <ReviewButton
-              isReviewed={isReviewed}
-              status={status}
-              onReviewButtonClick={handleReviewModalToggle}
-              onReviewCompleteButtonClick={handleReviewCompleteButtonClick}
-            />
-          ) : null}
-        </S_MessageAndReviewWrapper>
+        <S_MessagWrapper>
+          <p>{content}</p>
+        </S_MessagWrapper>
       </S_MentorCardWrapper>
+      {status !== StatusTypeEnum.REJECTED ? (
+        <ReviewButton
+          isReviewed={isReviewed}
+          status={status}
+          onReviewButtonClick={handleReviewModalToggle}
+          onReviewCompleteButtonClick={handleReviewCompleteButtonClick}
+        />
+      ) : null}
+      {status === StatusTypeEnum.APPROVED ||
+      status === StatusTypeEnum.COMPLETE ? (
+        <S_ChatButton onClick={handleChatButtonClick}>
+          채팅방으로 이동
+        </S_ChatButton>
+      ) : null}
       {status !== StatusTypeEnum.REJECTED &&
       status !== StatusTypeEnum.COMPLETE ? (
         <S_StepperWrapper>
           <MentoringStepper status={status} />
         </S_StepperWrapper>
       ) : null}
+
       <ReviewModal
         reservationId={reservationId}
         mentorName={mentorName}
@@ -94,6 +108,7 @@ const S_Container = styled.li`
   border-radius: 5px;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  cursor: pointer;
 `;
 
 const S_SummaryWrapper = styled.div`
@@ -122,6 +137,7 @@ const S_MentorCardWrapper = styled.div`
   justify-content: space-between;
 
   width: 100%;
+  margin-bottom: 1rem;
 `;
 
 const S_ProfileImage = styled.img`
@@ -133,25 +149,45 @@ const S_ProfileImage = styled.img`
   object-fit: cover;
 `;
 
-const S_MessageAndReviewWrapper = styled.div`
+const S_MessagWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
   width: 100%;
+  height: 8.5rem;
   min-width: 0;
   padding-left: 1.2rem;
-`;
-
-const S_Message = styled.div`
-  width: 100%;
-  height: 8.5rem;
 
   color: ${({ theme }) => theme.SYSTEM.GRAY800};
   overflow-y: scroll;
 
   ${({ theme }) => theme.TYPOGRAPHY.C2_R}
   line-height: 1.8rem;
+`;
+
+const S_ChatButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  width: 100%;
+  height: 3.8rem;
+  margin-top: 1rem;
+  margin-left: auto;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+
+  transition: all 0.2s ease;
+
+  cursor: pointer;
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  background-color: ${({ theme }) => theme.BG.BLACK};
+
+  color: ${({ theme }) => theme.BG.WHITE};
 `;
 
 const S_StepperWrapper = styled.div`
