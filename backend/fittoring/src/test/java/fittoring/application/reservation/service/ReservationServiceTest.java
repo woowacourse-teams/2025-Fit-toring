@@ -172,8 +172,16 @@ class ReservationServiceTest extends IntegrationTestSupport {
         List<MentorMentoringReservationResponse> actual =
                 reservationService.getReservationsByMentor(mentor.getId());
 
+        List<MentorMentoringReservationResponse> responses = List.of(
+                MentorMentoringReservationResponse.of(reservation3),
+                MentorMentoringReservationResponse.of(reservation2),
+                MentorMentoringReservationResponse.of(reservation1)
+        );
+
         // then
-        assertThat(actual).hasSize(3);
+        assertThat(actual)
+                .containsExactlyElementsOf(responses)
+        ;
     }
 
     @DisplayName("특정 멘토가 개설한 멘토링의 예약이 존재하지 않으면 빈 리스트를 반환한다.")
@@ -274,16 +282,6 @@ class ReservationServiceTest extends IntegrationTestSupport {
 
         List<ParticipatedReservationResponse> expected = List.of(
                 new ParticipatedReservationResponse(
-                        reservation1.getId(),
-                        mentoring1.getId(),
-                        mentoring1.getMentorName(),
-                        profileImageOfMentor1.getUrl(),
-                        reservation1.getCreatedAt().toLocalDate(),
-                        reservation1.getContent(),
-                        Status.PENDING.name(),
-                        false
-                ),
-                new ParticipatedReservationResponse(
                         reservation2.getId(),
                         mentoring2.getId(),
                         mentoring2.getMentorName(),
@@ -292,6 +290,16 @@ class ReservationServiceTest extends IntegrationTestSupport {
                         reservation2.getContent(),
                         Status.PENDING.name(),
                         true
+                ),
+                new ParticipatedReservationResponse(
+                        reservation1.getId(),
+                        mentoring1.getId(),
+                        mentoring1.getMentorName(),
+                        profileImageOfMentor1.getUrl(),
+                        reservation1.getCreatedAt().toLocalDate(),
+                        reservation1.getContent(),
+                        Status.PENDING.name(),
+                        false
                 )
         );
 
@@ -302,7 +310,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         // then
         assertThat(actual)
                 .usingRecursiveFieldByFieldElementComparator()
-                .containsExactlyInAnyOrderElementsOf(expected);
+                .containsExactlyElementsOf(expected);
     }
 
     @DisplayName("관리자는 예약의 상태를 변경할 수 있다")
