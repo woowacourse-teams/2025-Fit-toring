@@ -184,6 +184,12 @@ class ReservationServiceTest extends IntegrationTestSupport {
         // when
         List<MentorMentoringReservationResponse> actual = reservationService.getReservationsByMentor(mentor.getId());
 
+        List<MentorMentoringReservationResponse> responses = List.of(
+                MentorMentoringReservationResponse.of(reservation3),
+                MentorMentoringReservationResponse.of(reservation2),
+                MentorMentoringReservationResponse.of(reservation1)
+        );
+
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(actual).hasSize(3);
@@ -352,7 +358,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         // then
         assertThat(actual)
                 .usingRecursiveFieldByFieldElementComparator()
-                .containsExactlyInAnyOrderElementsOf(expected);
+                .containsExactlyElementsOf(expected);
     }
 
     @DisplayName("관리자는 예약의 상태를 변경할 수 있다")

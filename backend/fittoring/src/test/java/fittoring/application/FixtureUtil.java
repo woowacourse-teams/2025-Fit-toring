@@ -105,7 +105,12 @@ public class FixtureUtil {
         return new Review(5, "좋았습니다.", reservation, reviewer);
     }
 
-    public static Image getTestImageForMentoringProfile(Mentoring mentoring) {
+    public static Image getTestImageForMentoringProfileDefault(Mentoring mentoring) {
+        return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.DEFAULT, mentoring.getId(),
+                "baseName");
+    }
+
+    public static Image getTestImageForMentoringProfileThumbnail(Mentoring mentoring) {
         return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId(),
                 "baseName");
     }
