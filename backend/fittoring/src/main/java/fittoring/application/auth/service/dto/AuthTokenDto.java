@@ -1,4 +1,4 @@
-package fittoring.application.auth.presentation.dto.response;
+package fittoring.application.auth.service.dto;
 
 public record AuthTokenDto(
     String accessToken,
