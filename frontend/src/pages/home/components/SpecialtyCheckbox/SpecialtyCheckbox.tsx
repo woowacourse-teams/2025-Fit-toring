@@ -41,7 +41,6 @@ const S_Container = styled.label<{
     ${({ theme, checked }) =>
       checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
   border-radius: 16px;
-  user-select: none;
 
   color: ${({ theme, checked }) =>
     checked ? theme.SYSTEM.MAIN500 : theme.FONT.B02};
