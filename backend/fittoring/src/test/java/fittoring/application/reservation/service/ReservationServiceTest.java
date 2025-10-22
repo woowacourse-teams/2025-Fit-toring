@@ -280,10 +280,16 @@ class ReservationServiceTest extends IntegrationTestSupport {
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
         Reservation reservation1 = reservationRepository.save(
-                new Reservation("신청 내용1", Status.PENDING, mentoring1, mentee)
+                new Reservation("신청 내용1", Status.APPROVED, mentoring1, mentee)
         );
         Reservation reservation2 = reservationRepository.save(
-                new Reservation("신청 내용2", Status.PENDING, mentoring2, mentee)
+            new Reservation("신청 내용2", Status.COMPLETE, mentoring2, mentee)
+        );
+        Reservation reservation3 = reservationRepository.save(
+            new Reservation("신청 내용3", Status.PENDING, mentoring2, mentee)
+        );
+        Reservation reservation4 = reservationRepository.save(
+            new Reservation("신청 내용4", Status.REJECTED, mentoring2, mentee)
         );
 
         ChatRoom chatRoom1 = chatRoomRepository.save(new ChatRoom(reservation1.getId(), mentee.getId(), mentor1.getId()));
@@ -300,20 +306,42 @@ class ReservationServiceTest extends IntegrationTestSupport {
                         profileImageOfMentor1.getUrl(),
                         reservation1.getCreatedAt().toLocalDate(),
                         reservation1.getContent(),
-                        Status.PENDING.name(),
+                        Status.APPROVED.name(),
                         chatRoom1.getId(),
                         false
                 ),
                 new ParticipatedReservationResponse(
-                        reservation2.getId(),
-                        mentoring2.getId(),
-                        mentoring2.getMentorName(),
-                        null,
-                        reservation2.getCreatedAt().toLocalDate(),
-                        reservation2.getContent(),
-                        Status.PENDING.name(),
-                        chatRoom2.getId(),
-                        true
+                    reservation2.getId(),
+                    mentoring2.getId(),
+                    mentoring2.getMentorName(),
+                    null,
+                    reservation2.getCreatedAt().toLocalDate(),
+                    reservation2.getContent(),
+                    Status.COMPLETE.name(),
+                    chatRoom2.getId(),
+                    true
+                ),
+                new ParticipatedReservationResponse(
+                    reservation3.getId(),
+                    mentoring2.getId(),
+                    mentoring2.getMentorName(),
+                    null,
+                    reservation3.getCreatedAt().toLocalDate(),
+                    reservation3.getContent(),
+                    Status.PENDING.name(),
+                    null,
+                    false
+                ),
+                new ParticipatedReservationResponse(
+                    reservation4.getId(),
+                    mentoring2.getId(),
+                    mentoring2.getMentorName(),
+                    null,
+                    reservation4.getCreatedAt().toLocalDate(),
+                    reservation4.getContent(),
+                    Status.REJECTED.name(),
+                    null,
+                    false
                 )
         );
 

@@ -4,7 +4,6 @@ import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ChatStatus;
 import fittoring.domain.model.Reservation;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public record MentorMentoringReservationResponse(
         Long reservationId,
@@ -18,7 +17,11 @@ public record MentorMentoringReservationResponse(
         LocalDateTime createdAt
 ) {
 
-    public static MentorMentoringReservationResponse of(Reservation reservation, Optional<ChatRoom> chatRoom) {
+    public static MentorMentoringReservationResponse of(Reservation reservation) {
+        return of(reservation, null);
+    }
+
+    public static MentorMentoringReservationResponse of(Reservation reservation, ChatRoom chatRoom) {
         if (reservation.isPending()) {
             return ofPending(reservation);
         }
@@ -41,9 +44,9 @@ public record MentorMentoringReservationResponse(
 
     private static MentorMentoringReservationResponse ofApprovedOrRejected(
         Reservation reservation,
-        Optional<ChatRoom> chatRoom
+        ChatRoom chatRoom
     ) {
-        if (chatRoom.isEmpty()) {
+        if (chatRoom == null) {
             return new MentorMentoringReservationResponse(
                 reservation.getId(),
                 reservation.getMenteeName(),
@@ -63,8 +66,8 @@ public record MentorMentoringReservationResponse(
             reservation.getMentoring().getPrice(),
             reservation.getContent(),
             reservation.getStatus(),
-            chatRoom.get().getId(),
-            chatRoom.get().getStatus(),
+            chatRoom.getId(),
+            chatRoom.getStatus(),
             reservation.getCreatedAt()
         );
     }

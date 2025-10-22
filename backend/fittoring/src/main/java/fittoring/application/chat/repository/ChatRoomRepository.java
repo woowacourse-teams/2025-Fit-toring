@@ -1,12 +1,12 @@
 package fittoring.application.chat.repository;
 
 import fittoring.domain.model.ChatRoom;
-import java.util.Optional;
+import java.util.List;
 import org.springframework.data.repository.ListCrudRepository;
 
 public interface ChatRoomRepository extends ListCrudRepository<ChatRoom, Long> {
 
-    Optional<ChatRoom> findByReservationId(Long reservationId);
+    List<ChatRoom> findAllByReservationIdIn(List<Long> reservationIds);
 
     boolean existsByReservationId(Long reservationId);
 }
