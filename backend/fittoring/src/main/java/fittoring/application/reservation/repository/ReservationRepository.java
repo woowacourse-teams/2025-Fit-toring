@@ -44,6 +44,7 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
             JOIN FETCH r.mentoring m
             JOIN FETCH r.mentee mt
             WHERE m.mentor.id = :mentorId
+            ORDER BY r.createdAt desc
             """)
     List<Reservation> findAllByMentorId(Long mentorId);
 

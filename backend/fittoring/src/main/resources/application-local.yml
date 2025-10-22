@@ -11,6 +11,8 @@ spring:
       max-lifetime: ${HIKARI_MAX_LIFETIME}
   jpa:
     show-sql: false
+    hibernate:
+      ddl-auto: validate
   flyway:
     enabled: true
     url: jdbc:mysql://${PROD_DATABASE_HOST}:${PROD_DATABASE_PORT}/${PROD_DATABASE_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8

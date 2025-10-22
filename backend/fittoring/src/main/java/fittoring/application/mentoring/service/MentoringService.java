@@ -336,7 +336,7 @@ public class MentoringService {
     }
 
     private Image getProfileImageOrNull(Long mentoringId) {
-        return imageService.findByImageTypeAndRelationId(
+        return imageService.findThumbnailByImageTypeAndRelationId(
                 ImageType.MENTORING_PROFILE,
                 mentoringId
         ).orElse(null);
