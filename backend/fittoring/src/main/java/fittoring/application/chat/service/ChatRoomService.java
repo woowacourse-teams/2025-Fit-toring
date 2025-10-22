@@ -5,14 +5,17 @@ import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.chat.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
+import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +62,7 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public ChatRoomInfoDto findChatRoom(Long memberId, Long chatroomId) {
+    public ChatRoomInfoDto findChatRoom(Long chatroomId, Long memberId) {
         ChatRoom chatRoom = getChatRoom(chatroomId);
         validateParticipant(memberId, chatRoom);
 
@@ -68,10 +71,11 @@ public class ChatRoomService {
 
         Member member = getMember(memberId);
         String opponentName = getOpponentName(member, reservation);
+        MemberRole memberRoleInChat = resolveChatMemberRole(member, reservation);
 
         return new ChatRoomInfoDto(
                 reservation.getMentoring().getId(),
-                member.getRole(),
+                memberRoleInChat,
                 opponentName,
                 chatRoom.getStatus()
         );
@@ -80,14 +84,13 @@ public class ChatRoomService {
     private ChatRoom getChatRoom(Long chatroomId) {
         return chatRoomRepository.findById(chatroomId)
                 .orElseThrow(
-                        () -> new fittoring.mentoring.business.exception.ChatRoomNotFoundException(
-                                BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage())
+                        () -> new ChatRoomNotFoundException(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage())
                 );
     }
 
     private void validateParticipant(Long memberId, ChatRoom chatRoom) {
         if (chatRoom.isNonParticipant(memberId)) {
-            throw new fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException(
+            throw new UnauthorizedChatRoomAccessException(
                     BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage()
             );
         }
@@ -103,7 +106,7 @@ public class ChatRoomService {
 
     private void validateReservationStatus(Reservation reservation) {
         if (!reservation.isAccessibleForChatRoom()) {
-            throw new fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException(
+            throw new UnauthorizedChatRoomAccessException(
                     BusinessErrorMessage.INVALID_STATUS_CHAT_ROOM_ACCESS.getMessage()
             );
         }
@@ -115,9 +118,16 @@ public class ChatRoomService {
     }
 
     private String getOpponentName(Member member, Reservation reservation) {
-        if (member.isMentee()) {
-            return reservation.getMentorName();
+        if (reservation.getMentor().equals(member)) {
+            return reservation.getMenteeName();
         }
-        return reservation.getMenteeName();
+        return reservation.getMentorName();
+    }
+
+    private MemberRole resolveChatMemberRole(Member member, Reservation reservation) {
+        if (reservation.getMentor().equals(member)) {
+            return MemberRole.MENTOR;
+        }
+        return MemberRole.MENTEE;
     }
 }

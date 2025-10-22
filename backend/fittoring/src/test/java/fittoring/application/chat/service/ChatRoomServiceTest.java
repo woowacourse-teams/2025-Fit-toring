@@ -10,7 +10,9 @@ import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.chat.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
+import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
@@ -22,8 +24,6 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
-import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
-import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -85,7 +85,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
 
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        imageRepository.save(FixtureUtil.getTestImageForMentoringProfile(mentoring));
+        imageRepository.save(FixtureUtil.getTestImageForMentoringProfileDefault(mentoring));
 
         Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
@@ -93,7 +93,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
                 FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
         //when
-        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
+        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(chatRoom.getId(), mentee.getId());
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -114,7 +114,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
 
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        imageRepository.save(FixtureUtil.getTestImageForMentoringProfile(mentoring));
+        imageRepository.save(FixtureUtil.getTestImageForMentoringProfileDefault(mentoring));
 
         Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
@@ -122,7 +122,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
                 FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
         //when
-        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(mentor.getId(), chatRoom.getId());
+        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(chatRoom.getId(), mentor.getId());
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -140,7 +140,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
         Long invalidChatRoomId = -1L;
 
         //when & then
-        assertThatThrownBy(() -> chatRoomService.findChatRoom(1L, invalidChatRoomId))
+        assertThatThrownBy(() -> chatRoomService.findChatRoom(invalidChatRoomId, 1L))
                 .isInstanceOf(ChatRoomNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage());
     }
@@ -184,7 +184,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
 
         //when
         //then
-        assertThatThrownBy(() -> chatRoomService.findChatRoom(stranger.getId(), chatRoom.getId()))
+        assertThatThrownBy(() -> chatRoomService.findChatRoom(chatRoom.getId(), stranger.getId()))
                 .isInstanceOf(UnauthorizedChatRoomAccessException.class);
     }
 
@@ -228,7 +228,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
 
         // when
         // then
-        assertThatThrownBy(() -> chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId()))
+        assertThatThrownBy(() -> chatRoomService.findChatRoom(chatRoom.getId(), mentee.getId()))
                 .isInstanceOf(UnauthorizedChatRoomAccessException.class)
                 .hasMessage(BusinessErrorMessage.INVALID_STATUS_CHAT_ROOM_ACCESS.getMessage());
     }
@@ -250,7 +250,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
                 FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
         // when
-        ChatRoomInfoDto response = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
+        ChatRoomInfoDto response = chatRoomService.findChatRoom(chatRoom.getId(), mentee.getId());
 
         // then
         SoftAssertions.assertSoftly(softly -> {

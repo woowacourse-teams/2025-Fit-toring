@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class PasswordTest {
 
-    @DisplayName("비밀번호를 해쉬 암호화 하여 생성할 수 있다.")
+    @DisplayName("비밀번호를 해쉬 암호화 하여 생성할 수 있다")
     @Test
     void from() {
         //given

@@ -104,10 +104,6 @@ public class Reservation {
         return isApprove() || isComplete();
     }
 
-    public String getChatUrlOfMentoring() {
-        return mentoring.getChatUrl();
-    }
-
     public String getMenteeName() {
         return mentee.getName();
     }
@@ -119,7 +115,7 @@ public class Reservation {
     public Member getMentor() {
         return mentoring.getMentor();
     }
-
+    
     public String getMenteePhone() {
         return mentee.getPhoneNumber();
     }

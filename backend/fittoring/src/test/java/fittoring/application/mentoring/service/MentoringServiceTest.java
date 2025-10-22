@@ -244,7 +244,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     null,
                     3,
                     "컨텐츠컨텐츠",
-                    "가상의카카오오픈채팅",
                     List.of()
             );
 
@@ -277,7 +276,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     profileImageUrl,
                     3,
                     "컨텐츠컨텐츠",
-                    "가상의카카오오픈채팅",
                     List.of()
             );
 
@@ -313,7 +311,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     null,
                     3,
                     "컨텐츠컨텐츠",
-                    "가상의카카오오픈채팅",
                     List.of(certificateInfo1, certificateInfo2)
             );
 
@@ -342,7 +339,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     null,
                     3,
                     "컨텐츠컨텐츠",
-                    "가상의카카오오픈채팅",
                     List.of()
             );
 
@@ -385,8 +381,65 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     "수정된 긴 글 소개",
                     5,
                     "수정된 한 줄 소개",
-                    "가상의오픈채팅링크",
-                    "수정된 이미지 주소",
+                    "프로필 이미지 Url",
+                    List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
+            );
+
+            given(presignedUrlService.isObjectExistsFromUrl(anyString()))
+                    .willReturn(true);
+            given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                    .willReturn(true);
+
+            // when
+            mentoringService.modifyMentoring(modifyMentoringDto);
+
+            // then
+            Mentoring changedMentoring = mentoringRepository.findById(mentoring.getId()).get();
+            List<String> changedCategories = categoryMentoringRepository.findTitlesByMentoringId(mentoring.getId());
+            Image changedProfileImage = imageRepository.findByImageTypeAndRelationIdAndImageVariant(
+                    ImageType.MENTORING_PROFILE,
+                    mentoring.getId(),
+                    ImageVariant.DEFAULT
+            ).get();
+
+            Certificate changedCertificate = certificateRepository.findAllByMentoringId(mentoring.getId()).getLast();
+            Image certificateImage = imageRepository.findByImageTypeAndRelationIdAndImageVariant(
+                    ImageType.CERTIFICATE,
+                    changedCertificate.getId(),
+                    ImageVariant.DEFAULT
+            ).get();
+
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(changedMentoring.getPrice()).isEqualTo(modifyMentoringDto.price());
+                softAssertions.assertThat(changedMentoring.getIntroduction())
+                        .isEqualTo(modifyMentoringDto.introduction());
+                softAssertions.assertThat(changedMentoring.getCareer()).isEqualTo(modifyMentoringDto.career());
+                softAssertions.assertThat(changedMentoring.getContent()).isEqualTo(modifyMentoringDto.content());
+                softAssertions.assertThat(changedCategories).containsExactlyInAnyOrder("다이어트");
+                softAssertions.assertThat(changedProfileImage.getUrl()).isEqualTo(modifyMentoringDto.profileImageUrl());
+                softAssertions.assertThat(certificateImage.getUrl()).isEqualTo("자격증명 이미지 1");
+            });
+        }
+
+        @DisplayName("프로필 이미지가 존재하는 멘토링의 프로필을 수정하면 기존 프로필 이미지가 삭제되고 새로운 이미지로 수정된다.")
+        @Test
+        void modifyMentoringImage() {
+            Member mentor = memberRepository.save(FixtureUtil.getTestMentee());
+            Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+
+            categoryRepository.save(new Category("다이어트"));
+            imageRepository.save(FixtureUtil.getTestImageForMentoringProfileDefault(mentoring));
+            imageRepository.save(FixtureUtil.getTestImageForMentoringProfileThumbnail(mentoring));
+
+            ModifyMentoringDto modifyMentoringDto = new ModifyMentoringDto(
+                    mentoring.getId(),
+                    mentor.getId(),
+                    1000,
+                    List.of("다이어트"),
+                    "수정된 긴 글 소개",
+                    5,
+                    "수정된 한 줄 소개",
+                    "프로필 이미지 Url",
                     List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
@@ -443,7 +496,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     5,
                     "수정된 한 줄 소개",
                     "가상의오픈채팅링크",
-                    "수정된 이미지 주소",
                     List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
@@ -480,7 +532,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
                     5,
                     "수정된 한 줄 소개",
                     "가상의오픈채팅링크",
-                    "수정된 이미지 주소",
                     List.of(new CertificateInfoRequest(CertificateType.AWARD, "최우수상", "자격증명 이미지 1"))
             );
 
