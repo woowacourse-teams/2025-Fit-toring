@@ -1,11 +1,9 @@
 import { useState } from 'react';
 
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import defaultProfileImg from '../../../../common/assets/images/profileImg.svg';
 import starIcon from '../../../../common/assets/images/starIcon.svg';
-import Button from '../../../../common/components/Button/Button';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import useEscapeKeyDown from '../../../../common/hooks/useEscapeKeyDown';

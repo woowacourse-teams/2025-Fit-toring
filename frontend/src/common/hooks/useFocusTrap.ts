@@ -6,7 +6,7 @@ export function useFocusTrap(
   onClose?: () => void,
 ) {
   useEffect(() => {
-    if (!isOpen || !containerRef.current) return;
+    if (!isOpen || !containerRef.current) {return;}
 
     const container = containerRef.current;
 
@@ -28,7 +28,7 @@ export function useFocusTrap(
       container.querySelectorAll<HTMLElement>(focusableSelectors.join(',')),
     );
 
-    if (!focusableEls.length) return;
+    if (!focusableEls.length) {return;}
     const firstEl = focusableEls[0];
     const lastEl = focusableEls[focusableEls.length - 1];
 
@@ -41,7 +41,7 @@ export function useFocusTrap(
         return;
       }
 
-      if (e.key !== 'Tab') return;
+      if (e.key !== 'Tab') {return;}
 
       if (e.shiftKey) {
         if (document.activeElement === firstEl) {

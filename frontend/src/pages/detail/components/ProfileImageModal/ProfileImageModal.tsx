@@ -11,6 +11,7 @@ interface ProfileImageModalProps {
   onCloseClick: () => void;
 }
 import { createPortal } from 'react-dom';
+
 import { useRef } from 'react';
 
 function ProfileImageModal({
@@ -21,7 +22,7 @@ function ProfileImageModal({
   const containerRef = useRef<HTMLDivElement>(null);
   useFocusTrap(containerRef, opened, onCloseClick);
 
-  if (!opened) return null;
+  if (!opened) {return null;}
 
   return createPortal(
     <S_Container

@@ -1,12 +1,14 @@
+import { useRef } from 'react';
+
 import styled from '@emotion/styled';
+import { createPortal } from 'react-dom';
 
 import prevImg from '../../../../common/assets/images/chevron-left.svg';
 import nextImg from '../../../../common/assets/images/chevron-right.svg';
 import closeImg from '../../../../common/assets/images/white-x-mark.svg';
 import Modal from '../../../../common/components/Modal/Modal';
-import { useRef } from 'react';
 import { useFocusTrap } from '../../../../common/hooks/useFocusTrap';
-import { createPortal } from 'react-dom';
+
 
 interface CertificatesImageModalProps {
   opened: boolean;

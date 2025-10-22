@@ -18,7 +18,7 @@ function KakaoCallback() {
   useEffect(() => {
     const authCode = searchParams.get('code');
 
-    if (!authCode || didLoginRef.current) return;
+    if (!authCode || didLoginRef.current) {return;}
     didLoginRef.current = true;
 
     const handleLogin = async (authCode: string) => {
