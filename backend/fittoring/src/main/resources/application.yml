@@ -105,19 +105,3 @@ image-session:
 
 domain:
   sub-domain: ${SUB_DOMAIN}
-
-otel:
-  resource:
-    attributes:
-      deployment.environment: ${SPRING_PROFILES_ACTIVE}
-  metrics:
-    exporter: none
-  logs:
-    exporter: none
-  traces:
-    exporter: ${TRACING_EXPORTER}
-  exporter:
-    otlp:
-      traces:
-        endpoint: ${TEMPO_GRPC_LISTENER_URL}
-        protocol: grpc
