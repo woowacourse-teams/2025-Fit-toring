@@ -120,7 +120,10 @@ function ActionButtons({
       </S_Container>
     );
   }
-  if (status === StatusTypeEnum.APPROVED) {
+  if (
+    status === StatusTypeEnum.APPROVED ||
+    status === StatusTypeEnum.COMPLETE
+  ) {
     return (
       <S_Container>
         <S_PrimaryButton onClick={handleChatButtonClick}>
