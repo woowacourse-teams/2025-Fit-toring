@@ -205,7 +205,7 @@ const S_SkipLink = styled.a`
   z-index: 9999;
 
   padding: 1.2rem 2rem;
-  border-radius: 0 0 0.8rem 0.8rem;
+  border-radius: 0 0 8px 8px;
 
   background-color: ${({ theme }) => theme.SYSTEM.GRAY800};
 
