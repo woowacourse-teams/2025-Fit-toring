@@ -5,14 +5,14 @@ import { StatusTypeEnum } from '../../../common/types/statusType';
 import type { StatusType } from '../../../common/types/statusType';
 
 interface ReviewWriteButtonProps {
-  onClick: () => void;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   disabled: boolean;
 }
 
 interface ReviewButtonProps {
   isReviewed: boolean;
   status: StatusType;
-  onReviewButtonClick: () => void;
+  onReviewButtonClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onReviewCompleteButtonClick: (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => void;

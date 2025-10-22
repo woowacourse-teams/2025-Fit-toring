@@ -33,11 +33,11 @@ function MentoringItem({
 
   const navigate = useNavigate();
 
-  const handleReviewModalToggle = (
-    event?: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    event?.stopPropagation();
-
+  const handleReviewButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    handleReviewModalToggle();
+  };
+  const handleReviewModalToggle = () => {
     setOpened((prev) => !prev);
   };
 
@@ -68,11 +68,11 @@ function MentoringItem({
             <S_Message>
               <p>{content}</p>
             </S_Message>
-            {status === StatusTypeEnum.COMPLETE ? (
+            {status !== StatusTypeEnum.REJECTED ? (
               <ReviewButton
                 isReviewed={isReviewed}
                 status={status}
-                onReviewButtonClick={handleReviewModalToggle}
+                onReviewButtonClick={handleReviewButtonClick}
                 onReviewCompleteButtonClick={handleReviewCompleteButtonClick}
               />
             ) : null}
