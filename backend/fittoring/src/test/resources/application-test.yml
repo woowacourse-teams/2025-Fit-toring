@@ -35,6 +35,10 @@ spring:
     password: ${TEST_DATABASE_PASSWORD}
     baseline-on-migrate: false
     connect-retries: 10
+  cloud:
+    aws:
+      sqs:
+        enabled: false
 sms:
   base-url: http://localhost:8089
   timeout:
