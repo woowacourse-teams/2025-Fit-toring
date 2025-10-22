@@ -112,6 +112,7 @@ function MentoringCreateForm() {
     onSuccess: (response) => {
       if (response.status === 201) {
         alert('멘토링 등록 성공');
+        navigate(PAGE_URL.HOME);
       }
     },
     onError: (error, variables) => {
@@ -152,7 +153,6 @@ function MentoringCreateForm() {
       return;
     }
     await submitMentoringForm();
-    navigate(PAGE_URL.HOME);
 
     addSentryBreadcrumb({
       category: 'ui.submit',
