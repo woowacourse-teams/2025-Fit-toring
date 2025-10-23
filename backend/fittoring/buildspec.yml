@@ -1,0 +1,35 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "CodeBuild - Build phase started on $(date)"
+      # 1. 배포에 필요한 파일만 담을 임시 디렉토리 생성
+      - mkdir -p /tmp/codedeploy-package
+
+      # 2. 배포 설정 파일 복사
+      - echo "Copying deployment settings from backend/fittoring/deploysettings..."
+      - cp ./backend/fittoring/deploysettings/appspec.yml /tmp/codedeploy-package/
+      - cp ./backend/fittoring/deploysettings/start.sh /tmp/codedeploy-package/
+      - cp ./backend/fittoring/deploysettings/stop.sh /tmp/codedeploy-package/
+      - cp ./backend/fittoring/deploysettings/validate.sh /tmp/codedeploy-package/
+
+      # 3. docker-compose.yml 복사
+      - echo "Copying docker-compose.yml from backend/fittoring..."
+      - cp ./backend/fittoring/docker-compose.yml /tmp/codedeploy-package/
+
+      # 4. 임시 디렉토리로 이동하여 압축
+      - echo "Creating deployment zip package..."
+      - cd /tmp/codedeploy-package
+      - zip -r deploy.zip .
+
+  post_build:
+    commands:
+      - echo "Build phase completed on $(date)"
+
+artifacts:
+  files:
+    # CodePipeline은 이 zip 파일을 가져가서 CodeDeploy에게 전달.
+    - /tmp/codedeploy-package/deploy.zip
+
+

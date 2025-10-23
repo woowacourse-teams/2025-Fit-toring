@@ -147,7 +147,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         );
     }
 
-    @DisplayName("refreshToken을 이용해 accessToken과 refreshToken을 재발급 할 수 있다.")
+    @DisplayName("refreshToken을 이용해 accessToken과 refreshToken을 재발급 할 수가 있다.")
     @Test
     void reissue() {
         //given
