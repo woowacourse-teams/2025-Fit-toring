@@ -79,7 +79,7 @@ export function CertificationManagement() {
         console.log('📋 자격증명 목록 로드 시작:', { statusFilter, page: currentPage });
         setIsLoading(true);
         setError(null);
-        const data = await fetchCertificates(statusFilter, currentPage - 1, 10);
+        const data = await fetchCertificates(statusFilter, currentPage, 10);
         setCertifications(data.certificates);
         setTotalPages(data.totalPages);
         setTotalElements(data.totalElements);
