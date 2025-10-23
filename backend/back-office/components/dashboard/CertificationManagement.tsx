@@ -25,6 +25,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../ui/pagination";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
@@ -59,23 +68,29 @@ export function CertificationManagement() {
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+
   // 데이터 로드 - 필터 조건에 따른 데이터 로드
   useEffect(() => {
     const loadCertifications = async () => {
       try {
-        console.log('📋 자격증명 목록 로드 시작:', { statusFilter });
+        console.log('📋 자격증명 목록 로드 시작:', { statusFilter, page: currentPage });
         setIsLoading(true);
         setError(null);
-        const data = await fetchCertificates(statusFilter);
-        setCertifications(data);
-        console.log('✅ UI 상태 업데이트 완료:', { loadedCount: data.length });
+        const data = await fetchCertificates(statusFilter, currentPage - 1, 10);
+        setCertifications(data.certificates);
+        setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
+        console.log('✅ UI 상태 업데이트 완료:', { loadedCount: data.certificates.length });
         
         // 필터 적용 결과 토스트 (초기 로드 제외)
         if (!isInitialLoad && statusFilter !== 'all') {
           const filterName = statusFilter === 'PENDING' ? '검토 중' : 
                            statusFilter === 'REJECTED' ? '반려' : 
                            statusFilter === 'APPROVED' ? '인증 완료' : statusFilter;
-          toast.success(`${filterName} 상태 필터가 적용되었습니다. ${data.length}건의 자격증명이 조회되었습니다.`);
+          toast.success(`${filterName} 상태 필터가 적용되었습니다. ${data.certificates.length}건의 자격증명이 조회되었습니다.`);
         }
       } catch (err) {
         setError("자격증명 데이터를 불러오는데 실패했습니다.");
@@ -89,13 +104,20 @@ export function CertificationManagement() {
     };
 
     loadCertifications();
-  }, [statusFilter]);
+  }, [statusFilter, currentPage]);
 
   // 상태 필터 변경 핸들러
   const handleStatusFilterChange = (value: string) => {
     console.log('🔄 필터 변경:', { from: statusFilter, to: value });
     setStatusFilter(value);
+    setCurrentPage(1);
   };
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+    }
+  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -164,45 +186,14 @@ export function CertificationManagement() {
             AWARD
           </Badge>
         );
-      case "ECT":
+      case "ETC":
         return (
           <Badge
             variant="outline"
-            className="border-yellow-400 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 text-[12px] font-medium"
+            className="border-gray-400 text-gray-700 bg-gray-50 hover:bg-gray-100 text-[12px] font-medium"
           >
-            <Trophy className="h-3 w-3 mr-1" />
-            ECT
-          </Badge>
-        );
-      // 서버 원본 값도 지원 (하위 호환성)
-      case "자격증":
-        return (
-          <Badge
-            variant="outline"
-            className="border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 text-[12px] font-medium"
-          >
-            <FileText className="h-3 w-3 mr-1" />
-            자격증
-          </Badge>
-        );
-      case "학력":
-        return (
-          <Badge
-            variant="outline"
-            className="border-purple-300 text-purple-700 bg-purple-50 hover:bg-purple-100 text-[12px] font-medium"
-          >
-            <GraduationCap className="h-3 w-3 mr-1" />
-            학력
-          </Badge>
-        );
-      case "수상":
-        return (
-          <Badge
-            variant="outline"
-            className="border-yellow-400 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 text-[12px] font-medium"
-          >
-            <Trophy className="h-3 w-3 mr-1" />
-            수상
+            <Award className="h-3 w-3 mr-1" />
+            ETC
           </Badge>
         );
       default:
@@ -324,6 +315,90 @@ export function CertificationManagement() {
     }
   };
 
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    let startPage, endPage;
+
+    if (totalPages <= maxPagesToShow) {
+        startPage = 1;
+        endPage = totalPages;
+    } else {
+        const maxPagesBeforeCurrent = Math.floor(maxPagesToShow / 2);
+        const maxPagesAfterCurrent = Math.ceil(maxPagesToShow / 2) - 1;
+        if (currentPage <= maxPagesBeforeCurrent) {
+            startPage = 1;
+            endPage = maxPagesToShow;
+        } else if (currentPage + maxPagesAfterCurrent >= totalPages) {
+            startPage = totalPages - maxPagesToShow + 1;
+            endPage = totalPages;
+        } else {
+            startPage = currentPage - maxPagesBeforeCurrent;
+            endPage = currentPage + maxPagesAfterCurrent;
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(i);
+    }
+
+    return (
+        <div className="flex items-center justify-end py-4 px-6">
+            <Pagination>
+                <PaginationContent>
+                    <PaginationItem>
+                        <PaginationPrevious
+                            href="#"
+                            onClick={(e) => { e.preventDefault(); handlePageChange(currentPage - 1); }}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                    </PaginationItem>
+                    
+                    {startPage > 1 && (
+                        <>
+                            <PaginationItem>
+                                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); handlePageChange(1); }}>1</PaginationLink>
+                            </PaginationItem>
+                            {startPage > 2 && <PaginationItem><PaginationEllipsis /></PaginationItem>}
+                        </>
+                    )}
+
+                    {pageNumbers.map(number => (
+                        <PaginationItem key={number}>
+                            <PaginationLink
+                                href="#"
+                                onClick={(e) => { e.preventDefault(); handlePageChange(number); }}
+                                isActive={currentPage === number}
+                            >
+                                {number}
+                            </PaginationLink>
+                        </PaginationItem>
+                    ))}
+
+                    {endPage < totalPages && (
+                        <>
+                            {endPage < totalPages - 1 && <PaginationItem><PaginationEllipsis /></PaginationItem>}
+                            <PaginationItem>
+                                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); handlePageChange(totalPages); }}>{totalPages}</PaginationLink>
+                            </PaginationItem>
+                        </>
+                    )}
+
+                    <PaginationItem>
+                        <PaginationNext
+                            href="#"
+                            onClick={(e) => { e.preventDefault(); handlePageChange(currentPage + 1); }}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        />
+                    </PaginationItem>
+                </PaginationContent>
+            </Pagination>
+        </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col">
       {/* 헤더 */}
@@ -335,9 +410,9 @@ export function CertificationManagement() {
             </h1>
             <p className="text-muted-foreground mt-1">
               멘토들의 자격증명 정보를 관리하고 검증합니다.
-              {!isLoading && certifications.length > 0 && (
+              {!isLoading && (
                 <span className="ml-2 text-primary font-medium">
-                  총 {certifications.length}건
+                  총 {totalElements}건
                 </span>
               )}
             </p>
@@ -354,7 +429,7 @@ export function CertificationManagement() {
                   
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">모든 상태</SelectItem>
+                  <SelectItem value="all">모든 상태</SelectItem>
                   <SelectItem value="PENDING">검토 중</SelectItem>
                   <SelectItem value="REJECTED">반려</SelectItem>
                   <SelectItem value="APPROVED">
@@ -368,10 +443,10 @@ export function CertificationManagement() {
       </div>
 
       {/* 테이블 컨테이너 - 스크롤 가능 */}
-      <div className="flex-1 border rounded-lg bg-card overflow-hidden">
+      <div className="flex-1 border rounded-lg bg-card overflow-hidden flex flex-col">
         <div
-          className="h-full overflow-auto"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
+          className="flex-1 overflow-auto"
+          style={{ maxHeight: "calc(100vh - 260px)" }}
         >
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
@@ -482,6 +557,7 @@ export function CertificationManagement() {
             </>
           )}
         </div>
+        {renderPagination()}
       </div>
 
       {/* 자격증 상세 다이얼로그 */}
