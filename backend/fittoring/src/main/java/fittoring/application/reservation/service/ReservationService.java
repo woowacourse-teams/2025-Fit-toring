@@ -22,12 +22,14 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -93,10 +95,22 @@ public class ReservationService {
     }
 
     private List<MentorMentoringReservationResponse> getMentorMentoringReservationResponses(
-            List<Reservation> reservations) {
-        return reservations.stream()
-                .map(MentorMentoringReservationResponse::of)
-                .toList();
+            List<Reservation> reservations
+    ) {
+        List<Long> reservationIds = reservations.stream()
+            .map(Reservation::getId)
+            .toList();
+        Map<Long, ChatRoom> chatRoomMap = chatRoomService.findAllByReservationIds(reservationIds);
+
+        List<MentorMentoringReservationResponse> result = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            if (reservation.isAccessibleForChatRoom()) {
+                result.add(MentorMentoringReservationResponse.of(reservation, chatRoomMap.get(reservation.getId())));
+                continue;
+            }
+            result.add(MentorMentoringReservationResponse.of(reservation));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -114,23 +128,38 @@ public class ReservationService {
         Set<Long> mentoringIds = rows.stream()
                 .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
                 .collect(Collectors.toSet());
-
         Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(
                 ImageType.MENTORING_PROFILE,
                 mentoringIds
         );
+        
+        List<Long> reservationIds = rows.stream()
+            .map(ParticipatedReservationWithoutProfileImageDto::getReservationId)
+            .toList();
+        Map<Long, ChatRoom> chatRoomMap = chatRoomService.findAllByReservationIds(reservationIds);
+        
+        List<ParticipatedReservationResponse> result = new ArrayList<>();
+        for (ParticipatedReservationWithoutProfileImageDto participatedReservation : rows) {
+            Long chatRoomId = isChattableStatus(participatedReservation.getStatus())
+                ? chatRoomMap.get(participatedReservation.getReservationId()).getId()
+                : null;
+            result.add(new ParticipatedReservationResponse(
+                participatedReservation.getReservationId(),
+                participatedReservation.getMentoringId(),
+                participatedReservation.getMentorName(),
+                profileImageByMentoring.get(participatedReservation.getMentoringId()),
+                participatedReservation.getReservedAt(),
+                participatedReservation.getContent(),
+                participatedReservation.getStatus(),
+                chatRoomId,
+                participatedReservation.getIsReviewed()));
+        }
+        return result;
+    }
 
-        return rows.stream()
-                .map(r -> new ParticipatedReservationResponse(
-                        r.getReservationId(),
-                        r.getMentoringId(),
-                        r.getMentorName(),
-                        profileImageByMentoring.get(r.getMentoringId()),
-                        r.getReservedAt(),
-                        r.getContent(),
-                        r.getStatus(),
-                        r.getIsReviewed()))
-                .toList();
+    private boolean isChattableStatus(String statusName) {
+        return statusName.equals(Status.APPROVED.name())
+            || statusName.equals(Status.COMPLETE.name());
     }
 
     private void checkAdminAuthority(Long memberId) {
