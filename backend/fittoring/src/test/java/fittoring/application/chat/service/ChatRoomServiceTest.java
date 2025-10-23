@@ -3,16 +3,20 @@ package fittoring.application.chat.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
+import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.chat.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
+import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.MentoringNotFoundException;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
+import fittoring.application.exception.UnauthorizedChatRoomAccessException;
+import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.config.JpaConfiguration;
-import fittoring.config.QueryDslConfig;
+import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ChatStatus;
 import fittoring.domain.model.Member;
@@ -20,63 +24,47 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
-import fittoring.mentoring.business.exception.ChatRoomNotFoundException;
-import fittoring.mentoring.business.exception.UnauthorizedChatRoomAccessException;
-import fittoring.util.DbCleaner;
+import java.util.List;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({
-        DbCleaner.class,
-        ChatRoomService.class,
-        ChatRoomUrlGenerator.class,
-        QueryDslConfig.class,
-        JpaConfiguration.class,
-        MentoringPaginationHelper.class
-})
-@DataJpaTest
-class ChatRoomServiceTest {
+class ChatRoomServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ChatRoomService chatRoomService;
 
     @Autowired
+    private ChatRoomRepository chatRoomRepository;
+
+    @Autowired
     private MentoringRepository mentoringRepository;
 
     @Autowired
-    private TestEntityManager em;
+    private MemberRepository memberRepository;
 
     @Autowired
-    private DbCleaner dbCleaner;
+    private ReservationRepository reservationRepository;
 
-    @BeforeEach
-    void setUp() {
-        dbCleaner.clean();
-    }
+    @Autowired
+    private ImageRepository imageRepository;
 
     @DisplayName("채팅방 등록에 성공하면 채팅방 생성 정보를 반환한다.")
     @Test
     void registerChatRoomSuccess() {
         //given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.getTestMentee();
+        List<Member> savedMembers = memberRepository.saveAll(List.of(mentor, mentee));
+        mentor = savedMembers.get(0);
+        mentee = savedMembers.get(1);
 
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
         //when
         ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
@@ -89,23 +77,23 @@ class ChatRoomServiceTest {
     @Test
     void findChatRoomByMentee() {
         //given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.getTestMentee();
+        List<Member> savedMembers = memberRepository.saveAll(List.of(mentor, mentee));
+        mentor = savedMembers.get(0);
+        mentee = savedMembers.get(1);
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        em.persist(FixtureUtil.getTestImageForMentoringProfile(mentoring));
+        imageRepository.save(FixtureUtil.getTestImageForMentoringProfileDefault(mentoring));
 
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
-
-        ChatRoom chatRoom = new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId());
-        em.persist(chatRoom);
-        em.flush();
-        em.clear();
+        ChatRoom chatRoom = chatRoomRepository.save(
+                FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
         //when
-        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
+        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(chatRoom.getId(), mentee.getId());
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -120,21 +108,21 @@ class ChatRoomServiceTest {
     @Test
     void findChatRoomByMentor() {
         //given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.saveAll(List.of(mentor, mentee));
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        em.persist(FixtureUtil.getTestImageForMentoringProfile(mentoring));
+        imageRepository.save(FixtureUtil.getTestImageForMentoringProfileDefault(mentoring));
 
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
-
-        ChatRoom chatRoom = new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId());
-        em.persist(chatRoom);
+        ChatRoom chatRoom = chatRoomRepository.save(
+                FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
         //when
-        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(mentor.getId(), chatRoom.getId());
+        ChatRoomInfoDto chatRoomInfoDto = chatRoomService.findChatRoom(chatRoom.getId(), mentor.getId());
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -152,7 +140,7 @@ class ChatRoomServiceTest {
         Long invalidChatRoomId = -1L;
 
         //when & then
-        assertThatThrownBy(() -> chatRoomService.findChatRoom(1L, invalidChatRoomId))
+        assertThatThrownBy(() -> chatRoomService.findChatRoom(invalidChatRoomId, 1L))
                 .isInstanceOf(ChatRoomNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage());
     }
@@ -161,15 +149,15 @@ class ChatRoomServiceTest {
     @Test
     void registerChatRoom_fail_already_exists() {
         //given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.saveAll(List.of(mentor, mentee));
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
-
-        chatRoomService.registerChatRoom(reservation);
+        chatRoomRepository.save(FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
         //when
         //then
@@ -181,22 +169,22 @@ class ChatRoomServiceTest {
     @Test
     void findChatRoom_fail_unauthorized_access() {
         //given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.saveAll(List.of(mentor, mentee));
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
+        ChatRoom chatRoom = chatRoomRepository.save(
+                FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
-        ChatRoom chatRoom = new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId());
-        em.persist(chatRoom);
-
-        Member stranger = em.persist(FixtureUtil.getTestMentor(1));
+        Member stranger = memberRepository.save(FixtureUtil.getTestMentor(1));
 
         //when
         //then
-        assertThatThrownBy(() -> chatRoomService.findChatRoom(stranger.getId(), chatRoom.getId()))
+        assertThatThrownBy(() -> chatRoomService.findChatRoom(chatRoom.getId(), stranger.getId()))
                 .isInstanceOf(UnauthorizedChatRoomAccessException.class);
     }
 
@@ -204,18 +192,17 @@ class ChatRoomServiceTest {
     @Test
     void registerChatRoom_fail_mentoring_soft_deleted() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.saveAll(List.of(mentor, mentee));
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
-        em.clear();
-
-        Mentoring persistedMentoring = em.find(Mentoring.class, mentoring.getId());
+        Mentoring persistedMentoring = mentoringRepository.findById(mentoring.getId())
+                .orElse(null);
         mentoringRepository.delete(persistedMentoring);
-        em.flush();
 
         // when
         // then
@@ -228,20 +215,20 @@ class ChatRoomServiceTest {
     @Test
     void findChatRoomFailInvalidReservationStatus() {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.saveAll(List.of(mentor, mentee));
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
 
-        Reservation reservation = em.persist(FixtureUtil.getTestPendingReservation(mentoring, mentee));
-
-        ChatRoom chatRoom = new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId());
-        em.persist(chatRoom);
+        ChatRoom chatRoom = chatRoomRepository.save(
+                FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
         // when
         // then
-        assertThatThrownBy(() -> chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId()))
+        assertThatThrownBy(() -> chatRoomService.findChatRoom(chatRoom.getId(), mentee.getId()))
                 .isInstanceOf(UnauthorizedChatRoomAccessException.class)
                 .hasMessage(BusinessErrorMessage.INVALID_STATUS_CHAT_ROOM_ACCESS.getMessage());
     }
@@ -251,20 +238,19 @@ class ChatRoomServiceTest {
     @EnumSource(value = Status.class, names = {"APPROVED", "COMPLETE"})
     void findChatRoomApprovedOrCompletedReservationStatus(Status status) {
         // given
-        Member mentor = em.persist(FixtureUtil.getTestMentor());
+        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.saveAll(List.of(mentor, mentee));
 
-        Mentoring mentoring = em.persist(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
 
-        Member mentee = em.persist(FixtureUtil.getTestMentee());
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
-        Reservation approvedReservation = new Reservation("승인된 예약", status, mentoring, mentee);
-        em.persist(approvedReservation);
-
-        ChatRoom chatRoom = new ChatRoom(approvedReservation.getId(), mentee.getId(), mentor.getId());
-        em.persist(chatRoom);
+        ChatRoom chatRoom = chatRoomRepository.save(
+                FixtureUtil.getTestChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
 
         // when
-        ChatRoomInfoDto response = chatRoomService.findChatRoom(mentee.getId(), chatRoom.getId());
+        ChatRoomInfoDto response = chatRoomService.findChatRoom(chatRoom.getId(), mentee.getId());
 
         // then
         SoftAssertions.assertSoftly(softly -> {

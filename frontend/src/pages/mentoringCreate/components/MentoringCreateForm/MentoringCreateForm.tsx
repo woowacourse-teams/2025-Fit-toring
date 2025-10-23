@@ -18,7 +18,6 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
-import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
 
@@ -33,14 +32,12 @@ function MentoringCreateForm() {
     profileImageUrl: null,
     career: 0,
     content: '',
-    chatUrl: '',
-    certificateInfos: [],
+    certificateInfoRequests: [],
   });
 
   const priceErrorMessage = priceValidator(mentoringData.price);
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
-  const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
   const detailErrorMessage = validateTextarea(mentoringData.content);
 
   const { uploadFile: uploadImageFile } = useS3Upload();
@@ -115,6 +112,7 @@ function MentoringCreateForm() {
     onSuccess: (response) => {
       if (response.status === 201) {
         alert('멘토링 등록 성공');
+        navigate(PAGE_URL.HOME);
       }
     },
     onError: (error, variables) => {
@@ -149,24 +147,19 @@ function MentoringCreateForm() {
       priceErrorMessage ||
       introduceErrorMessage ||
       careerErrorMessage ||
-      chatUrlErrorMessage ||
       detailErrorMessage
     ) {
       alert('입력값을 확인해주세요.');
       return;
     }
     await submitMentoringForm();
-    navigate(PAGE_URL.HOME);
 
     addSentryBreadcrumb({
       category: 'ui.submit',
       message: '멘토링 생성 폼 제출 시도',
       data: {
         isFormValid:
-          priceErrorMessage ||
-          introduceErrorMessage ||
-          careerErrorMessage ||
-          chatUrlErrorMessage,
+          priceErrorMessage || introduceErrorMessage || careerErrorMessage,
       },
     });
   };
@@ -207,7 +200,7 @@ function MentoringCreateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
 
     addSentryBreadcrumb({
       category: 'ui.click',
@@ -281,7 +274,7 @@ function MentoringCreateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
   };
 
   return (
@@ -290,8 +283,6 @@ function MentoringCreateForm() {
         onBaseInfoChange={handleMentoringDataChange}
         priceErrorMessage={priceErrorMessage}
         price={mentoringData.price}
-        chatUrlErrorMessage={chatUrlErrorMessage}
-        chatUrl={mentoringData.chatUrl}
       />
       <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />

@@ -3,8 +3,8 @@ package fittoring.application.mentoring.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import fittoring.RepositoryTestSupport;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.reservation.repository.RepositoryTestSupport;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
@@ -13,9 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
-@Import({MentoringPaginationHelper.class})
 class MentoringRepositoryTest extends RepositoryTestSupport {
 
     @Autowired
@@ -33,8 +31,13 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
         );
 
         Mentoring mentoring = mentoringRepository.save(
-                new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개",
-                        "가상의카카오오픈채팅")
+                new Mentoring(
+                        mentor,
+                        5000,
+                        3,
+                        "컨텐츠컨텐츠",
+                        "자기소개자기소개"
+                )
         );
 
         //when
@@ -59,8 +62,7 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
         );
 
         mentoringRepository.save(
-                new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개",
-                        "가상의카카오오픈채팅")
+                new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개")
         );
 
         Member mentor2 = memberRepository.save(
@@ -68,8 +70,7 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
         );
 
         Mentoring mentoring2 = mentoringRepository.save(
-                new Mentoring(mentor2, 5000, 5, "컨텐츠컨텐츠", "자기소개자기소개",
-                        "가상의카카오오픈채팅")
+                new Mentoring(mentor2, 5000, 5, "컨텐츠컨텐츠", "자기소개자기소개")
         );
 
         mentoringRepository.delete(mentoring2);

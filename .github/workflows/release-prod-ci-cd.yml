@@ -139,27 +139,36 @@ jobs:
 
   deploy-prod:
     needs: build-and-push
-    runs-on:
-      - self-hosted
-      - prod
-    env:
-      IMAGE: fittoring/fittoring
-      TAG: ${{ needs.build-and-push.outputs.image_tag }}
+    # self-hosted runner가 아닌 github runner가
+    # prod 서버 EC2 인스턴스에 설치된 codeDeployAgent 에게
+    # AWS api로 배포를 요청합니다.
+    runs-on: ubuntu-latest
     steps:
-      - name: Docker hub login
+      # 해당 리포지토리의 소스코드를 가져옵니다.
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      # AWS api 를 위한 권한이 필요합니다. 해당 권한에 대한 ARN은 secrets 환경변수로 주입합니다.
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-northeast-2
+      # backend/fittoring/deploysettings 하위의 배포 설정을 deploy.zip으로 압축합니다.
+      - name: Make deployment package
+        run: cd backend/fittoring/deploysettings && zip -r ../../../deploy.zip .
+      # 압축한 파일을 S3의 버킷으로 업로드 합니다.
+      - name: Upload to S3
         run: |
-          sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-
-      - name: Write .env for deploy
+          aws s3 cp \
+            ./deploy.zip \
+            s3://${{ secrets.S3_BUCKET_NAME }}/fittoring/codeDeploy/deploy-${{ github.sha }}.zip
+            
+      - name: Deploy with AWS CodeDeploy
         run: |
-          cd /home/ssm-user/fittoring
-          sudo sh -c 'echo "IMAGE=${{ env.IMAGE }}" > .env.deploy'
-          sudo sh -c 'echo "TAG=${{ env.TAG }}" >> .env.deploy'
-
-      - name: Run deploy script
-        run: |
-          cd /home/ssm-user
-          ./deploy-be.sh
+          aws deploy create-deployment \
+            --application-name fittoring-backend \
+            --deployment-group-name fittoring-backend-prod \
+            --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=fittoring/codeDeploy/deploy-${{ github.sha }}.zip
 
   test-report:
     if: failure()

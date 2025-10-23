@@ -1,11 +1,14 @@
-package fittoring.integration;
+package fittoring;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static com.epages.restdocs.apispec.ResourceSnippetParameters.builder;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
+import fittoring.application.image.service.PresignedUrlService;
+import fittoring.infrastructure.SmsRestClientService;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -20,10 +23,11 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.restdocs.restassured.RestDocumentationFilter;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @ActiveProfiles("test")
 @ExtendWith(RestDocumentationExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class AbstractApiDocumentationTest {
 
     @LocalServerPort
@@ -31,6 +35,12 @@ public abstract class AbstractApiDocumentationTest {
 
     @Autowired
     protected DbCleaner dbCleaner;
+
+    @MockitoBean
+    protected PresignedUrlService presignedUrlService;
+
+    @MockitoBean
+    protected SmsRestClientService smsRestClientService;
 
     protected RequestSpecification spec;
 

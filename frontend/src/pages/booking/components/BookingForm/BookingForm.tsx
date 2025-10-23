@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
+import ApiError from '../../../../common/apis/ApiError';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
+import { SMS_ERROR_MESSAGE } from '../../constants/message';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
 interface BookingFormProps {
@@ -66,15 +68,23 @@ function BookingForm({
     } catch (error) {
       console.error('예약 중 에러 발생', error);
 
-      captureSentryError({
-        error,
-        level: 'error',
-        feature: 'reservation',
-        step: 'reservation-apply',
-        extras: {
-          content: counselContent,
-        },
-      });
+      if (error instanceof ApiError) {
+        const { message, status } = error;
+
+        if (status === 500 && SMS_ERROR_MESSAGE.includes(message)) {
+          handleBookingButtonClick();
+        }
+
+        captureSentryError({
+          error,
+          level: 'error',
+          feature: 'reservation',
+          step: 'reservation-apply',
+          extras: {
+            content: counselContent,
+          },
+        });
+      }
     }
   };
 

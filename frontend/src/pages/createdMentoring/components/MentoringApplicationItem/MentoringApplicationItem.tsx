@@ -30,6 +30,7 @@ function MentoringApplicationItem({
     content,
     status,
     createdAt,
+    chatRoomId,
   },
   onActionButtonsClick,
 }: MentoringApplicationItemProps) {
@@ -65,6 +66,7 @@ function MentoringApplicationItem({
         <ActionButtons
           reservationId={reservationId}
           status={status}
+          chatRoomId={chatRoomId}
           onClick={handleActionButtonsComplete}
         />
       </S_ButtonWrapper>

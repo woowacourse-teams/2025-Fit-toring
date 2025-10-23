@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends ListCrudRepository<Review, Long> {
 
+    @Query(value = "SELECT * FROM review WHERE id = :id AND is_deleted = true;", nativeQuery = true)
+    Review findDeletedById(@Param("id") Long id);
+
     List<Review> findAllByMentee_Id(Long menteeId);
 
     @Query("""

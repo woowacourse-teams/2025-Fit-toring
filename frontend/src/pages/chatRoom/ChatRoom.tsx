@@ -31,10 +31,17 @@ function ChatRoom() {
   const { chatRoomId } = useParams();
 
   const storedData = localStorage.getItem('memberId');
-  const memberId = storedData ? JSON.parse(storedData) : null;
+  const parsedData = storedData ? JSON.parse(storedData) : null;
+  const memberId = parsedData ? parsedData.memberId : null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
+    const { value } = e.target;
+
+    if (value.length > 20_000) {
+      return;
+    }
+
+    setMessage(value);
   };
 
   const handlePaymentRequestClick = (
@@ -64,25 +71,9 @@ function ChatRoom() {
     hasNextPage,
   } = useInfiniteChatRoomMessage(Number(chatRoomId!));
 
-  const listRef = useRef<HTMLDivElement>(null);
+  const listElRef = useRef<HTMLDivElement>(null);
   const initialScrolledRef = useRef(false);
   const ioReadyRef = useRef(false);
-
-  useLayoutEffect(() => {
-    const element = listRef.current;
-    if (!element) {
-      return;
-    }
-
-    if (!initialScrolledRef.current && messages.length > 0) {
-      element.scrollTop = element.scrollHeight;
-      initialScrolledRef.current = true;
-
-      requestAnimationFrame(() => {
-        ioReadyRef.current = true;
-      });
-    }
-  }, [listRef, messages]);
 
   const stateRef = useRef({
     hasNextPage: false,
@@ -108,12 +99,28 @@ function ChatRoom() {
     await fetchNextPage();
   }, [fetchNextPage]);
 
-  const { pageFirstRef } = useUpwardInfiniteScroll({
+  const { listReadyRef, pageFirstReadyRef, ready } = useUpwardInfiniteScroll({
     shouldTrigger: shouldTrigger,
     onIntersect,
     anchorKey: anchorKey!,
-    listRef,
+    listElRef,
   });
+
+  useLayoutEffect(() => {
+    const element = listElRef.current;
+    if (!element || !ready) {
+      return;
+    }
+
+    if (!initialScrolledRef.current && messages.length > 0) {
+      element.scrollTop = element.scrollHeight;
+      initialScrolledRef.current = true;
+
+      requestAnimationFrame(() => {
+        ioReadyRef.current = true;
+      });
+    }
+  }, [listElRef, messages, ready]);
 
   useEffect(() => {
     if (chatRoomMessage) {
@@ -137,7 +144,7 @@ function ChatRoom() {
           withCredentials: true,
         }),
       onStompError: (frame) => console.error('STOMP protocol error:', frame),
-      onWebSocketError: (event) => console.error('WebSocket error:', event),
+      onWebSocketError: (e) => console.error('WebSocket error:', e),
       reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(
@@ -187,6 +194,10 @@ function ChatRoom() {
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (message === '') {
+      return;
+    }
+
     const tempId = Date.now();
 
     const optimisticMsg = {
@@ -212,6 +223,10 @@ function ChatRoom() {
       body: JSON.stringify({ content: message, tempId }),
     });
   };
+
+  if (!memberId) {
+    return <div>로그인 후 이용 가능합니다.</div>;
+  }
 
   if (ChatRoomInfoQuery.isPending || !chatRoomInfo) {
     return (
@@ -240,8 +255,9 @@ function ChatRoom() {
 
       <ChatContent
         messages={messages}
-        pageFirstRef={pageFirstRef}
-        listRef={listRef}
+        pageFirstRef={pageFirstReadyRef}
+        listRef={listReadyRef}
+        listElRef={listElRef}
       />
       <InputSection
         value={message}

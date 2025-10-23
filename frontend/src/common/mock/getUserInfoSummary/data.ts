@@ -13,7 +13,6 @@ export const MENTORING_DETAIL: MentoringDetail = {
     '5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
   content:
     '김트레이너는 대단합니다. 저를 믿고 신청해주세요. 모든것을 도와드립니다. 여러분 저를 믿어주세요.',
-  chatUrl: '',
   certificates: [
     {
       certificateId: '1',
