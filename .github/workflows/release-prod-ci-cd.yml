@@ -137,44 +137,6 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE }}:cache
           cache-to: type=registry,ref=${{ env.IMAGE }}:cache,mode=max
 
-  deploy-prod:
-    needs: build-and-push
-    # self-hosted runner가 아닌 github runner가
-    # prod 서버 EC2 인스턴스에 설치된 codeDeployAgent 에게
-    # AWS api로 배포를 요청합니다.
-    runs-on: ubuntu-latest
-    # OIDC 토큰을 받기 위한 권한
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      # 해당 리포지토리의 소스코드를 가져옵니다.
-      - name: Checkout source code
-        uses: actions/checkout@v4
-      # AWS api 를 위한 권한이 필요합니다. 해당 권한에 대한 ARN은 secrets 환경변수로 주입합니다. (OIDC)
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
-          aws-region: ap-northeast-2
-      # backend/fittoring/deploysettings 하위의 배포 설정을 deploy.zip으로 압축합니다.
-      - name: Make deployment package
-        run: cd backend/fittoring/deploysettings && zip -r ../../../deploy.zip .
-      # 압축한 파일을 S3의 버킷으로 업로드 합니다.
-      - name: Upload to S3
-        run: |
-          aws s3 cp \
-            ./deploy.zip \
-            s3://${{ secrets.S3_BUCKET_NAME }}/fittoring/codeDeploy/deploy-${{ github.sha }}.zip
-
-      - name: Deploy with AWS CodeDeploy
-        run: |
-          aws deploy create-deployment \
-            --application-name fittoring-backend \
-            --deployment-group-name fittoring-backend-prod \
-            --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=fittoring/codeDeploy/deploy-${{ github.sha }}.zip
-
   test-report:
     if: failure()
     needs: build-and-push
