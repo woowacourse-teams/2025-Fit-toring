@@ -14,7 +14,7 @@ import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.OauthLoginException;
-import fittoring.application.mentoring.presentation.dto.response.MemberLoginResponse;
+import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
@@ -51,11 +51,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<MemberLoginResponse> login(@RequestBody @Valid SignInRequest request,
-                                                     HttpServletResponse httpResponse) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid SignInRequest request,
+                                               HttpServletResponse httpResponse) {
         LoginInfoDto loginInfo = authService.login(request.loginId(), request.password());
         CookieWriter.write(httpResponse, loginInfo.authTokenDto());
-        return ResponseEntity.ok(new MemberLoginResponse(loginInfo.memberId()));
+        return ResponseEntity.ok(new LoginResponse(loginInfo.memberId()));
     }
 
     @AuthRequired
@@ -119,11 +119,11 @@ public class AuthController {
 
         LoginInfoDto loginInfoDto = authService.kakaoLogin(code);
         AuthTokenDto authTokenDto = loginInfoDto.authTokenDto();
-        MemberLoginResponse memberLoginResponse = new MemberLoginResponse(loginInfoDto.memberId());
+        LoginResponse loginResponse = new LoginResponse(loginInfoDto.memberId());
 
         if (authTokenDto.isLoginSuccess()) {
             CookieWriter.write(httpResponse, authTokenDto);
-            return ResponseEntity.status(HttpStatus.OK).body(memberLoginResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
         }
 
         ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
@@ -133,14 +133,15 @@ public class AuthController {
     }
 
     @PostMapping("/oauth-signup")
-    public ResponseEntity<Void> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request,
+    public ResponseEntity<LoginResponse> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request,
                                             @CookieValue("oauthSignUpToken") String oauthSignUpToken,
                                             HttpServletResponse httpResponse) {
         MemberOauth memberOauth = authService.registerOauthMember(request, oauthSignUpToken);
+        LoginResponse response = new LoginResponse(memberOauth.getMemberId());
         AuthTokenDto authTokenDto = authService.loginOauthMember(memberOauth);
         CookieWriter.clearCookies(httpResponse);
         CookieWriter.write(httpResponse, authTokenDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .build();
+                .body(response);
     }
 }

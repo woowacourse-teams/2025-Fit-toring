@@ -14,7 +14,6 @@ import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.presentation.dto.response.MemberLoginResponse;
 import fittoring.domain.model.AuthProvider;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberOauth;
