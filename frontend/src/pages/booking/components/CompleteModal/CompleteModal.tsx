@@ -42,7 +42,7 @@ function CompleteModal({
         <S_Title>멘토링 신청이 완료되었습니다.</S_Title>
         <S_StepperWrapper>
           <S_ReservationInfoText>
-            확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
+            확정 완료 시 문자로 <br /> 연락용 채팅방 링크가 발송됩니다.
           </S_ReservationInfoText>
           <S_SubText>문자 발송에 5분정도 소요될 수 있습니다.</S_SubText>
           <MentoringStepper status={StatusTypeEnum.PENDING} />
