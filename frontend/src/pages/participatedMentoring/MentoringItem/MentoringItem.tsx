@@ -43,7 +43,7 @@ function MentoringItem({
     setOpened((prev) => !prev);
   };
 
-  const handleMentoringCardClick = () => {
+  const handleMentoringCardClick = (e: React.MouseEvent<HTMLLIElement>) => {
     navigate(`${PAGE_URL.DETAIL}/${mentoringId}`);
   };
 

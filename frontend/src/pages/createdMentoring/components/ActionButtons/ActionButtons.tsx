@@ -129,9 +129,11 @@ function ActionButtons({
         <S_PrimaryButton onClick={handleChatButtonClick}>
           채팅방으로 이동
         </S_PrimaryButton>
-        <S_SecondaryButton onClick={handleCompleteButtonClick}>
-          완료
-        </S_SecondaryButton>
+        {status === StatusTypeEnum.APPROVED && (
+          <S_SecondaryButton onClick={handleCompleteButtonClick}>
+            완료
+          </S_SecondaryButton>
+        )}
       </S_Container>
     );
   }
