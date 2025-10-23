@@ -53,4 +53,8 @@ public class MemberOauth {
     public MemberOauth(Member member, AuthProvider provider, String providerMemberId){
         this(null, member, provider, providerMemberId, false, null);
     }
+
+    public Long getMemberId(){
+        return member.getId();
+    }
 }
