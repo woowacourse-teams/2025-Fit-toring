@@ -43,23 +43,21 @@ function MentoringItem({
     setOpened((prev) => !prev);
   };
 
-  const handleMentoringCardClick = () => {
+  const handleMentoringCardClick = (e: React.MouseEvent<HTMLLIElement>) => {
     navigate(`${PAGE_URL.DETAIL}/${mentoringId}`);
   };
 
   const handleReviewCompleteButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLButtonElement>,
   ) => {
-    event.stopPropagation();
+    e.stopPropagation();
     navigate(`${PAGE_URL.DETAIL}/${mentoringId}`, {
       state: { tab: 'review' },
     });
   };
 
-  const handleChatButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    event.stopPropagation();
+  const handleChatButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     navigate(`${PAGE_URL.CHAT_ROOM}/${chatRoomId}`);
   };
 
