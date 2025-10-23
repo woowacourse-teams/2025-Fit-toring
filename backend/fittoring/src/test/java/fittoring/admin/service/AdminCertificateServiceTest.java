@@ -59,7 +59,7 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
                 .willReturn(true);
     }
 
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 자격증명 목록을 조회할 수 없다.")
+    @DisplayName("관리자 권한이 없는 일반 사용자라면 자격증명 목록을 조회할 수 조차 없다.")
     @Test
     void getAllWithoutAdminAuthority() {
         // given
