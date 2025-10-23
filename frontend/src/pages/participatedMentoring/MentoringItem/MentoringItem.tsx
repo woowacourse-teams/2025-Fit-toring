@@ -35,11 +35,22 @@ function MentoringItem({
 
   const navigate = useNavigate();
 
+  const handleReviewButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    handleReviewModalToggle();
+  };
   const handleReviewModalToggle = () => {
     setOpened((prev) => !prev);
   };
 
-  const handleReviewCompleteButtonClick = () => {
+  const handleMentoringCardClick = () => {
+    navigate(`${PAGE_URL.DETAIL}/${mentoringId}`);
+  };
+
+  const handleReviewCompleteButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.stopPropagation();
     navigate(`${PAGE_URL.DETAIL}/${mentoringId}`, {
       state: { tab: 'review' },
     });
@@ -53,38 +64,40 @@ function MentoringItem({
   };
 
   return (
-    <S_Container key={reservationId}>
-      <S_SummaryWrapper>
-        <S_Name>{mentorName}</S_Name>
-        <MentoringApplicationStatus status={status} type="PARTICIPATED" />
-      </S_SummaryWrapper>
-      <S_ReservedAt>신청일: {reservedAt}</S_ReservedAt>
-      <S_MentorCardWrapper>
-        <S_ProfileImage src={mentorProfileImage} />
-        <S_MessagWrapper>
-          <p>{content}</p>
-        </S_MessagWrapper>
-      </S_MentorCardWrapper>
-      {status !== StatusTypeEnum.REJECTED ? (
-        <ReviewButton
-          isReviewed={isReviewed}
-          status={status}
-          onReviewButtonClick={handleReviewModalToggle}
-          onReviewCompleteButtonClick={handleReviewCompleteButtonClick}
-        />
-      ) : null}
-      {status === StatusTypeEnum.APPROVED ||
-      status === StatusTypeEnum.COMPLETE ? (
-        <S_ChatButton onClick={handleChatButtonClick}>
-          채팅방으로 이동
-        </S_ChatButton>
-      ) : null}
-      {status !== StatusTypeEnum.REJECTED &&
-      status !== StatusTypeEnum.COMPLETE ? (
-        <S_StepperWrapper>
-          <MentoringStepper status={status} />
-        </S_StepperWrapper>
-      ) : null}
+    <>
+      <S_Container key={reservationId} onClick={handleMentoringCardClick}>
+        <S_SummaryWrapper>
+          <S_Name>{mentorName}</S_Name>
+          <MentoringApplicationStatus status={status} type="PARTICIPATED" />
+        </S_SummaryWrapper>
+        <S_ReservedAt>신청일: {reservedAt}</S_ReservedAt>
+        <S_MentorCardWrapper>
+          <S_ProfileImage src={mentorProfileImage} />
+          <S_MessagWrapper>
+            <p>{content}</p>
+          </S_MessagWrapper>
+        </S_MentorCardWrapper>
+        {status !== StatusTypeEnum.REJECTED ? (
+          <ReviewButton
+            isReviewed={isReviewed}
+            status={status}
+            onReviewButtonClick={handleReviewButtonClick}
+            onReviewCompleteButtonClick={handleReviewCompleteButtonClick}
+          />
+        ) : null}
+        {status === StatusTypeEnum.APPROVED ||
+        status === StatusTypeEnum.COMPLETE ? (
+          <S_ChatButton onClick={handleChatButtonClick}>
+            채팅방으로 이동
+          </S_ChatButton>
+        ) : null}
+        {status !== StatusTypeEnum.REJECTED &&
+        status !== StatusTypeEnum.COMPLETE ? (
+          <S_StepperWrapper>
+            <MentoringStepper status={status} />
+          </S_StepperWrapper>
+        ) : null}
+      </S_Container>
 
       <ReviewModal
         reservationId={reservationId}
@@ -93,7 +106,7 @@ function MentoringItem({
         onCloseClick={handleReviewModalToggle}
         onReviewSubmitButtonClick={handleReviewSubmitButtonClick}
       />
-    </S_Container>
+    </>
   );
 }
 
@@ -108,6 +121,7 @@ const S_Container = styled.li`
   border-radius: 5px;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+
   cursor: pointer;
 `;
 

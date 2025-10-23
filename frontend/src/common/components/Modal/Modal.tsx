@@ -19,8 +19,8 @@ function Modal({
   onCloseClick,
   zIndex = 1000,
 }: PropsWithChildren<ModalProps>) {
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
       onCloseClick();
     }
   };

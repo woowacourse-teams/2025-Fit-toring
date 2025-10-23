@@ -138,7 +138,7 @@ function ChatRoom() {
           withCredentials: true,
         }),
       onStompError: (frame) => console.error('STOMP protocol error:', frame),
-      onWebSocketError: (event) => console.error('WebSocket error:', event),
+      onWebSocketError: (e) => console.error('WebSocket error:', e),
       reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(
