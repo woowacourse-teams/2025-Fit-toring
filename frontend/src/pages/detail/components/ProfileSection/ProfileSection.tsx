@@ -68,7 +68,6 @@ function ProfileSection({
           ariaLabel={`(${ratingCount})개의 리뷰, 평균 ${ratingAverage}점`}
           text={`${ratingAverage} (${ratingCount})`}
           iconSrc={starIcon}
-          iconName="별점"
         />
         <CategoryTags tagNames={categories} />
         <S_Introduction>{introduction}</S_Introduction>

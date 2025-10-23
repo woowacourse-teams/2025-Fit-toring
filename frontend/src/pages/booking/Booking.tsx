@@ -9,7 +9,7 @@ import { captureSentryError } from '../../common/utils/captureSentryError';
 import BookingForm from './components/BookingForm/BookingForm';
 import BookingHeader from './components/BookingHeader/BookingHeader';
 import CompleteModal from './components/CompleteModal/CompleteModal';
-import MentoInfoCard from './components/MentorInfoCard/MentorInfoCard';
+import MentorInfoCard from './components/MentorInfoCard/MentorInfoCard';
 import { smoothScrollTo } from './utils/smoothScrollTo';
 
 import type { MentoringDetail } from '../../common/types/MentoringDetail';
@@ -74,7 +74,7 @@ function Booking() {
     <div ref={containerRef}>
       <BookingHeader />
       <S_ContentWrapper ref={wrapperRef}>
-        <MentoInfoCard mentorDetail={mentorDetail} />
+        <MentorInfoCard mentorDetail={mentorDetail} />
         <div ref={formRef}>
           <BookingForm
             handleBookingButtonClick={handleBookingButtonClick}
