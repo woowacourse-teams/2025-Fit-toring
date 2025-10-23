@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
 import { useLocation, useParams } from 'react-router-dom';
 
 import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
@@ -14,8 +15,6 @@ import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
 
-import type { MentoringDetail } from '../../common/types/MentoringDetail';
-
 type TapType = 'detail' | 'review';
 
 function Detail() {
@@ -23,26 +22,23 @@ function Detail() {
   const state = location.state as { tab?: TapType };
 
   const { mentoringId } = useParams();
-  const [data, setData] = useState<MentoringDetail | null>(null);
+
+  const { data, isError, error } = useQuery({
+    queryKey: ['mentoringDetail', mentoringId],
+    queryFn: () => getMentoringDetail(mentoringId!),
+  });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getMentoringDetail(mentoringId!);
-
-        setData(response);
-      } catch (error) {
-        console.error('fetchData 실패', error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'detail',
-          step: 'mentoring-detail-fetch',
-        });
-      }
-    };
-    fetchData();
-  }, [mentoringId]);
+    if (isError && error) {
+      console.error('fetchData 실패', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'detail',
+        step: 'mentoring-detail-fetch',
+      });
+    }
+  }, [isError, error]);
 
   const [selected, setSelected] = useState<TapType>(state?.tab ?? 'detail');
   const [scrollY, setScrollY] = useState(0);
@@ -54,6 +50,7 @@ function Detail() {
 
   const handleCertificateShowButton = () => {
     setSelected('detail');
+    document.getElementById('certificate-section')?.focus();
   };
 
   if (!data) {
@@ -62,7 +59,9 @@ function Detail() {
 
   return (
     <>
+      <S_SkipLink href="#apply-section">신청 버튼 바로가기</S_SkipLink>
       <DetailHeader />
+
       <S_Container>
         <S_MentorInfoWrapper>
           <ProfileSection
@@ -110,7 +109,11 @@ function Detail() {
           )}
         </S_ContentWrapper>
       </S_Container>
-      <ApplySection price={data.price} mentoringId={mentoringId} />
+      <ApplySection
+        id="apply-section"
+        price={data.price}
+        mentoringId={mentoringId}
+      />
     </>
   );
 }
@@ -191,4 +194,28 @@ const S_SpinnerWrapper = styled.div<{ height: number }>`
   justify-content: center;
 
   height: ${({ height }) => `${height}px`};
+`;
+
+const S_SkipLink = styled.a`
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-100%);
+
+  z-index: 9999;
+
+  padding: 1.2rem 2rem;
+  border-radius: 0 0 8px 8px;
+
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY800};
+
+  color: ${({ theme }) => theme.BG.WHITE};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+
+  transition: transform 0.2s ease;
+
+  &:focus {
+    transform: translateY(0);
+  }
 `;

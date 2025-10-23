@@ -18,7 +18,7 @@ function Landing() {
   };
 
   return (
-    <div>
+    <main>
       <Slogan />
       <FitnessQuestionFlow />
       <Introduce />
@@ -27,7 +27,7 @@ function Landing() {
         <S_Button onClick={handleStartButtonClick}>시작하기</S_Button>
       </S_ButtonSection>
       <Footer />
-    </div>
+    </main>
   );
 }
 

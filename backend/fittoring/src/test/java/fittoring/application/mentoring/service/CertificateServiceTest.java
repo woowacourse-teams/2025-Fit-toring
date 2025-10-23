@@ -1,0 +1,87 @@
+package fittoring.application.mentoring.service;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+
+import fittoring.IntegrationTestSupport;
+import fittoring.application.FixtureUtil;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.CertificateNotFoundException;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.CertificateRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.mentoring.service.dto.CertificateDeleteDto;
+import fittoring.domain.model.Certificate;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Mentoring;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+class CertificateServiceTest extends IntegrationTestSupport {
+
+    private Member admin;
+
+    @Autowired
+    private CertificateService certificateService;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private MentoringRepository mentoringRepository;
+
+    @Autowired
+    private CertificateRepository certificateRepository;
+
+
+    @BeforeEach
+    void setUp() {
+        admin = FixtureUtil.getTestAdmin();
+        memberRepository.save(admin);
+        given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                .willReturn(true);
+        given(presignedUrlService.isObjectExistsFromUrl(anyString()))
+                .willReturn(true);
+    }
+
+    @DisplayName("존재하지 않는 자격 사항 삭제 요청 시 예외가 발생한다.")
+    @Test
+    void deleteCertificateFail1() {
+        // given
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        CertificateDeleteDto dto = new CertificateDeleteDto(mentee.getId(), 999L);
+
+        // when
+        // then
+        assertThatThrownBy(() -> certificateService.deleteCertificate(dto))
+                .isInstanceOf(CertificateNotFoundException.class)
+                .hasMessage(BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("본인의 것이 아닌 자격 사항을 삭제하려고 하면 예외가 발생한다")
+    @Test
+    void deleteReviewFail2() {
+        // given
+        Member mentor1 = FixtureUtil.getTestMentor(1);
+        Member mentor2 = FixtureUtil.getTestMentor(2);
+        memberRepository.saveAll(List.of(mentor1, mentor2));
+
+        Mentoring mentoringForMentor2 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor2));
+
+        Certificate certificateForMentor2 = certificateRepository.save(
+                FixtureUtil.getTestCertificate(mentoringForMentor2));
+
+        CertificateDeleteDto dto = new CertificateDeleteDto(mentor1.getId(), certificateForMentor2.getId());
+
+        // when
+        // then
+        assertThatThrownBy(() -> certificateService.deleteCertificate(dto))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.NOT_CERTIFICATE_OWNER.getMessage());
+    }
+}

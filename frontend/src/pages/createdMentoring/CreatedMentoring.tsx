@@ -16,14 +16,14 @@ function CreatedMentoring() {
   const { mentoringApplicationList, updateMentoringApplicationListStatus } =
     useMentoringApplicationList();
 
-  const handleActionButtonsClick = ({
+  const handleActionButtonsClick = async ({
     reservationId,
     status,
   }: {
     reservationId: number;
     status: StatusType;
   }) => {
-    updateMentoringApplicationListStatus({ reservationId, status });
+    await updateMentoringApplicationListStatus({ reservationId, status });
   };
 
   const { mineMentoring } = useMineMentoring();

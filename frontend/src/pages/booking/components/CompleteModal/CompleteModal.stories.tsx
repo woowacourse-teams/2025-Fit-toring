@@ -37,10 +37,9 @@ export const DefaultModal: Story = {
         '안녕하세요. 김트레이너입니다. 현재 이벤트로 무료 상담하고 있습니다.',
       content:
         '현재 무료 상담 진행하고 있습니다. \n\n언제든 편하게 연락주시면 빠르게 답장하겠습니다.',
-      chatUrl: '',
       certificates: [
         {
-          certificateId: 19,
+          certificateId: '19',
           title: '핏토링',
           type: 'LICENSE',
           imageUrl:

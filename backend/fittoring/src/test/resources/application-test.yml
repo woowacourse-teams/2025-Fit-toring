@@ -1,4 +1,9 @@
 spring:
+  autoconfigure:
+    exclude:
+      - io.awspring.cloud.autoconfigure.sqs.SqsAutoConfiguration
+  application:
+    name: fittoring-test
   config:
     import: optional:file:.env[.properties]
   datasource:
@@ -6,6 +11,12 @@ spring:
     username: ${TEST_DATABASE_USER}
     password: ${TEST_DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    datasource:
+      hikari:
+        pool-name: test-hikari
+        maximum-pool-size: 10
+        connection-timeout: 30000
+        max-lifetime: 1800000
   sql:
     init:
       mode: never
@@ -15,6 +26,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -23,6 +35,10 @@ spring:
     password: ${TEST_DATABASE_PASSWORD}
     baseline-on-migrate: false
     connect-retries: 10
+  cloud:
+    aws:
+      sqs:
+        enabled: false
 sms:
   base-url: http://localhost:8089
   timeout:
@@ -32,3 +48,24 @@ jwt:
   secret-key: my/test/secret/key/my/test/secret/key
   access-token-expiration-millis: 10000
   refresh-token-expiration-millis: 20000000
+kakao:
+  redirect-url: ${KAKAO_REDIRECT_URL}
+  client-id: ${KAKAO_CLIENT_ID}
+
+aws:
+  s3:
+    region: ap-northeast-2
+    bucket-name: test-bucket
+    project-prefix: fit-toring/
+    env-prefix: local/
+  sqs:
+    listener:
+      auto-startup: false
+image-session:
+  merge:
+    enabled: true
+    fixed-delay-ms: 300000 # 5분
+    batch-size: 200
+
+domain:
+  sub-domain: test-sub-domain

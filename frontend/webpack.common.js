@@ -34,13 +34,6 @@ module.exports = {
         test: /\.(png|svg|jpg|jpeg|gif|avif)$/i,
         type: 'asset',
       },
-      {
-        test: /\.(woff|woff2|eot|ttf|otf)$/i,
-        type: 'asset/resource',
-        generator: {
-          filename: 'assets/fonts/[name][ext]',
-        },
-      },
     ],
   },
   resolve: {
@@ -58,12 +51,6 @@ module.exports = {
     new DotenvWebpackPlugin({
       path: path.resolve(__dirname, '.env'),
       systemvars: true,
-    }),
-    new DotenvWebpackPlugin({
-      path: path.resolve(
-        __dirname,
-        process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
-      ),
     }),
     new CopyWebpackPlugin({
       patterns: [

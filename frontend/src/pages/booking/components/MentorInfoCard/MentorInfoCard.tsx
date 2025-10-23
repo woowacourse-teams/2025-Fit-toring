@@ -15,35 +15,41 @@ interface MentorInfoCardProps {
 
 function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
   return (
-    <S_Container>
+    <div>
       {mentorDetail ? (
-        <>
-          <S_MentorProfileWrapper>
+        <S_Container
+          role="region"
+          aria-label={`${mentorDetail.mentorName} 별점${mentorDetail.ratingAverage}점 별점 참여자${mentorDetail.ratingCount}명 15분에 ${mentorDetail.price}원 카테고리${mentorDetail.categories.join(' ')}`}
+          tabIndex={0}
+        >
+          <S_MentorProfileWrapper aria-hidden="true">
             <ProfileImg src={mentorDetail.profileImageUrl} />
-            <S_MetorNameText>{mentorDetail.mentorName}</S_MetorNameText>
+            <S_MentorNameText>{mentorDetail.mentorName}</S_MentorNameText>
           </S_MentorProfileWrapper>
-          <S_InfoWithTags>
+          <S_InfoWithTags aria-hidden="true">
             <S_InfoWrapper>
               <TextWithIcon
                 iconSrc={startIcon}
                 text={`${mentorDetail.ratingAverage} (${mentorDetail.ratingCount})`}
-                iconName="별점"
+                ariaLabel="별점"
               />
               <TextWithIcon
                 iconSrc={locationIcon}
                 text="서울 강남구"
-                iconName="위치"
+                ariaLabel="위치"
               />
-              <TextWithIcon iconSrc={timeIcon} text="15분" iconName="시간" />
+              <TextWithIcon iconSrc={timeIcon} text="15분" ariaLabel="15분" />
             </S_InfoWrapper>
             <CategoryTags tagNames={mentorDetail.categories} />
           </S_InfoWithTags>
-          <S_PriceText>{mentorDetail.price.toLocaleString('ko')}원</S_PriceText>
-        </>
+          <S_PriceText aria-hidden="true">
+            {mentorDetail.price.toLocaleString('ko')}원
+          </S_PriceText>
+        </S_Container>
       ) : (
         <div>로딩중</div>
       )}
-    </S_Container>
+    </div>
   );
 }
 
@@ -71,7 +77,7 @@ const S_MentorProfileWrapper = styled.div`
   gap: 1.4rem;
 `;
 
-const S_MetorNameText = styled.span`
+const S_MentorNameText = styled.span`
   color: ${({ theme }) => theme.FONT.B01};
   font-size: 1.6rem;
 `;

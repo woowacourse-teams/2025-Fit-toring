@@ -17,15 +17,20 @@ function Slogan() {
     <S_Container>
       <S_SloganSection>
         <S_SloganWrapper>
-          <S_SloganText>일대일 온라인 운동 상담 플랫폼</S_SloganText>
-          <S_TextWrapper>
+          <S_ScreenReaderOnly>
+            일대일 온라인 운동 상담 플랫폼 핏토링
+          </S_ScreenReaderOnly>
+          <S_SloganText aria-hidden="true">
+            일대일 온라인 운동 상담 플랫폼
+          </S_SloganText>
+          <S_TextWrapper aria-hidden="true">
             <S_NameText highlight>Fit</S_NameText>
             <S_NameText>toring</S_NameText>
           </S_TextWrapper>
         </S_SloganWrapper>
         <S_Tags>
           {TAGS.map((tag) => (
-            <S_Tag key={tag}>#{tag}</S_Tag>
+            <S_Tag key={tag}>{`#${tag}`}</S_Tag>
           ))}
         </S_Tags>
         <S_Button onClick={handleStartButtonClick}>시작하기</S_Button>
@@ -36,7 +41,7 @@ function Slogan() {
 
 export default Slogan;
 
-const S_Container = styled.div`
+const S_Container = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,9 +62,26 @@ const S_SloganWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  position: relative;
 `;
 
-const S_SloganText = styled.p`
+const S_ScreenReaderOnly = styled.span`
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
+`;
+
+const S_SloganText = styled.h1`
   color: #000;
   font-weight: 700;
   font-size: 2.5rem;

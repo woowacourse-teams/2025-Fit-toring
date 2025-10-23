@@ -1,4 +1,4 @@
-import { commonHandler } from '../../../mock/common/handlers';
+import { commonHandler } from '../../../mock/getSpecialties/handlers';
 
 import SpecialtySection from './SpecialtySection';
 

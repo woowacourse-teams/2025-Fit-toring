@@ -2,7 +2,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import defaultImage from '../../../../common/assets/images/profileImg.svg';
 import { PAGE_URL } from '../../../../common/constants/url';
-import { MENTORING_DETAIL } from '../../../../common/mock/mentoringDetail/data';
+import { MENTORING_DETAIL } from '../../../../common/mock/getUserInfoSummary/data';
 
 import CertificatesImageModal from './CertificatesImageModal';
 

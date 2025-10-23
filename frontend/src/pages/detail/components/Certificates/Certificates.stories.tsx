@@ -1,7 +1,7 @@
 import { MemoryRouter } from 'react-router-dom';
 
 import { PAGE_URL } from '../../../../common/constants/url';
-import { MENTORING_DETAIL } from '../../../../common/mock/mentoringDetail/data';
+import { MENTORING_DETAIL } from '../../../../common/mock/getUserInfoSummary/data';
 
 import Certificates from './Certificates';
 

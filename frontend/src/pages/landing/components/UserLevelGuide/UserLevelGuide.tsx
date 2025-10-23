@@ -1,31 +1,41 @@
 import styled from '@emotion/styled';
 
 import beginnerAvif from '../../../../common/assets/images/beginner.avif';
-import expertAvif from '../../../../common/assets/images/expert.avif';
 import beginnerPng from '../../../../common/assets/images/beginner.png';
+import expertAvif from '../../../../common/assets/images/expert.avif';
 import expertPng from '../../../../common/assets/images/expert.png';
 
 function UserLevelGuide() {
   return (
     <S_Container>
-      <S_UserWrapper>
-        <picture>
+      <S_Heading>사용자별 가이드</S_Heading>
+
+      <S_UserWrapper
+        role="region"
+        aria-label="운동 초보자 소액으로 1회성 온라인 운동 멘토링"
+        tabIndex={0}
+      >
+        <picture aria-hidden="true">
           <source srcSet={beginnerAvif} type="image/avif" />
           <S_Img src={beginnerPng} alt="초보자 이미지" loading="lazy" />
         </picture>
-        <S_Name>운동 초보자</S_Name>
-        <S_Description>
+        <S_Name aria-hidden="true">운동 초보자</S_Name>
+        <S_Description aria-hidden="true">
           소액으로 1회성 <br />
           온라인 운동 멘토링
         </S_Description>
       </S_UserWrapper>
-      <S_UserWrapper>
-        <picture>
+      <S_UserWrapper
+        role="region"
+        aria-label="운동 숙련자 전문성과 경험을 공유해 추가 수익 창출"
+        tabIndex={0}
+      >
+        <picture aria-hidden="true">
           <source srcSet={expertAvif} type="image/avif" />
           <S_Img src={expertPng} alt="숙련자 이미지" loading="lazy" />
         </picture>
-        <S_Name>운동 숙련자</S_Name>
-        <S_Description>
+        <S_Name aria-hidden="true">운동 숙련자</S_Name>
+        <S_Description aria-hidden="true">
           전문성과 경험을 공유해 <br />
           추가 수익 창출
         </S_Description>
@@ -36,15 +46,31 @@ function UserLevelGuide() {
 
 export default UserLevelGuide;
 
-const S_Container = styled.div`
+const S_Container = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 3.5rem;
+  position: relative;
 
   padding: 7rem 3rem;
 
   line-height: normal;
+`;
+
+const S_Heading = styled.h2`
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 `;
 
 const S_UserWrapper = styled.div`

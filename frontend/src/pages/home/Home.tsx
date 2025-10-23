@@ -15,20 +15,21 @@ import { getMentorListByPage } from './apis/getMentorListByPage';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
-import SortButton from './components/SortButton/SortButton';
+import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
+import useSort from './hooks/useSortKey';
 
+import type { SortKey } from './hooks/useSortKey';
 import type { MentorInformation } from './types/MentorInformation';
+import type { Specialty } from '../../common/types/Specialty';
 
 const convertSelectedSpecialtiesToParams = (
-  selectedSpecialties: string[],
+  selectedSpecialties: Specialty[],
 ): Record<string, string> => {
   const params: Record<string, string> = {};
-  selectedSpecialties.forEach((specialty, index) => {
-    params[`categoryTitle${index + 1}`] = specialty;
-  });
+  params['categoryIds'] = selectedSpecialties.map(({ id }) => id).join(',');
 
   return params;
 };
@@ -49,25 +50,65 @@ function Home() {
     });
   };
 
-  const handleSortButtonClick = () => {
-    alert('기능 추가 예정입니다.');
-  };
   const handleCloseModal = () => {
     setModalOpened(false);
   };
 
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const { sortKey, changeSortKey } = useSort();
 
-  const handleApply = (specialties: string[]) => {
-    setSelectedSpecialties(specialties);
-    handleCloseModal();
+  const getSortedMentors = async (sortKey: SortKey) => {
+    const data = await getMentorListByPage({
+      params: {
+        ...convertSelectedSpecialtiesToParams(selectedSpecialties),
+        sortKey,
+      },
+    });
+
+    return data;
   };
 
-  const handleSelectedSpecialtyChange = (specialty: string) => {
-    setSelectedSpecialties((prev) =>
-      prev.includes(specialty)
-        ? prev.filter((prevSpecialty) => prevSpecialty !== specialty)
-        : [...prev, specialty],
+  const fetchSortedMentors = async (sortKey: SortKey) => {
+    const data = await getSortedMentors(sortKey);
+    const {
+      mentoringSummaryResponses,
+      hasNext: hasNewNext,
+      nextCursorCode,
+    } = data;
+
+    setMentorList(mentoringSummaryResponses);
+    setHasNext(hasNewNext);
+    setCursorCode(nextCursorCode);
+  };
+
+  const handleSortButtonClick = async (option: SortKey) => {
+    changeSortKey(option);
+    await fetchSortedMentors(option);
+  };
+
+  const [selectedSpecialties, setSelectedSpecialties] = useState<Specialty[]>(
+    [],
+  );
+
+  const handleApply = async (specialties: Specialty[]) => {
+    setSelectedSpecialties(specialties);
+    handleCloseModal();
+    await fetchFilteredMentors(specialties);
+  };
+
+  const handleSelectedSpecialtyChange = async (specialty: Specialty) => {
+    setSelectedSpecialties((prev) => {
+      const hasSpecialty = prev.find(
+        (prevSpecialty) => prevSpecialty.id === specialty.id,
+      );
+      return hasSpecialty
+        ? prev.filter((prevSpecialty) => prevSpecialty.id !== specialty.id)
+        : [...prev, specialty];
+    });
+
+    await fetchFilteredMentors(
+      selectedSpecialties.filter(
+        (prevSpecialty) => prevSpecialty.id !== specialty.id,
+      ),
     );
   };
 
@@ -115,12 +156,16 @@ function Home() {
         ? {
             ...convertSelectedSpecialtiesToParams(selectedSpecialties),
             cursorCode,
+            sortKey,
           }
-        : convertSelectedSpecialtiesToParams(selectedSpecialties),
+        : {
+            ...convertSelectedSpecialtiesToParams(selectedSpecialties),
+            sortKey,
+          },
     });
 
     return data;
-  }, [cursorCode, selectedSpecialties]);
+  }, [cursorCode, selectedSpecialties, sortKey]);
 
   useEffect(() => {
     const callback = async (entries: IntersectionObserverEntry[]) => {
@@ -145,6 +190,30 @@ function Home() {
     return () => io.disconnect();
   }, [fetchMentorData, hasNext]);
 
+  const getFilteredMentors = async (selectedSpecialties: Specialty[]) => {
+    const data = await getMentorListByPage({
+      params: {
+        ...convertSelectedSpecialtiesToParams(selectedSpecialties),
+        sortKey,
+      },
+    });
+
+    return data;
+  };
+
+  const fetchFilteredMentors = async (selectedSpecialties: Specialty[]) => {
+    const data = await getFilteredMentors(selectedSpecialties);
+    const {
+      mentoringSummaryResponses,
+      hasNext: hasNewNext,
+      nextCursorCode,
+    } = data;
+
+    setMentorList(mentoringSummaryResponses);
+    setHasNext(hasNewNext);
+    setCursorCode(nextCursorCode);
+  };
+
   return (
     <S_Container>
       <HomeHeader />
@@ -157,7 +226,10 @@ function Home() {
             selectedSpecialties={selectedSpecialties}
             handleApplyFinalSpecialties={handleApply}
           />
-          <SortButton handleSortButtonClick={handleSortButtonClick} />
+          <SortDropDown
+            onSortButtonClick={handleSortButtonClick}
+            currentSortKey={sortKey}
+          />
         </S_FilterWrapper>
         <Button onClick={handleMentoringCreation} customStyle={customStyle}>
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
@@ -167,8 +239,8 @@ function Home() {
         <S_CheckboxWrapper>
           {selectedSpecialties.map((specialty) => (
             <SpecialtyCheckbox
-              key={specialty}
-              specialty={specialty}
+              key={specialty.id}
+              specialty={specialty.title}
               checked={selectedSpecialties.includes(specialty)}
               disabled={false}
               onChange={() => handleSelectedSpecialtyChange(specialty)}

@@ -14,44 +14,27 @@ function SpecialtyCheckbox({
   onChange,
 }: SpecialtyCheckboxProps) {
   return (
-    <S_Container>
+    <S_Container checked={checked} disabled={disabled}>
       <S_HiddenCheckbox
         type="checkbox"
         checked={checked}
         onChange={onChange}
         disabled={disabled}
       />
-      <S_CheckboxLabel checked={checked} disabled={disabled}>
-        {specialty}
-      </S_CheckboxLabel>
+      {specialty}
     </S_Container>
   );
 }
 
 export default SpecialtyCheckbox;
 
-const S_Container = styled.label`
-  display: inline-flex;
-  align-items: center;
-
-  transition: all 0.2s ease;
-  user-select: none;
-`;
-
-const S_HiddenCheckbox = styled.input`
-  position: absolute;
-
-  width: 0;
-  height: 0;
-  opacity: 0;
-`;
-
-const S_CheckboxLabel = styled.span<{
+const S_Container = styled.label<{
   checked: boolean;
   disabled: boolean;
 }>`
   display: inline-flex;
   align-items: center;
+  position: relative;
 
   padding: 0.6rem 1.2rem;
   border: 1px solid
@@ -77,4 +60,20 @@ const S_CheckboxLabel = styled.span<{
   &:active {
     transform: scale(0.98);
   }
+
+  &:focus-within {
+    border-color: ${({ theme }) => theme.OUTLINE.BLACK};
+  }
+`;
+
+const S_HiddenCheckbox = styled.input`
+  overflow: hidden;
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
 `;

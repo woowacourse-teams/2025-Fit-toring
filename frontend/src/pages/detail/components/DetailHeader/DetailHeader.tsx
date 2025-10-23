@@ -1,14 +1,20 @@
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useNavigationType } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
 import Header from '../../../../common/components/Header/Header';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 function DetailHeader() {
   const navigate = useNavigate();
+  const navigationType = useNavigationType();
 
   const handleMoveBack = () => {
-    navigate(-1);
+    if (navigationType === 'POP') {
+      navigate(PAGE_URL.HOME, { replace: true });
+    } else {
+      navigate(-1);
+    }
   };
   return (
     <Header>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import BaseInfoSection from '../../../../common/components/mentoringForm/BaseInfoSection/BaseInfoSection';
@@ -11,38 +12,36 @@ import IntroduceSection from '../../../../common/components/mentoringForm/Introd
 import ProfileSection from '../../../../common/components/mentoringForm/ProfileSection/ProfileSection';
 import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
+import useS3Upload from '../../../../common/hooks/useS3Upload';
 import { addSentryBreadcrumb } from '../../../../common/utils/addSentryBreadcrumb';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
-import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
+import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
 
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { mentoringCreateFormData } from '../../../../common/types/mentoringCreateFormData';
-import { validateTextarea } from '../../../../common/utils/validateDetail';
 
 function MentoringCreateForm() {
   const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
     price: 0,
     category: [],
     introduction: '',
+    profileImageUrl: null,
     career: 0,
     content: '',
-    chatUrl: '',
-    certificateInfos: [],
+    certificateInfoRequests: [],
   });
-  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-  const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
-    [],
-  );
 
   const priceErrorMessage = priceValidator(mentoringData.price);
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
-  const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
   const detailErrorMessage = validateTextarea(mentoringData.content);
+
+  const { uploadFile: uploadImageFile } = useS3Upload();
+
   const handleMentoringDataChange = (
     newData: Partial<mentoringCreateFormData>,
   ) => {
@@ -58,61 +57,84 @@ function MentoringCreateForm() {
     });
   };
 
-  const handleProfileImageChange = (file: File | null) => {
-    setProfileImageFile(file);
+  const handleProfileImageChange = async (file: File | null) => {
+    if (!file) {
+      handleMentoringDataChange({
+        profileImageUrl: null,
+      });
+      addSentryBreadcrumb({
+        category: 'ui.change',
+        message: `프로필 이미지 제거`,
+      });
+      return;
+    }
 
-    addSentryBreadcrumb({
-      category: 'ui.change',
-      message: `프로필 이미지 변경`,
-      data: { file },
-    });
-  };
-
-  const handleCertificateImageFilesChange = (files: File[]) => {
-    setCertificateImageFiles(files);
-
-    addSentryBreadcrumb({
-      category: 'ui.change',
-      message: `자격증 이미지 변경`,
-      data: { files },
-    });
-  };
-
-  const submitMentoringForm = async () => {
-    const filteredCertificateInfos = mentoringData.certificateInfos.map(
-      (certificateInfo) => ({
-        type: certificateInfo.type,
-        title: certificateInfo.title,
-      }),
-    );
     try {
-      const response = await postMentoringCreate(
-        { ...mentoringData, certificateInfos: filteredCertificateInfos },
-        profileImageFile,
-        certificateImageFiles,
-      );
+      const { uploadedUrl } = await uploadImageFile(file, 'MENTORING_PROFILE');
 
+      if (!uploadedUrl || uploadedUrl === '') {
+        throw new Error('업로드된 URL이 유효하지 않습니다.');
+      }
+
+      handleMentoringDataChange({
+        profileImageUrl: uploadedUrl,
+      });
+
+      addSentryBreadcrumb({
+        category: 'ui.change',
+        message: `프로필 이미지 변경 성공`,
+        data: { fileName: file.name, fileSize: file.size },
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '프로필 이미지 업로드 중 알 수 없는 오류가 발생했습니다.';
+
+      console.error('프로필 이미지 업로드 실패:', errorMessage);
+      alert('프로필 이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+
+      addSentryBreadcrumb({
+        category: 'ui.error',
+        message: `프로필 이미지 업로드 실패`,
+        data: {
+          fileName: file.name,
+          fileSize: file.size,
+          error: errorMessage,
+        },
+        level: 'error',
+      });
+    }
+  };
+
+  const mutation = useMutation({
+    mutationFn: postMentoringCreate,
+    onSuccess: (response) => {
       if (response.status === 201) {
         alert('멘토링 등록 성공');
+        navigate(PAGE_URL.HOME);
       }
-    } catch (error) {
+    },
+    onError: (error, variables) => {
       console.error('멘토링 등록 실패');
-
       captureSentryError({
         error,
         level: 'error',
         feature: 'mentoring',
         step: 'mentoring-create',
         extras: {
-          mentoringData: {
-            ...mentoringData,
-            certificateInfos: filteredCertificateInfos,
-          },
-          profileImageFile,
-          certificateImageFiles,
+          ...variables,
         },
       });
-    }
+    },
+  });
+
+  const submitMentoringForm = async () => {
+    mutation.mutate({
+      mentoringData: {
+        ...mentoringData,
+      },
+    });
   };
 
   const navigate = useNavigate();
@@ -125,24 +147,19 @@ function MentoringCreateForm() {
       priceErrorMessage ||
       introduceErrorMessage ||
       careerErrorMessage ||
-      chatUrlErrorMessage ||
       detailErrorMessage
     ) {
       alert('입력값을 확인해주세요.');
       return;
     }
     await submitMentoringForm();
-    navigate(PAGE_URL.HOME);
 
     addSentryBreadcrumb({
       category: 'ui.submit',
       message: '멘토링 생성 폼 제출 시도',
       data: {
         isFormValid:
-          priceErrorMessage ||
-          introduceErrorMessage ||
-          careerErrorMessage ||
-          chatUrlErrorMessage,
+          priceErrorMessage || introduceErrorMessage || careerErrorMessage,
       },
     });
   };
@@ -162,7 +179,7 @@ function MentoringCreateForm() {
         id: crypto.randomUUID(),
         title: null,
         type: 'LICENSE',
-        file: undefined,
+        imageUrl: undefined,
       },
     ]);
 
@@ -178,18 +195,12 @@ function MentoringCreateForm() {
 
     setCertificates(updated);
 
-    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
-      id,
+    const finalCertificates = updated.map(({ title, type, imageUrl }) => ({
       title,
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
-
-    const files = updated
-      .map((item) => item.file)
-      .filter((file): file is File => !!file);
-    handleCertificateImageFilesChange(files);
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
 
     addSentryBreadcrumb({
       category: 'ui.click',
@@ -201,27 +212,69 @@ function MentoringCreateForm() {
     });
   };
 
-  const onCertificateChangeById = (
+  const onCertificateChangeById = async (
     id: string,
     changed: Partial<CertificateItem>,
   ) => {
+    if (changed.file) {
+      try {
+        const { uploadedUrl } = await uploadImageFile(
+          changed.file,
+          'CERTIFICATE',
+        );
+
+        if (!uploadedUrl || uploadedUrl === '') {
+          throw new Error('자격증 이미지 업로드에 실패했습니다.');
+        }
+
+        changed.imageUrl = uploadedUrl === '' ? null : uploadedUrl;
+
+        addSentryBreadcrumb({
+          category: 'ui.change',
+          message: '자격증 이미지 업로드 성공',
+          data: {
+            certificateId: id,
+            fileName: changed.file.name,
+            fileSize: changed.file.size,
+          },
+        });
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : '자격증 이미지 업로드 중 알 수 없는 오류가 발생했습니다.';
+
+        console.error('자격증 이미지 업로드 실패:', errorMessage);
+        alert('자격증 이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+
+        addSentryBreadcrumb({
+          category: 'ui.error',
+          message: '자격증 이미지 업로드 실패',
+          data: {
+            certificateId: id,
+            fileName: changed.file?.name,
+            fileSize: changed.file?.size,
+            error: errorMessage,
+          },
+          level: 'error',
+        });
+
+        return;
+      }
+    }
+
     const updated = certificates.map((item) =>
       item.id === id ? { ...item, ...changed } : item,
     );
+
     setCertificates(updated);
 
-    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
-      id,
+    const finalCertificates = updated.map(({ title, type, imageUrl }) => ({
       title,
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
-
-    const files = updated
-      .map((item) => item.file)
-      .filter((file): file is File => !!file);
-    handleCertificateImageFilesChange(files);
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
   };
 
   return (
@@ -230,8 +283,6 @@ function MentoringCreateForm() {
         onBaseInfoChange={handleMentoringDataChange}
         priceErrorMessage={priceErrorMessage}
         price={mentoringData.price}
-        chatUrlErrorMessage={chatUrlErrorMessage}
-        chatUrl={mentoringData.chatUrl}
       />
       <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />

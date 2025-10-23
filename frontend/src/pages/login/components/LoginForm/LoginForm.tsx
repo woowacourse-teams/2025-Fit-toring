@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
+import kakaoLoginIcon from '../../../../common/assets/images/kakao_login_large_wide.png';
 import notBlind from '../../../../common/assets/images/notBlind.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
@@ -27,9 +28,24 @@ function LoginForm() {
   const navigate = useNavigate();
 
   const { login } = useAuth();
+
+  const REST_API_KEY = process.env.KAKAO_REST_API_KEY;
+  const KAKAO_REDIRECT_URL = process.env.KAKAO_REDIRECT_URL;
+
+  const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code`;
+
   const fetchLogin = async () => {
     try {
       const response = await postLogin(userId, password);
+      const data = await response.json();
+
+      if (data?.memberId) {
+        localStorage.setItem(
+          'memberId',
+          JSON.stringify({ memberId: data.memberId }),
+        );
+      }
+
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
         navigate(PAGE_URL.HOME);
@@ -54,6 +70,10 @@ function LoginForm() {
     e.preventDefault();
 
     fetchLogin();
+  };
+
+  const handleSocialLoginButtonClick = () => {
+    window.location.href = KAKAO_URL;
   };
 
   const loginFormValidated = userId !== '' && password !== '';
@@ -96,16 +116,14 @@ function LoginForm() {
           size="full"
           customStyle={css`
             height: 4.3rem;
-            box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
-            box-shadow: 0 4px 12px 0
-              ${loginFormValidated ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
 
-            font-size: 1.6rem;
+            font-size: 1.8rem;
           `}
           variant={loginFormValidated ? 'primary' : 'disabled'}
         >
           로그인
         </Button>
+        <S_KakaoButton type="button" onClick={handleSocialLoginButtonClick} />
       </S_ButtonWrapper>
     </S_Container>
   );
@@ -168,7 +186,24 @@ const S_Img = styled.img`
   margin-right: 1rem;
 `;
 
+const S_KakaoButton = styled.a`
+  width: 100%;
+  height: 4.3rem;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  border-radius: 0.7rem;
+  cursor: pointer;
+  background-image: url(${kakaoLoginIcon});
+  background-size: cover;
+  background-position: center;
+  text-decoration: none;
+`;
+
 const S_ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+
   margin-top: 3rem;
 `;
 

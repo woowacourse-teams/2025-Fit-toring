@@ -3,13 +3,14 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
+import ApiError from '../../../../common/apis/ApiError';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
-import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
-import Checkbox from '../Checkbox/Checkbox';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
+import { SMS_ERROR_MESSAGE } from '../../constants/message';
+import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
 interface BookingFormProps {
   handleBookingButtonClick: () => void;
@@ -67,22 +68,32 @@ function BookingForm({
     } catch (error) {
       console.error('예약 중 에러 발생', error);
 
-      captureSentryError({
-        error,
-        level: 'error',
-        feature: 'reservation',
-        step: 'reservation-apply',
-        extras: {
-          content: counselContent,
-        },
-      });
+      if (error instanceof ApiError) {
+        const { message, status } = error;
+
+        if (status === 500 && SMS_ERROR_MESSAGE.includes(message)) {
+          handleBookingButtonClick();
+        }
+
+        captureSentryError({
+          error,
+          level: 'error',
+          feature: 'reservation',
+          step: 'reservation-apply',
+          extras: {
+            content: counselContent,
+          },
+        });
+      }
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!!detailErrorMessage) return;
+    if (detailErrorMessage) {
+      return;
+    }
 
     handleBooking();
   };
@@ -117,8 +128,12 @@ function BookingForm({
 더 정확한 조언을 받을 수 있습니다."
             onChange={handleCounselContentChange}
             errored={errored.textarea}
+            aria-describedby="details-limit"
             value={counselContent}
           />
+          <S_ScreenReaderOnly id="details-limit" hidden>
+            최대 5000자까지 입력할 수 있습니다.
+          </S_ScreenReaderOnly>
         </FormField>
       </S_UserInfoWrapper>
 
@@ -186,4 +201,18 @@ const S_Textarea = styled.textarea<{ errored: boolean }>`
   }
 
   color: ${({ theme }) => theme.FONT.B01};
+`;
+
+const S_ScreenReaderOnly = styled.span`
+  overflow: hidden;
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 `;

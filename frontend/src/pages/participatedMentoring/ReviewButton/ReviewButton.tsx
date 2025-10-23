@@ -5,15 +5,17 @@ import { StatusTypeEnum } from '../../../common/types/statusType';
 import type { StatusType } from '../../../common/types/statusType';
 
 interface ReviewWriteButtonProps {
-  onClick: () => void;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   disabled: boolean;
 }
 
 interface ReviewButtonProps {
   isReviewed: boolean;
   status: StatusType;
-  onReviewButtonClick: () => void;
-  onReviewCompleteButtonClick: () => void;
+  onReviewButtonClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onReviewCompleteButtonClick: (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => void;
 }
 
 function ReviewWriteButton({ onClick, disabled }: ReviewWriteButtonProps) {
@@ -24,7 +26,11 @@ function ReviewWriteButton({ onClick, disabled }: ReviewWriteButtonProps) {
   );
 }
 
-function ReviewCompleteButton({ onClick }: { onClick: () => void }) {
+function ReviewCompleteButton({
+  onClick,
+}: {
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}) {
   return (
     <S_ReviewCompleteButton onClick={onClick}>
       내가 작성한 리뷰
