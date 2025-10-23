@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { getMentoringApplicationList } from '../apis/getMentoringApplicationList';
@@ -11,26 +11,26 @@ const useMentoringApplicationList = () => {
     MentoringApplication[]
   >([]);
 
-  useEffect(() => {
-    const fetchMentoringApplicationList = async () => {
-      try {
-        const response = await getMentoringApplicationList();
-        setMentoringApplicationList(response);
-      } catch (error) {
-        console.error(error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'createdMentoring',
-          step: 'mentoring-application-fetch',
-        });
-      }
-    };
-
-    fetchMentoringApplicationList();
+  const fetchMentoringApplicationList = useCallback(async () => {
+    try {
+      const response = await getMentoringApplicationList();
+      setMentoringApplicationList(response);
+    } catch (error) {
+      console.error(error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'createdMentoring',
+        step: 'mentoring-application-fetch',
+      });
+    }
   }, []);
 
-  const updateMentoringApplicationListStatus = ({
+  useEffect(() => {
+    fetchMentoringApplicationList();
+  }, [fetchMentoringApplicationList]);
+
+  const updateMentoringApplicationListStatus = async ({
     reservationId,
     status,
   }: {
@@ -48,6 +48,8 @@ const useMentoringApplicationList = () => {
         };
       });
     });
+
+    await fetchMentoringApplicationList();
   };
 
   return { mentoringApplicationList, updateMentoringApplicationListStatus };
