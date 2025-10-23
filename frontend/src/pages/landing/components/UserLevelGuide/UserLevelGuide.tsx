@@ -8,7 +8,7 @@ import expertPng from '../../../../common/assets/images/expert.png';
 function UserLevelGuide() {
   return (
     <S_Container>
-      <S_Heading id="user-level-title">사용자별 가이드</S_Heading>
+      <S_Heading>사용자별 가이드</S_Heading>
 
       <S_UserWrapper
         role="region"
