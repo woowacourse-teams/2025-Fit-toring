@@ -18,7 +18,9 @@ function KakaoCallback() {
   useEffect(() => {
     const authCode = searchParams.get('code');
 
-    if (!authCode || didLoginRef.current) {return;}
+    if (!authCode || didLoginRef.current) {
+      return;
+    }
     didLoginRef.current = true;
 
     const handleLogin = async (authCode: string) => {
@@ -26,14 +28,13 @@ function KakaoCallback() {
         const response = await postKakaoLogin(authCode);
         const data = await response.json();
 
-        if (data?.memberId) {
-          localStorage.setItem(
-            'memberId',
-            JSON.stringify({ memberId: data.memberId }),
-          );
-        }
-
         if (response.status === 200) {
+          if (data?.memberId) {
+            localStorage.setItem(
+              'memberId',
+              JSON.stringify({ memberId: data.memberId }),
+            );
+          }
           login();
           navigate(PAGE_URL.HOME, { replace: true });
         } else if (response.status === 204) {
