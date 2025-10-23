@@ -44,6 +44,7 @@ function CompleteModal({
           <S_ReservationInfoText>
             확정 완료 시 문자로 <br /> 연락용 오픈카톡방 링크가 발송됩니다.
           </S_ReservationInfoText>
+          <S_SubText>문자 발송에 5분정도 소요될 수 있습니다.</S_SubText>
           <MentoringStepper status={StatusTypeEnum.PENDING} />
         </S_StepperWrapper>
         <S_MentorInfoBox>
@@ -145,6 +146,7 @@ const S_Icon = styled.img`
 const S_StepperWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
 
   padding: 3rem;
@@ -158,4 +160,9 @@ const S_ReservationInfoText = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B4_B};
   color: ${({ theme }) => theme.FONT.B02};
   text-align: center;
+`;
+
+const S_SubText = styled.span`
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
+  color: ${({ theme }) => theme.SYSTEM.GRAY400};
 `;
