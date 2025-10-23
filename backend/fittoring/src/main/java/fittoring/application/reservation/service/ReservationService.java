@@ -32,6 +32,7 @@ import fittoring.domain.model.Status;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -98,8 +99,8 @@ public class ReservationService {
             List<Reservation> reservations
     ) {
         List<Long> reservationIds = reservations.stream()
-            .map(Reservation::getId)
-            .toList();
+                .map(Reservation::getId)
+                .toList();
         Map<Long, ChatRoom> chatRoomMap = chatRoomService.findAllByReservationIds(reservationIds);
 
         List<MentorMentoringReservationResponse> result = new ArrayList<>();
@@ -132,34 +133,45 @@ public class ReservationService {
                 ImageType.MENTORING_PROFILE,
                 mentoringIds
         );
-        
+
         List<Long> reservationIds = rows.stream()
-            .map(ParticipatedReservationWithoutProfileImageDto::getReservationId)
-            .toList();
+                .map(ParticipatedReservationWithoutProfileImageDto::getReservationId)
+                .toList();
         Map<Long, ChatRoom> chatRoomMap = chatRoomService.findAllByReservationIds(reservationIds);
-        
+
         List<ParticipatedReservationResponse> result = new ArrayList<>();
         for (ParticipatedReservationWithoutProfileImageDto participatedReservation : rows) {
-            Long chatRoomId = isChattableStatus(participatedReservation.getStatus())
-                ? chatRoomMap.get(participatedReservation.getReservationId()).getId()
-                : null;
+            Long chatRoomId = getChatRoomIdOrNull(participatedReservation, chatRoomMap);
             result.add(new ParticipatedReservationResponse(
-                participatedReservation.getReservationId(),
-                participatedReservation.getMentoringId(),
-                participatedReservation.getMentorName(),
-                profileImageByMentoring.get(participatedReservation.getMentoringId()),
-                participatedReservation.getReservedAt(),
-                participatedReservation.getContent(),
-                participatedReservation.getStatus(),
-                chatRoomId,
-                participatedReservation.getIsReviewed()));
+                    participatedReservation.getReservationId(),
+                    participatedReservation.getMentoringId(),
+                    participatedReservation.getMentorName(),
+                    profileImageByMentoring.get(participatedReservation.getMentoringId()),
+                    participatedReservation.getReservedAt(),
+                    participatedReservation.getContent(),
+                    participatedReservation.getStatus(),
+                    chatRoomId,
+                    participatedReservation.getIsReviewed()));
         }
         return result;
     }
 
+    private Long getChatRoomIdOrNull(
+            ParticipatedReservationWithoutProfileImageDto participatedReservation,
+            Map<Long, ChatRoom> chatRoomMap
+    ) {
+        Long chatRoomId = null;
+        if (isChattableStatus(participatedReservation.getStatus())) {
+            chatRoomId = Optional.ofNullable(chatRoomMap.get(participatedReservation.getReservationId()))
+                    .map(ChatRoom::getId)
+                    .orElse(null);
+        }
+        return chatRoomId;
+    }
+
     private boolean isChattableStatus(String statusName) {
         return statusName.equals(Status.APPROVED.name())
-            || statusName.equals(Status.COMPLETE.name());
+                || statusName.equals(Status.COMPLETE.name());
     }
 
     private void checkAdminAuthority(Long memberId) {

@@ -138,6 +138,9 @@ public class ChatRoomService {
     public Map<Long, ChatRoom> findAllByReservationIds(List<Long> reservationIds) {
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByReservationIdIn(reservationIds);
         return chatRooms.stream()
-            .collect(Collectors.toMap(ChatRoom::getReservationId, Function.identity()));
+                .collect(Collectors.toMap(
+                        ChatRoom::getReservationId,
+                        Function.identity()
+                ));
     }
 }
