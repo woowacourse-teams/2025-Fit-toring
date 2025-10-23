@@ -35,7 +35,13 @@ function ChatRoom() {
   const memberId = parsedData ? parsedData.memberId : null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
+    const { value } = e.target;
+
+    if (value.length > 20_000) {
+      return;
+    }
+
+    setMessage(value);
   };
 
   const handlePaymentRequestClick = (
@@ -187,6 +193,10 @@ function ChatRoom() {
 
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (message === '') {
+      return;
+    }
 
     const tempId = Date.now();
 
