@@ -35,7 +35,13 @@ function ChatRoom() {
   const memberId = parsedData ? parsedData.memberId : null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
+    const { value } = e.target;
+
+    if (value.length > 20_000) {
+      return;
+    }
+
+    setMessage(value);
   };
 
   const handlePaymentRequestClick = (
@@ -138,7 +144,7 @@ function ChatRoom() {
           withCredentials: true,
         }),
       onStompError: (frame) => console.error('STOMP protocol error:', frame),
-      onWebSocketError: (event) => console.error('WebSocket error:', event),
+      onWebSocketError: (e) => console.error('WebSocket error:', e),
       reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(
@@ -187,6 +193,10 @@ function ChatRoom() {
 
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (message === '') {
+      return;
+    }
 
     const tempId = Date.now();
 

@@ -3,35 +3,50 @@ import React from 'react';
 import styled from '@emotion/styled';
 
 import closeIcon from '../../../../common/assets/images/close.svg';
+import { useFocusTrap } from '../../../../common/hooks/useFocusTrap';
 
 interface ProfileImageModalProps {
   opened: boolean;
   imageSrc: string;
   onCloseClick: () => void;
 }
+import { createPortal } from 'react-dom';
+
+import { useRef } from 'react';
 
 function ProfileImageModal({
   opened,
   imageSrc,
   onCloseClick,
 }: ProfileImageModalProps) {
-  return opened ? (
-    <S_Contaienr>
+  const containerRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(containerRef, opened, onCloseClick);
+
+  if (!opened) {return null;}
+
+  return createPortal(
+    <S_Container
+      role="dialog"
+      aria-modal="true"
+      aria-label="프로필 이미지 확대 보기"
+      ref={containerRef}
+    >
       <S_CloseButtonWrapper>
         <S_CloseButton onClick={onCloseClick}>
-          <S_CloseIcon src={closeIcon} alt="닫기 아이콘" />
+          <S_CloseIcon src={closeIcon} alt="닫기" />
         </S_CloseButton>
       </S_CloseButtonWrapper>
       <S_ImgWrapper>
         <S_Img src={imageSrc} alt="멘토 프로필 이미지" />
       </S_ImgWrapper>
-    </S_Contaienr>
-  ) : null;
+    </S_Container>,
+    document.body,
+  );
 }
 
 export default ProfileImageModal;
 
-const S_Contaienr = styled.div`
+const S_Container = styled.div`
   display: flex;
   flex-direction: column;
   position: fixed;

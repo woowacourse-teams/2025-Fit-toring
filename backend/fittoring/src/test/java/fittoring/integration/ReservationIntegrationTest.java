@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doNothing;
 
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
@@ -19,6 +20,7 @@ import fittoring.application.reservation.presentation.dto.response.ReservationCr
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -33,6 +35,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -60,6 +63,8 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private JwtProvider jwtProvider;
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
 
     @DisplayName("멘토링 예약에 성공하면 201 Created 상태코드와 예약 정보를 반환한다.")
     @Test
@@ -347,10 +352,10 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 });
 
         //then
-        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation);
-        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2);
-        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
-        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
+        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation, null);
+        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2, null);
+        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3, null);
+        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4, null);
 
         assertThat(response)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
@@ -414,6 +419,9 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Reservation savedReservation4 = reservationRepository.save(
                 new Reservation("멘토링 예약 내용", Status.APPROVED, savedMentoring2, savedMentee)
         );
+        ChatRoom chatRoom4 = chatRoomRepository.save(
+                new ChatRoom(savedReservation4.getId(), savedMentee.getId(), mentor.getId())
+        );
 
         //mentee2의 예약
         Reservation savedReservation5 = reservationRepository.save(
@@ -421,6 +429,9 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         );
         Reservation savedReservation6 = reservationRepository.save(
                 new Reservation("멘토링 예약 내용", Status.COMPLETE, savedMentoring2, savedMentee2)
+        );
+        ChatRoom chatRoom6 = chatRoomRepository.save(
+            new ChatRoom(savedReservation6.getId(), savedMentee2.getId(), mentor.getId())
         );
 
         //when
@@ -437,12 +448,12 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 });
 
         //then
-        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation);
-        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2);
-        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
-        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
-        MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5);
-        MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6);
+        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation, null);
+        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2, null);
+        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3, null);
+        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4, chatRoom4);
+        MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5, null);
+        MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6, chatRoom6);
 
         assertThat(response)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")

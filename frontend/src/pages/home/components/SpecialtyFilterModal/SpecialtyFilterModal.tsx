@@ -96,10 +96,19 @@ function SpecialtyFilterModal({
   return (
     <Modal opened={opened} onCloseClick={handleRollbackTemporarySpecialties}>
       <S_Container>
-        <S_Title>전문 분야</S_Title>
+        <S_Title>전문 분야 (최대 {MAX_SPECIALTIES}개)</S_Title>
+        <S_VisuallyHidden>
+          총 {specialties.length}개의 선택지가 있습니다.
+        </S_VisuallyHidden>
         <S_Line />
 
         <S_SpecialtyWrapper>
+          <S_VisuallyHidden role="status">
+            {temporarySelectedSpecialties.length > 0 &&
+              `현재 ${temporarySelectedSpecialties.length}개`}
+            {temporarySelectedSpecialties.length >= MAX_SPECIALTIES &&
+              `, 최대 개수 도달`}
+          </S_VisuallyHidden>
           {specialties.map((specialty) => (
             <SpecialtyCheckbox
               key={specialty.id}
@@ -120,10 +129,19 @@ function SpecialtyFilterModal({
 
         <S_Line />
         <S_ButtonWrapper>
-          <S_SecondaryButton onClick={handleResetTemporarySpecialties}>
+          <S_VisuallyHidden>
+            <h4>전문 분야 필터 모달 버튼</h4>
+          </S_VisuallyHidden>
+          <S_SecondaryButton
+            onClick={handleResetTemporarySpecialties}
+            aria-label="선택한 전문 분야 초기화"
+          >
             초기화
           </S_SecondaryButton>
-          <S_PrimaryButton onClick={handleApplySpecialties}>
+          <S_PrimaryButton
+            onClick={handleApplySpecialties}
+            aria-label={`${temporarySelectedSpecialties.length}개의 전문 분야 적용 및 닫기`}
+          >
             적용
           </S_PrimaryButton>
         </S_ButtonWrapper>
@@ -134,7 +152,7 @@ function SpecialtyFilterModal({
 
 export default SpecialtyFilterModal;
 
-const S_Container = styled.div`
+const S_Container = styled.article`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -211,4 +229,18 @@ const S_SecondaryButton = styled(S_Button)`
   &:hover {
     background-color: ${({ theme }) => theme.BG.LIGHT};
   }
+`;
+
+const S_VisuallyHidden = styled.div`
+  overflow: hidden;
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 `;
