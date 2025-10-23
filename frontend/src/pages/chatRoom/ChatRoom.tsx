@@ -71,25 +71,9 @@ function ChatRoom() {
     hasNextPage,
   } = useInfiniteChatRoomMessage(Number(chatRoomId!));
 
-  const listRef = useRef<HTMLDivElement>(null);
+  const listElRef = useRef<HTMLDivElement>(null);
   const initialScrolledRef = useRef(false);
   const ioReadyRef = useRef(false);
-
-  useLayoutEffect(() => {
-    const element = listRef.current;
-    if (!element) {
-      return;
-    }
-
-    if (!initialScrolledRef.current && messages.length > 0) {
-      element.scrollTop = element.scrollHeight;
-      initialScrolledRef.current = true;
-
-      requestAnimationFrame(() => {
-        ioReadyRef.current = true;
-      });
-    }
-  }, [listRef, messages]);
 
   const stateRef = useRef({
     hasNextPage: false,
@@ -115,12 +99,28 @@ function ChatRoom() {
     await fetchNextPage();
   }, [fetchNextPage]);
 
-  const { pageFirstRef } = useUpwardInfiniteScroll({
+  const { listReadyRef, pageFirstReadyRef, ready } = useUpwardInfiniteScroll({
     shouldTrigger: shouldTrigger,
     onIntersect,
     anchorKey: anchorKey!,
-    listRef,
+    listElRef,
   });
+
+  useLayoutEffect(() => {
+    const element = listElRef.current;
+    if (!element || !ready) {
+      return;
+    }
+
+    if (!initialScrolledRef.current && messages.length > 0) {
+      element.scrollTop = element.scrollHeight;
+      initialScrolledRef.current = true;
+
+      requestAnimationFrame(() => {
+        ioReadyRef.current = true;
+      });
+    }
+  }, [listElRef, messages, ready]);
 
   useEffect(() => {
     if (chatRoomMessage) {
@@ -255,8 +255,9 @@ function ChatRoom() {
 
       <ChatContent
         messages={messages}
-        pageFirstRef={pageFirstRef}
-        listRef={listRef}
+        pageFirstRef={pageFirstReadyRef}
+        listRef={listReadyRef}
+        listElRef={listElRef}
       />
       <InputSection
         value={message}
