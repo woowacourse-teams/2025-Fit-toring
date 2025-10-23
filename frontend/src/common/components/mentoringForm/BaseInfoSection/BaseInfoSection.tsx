@@ -49,7 +49,12 @@ function BaseInfoSection({
   }, []);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onBaseInfoChange({ price: Number(e.target.value) });
+    const price = Number(e.target.value);
+    if (Number.isNaN(price)) {
+      return;
+    }
+
+    onBaseInfoChange({ price });
   };
 
   return (
@@ -71,6 +76,7 @@ function BaseInfoSection({
             onChange={handlePriceChange}
             errored={priceErrorMessage !== ''}
             value={price}
+            type="tel"
           />
         </FormField>
       </S_FormFieldWrapper>
