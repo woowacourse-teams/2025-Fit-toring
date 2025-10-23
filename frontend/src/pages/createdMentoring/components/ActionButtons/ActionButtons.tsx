@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
+import { PAGE_URL } from '../../../../common/constants/url';
 import {
   StatusTypeEnum,
   type StatusType,
@@ -9,8 +11,6 @@ import { patchReservationStatus } from '../../apis/patchReservationStatus';
 import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
 
 import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
-import { useNavigate } from 'react-router-dom';
-import { PAGE_URL } from '../../../../common/constants/url';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -85,6 +85,25 @@ function ActionButtons({
     }
   };
 
+  const handleCompleteButtonClick = async () => {
+    try {
+      if (
+        confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
+      ) {
+        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
+        onClick(StatusTypeEnum.COMPLETE);
+      }
+    } catch (error) {
+      console.error(`Error handling complete button click:`, error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'createdMentoring',
+        step: 'complete-button-click',
+      });
+    }
+  };
+
   const handleChatButtonClick = async () => {
     navigate(`${PAGE_URL.CHAT_ROOM}/${chatRoomId}`);
   };
@@ -106,10 +125,13 @@ function ActionButtons({
     status === StatusTypeEnum.COMPLETE
   ) {
     return (
-      <S_Container>
+      <S_Container flexDirection="column">
         <S_PrimaryButton onClick={handleChatButtonClick}>
           채팅방으로 이동
         </S_PrimaryButton>
+        <S_SecondaryButton onClick={handleCompleteButtonClick}>
+          완료
+        </S_SecondaryButton>
       </S_Container>
     );
   }
@@ -117,8 +139,9 @@ function ActionButtons({
 
 export default ActionButtons;
 
-const S_Container = styled.div`
+const S_Container = styled.div<{ flexDirection?: 'row' | 'column' }>`
   display: flex;
+  flex-direction: ${({ flexDirection }) => flexDirection || 'row'};
   align-items: center;
   gap: 1rem;
 
