@@ -25,7 +25,7 @@ export interface CertificateData {
     mentorName: string;
     mentorId: string;
     certificationName: string;
-    certType: 'LICENSE' | 'EDUCATION' | 'AWARD' | 'ECT';
+    certType: 'LICENSE' | 'EDUCATION' | 'AWARD' | 'ETC';
     issueDate: string;
     expiryDate: string | null;
     status: 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -84,18 +84,18 @@ const fetchWithTokenRefresh = async (url: string, options: RequestInit): Promise
 };
 
 // 타입 매핑
-const mapCertificateType = (type: string): 'LICENSE' | 'EDUCATION' | 'AWARD' | 'ECT' => {
+const mapCertificateType = (type: string): 'LICENSE' | 'EDUCATION' | 'AWARD' | 'ETC' => {
     switch (type) {
-        case '자격증':
+        case 'LICENSE':
             return 'LICENSE';
-        case '학력':
+        case 'EDUCATION':
             return 'EDUCATION';
-        case '수상':
+        case 'AWARD':
             return 'AWARD';
-        case '기타':
-            return 'ECT';
+        case 'ETC':
+            return 'ETC';
         default:
-            return 'LICENSE';
+            return 'ETC';
     }
 };
 
@@ -114,7 +114,8 @@ const mapCertificateStatus = (status: string): 'PENDING' | 'APPROVED' | 'REJECTE
 
 // 날짜 포맷
 const formatDate = (dateString: string): string => {
-    return dateString.split(' ')[0];
+    if(!dateString) return '';
+    return dateString.split('T')[0];
 };
 
 // 응답 변환
@@ -148,12 +149,30 @@ const transformDetailResponse = (apiData: CertificateDetailResponse, id: number)
         documentUrl: '#',
         imageUrl: apiData.imageUrl,
         submittedAt: formatDate(apiData.createdAt),
-        ...(apiData.certificateStatus === 'REJECT' && {rejectionReason: '관리자에 의해 반려됨'})
+        ...(apiData.certificateStatus === 'REJECTED' && {rejectionReason: '관리자에 의해 반려됨'})
     };
 };
 
+export interface Paginated<T> {
+    content: T[];
+    page: number;
+    size: number;
+    total: number;
+    totalPages: number;
+}
+
+export interface FetchCertificatesResult {
+    certificates: CertificateData[];
+    totalPages: number;
+    totalElements: number;
+}
+
 // 목록 조회
-export const fetchCertificates = async (statusFilter?: string): Promise<CertificateData[]> => {
+export const fetchCertificates = async (
+    statusFilter?: string,
+    page: number = 0,
+    size: number = 20
+): Promise<FetchCertificatesResult> => {
     try {
         const queryParams = new URLSearchParams();
         if (statusFilter && statusFilter !== 'all') {
@@ -165,33 +184,25 @@ export const fetchCertificates = async (statusFilter?: string): Promise<Certific
             const apiStatus = statusMap[statusFilter];
             if (apiStatus) queryParams.append('type', apiStatus);
         }
+        queryParams.append('page', String(page));
+        queryParams.append('size', String(size));
 
-        const url = `${API_BASE_URL}/admin/certificates${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
-        const debugHeaders: Record<string, string> = {};
-        if (statusFilter && statusFilter !== 'all') {
-            debugHeaders['X-Filter-Status'] = statusFilter;
-        }
+        const url = `${API_BASE_URL}/admin/certificates?${queryParams.toString()}`;
 
         const response = await fetchWithTokenRefresh(url, {
             method: 'GET',
-            headers: getApiHeaders(debugHeaders),
+            headers: getApiHeaders(),
         });
 
         if (!response.ok) throw new Error(`자격증 목록 조회 실패: ${response.status} ${response.statusText}`);
 
-        const apiData: CertificateListResponse[] = await response.json();
+        const apiData: Paginated<CertificateListResponse> = await response.json();
 
-        const statusOrder: Record<string, number> = {
-            PENDING: 0,
-            REJECTED: 1,
-            APPROVED: 2
+        return {
+            certificates: transformListResponse(apiData.content),
+            totalPages: apiData.totalPages,
+            totalElements: apiData.total,
         };
-
-        apiData.sort((a, b) => {
-            return statusOrder[a.certificateStatus] - statusOrder[b.certificateStatus];
-        });
-
-        return transformListResponse(apiData);
     } catch (error) {
         console.error('자격증 목록 조회 실패:', error);
         throw error;
