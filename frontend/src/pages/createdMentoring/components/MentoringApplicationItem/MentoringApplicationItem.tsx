@@ -13,7 +13,7 @@ interface MentoringApplicationItemProps {
   onActionButtonsClick: (params: {
     reservationId: number;
     status: StatusType;
-  }) => void;
+  }) => Promise<void>;
 }
 
 const formatDate = (dateString: string) => {
@@ -38,8 +38,8 @@ function MentoringApplicationItem({
 
   const { contentOverflowed, setRef: contentRef } = useContentOverflowedRef();
 
-  const handleActionButtonsComplete = (updatedStatus: StatusType) => {
-    onActionButtonsClick({
+  const handleActionButtonsComplete = async (updatedStatus: StatusType) => {
+    await onActionButtonsClick({
       reservationId,
       status: updatedStatus,
     });

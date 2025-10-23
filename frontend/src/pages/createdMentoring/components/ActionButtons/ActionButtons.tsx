@@ -16,7 +16,7 @@ interface ActionButtonsProps {
   reservationId: number;
   status: StatusType;
   chatRoomId: number | null;
-  onClick: (status: StatusType) => void;
+  onClick: (status: StatusType) => Promise<void>;
 }
 
 function ActionButtons({
@@ -53,7 +53,7 @@ function ActionButtons({
         confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
-        onClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
+        await onClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
       }
     } catch (error) {
       console.error(`Error handling approve button click:`, error);
@@ -72,7 +72,7 @@ function ActionButtons({
         confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
-        onClick(StatusTypeEnum.REJECTED);
+        await onClick(StatusTypeEnum.REJECTED);
       }
     } catch (error) {
       console.error(`Error handling reject button click:`, error);
@@ -91,7 +91,7 @@ function ActionButtons({
         confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
-        onClick(StatusTypeEnum.COMPLETE);
+        await onClick(StatusTypeEnum.COMPLETE);
       }
     } catch (error) {
       console.error(`Error handling complete button click:`, error);
@@ -129,9 +129,11 @@ function ActionButtons({
         <S_PrimaryButton onClick={handleChatButtonClick}>
           채팅방으로 이동
         </S_PrimaryButton>
-        <S_SecondaryButton onClick={handleCompleteButtonClick}>
-          완료
-        </S_SecondaryButton>
+        {status === StatusTypeEnum.APPROVED && (
+          <S_SecondaryButton onClick={handleCompleteButtonClick}>
+            완료
+          </S_SecondaryButton>
+        )}
       </S_Container>
     );
   }

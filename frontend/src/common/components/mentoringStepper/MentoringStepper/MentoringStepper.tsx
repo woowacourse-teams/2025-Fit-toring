@@ -6,6 +6,7 @@ import {
   type MentoringReservationStatusType,
 } from '../../../types/mentoringReservationStatus';
 import Step from '../Step/Step';
+import { useState } from 'react';
 
 interface MentoringStepperProps {
   status: MentoringReservationStatusType;
@@ -29,6 +30,12 @@ function MentoringStepper({ status }: MentoringStepperProps) {
     MentoringReservationStatusTypeEnum,
   ) as MentoringReservationStatusType[];
   const currentStep = stepValues.indexOf(status);
+  const [opened, setOpened] = useState(false);
+
+  const handleTooltipToggle = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
+    setOpened((prev) => !prev);
+  };
 
   const getType = (step: number) => {
     if (step > currentStep) {
@@ -49,8 +56,14 @@ function MentoringStepper({ status }: MentoringStepperProps) {
           <S_TextWrapper>
             <S_Text step={getType(step)}>{statusTextMap[stepInfo]}</S_Text>
             <S_IconWrapper>
-              <S_Icon src={tooltipIcon} alt="툴팁 아이콘" />
-              <S_Tooltip>{statusInfoTextMap[stepInfo]}</S_Tooltip>
+              <S_Icon
+                src={tooltipIcon}
+                alt="툴팁 아이콘"
+                onClick={handleTooltipToggle}
+              />
+              <S_Tooltip opened={opened}>
+                {statusInfoTextMap[stepInfo]}
+              </S_Tooltip>
             </S_IconWrapper>
           </S_TextWrapper>
         </Step>
@@ -107,8 +120,8 @@ const S_IconWrapper = styled.div`
   }
 `;
 
-const S_Tooltip = styled.div`
-  visibility: hidden;
+const S_Tooltip = styled.div<{ opened: boolean }>`
+  visibility: ${({ opened }) => (opened ? 'visible' : 'hidden')};
   position: absolute;
   top: 2rem;
   left: 50%;
