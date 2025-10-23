@@ -4,18 +4,12 @@ interface TextWithIconProps {
   ariaLabel: string;
   text: string;
   iconSrc: string;
-  iconName: string;
 }
 
-function TextWithIcon({
-  ariaLabel,
-  text,
-  iconSrc,
-  iconName,
-}: TextWithIconProps) {
+function TextWithIcon({ ariaLabel, text, iconSrc }: TextWithIconProps) {
   return (
     <S_Container role="text" aria-label={ariaLabel}>
-      <S_Img aria-hidden="true" alt={`${iconName} 아이콘`} src={iconSrc} />
+      <S_Img aria-hidden="true" alt="" src={iconSrc} />
       <S_Span aria-hidden="true">{text}</S_Span>
     </S_Container>
   );

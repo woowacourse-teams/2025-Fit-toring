@@ -55,7 +55,7 @@ function MentorCardItem({
           <TextWithIcon
             text={`${ratingAverage} (${ratingCount})`}
             iconSrc={starIcon}
-            iconName="별점"
+            ariaLabel={`(${ratingCount})개의 리뷰, 평균 ${ratingAverage}점`}
           />
           <CategoryTags tagNames={categories} />
         </S_InfoWrapper>

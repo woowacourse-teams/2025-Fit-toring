@@ -13,7 +13,7 @@ function BookingSummarySection({ price }: BookingSummarySectionProps) {
   return (
     <S_Container>
       <S_Wrapper>
-        <TextWithIcon iconSrc={timeIcon} iconName="시간 아이콘" text="15분" />
+        <TextWithIcon iconSrc={timeIcon} text="15분" ariaLabel="15분" />
         <S_Price>{`${price.toLocaleString()}원`}</S_Price>
       </S_Wrapper>
       <Button

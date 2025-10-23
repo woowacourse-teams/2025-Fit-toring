@@ -31,14 +31,14 @@ function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
               <TextWithIcon
                 iconSrc={startIcon}
                 text={`${mentorDetail.ratingAverage} (${mentorDetail.ratingCount})`}
-                iconName="별점"
+                ariaLabel="별점"
               />
               <TextWithIcon
                 iconSrc={locationIcon}
                 text="서울 강남구"
-                iconName="위치"
+                ariaLabel="위치"
               />
-              <TextWithIcon iconSrc={timeIcon} text="15분" iconName="시간" />
+              <TextWithIcon iconSrc={timeIcon} text="15분" ariaLabel="15분" />
             </S_InfoWrapper>
             <CategoryTags tagNames={mentorDetail.categories} />
           </S_InfoWithTags>
