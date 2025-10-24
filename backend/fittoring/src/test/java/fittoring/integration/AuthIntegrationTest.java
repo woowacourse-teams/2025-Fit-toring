@@ -42,7 +42,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
 
-    @DisplayName("사용자는 회원가입을 할 수 있다.")
+    @DisplayName("사용자는 회원가입을 할 수가 있다.")
     @Test
     void signUp() {
         //given

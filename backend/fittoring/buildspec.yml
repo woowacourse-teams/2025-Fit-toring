@@ -1,35 +1,44 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - echo "Docker가 사전 설치된 표준 빌드 이미지를 사용합니다."
+
+  pre_build:
+    commands:
+      - echo "Docker Hub에 로그인합니다..."
+      - echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+      - echo "/backend/fittoring 디렉터리로 이동합니다..."
+      - cd backend/fittoring
+
   build:
     commands:
-      - echo "CodeBuild - Build phase started on $(date)"
-      # 1. 배포에 필요한 파일만 담을 임시 디렉토리 생성
-      - mkdir -p /tmp/codedeploy-package
+      - echo "Gradle Wrapper에 실행 권한을 부여합니다..."
+      - chmod +x ./gradlew
 
-      # 2. 배포 설정 파일 복사
-      - echo "Copying deployment settings from backend/fittoring/deploysettings..."
-      - cp ./backend/fittoring/deploysettings/appspec.yml /tmp/codedeploy-package/
-      - cp ./backend/fittoring/deploysettings/start.sh /tmp/codedeploy-package/
-      - cp ./backend/fittoring/deploysettings/stop.sh /tmp/codedeploy-package/
-      - cp ./backend/fittoring/deploysettings/validate.sh /tmp/codedeploy-package/
+      - echo "Gradle을 사용하여 Jar 파일을 빌드합니다."
+      - ./gradlew clean
+      - ./gradlew generateApiDocs
+      - ./gradlew bootJar
 
-      # 3. docker-compose.yml 복사
-      - echo "Copying docker-compose.yml from backend/fittoring..."
-      - cp ./backend/fittoring/docker-compose.yml /tmp/codedeploy-package/
-
-      # 4. 임시 디렉토리로 이동하여 압축
-      - echo "Creating deployment zip package..."
-      - cd /tmp/codedeploy-package
-      - zip -r deploy.zip .
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - REPOSITORY_URI="$DOCKERHUB_USERNAME/fittoring/fittoring"
+      - echo "Docker 이미지를 빌드합니다... Tag: $IMAGE_TAG"
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
 
   post_build:
     commands:
-      - echo "Build phase completed on $(date)"
+      - echo "빌드된 이미지를 Docker Hub로 Push합니다..."
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+      - echo "배포에 사용할 image_tag.txt 파일을 생성합니다..."
+      - echo $IMAGE_TAG > image_tag.txt
 
 artifacts:
+  base-directory: backend/fittoring/deploysettings
   files:
-    # CodePipeline은 이 zip 파일을 가져가서 CodeDeploy에게 전달.
-    - /tmp/codedeploy-package/deploy.zip
-
-
+    - appspec.yml
+    - docker-compose.yml
+    - image_tag.txt
+    - scripts/**/*
