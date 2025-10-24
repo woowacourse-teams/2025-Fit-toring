@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # CodeDeploy의 ApplicationStart 단계에서 실행됩니다.
-# 새 버전의 애플리케이션을 시작합니다.
+# 새 버전의 애플리케이션을 DockerHub 이미지로 배포합니다.
 
 set -Eeuo pipefail
 trap 'echo "[ERROR] ${BASH_SOURCE[0]}:${LINENO} 명령 실패 (exit $?)"; exit 1' ERR
 
 APP_DIR="/home/ssm-user/fittoring"
+DEPLOY_DIR="/home/ssm-user/fittoring-deploy"
+
 cd "$APP_DIR"
 
 # 여유 공간(%): /var/lib/docker 기준
@@ -17,15 +19,29 @@ if [ "$FREE_PCT" -lt 10 ]; then
   sudo docker system prune -af
 fi
 
-# CI/CD 파이프라인에서 생성한 .env.deploy 파일을 docker-compose가 사용할 수 있도록 복사합니다.
-# 이 파일에는 IMAGE와 TAG 정보가 들어있습니다.
-# CodeDeploy는 배포 파일을 /home/ssm-user/fittoring-deploy 디렉토리에 복사합니다.
+# 배포 디렉터리에서 새로 전달된 이미지 태그 읽기
+if [ ! -f "$DEPLOY_DIR/image_tag.txt" ]; then
+  echo "[ERROR] image_tag.txt 파일이 없습니다. CodeBuild 아티팩트 구성을 확인하세요."
+  exit 1
+fi
 
-# docker-compose.yml에 정의된 이미지 이름과 태그를 .env.deploy 파일에서 읽어옵니다.
-# 명시적으로 이미지를 pull 합니다.
-echo "[INFO] 새 이미지를 pull 합니다."
-sudo docker-compose --env-file .env.deploy pull app
+IMAGE_TAG=$(cat "$DEPLOY_DIR/image_tag.txt")
+IMAGE_REPO="fittoring/fittoring"
+IMAGE_FULL="$DOCKERHUB_USERNAME/$IMAGE_REPO:$IMAGE_TAG"
 
-echo "[INFO] 새 이미지로 애플리케이션을 시작합니다 (docker compose up)"
-# --pull never 옵션으로 방금 pull 받은 이미지를 사용하도록 강제합니다.
+echo "[INFO] 배포할 이미지: $IMAGE_FULL"
+
+# DockerHub에서 새 이미지 pull
+echo "[INFO] 새 이미지를 pull 합니다..."
+sudo docker pull "$IMAGE_FULL"
+
+# .env 파일을 업데이트하여 docker-compose가 올바른 이미지를 사용하도록 설정
+echo "[INFO] .env 파일을 업데이트합니다..."
+echo "IMAGE=$DOCKERHUB_USERNAME/$IMAGE_REPO" > .env.deploy
+echo "TAG=$IMAGE_TAG" >> .env.deploy
+
+# 실행 중인 컨테이너 교체
+echo "[INFO] 새 이미지로 애플리케이션을 시작합니다..."
 sudo docker-compose --env-file .env.deploy up -d --wait app
+
+echo "[INFO] 배포 완료!"
