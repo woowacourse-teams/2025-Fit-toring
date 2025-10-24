@@ -20,7 +20,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수 있다.")
+    @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수가 있다.")
     @Test
     void loginGetMyInfoForMentee() {
         // given
