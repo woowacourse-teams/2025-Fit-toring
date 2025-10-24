@@ -23,7 +23,7 @@ phases:
       - "./gradlew bootJar -x test"
 
       - "IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)"
-      - "REPOSITORY_URI=\"$DOCKERHUB_USERNAME/fittoring/fittoring\""
+      - "REPOSITORY_URI=\"$DOCKERHUB_USERNAME/fittoring\""
       - "echo 'Docker 이미지를 빌드합니다... Tag:' $IMAGE_TAG"
       - "docker build -t $REPOSITORY_URI:$IMAGE_TAG ."
 
