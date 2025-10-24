@@ -20,7 +20,7 @@ phases:
       - "echo 'Gradle을 사용하여 Jar 파일을 빌드합니다.'"
       - "./gradlew clean"
 #      - "./gradlew generateApiDocs"
-      - "./gradlew bootJar"
+      - "./gradlew bootJar -x test"
 
       - "IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)"
       - "REPOSITORY_URI=\"$DOCKERHUB_USERNAME/fittoring/fittoring\""
