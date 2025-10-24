@@ -1,18 +1,37 @@
 version: 0.0
 os: linux
+
 files:
-  - source: /
-    destination: /home/ssm-user/codedeploy
+  - source: /docker-compose.yml
+    destination: /home/ssm-user/fittoring-deploy
+  - source: /appspec.yml
+    destination: /home/ssm-user/fittoring-deploy
+  - source: /image_tag.txt
+    destination: /home/ssm-user/fittoring-deploy
+  - source: /scripts/
+    destination: /home/ssm-user/fittoring-deploy/scripts
+
 hooks:
   ApplicationStop:
-    - location: stop.sh
-      timeout: 300
+    - location: scripts/stop.sh
+      workingDirectory: /home/ssm-user/fittoring-deploy
+      timeout: 120
       runas: root
+
+  BeforeInstall:
+    - location: scripts/cleanup.sh
+      workingDirectory: /home/ssm-user/fittoring-deploy
+      timeout: 60
+      runas: root
+
   ApplicationStart:
-    - location: start.sh
-      timeout: 300
+    - location: scripts/start.sh
+      workingDirectory: /home/ssm-user/fittoring-deploy
+      timeout: 180
       runas: root
+
   ValidateService:
-    - location: validate.sh
-      timeout: 300
+    - location: scripts/validate.sh
+      workingDirectory: /home/ssm-user/fittoring-deploy
+      timeout: 60
       runas: root
