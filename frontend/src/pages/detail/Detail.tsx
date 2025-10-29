@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
 import { useLocation, useParams } from 'react-router-dom';
 
-import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
@@ -14,6 +12,7 @@ import DetailHeader from './components/DetailHeader/DetailHeader';
 import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
+import useMentoringDetail from './hooks/useMentoringDetail';
 
 type TapType = 'detail' | 'review';
 
@@ -23,10 +22,7 @@ function Detail() {
 
   const { mentoringId } = useParams();
 
-  const { data, isError, error } = useQuery({
-    queryKey: ['mentoringDetail', mentoringId],
-    queryFn: () => getMentoringDetail(mentoringId!),
-  });
+  const { data, isLoading, isError, error } = useMentoringDetail(mentoringId!);
 
   useEffect(() => {
     if (isError && error) {
@@ -53,7 +49,7 @@ function Detail() {
     document.getElementById('certificate-section')?.focus();
   };
 
-  if (!data) {
+  if (isLoading || !data) {
     return <div>로딩 중...</div>;
   }
 
