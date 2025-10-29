@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import styled from '@emotion/styled';
 import { useLocation, useParams } from 'react-router-dom';
@@ -13,6 +13,7 @@ import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
 import useMentoringDetail from './hooks/useMentoringDetail';
+import useScrollY from './hooks/useScrollY';
 import useTabs from './hooks/useTabs';
 
 type TapType = 'detail' | 'review';
@@ -39,11 +40,11 @@ function Detail() {
 
   const { selectedTab, selectTab } = useTabs<TapType>(state?.tab ?? 'detail');
 
-  const [scrollY, setScrollY] = useState(0);
+  const { scrollY, changeScrollY } = useScrollY();
 
   const handleTapClick = (tab: TapType) => {
     selectTab(tab);
-    setScrollY(window.scrollY);
+    changeScrollY(window.scrollY);
   };
 
   const handleCertificateShowButton = () => {
