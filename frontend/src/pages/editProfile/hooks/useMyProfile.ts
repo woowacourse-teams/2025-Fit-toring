@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { getUserInfo } from '../../../common/apis/getUserInfo';
 
@@ -16,21 +16,13 @@ const convertResponse = (response: UserInfo): UserProfileResponse => {
 };
 
 const useMyProfile = () => {
-  const [myProfile, setMyProfile] = useState<UserProfileResponse | null>(null);
-
-  useEffect(() => {
-    const fetchMyProfile = async () => {
-      try {
-        const response = await getUserInfo();
-
-        setMyProfile(convertResponse(response));
-      } catch (error) {
-        console.error('회원 정보 불러오기 실패', error);
-        setMyProfile(null);
-      }
-    };
-    fetchMyProfile();
-  }, []);
+  const { data: myProfile } = useQuery({
+    queryKey: ['myProfile'],
+    queryFn: async () => {
+      const response = await getUserInfo();
+      return convertResponse(response);
+    },
+  });
 
   return { myProfile };
 };
