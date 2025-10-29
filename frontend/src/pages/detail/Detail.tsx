@@ -13,6 +13,7 @@ import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
 import useMentoringDetail from './hooks/useMentoringDetail';
+import useTabs from './hooks/useTabs';
 
 type TapType = 'detail' | 'review';
 
@@ -36,16 +37,17 @@ function Detail() {
     }
   }, [isError, error]);
 
-  const [selected, setSelected] = useState<TapType>(state?.tab ?? 'detail');
+  const { selectedTab, selectTab } = useTabs<TapType>(state?.tab ?? 'detail');
+
   const [scrollY, setScrollY] = useState(0);
 
-  const handleTapClick = (selectedType: TapType) => {
-    setSelected(selectedType);
+  const handleTapClick = (tab: TapType) => {
+    selectTab(tab);
     setScrollY(window.scrollY);
   };
 
   const handleCertificateShowButton = () => {
-    setSelected('detail');
+    selectTab('detail');
     document.getElementById('certificate-section')?.focus();
   };
 
@@ -73,19 +75,19 @@ function Detail() {
         <S_TapWrapper>
           <S_Tap
             onClick={() => handleTapClick('detail')}
-            selected={selected === 'detail'}
+            selected={selectedTab === 'detail'}
           >
             상세보기
           </S_Tap>
           <S_Tap
             onClick={() => handleTapClick('review')}
-            selected={selected === 'review'}
+            selected={selectedTab === 'review'}
           >
             리뷰
           </S_Tap>
         </S_TapWrapper>
         <S_ContentWrapper>
-          {selected === 'detail' ? (
+          {selectedTab === 'detail' ? (
             <S_DetailWrapper>
               <Introduction content={data.content} />
               <S_Line />
