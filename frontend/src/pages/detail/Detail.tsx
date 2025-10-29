@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 import styled from '@emotion/styled';
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -28,6 +30,8 @@ function Detail() {
 
   const { scrollY, changeScrollY } = useScrollY();
 
+  const certificateSectionRef = useRef<HTMLHeadingElement | null>(null);
+
   const handleTapClick = (tab: TapType) => {
     selectTab(tab);
     changeScrollY(window.scrollY);
@@ -35,7 +39,7 @@ function Detail() {
 
   const handleCertificateShowButton = () => {
     selectTab('detail');
-    document.getElementById('certificate-section')?.focus();
+    certificateSectionRef.current?.focus();
   };
 
   if (isError && error) {
@@ -90,7 +94,10 @@ function Detail() {
             <S_DetailWrapper>
               <Introduction content={data.content} />
               <S_Line />
-              <Certificates certificates={data.certificates} />
+              <Certificates
+                certificates={data.certificates}
+                ref={certificateSectionRef}
+              />
             </S_DetailWrapper>
           ) : (
             <DetailReview
