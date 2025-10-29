@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import styled from '@emotion/styled';
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -26,18 +24,6 @@ function Detail() {
 
   const { data, isLoading, isError, error } = useMentoringDetail(mentoringId!);
 
-  useEffect(() => {
-    if (isError && error) {
-      console.error('fetchData 실패', error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'detail',
-        step: 'mentoring-detail-fetch',
-      });
-    }
-  }, [isError, error]);
-
   const { selectedTab, selectTab } = useTabs<TapType>(state?.tab ?? 'detail');
 
   const { scrollY, changeScrollY } = useScrollY();
@@ -51,6 +37,18 @@ function Detail() {
     selectTab('detail');
     document.getElementById('certificate-section')?.focus();
   };
+
+  if (isError && error) {
+    console.error('fetchData 실패', error);
+    captureSentryError({
+      error,
+      level: 'warning',
+      feature: 'detail',
+      step: 'mentoring-detail-fetch',
+    });
+
+    return <div>데이터를 불러오는 중에 오류가 발생했습니다.</div>;
+  }
 
   if (isLoading || !data) {
     return <div>로딩 중...</div>;
