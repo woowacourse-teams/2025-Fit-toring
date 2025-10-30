@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { getMentoringDetail } from '../../../common/apis/getMentoringDetail';
 
 const useMentoringDetail = (mentoringId: string) => {
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isPending, isError, error } = useQuery({
     queryKey: ['mentoringDetail', mentoringId],
     queryFn: () => getMentoringDetail(mentoringId!),
   });
 
-  return { data, isLoading, isError, error };
+  return { data, isPending, isError, error };
 };
 
 export default useMentoringDetail;

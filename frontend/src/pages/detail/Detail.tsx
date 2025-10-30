@@ -24,7 +24,7 @@ function Detail() {
 
   const { mentoringId } = useParams();
 
-  const { data, isLoading, isError, error } = useMentoringDetail(mentoringId!);
+  const { data, isPending, isError, error } = useMentoringDetail(mentoringId!);
 
   const { selectedTab, selectTab } = useTabs<TapType>(state?.tab ?? 'detail');
 
@@ -54,7 +54,7 @@ function Detail() {
     return <div>데이터를 불러오는 중에 오류가 발생했습니다.</div>;
   }
 
-  if (isLoading || !data) {
+  if (isPending || !data) {
     return <div>로딩 중...</div>;
   }
 
