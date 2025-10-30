@@ -19,6 +19,7 @@ import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
+import useModal from './hooks/useModal';
 import useSort from './hooks/useSortKey';
 
 import type { SortKey } from './hooks/useSortKey';
@@ -35,14 +36,14 @@ const convertSelectedSpecialtiesToParams = (
 };
 
 function Home() {
-  const [modalOpened, setModalOpened] = useState(false);
+  const { modalOpened, openModal, closeModal } = useModal();
   const [myMentoringId, setMyMentoringId] = useState<null | number>(null);
 
   const { authenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleOpenModal = () => {
-    setModalOpened(true);
+    openModal();
     ReactGA.event({
       category: 'Specialty Filter',
       action: 'Open Specialty Filter Modal',
@@ -51,7 +52,7 @@ function Home() {
   };
 
   const handleCloseModal = () => {
-    setModalOpened(false);
+    closeModal();
   };
 
   const { sortKey, changeSortKey } = useSort();
