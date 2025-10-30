@@ -5,7 +5,6 @@ import styled from '@emotion/styled';
 import ReactGA from 'react-ga4';
 import { useNavigate } from 'react-router-dom';
 
-import { getMineMentoring } from '../../common/apis/getMineMentoring';
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
@@ -20,6 +19,7 @@ import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox'
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 import useModal from './hooks/useModal';
+import useMyMentoringId from './hooks/useMyMentoringId';
 import useSort from './hooks/useSortKey';
 
 import type { SortKey } from './hooks/useSortKey';
@@ -37,9 +37,11 @@ const convertSelectedSpecialtiesToParams = (
 
 function Home() {
   const { modalOpened, openModal, closeModal } = useModal();
-  const [myMentoringId, setMyMentoringId] = useState<null | number>(null);
 
   const { authenticated } = useAuth();
+
+  const { myMentoringId } = useMyMentoringId(authenticated);
+
   const navigate = useNavigate();
 
   const handleOpenModal = () => {
@@ -125,26 +127,6 @@ function Home() {
 
     navigate(PAGE_URL.MENTORING_CREATE);
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getMineMentoring();
-        setMyMentoringId(response.id);
-      } catch (error) {
-        console.error(error);
-        setMyMentoringId(null);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (!authenticated) {
-      setMyMentoringId(null);
-    }
-  }, [authenticated]);
 
   const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
   const [hasNext, setHasNext] = useState(true);
