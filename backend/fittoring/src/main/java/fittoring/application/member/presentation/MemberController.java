@@ -1,16 +1,19 @@
 package fittoring.application.member.presentation;
 
+import fittoring.admin.presentation.dto.AdminActiveStatusResponse;
+import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
+import fittoring.application.member.presentation.dto.response.MyInfoResponse;
+import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
+import fittoring.application.member.service.MemberService;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.application.member.service.MemberService;
-import fittoring.admin.presentation.dto.AdminActiveStatusResponse;
-import fittoring.application.member.presentation.dto.response.MyInfoResponse;
-import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -24,7 +27,14 @@ public class MemberController {
     public ResponseEntity<MyInfoResponse> getMyInfo(@Login LoginInfo loginInfo) {
         MyInfoResponse memberInfo = memberService.getMemberInfo(loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(memberInfo);
+                .body(memberInfo);
+    }
+
+    @AuthRequired
+    @PatchMapping("/members/me")
+    public ResponseEntity<Void> updateInfo(@Login LoginInfo loginInfo, @RequestBody MemberInfoUpdateRequest request) {
+        memberService.updateMemberInfo(loginInfo.memberId(), request);
+        return ResponseEntity.noContent().build();
     }
 
     @AuthRequired
@@ -32,7 +42,7 @@ public class MemberController {
     public ResponseEntity<MyInfoSummaryResponse> getMyInfoSummary(@Login LoginInfo loginInfo) {
         MyInfoSummaryResponse memberInfoSummary = memberService.getMemberInfoSummary(loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(memberInfoSummary);
+                .body(memberInfoSummary);
     }
 
     @AuthRequired
@@ -40,6 +50,6 @@ public class MemberController {
     public ResponseEntity<AdminActiveStatusResponse> getAdminMemberStatus(@Login LoginInfo loginInfo) {
         boolean isActive = memberService.getAdminMemberActiveStatus(loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(new AdminActiveStatusResponse(isActive));
+                .body(new AdminActiveStatusResponse(isActive));
     }
 }

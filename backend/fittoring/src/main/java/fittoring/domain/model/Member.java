@@ -77,14 +77,30 @@ public class Member {
         this(null, loginId, gender, name, phone, password, role, false, null);
     }
 
-    public void matchPassword(String password) {
-        this.password.validateMatches(password);
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phone = new Phone(phoneNumber);
+    }
+
+    public void updatePassword(String password) {
+        this.password = Password.from(password);
     }
 
     public void registerAsMentor() {
         if (this.role != MemberRole.ADMIN) {
             this.role = MemberRole.MENTOR;
         }
+    }
+
+    public void matchPassword(String password) {
+        this.password.validateMatches(password);
     }
 
     public boolean isMentee() {

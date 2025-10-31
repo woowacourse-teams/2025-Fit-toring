@@ -2,8 +2,10 @@ package fittoring.application.member.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.image.service.ImageService;
+import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.member.repository.MemberRepository;
@@ -15,6 +17,7 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -63,4 +66,28 @@ public class MemberService {
         return true;
     }
 
+    @Transactional
+    public void updateMemberInfo(Long memberId, MemberInfoUpdateRequest request) {
+        Member member = getMember(memberId);
+        if (request.name() != null) {
+            member.updateName(request.name());
+        }
+
+        if (request.gender() != null) {
+            member.updateGender(request.gender());
+        }
+
+        if (request.phoneNumber() != null) {
+            member.updatePhoneNumber(request.phoneNumber());
+        }
+
+        if (request.password() != null) {
+            member.updatePassword(request.password());
+        }
+    }
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+    }
 }
