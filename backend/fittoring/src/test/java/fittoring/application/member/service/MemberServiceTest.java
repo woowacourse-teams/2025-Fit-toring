@@ -1,8 +1,11 @@
 package fittoring.application.member.service;
 
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.image.repository.ImageRepository;
+import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.member.repository.MemberRepository;
@@ -11,7 +14,8 @@ import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
-import org.assertj.core.api.SoftAssertions;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.password.Password;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +44,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isNull();
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
@@ -63,7 +67,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isNull();
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
@@ -94,7 +98,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isEqualTo(image.getUrl());
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
@@ -113,9 +117,99 @@ class MemberServiceTest extends IntegrationTestSupport {
         MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(member.getId());
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
+        assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
             softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
+        });
+    }
+
+    @DisplayName("회원(멘토, 멘티)은 자신의 회원 정보인 이름, 성별, 비밀번호, 전화번호를 수정할 수 있다.")
+    @Test
+    void updateMemberInfo() {
+        //given
+        String rawName = "이름";
+        String rawGender = "MALE";
+        String rawPhoneNumber = "010-1234-5678";
+        Password rawPassword = Password.from("password");
+        Member member = memberRepository.save(
+                new Member(
+                        "menteeId",
+                        rawGender,
+                        rawName,
+                        new Phone(rawPhoneNumber),
+                        rawPassword
+                )
+        );
+
+        String newName = "newName";
+        String newGender = "newGender";
+        String newPassword = "newPassword";
+        String newPhoneNumber = "010-5678-9123";
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                newName,
+                newGender,
+                newPassword,
+                newPhoneNumber
+        );
+
+        //when
+        memberService.updateMemberInfo(member.getId(), request);
+
+        //then
+        Member actual = memberRepository.findById(member.getId())
+                .orElse(null);
+
+        assertSoftly(softly -> {
+            softly.assertThat(actual).isNotNull();
+            softly.assertThat(actual.getName()).isNotEqualTo(rawName);
+            softly.assertThat(actual.getGender()).isNotEqualTo(rawGender);
+            softly.assertThat(actual.getPassword()).isNotEqualTo(rawPassword.getPassword());
+            softly.assertThat(actual.getPhoneNumber()).isNotEqualTo(rawPhoneNumber);
+        });
+    }
+
+    @DisplayName("회원(멘토, 멘티)은 자신의 이름, 성별, 비밀번호, 전화번호 중 일부를 선택적으로 수정할 수 있다.")
+    @Test
+    void updateMemberInfo2() {
+        //given
+        String rawName = "이름";
+        String rawGender = "MALE";
+        String rawPhoneNumber = "010-1234-5678";
+        Password rawPassword = Password.from("password");
+        Member member = memberRepository.save(
+                new Member(
+                        "menteeId",
+                        rawGender,
+                        rawName,
+                        new Phone(rawPhoneNumber),
+                        rawPassword
+                )
+        );
+
+        String newName = "newName";
+        String newPhoneNumber = "010-5678-9123";
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                newName,
+                null,
+                null,
+                newPhoneNumber
+        );
+
+        //when
+        memberService.updateMemberInfo(member.getId(), request);
+
+        //then
+        Member actual = memberRepository.findById(member.getId())
+                .orElse(null);
+
+        assertSoftly(softly -> {
+            softly.assertThat(actual).isNotNull();
+            softly.assertThat(actual.getName()).isNotEqualTo(rawName);
+            softly.assertThat(actual.getGender()).isEqualTo(rawGender);
+            softly.assertThat(actual.getPassword()).isEqualTo(rawPassword.getPassword());
+            softly.assertThat(actual.getPhoneNumber()).isNotEqualTo(rawPhoneNumber);
         });
     }
 }
