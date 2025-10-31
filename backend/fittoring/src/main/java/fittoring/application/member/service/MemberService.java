@@ -3,7 +3,6 @@ package fittoring.application.member.service;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MemberNotFoundException;
-import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
@@ -28,8 +27,7 @@ public class MemberService {
     private final MentoringRepository mentoringRepository;
 
     public MyInfoResponse getMemberInfo(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        Member member = getMember(memberId);
         if (MemberRole.isMentee(member.getRole())) {
             return MyInfoResponse.from(member);
         }
@@ -52,14 +50,12 @@ public class MemberService {
     }
 
     public MyInfoSummaryResponse getMemberInfoSummary(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        Member member = getMember(memberId);
         return MyInfoSummaryResponse.of(member);
     }
 
     public boolean getAdminMemberActiveStatus(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        Member member = getMember(memberId);
         if (member.isNotAdmin()) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
