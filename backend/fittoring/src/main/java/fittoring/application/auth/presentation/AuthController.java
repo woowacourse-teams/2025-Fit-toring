@@ -8,13 +8,13 @@ import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
 import fittoring.application.auth.service.PhoneVerificationFacadeService;
 import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.OauthLoginException;
-import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
@@ -133,9 +133,10 @@ public class AuthController {
     }
 
     @PostMapping("/oauth-signup")
-    public ResponseEntity<LoginResponse> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request,
-                                            @CookieValue("oauthSignUpToken") String oauthSignUpToken,
-                                            HttpServletResponse httpResponse) {
+    public ResponseEntity<LoginResponse> oauthSignUp(
+            @RequestBody @Valid OauthSignUpRequest request,
+            @CookieValue("oauthSignUpToken") String oauthSignUpToken,
+            HttpServletResponse httpResponse) {
         MemberOauth memberOauth = authService.registerOauthMember(request, oauthSignUpToken);
         LoginResponse response = new LoginResponse(memberOauth.getMemberId());
         AuthTokenDto authTokenDto = authService.loginOauthMember(memberOauth);

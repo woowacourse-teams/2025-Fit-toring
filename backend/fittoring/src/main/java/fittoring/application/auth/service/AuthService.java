@@ -53,7 +53,7 @@ public class AuthService {
     }
 
     private void validateDuplicatePhone(String phone) {
-        if (memberRepository.existsByPhone_Number(phone)) {
+        if (memberRepository.existsByPhoneNumber(phone)) {
             throw new DuplicatePhoneException(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
         }
     }
@@ -118,21 +118,25 @@ public class AuthService {
     public LoginInfoDto kakaoLogin(String code) {
         KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code);
         String kakaoAccessToken = tokenResponse.access_token();
-
         KakaoUserInfoResponse userInfoResponse = oauthClientService.requestKakaoId(kakaoAccessToken);
         Long kakaoId = userInfoResponse.id();
-
         Optional<MemberOauth> memberOauth = memberOauthRepository.findByProviderAndProviderMemberId(
                 AuthProvider.KAKAO,
                 String.valueOf(kakaoId)
         );
-
         if (memberOauth.isPresent()) {
-            Member member = memberOauth.get().getMember();
-            AuthTokenDto authTokenDto = getAuthorizedTokenResponse(member);
-            return new LoginInfoDto(member.getId(), authTokenDto);
+            return allowOauthSignIn(memberOauth);
         }
+        return allowOauthSignUp(kakaoId);
+    }
 
+    private LoginInfoDto allowOauthSignIn(Optional<MemberOauth> memberOauth) {
+        Member member = memberOauth.get().getMember();
+        AuthTokenDto authTokenDto = getAuthorizedTokenResponse(member);
+        return new LoginInfoDto(member.getId(), authTokenDto);
+    }
+
+    private LoginInfoDto allowOauthSignUp(Long kakaoId) {
         String oauthSignUpToken = jwtProvider.createOauthSignUpToken(String.valueOf(kakaoId));
         AuthTokenDto authTokenDto = new AuthTokenDto(null, null, oauthSignUpToken);
         return new LoginInfoDto(null, authTokenDto);
