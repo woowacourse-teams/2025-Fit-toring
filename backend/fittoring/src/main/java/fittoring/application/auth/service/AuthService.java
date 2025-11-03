@@ -145,6 +145,22 @@ public class AuthService {
     @Transactional
     public MemberOauth registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
         String oauthId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
+        
+        Optional<Member> existedMember = memberRepository.findByPhoneNumber(request.phone());
+        if(existedMember.isPresent()){
+            MemberOauth memberOauth = new MemberOauth(existedMember.get(), AuthProvider.KAKAO, oauthId);
+            memberOauthRepository.save(memberOauth);
+            return memberOauth;
+        }
+
+        Member member = getRandomIdPwMember(request);
+        memberRepository.save(member);
+        MemberOauth memberOauth = new MemberOauth(member, AuthProvider.KAKAO, oauthId);
+        memberOauthRepository.save(memberOauth);
+        return memberOauth;
+    }
+
+    private Member getRandomIdPwMember(OauthSignUpRequest request) {
         String randomLoginId = RandomStringUtils.randomAlphanumeric(20);
         String randomPw = RandomStringUtils.randomAlphanumeric(20);
         Member member = new Member(
@@ -155,11 +171,7 @@ public class AuthService {
                 Password.from(randomPw)
         );
         validateDuplicateLoginId(randomLoginId);
-        validateDuplicatePhone(request.phone());
-        memberRepository.save(member);
-        MemberOauth memberOauth = new MemberOauth(member, AuthProvider.KAKAO, oauthId);
-        memberOauthRepository.save(memberOauth);
-        return memberOauth;
+        return member;
     }
 
     public AuthTokenDto loginOauthMember(MemberOauth memberOauth) {
