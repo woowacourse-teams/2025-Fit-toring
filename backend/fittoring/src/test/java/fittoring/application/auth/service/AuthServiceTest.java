@@ -3,18 +3,22 @@ package fittoring.application.auth.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
-import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.RefreshToken;
 import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
@@ -210,5 +214,46 @@ class AuthServiceTest extends IntegrationTestSupport {
         // then
         assertThatCode(() -> authService.logout(memberId))
                 .doesNotThrowAnyException();
+    }
+
+    @DisplayName("oauth 회원가입이 가능하다.")
+    @Test
+    void registerOauthMember() {
+        // given
+        String phoneNumber = "010-1234-5678";
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", "MALE", phoneNumber);
+        given(mockJwtProvider.getSubjectFromPayloadBy(any())).willReturn(1L);
+
+        // when
+        MemberOauth memberOauth = authService.registerOauthMember(request, "validOauthSignUpToken");
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(memberOauth).isNotNull();
+                    assertThat(memberOauth.getMember().getPhoneNumber()).isEqualTo(phoneNumber);
+                }
+        );
+    }
+
+    @DisplayName("기존 회원도 oauth 회원가입이 가능하다.")
+    @Test
+    void registerOauthMember2() {
+        // given
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", "MALE", mentee.getPhoneNumber());
+        given(mockJwtProvider.getSubjectFromPayloadBy(any())).willReturn(1L);
+
+        // when
+        MemberOauth memberOauth = authService.registerOauthMember(request, "validOauthSignUpToken");
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(memberOauth).isNotNull();
+                    assertThat(memberOauth.getMember().getPhoneNumber()).isEqualTo(mentee.getPhoneNumber());
+                    assertThat(memberOauth.getMember().getName()).isEqualTo(mentee.getName());
+                    assertThat(memberOauth.getMember().getLoginId()).isEqualTo(mentee.getLoginId());
+                }
+        );
     }
 }

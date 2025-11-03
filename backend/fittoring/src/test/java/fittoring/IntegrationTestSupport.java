@@ -1,5 +1,6 @@
 package fittoring;
 
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.logging.JsonLogger;
@@ -23,6 +24,9 @@ public abstract class IntegrationTestSupport {
 
     @MockitoBean
     protected MentoringPaginationHelper mph;
+
+    @MockitoBean
+    protected JwtProvider mockJwtProvider;
 
     @Autowired
     private DbCleaner dbCleaner;
