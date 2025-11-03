@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willReturn;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
@@ -36,9 +36,6 @@ class AuthServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
-
-    @Autowired
-    private JwtProvider jwtProvider;
 
     @DisplayName("회원을 저장할 때 암호화된 비밀번호가 저장된다.")
     @Test
@@ -222,7 +219,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         // given
         String phoneNumber = "010-1234-5678";
         OauthSignUpRequest request = new OauthSignUpRequest("이름", "MALE", phoneNumber);
-        given(mockJwtProvider.getSubjectFromPayloadBy(any())).willReturn(1L);
+        willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
 
         // when
         MemberOauth memberOauth = authService.registerOauthMember(request, "validOauthSignUpToken");
@@ -242,7 +239,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
         OauthSignUpRequest request = new OauthSignUpRequest("이름", "MALE", mentee.getPhoneNumber());
-        given(mockJwtProvider.getSubjectFromPayloadBy(any())).willReturn(1L);
+        willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
 
         // when
         MemberOauth memberOauth = authService.registerOauthMember(request, "validOauthSignUpToken");
