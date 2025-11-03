@@ -53,7 +53,7 @@ public class AuthService {
     }
 
     private void validateDuplicatePhone(String phone) {
-        if (memberRepository.existsByPhoneNumber(phone)) {
+        if (memberRepository.existsByPhone_Number(phone)) {
             throw new DuplicatePhoneException(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
         }
     }
@@ -146,7 +146,7 @@ public class AuthService {
     public MemberOauth registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
         String oauthId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
         
-        Optional<Member> existedMember = memberRepository.findByPhoneNumber(request.phone());
+        Optional<Member> existedMember = memberRepository.findByPhone_Number(request.phone());
         if(existedMember.isPresent()){
             MemberOauth memberOauth = new MemberOauth(existedMember.get(), AuthProvider.KAKAO, oauthId);
             memberOauthRepository.save(memberOauth);
