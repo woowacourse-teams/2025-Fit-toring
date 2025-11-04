@@ -25,6 +25,7 @@ import useSpecialtyFilter from './hooks/useSpecialtyFilter';
 
 import type { SortKey } from './hooks/useSortKey';
 import type { MentorInformation } from './types/MentorInformation';
+import type { MentoringByPage } from './types/MentoringByPage';
 import type { Specialty } from '../../common/types/Specialty';
 
 const convertSelectedSpecialtiesToParams = (
@@ -74,8 +75,7 @@ function Home() {
     return data;
   };
 
-  const fetchSortedMentors = async (sortKey: SortKey) => {
-    const data = await getMentors(selectedSpecialties, sortKey);
+  const updateMentorList = (data: MentoringByPage) => {
     const {
       mentoringSummaryResponses,
       hasNext: hasNewNext,
@@ -89,7 +89,9 @@ function Home() {
 
   const handleSortButtonClick = async (option: SortKey) => {
     changeSortKey(option);
-    await fetchSortedMentors(option);
+
+    const data = await getMentors(selectedSpecialties, option);
+    updateMentorList(data);
   };
 
   const { selectedSpecialties, applySpecialties, toggleSpecialty } =
@@ -98,17 +100,22 @@ function Home() {
   const handleApply = async (specialties: Specialty[]) => {
     applySpecialties(specialties);
     handleCloseModal();
-    await fetchFilteredMentors(specialties);
+
+    const data = await getMentors(specialties, sortKey);
+    updateMentorList(data);
   };
 
   const handleSelectedSpecialtyChange = async (specialty: Specialty) => {
     toggleSpecialty(specialty);
 
-    await fetchFilteredMentors(
+    const data = await getMentors(
       selectedSpecialties.filter(
         (prevSpecialty) => prevSpecialty.id !== specialty.id,
       ),
+      sortKey,
     );
+
+    updateMentorList(data);
   };
 
   const handleMentoringCreation = () => {
@@ -168,19 +175,6 @@ function Home() {
     }
     return () => io.disconnect();
   }, [fetchMentorData, hasNext]);
-
-  const fetchFilteredMentors = async (selectedSpecialties: Specialty[]) => {
-    const data = await getMentors(selectedSpecialties, sortKey);
-    const {
-      mentoringSummaryResponses,
-      hasNext: hasNewNext,
-      nextCursorCode,
-    } = data;
-
-    setMentorList(mentoringSummaryResponses);
-    setHasNext(hasNewNext);
-    setCursorCode(nextCursorCode);
-  };
 
   return (
     <S_Container>
