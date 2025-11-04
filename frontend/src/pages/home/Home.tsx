@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -64,11 +64,13 @@ function Home() {
   const getMentors = async (
     selectedSpecialties: Specialty[],
     sortKey: SortKey,
+    cursorCode: string | null = null,
   ) => {
     const data = await getMentorListByPage({
       params: {
         ...convertSelectedSpecialtiesToParams(selectedSpecialties),
         sortKey,
+        ...(cursorCode && { cursorCode }),
       },
     });
 
@@ -136,27 +138,10 @@ function Home() {
   const [cursorCode, setCursorCode] = useState<string | null>(null);
   const elementRef = useRef<HTMLLIElement>(null);
 
-  const fetchMentorData = useCallback(async () => {
-    const data = await getMentorListByPage({
-      params: cursorCode
-        ? {
-            ...convertSelectedSpecialtiesToParams(selectedSpecialties),
-            cursorCode,
-            sortKey,
-          }
-        : {
-            ...convertSelectedSpecialtiesToParams(selectedSpecialties),
-            sortKey,
-          },
-    });
-
-    return data;
-  }, [cursorCode, selectedSpecialties, sortKey]);
-
   useEffect(() => {
     const callback = async (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting && hasNext) {
-        const data = await fetchMentorData();
+        const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
         const {
           mentoringSummaryResponses,
           hasNext: hasNewNext,
@@ -174,7 +159,7 @@ function Home() {
       io.observe(elementRef.current);
     }
     return () => io.disconnect();
-  }, [fetchMentorData, hasNext]);
+  }, [cursorCode, hasNext, selectedSpecialties, sortKey]);
 
   return (
     <S_Container>
