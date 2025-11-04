@@ -60,7 +60,10 @@ function Home() {
 
   const { sortKey, changeSortKey } = useSort();
 
-  const getSortedMentors = async (sortKey: SortKey) => {
+  const getMentors = async (
+    selectedSpecialties: Specialty[],
+    sortKey: SortKey,
+  ) => {
     const data = await getMentorListByPage({
       params: {
         ...convertSelectedSpecialtiesToParams(selectedSpecialties),
@@ -72,7 +75,7 @@ function Home() {
   };
 
   const fetchSortedMentors = async (sortKey: SortKey) => {
-    const data = await getSortedMentors(sortKey);
+    const data = await getMentors(selectedSpecialties, sortKey);
     const {
       mentoringSummaryResponses,
       hasNext: hasNewNext,
@@ -166,19 +169,8 @@ function Home() {
     return () => io.disconnect();
   }, [fetchMentorData, hasNext]);
 
-  const getFilteredMentors = async (selectedSpecialties: Specialty[]) => {
-    const data = await getMentorListByPage({
-      params: {
-        ...convertSelectedSpecialtiesToParams(selectedSpecialties),
-        sortKey,
-      },
-    });
-
-    return data;
-  };
-
   const fetchFilteredMentors = async (selectedSpecialties: Specialty[]) => {
-    const data = await getFilteredMentors(selectedSpecialties);
+    const data = await getMentors(selectedSpecialties, sortKey);
     const {
       mentoringSummaryResponses,
       hasNext: hasNewNext,
