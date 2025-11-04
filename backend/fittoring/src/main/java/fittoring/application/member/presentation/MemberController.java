@@ -8,6 +8,7 @@ import fittoring.application.member.service.MemberService;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,10 @@ public class MemberController {
 
     @AuthRequired
     @PatchMapping("/me")
-    public ResponseEntity<Void> updateInfo(@Login LoginInfo loginInfo, @RequestBody MemberInfoUpdateRequest request) {
+    public ResponseEntity<Void> updateInfo(
+            @Login LoginInfo loginInfo,
+            @RequestBody @Valid MemberInfoUpdateRequest request
+    ) {
         memberService.updateMemberInfo(loginInfo.memberId(), request);
         return ResponseEntity.noContent().build();
     }
