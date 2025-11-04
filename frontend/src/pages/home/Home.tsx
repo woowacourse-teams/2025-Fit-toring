@@ -21,6 +21,7 @@ import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/
 import useModal from './hooks/useModal';
 import useMyMentoringId from './hooks/useMyMentoringId';
 import useSort from './hooks/useSortKey';
+import useSpecialtyFilter from './hooks/useSpecialtyFilter';
 
 import type { SortKey } from './hooks/useSortKey';
 import type { MentorInformation } from './types/MentorInformation';
@@ -88,25 +89,17 @@ function Home() {
     await fetchSortedMentors(option);
   };
 
-  const [selectedSpecialties, setSelectedSpecialties] = useState<Specialty[]>(
-    [],
-  );
+  const { selectedSpecialties, applySpecialties, toggleSpecialty } =
+    useSpecialtyFilter();
 
   const handleApply = async (specialties: Specialty[]) => {
-    setSelectedSpecialties(specialties);
+    applySpecialties(specialties);
     handleCloseModal();
     await fetchFilteredMentors(specialties);
   };
 
   const handleSelectedSpecialtyChange = async (specialty: Specialty) => {
-    setSelectedSpecialties((prev) => {
-      const hasSpecialty = prev.find(
-        (prevSpecialty) => prevSpecialty.id === specialty.id,
-      );
-      return hasSpecialty
-        ? prev.filter((prevSpecialty) => prevSpecialty.id !== specialty.id)
-        : [...prev, specialty];
-    });
+    toggleSpecialty(specialty);
 
     await fetchFilteredMentors(
       selectedSpecialties.filter(
