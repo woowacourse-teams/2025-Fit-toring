@@ -20,11 +20,11 @@ phases:
       - "./gradlew clean"
 #      - "./gradlew generateApiDocs"
       - "./gradlew bootJar -x test"
-      
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - REPOSITORY_URI="$DOCKERHUB_USERNAME/fittoring"
-      - echo "Docker 이미지 빌드: $IMAGE_TAG"
-      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+
+      - "IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)"
+      - "REPOSITORY_URI=\"$DOCKERHUB_USERNAME/fittoring\""
+      - "echo 'Docker 이미지를 빌드합니다... Tag:' $IMAGE_TAG"
+      - "docker build -t $REPOSITORY_URI:$IMAGE_TAG ."
 
   post_build:
     commands:
