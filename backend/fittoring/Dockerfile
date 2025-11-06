@@ -1,4 +1,4 @@
-FROM amazoncorretto:21 AS runtime
+FROM eclipse-temurin:21 AS runtime
 WORKDIR /app
 
 RUN apt-get update \
