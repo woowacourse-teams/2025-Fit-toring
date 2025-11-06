@@ -18,12 +18,6 @@ hooks:
       timeout: 120
       runas: root
 
-  BeforeInstall:
-    - location: scripts/cleanup.sh
-      workingDirectory: /home/ssm-user/fittoring-deploy
-      timeout: 60
-      runas: root
-
   ApplicationStart:
     - location: scripts/start.sh
       workingDirectory: /home/ssm-user/fittoring-deploy
