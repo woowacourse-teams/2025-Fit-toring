@@ -9,8 +9,6 @@ phases:
     commands:
       - "echo 'Docker Hub에 로그인합니다...'"
       - "echo \"$DOCKERHUB_TOKEN\" | docker login --username \"$DOCKERHUB_USERNAME\" --password-stdin"
-      - "echo '/backend/fittoring 디렉터리로 이동합니다...'"
-      - "cd backend/fittoring"
 
   build:
     commands:
@@ -36,8 +34,10 @@ phases:
       - "echo $IMAGE_TAG > deploysettings/image_tag.txt"
 
 artifacts:
+  base-directory: backend/fittoring/deploysettings
   files:
-    - backend/fittoring/deploysettings/appspec.yml
-    - backend/fittoring/deploysettings/docker-compose.yml
-    - backend/fittoring/deploysettings/image_tag.txt
-    - backend/fittoring/deploysettings/scripts/**/*
+    - appspec.yml
+    - docker-compose.yml
+    - image_tag.txt
+    - scripts/**/*
+    
