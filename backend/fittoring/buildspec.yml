@@ -36,8 +36,10 @@ phases:
       - "echo $IMAGE_TAG > deploysettings/image_tag.txt"
 
 artifacts:
+  base-directory: deploysettings
   files:
-    - backend/fittoring/deploysettings/appspec.yml
-    - backend/fittoring/deploysettings/docker-compose.yml
-    - backend/fittoring/deploysettings/image_tag.txt
-    - backend/fittoring/deploysettings/scripts/**/*
+    - appspec.yml
+    - docker-compose.yml
+    - image_tag.txt
+    - scripts/**/*
+    
