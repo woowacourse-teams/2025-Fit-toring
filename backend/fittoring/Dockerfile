@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim AS runtime
+FROM amazoncorretto:21 AS runtime
 WORKDIR /app
 
 RUN apt-get update \
