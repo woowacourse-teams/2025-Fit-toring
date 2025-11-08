@@ -32,7 +32,7 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
 
       - echo "배포용 이미지 태그 저장"
-      - echo $IMAGE_TAG > deploysettings/image_tag.txt
+      - echo $IMAGE_TAG > image_tag.txt
 
 artifacts:
   base-directory: backend/fittoring
