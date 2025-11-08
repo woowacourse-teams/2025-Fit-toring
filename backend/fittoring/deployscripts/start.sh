@@ -39,7 +39,7 @@ if [ ! -f "$APP_DIR/image_tag.txt" ]; then
 fi
 
 IMAGE_TAG=$(cat "$APP_DIR/image_tag.txt")
-IMAGE_REPO="fittoring/fittoring"
+IMAGE_REPO="fittoring"
 IMAGE_FULL="$DOCKERHUB_USERNAME/$IMAGE_REPO:$IMAGE_TAG"
 
 echo "[INFO] 배포할 이미지: $IMAGE_FULL"
