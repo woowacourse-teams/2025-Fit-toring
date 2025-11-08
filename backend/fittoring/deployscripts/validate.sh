@@ -5,10 +5,13 @@
 set -Eeuo pipefail
 trap 'echo "[ERROR] ${BASH_SOURCE[0]}:${LINENO} 명령 실패 (exit $?)"; exit 1' ERR
 
+echo "[INFO] 현재 작업 디렉토리로 이동: $(pwd)"
+cd "$(dirname "$0")/../" || exit 1
+
+echo "[INFO] 헬스체크 검증을 시작합니다."
 # 60초 동안 5초 간격으로 애플리케이션이 healthy 상태가 되는지 확인
 for i in {1..12}; do
   echo "[INFO] 헬스체크 검사 시도 ($i/12)..."
-  # docker compose ps의 상태가 "healthy"인지 확인
   if sudo docker-compose ps app | grep -q "healthy"; then
     echo "[SUCCESS] 애플리케이션이 healthy 상태입니다."
     exit 0
