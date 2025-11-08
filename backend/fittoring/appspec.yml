@@ -1,0 +1,22 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /home/ssm-user/fittoring-deploy/
+
+hooks:
+  ApplicationStop:
+    - location: deployscripts/stop.sh
+      timeout: 120
+      runas: root
+
+  ApplicationStart:
+    - location: deployscripts/start.sh
+      timeout: 180
+      runas: root
+
+  ValidateService:
+    - location: deployscripts/validate.sh
+      timeout: 180
+      runas: root
