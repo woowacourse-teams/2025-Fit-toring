@@ -30,16 +30,14 @@ phases:
     commands:
       - echo "Docker 이미지 Push"
       - docker push $REPOSITORY_URI:$IMAGE_TAG
+
       - echo "배포용 이미지 태그 저장"
       - echo $IMAGE_TAG > deploysettings/image_tag.txt
 
-      - mkdir -p ../../deploysettings_root
-      - cp -r deploysettings/* ../../deploysettings_root/
-
 artifacts:
-  base-directory: deploysettings_root
+  base-directory: backend/fittoring
   files:
     - appspec.yml
     - docker-compose.yml
     - image_tag.txt
-    - scripts/**/*
+    - deployscripts/**/*
