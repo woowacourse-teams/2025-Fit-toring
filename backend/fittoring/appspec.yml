@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ssm-user/fittoring-deploy/
+    destination: /home/ssm-user/fittoring/
 
 hooks:
   ApplicationStop:
