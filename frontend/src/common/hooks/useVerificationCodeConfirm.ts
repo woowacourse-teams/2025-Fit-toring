@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useMutation } from '@tanstack/react-query';
+
 import { postAuthCodeVerify } from '../apis/postAuthCodeVerify';
 import { captureSentryError } from '../utils/captureSentryError';
 
@@ -24,27 +26,35 @@ const useVerificationCodeConfirm = ({
 
   const [verificationCodeError, setVerificationCodeError] = useState(false);
 
-  const handleAuthCodeVerifyClick = async (phoneNumber: string) => {
-    setVerificationCodeError(false);
-    try {
-      const response = await postAuthCodeVerify(phoneNumber, verificationCode);
+  const { mutate: verifyAuthCode } = useMutation({
+    mutationFn: (phoneNumber: string) =>
+      postAuthCodeVerify(phoneNumber, verificationCode),
+    onMutate: () => {
+      setVerificationCodeError(false);
+    },
+    onSuccess: (response) => {
       if (response.status === 200) {
         alert('인증 성공');
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       setVerificationCodeError(true);
       console.error('인증 실패', error);
-
       captureSentryError({
         error,
         level: 'error',
         feature: 'sms',
         step: 'verify-code',
       });
-    } finally {
+    },
+    onSettled: () => {
       completeVerification();
       confrimVerificationCode();
-    }
+    },
+  });
+
+  const handleAuthCodeVerifyClick = (phoneNumber: string) => {
+    verifyAuthCode(phoneNumber);
   };
 
   const getFinalVerificationCodeErrorMessage = () => {
