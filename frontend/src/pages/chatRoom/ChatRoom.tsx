@@ -99,7 +99,7 @@ function ChatRoom() {
     await fetchNextPage();
   }, [fetchNextPage]);
 
-  const { listReadyRef, pageFirstReadyRef, ready } = useUpwardInfiniteScroll({
+  const { pageFirstElRef } = useUpwardInfiniteScroll({
     shouldTrigger: shouldTrigger,
     onIntersect,
     anchorKey: anchorKey!,
@@ -108,7 +108,7 @@ function ChatRoom() {
 
   useLayoutEffect(() => {
     const element = listElRef.current;
-    if (!element || !ready) {
+    if (!element) {
       return;
     }
 
@@ -120,7 +120,7 @@ function ChatRoom() {
         ioReadyRef.current = true;
       });
     }
-  }, [listElRef, messages, ready]);
+  }, [listElRef, messages]);
 
   useEffect(() => {
     if (chatRoomMessage) {
@@ -251,8 +251,7 @@ function ChatRoom() {
 
       <ChatContent
         messages={messages}
-        pageFirstRef={pageFirstReadyRef}
-        listRef={listReadyRef}
+        pageFirstElRef={pageFirstElRef}
         listElRef={listElRef}
       />
       <InputSection
