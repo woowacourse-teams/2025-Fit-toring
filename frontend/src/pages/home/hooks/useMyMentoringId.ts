@@ -10,7 +10,6 @@ const useMyMentoringId = (authenticated: boolean) => {
   const storedData = localStorage.getItem('memberId');
   const parsedData = storedData ? JSON.parse(storedData) : null;
   const memberId = parsedData ? parsedData.memberId : null;
-
   const { data: myMentoringId = null, error } = useQuery({
     queryKey: QUERY_KEY.myMentoringId(memberId),
     queryFn: getMineMentoring,
@@ -22,6 +21,7 @@ const useMyMentoringId = (authenticated: boolean) => {
   if (error) {
     console.error(error);
   }
+  console.log('memberId, myMentoringId', memberId, myMentoringId);
 
   return { myMentoringId };
 };
