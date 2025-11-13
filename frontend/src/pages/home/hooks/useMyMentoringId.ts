@@ -21,7 +21,6 @@ const useMyMentoringId = (authenticated: boolean) => {
   if (error) {
     console.error(error);
   }
-  console.log('memberId, myMentoringId', memberId, myMentoringId);
 
   return { myMentoringId };
 };
