@@ -1,3 +1,5 @@
+import { useMutation } from '@tanstack/react-query';
+
 import { postAuthCode } from '../apis/postAuthCode';
 import { captureSentryError } from '../utils/captureSentryError';
 
@@ -20,24 +22,28 @@ const useVerificationCodeRequest = ({
     shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
   } = useSubmitGuardWithConfirm(phoneNumber);
 
-  const handleAuthCodeClick = async (phoneNumber: string) => {
-    try {
-      const response = await postAuthCode(phoneNumber);
+  const { mutate: requestAuthCode } = useMutation({
+    mutationFn: (phoneNumber: string) => postAuthCode(phoneNumber),
+    onSuccess: (response) => {
       if (response.status === 201) {
         alert('인증요청 성공');
         confirmPhoneNumber();
         completeRequest();
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error('인증요청 실패', error);
-
       captureSentryError({
         error,
         level: 'error',
         feature: 'sms',
         step: 'send-code',
       });
-    }
+    },
+  });
+
+  const handleAuthCodeClick = (phoneNumber: string) => {
+    requestAuthCode(phoneNumber);
   };
 
   const getFinalPhoneNumberErrorMessage = () => {
