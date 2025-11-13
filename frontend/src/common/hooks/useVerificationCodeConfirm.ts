@@ -19,7 +19,7 @@ const useVerificationCodeConfirm = ({
   completeVerification,
 }: useVerificationCodeConfirmParams) => {
   const {
-    confirm: confrimVerificationCode,
+    confirm: confirmVerificationCode,
     matchConfirmed: verificationCodeMatchConfirmed,
     shouldBlockSubmit: shouldBlockSubmitByVerificationCode,
   } = useSubmitGuardWithConfirm(verificationCode);
@@ -49,7 +49,7 @@ const useVerificationCodeConfirm = ({
     },
     onSettled: () => {
       completeVerification();
-      confrimVerificationCode();
+      confirmVerificationCode();
     },
   });
 
