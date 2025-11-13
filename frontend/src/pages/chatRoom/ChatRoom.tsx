@@ -228,30 +228,26 @@ function ChatRoom() {
     return <div>로그인 후 이용 가능합니다.</div>;
   }
 
-  if (ChatRoomInfoQuery.isPending || !chatRoomInfo) {
-    return (
-      <S_Container>
-        <div>로딩중</div>
-      </S_Container>
-    );
-  }
-
   return (
     <S_Container>
-      <div>
-        <ChatRoomHeader name={chatRoomInfo.opponentName} />
-        <MentoringActionPanel
-          mentorName={chatRoomInfo.mentorName}
-          price={chatRoomInfo.price}
-          profileImageUrl={chatRoomInfo.profileImageUrl}
-          mentorOwned={chatRoomInfo.myRole === 'MENTOR'}
-          onPaymentRequestClick={handlePaymentRequestClick}
-          onReviewRequestClick={handleReviewRequestClick}
-          onEndClick={handleEndClick}
-          onPaymentClick={handlePaymentClick}
-          onReviewClick={handleReviewClick}
-        />
-      </div>
+      {ChatRoomInfoQuery.isPending || !chatRoomInfo ? (
+        <div>로딩중</div>
+      ) : (
+        <div>
+          <ChatRoomHeader name={chatRoomInfo.opponentName} />
+          <MentoringActionPanel
+            mentorName={chatRoomInfo.mentorName}
+            price={chatRoomInfo.price}
+            profileImageUrl={chatRoomInfo.profileImageUrl}
+            mentorOwned={chatRoomInfo.myRole === 'MENTOR'}
+            onPaymentRequestClick={handlePaymentRequestClick}
+            onReviewRequestClick={handleReviewRequestClick}
+            onEndClick={handleEndClick}
+            onPaymentClick={handlePaymentClick}
+            onReviewClick={handleReviewClick}
+          />
+        </div>
+      )}
 
       <ChatContent
         messages={messages}
