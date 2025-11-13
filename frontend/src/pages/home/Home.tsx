@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -10,7 +10,6 @@ import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
 import { THEME } from '../../common/styles/theme';
 
-import { getMentorListByPage } from './apis/getMentorListByPage';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
@@ -18,24 +17,14 @@ import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
+import useMentorList from './hooks/useMentorList';
 import useModal from './hooks/useModal';
 import useMyMentoringId from './hooks/useMyMentoringId';
 import useSort from './hooks/useSortKey';
 import useSpecialtyFilter from './hooks/useSpecialtyFilter';
 
 import type { SortKey } from './hooks/useSortKey';
-import type { MentorInformation } from './types/MentorInformation';
-import type { MentoringByPage } from './types/MentoringByPage';
 import type { Specialty } from '../../common/types/Specialty';
-
-const convertSelectedSpecialtiesToParams = (
-  selectedSpecialties: Specialty[],
-): Record<string, string> => {
-  const params: Record<string, string> = {};
-  params['categoryIds'] = selectedSpecialties.map(({ id }) => id).join(',');
-
-  return params;
-};
 
 function Home() {
   const { modalOpened, openModal, closeModal } = useModal();
@@ -61,39 +50,18 @@ function Home() {
 
   const { sortKey, changeSortKey } = useSort();
 
-  const getMentors = async (
-    selectedSpecialties: Specialty[],
-    sortKey: SortKey,
-    cursorCode: string | null = null,
-  ) => {
-    const data = await getMentorListByPage({
-      params: {
-        ...convertSelectedSpecialtiesToParams(selectedSpecialties),
-        sortKey,
-        ...(cursorCode && { cursorCode }),
-      },
-    });
-
-    return data;
-  };
-
-  const updateMentorList = (data: MentoringByPage) => {
-    const {
-      mentoringSummaryResponses,
-      hasNext: hasNewNext,
-      nextCursorCode,
-    } = data;
-
-    setMentorList(mentoringSummaryResponses);
-    setHasNext(hasNewNext);
-    setCursorCode(nextCursorCode);
-  };
+  const {
+    fetchInitialMentors,
+    fetchMoreMentors,
+    mentorList,
+    hasNext,
+    cursorCode,
+  } = useMentorList();
 
   const handleSortButtonClick = async (option: SortKey) => {
     changeSortKey(option);
 
-    const data = await getMentors(selectedSpecialties, option);
-    updateMentorList(data);
+    await fetchInitialMentors(selectedSpecialties, option);
   };
 
   const { selectedSpecialties, applySpecialties, toggleSpecialty } =
@@ -103,21 +71,18 @@ function Home() {
     applySpecialties(specialties);
     handleCloseModal();
 
-    const data = await getMentors(specialties, sortKey);
-    updateMentorList(data);
+    await fetchInitialMentors(specialties, sortKey);
   };
 
   const handleSelectedSpecialtyChange = async (specialty: Specialty) => {
     toggleSpecialty(specialty);
 
-    const data = await getMentors(
+    await fetchInitialMentors(
       selectedSpecialties.filter(
         (prevSpecialty) => prevSpecialty.id !== specialty.id,
       ),
       sortKey,
     );
-
-    updateMentorList(data);
   };
 
   const handleMentoringCreation = () => {
@@ -133,24 +98,12 @@ function Home() {
     navigate(PAGE_URL.MENTORING_CREATE);
   };
 
-  const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
-  const [hasNext, setHasNext] = useState(true);
-  const [cursorCode, setCursorCode] = useState<string | null>(null);
   const elementRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
     const callback = async (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting && hasNext) {
-        const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
-        const {
-          mentoringSummaryResponses,
-          hasNext: hasNewNext,
-          nextCursorCode,
-        } = data;
-
-        setHasNext(hasNewNext);
-        setMentorList((prev) => [...prev, ...mentoringSummaryResponses]);
-        setCursorCode(nextCursorCode);
+        await fetchMoreMentors(selectedSpecialties, sortKey, cursorCode);
       }
     };
 
@@ -159,7 +112,7 @@ function Home() {
       io.observe(elementRef.current);
     }
     return () => io.disconnect();
-  }, [cursorCode, hasNext, selectedSpecialties, sortKey]);
+  }, [cursorCode, fetchMoreMentors, hasNext, selectedSpecialties, sortKey]);
 
   return (
     <S_Container>
