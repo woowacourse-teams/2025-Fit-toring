@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -17,6 +17,7 @@ import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
+import useInfiniteScroll from './hooks/useInfiniteScroll';
 import useMentorList from './hooks/useMentorList';
 import useModal from './hooks/useModal';
 import useMyMentoringId from './hooks/useMyMentoringId';
@@ -98,21 +99,14 @@ function Home() {
     navigate(PAGE_URL.MENTORING_CREATE);
   };
 
-  const elementRef = useRef<HTMLLIElement>(null);
+  const fetchNextPage = useCallback(async () => {
+    await fetchMoreMentors(selectedSpecialties, sortKey, cursorCode);
+  }, [cursorCode, fetchMoreMentors, selectedSpecialties, sortKey]);
 
-  useEffect(() => {
-    const callback = async (entries: IntersectionObserverEntry[]) => {
-      if (entries[0].isIntersecting && hasNext) {
-        await fetchMoreMentors(selectedSpecialties, sortKey, cursorCode);
-      }
-    };
-
-    const io = new IntersectionObserver(callback);
-    if (elementRef.current) {
-      io.observe(elementRef.current);
-    }
-    return () => io.disconnect();
-  }, [cursorCode, fetchMoreMentors, hasNext, selectedSpecialties, sortKey]);
+  const { elementRef } = useInfiniteScroll<HTMLLIElement>(
+    fetchNextPage,
+    hasNext,
+  );
 
   return (
     <S_Container>
