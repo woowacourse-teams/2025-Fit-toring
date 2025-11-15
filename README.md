@@ -1,5 +1,5 @@
 <p align="center">
-<img width="400" height="1024" alt="image" src="https://github.com/user-attachments/assets/89cb676d-0254-4fa1-89e4-0953be96333b" />
+<img width="400" height="420" alt="핏토링로고" src="https://github.com/user-attachments/assets/36958020-bc31-47b9-a947-4ed696cfa1aa" />
 </p>
 
 ## 핏토링
