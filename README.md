@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://i.ibb.co/ZzWfDdnn/Chat-GPT-Image-Jul-10-2025-08-01-14-PM-Photoroom.png" width="400" height="420"/>
+<img width="400" height="420" alt="핏토링로고" src="https://github.com/user-attachments/assets/36958020-bc31-47b9-a947-4ed696cfa1aa" />
 </p>
 
 ## 핏토링

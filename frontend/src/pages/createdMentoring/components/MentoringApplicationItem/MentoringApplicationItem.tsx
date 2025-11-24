@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
-import { type StatusType } from '../../../../common/types/statusType';
 import useContentOverflowedRef from '../../hooks/useContentOverflowedRef';
 import useShowMore from '../../hooks/useShowMore';
 import ActionButtons from '../ActionButtons/ActionButtons';
@@ -10,10 +9,7 @@ import type { MentoringApplication } from '../../types/mentoringApplication';
 
 interface MentoringApplicationItemProps {
   mentoringApplication: MentoringApplication;
-  onActionButtonsClick: (params: {
-    reservationId: number;
-    status: StatusType;
-  }) => Promise<void>;
+  onActionButtonsClick: () => Promise<void>;
 }
 
 const formatDate = (dateString: string) => {
@@ -38,11 +34,8 @@ function MentoringApplicationItem({
 
   const { contentOverflowed, setRef: contentRef } = useContentOverflowedRef();
 
-  const handleActionButtonsComplete = async (updatedStatus: StatusType) => {
-    await onActionButtonsClick({
-      reservationId,
-      status: updatedStatus,
-    });
+  const handleActionButtonsComplete = async () => {
+    await onActionButtonsClick();
   };
 
   return (

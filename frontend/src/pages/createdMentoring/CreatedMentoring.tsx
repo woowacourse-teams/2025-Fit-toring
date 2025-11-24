@@ -10,20 +10,12 @@ import MentoringApplicationList from './components/MentoringApplicationList/Ment
 import useMentoringApplicationList from './hooks/useMentoringApplicationList';
 import useMineMentoring from './hooks/useMineMentoring';
 
-import type { StatusType } from '../../common/types/statusType';
-
 function CreatedMentoring() {
-  const { mentoringApplicationList, updateMentoringApplicationListStatus } =
+  const { mentoringApplicationList, refetchMentoringApplicationList } =
     useMentoringApplicationList();
 
-  const handleActionButtonsClick = async ({
-    reservationId,
-    status,
-  }: {
-    reservationId: number;
-    status: StatusType;
-  }) => {
-    await updateMentoringApplicationListStatus({ reservationId, status });
+  const handleActionButtonsClick = async () => {
+    await refetchMentoringApplicationList();
   };
 
   const { mineMentoring } = useMineMentoring();

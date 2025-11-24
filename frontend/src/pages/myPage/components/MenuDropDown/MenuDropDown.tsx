@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { postLogout } from '../../../../common/apis/postLogout';
@@ -54,7 +55,7 @@ function MenuDropDown() {
       action: () => navigate(PAGE_URL.PARTICIPATED_MENTORING),
     },
     { name: '회원 정보 수정', action: () => navigate(PAGE_URL.EDIT_PROFILE) },
-    { name: '로그아웃', action: async () => await handleLogout(PAGE_URL.HOME) },
+    { name: '로그아웃', action: () => handleLogout() },
   ];
 
   const [selectedMenu, setSelectedMenu] =
@@ -70,12 +71,14 @@ function MenuDropDown() {
     await item.action();
   };
 
-  const handleLogout = async (url: string) => {
-    try {
-      await postLogout();
+  const { mutate: handleLogout } = useMutation({
+    mutationFn: postLogout,
+    onSuccess: () => {
       logout();
-      navigate(url);
-    } catch (error) {
+      localStorage.removeItem('memberId');
+      navigate(PAGE_URL.HOME);
+    },
+    onError: (error) => {
       console.error('Logout failed', error);
       captureSentryError({
         error,
@@ -83,8 +86,8 @@ function MenuDropDown() {
         feature: 'myPage',
         step: 'logout',
       });
-    }
-  };
+    },
+  });
 
   return (
     <S_Container ref={containerRef}>
