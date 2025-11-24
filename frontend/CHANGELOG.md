@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.13.0...v1.14.0) (2025-11-24)
+
+
+### Features
+
+* S3 버킷 이름 변경 ([#1106](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1106)) ([6866e9b](https://github.com/woowacourse-teams/2025-Fit-toring/commit/6866e9bd7192c31bb7955f69c6fbb0ba3d6c256c))
+
 # [1.13.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.12.0...v1.13.0) (2025-10-23)
 
 
