@@ -55,10 +55,10 @@ function MenuDropDown() {
 
   const { logout } = useAuth();
 
-  const handleSelectMenu = async (item: MenuItem) => {
+  const handleSelectMenu = (item: MenuItem) => {
     setSelectedMenu(item.name);
-    setOpened((prev) => !prev);
-    await item.action();
+    closeDropDown();
+    item.action();
   };
 
   const { mutate: handleLogout } = useMutation({
@@ -89,7 +89,7 @@ function MenuDropDown() {
         {MENU_ITEMS.map((item) => (
           <S_MenuItem
             key={item.name}
-            onClick={async () => await handleSelectMenu(item)}
+            onClick={() => handleSelectMenu(item)}
             selected={selectedMenu === item.name}
           >
             {item.name}
