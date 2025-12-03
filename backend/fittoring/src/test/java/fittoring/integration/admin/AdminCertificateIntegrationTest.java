@@ -1,5 +1,6 @@
 package fittoring.integration.admin;
 
+import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
@@ -14,7 +15,6 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
-import fittoring.integration.AbstractApiDocumentationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,8 +122,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction",
-                    "가상의카카오오픈채팅"
+                    "introduction"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -133,8 +132,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -159,8 +159,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction",
-                    "가상의카카오오픈채팅"
+                    "introduction"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -170,8 +169,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -201,8 +201,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction",
-                    "가상의카카오오픈채팅"
+                    "introduction"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -212,8 +211,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -238,8 +238,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction",
-                    "가상의카카오오픈채팅"
+                    "introduction"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -249,8 +248,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -280,8 +280,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction",
-                    "가상의카카오오픈채팅"
+                    "introduction"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -291,8 +290,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then
@@ -317,8 +317,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     1000,
                     1,
                     "content",
-                    "introduction",
-                    "가상의카카오오픈채팅"
+                    "introduction"
             ));
             Certificate certificate = certificateRepository.save(new Certificate(
                     CertificateType.LICENSE,
@@ -328,8 +327,9 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
             imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    certificate.getId())
-            );
+                    certificate.getId(),
+                    null
+            ));
 
             // when
             // then

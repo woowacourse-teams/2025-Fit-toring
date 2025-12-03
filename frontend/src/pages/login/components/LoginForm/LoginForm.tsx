@@ -37,7 +37,16 @@ function LoginForm() {
 
   const { mutate: loginMutate } = useMutation({
     mutationFn: postLogin,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
+      const data = await response.json();
+
+      if (data?.memberId) {
+        localStorage.setItem(
+          'memberId',
+          JSON.stringify({ memberId: data.memberId }),
+        );
+      }
+
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
         navigate(PAGE_URL.HOME);

@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
+import { PAGE_URL } from '../../../../common/constants/url';
 import {
   StatusTypeEnum,
   type StatusType,
@@ -13,10 +15,18 @@ import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicat
 interface ActionButtonsProps {
   reservationId: number;
   status: StatusType;
-  onClick: (status: StatusType) => void;
+  chatRoomId: number | null;
+  onClick: () => Promise<void>;
 }
 
-function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
+function ActionButtons({
+  reservationId,
+  status,
+  chatRoomId,
+  onClick,
+}: ActionButtonsProps) {
+  const navigate = useNavigate();
+
   const updateStatus = async (newStatus: MENTORING_APPLICATION_STATUS) => {
     try {
       const response = await patchReservationStatus(reservationId, {
@@ -43,7 +53,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
-        onClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
+        await onClick();
       }
     } catch (error) {
       console.error(`Error handling approve button click:`, error);
@@ -62,7 +72,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
-        onClick(StatusTypeEnum.REJECTED);
+        await onClick();
       }
     } catch (error) {
       console.error(`Error handling reject button click:`, error);
@@ -81,7 +91,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
       ) {
         await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
-        onClick(StatusTypeEnum.COMPLETE);
+        await onClick();
       }
     } catch (error) {
       console.error(`Error handling complete button click:`, error);
@@ -92,6 +102,10 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         step: 'complete-button-click',
       });
     }
+  };
+
+  const handleChatButtonClick = async () => {
+    navigate(`${PAGE_URL.CHAT_ROOM}/${chatRoomId}`);
   };
 
   if (status === StatusTypeEnum.PENDING) {
@@ -106,12 +120,20 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
       </S_Container>
     );
   }
-  if (status === StatusTypeEnum.APPROVED) {
+  if (
+    status === StatusTypeEnum.APPROVED ||
+    status === StatusTypeEnum.COMPLETE
+  ) {
     return (
-      <S_Container>
-        <S_PrimaryButton onClick={handleCompleteButtonClick}>
-          완료
+      <S_Container flexDirection="column">
+        <S_PrimaryButton onClick={handleChatButtonClick}>
+          채팅방으로 이동
         </S_PrimaryButton>
+        {status === StatusTypeEnum.APPROVED && (
+          <S_SecondaryButton onClick={handleCompleteButtonClick}>
+            완료
+          </S_SecondaryButton>
+        )}
       </S_Container>
     );
   }
@@ -119,8 +141,9 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
 
 export default ActionButtons;
 
-const S_Container = styled.div`
+const S_Container = styled.div<{ flexDirection?: 'row' | 'column' }>`
   display: flex;
+  flex-direction: ${({ flexDirection }) => flexDirection || 'row'};
   align-items: center;
   gap: 1rem;
 

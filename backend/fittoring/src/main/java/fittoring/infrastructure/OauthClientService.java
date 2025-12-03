@@ -1,7 +1,7 @@
 package fittoring.infrastructure;
 
-import fittoring.application.auth.service.dto.KakaoTokenResponse;
-import fittoring.application.auth.service.dto.KakaoUserInfoResponse;
+import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
+import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;

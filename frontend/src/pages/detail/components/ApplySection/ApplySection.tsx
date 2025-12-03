@@ -14,11 +14,12 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
 interface ApplySectionProps {
+  id: string;
   price: number;
   mentoringId: string | undefined;
 }
 
-function ApplySection({ price, mentoringId }: ApplySectionProps) {
+function ApplySection({ id, price, mentoringId }: ApplySectionProps) {
   const navigate = useNavigate();
 
   const { authenticated } = useAuth();
@@ -68,6 +69,7 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
         <strong>{price.toLocaleString()}원</strong>
       </S_Wrapper>
       <Button
+        id={id}
         size="full"
         customStyle={css`
           padding: 1.6rem 0;

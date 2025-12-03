@@ -1,0 +1,46 @@
+import { http, HttpResponse } from 'msw';
+
+import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
+import { postAuthCode } from '../../../common/mock/authCode/handlers';
+import { postAuthCodeVerify } from '../../../common/mock/authCodeVerify/handlers';
+import { getUserInfo } from '../../../common/mock/getUserInfo/handler';
+
+import type { PartialUserProfileRequest } from '../../../pages/editProfile/types/userProfile';
+
+const BASE_URL = process.env.API_BASE_URL;
+const EDIT_PROFILE_URL = `${BASE_URL}${API_ENDPOINTS.MEMBERS_ME}`;
+
+export const testStateStore = {
+  shouldFail: false,
+  customError: null as string | null,
+  reset() {
+    this.shouldFail = false;
+    this.customError = '내 정보 수정 실패';
+  },
+};
+
+const patchMyProfile = http.patch(EDIT_PROFILE_URL, async ({ request }) => {
+  const body = await request.json();
+  const profileData = body as PartialUserProfileRequest;
+
+  if (testStateStore.shouldFail) {
+    return new HttpResponse(
+      { message: testStateStore.customError || 'Patch failed' },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  return HttpResponse.json(
+    { message: `내 정보 수정 성공`, data: profileData },
+    { status: 204 },
+  );
+});
+
+export const editProfileHandlers = [
+  patchMyProfile,
+  getUserInfo,
+  postAuthCode,
+  postAuthCodeVerify,
+];

@@ -1,6 +1,8 @@
 spring:
   application:
     name: fittoring
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
   config:
     import: optional:file:.env[.properties]
   mvc:
@@ -25,42 +27,45 @@ spring:
       max-file-size: 5MB
       max-request-size: 20MB
 
+server:
+  tomcat:
+    threads:
+      max: ${TOMCAT_MAX_THREADS}
+    max-connections: ${TOMCAT_MAX_CONNECTIONS}
+    connection-timeout: ${TOMCAT_CONNECTION_TIMEOUT}
+    keep-alive-timeout: ${TOMCAT_KEEP_ALIVE_TIMEOUT}
+    mbeanregistry:
+      enabled: true
+
 management:
   endpoints:
     web:
       base-path: /
       exposure:
-        include: health,info,prometheus, metrics
+        include: heapdump, health,info,prometheus, metrics
       path-mapping:
         health: healthcheck
         prometheus: prometheus-provider
+  endpoint:
+    heapdump:
+      enabled: true
   metrics:
     distribution:
       percentiles-histogram:
         http.server.requests: true
       percentiles:
         http.server.requests: 0.95,0.99
-  tracing:
-    enabled: ${TRACING_ENABLE}
-    sampling:
-      probability: 1.0
-  otlp:
-    tracing:
-      transport: grpc
-      endpoint: ${TEMPO_GRPC_LISTENER_URL}
-jdbc:
-  datasource-proxy:
-    enabled: ${DB_TRACING_ENABLE}
-    include-parameter-values: ${DB_TRACING_ENABLE}
-    query:
-      logger-name: my.query-logger
-  resultset-operations:
-    enabled: ${DB_TRACING_ENABLE}
+    tags:
+      environment: ${SPRING_PROFILES_ACTIVE}
+  prometheus:
+    metrics:
+      export:
+        step: ${METRICS_EXPORT_TIME_TO_PROMETHEUS}
 sms:
   base-url: https://api.solapi.com
   timeout:
-    connect: 1_200
-    read: 5_000
+    connect: 1200
+    read: 5000
 
 logging:
   file:
@@ -89,14 +94,14 @@ kakao:
 aws:
   s3:
     region: ap-northeast-2
-    bucket-name: techcourse-project-2025
-  sqs:
-    image-queue: fittoring-image-queue
+    bucket-name: fittoring-s3
+    project-prefix: fit-toring/
 
 image-session:
   merge:
     enabled: true
-    fixed-delay-ms: 300000 # 5분
+    fixed-delay-ms: 300000
     batch-size: 200
+
 domain:
   sub-domain: ${SUB_DOMAIN}

@@ -1,8 +1,11 @@
-import type { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 
 import styled from '@emotion/styled';
 
+import useFocusTrapRef from '../../../pages/home/hooks/useFocusTrapRef';
+import useInertBackground from '../../../pages/home/hooks/useInertBackground';
 import useEscapeKeyDown from '../../hooks/useEscapeKeyDown';
+import Portal from '../Portal/Portal';
 
 interface ModalProps {
   opened: boolean;
@@ -16,19 +19,27 @@ function Modal({
   onCloseClick,
   zIndex = 1000,
 }: PropsWithChildren<ModalProps>) {
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
       onCloseClick();
     }
   };
 
   useEscapeKeyDown(onCloseClick, opened);
 
+  const { ref } = useFocusTrapRef<HTMLDivElement>();
+
+  useInertBackground(opened);
+
   return (
     opened && (
-      <S_Overlay onClick={handleClick} zIndex={zIndex}>
-        <S_Content>{children}</S_Content>
-      </S_Overlay>
+      <Portal>
+        <S_Overlay onClick={handleClick} zIndex={zIndex}>
+          <S_Content ref={ref} role="dialog" aria-modal="true">
+            {children}
+          </S_Content>
+        </S_Overlay>
+      </Portal>
     )
   );
 }

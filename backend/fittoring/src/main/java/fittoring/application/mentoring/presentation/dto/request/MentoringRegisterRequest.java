@@ -9,8 +9,6 @@ public record MentoringRegisterRequest(
         String profileImageUrl,
         int career,
         String content,
-        String chatUrl,
-
         List<CertificateInfoRequest> certificateInfoRequests
 ) {
 

@@ -142,9 +142,17 @@ function IdentityVerificationForm() {
 
   const { mutate: identityVerificationMutate } = useMutation({
     mutationFn: postIdentityVerification,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
+      const data = await response.json();
+
       if (response.status === 201) {
         alert('본인 인증이 완료되었습니다.');
+        if (data?.memberId) {
+          localStorage.setItem(
+            'memberId',
+            JSON.stringify({ memberId: data.memberId }),
+          );
+        }
         login();
         navigate(PAGE_URL.HOME);
       }

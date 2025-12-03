@@ -6,10 +6,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.image.repository.ImageRepository;
-import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
 import fittoring.application.mentoring.presentation.dto.response.CertificateSpecAndImageResponse;
@@ -17,7 +17,6 @@ import fittoring.application.mentoring.presentation.dto.response.MentoringRespon
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
 import fittoring.application.mentoring.repository.CategoryRepository;
 import fittoring.application.mentoring.repository.CertificateRepository;
-import fittoring.application.mentoring.repository.MentoringPaginationHelper;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
 import fittoring.application.mentoring.service.dto.MentoringSummaryPaginationResponse;
@@ -40,8 +39,6 @@ import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,14 +48,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@Import({MentoringPaginationHelper.class})
 class MentoringIntegrationTest extends AbstractApiDocumentationTest {
-
-    @MockitoBean
-    private PresignedUrlService presignedUrlService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -93,9 +84,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @PersistenceContext
-    private EntityManager em;
-
     @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
     @Test
     void modifyMentoring() throws IOException {
@@ -115,13 +103,13 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 3,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         imageRepository.save(new Image(
                 "originalProfileImage",
                 ImageType.MENTORING_PROFILE,
-                mentoring.getId()
+                mentoring.getId(),
+                null
         ));
         categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
         Certificate certificate = certificateRepository.save(new Certificate(
@@ -132,7 +120,8 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         imageRepository.save(new Image(
                 "originalCertificateImage",
                 ImageType.CERTIFICATE,
-                certificate.getId()
+                certificate.getId(),
+                null
         ));
 
         int newPrice = 1000;
@@ -141,7 +130,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         String newProfileImageUrl = "수정된 새로운 프로필 이미지";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
-        String chatUrl = "가상의카카오오픈채팅";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
                 newPrice,
                 List.of(newCategory),
@@ -149,7 +137,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newProfileImageUrl,
                 newCareer,
                 newContent,
-                chatUrl,
                 Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
@@ -189,7 +176,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         String newProfileImageUrl = "수정된 새로운 프로필 이미지";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
-        String chatUrl = "가상의카카오오픈채팅";
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
                 newPrice,
                 List.of(newCategory),
@@ -197,7 +183,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newProfileImageUrl,
                 newCareer,
                 newContent,
-                chatUrl,
                 Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
@@ -227,14 +212,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-9048"),
                 Password.from("pw")
         ));
-        String chatUrl = "가상의카카오오픈채팅링크";
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
                 3,
                 "한 줄 소개",
-                "긴 글 소개",
-                chatUrl
+                "긴 글 소개"
         ));
 
         Member invalidMember = memberRepository.save(new Member(
@@ -258,7 +241,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newProfileImageUrl,
                 newCareer,
                 newContent,
-                chatUrl,
                 Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(invalidMember.getId());
@@ -300,8 +282,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개",
-                            "가상의카카오오픈채팅"
+                            "멘토링 자기소개"
                     )
             );
             mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(savedMentoring));
@@ -312,8 +293,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                             1000,
                             4,
                             "멘토링 내용",
-                            "멘토링 자기소개",
-                            "가상의카카오오픈채팅"
+                            "멘토링 자기소개"
                     )
             );
             mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(savedMentoring2));
@@ -324,8 +304,10 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
 
-            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
-            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
+            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId(),
+                    null));
+            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId(),
+                    null));
 
             Reservation savedReservation1 = reservationRepository.save(
                     new Reservation("예약 코멘트1", Status.COMPLETE, savedMentoring, mentee));
@@ -365,7 +347,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                     "image1.jpg",
                     savedMentoring.getIntroduction(),
                     savedMentoring.getContent(),
-                    savedMentoring.getChatUrl(),
                     new ArrayList<>(),
                     String.format("%.1f", 4.5),
                     2
@@ -391,8 +372,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개",
-                            "가상의카카오오픈채팅"
+                            "멘토링 자기소개"
                     )
             );
             mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(savedMentoring));
@@ -407,7 +387,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             //멘토링 프로필 이미지 생성
             Image savedImage = imageRepository.save(
-                    new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+                    new Image(
+                            "image1.jpg",
+                            ImageType.MENTORING_PROFILE,
+                            savedMentoring.getId(),
+                            null
+                    ));
 
             //자격증 생성
             Certificate certificate = new Certificate(
@@ -430,14 +415,16 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             Image savedCetificateImage = imageRepository.save(new Image(
                     "profileImageUrl",
                     ImageType.CERTIFICATE,
-                    savedCertificate.getId())
-            );
+                    savedCertificate.getId(),
+                    null
+            ));
 
             Image savedCertificateImage2 = imageRepository.save(new Image(
                     "profileImageUrl2",
                     ImageType.CERTIFICATE,
-                    savedCertificate2.getId())
-            );
+                    savedCertificate2.getId(),
+                    null
+            ));
 
             //when
             MentoringResponse response = RestAssured
@@ -493,8 +480,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                             1000,
                             3,
                             "멘토링 내용",
-                            "멘토링 자기소개",
-                            "가상의카카오오픈채팅"
+                            "멘토링 자기소개"
                     )
             );
 
@@ -504,8 +490,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                             1000,
                             4,
                             "멘토링 내용",
-                            "멘토링 자기소개",
-                            "가상의카카오오픈채팅"
+                            "멘토링 자기소개"
                     )
             );
 
@@ -515,8 +500,18 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
             categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring2));
 
-            imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
-            imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
+            imageRepository.save(new Image(
+                    "image1.jpg",
+                    ImageType.MENTORING_PROFILE,
+                    savedMentoring.getId(),
+                    null
+            ));
+            imageRepository.save(new Image(
+                    "image2.jpg",
+                    ImageType.MENTORING_PROFILE,
+                    savedMentoring2.getId(),
+                    null
+            ));
 
             long invalidId = 100L;
 
@@ -544,7 +539,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
     @Nested
     @DisplayName("멘토링 페이징 조회")
     class getMentoringWithPagination {
-
         @DisplayName("첫 멘토링 목록 페이지를 조회하고, 반환된 커서를 사용하면 나머지 목록을 조회할 수 있다.")
         @Test
         void getMentoringSummaryPages() {
@@ -586,8 +580,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                                 1000,
                                 3,
                                 "멘토링 내용: " + i,
-                                "멘토링 자기소개",
-                                "가상의카카오오픈채팅"
+                                "멘토링 자기소개"
                         );
                 savedMentorings.add(mentoring);
             }
@@ -611,7 +604,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -716,8 +714,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                         1000,
                         3,
                         "멘토링 내용: " + i,
-                        "멘토링 자기소개",
-                        "가상의카카오오픈채팅"
+                        "멘토링 자기소개"
                 );
                 savedMentorings.add(mentoring);
             }
@@ -746,7 +743,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -835,8 +837,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                                 1000,
                                 3,
                                 "멘토링 내용: " + i,
-                                "멘토링 자기소개",
-                                "가상의카카오오픈채팅"
+                                "멘토링 자기소개"
                         );
                 savedMentorings.add(mentoring);
             }
@@ -863,7 +864,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -971,8 +977,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                                 1000,
                                 3,
                                 "멘토링 내용: " + i,
-                                "멘토링 자기소개",
-                                "가상의카카오오픈채팅"
+                                "멘토링 자기소개"
                         );
                 savedMentorings.add(mentoring);
             }
@@ -996,7 +1001,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -1108,8 +1118,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                                 1000,
                                 3,
                                 "멘토링 내용: " + i,
-                                "멘토링 자기소개",
-                                "가상의카카오오픈채팅"
+                                "멘토링 자기소개"
                         );
                 savedMentorings.add(mentoring);
             }
@@ -1136,7 +1145,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -1212,30 +1226,30 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPages3() {
             //given
             Member mentee = memberRepository.save(
-                new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
-                "010-1234-5678",
-                "010-2345-6789",
-                "010-3456-7890",
-                "010-4567-8901",
-                "010-5678-9012",
-                "010-6789-0123",
-                "010-7890-1234",
-                "010-8901-2345",
-                "010-9012-3456",
-                "010-1122-3344",
-                "010-2233-4455",
-                "010-3344-5566"
+                    "010-1234-5678",
+                    "010-2345-6789",
+                    "010-3456-7890",
+                    "010-4567-8901",
+                    "010-5678-9012",
+                    "010-6789-0123",
+                    "010-7890-1234",
+                    "010-8901-2345",
+                    "010-9012-3456",
+                    "010-1122-3344",
+                    "010-2233-4455",
+                    "010-3344-5566"
             );
             List<Member> savedMentor = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
-                    "mentorId" + i,
-                    "MALE",
-                    "멘토" + i,
-                    new Phone(phoneNumbers.get(i)),
-                    Password.from("pw"));
+                        "mentorId" + i,
+                        "MALE",
+                        "멘토" + i,
+                        new Phone(phoneNumbers.get(i)),
+                        Password.from("pw"));
                 savedMentor.add(mentor);
             }
             memberRepository.saveAll(savedMentor);
@@ -1243,20 +1257,19 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             List<Mentoring> savedMentorings = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
                 Mentoring mentoring =
-                    new Mentoring(
-                        savedMentor.get(i),
-                        1000,
-                        3,
-                        "멘토링 내용: " + i,
-                        "멘토링 자기소개",
-                        "가상의카카오오픈채팅"
-                    );
+                        new Mentoring(
+                                savedMentor.get(i),
+                                1000,
+                                3,
+                                "멘토링 내용: " + i,
+                                "멘토링 자기소개"
+                        );
                 savedMentorings.add(mentoring);
             }
             mentoringRepository.saveAll(savedMentorings);
 
             List<MentoringStatistics> savedMentoringStatistics = new ArrayList<>();
-            for (int i=0; i<12; i++) {
+            for (int i = 0; i < 12; i++) {
                 MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(savedMentorings.get(i));
                 savedMentoringStatistics.add(mentoringStatistics);
             }
@@ -1273,7 +1286,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -1292,45 +1310,47 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             reservationRepository.saveAll(reservations);
 
             List<Review> reviews = new ArrayList<>();
-            int[] ratingForReviews = { 2, 2, 3, 3, 4, 4, 1, 1, 5, 5, 3, 4 };
+            int[] ratingForReviews = {2, 2, 3, 3, 4, 4, 1, 1, 5, 5, 3, 4};
             for (int i = 0; i < ratingForReviews.length; i++) {
                 reviews.add(new Review(ratingForReviews[i], "좋았습니다.", reservations.get(i), mentee));
-                mentoringStatisticsRepository.updateReviewStatisticsPlus(reservations.get(i).getMentoring().getId(), ratingForReviews[i]);
+                mentoringStatisticsRepository.updateReviewStatisticsPlus(reservations.get(i).getMentoring().getId(),
+                        ratingForReviews[i]);
             }
             for (int i = 0; i < ratingForReviews.length; i++) {
                 reviews.add(new Review(ratingForReviews[i], "좋았습니다.", reservations.get(12 + i), mentee));
-                mentoringStatisticsRepository.updateReviewStatisticsPlus(reservations.get(12 + i).getMentoring().getId(), ratingForReviews[i]);
+                mentoringStatisticsRepository.updateReviewStatisticsPlus(
+                        reservations.get(12 + i).getMentoring().getId(), ratingForReviews[i]);
             }
             reviewRepository.saveAll(reviews);
 
             //when
             MentoringSummaryPaginationResponse firstResponse = RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-first"))
-                .log().all().contentType(ContentType.JSON)
-                .queryParam("sortKey", "AVERAGE_RATING")
-                .when()
-                .get("/mentorings-page")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .as(MentoringSummaryPaginationResponse.class);
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-first"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "AVERAGE_RATING")
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
 
             String nextCursorCode = firstResponse.nextCursorCode();
             MentoringSummaryPaginationResponse nextResponse = RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-next"))
-                .log().all().contentType(ContentType.JSON)
-                .queryParam("sortKey", "AVERAGE_RATING")
-                .queryParam("cursorCode", nextCursorCode)
-                .when()
-                .get("/mentorings-page")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .as(MentoringSummaryPaginationResponse.class);
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-next"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "AVERAGE_RATING")
+                    .queryParam("cursorCode", nextCursorCode)
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
 
             //then
             SoftAssertions.assertSoftly(softAssertions -> {
@@ -1350,30 +1370,30 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory3() {
             //given
             Member mentee = memberRepository.save(
-                new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
-                "111-1234-5678",
-                "111-2345-6789",
-                "111-3456-7890",
-                "111-4567-8901",
-                "111-5678-9012",
-                "111-6789-0123",
-                "111-7890-1234",
-                "111-8901-2345",
-                "111-9012-3456",
-                "111-1122-3344",
-                "111-2233-4455",
-                "111-3344-5566"
+                    "111-1234-5678",
+                    "111-2345-6789",
+                    "111-3456-7890",
+                    "111-4567-8901",
+                    "111-5678-9012",
+                    "111-6789-0123",
+                    "111-7890-1234",
+                    "111-8901-2345",
+                    "111-9012-3456",
+                    "111-1122-3344",
+                    "111-2233-4455",
+                    "111-3344-5566"
             );
             List<Member> savedMentor = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
-                    "mentorId" + i,
-                    "MALE",
-                    "멘토" + i,
-                    new Phone(phoneNumbers.get(i)),
-                    Password.from("pw"));
+                        "mentorId" + i,
+                        "MALE",
+                        "멘토" + i,
+                        new Phone(phoneNumbers.get(i)),
+                        Password.from("pw"));
                 savedMentor.add(mentor);
             }
             memberRepository.saveAll(savedMentor);
@@ -1381,20 +1401,19 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             List<Mentoring> savedMentorings = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
                 Mentoring mentoring =
-                    new Mentoring(
-                        savedMentor.get(i),
-                        1000,
-                        3,
-                        "멘토링 내용: " + i,
-                        "멘토링 자기소개",
-                        "가상의카카오오픈채팅"
-                    );
+                        new Mentoring(
+                                savedMentor.get(i),
+                                1000,
+                                3,
+                                "멘토링 내용: " + i,
+                                "멘토링 자기소개"
+                        );
                 savedMentorings.add(mentoring);
             }
             mentoringRepository.saveAll(savedMentorings);
 
             List<MentoringStatistics> savedMentoringStatistics = new ArrayList<>();
-            for (int i=0; i<12; i++) {
+            for (int i = 0; i < 12; i++) {
                 MentoringStatistics mentoringStatistics = MentoringStatistics.defaultOf(savedMentorings.get(i));
                 savedMentoringStatistics.add(mentoringStatistics);
             }
@@ -1414,7 +1433,12 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             List<Image> images = new ArrayList<>();
             for (int i = 0; i < 12; i++) {
-                Image image = new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentorings.get(i).getId());
+                Image image = new Image(
+                        "image1.jpg",
+                        ImageType.MENTORING_PROFILE,
+                        savedMentorings.get(i).getId(),
+                        null
+                );
                 images.add(image);
             }
             imageRepository.saveAll(images);
@@ -1433,47 +1457,49 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             reservationRepository.saveAll(reservations);
 
             List<Review> reviews = new ArrayList<>();
-            int[] ratingForReviews = { 2, 2, 3, 3, 4, 4, 1, 1, 5, 5, 3, 4 };
+            int[] ratingForReviews = {2, 2, 3, 3, 4, 4, 1, 1, 5, 5, 3, 4};
             for (int i = 0; i < ratingForReviews.length; i++) {
                 reviews.add(new Review(ratingForReviews[i], "좋았습니다.", reservations.get(i), mentee));
-                mentoringStatisticsRepository.updateReviewStatisticsPlus(reservations.get(i).getMentoring().getId(), ratingForReviews[i]);
+                mentoringStatisticsRepository.updateReviewStatisticsPlus(reservations.get(i).getMentoring().getId(),
+                        ratingForReviews[i]);
             }
             for (int i = 0; i < ratingForReviews.length; i++) {
                 reviews.add(new Review(ratingForReviews[i], "좋았습니다.", reservations.get(12 + i), mentee));
-                mentoringStatisticsRepository.updateReviewStatisticsPlus(reservations.get(12 + i).getMentoring().getId(), ratingForReviews[i]);
+                mentoringStatisticsRepository.updateReviewStatisticsPlus(
+                        reservations.get(12 + i).getMentoring().getId(), ratingForReviews[i]);
             }
             reviewRepository.saveAll(reviews);
 
             //when
             MentoringSummaryPaginationResponse firstResponse = RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-first"))
-                .log().all().contentType(ContentType.JSON)
-                .queryParam("sortKey", "AVERAGE_RATING")
-                .queryParam("categoryIds", "1, 2")
-                .when()
-                .get("/mentorings-page")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .as(MentoringSummaryPaginationResponse.class);
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-first"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "AVERAGE_RATING")
+                    .queryParam("categoryIds", "1, 2")
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
 
             String nextCursorCode = firstResponse.nextCursorCode();
             MentoringSummaryPaginationResponse nextResponse = RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-next"))
-                .log().all().contentType(ContentType.JSON)
-                .queryParam("sortKey", "AVERAGE_RATING")
-                .queryParam("categoryIds", "1, 2")
-                .queryParam("cursorCode", nextCursorCode)
-                .when()
-                .get("/mentorings-page")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .as(MentoringSummaryPaginationResponse.class);
+                    .given(spec)
+                    .accept("application/json")
+                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-next"))
+                    .log().all().contentType(ContentType.JSON)
+                    .queryParam("sortKey", "AVERAGE_RATING")
+                    .queryParam("categoryIds", "1, 2")
+                    .queryParam("cursorCode", nextCursorCode)
+                    .when()
+                    .get("/mentorings-page")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringSummaryPaginationResponse.class);
             //then
             SoftAssertions.assertSoftly(softAssertions -> {
                 assertThat(firstResponse.mentoringSummaryResponses()).hasSize(10);   // 카테고리 1, 2번 동시 보유 조건

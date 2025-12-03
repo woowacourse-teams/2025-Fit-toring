@@ -3,6 +3,8 @@ package fittoring.domain.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,6 +12,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -17,6 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
@@ -26,12 +30,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 public class ChatRoom {
 
+    @EqualsAndHashCode.Include
     @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @Column(name = "reservation_id", nullable = false)
+    @Getter
+    @Column(name = "reservation_id", nullable = false, unique = true)
     private Long reservationId;
 
     @Column(name = "mentee_id", nullable = false)
@@ -45,6 +51,11 @@ public class ChatRoom {
     private LocalDateTime createdAt;
 
     @Getter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ChatStatus status;
+
+    @Getter
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
@@ -53,6 +64,19 @@ public class ChatRoom {
     private LocalDateTime deletedAt;
 
     public ChatRoom(Long reservationId, Long menteeId, Long mentorId) {
-        this(null, reservationId, menteeId, mentorId, null, false, null);
+        this(
+                null,
+                reservationId,
+                menteeId,
+                mentorId,
+                null,
+                ChatStatus.ACTIVATE,
+                false,
+                null
+        );
+    }
+
+    public boolean isNonParticipant(Long memberId) {
+        return !mentorId.equals(memberId) && !menteeId.equals(memberId);
     }
 }

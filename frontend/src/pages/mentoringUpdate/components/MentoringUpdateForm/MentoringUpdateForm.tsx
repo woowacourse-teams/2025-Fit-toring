@@ -13,11 +13,11 @@ import IntroduceSection from '../../../../common/components/mentoringForm/Introd
 import ProfileSection from '../../../../common/components/mentoringForm/ProfileSection/ProfileSection';
 import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
+import useS3Upload from '../../../../common/hooks/useS3Upload';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
-import { validateChatUrl } from '../../../../common/utils/validateChatUrl';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { deleteCertificate } from '../../apis/deleteCertificate';
 import { putMentoring } from '../../apis/putMentoring';
@@ -33,19 +33,16 @@ function MentoringUpdateForm() {
   const [mentoringData, setMentoringData] = useState<MentoringUpdateFormData>(
     INITIAL_UPDATE_MENTORING_DATA,
   );
-  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-  const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
-    [],
-  );
   const [deletedCertificateIds, setDeletedCertificateIds] = useState<string[]>(
     [],
   );
   const initialCertificatesIdRef = useRef<string[]>([]);
 
+  const { uploadFile: uploadImageFile } = useS3Upload();
+
   const priceErrorMessage = priceValidator(mentoringData.price);
   const introduceErrorMessage = introduceValidator(mentoringData.introduction);
   const careerErrorMessage = careerValidator(mentoringData.career);
-  const chatUrlErrorMessage = validateChatUrl(mentoringData.chatUrl);
   const detailErrorMessage = validateTextarea(mentoringData.content);
 
   const handleMentoringDataChange = (
@@ -57,13 +54,48 @@ function MentoringUpdateForm() {
     }));
   };
 
-  const handleProfileImageChange = (file: File | null) => {
-    setProfileImageFile(file);
-    setMentoringData((prev) => ({ ...prev, profileImageUrl: null }));
-  };
+  const handleProfileImageChange = async (file: File | null) => {
+    if (!file) {
+      handleMentoringDataChange({
+        profileImageUrl: null,
+      });
 
-  const handleCertificateImageFilesChange = (files: File[]) => {
-    setCertificateImageFiles(files);
+      return;
+    }
+
+    try {
+      const { uploadedUrl } = await uploadImageFile(file, 'MENTORING_PROFILE');
+
+      if (!uploadedUrl || uploadedUrl === '') {
+        throw new Error('업로드된 URL이 유효하지 않습니다.');
+      }
+
+      handleMentoringDataChange({
+        profileImageUrl: uploadedUrl,
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '프로필 이미지 업로드 중 알 수 없는 오류가 발생했습니다.';
+
+      console.error('프로필 이미지 업로드 실패:', errorMessage);
+      alert('프로필 이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'mentoring',
+        step: 'mentoring-update-profile-image',
+        extras: {
+          message: `프로필 이미지 업로드 실패`,
+          data: {
+            fileName: file.name,
+            fileSize: file.size,
+          },
+        },
+      });
+    }
   };
 
   const { mentoringId } = useParams();
@@ -73,7 +105,7 @@ function MentoringUpdateForm() {
       return;
     }
 
-    const addedCertifications = mentoringData.certificateInfos.filter(
+    const addedCertifications = mentoringData.certificateInfoRequests.filter(
       (info) => !initialCertificatesIdRef.current.includes(info.id),
     );
 
@@ -95,10 +127,9 @@ function MentoringUpdateForm() {
           })),
           profileImageUrl: mentoringData.profileImageUrl,
         },
-        profileImageFile,
-        certificateImageFiles,
         mentoringId,
       });
+
       navigate(PAGE_URL.HOME);
       if (response.status === 200) {
         alert('멘토링 수정 성공');
@@ -120,8 +151,6 @@ function MentoringUpdateForm() {
             })),
             profileImageUrl: mentoringData.profileImageUrl,
           },
-          profileImageFile,
-          certificateImageFiles,
           mentoringId,
         },
       });
@@ -138,7 +167,6 @@ function MentoringUpdateForm() {
       priceErrorMessage ||
       introduceErrorMessage ||
       careerErrorMessage ||
-      chatUrlErrorMessage ||
       detailErrorMessage
     ) {
       alert('입력값을 확인해주세요.');
@@ -162,7 +190,7 @@ function MentoringUpdateForm() {
         id: crypto.randomUUID(),
         title: null,
         type: 'LICENSE',
-        file: undefined,
+        imageUrl: undefined,
       },
     ]);
   };
@@ -178,20 +206,55 @@ function MentoringUpdateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
-
-    const files = updated
-      .map((item) => item.file)
-      .filter((file): file is File => !!file);
-    handleCertificateImageFilesChange(files);
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
 
     setDeletedCertificateIds((prev) => [...prev, id]);
   };
 
-  const onCertificateChangeById = (
+  const onCertificateChangeById = async (
     id: string,
     changed: Partial<CertificateItem>,
   ) => {
+    if (changed.file) {
+      try {
+        const { uploadedUrl } = await uploadImageFile(
+          changed.file,
+          'CERTIFICATE',
+        );
+
+        if (!uploadedUrl || uploadedUrl === '') {
+          throw new Error('자격증 이미지 업로드에 실패했습니다.');
+        }
+
+        changed.imageUrl = uploadedUrl;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : '자격증 이미지 업로드 중 알 수 없는 오류가 발생했습니다.';
+
+        console.error('자격증 이미지 업로드 실패:', errorMessage);
+        alert('자격증 이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'mentoring',
+          step: 'mentoring-update-certificate-image',
+          extras: {
+            message: '자격증 이미지 업로드 실패',
+            data: {
+              certificateId: id,
+              fileName: changed.file?.name,
+              fileSize: changed.file?.size,
+            },
+          },
+        });
+
+        return;
+      }
+    }
+
     const updated = certificates.map((item) =>
       item.id === id ? { ...item, ...changed } : item,
     );
@@ -203,12 +266,7 @@ function MentoringUpdateForm() {
       type,
       imageUrl,
     }));
-    handleMentoringDataChange({ certificateInfos: finalCertificates });
-
-    const files = updated
-      .map((item) => item.file)
-      .filter((file): file is File => !!file);
-    handleCertificateImageFilesChange(files);
+    handleMentoringDataChange({ certificateInfoRequests: finalCertificates });
   };
 
   useEffect(() => {
@@ -223,22 +281,15 @@ function MentoringUpdateForm() {
           type: info.type,
           imageUrl: info.imageUrl,
         }));
-        const {
-          price,
-          career,
-          introduction,
-          content,
-          profileImageUrl,
-          chatUrl,
-        } = mentoring;
+        const { price, career, introduction, content, profileImageUrl } =
+          mentoring;
         setMentoringData({
           price,
           career,
           introduction,
           content,
           category: categories,
-          chatUrl,
-          certificateInfos: certificateInfosData,
+          certificateInfoRequests: certificateInfosData,
           profileImageUrl,
         });
         setCertificates(certificateInfosData);
@@ -260,8 +311,6 @@ function MentoringUpdateForm() {
             onBaseInfoChange={handleMentoringDataChange}
             priceErrorMessage={priceErrorMessage}
             price={mentoringData.price}
-            chatUrlErrorMessage={chatUrlErrorMessage}
-            chatUrl={mentoringData.chatUrl}
           />
           <ProfileSection
             profileImageUrl={mentoringData.profileImageUrl}
