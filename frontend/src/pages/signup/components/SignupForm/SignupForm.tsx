@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../../common/apis/ApiError';
@@ -179,6 +180,29 @@ function SignupForm() {
     );
   };
 
+  const { mutate: signupMutate } = useMutation({
+    mutationFn: postSignup,
+    onSuccess: (response) => {
+      if (response.status === 201) {
+        alert('가입에 성공했습니다.');
+        navigate(PAGE_URL.LOGIN);
+      }
+    },
+    onError: (error) => {
+      console.error('회원가입 실패', error);
+      if (error instanceof ApiError) {
+        alert(error.message);
+      }
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'signup',
+        step: 'signup',
+      });
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -218,25 +242,7 @@ function SignupForm() {
       password,
     };
 
-    try {
-      const response = await postSignup(signupInfo);
-      if (response.status === 201) {
-        alert('가입에 성공했습니다.');
-        navigate(PAGE_URL.LOGIN);
-      }
-    } catch (error) {
-      console.error('회원가입 실패', error);
-      if (error instanceof ApiError) {
-        alert(error.message);
-      }
-
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'signup',
-        step: 'signup',
-      });
-    }
+    signupMutate(signupInfo);
   };
 
   return (
