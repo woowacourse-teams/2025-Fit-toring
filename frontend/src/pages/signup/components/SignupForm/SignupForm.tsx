@@ -180,7 +180,7 @@ function SignupForm() {
     );
   };
 
-  const signupMutation = useMutation({
+  const { mutate: signupMutate } = useMutation({
     mutationFn: postSignup,
     onSuccess: (response) => {
       if (response.status === 201) {
@@ -242,7 +242,7 @@ function SignupForm() {
       password,
     };
 
-    signupMutation.mutate(signupInfo);
+    signupMutate(signupInfo);
   };
 
   return (

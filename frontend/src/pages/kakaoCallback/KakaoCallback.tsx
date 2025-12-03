@@ -14,7 +14,7 @@ function KakaoCallback() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const kakaoLoginMutation = useMutation({
+  const { mutate: kakaoLoginMutationMutate } = useMutation({
     mutationFn: postKakaoLogin,
     onSuccess: (response) => {
       if (response.status === 200) {
@@ -45,8 +45,6 @@ function KakaoCallback() {
       navigate(PAGE_URL.LOGIN);
     },
   });
-
-  const kakaoLoginMutationMutate = kakaoLoginMutation.mutate;
 
   useEffect(() => {
     const authCode = new URLSearchParams(window.location.search).get('code');

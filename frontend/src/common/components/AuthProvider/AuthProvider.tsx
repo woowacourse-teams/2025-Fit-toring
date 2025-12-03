@@ -17,7 +17,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 function AuthProvider({ children }: PropsWithChildren) {
   const [authenticated, setAuthenticated] = useState(false);
 
-  const reissueMutation = useMutation({
+  const { mutate: reissueMutate } = useMutation({
     mutationFn: postReissue,
     onSuccess: () => {
       setAuthenticated(true);
@@ -33,8 +33,6 @@ function AuthProvider({ children }: PropsWithChildren) {
       });
     },
   });
-
-  const reissueMutate = reissueMutation.mutate;
 
   useEffect(() => {
     const checkAuth = async () => {

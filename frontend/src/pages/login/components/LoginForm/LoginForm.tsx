@@ -35,7 +35,7 @@ function LoginForm() {
 
   const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code`;
 
-  const loginMutation = useMutation({
+  const { mutate: loginMutate } = useMutation({
     mutationFn: postLogin,
     onSuccess: (response) => {
       if (response.status === 200) {
@@ -62,7 +62,7 @@ function LoginForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    loginMutation.mutate({ loginId: userId, password });
+    loginMutate({ loginId: userId, password });
   };
 
   const handleSocialLoginButtonClick = () => {

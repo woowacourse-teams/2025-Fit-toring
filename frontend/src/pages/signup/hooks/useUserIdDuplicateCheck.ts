@@ -25,7 +25,7 @@ const useUserIdDuplicateCheck = ({
     shouldBlockSubmit: shouldBlockSubmitByUserId,
   } = useSubmitGuardWithConfirm(userId);
 
-  const validateIdMutation = useMutation({
+  const { mutate: validateIdMutate } = useMutation({
     mutationFn: postValidateId,
     onSuccess: (response) => {
       if (response.status === 200) {
@@ -49,7 +49,7 @@ const useUserIdDuplicateCheck = ({
   const handleDuplicateConfirmClick = async () => {
     setDuplicateError(false);
 
-    validateIdMutation.mutate(userId);
+    validateIdMutate(userId);
   };
 
   const resetDuplicateCheck = () => {

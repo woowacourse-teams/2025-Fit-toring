@@ -140,7 +140,7 @@ function IdentityVerificationForm() {
     phoneNumberErrorMessage === '' &&
     verificationCodeValidated;
 
-  const identityVerificationMutation = useMutation({
+  const { mutate: identityVerificationMutate } = useMutation({
     mutationFn: postIdentityVerification,
     onSuccess: (response) => {
       if (response.status === 201) {
@@ -193,7 +193,7 @@ function IdentityVerificationForm() {
       phone: phoneNumber,
     };
 
-    identityVerificationMutation.mutate(userInfo);
+    identityVerificationMutate(userInfo);
   };
 
   return (

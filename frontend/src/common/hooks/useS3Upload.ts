@@ -24,7 +24,7 @@ const getExtension = (fileType: string) => {
 };
 
 const useS3Upload = () => {
-  const uploadMutation = useMutation({
+  const { mutateAsync: uploadMutationMutateAsync } = useMutation({
     mutationFn: async ({
       file,
       imageType,
@@ -47,8 +47,6 @@ const useS3Upload = () => {
       }
     },
   });
-
-  const uploadMutationMutateAsync = uploadMutation.mutateAsync;
 
   const uploadFile = useCallback(
     async (file: File, imageType: ImageType) => {
