@@ -1,8 +1,9 @@
-import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { ERROR_MESSAGE } from '../src/common/constants/errorMessage';
 import usePasswordWithConfirmInput from '../src/pages/signup/hooks/usePasswordWithConfirmInput';
+
+import { renderHook, act } from './index';
 
 const createFakeChangeEvent = (
   value: string,
