@@ -1,21 +1,12 @@
-import { ThemeProvider } from '@emotion/react';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
-import { PAGE_URL } from '../src/common/constants/url';
-import { THEME } from '../src/common/styles/theme';
 import SignupForm from '../src/pages/signup/components/SignupForm/SignupForm';
+
+import { render, fireEvent, screen } from './index';
 
 describe('SignupForm 컴포넌트 입력 비활성화 테스트', () => {
   it('모든 입력값이 유효하지 않으면 버튼이 클릭되지 않는다.', () => {
-    render(
-      <ThemeProvider theme={THEME}>
-        <MemoryRouter initialEntries={[PAGE_URL.SIGNUP]}>
-          <SignupForm />
-        </MemoryRouter>
-      </ThemeProvider>,
-    );
+    render(<SignupForm />);
 
     const nameInput = screen.getByLabelText('이름 *');
     fireEvent.change(nameInput, { target: { value: '' } });
@@ -41,13 +32,7 @@ describe('SignupForm 컴포넌트 입력 비활성화 테스트', () => {
   });
 
   it('하나의 인풋이라도 입력값이 유효하지 않으면 버튼이 클릭되지 않는다.', () => {
-    render(
-      <ThemeProvider theme={THEME}>
-        <MemoryRouter initialEntries={[PAGE_URL.SIGNUP]}>
-          <SignupForm />
-        </MemoryRouter>
-      </ThemeProvider>,
-    );
+    render(<SignupForm />);
 
     const nameInput = screen.getByLabelText('이름 *');
     fireEvent.change(nameInput, { target: { value: '홍길동' } });
@@ -73,13 +58,7 @@ describe('SignupForm 컴포넌트 입력 비활성화 테스트', () => {
   });
 
   it('모든 입력값이 유효하면 버튼이 클릭된다.', () => {
-    render(
-      <ThemeProvider theme={THEME}>
-        <MemoryRouter initialEntries={[PAGE_URL.SIGNUP]}>
-          <SignupForm />
-        </MemoryRouter>
-      </ThemeProvider>,
-    );
+    render(<SignupForm />);
 
     const nameInput = screen.getByLabelText('이름 *');
     fireEvent.change(nameInput, { target: { value: '홍길동' } });
