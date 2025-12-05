@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-import { THEME } from '../src/common/styles/theme';
+import { THEME } from '../../src/common/styles/theme';
 
 import type { RenderOptions } from '@testing-library/react';
 import type { MemoryRouterProps } from 'react-router-dom';
