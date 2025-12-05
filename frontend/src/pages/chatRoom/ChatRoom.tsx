@@ -71,7 +71,7 @@ function ChatRoom() {
     hasNextPage,
   } = useInfiniteChatRoomMessage(Number(chatRoomId!));
 
-  const listElRef = useRef<HTMLDivElement>(null);
+  const listElRef = useRef<HTMLDivElement | null>(null);
   const initialScrolledRef = useRef(false);
   const ioReadyRef = useRef(false);
 
@@ -191,11 +191,27 @@ function ChatRoom() {
     };
   }, [chatRoomId]);
 
+  const prevScrollRef = useRef({
+    scrollTop: 0,
+    scrollHeight: 0,
+    clientHeight: 0,
+  });
+
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (message === '') {
       return;
+    }
+
+    const element = listElRef.current;
+
+    if (element) {
+      prevScrollRef.current = {
+        scrollTop: element.scrollTop,
+        scrollHeight: element.scrollHeight,
+        clientHeight: element.clientHeight,
+      };
     }
 
     const tempId = Date.now();
@@ -253,6 +269,7 @@ function ChatRoom() {
         messages={messages}
         pageFirstElRef={pageFirstElRef}
         listElRef={listElRef}
+        prevScrollRef={prevScrollRef}
       />
       <InputSection
         value={message}
