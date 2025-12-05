@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { ERROR_MESSAGE } from '../src/common/constants/errorMessage';
 import usePasswordWithConfirmInput from '../src/pages/signup/hooks/usePasswordWithConfirmInput';
 
-import { renderHook, act } from './index';
+import { renderHook, act } from './utils/index';
 
 const createFakeChangeEvent = (
   value: string,

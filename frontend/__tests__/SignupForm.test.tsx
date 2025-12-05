@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import SignupForm from '../src/pages/signup/components/SignupForm/SignupForm';
 
-import { render, fireEvent, screen } from './index';
+import { render, fireEvent, screen } from './utils/index';
 
 describe('SignupForm 컴포넌트 입력 비활성화 테스트', () => {
   it('모든 입력값이 유효하지 않으면 버튼이 클릭되지 않는다.', () => {

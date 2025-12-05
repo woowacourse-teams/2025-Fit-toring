@@ -5,7 +5,7 @@ import useVerificationCodeInput, {
   VERIFICATION_CODE_LENGTH,
 } from '../src/common/hooks/useVerificationCodeInput';
 
-import { renderHook, act } from './index';
+import { renderHook, act } from './utils/index';
 
 const createFakeChangeEvent = (
   value: string,

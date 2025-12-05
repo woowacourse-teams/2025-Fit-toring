@@ -1,2 +1,0 @@
-export * from '@testing-library/react';
-export { render } from './utils/customRender';
