@@ -7,15 +7,7 @@ const useOutsideClickRef = <T extends HTMLElement = HTMLElement>(
   const callbackRef = useRef(callback);
 
   const setRef = useCallback((node: T | null) => {
-    if (node === null) {
-      return;
-    }
-
     ref.current = node;
-
-    return () => {
-      ref.current = null;
-    };
   }, []);
 
   useEffect(() => {
