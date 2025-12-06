@@ -3,6 +3,14 @@ package fittoring.integration;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
+import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.review.presentation.dto.request.ReviewCreateRequest;
+import fittoring.application.review.presentation.dto.request.ReviewModifyRequest;
+import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
@@ -10,13 +18,6 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.review.presentation.dto.request.ReviewCreateRequest;
-import fittoring.application.review.presentation.dto.request.ReviewModifyRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
@@ -65,8 +66,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "content",
-                "introduction",
-                "가상의카카오오픈채팅"
+                "introduction"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -126,8 +126,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "content",
-                "introduction",
-                "가상의카카오오픈채팅"
+                "introduction"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -183,8 +182,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "content",
-                "introduction",
-                "가상의카카오오픈채팅"
+                "introduction"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -250,8 +248,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "content",
-                "introduction",
-                "가상의카카오오픈채팅"
+                "introduction"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -318,8 +315,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "content",
-                "introduction",
-                "가상의카카오오픈채팅"
+                "introduction"
         ));
         Reservation reservation = reservationRepository.save(
                 new Reservation(
@@ -382,16 +378,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
                 mentor2,
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         Reservation reservation1 = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -450,8 +444,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         Member mentee1 = memberRepository.save(new Member(
                 "loginId",
@@ -531,8 +524,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -590,8 +582,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -648,8 +639,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -710,8 +700,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "content",
-                "introduction",
-                "가상의카카오오픈채팅"
+                "introduction"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -775,8 +764,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",
@@ -851,8 +839,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 5000,
                 5,
                 "한 줄 소개",
-                "긴 글 소개",
-                "가상의카카오오픈채팅"
+                "긴 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
                 "예약합니다.",

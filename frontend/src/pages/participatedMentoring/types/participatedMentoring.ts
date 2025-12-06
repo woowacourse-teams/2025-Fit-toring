@@ -9,4 +9,5 @@ export interface ParticipatedMentoringType {
   content: string;
   status: StatusType;
   isReviewed: boolean;
+  chatRoomId: number | null;
 }

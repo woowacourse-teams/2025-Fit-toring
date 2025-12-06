@@ -1,5 +1,6 @@
 package fittoring.application.mentoring.repository;
 
+import fittoring.admin.repository.CustomCertificateRepository;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Status;
@@ -10,9 +11,19 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CertificateRepository extends ListCrudRepository<Certificate, Long> {
+public interface CertificateRepository extends ListCrudRepository<Certificate, Long>, CustomCertificateRepository {
 
-    List<Certificate> findByVerificationStatus(Status status);
+    @Query(value = "SELECT * FROM certificate WHERE id = :id AND is_deleted = true;", nativeQuery = true)
+    Certificate findDeletedById(@Param("id") Long id);
+
+    @Query("""
+            SELECT DISTINCT c
+            FROM Certificate c
+            JOIN FETCH c.mentoring
+            JOIN FETCH c.mentoring.mentor
+            WHERE c.verificationStatus=:status
+            """)
+    List<Certificate> findByVerificationStatus(@Param("status") Status verificationStatus);
 
     @Query("""
             SELECT c

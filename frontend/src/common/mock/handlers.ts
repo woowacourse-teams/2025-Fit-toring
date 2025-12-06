@@ -1,28 +1,26 @@
-import { authCodeHandler } from './authCode/authCode';
-import { authCodeVerifyHandler } from './authCodeVerify/authCodeVerify';
-import { commonHandler } from './common/handlers';
-import { createdMentoringHandler } from './createdMentoring/handlers';
-import { editProfileHandlers } from './editProfile/handler';
-import { loginHandler } from './login/handler';
-import { membersHandler } from './members/handlers';
-import { mentoringHandler } from './mentoring/handlers';
-import { mentoringDetailHandler } from './mentoringDetail/handler';
-import { participatedMentoringHandler } from './participatedMentoring/handler';
-import { signupHandler } from './signup/signup';
-import { validateIdHandler } from './validateId/validateId';
+import { createdMentoringHandler } from '../../pages/createdMentoring/mock/handlers';
+import { editProfileHandlers } from '../../pages/editProfile/mock/handler';
+import { homeHandler } from '../../pages/home/mock/handlers';
+import { identityVerificationHandlers } from '../../pages/identityVerification/mock/handlers';
+import { loginHandler } from '../../pages/login/mock/handler';
+import { mentoringCreateHandler } from '../../pages/mentoringCreate/mock/handlers';
+import { mentoringUpdateHandler } from '../../pages/mentoringUpdate/mock/handlers';
+import { participatedMentoringHandler } from '../../pages/participatedMentoring/mock/handler';
+import { signupHandler } from '../../pages/signup/mock/handlers';
+
+import { chatRoomHandler } from './chatrooms/handlers';
+import { imageUploadHandler } from './imageUpload/handler';
 
 export const handlers = [
-  ...mentoringHandler,
-  ...validateIdHandler,
-  ...authCodeHandler,
-  ...authCodeVerifyHandler,
   ...signupHandler,
-  ...mentoringHandler,
-  ...commonHandler,
-  ...membersHandler,
   ...loginHandler,
   ...createdMentoringHandler,
-  ...mentoringDetailHandler,
+  ...mentoringCreateHandler,
+  ...mentoringUpdateHandler,
   ...participatedMentoringHandler,
   ...editProfileHandlers,
+  ...identityVerificationHandlers,
+  ...homeHandler,
+  ...imageUploadHandler,
+  ...chatRoomHandler,
 ];

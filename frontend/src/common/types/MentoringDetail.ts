@@ -6,7 +6,6 @@ export interface MentoringDetail {
   categories: string[];
   price: number;
   career: number;
-  chatUrl: string;
   profileImageUrl: string | null;
   introduction: string;
   content: string;

@@ -1,10 +1,11 @@
 package fittoring.integration;
 
+import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.auth.service.JwtProvider;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +20,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수 있다.")
+    @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수가 있다.")
     @Test
     void loginGetMyInfoForMentee() {
         // given

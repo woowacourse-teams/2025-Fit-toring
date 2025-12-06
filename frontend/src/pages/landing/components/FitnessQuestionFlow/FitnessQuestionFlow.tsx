@@ -5,6 +5,8 @@ import QuestionBubble from '../QuestionBubble/QuestionBubble';
 function FitnessQuestionFlow() {
   return (
     <S_Container>
+      <S_ScreenReaderOnly>이런 고민, 있으셨죠?</S_ScreenReaderOnly>
+
       <S_QuestionBubbles>
         <S_Wrapper direction="left" padding={8}>
           <QuestionBubble direction="left">
@@ -43,10 +45,11 @@ function FitnessQuestionFlow() {
 
 export default FitnessQuestionFlow;
 
-const S_Container = styled.div`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 3rem;
+  position: relative;
 
   padding: 10rem 0;
 
@@ -57,6 +60,22 @@ const S_Container = styled.div`
     #fff 100%
   )
 `};
+`;
+
+const S_ScreenReaderOnly = styled.h2`
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 `;
 
 const S_QuestionBubbles = styled.div`

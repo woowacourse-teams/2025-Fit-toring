@@ -1,56 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { getMentoringApplicationList } from '../apis/getMentoringApplicationList';
 
-import type { StatusType } from '../../../common/types/statusType';
-import type { MentoringApplication } from '../types/mentoringApplication';
+const QUERY_KEY = ['mentoringApplicationList'] as const;
 
 const useMentoringApplicationList = () => {
-  const [mentoringApplicationList, setMentoringApplicationList] = useState<
-    MentoringApplication[]
-  >([]);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchMentoringApplicationList = async () => {
-      try {
-        const response = await getMentoringApplicationList();
-        setMentoringApplicationList(response);
-      } catch (error) {
-        console.error(error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'createdMentoring',
-          step: 'mentoring-application-fetch',
-        });
-      }
-    };
+  const { data: mentoringApplicationList = [], error } = useQuery({
+    queryKey: QUERY_KEY,
+    queryFn: getMentoringApplicationList,
+  });
 
-    fetchMentoringApplicationList();
-  }, []);
-
-  const updateMentoringApplicationListStatus = ({
-    reservationId,
-    status,
-  }: {
-    reservationId: number;
-    status: StatusType;
-  }) => {
-    setMentoringApplicationList((prevList) => {
-      return prevList.map((item) => {
-        if (item.reservationId !== reservationId) {
-          return item;
-        }
-        return {
-          ...item,
-          status,
-        };
-      });
+  if (error) {
+    captureSentryError({
+      error,
+      level: 'warning',
+      feature: 'createdMentoring',
+      step: 'mentoring-application-fetch',
     });
+  }
+
+  const refetchMentoringApplicationList = async () => {
+    await queryClient.invalidateQueries({ queryKey: QUERY_KEY });
   };
 
-  return { mentoringApplicationList, updateMentoringApplicationListStatus };
+  return { mentoringApplicationList, refetchMentoringApplicationList };
 };
 
 export default useMentoringApplicationList;

@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import styled from '@emotion/styled';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { postLogout } from '../../../../common/apis/postLogout';
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../../../common/constants/url';
+import useOutsideClickRef from '../../../../common/hooks/useOutsideClickRef';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 type MenuItemName =
@@ -22,23 +24,12 @@ interface MenuItem {
 
 function MenuDropDown() {
   const [opened, setOpened] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleOutsideClick = (e: MouseEvent) => {
-    if (
-      containerRef.current &&
-      !containerRef.current.contains(e.target as Node)
-    ) {
-      setOpened(false);
-    }
+  const closeDropDown = () => {
+    setOpened(false);
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, []);
+  const { ref: containerRef } = useOutsideClickRef(closeDropDown);
 
   const handleMenuButtonClick = () => {
     setOpened((prev) => !prev);
@@ -54,7 +45,7 @@ function MenuDropDown() {
       action: () => navigate(PAGE_URL.PARTICIPATED_MENTORING),
     },
     { name: '회원 정보 수정', action: () => navigate(PAGE_URL.EDIT_PROFILE) },
-    { name: '로그아웃', action: async () => await handleLogout(PAGE_URL.HOME) },
+    { name: '로그아웃', action: () => handleLogout() },
   ];
 
   const [selectedMenu, setSelectedMenu] =
@@ -64,18 +55,20 @@ function MenuDropDown() {
 
   const { logout } = useAuth();
 
-  const handleSelectMenu = async (item: MenuItem) => {
+  const handleSelectMenu = (item: MenuItem) => {
     setSelectedMenu(item.name);
-    setOpened((prev) => !prev);
-    await item.action();
+    closeDropDown();
+    item.action();
   };
 
-  const handleLogout = async (url: string) => {
-    try {
-      await postLogout();
+  const { mutate: handleLogout } = useMutation({
+    mutationFn: postLogout,
+    onSuccess: () => {
       logout();
-      navigate(url);
-    } catch (error) {
+      localStorage.removeItem('memberId');
+      navigate(PAGE_URL.HOME);
+    },
+    onError: (error) => {
       console.error('Logout failed', error);
       captureSentryError({
         error,
@@ -83,8 +76,8 @@ function MenuDropDown() {
         feature: 'myPage',
         step: 'logout',
       });
-    }
-  };
+    },
+  });
 
   return (
     <S_Container ref={containerRef}>
@@ -96,7 +89,7 @@ function MenuDropDown() {
         {MENU_ITEMS.map((item) => (
           <S_MenuItem
             key={item.name}
-            onClick={async () => await handleSelectMenu(item)}
+            onClick={() => handleSelectMenu(item)}
             selected={selectedMenu === item.name}
           >
             {item.name}

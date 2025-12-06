@@ -8,6 +8,7 @@ export interface MentoringApplication {
   content: string;
   status: StatusType;
   createdAt: string;
+  chatRoomId: number | null;
 }
 
 export type MentoringApplicationResponse = MentoringApplication[];

@@ -1,33 +1,40 @@
 package fittoring.application.reservation.service;
 
+import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
+import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
+import fittoring.application.chat.service.ChatRoomService;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.exception.ReservationNotFoundException;
-import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.image.service.ImageService;
-import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
-import fittoring.domain.model.*;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
-import fittoring.application.mentoring.service.dto.MentoringReservationGetDto;
-import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
-import fittoring.application.reservation.service.dto.ReservationCreateDto;
-import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
-import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.application.mentoring.service.dto.ReservationInfo;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
+import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
+import fittoring.application.reservation.service.dto.ReservationCreateDto;
+import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Status;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReservationService {
 
+    private final ChatRoomService chatRoomService;
     private final MentoringRepository mentoringRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
@@ -88,10 +96,22 @@ public class ReservationService {
     }
 
     private List<MentorMentoringReservationResponse> getMentorMentoringReservationResponses(
-            List<Reservation> reservations) {
-        return reservations.stream()
-                .map(MentorMentoringReservationResponse::of)
+            List<Reservation> reservations
+    ) {
+        List<Long> reservationIds = reservations.stream()
+                .map(Reservation::getId)
                 .toList();
+        Map<Long, ChatRoom> chatRoomMap = chatRoomService.findAllByReservationIds(reservationIds);
+
+        List<MentorMentoringReservationResponse> result = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            if (reservation.isAccessibleForChatRoom()) {
+                result.add(MentorMentoringReservationResponse.of(reservation, chatRoomMap.get(reservation.getId())));
+                continue;
+            }
+            result.add(MentorMentoringReservationResponse.of(reservation));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -102,41 +122,56 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ParticipatedReservationResponse> findMemberReservations(Long memberId) {
-        List<ParticipatedReservationWithoutProfileImageDto> rows = reservationRepository.findMemberReservationDtos(memberId);
+        List<ParticipatedReservationWithoutProfileImageDto> rows = reservationRepository.findMemberReservationDtos(
+                memberId
+        );
 
         Set<Long> mentoringIds = rows.stream()
                 .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
                 .collect(Collectors.toSet());
+        Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(
+                ImageType.MENTORING_PROFILE,
+                mentoringIds
+        );
 
-        Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(ImageType.MENTORING_PROFILE, mentoringIds);
-
-        return rows.stream()
-                .map(r -> new ParticipatedReservationResponse(
-                        r.getReservationId(),
-                        r.getMentoringId(),
-                        r.getMentorName(),
-                        profileImageByMentoring.get(r.getMentoringId()),
-                        r.getReservedAt(),
-                        r.getContent(),
-                        r.getStatus(),
-                        r.getIsReviewed()))
+        List<Long> reservationIds = rows.stream()
+                .map(ParticipatedReservationWithoutProfileImageDto::getReservationId)
                 .toList();
+        Map<Long, ChatRoom> chatRoomMap = chatRoomService.findAllByReservationIds(reservationIds);
+
+        List<ParticipatedReservationResponse> result = new ArrayList<>();
+        for (ParticipatedReservationWithoutProfileImageDto participatedReservation : rows) {
+            Long chatRoomId = getChatRoomIdOrNull(participatedReservation, chatRoomMap);
+            result.add(new ParticipatedReservationResponse(
+                    participatedReservation.getReservationId(),
+                    participatedReservation.getMentoringId(),
+                    participatedReservation.getMentorName(),
+                    profileImageByMentoring.get(participatedReservation.getMentoringId()),
+                    participatedReservation.getReservedAt(),
+                    participatedReservation.getContent(),
+                    participatedReservation.getStatus(),
+                    chatRoomId,
+                    participatedReservation.getIsReviewed()));
+        }
+        return result;
     }
 
-    @Transactional(readOnly = true)
-    public List<AdminReservationResponse> findMentoringReservationsWithAdminAuthorization(
-            MentoringReservationGetDto dto) {
-        checkAdminAuthority(dto.memberId());
-        List<Reservation> reservations = reservationRepository.findAllByMentoringId(dto.mentoringId());
-        return reservations.stream()
-                .map(reservation -> new AdminReservationResponse(
-                        reservation.getId(),
-                        reservation.getMenteeName(),
-                        reservation.getCreatedAt().toLocalDate(),
-                        reservation.getStatus(),
-                        reservation.getContent()
-                ))
-                .toList();
+    private Long getChatRoomIdOrNull(
+            ParticipatedReservationWithoutProfileImageDto participatedReservation,
+            Map<Long, ChatRoom> chatRoomMap
+    ) {
+        Long chatRoomId = null;
+        if (isChattableStatus(participatedReservation.getStatus())) {
+            chatRoomId = Optional.ofNullable(chatRoomMap.get(participatedReservation.getReservationId()))
+                    .map(ChatRoom::getId)
+                    .orElse(null);
+        }
+        return chatRoomId;
+    }
+
+    private boolean isChattableStatus(String statusName) {
+        return statusName.equals(Status.APPROVED.name())
+                || statusName.equals(Status.COMPLETE.name());
     }
 
     private void checkAdminAuthority(Long memberId) {
@@ -148,11 +183,18 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation updateStatus(Long reservationId, String updateStatus) {
+    public ReservationInfo updateStatus(Long reservationId, String updateStatus) {
         Reservation reservation = getReservation(reservationId);
         Status status = Status.of(updateStatus);
         reservation.changeStatus(status);
-        return reservation;
+
+        String url = "";
+        if (reservation.isApprove()) {
+            ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
+            url = chatRoomCreatedInfo.url();
+        }
+
+        return new ReservationInfo(reservation, url);
     }
 
     private Reservation getReservation(Long reservationId) {

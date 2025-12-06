@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
-import { type StatusType } from '../../../../common/types/statusType';
 import useContentOverflowedRef from '../../hooks/useContentOverflowedRef';
 import useShowMore from '../../hooks/useShowMore';
 import ActionButtons from '../ActionButtons/ActionButtons';
@@ -10,10 +9,7 @@ import type { MentoringApplication } from '../../types/mentoringApplication';
 
 interface MentoringApplicationItemProps {
   mentoringApplication: MentoringApplication;
-  onActionButtonsClick: (params: {
-    reservationId: number;
-    status: StatusType;
-  }) => void;
+  onActionButtonsClick: () => Promise<void>;
 }
 
 const formatDate = (dateString: string) => {
@@ -30,6 +26,7 @@ function MentoringApplicationItem({
     content,
     status,
     createdAt,
+    chatRoomId,
   },
   onActionButtonsClick,
 }: MentoringApplicationItemProps) {
@@ -37,11 +34,8 @@ function MentoringApplicationItem({
 
   const { contentOverflowed, setRef: contentRef } = useContentOverflowedRef();
 
-  const handleActionButtonsComplete = (updatedStatus: StatusType) => {
-    onActionButtonsClick({
-      reservationId,
-      status: updatedStatus,
-    });
+  const handleActionButtonsComplete = async () => {
+    await onActionButtonsClick();
   };
 
   return (
@@ -65,6 +59,7 @@ function MentoringApplicationItem({
         <ActionButtons
           reservationId={reservationId}
           status={status}
+          chatRoomId={chatRoomId}
           onClick={handleActionButtonsComplete}
         />
       </S_ButtonWrapper>

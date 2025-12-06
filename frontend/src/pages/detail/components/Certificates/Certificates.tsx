@@ -1,3 +1,4 @@
+import type { RefObject } from 'react';
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
@@ -9,9 +10,10 @@ import type { Certificates } from '../../../../common/types/MentoringDetail';
 
 interface CertificatesProps {
   certificates: Certificates[];
+  ref: RefObject<HTMLHeadingElement | null>;
 }
 
-function Certificates({ certificates }: CertificatesProps) {
+function Certificates({ certificates, ref }: CertificatesProps) {
   const [opened, setOpened] = useState(false);
 
   const handleModalCloseClick = () => {
@@ -63,7 +65,9 @@ function Certificates({ certificates }: CertificatesProps) {
 
   return (
     <S_Container>
-      <S_Title id="certificate-section">자격 사항</S_Title>
+      <S_Title id="certificate-section" tabIndex={-1} ref={ref}>
+        자격 사항
+      </S_Title>
       {certificates.length > 0 ? (
         <S_List>
           {certificates.map((item) => (

@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
@@ -12,51 +12,52 @@ import { postKakaoLogin } from './apis/postKakaoLogin';
 function KakaoCallback() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const didLoginRef = useRef(false);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const authCode = new URLSearchParams(window.location.search).get('code');
+    const authCode = searchParams.get('code');
 
-    if (authCode) {
-      const handleLogin = async (authCode: string) => {
-        try {
-          const response = await postKakaoLogin(authCode);
-
-          if (response.status === 200) {
-            login();
-            navigate(PAGE_URL.HOME);
-          } else if (response.status === 204) {
-            navigate(PAGE_URL.IDENTITY_VERIFICATION);
-          } else {
-            captureSentryError({
-              error: new Error(
-                `Unexpected response status: ${response.status}`,
-              ),
-              level: 'warning',
-              feature: 'auth',
-              step: 'kakao-login',
-            });
-            alert('로그인에 실패했습니다.');
-            navigate(PAGE_URL.LOGIN);
-          }
-        } catch (error) {
-          console.error('카카오 로그인 에러', error);
-          captureSentryError({
-            error,
-            level: 'warning',
-            feature: 'auth',
-            step: 'kakao-login',
-          });
-          alert('로그인 중 오류가 발생했습니다.');
-          navigate(PAGE_URL.LOGIN);
-        }
-      };
-
-      handleLogin(authCode);
-    } else {
-      alert('잘못된 접근입니다.');
-      navigate(PAGE_URL.LOGIN);
+    if (!authCode || didLoginRef.current) {
+      return;
     }
-  }, [navigate]);
+    didLoginRef.current = true;
+
+    const handleLogin = async (authCode: string) => {
+      try {
+        const response = await postKakaoLogin(authCode);
+
+        if (response.status === 200) {
+          const data = await response.json();
+          if (data?.memberId) {
+            localStorage.setItem(
+              'memberId',
+              JSON.stringify({ memberId: data.memberId }),
+            );
+          }
+          login();
+          navigate(PAGE_URL.HOME, { replace: true });
+        } else if (response.status === 204) {
+          navigate(PAGE_URL.IDENTITY_VERIFICATION, { replace: true });
+        } else if (response.status === 400) {
+          alert('이미 가입된 회원입니다. 다른 로그인 방식을 이용해주세요.');
+          navigate(PAGE_URL.LOGIN, { replace: true });
+        }
+      } catch (error) {
+        console.error('카카오 로그인 에러', error);
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'auth',
+          step: 'kakao-login',
+        });
+        alert('로그인 중 오류가 발생했습니다.');
+        navigate(PAGE_URL.LOGIN);
+      }
+    };
+
+    handleLogin(authCode);
+  }, [navigate, searchParams, login]);
 
   return <LoadingSpinner />;
 }

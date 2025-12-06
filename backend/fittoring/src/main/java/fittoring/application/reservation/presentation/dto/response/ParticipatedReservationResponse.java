@@ -10,6 +10,7 @@ public record ParticipatedReservationResponse(
         LocalDate reservedAt,
         String content,
         String status,
+        Long chatRoomId,
         boolean isReviewed
 ) {
 

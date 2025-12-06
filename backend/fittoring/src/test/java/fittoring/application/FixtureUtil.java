@@ -1,6 +1,18 @@
 package fittoring.application;
 
-import fittoring.domain.model.*;
+import fittoring.domain.model.Certificate;
+import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.ImageVariant;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
 
 public class FixtureUtil {
@@ -15,11 +27,12 @@ public class FixtureUtil {
     }
 
     public static Member getTestMentee(int i) {
+        String phoneSuffix = String.format("%02d", i);
         return new Member(
-                "menteeId"+i,
+                "menteeId" + i,
                 "MALE",
                 "이름",
-                new Phone("010-1234-567"+((i%9)+1)),
+                new Phone("010-1234-" + String.format("%04d", i)),
                 Password.from("password"));
     }
 
@@ -35,13 +48,14 @@ public class FixtureUtil {
     }
 
     public static Member getTestMentor(int i) {
+        String phoneSuffix = String.format("%02d", i);
         return new Member(
-                "mentorId"+i,
+                "mentorId" + i,
                 "MALE",
                 "멘토이름",
-                new Phone("010-1234-568"+((i%9)+1)),
+                new Phone("010-1234-" + String.format("%04d", i)),
                 Password.from("password"),
-                MemberRole.MENTOR
+                MemberRole.MENTEE
         );
     }
 
@@ -63,8 +77,7 @@ public class FixtureUtil {
                 5000,
                 5,
                 "content",
-                "introduction",
-                "https://chatRoomUrl"
+                "introduction"
         );
     }
 
@@ -84,8 +97,29 @@ public class FixtureUtil {
         return new Reservation("예약 내용", Status.COMPLETE, mentoring, mentee);
     }
 
+    public static Reservation getTestApprovedReservation(Mentoring mentoring, Member mentee) {
+        return new Reservation("예약 내용", Status.APPROVED, mentoring, mentee);
+    }
+
     public static Review getTestReview(Reservation reservation, Member reviewer) {
         return new Review(5, "좋았습니다.", reservation, reviewer);
     }
 
+    public static Image getTestImageForMentoringProfileDefault(Mentoring mentoring) {
+        return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.DEFAULT, mentoring.getId(),
+                "baseName");
+    }
+
+    public static Image getTestImageForMentoringProfileThumbnail(Mentoring mentoring) {
+        return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId(),
+                "baseName");
+    }
+
+    public static ChatRoom getTestChatRoom(Long reservationId, Long menteeId, Long mentorId) {
+        return new ChatRoom(
+                reservationId,
+                menteeId,
+                mentorId
+        );
+    }
 }
