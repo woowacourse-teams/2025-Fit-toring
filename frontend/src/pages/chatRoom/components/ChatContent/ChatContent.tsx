@@ -1,49 +1,23 @@
-import { useEffect } from 'react';
-
 import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
 
 import type { Message } from '../../types/message';
 
-interface PrevScroll {
-  scrollTop: number;
-  scrollHeight: number;
-  clientHeight: number;
-}
-
 interface ChatContentProps {
   messages: Message[];
   pageFirstElRef: React.RefObject<HTMLDivElement | null>;
   listElRef: React.RefObject<HTMLDivElement | null>;
-  prevScrollRef: React.RefObject<PrevScroll>;
 }
 
 function ChatContent({
   messages,
   pageFirstElRef,
   listElRef,
-  prevScrollRef,
 }: ChatContentProps) {
   const storedData = localStorage.getItem('memberId');
   const parsedData = storedData ? JSON.parse(storedData) : null;
   const memberId = parsedData ? parsedData.memberId : null;
-
-  useEffect(() => {
-    const element = listElRef.current;
-    const prev = prevScrollRef.current;
-
-    if (!element || !prev) {
-      return;
-    }
-
-    const isAtBottom =
-      prev.scrollHeight - prev.scrollTop - prev.clientHeight < 50;
-
-    if (isAtBottom) {
-      element.scrollTop = element.scrollHeight;
-    }
-  }, [listElRef, messages.length, prevScrollRef]);
 
   if (!memberId) {
     return null; // TODO: 에러 UI로 변경할 예정

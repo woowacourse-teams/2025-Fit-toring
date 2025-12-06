@@ -18,6 +18,7 @@ import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
@@ -150,6 +151,8 @@ function ChatRoom() {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
           (message: IMessage) => {
+            capturePrevScroll();
+
             const parsedMessage = JSON.parse(message.body);
 
             setMessages((prev) => {
@@ -191,10 +194,9 @@ function ChatRoom() {
     };
   }, [chatRoomId]);
 
-  const prevScrollRef = useRef({
-    scrollTop: 0,
-    scrollHeight: 0,
-    clientHeight: 0,
+  const { capturePrevScroll } = useScrollToBottomOnMessageSend({
+    messageCount: messages.length,
+    listElRef,
   });
 
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -204,15 +206,7 @@ function ChatRoom() {
       return;
     }
 
-    const element = listElRef.current;
-
-    if (element) {
-      prevScrollRef.current = {
-        scrollTop: element.scrollTop,
-        scrollHeight: element.scrollHeight,
-        clientHeight: element.clientHeight,
-      };
-    }
+    capturePrevScroll();
 
     const tempId = Date.now();
 
@@ -269,7 +263,6 @@ function ChatRoom() {
         messages={messages}
         pageFirstElRef={pageFirstElRef}
         listElRef={listElRef}
-        prevScrollRef={prevScrollRef}
       />
       <InputSection
         value={message}
