@@ -10,6 +10,7 @@ import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicateReservationException;
 import fittoring.application.exception.InvalidStatusException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
@@ -155,6 +156,51 @@ class ReservationServiceTest extends IntegrationTestSupport {
         assertThatThrownBy(() -> reservationService.createReservation(dto))
                 .isInstanceOf(MentoringNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("이미 예약을 신청한 멘토링에는 다시 예약을 신청할 수 없다.")
+    @Test
+    void createReservationFail3() {
+        // given
+        Member mentee = FixtureUtil.getTestMentee();
+        Member mentor = FixtureUtil.getTestMentor();
+        memberRepository.saveAll(List.of(mentee, mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
+        ReservationCreateDto dto = new ReservationCreateDto(
+            mentee.getId(),
+            mentoring.getId(),
+            "운동을 배우고 싶어요."
+        );
+        reservationService.createReservation(dto);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(dto))
+            .isInstanceOf(DuplicateReservationException.class)
+            .hasMessage(BusinessErrorMessage.DUPLICATED_RESERVATION.getMessage());
+    }
+
+    @DisplayName("예약이 승인되어 현재 진행중인 멘토링에는 예약을 신청할 수 없다.")
+    @Test
+    void createReservationFail4() {
+        // given
+        Member mentee = FixtureUtil.getTestMentee();
+        Member mentor = FixtureUtil.getTestMentor();
+        memberRepository.saveAll(List.of(mentee, mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
+        reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
+
+        ReservationCreateDto dto = new ReservationCreateDto(
+            mentee.getId(),
+            mentoring.getId(),
+            "운동을 배우고 싶어요."
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(dto))
+            .isInstanceOf(DuplicateReservationException.class)
+            .hasMessage(BusinessErrorMessage.DUPLICATED_RESERVATION.getMessage());
     }
 
     @DisplayName("특정 멘토가 개설한 멘토링의 모든 예약을 반환한다.")

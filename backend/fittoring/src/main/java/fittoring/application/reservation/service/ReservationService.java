@@ -5,6 +5,7 @@ import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chat.service.ChatRoomService;
 import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicateReservationException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
@@ -53,10 +54,22 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
+        validateNoOngoingReservation(dto);
         Reservation reservation = createReservationEntity(dto);
         Reservation savedReservation = reservationRepository.save(reservation);
         mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
         return savedReservation;
+    }
+
+    private void validateNoOngoingReservation(ReservationCreateDto dto) {
+        boolean existsOngoingReservation = reservationRepository.existsByMentoringIdAndMenteeIdAndStatusIn(
+            dto.mentoringId(),
+            dto.menteeId(),
+            List.of(Status.PENDING, Status.APPROVED)
+        );
+        if (existsOngoingReservation) {
+            throw new DuplicateReservationException(BusinessErrorMessage.DUPLICATED_RESERVATION.getMessage());
+        }
     }
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {
