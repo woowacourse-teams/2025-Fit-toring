@@ -10,6 +10,7 @@ import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.InvalidStatusException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
 import fittoring.application.exception.ReservationNotFoundException;
@@ -236,6 +237,58 @@ class ReservationServiceTest extends IntegrationTestSupport {
         Reservation actual = reservationRepository.findById(reservation.getId())
                 .orElse(null);
         assertThat(actual.getStatus()).isEqualTo(expectedStatusValue);
+    }
+
+    @DisplayName("이미 처리된 예약은 상태를 변경할 수 없다.")
+    @Test
+    void updateStatusFail1() {
+        // given
+        Member mentee1 = memberRepository.save(FixtureUtil.getTestMentee(1));
+        Member mentee2 = memberRepository.save(FixtureUtil.getTestMentee(2));
+        Member mentee3 = memberRepository.save(FixtureUtil.getTestMentee(3));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+
+        Reservation reservation1 = reservationRepository.save(
+            new Reservation("content", Status.REJECTED, mentoring, mentee1)
+        );
+        Reservation reservation2 = reservationRepository.save(
+            new Reservation("content", Status.COMPLETE, mentoring, mentee2)
+        );
+        Reservation reservation3 = reservationRepository.save(
+            new Reservation("content", Status.APPROVED, mentoring, mentee3)
+        );
+
+        // when & then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThatThrownBy(() -> reservationService.updateStatus(reservation1.getId(), Status.REJECTED.name()))
+                .isInstanceOf(InvalidStatusException.class)
+                .hasMessage(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
+            softAssertions.assertThatThrownBy(() -> reservationService.updateStatus(reservation2.getId(), Status.REJECTED.name()))
+                .isInstanceOf(InvalidStatusException.class)
+                .hasMessage(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
+            softAssertions.assertThatThrownBy(() -> reservationService.updateStatus(reservation3.getId(), Status.REJECTED.name()))
+                .isInstanceOf(InvalidStatusException.class)
+                .hasMessage(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
+        });
+    }
+
+    @DisplayName("같은 상태로는 예약의 상태를 변경할 수 없다.")
+    @Test
+    void updateStatusFail2() {
+        // given
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+
+        Reservation reservation = reservationRepository.save(
+            new Reservation("content", Status.PENDING, mentoring, mentee)
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.updateStatus(reservation.getId(), reservation.getStatus()))
+            .isInstanceOf(InvalidStatusException.class)
+            .hasMessage(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
     }
 
     @DisplayName("예약자(멘티)의 전화번호를 반환할 수 있다.")

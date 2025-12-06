@@ -76,10 +76,10 @@ public class Reservation {
     }
 
     private void validateReservation(Status updateStatus) {
-        if (this.status.isReject() || this.status.isComplete()) {
+        if (this.status.isReject() || this.status.isComplete() || (updateStatus.isReject() && this.status.isApprove())) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
-        if (this.status.equals(updateStatus)) {
+        if (this.status == updateStatus) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
         }
     }
