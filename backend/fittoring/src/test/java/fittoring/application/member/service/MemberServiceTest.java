@@ -7,6 +7,7 @@ import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
@@ -252,5 +253,22 @@ class MemberServiceTest extends IntegrationTestSupport {
         assertThatThrownBy(() -> memberService.updateMemberInfo(member.getId(), request))
                 .isInstanceOf(DuplicatePhoneException.class)
                 .hasMessage(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
+    }
+
+    @DisplayName("요청 정보에 수정하려는 정보가 없는 경우 예외가 발생한다.")
+    @Test
+    void emptyRequestByUpdate() {
+        //given
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null
+        );
+
+        //when //then
+        assertThatThrownBy(() -> memberService.updateMemberInfo(1L, request))
+                .isInstanceOf(EmptyRequestException.class)
+                .hasMessage(BusinessErrorMessage.EMPTY_REQUEST.getMessage());
     }
 }

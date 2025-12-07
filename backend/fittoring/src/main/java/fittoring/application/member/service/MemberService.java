@@ -2,6 +2,7 @@ package fittoring.application.member.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.image.service.ImageService;
@@ -65,6 +66,10 @@ public class MemberService {
 
     @Transactional
     public void updateMemberInfo(Long memberId, MemberInfoUpdateRequest request) {
+        if (isEmptyRequest(request)) {
+            throw new EmptyRequestException(BusinessErrorMessage.EMPTY_REQUEST.getMessage());
+        }
+
         Member member = getMember(memberId);
         if (request.name() != null) {
             member.updateName(request.name());
@@ -84,12 +89,17 @@ public class MemberService {
         }
     }
 
+    private boolean isEmptyRequest(MemberInfoUpdateRequest request) {
+        return request.name() == null && request.gender() == null
+               && request.phoneNumber() == null && request.password() == null;
+    }
+
     private Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
-    private void validateDuplicatePhoneNumber(final MemberInfoUpdateRequest request) {
+    private void validateDuplicatePhoneNumber(MemberInfoUpdateRequest request) {
         if (memberRepository.existsByPhone_Number(request.phoneNumber())) {
             throw new DuplicatePhoneException(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
         }

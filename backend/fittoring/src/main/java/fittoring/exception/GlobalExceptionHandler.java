@@ -8,6 +8,7 @@ import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.InvalidCertificateException;
 import fittoring.application.exception.InvalidCursorException;
@@ -94,6 +95,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicatePhoneException.class)
     public ResponseEntity<ErrorResponse> handle(DuplicatePhoneException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(EmptyRequestException.class)
+    public ResponseEntity<ErrorResponse> handle(EmptyRequestException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
