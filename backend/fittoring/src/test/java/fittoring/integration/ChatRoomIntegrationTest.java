@@ -15,6 +15,7 @@ import fittoring.domain.model.Category;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ChatStatus;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
@@ -65,7 +66,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         Member mentor = memberRepository.save(
                 new Member(
                         "id1",
-                        "MALE",
+                        Gender.MALE,
                         "김트레이너",
                         new Phone("010-1234-9048"),
                         Password.from("pw"),
@@ -89,7 +90,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         Member mentee = memberRepository.save(
                 new Member(
                         "id2",
-                        "MALE",
+                        Gender.MALE,
                         "김멘티",
                         new Phone("010-2345-6789"),
                         Password.from("pw")
@@ -129,7 +130,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         Member mentor = memberRepository.save(
                 new Member(
                         "id1",
-                        "MALE",
+                        Gender.MALE,
                         "김트레이너",
                         new Phone("010-1234-9048"),
                         Password.from("pw"),
@@ -149,7 +150,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         Member mentee = memberRepository.save(
                 new Member(
                         "id2",
-                        "MALE",
+                        Gender.MALE,
                         "김멘티",
                         new Phone("010-2345-6789"),
                         Password.from("pw")
@@ -187,10 +188,10 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
     void findChatMessage() {
         //given
         Member mentee = memberRepository.save(
-                new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
         Member mentor = memberRepository.save(
-                new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
+                new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
 
         ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(1L, mentor.getId(), mentee.getId()));
 

@@ -7,13 +7,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
-import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.RefreshToken;
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         SignUpRequest request = new SignUpRequest(
                 "loginId",
                 "이름",
-                "MALE",
+                Gender.MALE,
                 "010-1234-5678",
                 password);
 

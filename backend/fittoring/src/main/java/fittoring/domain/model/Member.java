@@ -37,8 +37,9 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String loginId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String gender;
+    private Gender gender;
 
     @Column(nullable = false)
     private String name;
@@ -62,13 +63,13 @@ public class Member {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public Member(String loginId, String gender, String name, Phone phone, Password password) {
+    public Member(String loginId, Gender gender, String name, Phone phone, Password password) {
         this(null, loginId, gender, name, phone, password, MemberRole.MENTEE, false, null);
     }
 
     public Member(
             String loginId,
-            String gender,
+            Gender gender,
             String name,
             Phone phone,
             Password password,
@@ -81,7 +82,7 @@ public class Member {
         this.name = name;
     }
 
-    public void updateGender(String gender) {
+    public void updateGender(Gender gender) {
         this.gender = gender;
     }
 

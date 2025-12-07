@@ -4,6 +4,7 @@ import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
@@ -27,7 +28,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     void loginGetMyInfoForMentee() {
         // given
         Member mentee = memberRepository.save(
-                new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
         String accessToken = jwtProvider.createAccessToken(mentee.getId());
 
         // when
@@ -51,7 +52,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     void loginGetMyInfoForMentor() {
         // given
         Member mentor = memberRepository.save(
-                new Member("id", "MALE", "멘토1", new Phone("010-1231-1231"), Password.from("pw")));
+                new Member("id", Gender.MALE, "멘토1", new Phone("010-1231-1231"), Password.from("pw")));
         mentor.registerAsMentor();
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
@@ -91,7 +92,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     void updateInfo() {
         // given
         String rawName = "이름";
-        String rawGender = "MALE";
+        Gender rawGender = Gender.MALE;
         String rawPhoneNumber = "010-1234-5678";
         Password rawPassword = Password.from("password");
         Member member = memberRepository.save(
@@ -107,7 +108,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(member.getId());
 
         String newName = "newName";
-        String newGender = "newGender";
+        Gender newGender = Gender.FEMALE;
         String newPassword = "newPassword";
         String newPhoneNumber = "010-5678-9123";
 
@@ -140,7 +141,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     void updateInfo2() {
         // given
         String rawName = "이름";
-        String rawGender = "MALE";
+        Gender rawGender = Gender.MALE;
         String rawPhoneNumber = "010-1234-5678";
         Password rawPassword = Password.from("password");
         Member member = memberRepository.save(

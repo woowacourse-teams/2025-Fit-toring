@@ -10,6 +10,7 @@ import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -128,7 +129,7 @@ class MemberServiceTest extends IntegrationTestSupport {
     void updateMemberInfo() {
         //given
         String rawName = "이름";
-        String rawGender = "MALE";
+        Gender rawGender = Gender.MALE;
         String rawPhoneNumber = "010-1234-5678";
         Password rawPassword = Password.from("password");
         Member member = memberRepository.save(
@@ -142,7 +143,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         );
 
         String newName = "newName";
-        String newGender = "newGender";
+        Gender newGender = Gender.FEMALE;
         String newPassword = "newPassword";
         String newPhoneNumber = "010-5678-9123";
 
@@ -174,7 +175,7 @@ class MemberServiceTest extends IntegrationTestSupport {
     void updateMemberInfo2() {
         //given
         String rawName = "이름";
-        String rawGender = "MALE";
+        Gender rawGender = Gender.MALE;
         String rawPhoneNumber = "010-1234-5678";
         Password rawPassword = Password.from("password");
         Member member = memberRepository.save(
