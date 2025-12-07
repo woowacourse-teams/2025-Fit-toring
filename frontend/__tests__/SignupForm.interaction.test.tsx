@@ -1,18 +1,17 @@
-import { ThemeProvider } from '@emotion/react';
-import { screen, fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { THEME } from '../src/common/styles/theme';
 import SignupForm from '../src/pages/signup/components/SignupForm/SignupForm';
+
+import { render, screen, fireEvent } from './utils';
 
 const fillSignUpFormExceptPhone = async () => {
   const nameInput = screen.getByLabelText('이름 *');
   await userEvent.type(nameInput, '홍길동');
 
   const idInput = screen.getByLabelText('아이디 *');
-  await userEvent.type(idInput, 'abc1234');
+  await userEvent.type(idInput, 'abc12345');
 
   await userEvent.click(screen.getByRole('button', { name: /중복확인/i }));
 
@@ -24,13 +23,7 @@ const fillSignUpFormExceptPhone = async () => {
 };
 
 const renderSignupForm = () => {
-  render(
-    <ThemeProvider theme={THEME}>
-      <MemoryRouter>
-        <SignupForm />
-      </MemoryRouter>
-    </ThemeProvider>,
-  );
+  render(<SignupForm />);
 };
 
 describe('SignUpForm', () => {

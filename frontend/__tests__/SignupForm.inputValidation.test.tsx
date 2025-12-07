@@ -1,20 +1,13 @@
-import { ThemeProvider } from '@emotion/react';
-import { screen, fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import { THEME } from '../src/common/styles/theme';
 import SignupForm from '../src/pages/signup/components/SignupForm/SignupForm';
 
+import { render, screen, fireEvent } from './utils';
+
 const renderSignupForm = () => {
-  render(
-    <ThemeProvider theme={THEME}>
-      <MemoryRouter>
-        <SignupForm />
-      </MemoryRouter>
-    </ThemeProvider>,
-  );
+  render(<SignupForm />);
 };
 
 describe('SignUpForm', () => {
