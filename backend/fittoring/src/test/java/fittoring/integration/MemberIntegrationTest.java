@@ -1,6 +1,7 @@
 package fittoring.integration;
 
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.repository.MemberRepository;
@@ -154,11 +155,10 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 )
         );
 
-        String accessToken = jwtProvider.createAccessToken(member.getId());
-
         String newName = "newName";
         String newPhoneNumber = "010-5678-9123";
 
+        String accessToken = jwtProvider.createAccessToken(member.getId());
         MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
                 newName,
                 null,
@@ -181,5 +181,87 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .then()
                 .log().all()
                 .statusCode(204);
+    }
+
+    @DisplayName("회원(멘토, 멘티)은 이미 다른 사용자가 사용중인 전화번호로 변경을 할 수 없다.")
+    @Test
+    void updateInfo3() {
+        // given
+        String rawName = "이름";
+        Gender rawGender = Gender.MALE;
+        String rawPhoneNumber = "010-1111-2222";
+        Password rawPassword = Password.from("password");
+        Member member = memberRepository.save(
+                new Member(
+                        "menteeId1",
+                        rawGender,
+                        rawName,
+                        new Phone(rawPhoneNumber),
+                        rawPassword
+                )
+        );
+
+        Member testMentee = FixtureUtil.getTestMentee();
+        memberRepository.save(testMentee);
+
+        String newName = "newName";
+        String newPhoneNumber = testMentee.getPhoneNumber();
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                newName,
+                null,
+                null,
+                newPhoneNumber
+        );
+
+        String accessToken = jwtProvider.createAccessToken(member.getId());
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .filter(documentWithTag("member/patch-memberInfo-success-optional"))
+                .log().all()
+                .body(request)
+                .when()
+                .patch("/members/me")
+                .then()
+                .log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("사용자는 수정하려는 정보가 없는 경우 회원 정보를 수정할 수 없다")
+    @Test
+    void emptyRequestByUpdate() {
+        //given
+        Member member = FixtureUtil.getTestMentee();
+        memberRepository.save(member);
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null
+        );
+
+        String accessToken = jwtProvider.createAccessToken(member.getId());
+
+        //when //then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .filter(documentWithTag("member/patch-memberInfo-success-optional"))
+                .log().all()
+                .body(request)
+                .when()
+                .patch("/members/me")
+                .then()
+                .log().all()
+                .statusCode(400);
     }
 }
