@@ -1,9 +1,12 @@
 package fittoring.application.member.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
@@ -212,5 +215,42 @@ class MemberServiceTest extends IntegrationTestSupport {
             softly.assertThat(actual.getPassword()).isEqualTo(rawPassword.getPassword());
             softly.assertThat(actual.getPhoneNumber()).isNotEqualTo(rawPhoneNumber);
         });
+    }
+
+    @DisplayName("수정하려는 전화번호가 이미 사용중인 번호라면 예외가 발생한다.")
+    @Test
+    void duplicatePhoneNumber() {
+        //given
+        String rawName = "이름";
+        Gender rawGender = Gender.MALE;
+        String rawPhoneNumber = "010-1111-2222";
+        Password rawPassword = Password.from("password");
+        Member member = memberRepository.save(
+                new Member(
+                        "menteeId1",
+                        rawGender,
+                        rawName,
+                        new Phone(rawPhoneNumber),
+                        rawPassword
+                )
+        );
+
+        Member testMentee = FixtureUtil.getTestMentee();
+        memberRepository.save(testMentee);
+
+        String newName = "newName";
+        String newPhoneNumber = testMentee.getPhoneNumber();
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                newName,
+                null,
+                null,
+                newPhoneNumber
+        );
+
+        //when //then
+        assertThatThrownBy(() -> memberService.updateMemberInfo(member.getId(), request))
+                .isInstanceOf(DuplicatePhoneException.class)
+                .hasMessage(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
     }
 }
