@@ -1,10 +1,27 @@
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { THEME } from '../src/common/styles/theme';
 import SignupForm from '../src/pages/signup/components/SignupForm/SignupForm';
 
 import { render, screen, fireEvent } from './utils';
+
+const fillSignUpFormExceptPhone = async () => {
+  const nameInput = screen.getByLabelText('이름 *');
+  await userEvent.type(nameInput, '홍길동');
+
+  const idInput = screen.getByLabelText('아이디 *');
+  await userEvent.type(idInput, 'abc12345');
+
+  await userEvent.click(screen.getByRole('button', { name: /중복확인/i }));
+
+  const passwordInput = screen.getByLabelText('비밀번호 *');
+  await userEvent.type(passwordInput, '12345');
+
+  const phoneNumberInput = screen.getByLabelText(/전화번호/i);
+  await userEvent.type(phoneNumberInput, '123-4567-8901');
+  await userEvent.click(screen.getByRole('button', { name: /인증요청/i }));
+};
 
 const renderSignupForm = () => {
   render(<SignupForm />);
@@ -181,11 +198,15 @@ describe('SignUpForm', () => {
   describe('인증번호 입력', () => {
     it('6자리 입력 시 인증하기 버튼이 활성화된다.', async () => {
       // given
+      const user = userEvent.setup();
+      vi.spyOn(window, 'alert').mockImplementation(() => {});
+
       renderSignupForm();
-      const codeInput = screen.getByLabelText(/인증번호/i);
+      await fillSignUpFormExceptPhone();
+      const codeInput = screen.getByLabelText(/인증번호 확인/i);
 
       // when
-      await userEvent.type(codeInput, '123456');
+      await user.type(codeInput, '123456');
 
       // then
       const button = screen.getByRole('button', { name: /인증하기/i });
@@ -194,11 +215,15 @@ describe('SignUpForm', () => {
 
     it('6자 미만 입력 시 인증하기 버튼이 비활성화된다.', async () => {
       // given
+      const user = userEvent.setup();
+      vi.spyOn(window, 'alert').mockImplementation(() => {});
+
       renderSignupForm();
-      const codeInput = screen.getByLabelText(/인증번호/i);
+      await fillSignUpFormExceptPhone();
+      const codeInput = screen.getByLabelText(/인증번호 확인/i);
 
       // when
-      await userEvent.type(codeInput, '12345');
+      await user.type(codeInput, '12345');
 
       // then
       const button = screen.getByRole('button', { name: /인증하기/i });
