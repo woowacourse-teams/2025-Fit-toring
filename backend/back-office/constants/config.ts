@@ -29,7 +29,7 @@ export const API_ENDPOINTS = {
   
   // 멘토링
   ADMIN_MENTORING: `${BASE_URL}/admin/mentorings`,
-  MENTORING: `${BASE_URL}/mentorings`,
+  MENTORING: `${BASE_URL}/admin/mentorings`,
   MENTORING_DETAIL: `${BASE_URL}/mentorings/`,
   MENTORING_DELETE: `${BASE_URL}/admin/mentorings/`,
   MENTORING_CREATE: `${BASE_URL}/admin/mentorings`,

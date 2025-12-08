@@ -1,5 +1,22 @@
 import { API_ENDPOINTS } from "@/constants/config";
-import { getApiHeaders, getDefaultFetchOptions, joinUrl, fetchWithTokenRefresh } from "@/services/apiUtils"; 
+import {
+  getApiHeaders,
+  getDefaultFetchOptions,
+  joinUrl,
+  fetchWithTokenRefresh,
+} from "@/services/apiUtils";
+
+// -----------------------------
+// 타입 정의
+// -----------------------------
+
+export interface MentoringPagingResponse {
+  content: MentoringListItemResponse[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+}
 
 export interface MentoringListItemResponse {
   id: number;
@@ -112,23 +129,33 @@ export interface CategoryListResponse {
 // -----------------------------
 type AnyObj = Record<string, any>;
 
-const normalizeMentoringDetail = (src: AnyObj): MentoringDetailResponse => {
-  const certificatesRaw = Array.isArray(src.certificates) ? src.certificates : [];
+const normalizeMentoringDetail = (
+  src: AnyObj,
+): MentoringDetailResponse => {
+  const certificatesRaw = Array.isArray(src.certificates)
+    ? src.certificates
+    : [];
 
   return {
     id: Number(src.id),
     mentorName: src.mentorName ?? src.mentor_name ?? "",
-    categories: Array.isArray(src.categories) ? src.categories : [],
+    categories: Array.isArray(src.categories)
+      ? src.categories
+      : [],
     price: Number(src.price ?? 0),
     career: Number(src.career ?? src.experience ?? 0),
-    profileImageUrl: src.profileImageUrl ?? src.profile_image_url ?? null,
+    profileImageUrl:
+      src.profileImageUrl ?? src.profile_image_url ?? null,
     introduction: src.introduction ?? src.oneLineIntro ?? "",
     content: src.content ?? "",
-
     certificates: certificatesRaw.map((c: AnyObj) => ({
-      certificateId: Number(c.certificateId ?? c.id ?? 0),
+      certificateId: Number(
+        c.certificateId ?? c.id ?? 0,
+      ),
       certificateName: c.certificateName ?? c.title ?? "",
-      certificateType: (c.certificateType ?? c.type ?? "ETC") as
+      certificateType: (c.certificateType ??
+        c.type ??
+        "ETC") as
         | "LICENSE"
         | "EDUCATION"
         | "AWARD"
@@ -138,7 +165,9 @@ const normalizeMentoringDetail = (src: AnyObj): MentoringDetailResponse => {
   };
 };
 
-const toSummary = (src: MentoringListItemResponse): MentoringSummary => ({
+const toSummary = (
+  src: MentoringListItemResponse,
+): MentoringSummary => ({
   id: src.id,
   mentorName: src.mentorName,
   categories: src.categories ?? [],
@@ -148,7 +177,9 @@ const toSummary = (src: MentoringListItemResponse): MentoringSummary => ({
   introduction: src.introduction,
 });
 
-const toDetail = (src: MentoringDetailResponse): MentoringDetail => ({
+const toDetail = (
+  src: MentoringDetailResponse,
+): MentoringDetail => ({
   id: src.id,
   mentorName: src.mentorName,
   categories: src.categories ?? [],
@@ -160,7 +191,7 @@ const toDetail = (src: MentoringDetailResponse): MentoringDetail => ({
   certificates: (src.certificates ?? []).map((c) => ({
     id: c.certificateId,
     name: c.certificateName,
-    type: c.certificateType, // "LICENSE" | "EDUCATION" | "AWARD" | "ETC"
+    type: c.certificateType,
     imageUrl: c.imageUrl,
   })),
 });
@@ -168,32 +199,70 @@ const toDetail = (src: MentoringDetailResponse): MentoringDetail => ({
 const handleApiError = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    throw new Error(
+      errorData.message ||
+        `HTTP error! status: ${response.status}`,
+    );
   }
   return response;
+};
+
+// page 방어 로직: 1 미만이면 1로 강제
+const normalizePage = (page?: number): number => {
+  const p = Number(page);
+  if (!p || Number.isNaN(p) || p < 1) {
+    return 1;
+  }
+  return p;
 };
 
 // -----------------------------
 // API 함수
 // -----------------------------
 
-// 멘토링 목록 조회
-export const fetchMentorings = async (): Promise<MentoringSummary[]> => {
+// 멘토링 목록 조회 (페이지네이션)
+export const fetchMentorings = async (
+  page: number = 1,
+  size: number = 20,
+): Promise<{
+  items: MentoringSummary[];
+  page: number;              // FE에서 넘긴 page 그대로 반환
+  totalPages: number;
+  totalElements: number;
+}> => {
   try {
-    const listBase = (API_ENDPOINTS as AnyObj).MENTORINGS ?? API_ENDPOINTS.MENTORING;
-    const url = listBase; // 목록은 base 그대로 사용
+    const safePage = normalizePage(page);
+
+    const listBase =
+      (API_ENDPOINTS as AnyObj).MENTORINGS ??
+      API_ENDPOINTS.MENTORING;
+
+    const url = `${listBase}?page=${safePage}&size=${size}`;
+
     const res = await fetchWithTokenRefresh(url, {
       method: "GET",
       ...getDefaultFetchOptions(),
       headers: getApiHeaders(),
     });
 
-    if (!res.ok) {
-      throw new Error(`멘토링 목록 조회 실패: ${res.status} ${res.statusText}`);
-    }
+    if (!res.ok) throw new Error(`멘토링 목록 조회 실패`);
 
-    const data: MentoringListItemResponse[] = await res.json();
-    return data.map(toSummary);
+    const data: MentoringPagingResponse = await res.json();
+
+    return {
+      items: (data.content ?? []).map((item) => {
+        const parsedId =
+          Number(item.id ?? item.mentoringId ?? item.mentoring_id);
+
+        return {
+          ...item,
+          id: parsedId,
+        };
+      }),
+      page: safePage,               // FE 기준 유지
+      totalPages: data.totalPages,
+      totalElements: data.total,
+    };
   } catch (e) {
     console.error("멘토링 목록 조회 실패:", e);
     throw e;
@@ -205,9 +274,11 @@ export const fetchMentorings = async (): Promise<MentoringSummary[]> => {
  * - { mentoring: {...} } 또는 { data: {...} } 또는 {...} 모두 대응
  * - 필드명 불일치 정규화 후 toDetail 변환
  */
-export const fetchMentoringDetail = async (mentoringId: number): Promise<MentoringDetail> => {
+export const fetchMentoringDetail = async (
+  mentoringId: number,
+): Promise<MentoringDetail> => {
   try {
-    const base = API_ENDPOINTS.MENTORING_DETAIL; // 보통 "/mentorings/"
+    const base = API_ENDPOINTS.MENTORING_DETAIL; // "/mentorings/"
     const url = joinUrl(base, mentoringId);
     const res = await fetchWithTokenRefresh(url, {
       method: "GET",
@@ -216,12 +287,16 @@ export const fetchMentoringDetail = async (mentoringId: number): Promise<Mentori
     });
 
     if (!res.ok) {
-      throw new Error(`멘토링 상세 조회 실패: ${res.status} ${res.statusText}`);
+      throw new Error(
+        `멘토링 상세 조회 실패: ${res.status} ${res.statusText}`,
+      );
     }
 
-    const json = (await res.json()) as MentoringDetailEnvelopeResponse | AnyObj;
+    const json =
+      (await res.json()) as
+        | MentoringDetailEnvelopeResponse
+        | AnyObj;
 
-    // 래핑 유무/다른 키(data 등) 모두 대응
     const raw =
       (json as MentoringDetailEnvelopeResponse).mentoring ??
       (json as AnyObj).data ??
@@ -229,10 +304,14 @@ export const fetchMentoringDetail = async (mentoringId: number): Promise<Mentori
 
     if (!raw || typeof raw !== "object") {
       console.warn("Unexpected detail payload:", json);
-      throw new Error("멘토링 상세 응답 형식이 예상과 다릅니다.");
+      throw new Error(
+        "멘토링 상세 응답 형식이 예상과 다릅니다.",
+      );
     }
 
-    const normalized = normalizeMentoringDetail(raw as AnyObj);
+    const normalized = normalizeMentoringDetail(
+      raw as AnyObj,
+    );
     return toDetail(normalized);
   } catch (e) {
     console.error("멘토링 상세 조회 실패:", e);
@@ -241,9 +320,11 @@ export const fetchMentoringDetail = async (mentoringId: number): Promise<Mentori
 };
 
 // 멘토링 삭제 (관리자 전용)
-export const deleteMentoring = async (mentoringId: number): Promise<void> => {
+export const deleteMentoring = async (
+  mentoringId: number,
+): Promise<void> => {
   try {
-    const base = API_ENDPOINTS.MENTORING_DELETE; // 보통 "/admin/mentorings/"
+    const base = API_ENDPOINTS.MENTORING_DELETE; // "/admin/mentorings/"
     const url = joinUrl(base, mentoringId);
     const res = await fetchWithTokenRefresh(url, {
       method: "DELETE",
@@ -252,7 +333,9 @@ export const deleteMentoring = async (mentoringId: number): Promise<void> => {
     });
 
     if (!res.ok) {
-      throw new Error(`멘토링 삭제 실패: ${res.status} ${res.statusText}`);
+      throw new Error(
+        `멘토링 삭제 실패: ${res.status} ${res.statusText}`,
+      );
     }
   } catch (e) {
     console.error("멘토링 삭제 실패:", e);
@@ -263,46 +346,60 @@ export const deleteMentoring = async (mentoringId: number): Promise<void> => {
 /**
  * 멘토링 등록
  */
- export const createMentoring = async (data: CreateMentoringRequest) => {
+export const createMentoring = async (
+  data: CreateMentoringRequest,
+) => {
   const formData = new FormData();
-  
+
   // 기본 데이터 추가
-  formData.append('mentorId', data.mentorId);
-  formData.append('price', data.price.toString());
-  formData.append('introduction', data.introduction);
-  formData.append('career', data.career.toString());
-  formData.append('content', data.content);
-  
+  formData.append("mentorId", data.mentorId);
+  formData.append("price", data.price.toString());
+  formData.append("introduction", data.introduction);
+  formData.append("career", data.career.toString());
+  formData.append("content", data.content);
+
   // 카테고리 ID 배열 추가
   data.categoryIds.forEach((categoryId, index) => {
-    formData.append(`categoryIds[${index}]`, categoryId.toString());
+    formData.append(
+      `categoryIds[${index}]`,
+      categoryId.toString(),
+    );
   });
-  
+
   // 프로필 이미지 추가
   if (data.profileImage) {
-    formData.append('profileImage', data.profileImage);
+    formData.append("profileImage", data.profileImage);
   }
-  
+
   // 자격증 정보 추가
   data.certificateInfos.forEach((cert, index) => {
-    formData.append(`certificateInfos[${index}].type`, cert.type);
-    formData.append(`certificateInfos[${index}].title`, cert.title);
+    formData.append(
+      `certificateInfos[${index}].type`,
+      cert.type,
+    );
+    formData.append(
+      `certificateInfos[${index}].title`,
+      cert.title,
+    );
     if (cert.image) {
-      formData.append(`certificateInfos[${index}].image`, cert.image);
+      formData.append(
+        `certificateInfos[${index}].image`,
+        cert.image,
+      );
     }
   });
 
   try {
     const base = API_ENDPOINTS.MENTORING_CREATE;
     const response = await fetch(base, {
-      method: 'POST',
+      method: "POST",
       headers: getApiHeaders(),
       body: formData,
     });
     await handleApiError(response);
     return await response.json();
   } catch (error) {
-    console.error('멘토링 등록 실패:', error);
+    console.error("멘토링 등록 실패:", error);
     throw error;
   }
 };
@@ -310,18 +407,19 @@ export const deleteMentoring = async (mentoringId: number): Promise<void> => {
 /**
  * 사용자 목록 조회 (멘토링 작성자 선택용)
  */
- export const getUserList = async (): Promise<UserListResponse> => {
+export const getUserList = async (): Promise<UserListResponse> => {
   try {
-    const baseUrl = API_ENDPOINTS.MEMBER_MENTORING_CANDIDATES
+    const baseUrl =
+      API_ENDPOINTS.MEMBER_MENTORING_CANDIDATES;
     const response = await fetch(baseUrl, {
-      method: 'GET',
+      method: "GET",
       headers: getApiHeaders(),
     });
 
     await handleApiError(response);
     return await response.json();
   } catch (error) {
-    console.error('사용자 목록 조회 실패:', error);
+    console.error("사용자 목록 조회 실패:", error);
     throw error;
   }
 };
@@ -331,16 +429,16 @@ export const deleteMentoring = async (mentoringId: number): Promise<void> => {
  */
 export const getCategoryList = async (): Promise<CategoryListResponse> => {
   try {
-    const base = API_ENDPOINTS.CATEGORIES
+    const base = API_ENDPOINTS.CATEGORIES;
     const response = await fetch(base, {
-      method: 'GET',
+      method: "GET",
       headers: getApiHeaders(),
     });
 
     await handleApiError(response);
     return await response.json();
   } catch (error) {
-    console.error('카테고리 목록 조회 실패:', error);
+    console.error("카테고리 목록 조회 실패:", error);
     throw error;
   }
 };
