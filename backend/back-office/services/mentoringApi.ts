@@ -252,7 +252,7 @@ export const fetchMentorings = async (
     return {
       items: (data.content ?? []).map((item) => {
         const parsedId =
-          Number(item.id ?? item.mentoringId ?? item.mentoring_id);
+          Number(item.id);
 
         return {
           ...item,
