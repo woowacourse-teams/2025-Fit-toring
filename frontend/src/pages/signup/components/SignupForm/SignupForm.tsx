@@ -231,10 +231,8 @@ function SignupForm() {
 
   const getVerificationButtonEnabled = () => {
     return (
-      verificationStep === 'requested' ||
-      (verificationStep === 'verified' &&
-        phoneNumberErrorMessage === '' &&
-        verificationCodeValidated)
+      (verificationStep === 'verified' || verificationStep === 'requested') &&
+      verificationCodeValidated
     );
   };
 
