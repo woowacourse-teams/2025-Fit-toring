@@ -9,7 +9,7 @@ public class CookieProvider {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .sameSite("None");
+                .sameSite("Strict");
     }
 
     public static ResponseCookie createCookie(final String name, final String value) {
