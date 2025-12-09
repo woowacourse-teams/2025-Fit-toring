@@ -35,13 +35,14 @@ public class AdminReservationController {
     public ResponseEntity<PageResult<AdminReservationResponse>> findMentoringReservations(
             @Login LoginInfo loginInfo,
             @PathVariable("mentoringId") Long mentoringId,
-            @RequestParam(defaultValue = "1") int page
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
         AdminMentoringReservationDto mentoringReservationGetDto = new AdminMentoringReservationDto(
                 loginInfo.memberId(),
                 mentoringId,
                 page,
-                20
+                size
         );
         PageResult<AdminReservationResponse> responseBody = reservationQueryService.findMentoringReservationsForAdmin(
                 mentoringReservationGetDto
