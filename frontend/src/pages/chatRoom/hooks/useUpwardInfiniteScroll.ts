@@ -54,7 +54,7 @@ const useUpwardInfiniteScroll = ({
         }
       },
       {
-        root: listElRef.current,
+        root: list,
         threshold: 0.1,
         rootMargin: '20px 0px 0px 0px',
       },
