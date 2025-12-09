@@ -19,7 +19,7 @@ export interface MentoringPagingResponse {
 }
 
 export interface MentoringListItemResponse {
-  id: number;
+  mentoringId: number;
   mentorName: string;
   categories: string[];
   price: number;
@@ -168,7 +168,7 @@ const normalizeMentoringDetail = (
 const toSummary = (
   src: MentoringListItemResponse,
 ): MentoringSummary => ({
-  id: src.id,
+  id: src.mentoringId,
   mentorName: src.mentorName,
   categories: src.categories ?? [],
   price: src.price,
@@ -252,7 +252,7 @@ export const fetchMentorings = async (
     return {
       items: (data.content ?? []).map((item) => {
         const parsedId =
-          Number(item.id);
+          Number(item.mentoringId);
 
         return {
           ...item,
