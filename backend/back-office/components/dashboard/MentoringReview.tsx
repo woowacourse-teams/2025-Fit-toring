@@ -42,7 +42,7 @@ import {
   fetchMentoringReviews,
   MentoringReviewListResponse,
   MentoringReview,
-} from "@/services/mentoringApi";
+} from "@/services/reviewApi";
 
 interface MentoringReviewProps {
   mentoringId: number;
@@ -57,7 +57,7 @@ export function MentoringReviewSection({ mentoringId }: MentoringReviewProps) {
 
   // 페이지네이션(프론트 기준)
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const pageSize = 10;
+  const pageSize = 5;
 
   useEffect(() => {
     const load = async () => {
