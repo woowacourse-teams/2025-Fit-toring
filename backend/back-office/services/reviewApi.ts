@@ -6,6 +6,8 @@ import {
   fetchWithTokenRefresh,
 } from "@/services/apiUtils";
 
+type AnyObj = Record<string, any>;
+
 export interface MentoringReview {
     id: number;
     menteeId: number;
@@ -91,4 +93,3 @@ export const deleteReview = async (reviewId: number): Promise<void> => {
       );
     }
   };
-  
