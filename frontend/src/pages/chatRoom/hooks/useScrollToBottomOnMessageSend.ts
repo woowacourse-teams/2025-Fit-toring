@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 
 interface PrevScroll {
   scrollTop: number;
@@ -36,7 +36,7 @@ const useScrollToBottomOnMessageSend = ({
     };
   }, [listElRef]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = listElRef.current;
     const prev = prevScrollRef.current;
 
