@@ -239,14 +239,14 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                     cookie.startsWith("accessToken=;")
                     && cookie.contains("Max-Age=0")
                     && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=None")
+                    && cookie.contains("SameSite=Strict")
                     && cookie.contains("HttpOnly")
                     && cookie.contains("Secure"));
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("refreshToken=;")
                     && cookie.contains("Max-Age=0")
                     && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=None")
+                    && cookie.contains("SameSite=Strict")
                     && cookie.contains("HttpOnly")
                     && cookie.contains("Secure"));
         });
