@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -42,6 +43,7 @@ import {
   fetchMentoringReviews,
   MentoringReviewListResponse,
   MentoringReview,
+  deleteReview,
 } from "@/services/reviewApi";
 
 interface MentoringReviewProps {
@@ -82,12 +84,17 @@ export function MentoringReviewSection({ mentoringId }: MentoringReviewProps) {
     }
   }, [mentoringId]);
 
-  const handleDeleteReviewLocal = (reviewId: number) => {
+  const handleDeleteReview = async (reviewId: number) => {
     if (!reviews) return;
-
+  
+    // 롤백 대비 백업
+    const prevReviews = reviews;
+    const prevPage = currentPage;
+  
+    // 1) UI에서 먼저 제거 (낙관적 업데이트)
     const remaining = reviews.reviewData.filter((r) => r.id !== reviewId);
     const ratingCount = remaining.length;
-
+  
     let ratingAverage = "0";
     if (ratingCount > 0) {
       const total = remaining.reduce(
@@ -96,17 +103,31 @@ export function MentoringReviewSection({ mentoringId }: MentoringReviewProps) {
       );
       ratingAverage = (total / ratingCount).toFixed(1);
     }
-
+  
     setReviews({
       ratingAverage,
       ratingCount,
       reviewData: remaining,
     });
-
-    // 삭제 후 페이지에 리뷰가 없으면 이전 페이지로 당기기
+  
+    // 페이지 자동 보정
     const totalPages = Math.max(1, Math.ceil(ratingCount / pageSize));
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
+    }
+  
+    // 2) 실제 API 호출
+    try {
+      await deleteReview(reviewId);
+      toast.success("리뷰가 삭제되었습니다.");
+    } catch (e) {
+      console.error("리뷰 삭제 실패:", e);
+  
+      // 3) 실패 → rollback
+      setReviews(prevReviews);
+      setCurrentPage(prevPage);
+  
+      toast.error("리뷰 삭제 중 오류가 발생했습니다.");
     }
   };
 
@@ -390,7 +411,7 @@ export function MentoringReviewSection({ mentoringId }: MentoringReviewProps) {
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() =>
-                                    handleDeleteReviewLocal(review.id)
+                                    handleDeleteReview(review.id)
                                   }
                                   className="bg-red-600 hover:bg-red-700"
                                 >

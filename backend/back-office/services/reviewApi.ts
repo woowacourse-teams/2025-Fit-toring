@@ -68,3 +68,27 @@ export const fetchMentoringReviews = async (
     return { ratingAverage, ratingCount, reviewData };
   };
   
+  /**
+ * 리뷰 삭제 API
+ */
+export const deleteReview = async (reviewId: number): Promise<void> => {
+    if (!reviewId || Number.isNaN(reviewId)) {
+      throw new Error("유효하지 않은 리뷰 ID입니다.");
+    }
+  
+    const url = joinUrl(API_ENDPOINTS.MENTORING_REVIEW_DELETE, reviewId);
+  
+    const res = await fetchWithTokenRefresh(url, {
+      method: "DELETE",
+      ...getDefaultFetchOptions(),
+      headers: getApiHeaders(),
+    });
+  
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(
+        `리뷰 삭제 실패: ${res.status} ${res.statusText} ${text}`,
+      );
+    }
+  };
+  
