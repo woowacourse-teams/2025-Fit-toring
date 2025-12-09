@@ -8,15 +8,13 @@ import type { Message } from '../../types/message';
 
 interface ChatContentProps {
   messages: Message[];
-  pageFirstRef: (node: HTMLDivElement | null) => void;
-  listRef: (node: HTMLDivElement | null) => void;
+  pageFirstElRef: React.RefObject<HTMLDivElement | null>;
   listElRef: React.RefObject<HTMLDivElement | null>;
 }
 
 function ChatContent({
   messages,
-  pageFirstRef,
-  listRef,
+  pageFirstElRef,
   listElRef,
 }: ChatContentProps) {
   const storedData = localStorage.getItem('memberId');
@@ -35,15 +33,15 @@ function ChatContent({
     if (isAtBottom) {
       element.scrollTop = element.scrollHeight;
     }
-  }, [listElRef, listRef, messages.length]);
+  }, [listElRef, messages.length]);
 
   if (!memberId) {
     return null; // TODO: 에러 UI로 변경할 예정
   }
 
   return (
-    <S_Container ref={listRef}>
-      <div ref={pageFirstRef} style={{ height: 1, flex: '0 0 1px' }} />
+    <S_Container ref={listElRef}>
+      <div ref={pageFirstElRef} style={{ height: 1, flex: '0 0 1px' }} />
 
       <S_BubbleList>
         {messages.map(
