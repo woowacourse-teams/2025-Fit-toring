@@ -1,7 +1,6 @@
 package fittoring.application.member.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
@@ -21,6 +20,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
-        assertSoftly(softAssertions -> {
+        SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isNull();
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
@@ -72,7 +72,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
-        assertSoftly(softAssertions -> {
+        SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isNull();
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
@@ -103,7 +103,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
 
         // then
-        assertSoftly(softAssertions -> {
+        SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isEqualTo(image.getUrl());
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
@@ -122,7 +122,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(member.getId());
 
         // then
-        assertSoftly(softAssertions -> {
+        SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
             softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
@@ -165,7 +165,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         Member actual = memberRepository.findById(member.getId())
                 .orElse(null);
 
-        assertSoftly(softly -> {
+        SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(actual).isNotNull();
             softly.assertThat(actual.getName()).isNotEqualTo(rawName);
             softly.assertThat(actual.getGender()).isNotEqualTo(rawGender);
@@ -209,7 +209,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         Member actual = memberRepository.findById(member.getId())
                 .orElse(null);
 
-        assertSoftly(softly -> {
+        SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(actual).isNotNull();
             softly.assertThat(actual.getName()).isNotEqualTo(rawName);
             softly.assertThat(actual.getGender()).isEqualTo(rawGender);
