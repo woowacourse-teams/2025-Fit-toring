@@ -125,18 +125,18 @@ public class AuthService {
                 String.valueOf(kakaoId)
         );
         if (memberOauth.isPresent()) {
-            return allowOauthSignIn(memberOauth);
+            return allowOauthLogin(memberOauth);
         }
-        return allowOauthSignUp(kakaoId);
+        return allowOauthRegistration(kakaoId);
     }
 
-    private LoginInfoDto allowOauthSignIn(Optional<MemberOauth> memberOauth) {
+    private LoginInfoDto allowOauthLogin(Optional<MemberOauth> memberOauth) {
         Member member = memberOauth.get().getMember();
         AuthTokenDto authTokenDto = getAuthorizedTokenResponse(member);
         return new LoginInfoDto(member.getId(), authTokenDto);
     }
 
-    private LoginInfoDto allowOauthSignUp(Long kakaoId) {
+    private LoginInfoDto allowOauthRegistration(Long kakaoId) {
         String oauthSignUpToken = jwtProvider.createOauthSignUpToken(String.valueOf(kakaoId));
         AuthTokenDto authTokenDto = new AuthTokenDto(null, null, oauthSignUpToken);
         return new LoginInfoDto(null, authTokenDto);
