@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
 @RestController
@@ -112,7 +114,8 @@ public class AuthController {
     }
 
     @GetMapping("kakao/login")
-    public void kakaoLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Void> redirectKakaoAuth(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         // state 난수 생성
         String state = UUID.randomUUID().toString();
 
@@ -120,14 +123,15 @@ public class AuthController {
         request.getSession().setAttribute(KAKAO_STATE, state);
 
         // redirect url 구성
-        String url = "https://kauth.kakao.com/oauth/authorize" +
-                "?client_id=" + kakaoClientUrl +
-                "&redirect_uri=" + kakaoRedirectUrl +
-                "&state=" + URLEncoder.encode(state, StandardCharsets.UTF_8) +
-                "&response_type=code";
+        URI url = UriComponentsBuilder.fromUriString("https://kauth.kakao.com/oauth/authorize")
+                .queryParam("client_id", kakaoClientUrl)
+                .queryParam("redirect_uri", kakaoRedirectUrl)
+                .queryParam("state", URLEncoder.encode(state, StandardCharsets.UTF_8))
+                .build()
+                .toUri();
 
         // redirect
-        response.sendRedirect(url);
+        return ResponseEntity.status(HttpStatus.FOUND).location(url).build();
     }
 
     @GetMapping("/kakao/callback")
