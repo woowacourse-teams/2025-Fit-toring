@@ -18,6 +18,15 @@ function DetailIntroduce({
   detailIntroduce,
   detailErrorMessage,
 }: DetailIntroduceProps) {
+  const handleIntroduceChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+
+    if (value.length > 5000) {
+      return;
+    }
+
+    onDetailIntroduceChange({ content: e.target.value });
+  };
   return (
     <section>
       <TitleSeparator>상세 소개</TitleSeparator>
@@ -26,9 +35,7 @@ function DetailIntroduce({
           <S_Textarea
             placeholder="멘토링 경험, 전문성, 제공하는 서비스 등을 자세히 소개해주세요"
             id="content"
-            onChange={(e) =>
-              onDetailIntroduceChange({ content: e.target.value })
-            }
+            onChange={handleIntroduceChange}
             value={detailIntroduce}
             required
           />
