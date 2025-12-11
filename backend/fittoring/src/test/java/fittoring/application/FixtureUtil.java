@@ -3,6 +3,7 @@ package fittoring.application;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
@@ -20,7 +21,7 @@ public class FixtureUtil {
     public static Member getTestMentee() {
         return new Member(
                 "menteeId",
-                "MALE",
+                Gender.MALE,
                 "이름",
                 new Phone("010-1234-5670"),
                 Password.from("password"));
@@ -30,7 +31,7 @@ public class FixtureUtil {
         String phoneSuffix = String.format("%02d", i);
         return new Member(
                 "menteeId" + i,
-                "MALE",
+                Gender.MALE,
                 "이름",
                 new Phone("010-1234-" + String.format("%04d", i)),
                 Password.from("password"));
@@ -39,7 +40,7 @@ public class FixtureUtil {
     public static Member getTestMentor() {
         return new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "멘토이름",
                 new Phone("010-1234-5680"),
                 Password.from("password"),
@@ -51,7 +52,7 @@ public class FixtureUtil {
         String phoneSuffix = String.format("%02d", i);
         return new Member(
                 "mentorId" + i,
-                "MALE",
+                Gender.MALE,
                 "멘토이름",
                 new Phone("010-1234-" + String.format("%04d", i)),
                 Password.from("password"),
@@ -62,7 +63,7 @@ public class FixtureUtil {
     public static Member getTestAdmin() {
         return new Member(
                 "adminId",
-                "FEMALE",
+                Gender.FEMALE,
                 "관리자",
                 new Phone("010-9876-5432"),
                 Password.from("password"),

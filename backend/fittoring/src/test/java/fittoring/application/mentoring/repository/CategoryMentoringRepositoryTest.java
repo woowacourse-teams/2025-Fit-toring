@@ -6,6 +6,7 @@ import fittoring.RepositoryTestSupport;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
@@ -34,7 +35,7 @@ class CategoryMentoringRepositoryTest extends RepositoryTestSupport {
     void softDelete() {
         //given
         Member savedMentor = memberRepository.save(
-                new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
+                new Member("id1", Gender.MALE, "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
         );
 
         Mentoring savedMentoring = mentoringRepository.save(

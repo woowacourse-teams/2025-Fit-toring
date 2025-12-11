@@ -11,6 +11,7 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.presentation.dto.request.ReviewCreateRequest;
 import fittoring.application.review.presentation.dto.request.ReviewModifyRequest;
 import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
@@ -48,14 +49,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 password
@@ -109,14 +110,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -165,14 +166,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 password
@@ -201,7 +202,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         );
         Member anotherMember = memberRepository.save(new Member(
                 "loginId2",
-                "MALE",
+                Gender.MALE,
                 "name2",
                 new Phone("010-1234-5679"),
                 Password.from("password")
@@ -230,14 +231,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 password
@@ -297,14 +298,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 password
@@ -354,21 +355,21 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor1 = memberRepository.save(new Member(
                 "mentor1Id",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
         Member mentor2 = memberRepository.save(new Member(
                 "mentor2Id",
-                "MALE",
+                Gender.MALE,
                 "박멘토",
                 new Phone("010-2222-3333"),
                 Password.from("password")
@@ -434,7 +435,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
@@ -448,14 +449,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee1 = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentee2 = memberRepository.save(new Member(
                 "loginId2",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5670"),
                 Password.from("password")
@@ -507,14 +508,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -565,14 +566,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -622,14 +623,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -683,14 +684,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
@@ -716,7 +717,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member invalidMember = memberRepository.save(new Member(
                 "loginId2",
-                "MALE",
+                Gender.MALE,
                 "name2",
                 new Phone("010-1234-5679"),
                 Password.from("password")
@@ -747,14 +748,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "남",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
@@ -799,7 +800,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -822,14 +823,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
@@ -855,7 +856,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member invalidMember = memberRepository.save(new Member(
                 "loginId2",
-                "MALE",
+                Gender.MALE,
                 "name2",
                 new Phone("010-1234-5679"),
                 Password.from("password")
