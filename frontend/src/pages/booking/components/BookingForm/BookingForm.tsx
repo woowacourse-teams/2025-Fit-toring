@@ -27,29 +27,18 @@ function BookingForm({
     phoneNumber: '',
   });
 
-  const [errored, setErrored] = useState({
-    textarea: false,
-  });
-
   const detailErrorMessage = validateTextarea(counselContent);
 
   const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setCounselContent(e.target.value);
-    if (!errored.textarea && e.target.value.length > 5000) {
-      setErrored((prev) => ({
-        ...prev,
-        textarea: true,
-      }));
+    const { value } = e.target;
+
+    if (value.length > 5000) {
+      return;
     }
 
-    if (errored.textarea && e.target.value.length <= 5000) {
-      setErrored((prev) => ({
-        ...prev,
-        textarea: false,
-      }));
-    }
+    setCounselContent(value);
   };
 
   const handleBooking = async () => {
@@ -81,7 +70,9 @@ function BookingForm({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (detailErrorMessage) {return;}
+    if (detailErrorMessage) {
+      return;
+    }
 
     handleBooking();
   };
@@ -115,7 +106,6 @@ function BookingForm({
             placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
 더 정확한 조언을 받을 수 있습니다."
             onChange={handleCounselContentChange}
-            errored={errored.textarea}
             value={counselContent}
           />
         </FormField>
@@ -168,13 +158,11 @@ const S_UserInfoText = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const S_Textarea = styled.textarea<{ errored: boolean }>`
+const S_Textarea = styled.textarea`
   width: 100%;
   height: 5.8rem;
   padding: 0.7rem 1.1rem;
-  border: ${({ theme, errored }) =>
-      errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
-    1px solid;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
   border-radius: 0.7rem;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
