@@ -101,13 +101,18 @@ function BookingForm({
           label="상담 내용(선택사항)"
           errorMessage={detailErrorMessage}
         >
-          <S_Textarea
-            id="details"
-            placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
+          <S_TextareaWrapper>
+            <S_Textarea
+              id="details"
+              placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
 더 정확한 조언을 받을 수 있습니다."
-            onChange={handleCounselContentChange}
-            value={counselContent}
-          />
+              onChange={handleCounselContentChange}
+              value={counselContent}
+            />
+            <S_TextAreaCounter>
+              {`(${counselContent.length}/5000)`}
+            </S_TextAreaCounter>
+          </S_TextareaWrapper>
         </FormField>
       </S_UserInfoWrapper>
 
@@ -158,19 +163,42 @@ const S_UserInfoText = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const S_Textarea = styled.textarea`
+const S_TextareaWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+
   width: 100%;
-  height: 5.8rem;
-  padding: 0.7rem 1.1rem;
+  height: 8rem;
+  padding-bottom: 0.7rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
   border-radius: 0.7rem;
-
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
-  resize: none;
 
   :focus {
     outline: none;
   }
 
   color: ${({ theme }) => theme.FONT.B01};
+`;
+
+const S_Textarea = styled.textarea`
+  width: 100%;
+  height: 100%;
+  padding: 0.7rem 1.1rem;
+  border: none;
+  border-radius: 0.7rem;
+  resize: none;
+
+  :focus {
+    outline: none;
+  }
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+`;
+
+const S_TextAreaCounter = styled.p`
+  margin-right: 1.1rem;
+
+  color: ${({ theme }) => theme.FONT.G01};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  text-align: right;
 `;
