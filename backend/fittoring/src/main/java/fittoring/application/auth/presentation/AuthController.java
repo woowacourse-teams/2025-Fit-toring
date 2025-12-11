@@ -2,19 +2,13 @@ package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieProvider;
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignInRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
-import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.request.*;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
 import fittoring.application.auth.service.PhoneVerificationFacadeService;
 import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
-import fittoring.application.exception.OauthLoginException;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
@@ -22,23 +16,20 @@ import fittoring.domain.model.MemberOauth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -114,7 +105,7 @@ public class AuthController {
     }
 
     @GetMapping("kakao/login")
-    public void kakaoLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Void> redirectKakaoAuth(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // state 난수 생성
         String state = UUID.randomUUID().toString();
 
@@ -122,14 +113,15 @@ public class AuthController {
         request.getSession().setAttribute(KAKAO_STATE, state);
 
         // redirect url 구성
-        String url = "https://kauth.kakao.com/oauth/authorize" +
-                "?client_id=" + kakaoClientUrl +
-                "&redirect_uri=" + kakaoRedirectUrl +
-                "&state=" + URLEncoder.encode(state, StandardCharsets.UTF_8) +
-                "&response_type=code";
+        URI url = UriComponentsBuilder.fromUriString("https://kauth.kakao.com/oauth/authorize")
+                .queryParam("client_id", kakaoClientUrl)
+                .queryParam("redirect_uri", kakaoRedirectUrl)
+                .queryParam("state", URLEncoder.encode(state, StandardCharsets.UTF_8))
+                .build()
+                .toUri();
 
         // redirect
-        response.sendRedirect(url);
+        return ResponseEntity.status(HttpStatus.FOUND).location(url).build();
     }
 
     @GetMapping("/kakao/callback")
@@ -169,7 +161,7 @@ public class AuthController {
         request.getSession().removeAttribute(KAKAO_STATE);
 
         // state 검증
-        if(savedState==null || !savedState.equals(state)){
+        if (savedState == null || !savedState.equals(state)) {
             throw new IllegalStateException("로그인 세션 불일치 : state 값이 일치하지 않습니다.");
         }
     }
