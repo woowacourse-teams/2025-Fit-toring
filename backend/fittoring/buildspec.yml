@@ -4,13 +4,14 @@ phases:
   install:
     commands:
       - echo "Docker가 사전 설치된 표준 빌드 이미지를 사용합니다."
+      - echo "buildx 빌드 활성화 중..."
+      - docker buildx create --use
 
   pre_build:
     commands:
-      - "echo 'Docker Hub에 로그인합니다...'"
-      - "echo \"$DOCKERHUB_TOKEN\" | docker login --username \"$DOCKERHUB_USERNAME\" --password-stdin"
-      - "echo '/backend/fittoring 디렉터리로 이동합니다...'"
-      - "cd backend/fittoring"
+      - echo "Docker Hub에 로그인합니다..."
+      - echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+      - cd backend/fittoring
 
   build:
     commands:
@@ -24,21 +25,18 @@ phases:
 
       - "IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)"
       - "REPOSITORY_URI=\"$DOCKERHUB_USERNAME/fittoring\""
-      - "echo 'Docker 이미지를 빌드합니다... Tag:' $IMAGE_TAG"
-      - "docker build -t $REPOSITORY_URI:$IMAGE_TAG ."
+      - "echo 'Docker 이미지를 ARM64용으로 빌드하고 푸시합니다... Tag:' $IMAGE_TAG"
+      - "docker buildx build --platform linux/arm64 -t $REPOSITORY_URI:$IMAGE_TAG --push ."
 
   post_build:
     commands:
-      - "echo '빌드된 이미지를 Docker Hub로 Push합니다...'"
-      - "docker push $REPOSITORY_URI:$IMAGE_TAG"
-
-      - "echo '배포에 사용할 image_tag.txt 파일을 생성합니다...'"
-      - "echo $IMAGE_TAG > deploysettings/image_tag.txt"
+      - echo "배포용 이미지 태그 저장"
+      - echo $IMAGE_TAG > image_tag.txt
 
 artifacts:
-  base-directory: backend/fittoring/deploysettings
+  base-directory: backend/fittoring
   files:
     - appspec.yml
     - docker-compose.yml
     - image_tag.txt
-    - scripts/**/*
+    - deployscripts/**/*

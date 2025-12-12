@@ -12,6 +12,7 @@ import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.RefreshToken;
 import org.assertj.core.api.SoftAssertions;
@@ -45,7 +46,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         SignUpRequest request = new SignUpRequest(
                 "loginId",
                 "이름",
-                "MALE",
+                Gender.MALE,
                 "010-1234-5678",
                 password);
 

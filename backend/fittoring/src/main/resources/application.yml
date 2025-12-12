@@ -94,7 +94,7 @@ kakao:
 aws:
   s3:
     region: ap-northeast-2
-    bucket-name: techcourse-project-2025
+    bucket-name: fittoring-s3
     project-prefix: fit-toring/
 
 image-session:

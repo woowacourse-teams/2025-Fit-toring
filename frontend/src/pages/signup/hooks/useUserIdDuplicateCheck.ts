@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useMutation } from '@tanstack/react-query';
+
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postValidateId } from '../apis/postValidateId';
 
@@ -23,17 +25,15 @@ const useUserIdDuplicateCheck = ({
     shouldBlockSubmit: shouldBlockSubmitByUserId,
   } = useSubmitGuardWithConfirm(userId);
 
-  const handleDuplicateConfirmClick = async () => {
-    setDuplicateError(false);
-
-    try {
-      const response = await postValidateId(userId);
-
+  const { mutate: validateIdMutate } = useMutation({
+    mutationFn: postValidateId,
+    onSuccess: (response) => {
       if (response.status === 200) {
         confirmUserId();
         setDuplicateChecked(true);
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error('아이디 중복 확인 에러:', error);
       setDuplicateError(true);
 
@@ -43,7 +43,13 @@ const useUserIdDuplicateCheck = ({
         feature: 'signup',
         step: 'userId-duplicate-validate',
       });
-    }
+    },
+  });
+
+  const handleDuplicateConfirmClick = async () => {
+    setDuplicateError(false);
+
+    validateIdMutate(userId);
   };
 
   const resetDuplicateCheck = () => {
