@@ -218,7 +218,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     void registerOauthMember() {
         // given
         String phoneNumber = "010-1234-5678";
-        OauthSignUpRequest request = new OauthSignUpRequest("이름", "MALE", phoneNumber);
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, phoneNumber);
         willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
 
         // when
@@ -238,7 +238,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         // given
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
-        OauthSignUpRequest request = new OauthSignUpRequest("이름", "MALE", mentee.getPhoneNumber());
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, mentee.getPhoneNumber());
         willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
 
         // when
