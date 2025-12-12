@@ -2,12 +2,7 @@ package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieProvider;
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignInRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
-import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.request.*;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
 import fittoring.application.auth.service.PhoneVerificationFacadeService;
@@ -15,10 +10,10 @@ import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.OauthLoginException;
+import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.domain.model.MemberOauth;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -137,9 +127,9 @@ public class AuthController {
             @RequestBody @Valid OauthSignUpRequest request,
             @CookieValue("oauthSignUpToken") String oauthSignUpToken,
             HttpServletResponse httpResponse) {
-        MemberOauth memberOauth = authService.registerOauthMember(request, oauthSignUpToken);
-        LoginResponse response = new LoginResponse(memberOauth.getMemberId());
-        AuthTokenDto authTokenDto = authService.loginOauthMember(memberOauth);
+        RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, oauthSignUpToken);
+        LoginResponse response = new LoginResponse(registerOAuthDto.memberId());
+        AuthTokenDto authTokenDto = registerOAuthDto.authTokenDto();
         CookieWriter.clearCookies(httpResponse);
         CookieWriter.write(httpResponse, authTokenDto);
         return ResponseEntity.status(HttpStatus.CREATED)

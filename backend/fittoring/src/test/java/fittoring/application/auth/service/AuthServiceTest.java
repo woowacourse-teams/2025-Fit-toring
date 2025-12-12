@@ -1,11 +1,5 @@
 package fittoring.application.auth.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.willReturn;
-
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
@@ -17,14 +11,19 @@ import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.RefreshToken;
-import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willReturn;
 
 class AuthServiceTest extends IntegrationTestSupport {
 
@@ -222,12 +221,12 @@ class AuthServiceTest extends IntegrationTestSupport {
         willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
 
         // when
-        MemberOauth memberOauth = authService.registerOauthMember(request, "validOauthSignUpToken");
+        RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");
 
         // then
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(memberOauth).isNotNull();
-                    assertThat(memberOauth.getMember().getPhoneNumber()).isEqualTo(phoneNumber);
+                    assertThat(registerOAuthDto).isNotNull();
+                    assertThat(memberRepository.findById(registerOAuthDto.memberId()).isPresent()).isTrue();
                 }
         );
     }
@@ -242,14 +241,12 @@ class AuthServiceTest extends IntegrationTestSupport {
         willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
 
         // when
-        MemberOauth memberOauth = authService.registerOauthMember(request, "validOauthSignUpToken");
+        RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");
 
         // then
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(memberOauth).isNotNull();
-                    assertThat(memberOauth.getMember().getPhoneNumber()).isEqualTo(mentee.getPhoneNumber());
-                    assertThat(memberOauth.getMember().getName()).isEqualTo(mentee.getName());
-                    assertThat(memberOauth.getMember().getLoginId()).isEqualTo(mentee.getLoginId());
+                    assertThat(registerOAuthDto).isNotNull();
+                    assertThat(memberRepository.findById(registerOAuthDto.memberId()).isPresent()).isTrue();
                 }
         );
     }
