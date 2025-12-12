@@ -1,6 +1,8 @@
 package fittoring.application.auth.presentation.dto.request;
 
+import fittoring.domain.model.Gender;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record SignUpRequest(
@@ -10,8 +12,8 @@ public record SignUpRequest(
         @Size(min = 2, max = 5, message = "이름은 2자 이상 5자 이하로 입력해주세요.")
         @NotBlank
         String name,
-        @NotBlank
-        String gender,
+        @NotNull
+        Gender gender,
         @PhoneNumber
         @NotBlank
         String phone,

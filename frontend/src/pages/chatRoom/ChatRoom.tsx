@@ -18,6 +18,7 @@ import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
@@ -71,7 +72,7 @@ function ChatRoom() {
     hasNextPage,
   } = useInfiniteChatRoomMessage(Number(chatRoomId!));
 
-  const listElRef = useRef<HTMLDivElement>(null);
+  const listElRef = useRef<HTMLDivElement | null>(null);
   const initialScrolledRef = useRef(false);
   const ioReadyRef = useRef(false);
 
@@ -122,6 +123,46 @@ function ChatRoom() {
     }
   }, [listElRef, messages]);
 
+  const { capturePrevScroll } = useScrollToBottomOnMessageSend({
+    messageCount: messages.length,
+    listElRef,
+  });
+
+  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (message === '') {
+      return;
+    }
+
+    capturePrevScroll();
+
+    const tempId = Date.now();
+
+    const optimisticMsg = {
+      senderId: memberId,
+      content: message,
+      createdAt: new Date().toString(),
+      chatRoomId: Number(chatRoomId),
+      chatMessageId: tempId,
+      tempId,
+      status: 'pending' as const,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessage('');
+
+    const client = stompClientRef.current;
+    if (!client || !client.connected || memberId === null) {
+      return;
+    }
+
+    client.publish({
+      destination: `/app/chatroom/${chatRoomId}`,
+      body: JSON.stringify({ content: message, tempId }),
+    });
+  };
+
   useEffect(() => {
     if (chatRoomMessage) {
       setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
@@ -150,6 +191,8 @@ function ChatRoom() {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
           (message: IMessage) => {
+            capturePrevScroll();
+
             const parsedMessage = JSON.parse(message.body);
 
             setMessages((prev) => {
@@ -189,40 +232,7 @@ function ChatRoom() {
     return () => {
       client.deactivate();
     };
-  }, [chatRoomId]);
-
-  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (message === '') {
-      return;
-    }
-
-    const tempId = Date.now();
-
-    const optimisticMsg = {
-      senderId: memberId,
-      content: message,
-      createdAt: new Date().toString(),
-      chatRoomId: Number(chatRoomId),
-      chatMessageId: tempId,
-      tempId,
-      status: 'pending' as const,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setMessage('');
-
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
-
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({ content: message, tempId }),
-    });
-  };
+  }, [capturePrevScroll, chatRoomId]);
 
   if (!memberId) {
     return <div>로그인 후 이용 가능합니다.</div>;

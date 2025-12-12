@@ -1,9 +1,12 @@
 package fittoring.application.member.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.image.service.ImageService;
+import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.member.repository.MemberRepository;
@@ -15,6 +18,7 @@ import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -25,8 +29,7 @@ public class MemberService {
     private final MentoringRepository mentoringRepository;
 
     public MyInfoResponse getMemberInfo(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        Member member = getMember(memberId);
         if (MemberRole.isMentee(member.getRole())) {
             return MyInfoResponse.from(member);
         }
@@ -49,18 +52,56 @@ public class MemberService {
     }
 
     public MyInfoSummaryResponse getMemberInfoSummary(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        Member member = getMember(memberId);
         return MyInfoSummaryResponse.of(member);
     }
 
     public boolean getAdminMemberActiveStatus(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+        Member member = getMember(memberId);
         if (member.isNotAdmin()) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
         return true;
     }
 
+    @Transactional
+    public void updateMemberInfo(Long memberId, MemberInfoUpdateRequest request) {
+        if (isEmptyRequest(request)) {
+            throw new EmptyRequestException(BusinessErrorMessage.EMPTY_REQUEST.getMessage());
+        }
+
+        Member member = getMember(memberId);
+        if (request.name() != null) {
+            member.updateName(request.name());
+        }
+
+        if (request.gender() != null) {
+            member.updateGender(request.gender());
+        }
+
+        if (request.phoneNumber() != null) {
+            validateDuplicatePhoneNumber(request);
+            member.updatePhoneNumber(request.phoneNumber());
+        }
+
+        if (request.password() != null) {
+            member.updatePassword(request.password());
+        }
+    }
+
+    private boolean isEmptyRequest(MemberInfoUpdateRequest request) {
+        return request.name() == null && request.gender() == null
+               && request.phoneNumber() == null && request.password() == null;
+    }
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+    }
+
+    private void validateDuplicatePhoneNumber(MemberInfoUpdateRequest request) {
+        if (memberRepository.existsByPhone_Number(request.phoneNumber())) {
+            throw new DuplicatePhoneException(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
+        }
+    }
 }
