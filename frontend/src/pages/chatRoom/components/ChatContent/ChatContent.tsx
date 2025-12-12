@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
@@ -20,20 +18,6 @@ function ChatContent({
   const storedData = localStorage.getItem('memberId');
   const parsedData = storedData ? JSON.parse(storedData) : null;
   const memberId = parsedData ? parsedData.memberId : null;
-
-  useEffect(() => {
-    const element = listElRef.current;
-    if (!element) {
-      return;
-    }
-
-    const isAtBottom =
-      element.scrollHeight - element.scrollTop - element.clientHeight < 50;
-
-    if (isAtBottom) {
-      element.scrollTop = element.scrollHeight;
-    }
-  }, [listElRef, messages.length]);
 
   if (!memberId) {
     return null; // TODO: 에러 UI로 변경할 예정

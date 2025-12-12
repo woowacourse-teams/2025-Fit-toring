@@ -29,6 +29,6 @@ public class CookieProvider {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .sameSite("None");
+                .sameSite("Strict");
     }
 }

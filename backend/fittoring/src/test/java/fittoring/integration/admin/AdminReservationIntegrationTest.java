@@ -7,6 +7,7 @@ import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
@@ -44,7 +45,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member admin = memberRepository.save(new Member(
                 "adminId",
-                "MALE",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-1111-2222"),
                 Password.from("password"),
@@ -52,7 +53,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "아이유",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -67,7 +68,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee1 = memberRepository.save(new Member(
                 "menteeId1",
-                "MALE",
+                Gender.MALE,
                 "김멘티",
                 new Phone("010-1234-5679"),
                 Password.from("password"),
@@ -75,7 +76,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee2 = memberRepository.save(new Member(
                 "menteeId2",
-                "MALE",
+                Gender.MALE,
                 "박멘티",
                 new Phone("010-1234-5670"),
                 Password.from("password"),
@@ -115,7 +116,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member normalMember = memberRepository.save(new Member(
                 "adminId",
-                "MALE",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-1111-2222"),
                 Password.from("password"),
@@ -123,7 +124,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "아이유",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -158,7 +159,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member admin = memberRepository.save(new Member(
                 "adminId",
-                "MALE",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-1111-2222"),
                 Password.from("password"),
@@ -166,7 +167,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "고윤하",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -181,7 +182,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee = memberRepository.save(new Member(
                 "menteeId1",
-                "MALE",
+                Gender.MALE,
                 "김멘티",
                 new Phone("010-1234-5679"),
                 Password.from("password"),
@@ -219,7 +220,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member admin = memberRepository.save(new Member(
                 "adminId",
-                "MALE",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-1111-2222"),
                 Password.from("password"),
@@ -227,7 +228,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "최유리",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -242,7 +243,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee = memberRepository.save(new Member(
                 "menteeId1",
-                "MALE",
+                Gender.MALE,
                 "김멘티",
                 new Phone("010-1234-5679"),
                 Password.from("password"),

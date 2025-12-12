@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.RepositoryTestSupport;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
@@ -22,7 +23,7 @@ class MemberRepositoryTest extends RepositoryTestSupport {
     void findAllDeleted() {
         //given
         Member savedMember = memberRepository.save(
-                new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
+                new Member("id1", Gender.MALE, "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
         );
 
         memberRepository.delete(savedMember);
@@ -40,7 +41,7 @@ class MemberRepositoryTest extends RepositoryTestSupport {
     void softDelete() {
         //given
         Member savedMember = memberRepository.save(
-                new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
+                new Member("id1", Gender.MALE, "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
         );
 
         //when
