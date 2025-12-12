@@ -1,5 +1,10 @@
 import { API_ENDPOINTS, BASE_URL } from "@/constants/config";
-import { getApiHeaders, getDefaultFetchOptions, fetchWithTokenRefresh, joinUrl } from "@/services/apiUtils";
+import {
+  getApiHeaders,
+  getDefaultFetchOptions,
+  fetchWithTokenRefresh,
+  joinUrl,
+} from "@/services/apiUtils";
 
 export interface ReservationItemResponse {
   reservationId: number;
@@ -7,6 +12,14 @@ export interface ReservationItemResponse {
   createdAt: string;
   status: "PENDING" | "APPROVED" | "REJECTED" | "COMPLETE";
   content: string;
+}
+
+export interface ReservationPageResponse {
+  content: ReservationItemResponse[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
 }
 
 export interface Reservation {
@@ -25,19 +38,24 @@ const toReservation = (src: ReservationItemResponse): Reservation => ({
   content: src.content,
 });
 
-const RESV_BASE =
-  (API_ENDPOINTS as any).MENTORING_RESERVATION_PREFIX ??
-  (API_ENDPOINTS as any).MENTORING_RESERVATION_PRIFIX ??
-  [BASE_URL.replace(/\/+$/, ""), "admin", "mentorings"].join("/");
-
 /**
- * 예약 목록 조회
- * GET /admin/mentorings/{mentoringId}/reservations
+ * 예약 목록 조회 (서버 페이지네이션 적용)
  */
-export const fetchReservations = async (mentoringId: number): Promise<Reservation[]> => {
+export const fetchReservations = async (
+  mentoringId: number,
+  page: number,
+  size: number
+): Promise<{
+  items: Reservation[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+}> => {
   try {
     const base = (API_ENDPOINTS as any).ADMIN_MENTORING ?? "/admin/mentorings";
-    const url = joinUrl(base, mentoringId, "reservations");
+
+    const url = `${joinUrl(base, mentoringId, "reservations")}?page=${page}&size=${size}`;
 
     const res = await fetchWithTokenRefresh(url, {
       method: "GET",
@@ -46,11 +64,20 @@ export const fetchReservations = async (mentoringId: number): Promise<Reservatio
     });
 
     if (!res.ok) {
-      throw new Error(`예약 목록 조회 실패: ${res.status} ${res.statusText}`);
+      throw new Error(
+        `예약 목록 조회 실패: ${res.status} ${res.statusText}`
+      );
     }
 
-    const data: ReservationItemResponse[] = await res.json();
-    return (Array.isArray(data) ? data : []).map(toReservation);
+    const json = (await res.json()) as ReservationPageResponse;
+
+    return {
+      items: json.content.map(toReservation),
+      page: json.page,
+      size: json.size,
+      total: json.total,
+      totalPages: json.totalPages,
+    };
   } catch (e) {
     console.error("예약 목록 조회 실패:", e);
     throw e;
@@ -58,7 +85,7 @@ export const fetchReservations = async (mentoringId: number): Promise<Reservatio
 };
 
 /**
- * 예약 항목 수정
+ * 예약 상태 변경
  */
 export type ReservationStatus = Reservation["status"];
 
@@ -66,7 +93,11 @@ export const fetchUpdateStatusReservation = async (
   reservationId: number,
   status: ReservationStatus
 ): Promise<void> => {
-  const url = joinUrl(RESV_BASE, reservationId, "status");
+  const base =
+    (API_ENDPOINTS as any).MENTORING_RESERVATION_PREFIX ??
+    [BASE_URL.replace(/\/$/, ""), "admin", "reservations"].join("/");
+
+  const url = joinUrl(base, reservationId, "status");
 
   const res = await fetchWithTokenRefresh(url, {
     method: "PATCH",
@@ -75,18 +106,24 @@ export const fetchUpdateStatusReservation = async (
     body: JSON.stringify({ status }),
   });
 
-  if (!(res.status === 200 || res.ok)) {
-    console.warn(`예약 상태 수정 실패: ${res.status} ${res.statusText}`);
+  if (!(res.ok || res.status === 200)) {
+    console.warn(
+      `예약 상태 수정 실패: ${res.status} ${res.statusText}`
+    );
   }
 };
 
 /**
- * 예약 항목 삭제
+ * 예약 삭제
  */
- export const fetchDeleteReservation = async (
+export const fetchDeleteReservation = async (
   reservationId: number
 ): Promise<void> => {
-  const url = joinUrl(RESV_BASE, reservationId);
+  const base =
+    (API_ENDPOINTS as any).MENTORING_RESERVATION_PREFIX ??
+    [BASE_URL.replace(/\/$/, ""), "admin", "reservations"].join("/");
+
+  const url = joinUrl(base, reservationId);
 
   const res = await fetchWithTokenRefresh(url, {
     method: "DELETE",
