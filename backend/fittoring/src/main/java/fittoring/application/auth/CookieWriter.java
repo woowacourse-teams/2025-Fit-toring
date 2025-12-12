@@ -20,6 +20,11 @@ public class CookieWriter {
         response.addHeader(HttpHeaders.SET_COOKIE, refreshToken.toString());
     }
 
+    public void writeOauthSignUpToken(HttpServletResponse response, String oauthSignUpToken) {
+        ResponseCookie cookie = cookieProvider.createCookie("oauthSignUpToken", oauthSignUpToken);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
     public void clearCookies(HttpServletResponse response) {
         ResponseCookie accessToken = cookieProvider.clearCookie("accessToken");
         ResponseCookie refreshToken = cookieProvider.clearCookie("refreshToken");

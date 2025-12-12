@@ -1,6 +1,5 @@
 package fittoring.application.auth.presentation;
 
-import fittoring.application.auth.CookieProvider;
 import fittoring.application.auth.CookieWriter;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
@@ -22,9 +21,7 @@ import fittoring.domain.model.MemberOauth;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +39,7 @@ public class AuthController {
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
+    private final CookieWriter cookieWriter;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
@@ -54,7 +52,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid SignInRequest request,
                                                HttpServletResponse httpResponse) {
         LoginInfoDto loginInfo = authService.login(request.loginId(), request.password());
-        CookieWriter.write(httpResponse, loginInfo.authTokenDto());
+        cookieWriter.write(httpResponse, loginInfo.authTokenDto());
         return ResponseEntity.ok(new LoginResponse(loginInfo.memberId()));
     }
 
@@ -62,7 +60,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@Login LoginInfo loginInfo, HttpServletResponse httpResponse) {
         authService.logout(loginInfo.memberId());
-        CookieWriter.clearCookies(httpResponse);
+        cookieWriter.clearCookies(httpResponse);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }
@@ -73,7 +71,7 @@ public class AuthController {
             HttpServletResponse httpResponse
     ) {
         AuthTokenDto response = authService.reissue(refreshToken);
-        CookieWriter.write(httpResponse, response);
+        cookieWriter.write(httpResponse, response);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
@@ -122,13 +120,11 @@ public class AuthController {
         LoginResponse loginResponse = new LoginResponse(loginInfoDto.memberId());
 
         if (authTokenDto.isLoginSuccess()) {
-            CookieWriter.write(httpResponse, authTokenDto);
+            cookieWriter.write(httpResponse, authTokenDto);
             return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
         }
 
-        ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
-                authTokenDto.oauthSignUpToken());
-        httpResponse.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
+        cookieWriter.writeOauthSignUpToken(httpResponse, authTokenDto.oauthSignUpToken());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -139,8 +135,8 @@ public class AuthController {
         MemberOauth memberOauth = authService.registerOauthMember(request, oauthSignUpToken);
         LoginResponse response = new LoginResponse(memberOauth.getMemberId());
         AuthTokenDto authTokenDto = authService.loginOauthMember(memberOauth);
-        CookieWriter.clearCookies(httpResponse);
-        CookieWriter.write(httpResponse, authTokenDto);
+        cookieWriter.clearCookies(httpResponse);
+        cookieWriter.write(httpResponse, authTokenDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
