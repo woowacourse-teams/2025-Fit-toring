@@ -105,7 +105,7 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("kakao/login")
+    @GetMapping("/kakao/login")
     public ResponseEntity<Void> redirectKakaoAuth(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         // state 난수 생성
@@ -127,7 +127,7 @@ public class AuthController {
     }
 
     @GetMapping("/kakao/callback")
-    public ResponseEntity<?> kakaoCallBack_V2(
+    public ResponseEntity<?> kakaoCallBack(
             @RequestParam String code,
             @RequestParam(required = false) String error,
             @RequestParam(required = false, value = "error_description") String errorDescription,
