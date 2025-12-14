@@ -30,16 +30,17 @@ public class AdminCertificateController {
     public ResponseEntity<PageResult<AdminCertificateResponse>> getAllCertificates(
             @Login LoginInfo loginInfo,
             @RequestParam(value = "type", required = false) Status status,
-            @RequestParam(defaultValue = "1") int page
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size
     ) {
         PageResult<AdminCertificateResponse> certificates = adminCertificateService.getAllCertificatesPaged(
                 loginInfo.memberId(),
                 status,
                 page,
-            20
+                size
         );
         return ResponseEntity.status(HttpStatus.OK)
-            .body(certificates);
+                .body(certificates);
     }
 
     @AuthRequired
@@ -53,7 +54,7 @@ public class AdminCertificateController {
                 certificateId
         );
         return ResponseEntity.status(HttpStatus.OK)
-            .body(response);
+                .body(response);
     }
 
     @AuthRequired
@@ -67,7 +68,7 @@ public class AdminCertificateController {
                 certificateId
         );
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .build();
+                .build();
     }
 
     @AuthRequired
@@ -81,6 +82,6 @@ public class AdminCertificateController {
                 certificateId
         );
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .build();
+                .build();
     }
 }

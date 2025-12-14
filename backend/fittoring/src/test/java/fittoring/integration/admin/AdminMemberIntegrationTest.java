@@ -5,6 +5,7 @@ import fittoring.admin.presentation.dto.AdminMemberResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
@@ -37,7 +38,7 @@ public class AdminMemberIntegrationTest extends AbstractApiDocumentationTest {
     void setUp() {
         admin = memberRepository.save(new Member(
                 "adminId",
-                "여",
+                Gender.FEMALE,
                 "관리자",
                 new Phone("010-0000-0000"),
                 Password.from("pw"),
@@ -46,7 +47,7 @@ public class AdminMemberIntegrationTest extends AbstractApiDocumentationTest {
         adminAccessToken = jwtProvider.createAccessToken(admin.getId());
         user = memberRepository.save(new Member(
                 "userId",
-                "남",
+                Gender.MALE,
                 "멘티",
                 new Phone("010-1111-1111"),
                 Password.from("pw")

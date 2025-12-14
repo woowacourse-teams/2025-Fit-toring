@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import styled from '@emotion/styled';
 
 import downIcon from '../../../../common/assets/images/downIcon.svg';
+import useOutsideClickRef from '../../../../common/hooks/useOutsideClickRef';
 
 import type { SortKey } from '../../hooks/useSortKey';
 interface SortButtonProps {
@@ -25,24 +26,11 @@ function SortDropDown({ onSortButtonClick, currentSortKey }: SortButtonProps) {
   const currentSortLabel =
     SORT_KEYS.find(({ value }) => value === currentSortKey)?.label || '기본순';
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const handleClickOutside = (e: MouseEvent) => {
-    if (
-      !containerRef.current ||
-      containerRef.current.contains(e.target as Node)
-    ) {
-      return;
-    }
-
+  const closeDropDown = () => {
     setOpened(false);
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const { ref: containerRef } = useOutsideClickRef(closeDropDown);
 
   const handleSortButtonClick = (sortKey: SortKey) => {
     onSortButtonClick(sortKey);

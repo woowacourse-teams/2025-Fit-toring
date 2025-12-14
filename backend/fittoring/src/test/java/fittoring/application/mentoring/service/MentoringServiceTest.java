@@ -30,6 +30,7 @@ import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
@@ -515,7 +516,7 @@ class MentoringServiceTest extends IntegrationTestSupport {
 
             Member invalidMember = memberRepository.save(new Member(
                     "id2",
-                    "MALE",
+                    Gender.MALE,
                     "박트레이너",
                     new Phone("010-1234-9021"),
                     Password.from("pw")
