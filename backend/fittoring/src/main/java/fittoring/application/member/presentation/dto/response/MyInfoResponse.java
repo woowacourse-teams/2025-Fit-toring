@@ -1,5 +1,6 @@
 package fittoring.application.member.presentation.dto.response;
 
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.Member;
 
@@ -7,7 +8,7 @@ public record MyInfoResponse(
         String image,
         String loginId,
         String name,
-        String gender,
+        Gender gender,
         String phoneNumber
 ) {
 

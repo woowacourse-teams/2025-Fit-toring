@@ -26,6 +26,7 @@ import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -90,7 +91,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member mentor = memberRepository.save(new Member(
                 "id1",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1234-9048"),
                 Password.from("pw")
@@ -164,7 +165,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "id1",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1234-9048"),
                 Password.from("pw")
@@ -207,7 +208,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "id1",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1234-9048"),
                 Password.from("pw")
@@ -222,7 +223,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
         Member invalidMember = memberRepository.save(new Member(
                 "id2",
-                "MALE",
+                Gender.MALE,
                 "박트레이너",
                 new Phone("010-1234-9021"),
                 Password.from("pw")
@@ -268,13 +269,13 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoring() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
             String accessToken = jwtProvider.createAccessToken(mentee.getId());
 
             Member mentor1 = memberRepository.save(
-                    new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
+                    new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
             Member mentor2 = memberRepository.save(
-                    new Member("id2", "MALE", "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
+                    new Member("id2", Gender.MALE, "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
@@ -360,7 +361,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             //given
 
             //멘토 생성
-            Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+            Member mentor = new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
             Member savedMentor = memberRepository.save(mentor);
 
             //토큰 생성
@@ -466,13 +467,13 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoring2() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
             String accessToken = jwtProvider.createAccessToken(mentee.getId());
 
             Member mentor1 = memberRepository.save(
-                    new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
+                    new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
             Member mentor2 = memberRepository.save(
-                    new Member("id2", "MALE", "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
+                    new Member("id2", Gender.MALE, "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
@@ -544,7 +545,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPages() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "010-1234-5678",
@@ -564,7 +565,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -679,7 +680,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory_1() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "111-1234-5678",
@@ -699,7 +700,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -801,7 +802,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "111-1234-5678",
@@ -821,7 +822,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -941,7 +942,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPages2() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "010-1234-5678",
@@ -961,7 +962,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -1082,7 +1083,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory2() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "111-1234-5678",
@@ -1102,7 +1103,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -1226,7 +1227,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPages3() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "010-1234-5678",
@@ -1246,7 +1247,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -1370,7 +1371,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory3() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "111-1234-5678",
@@ -1390,7 +1391,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -1518,7 +1519,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesFail_invalidCursor() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId2", "MALE", "멘티2", new Phone("010-9999-9999"), Password.from("pw")));
+                    new Member("menteeId2", Gender.MALE, "멘티2", new Phone("010-9999-9999"), Password.from("pw")));
             String invalidCursorCode = "invalid-cursor";
 
             //when
