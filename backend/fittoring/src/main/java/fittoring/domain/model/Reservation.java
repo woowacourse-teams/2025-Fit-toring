@@ -71,17 +71,25 @@ public class Reservation {
     }
 
     public void changeStatus(Status updateStatus) {
-        validateReservation(updateStatus);
+        validateReservationStatus(updateStatus);
         this.status = updateStatus;
     }
 
-    private void validateReservation(Status updateStatus) {
-        if (this.status.isReject() || this.status.isComplete() || (updateStatus.isReject() && this.status.isApprove())) {
+    private void validateReservationStatus(Status updateStatus) {
+        if (canChangeStatus() || isRejectingAfterApproved(updateStatus)) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
         if (this.status == updateStatus) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
         }
+    }
+
+    private boolean canChangeStatus() {
+        return this.status.isReject() || this.status.isComplete();
+    }
+
+    private boolean isRejectingAfterApproved(Status updateStatus) {
+        return updateStatus.isReject() && this.status.isApprove();
     }
 
     public boolean isCreatedByMember(Long memberId) {

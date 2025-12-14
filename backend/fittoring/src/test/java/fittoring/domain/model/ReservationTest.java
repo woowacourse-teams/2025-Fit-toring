@@ -17,7 +17,7 @@ class ReservationTest {
     @CsvSource({
             "REJECTED, APPROVED"
     })
-    void validateReservation(String updateStatus) {
+    void validateReservationStatus(String updateStatus) {
         //given
         Reservation reservation = FixtureUtil.getTestCompletedReservation(
                 FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor()),
@@ -32,7 +32,7 @@ class ReservationTest {
 
     @DisplayName("변경하려는 예약 상태가 현재 상태와 동일한 경우 예외가 발생한다.")
     @Test
-    void validateReservation2() {
+    void validateReservationStatus2() {
         //given
         String updateStatus = "PENDING";
 
