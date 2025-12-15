@@ -30,11 +30,6 @@ function LoginForm() {
 
   const { login } = useAuth();
 
-  const REST_API_KEY = process.env.KAKAO_REST_API_KEY;
-  const KAKAO_REDIRECT_URL = process.env.KAKAO_REDIRECT_URL;
-
-  const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code`;
-
   const { mutate: loginMutate } = useMutation({
     mutationFn: postLogin,
     onSuccess: async (response) => {
@@ -75,7 +70,7 @@ function LoginForm() {
   };
 
   const handleSocialLoginButtonClick = () => {
-    window.location.href = KAKAO_URL;
+    window.location.href = `${process.env.API_BASE_URL}/kakao/login`
   };
 
   const loginFormValidated = userId !== '' && password !== '';

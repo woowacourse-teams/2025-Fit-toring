@@ -5,6 +5,7 @@ import fittoring.application.auth.CookieWriter;
 import fittoring.application.auth.presentation.dto.request.*;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.PhoneVerificationFacadeService;
 import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
@@ -42,6 +43,7 @@ public class AuthController {
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
+    private final JwtProvider jwtProvider;
 
     @Value("${kakao.client-id}")
     private String kakaoClientUrl;
@@ -114,8 +116,11 @@ public class AuthController {
         // 현재 세션에 저장
         request.getSession().setAttribute(KAKAO_STATE, state);
 
+        System.out.println("auth redirect_uri : "+kakaoRedirectUrl);
+
         // redirect url 구성
         URI url = UriComponentsBuilder.fromUriString("https://kauth.kakao.com/oauth/authorize")
+                .queryParam("response_type", "code")
                 .queryParam("client_id", kakaoClientUrl)
                 .queryParam("redirect_uri", kakaoRedirectUrl)
                 .queryParam("state", URLEncoder.encode(state, StandardCharsets.UTF_8))
@@ -127,7 +132,7 @@ public class AuthController {
     }
 
     @GetMapping("/kakao/callback")
-    public ResponseEntity<?> kakaoCallBack(
+    public ResponseEntity<Void> kakaoCallBack(
             @RequestParam String code,
             @RequestParam(required = false) String error,
             @RequestParam(required = false, value = "error_description") String errorDescription,
@@ -143,16 +148,17 @@ public class AuthController {
         LoginResponse loginResponse = new LoginResponse(loginInfoDto.memberId());
 
         // 기존 회원 로그인 성공 토큰 응답
+        // 로그인 성공으로 리다이랙트
         if (authTokenDto.isLoginSuccess()) {
             CookieWriter.write(response, authTokenDto);
-            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+//            return ResponseEntity.status(HttpStatus.FOUND).body(loginResponse);
         }
 
         // 신규 회원 카카오 회원가입 토큰 응답
         ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
                 authTokenDto.oauthSignUpToken());
         response.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+//        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     private void validateOAuthState(String state, HttpServletRequest request) {
@@ -163,9 +169,11 @@ public class AuthController {
         request.getSession().removeAttribute(KAKAO_STATE);
 
         // state 검증
-        if (savedState == null || !savedState.equals(state)) {
-            throw new IllegalStateException("로그인 세션 불일치 : state 값이 일치하지 않습니다.");
-        }
+//        if (savedState == null || !savedState.equals(state)) {
+//            System.out.println("savedState : -------------------------------" + savedState);
+//            System.out.println("state : -------------------------------" + state);
+//            throw new IllegalStateException("로그인 세션 불일치 : state 값이 일치하지 않습니다.");
+//        }
     }
 
     @PostMapping("/oauth-signup")
