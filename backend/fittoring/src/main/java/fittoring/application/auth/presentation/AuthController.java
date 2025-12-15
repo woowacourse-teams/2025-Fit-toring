@@ -152,13 +152,14 @@ public class AuthController {
         if (authTokenDto.isLoginSuccess()) {
             CookieWriter.write(response, authTokenDto);
 //            return ResponseEntity.status(HttpStatus.FOUND).body(loginResponse);
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("https://localhost:3000/")).build();
         }
 
         // 신규 회원 카카오 회원가입 토큰 응답
         ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
                 authTokenDto.oauthSignUpToken());
         response.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("https://localhost:3000/")).build();
     }
 
     private void validateOAuthState(String state, HttpServletRequest request) {
