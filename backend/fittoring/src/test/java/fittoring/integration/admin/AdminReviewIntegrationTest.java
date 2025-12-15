@@ -9,6 +9,7 @@ import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
@@ -60,7 +61,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
     void setUp() {
         admin = memberRepository.save(new Member(
                 "adminId",
-                "남",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-0000-0000"),
                 Password.from("pw"),
@@ -69,7 +70,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
         adminAccessToken = jwtProvider.createAccessToken(admin.getId());
         user = memberRepository.save(new Member(
                 "userId",
-                "남",
+                Gender.MALE,
                 "멘티",
                 new Phone("010-1111-1111"),
                 Password.from("pw")

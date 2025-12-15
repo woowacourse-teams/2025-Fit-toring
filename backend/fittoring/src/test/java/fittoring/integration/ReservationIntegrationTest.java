@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doNothing;
 
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
@@ -19,6 +20,8 @@ import fittoring.application.reservation.presentation.dto.response.ReservationCr
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -60,6 +63,8 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private JwtProvider jwtProvider;
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
 
     @DisplayName("멘토링 예약에 성공하면 201 Created 상태코드와 예약 정보를 반환한다.")
     @Test
@@ -74,9 +79,9 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 );
 
         Member mentor = memberRepository.save(
-                new Member("id1", "MALE", "박멘토", new Phone("010-1234-5678"), Password.from("pw")));
+                new Member("id1", Gender.MALE, "박멘토", new Phone("010-1234-5678"), Password.from("pw")));
         Member mentee = memberRepository.save(
-                new Member("id2", "MALE", "김멘티", new Phone("010-1234-5679"), Password.from("pw")));
+                new Member("id2", Gender.MALE, "김멘티", new Phone("010-1234-5679"), Password.from("pw")));
 
         Mentoring savedMentoring = mentoringRepository.save(
                 new Mentoring(
@@ -130,7 +135,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorLoginId",
-                "MALE",
+                Gender.MALE,
                 "아이유",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -169,7 +174,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
     void createReservationFail2() {
         //given
         Member mentee = memberRepository.save(
-                new Member("id1", "MALE", "김멘티", new Phone("010-1234-5679"), Password.from("pw")));
+                new Member("id1", Gender.MALE, "김멘티", new Phone("010-1234-5679"), Password.from("pw")));
         String accessToken = jwtProvider.createAccessToken(mentee.getId());
         doNothing()
                 .when(smsRestClientService)
@@ -206,14 +211,14 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor1 = memberRepository.save(new Member(
                 "mentorId1",
-                "남",
+                Gender.MALE,
                 "김멘토",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor2 = memberRepository.save(new Member(
                 "mentorId2",
-                "남",
+                Gender.MALE,
                 "김멘토",
                 new Phone("010-1234-5679"),
                 Password.from("password")
@@ -246,7 +251,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee = memberRepository.save(new Member(
                 "menteeId",
-                "남",
+                Gender.MALE,
                 "김멘티",
                 new Phone("010-5678-1234"),
                 Password.from("password")
@@ -287,7 +292,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘티 생성
         Member mentor = memberRepository.save(
                 new Member("id1",
-                        "MALE",
+                        Gender.MALE,
                         "박멘토",
                         new Phone("010-1234-5679"),
                         Password.from("pw"))
@@ -310,7 +315,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘티 생성
         Member mentee = memberRepository.save(
                 new Member("id2",
-                        "MALE",
+                        Gender.MALE,
                         "김멘티",
                         new Phone("010-5678-9123"),
                         Password.from("pw"))
@@ -347,10 +352,10 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 });
 
         //then
-        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation);
-        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2);
-        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
-        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
+        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation, null);
+        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2, null);
+        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3, null);
+        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4, null);
 
         assertThat(response)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
@@ -364,7 +369,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘티 생성
         Member mentor = memberRepository.save(
                 new Member("id1",
-                        "MALE",
+                        Gender.MALE,
                         "박멘토",
                         new Phone("010-1234-5679"),
                         Password.from("pw"))
@@ -384,7 +389,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘티 생성
         Member mentee = memberRepository.save(
                 new Member("id2",
-                        "MALE",
+                        Gender.MALE,
                         "김멘티",
                         new Phone("010-5678-9123"),
                         Password.from("pw"))
@@ -393,7 +398,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         Member mentee2 = memberRepository.save(
                 new Member("id3",
-                        "MALE",
+                        Gender.MALE,
                         "이멘티",
                         new Phone("010-1357-2468"),
                         Password.from("pw"))
@@ -414,6 +419,9 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Reservation savedReservation4 = reservationRepository.save(
                 new Reservation("멘토링 예약 내용", Status.APPROVED, savedMentoring2, savedMentee)
         );
+        ChatRoom chatRoom4 = chatRoomRepository.save(
+                new ChatRoom(savedReservation4.getId(), savedMentee.getId(), mentor.getId())
+        );
 
         //mentee2의 예약
         Reservation savedReservation5 = reservationRepository.save(
@@ -421,6 +429,9 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         );
         Reservation savedReservation6 = reservationRepository.save(
                 new Reservation("멘토링 예약 내용", Status.COMPLETE, savedMentoring2, savedMentee2)
+        );
+        ChatRoom chatRoom6 = chatRoomRepository.save(
+                new ChatRoom(savedReservation6.getId(), savedMentee2.getId(), mentor.getId())
         );
 
         //when
@@ -437,12 +448,14 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 });
 
         //then
-        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation);
-        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2);
-        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3);
-        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4);
-        MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5);
-        MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6);
+        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation, null);
+        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2, null);
+        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3, null);
+        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4,
+                chatRoom4);
+        MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5, null);
+        MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6,
+                chatRoom6);
 
         assertThat(response)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
@@ -456,7 +469,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘토 생성
         Member mentor = memberRepository.save(
                 new Member("id1",
-                        "MALE",
+                        Gender.MALE,
                         "박멘토",
                         new Phone("010-1234-5679"),
                         Password.from("pw"))
@@ -503,7 +516,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         Member mentor = memberRepository.save(
                 new Member("id1",
-                        "MALE",
+                        Gender.MALE,
                         "박멘토",
                         new Phone("010-1234-5679"),
                         Password.from("pw"))
@@ -520,7 +533,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘티 생성
         Member mentee = memberRepository.save(
                 new Member("id2",
-                        "MALE",
+                        Gender.MALE,
                         "김멘티",
                         new Phone("010-5678-9123"),
                         Password.from("pw"))
@@ -560,7 +573,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member mentor = memberRepository.save(
                 new Member("id1",
-                        "MALE",
+                        Gender.MALE,
                         "박멘토",
                         new Phone("010-1234-5679"),
                         Password.from("pw"))
@@ -577,7 +590,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘티 생성
         Member mentee = memberRepository.save(
                 new Member("id2",
-                        "MALE",
+                        Gender.MALE,
                         "김멘티",
                         new Phone("010-5678-9123"),
                         Password.from("pw"))
@@ -611,7 +624,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member mentor = memberRepository.save(
                 new Member("id1",
-                        "MALE",
+                        Gender.MALE,
                         "박멘토",
                         new Phone("010-1234-5679"),
                         Password.from("pw"))
@@ -628,7 +641,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘티 생성
         Member mentee = memberRepository.save(
                 new Member("id2",
-                        "MALE",
+                        Gender.MALE,
                         "김멘티",
                         new Phone("010-5678-9123"),
                         Password.from("pw"))
@@ -660,7 +673,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member mentor = memberRepository.save(
                 new Member("id1",
-                        "MALE",
+                        Gender.MALE,
                         "박멘토",
                         new Phone("010-1234-5679"),
                         Password.from("pw"))
@@ -677,7 +690,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //멘티 생성
         Member mentee = memberRepository.save(
                 new Member("id2",
-                        "MALE",
+                        Gender.MALE,
                         "김멘티",
                         new Phone("010-5678-9123"),
                         Password.from("pw"))

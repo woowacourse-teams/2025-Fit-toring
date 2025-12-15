@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
@@ -8,36 +6,26 @@ import type { Message } from '../../types/message';
 
 interface ChatContentProps {
   messages: Message[];
-  pageFirstRef: React.RefObject<HTMLDivElement | null>;
-  listRef: React.RefObject<HTMLDivElement | null>;
+  pageFirstElRef: React.RefObject<HTMLDivElement | null>;
+  listElRef: React.RefObject<HTMLDivElement | null>;
 }
 
-function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
+function ChatContent({
+  messages,
+  pageFirstElRef,
+  listElRef,
+}: ChatContentProps) {
   const storedData = localStorage.getItem('memberId');
   const parsedData = storedData ? JSON.parse(storedData) : null;
   const memberId = parsedData ? parsedData.memberId : null;
-
-  useEffect(() => {
-    const element = listRef.current;
-    if (!element) {
-      return;
-    }
-
-    const isAtBottom =
-      element.scrollHeight - element.scrollTop - element.clientHeight < 50;
-
-    if (isAtBottom) {
-      element.scrollTop = element.scrollHeight;
-    }
-  }, [listRef, messages.length]);
 
   if (!memberId) {
     return null; // TODO: 에러 UI로 변경할 예정
   }
 
   return (
-    <S_Container ref={listRef}>
-      <div ref={pageFirstRef} style={{ height: 1, flex: '0 0 1px' }} />
+    <S_Container ref={listElRef}>
+      <div ref={pageFirstElRef} style={{ height: 1, flex: '0 0 1px' }} />
 
       <S_BubbleList>
         {messages.map(
@@ -47,19 +35,17 @@ function ChatContent({ messages, pageFirstRef, listRef }: ChatContentProps) {
             const senderChanged = prevSenderId !== senderId;
 
             return (
-              <div>
-                <S_ChatBubbleWrapper
-                  key={chatMessageId}
-                  senderChanged={senderChanged}
-                >
-                  <ChatBubble
-                    content={content}
-                    createdAt={createdAt}
-                    authored={senderId === memberId}
-                    status={status}
-                  />
-                </S_ChatBubbleWrapper>
-              </div>
+              <S_ChatBubbleWrapper
+                key={chatMessageId}
+                senderChanged={senderChanged}
+              >
+                <ChatBubble
+                  content={content}
+                  createdAt={createdAt}
+                  authored={senderId === memberId}
+                  status={status}
+                />
+              </S_ChatBubbleWrapper>
             );
           },
         )}

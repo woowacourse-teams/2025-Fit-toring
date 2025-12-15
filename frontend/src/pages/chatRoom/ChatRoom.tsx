@@ -18,6 +18,7 @@ import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
@@ -35,7 +36,13 @@ function ChatRoom() {
   const memberId = parsedData ? parsedData.memberId : null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
+    const { value } = e.target;
+
+    if (value.length > 20_000) {
+      return;
+    }
+
+    setMessage(value);
   };
 
   const handlePaymentRequestClick = (
@@ -65,25 +72,9 @@ function ChatRoom() {
     hasNextPage,
   } = useInfiniteChatRoomMessage(Number(chatRoomId!));
 
-  const listRef = useRef<HTMLDivElement>(null);
+  const listElRef = useRef<HTMLDivElement | null>(null);
   const initialScrolledRef = useRef(false);
   const ioReadyRef = useRef(false);
-
-  useLayoutEffect(() => {
-    const element = listRef.current;
-    if (!element) {
-      return;
-    }
-
-    if (!initialScrolledRef.current && messages.length > 0) {
-      element.scrollTop = element.scrollHeight;
-      initialScrolledRef.current = true;
-
-      requestAnimationFrame(() => {
-        ioReadyRef.current = true;
-      });
-    }
-  }, [listRef, messages]);
 
   const stateRef = useRef({
     hasNextPage: false,
@@ -109,12 +100,68 @@ function ChatRoom() {
     await fetchNextPage();
   }, [fetchNextPage]);
 
-  const { pageFirstRef } = useUpwardInfiniteScroll({
+  const { pageFirstElRef } = useUpwardInfiniteScroll({
     shouldTrigger: shouldTrigger,
     onIntersect,
     anchorKey: anchorKey!,
-    listRef,
+    listElRef,
   });
+
+  useLayoutEffect(() => {
+    const element = listElRef.current;
+    if (!element) {
+      return;
+    }
+
+    if (!initialScrolledRef.current && messages.length > 0) {
+      element.scrollTop = element.scrollHeight;
+      initialScrolledRef.current = true;
+
+      requestAnimationFrame(() => {
+        ioReadyRef.current = true;
+      });
+    }
+  }, [listElRef, messages]);
+
+  const { capturePrevScroll } = useScrollToBottomOnMessageSend({
+    messageCount: messages.length,
+    listElRef,
+  });
+
+  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (message === '') {
+      return;
+    }
+
+    capturePrevScroll();
+
+    const tempId = Date.now();
+
+    const optimisticMsg = {
+      senderId: memberId,
+      content: message,
+      createdAt: new Date().toString(),
+      chatRoomId: Number(chatRoomId),
+      chatMessageId: tempId,
+      tempId,
+      status: 'pending' as const,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessage('');
+
+    const client = stompClientRef.current;
+    if (!client || !client.connected || memberId === null) {
+      return;
+    }
+
+    client.publish({
+      destination: `/app/chatroom/${chatRoomId}`,
+      body: JSON.stringify({ content: message, tempId }),
+    });
+  };
 
   useEffect(() => {
     if (chatRoomMessage) {
@@ -138,12 +185,14 @@ function ChatRoom() {
           withCredentials: true,
         }),
       onStompError: (frame) => console.error('STOMP protocol error:', frame),
-      onWebSocketError: (event) => console.error('WebSocket error:', event),
+      onWebSocketError: (e) => console.error('WebSocket error:', e),
       reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
           (message: IMessage) => {
+            capturePrevScroll();
+
             const parsedMessage = JSON.parse(message.body);
 
             setMessages((prev) => {
@@ -183,70 +232,37 @@ function ChatRoom() {
     return () => {
       client.deactivate();
     };
-  }, [chatRoomId]);
-
-  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const tempId = Date.now();
-
-    const optimisticMsg = {
-      senderId: memberId,
-      content: message,
-      createdAt: new Date().toString(),
-      chatRoomId: Number(chatRoomId),
-      chatMessageId: tempId,
-      tempId,
-      status: 'pending' as const,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setMessage('');
-
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
-
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({ content: message, tempId }),
-    });
-  };
+  }, [capturePrevScroll, chatRoomId]);
 
   if (!memberId) {
     return <div>로그인 후 이용 가능합니다.</div>;
   }
 
-  if (ChatRoomInfoQuery.isPending || !chatRoomInfo) {
-    return (
-      <S_Container>
-        <div>로딩중</div>
-      </S_Container>
-    );
-  }
-
   return (
     <S_Container>
-      <div>
-        <ChatRoomHeader name={chatRoomInfo.opponentName} />
-        <MentoringActionPanel
-          mentorName={chatRoomInfo.mentorName}
-          price={chatRoomInfo.price}
-          profileImageUrl={chatRoomInfo.profileImageUrl}
-          mentorOwned={chatRoomInfo.myRole === 'MENTOR'}
-          onPaymentRequestClick={handlePaymentRequestClick}
-          onReviewRequestClick={handleReviewRequestClick}
-          onEndClick={handleEndClick}
-          onPaymentClick={handlePaymentClick}
-          onReviewClick={handleReviewClick}
-        />
-      </div>
+      {ChatRoomInfoQuery.isPending || !chatRoomInfo ? (
+        <div>로딩중</div>
+      ) : (
+        <div>
+          <ChatRoomHeader name={chatRoomInfo.opponentName} />
+          <MentoringActionPanel
+            mentorName={chatRoomInfo.mentorName}
+            price={chatRoomInfo.price}
+            profileImageUrl={chatRoomInfo.profileImageUrl}
+            mentorOwned={chatRoomInfo.myRole === 'MENTOR'}
+            onPaymentRequestClick={handlePaymentRequestClick}
+            onReviewRequestClick={handleReviewRequestClick}
+            onEndClick={handleEndClick}
+            onPaymentClick={handlePaymentClick}
+            onReviewClick={handleReviewClick}
+          />
+        </div>
+      )}
 
       <ChatContent
         messages={messages}
-        pageFirstRef={pageFirstRef}
-        listRef={listRef}
+        pageFirstElRef={pageFirstElRef}
+        listElRef={listElRef}
       />
       <InputSection
         value={message}

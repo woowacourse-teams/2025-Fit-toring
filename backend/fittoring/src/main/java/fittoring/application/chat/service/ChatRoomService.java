@@ -18,6 +18,10 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,5 +133,14 @@ public class ChatRoomService {
             return MemberRole.MENTOR;
         }
         return MemberRole.MENTEE;
+    }
+
+    public Map<Long, ChatRoom> findAllByReservationIds(List<Long> reservationIds) {
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByReservationIdIn(reservationIds);
+        return chatRooms.stream()
+                .collect(Collectors.toMap(
+                        ChatRoom::getReservationId,
+                        Function.identity()
+                ));
     }
 }

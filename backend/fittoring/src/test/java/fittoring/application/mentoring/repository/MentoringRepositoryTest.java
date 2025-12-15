@@ -5,6 +5,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import fittoring.RepositoryTestSupport;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
@@ -27,7 +28,7 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
     void mentoringSoftDelete() {
         //given
         Member mentor = memberRepository.save(
-                new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
+                new Member("id1", Gender.MALE, "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
         );
 
         Mentoring mentoring = mentoringRepository.save(
@@ -58,7 +59,7 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
     void findMentorings() {
         //given
         Member mentor = memberRepository.save(
-                new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
+                new Member("id1", Gender.MALE, "김트레이너", new Phone("010-1234-9048"), Password.from("pw"))
         );
 
         mentoringRepository.save(
@@ -66,7 +67,7 @@ class MentoringRepositoryTest extends RepositoryTestSupport {
         );
 
         Member mentor2 = memberRepository.save(
-                new Member("id2", "MALE", "이트레이너", new Phone("010-1234-5678"), Password.from("pw"))
+                new Member("id2", Gender.MALE, "이트레이너", new Phone("010-1234-5678"), Password.from("pw"))
         );
 
         Mentoring mentoring2 = mentoringRepository.save(

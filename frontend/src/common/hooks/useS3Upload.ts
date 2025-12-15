@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 
+import { useMutation } from '@tanstack/react-query';
+
 import { postPresignedURL } from '../apis/postPresignedURL';
 import { putImageToS3 } from '../apis/putImageToS3';
 
@@ -22,26 +24,40 @@ const getExtension = (fileType: string) => {
 };
 
 const useS3Upload = () => {
-  const uploadFile = useCallback(async (file: File, imageType: ImageType) => {
-    try {
-      const data = await postPresignedURL({
+  const { mutateAsync: uploadMutationMutateAsync } = useMutation({
+    mutationFn: async ({
+      file,
+      imageType,
+    }: {
+      file: File;
+      imageType: ImageType;
+    }) => {
+      const { presignedUrl } = await postPresignedURL({
         imageType,
         extension: getExtension(file.type),
       });
 
-      const { presignedUrl } = data;
-
       await putImageToS3(presignedUrl, file);
 
       return { uploadedUrl: presignedUrl.split('?')[0] };
-    } catch (error) {
+    },
+    onError: (error) => {
       if (error instanceof Error) {
         console.error('S3 업로드 실패', error.message);
       }
+    },
+  });
 
-      return { uploadedUrl: '' };
-    }
-  }, []);
+  const uploadFile = useCallback(
+    async (file: File, imageType: ImageType) => {
+      try {
+        return await uploadMutationMutateAsync({ file, imageType });
+      } catch {
+        return { uploadedUrl: '' };
+      }
+    },
+    [uploadMutationMutateAsync],
+  );
 
   return { uploadFile };
 };

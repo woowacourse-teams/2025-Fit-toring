@@ -1,32 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { getMineMentoring } from '../../../common/apis/getMineMentoring';
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 
-import type { MentoringDetail } from '../../../common/types/MentoringDetail';
-
 const useMineMentoring = () => {
-  const [mineMentoring, setMineMentoring] = useState<MentoringDetail | null>(
-    null,
-  );
-  useEffect(() => {
-    const fetchMentoring = async () => {
-      try {
-        const mentoring = await getMineMentoring();
-        setMineMentoring(mentoring);
-      } catch (error) {
-        console.error(error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'createdMentoring',
-          step: 'mine-mentoring-fetch',
-        });
-      }
-    };
+  const { data: mineMentoring, error } = useQuery({
+    queryKey: ['mineMentoring'],
+    queryFn: getMineMentoring,
+  });
 
-    fetchMentoring();
-  }, []);
+  if (error) {
+    console.error(error);
+    captureSentryError({
+      error,
+      level: 'warning',
+      feature: 'createdMentoring',
+      step: 'mine-mentoring-fetch',
+    });
+  }
 
   return { mineMentoring };
 };

@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useRef } from 'react';
 
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
 import { useLocation, useParams } from 'react-router-dom';
 
-import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
@@ -14,7 +12,9 @@ import DetailHeader from './components/DetailHeader/DetailHeader';
 import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
-
+import useMentoringDetail from './hooks/useMentoringDetail';
+import useScrollY from './hooks/useScrollY';
+import useTabs from './hooks/useTabs';
 
 type TapType = 'detail' | 'review';
 
@@ -24,42 +24,45 @@ function Detail() {
 
   const { mentoringId } = useParams();
 
-  const { data, isError, error } = useQuery({
-    queryKey: ['mentoringDetail', mentoringId],
-    queryFn: () => getMentoringDetail(mentoringId!),
-  });
+  const { data, isPending, isError, error } = useMentoringDetail(mentoringId!);
 
-  useEffect(() => {
-    if (isError && error) {
-      console.error('fetchData 실패', error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'detail',
-        step: 'mentoring-detail-fetch',
-      });
-    }
-  }, [isError, error]);
+  const { selectedTab, selectTab } = useTabs<TapType>(state?.tab ?? 'detail');
 
-  const [selected, setSelected] = useState<TapType>(state?.tab ?? 'detail');
-  const [scrollY, setScrollY] = useState(0);
+  const { scrollY, changeScrollY } = useScrollY();
 
-  const handleTapClick = (selectedType: TapType) => {
-    setSelected(selectedType);
-    setScrollY(window.scrollY);
+  const certificateSectionRef = useRef<HTMLHeadingElement | null>(null);
+
+  const handleTapClick = (tab: TapType) => {
+    selectTab(tab);
+    changeScrollY(window.scrollY);
   };
 
   const handleCertificateShowButton = () => {
-    setSelected('detail');
+    selectTab('detail');
+    certificateSectionRef.current?.focus();
   };
 
-  if (!data) {
+  if (isError && error) {
+    console.error('fetchData 실패', error);
+    captureSentryError({
+      error,
+      level: 'warning',
+      feature: 'detail',
+      step: 'mentoring-detail-fetch',
+    });
+
+    return <div>데이터를 불러오는 중에 오류가 발생했습니다.</div>;
+  }
+
+  if (isPending || !data) {
     return <div>로딩 중...</div>;
   }
 
   return (
     <>
+      <S_SkipLink href="#apply-section">신청 버튼 바로가기</S_SkipLink>
       <DetailHeader />
+
       <S_Container>
         <S_MentorInfoWrapper>
           <ProfileSection
@@ -75,23 +78,26 @@ function Detail() {
         <S_TapWrapper>
           <S_Tap
             onClick={() => handleTapClick('detail')}
-            selected={selected === 'detail'}
+            selected={selectedTab === 'detail'}
           >
             상세보기
           </S_Tap>
           <S_Tap
             onClick={() => handleTapClick('review')}
-            selected={selected === 'review'}
+            selected={selectedTab === 'review'}
           >
             리뷰
           </S_Tap>
         </S_TapWrapper>
         <S_ContentWrapper>
-          {selected === 'detail' ? (
+          {selectedTab === 'detail' ? (
             <S_DetailWrapper>
               <Introduction content={data.content} />
               <S_Line />
-              <Certificates certificates={data.certificates} />
+              <Certificates
+                certificates={data.certificates}
+                ref={certificateSectionRef}
+              />
             </S_DetailWrapper>
           ) : (
             <DetailReview
@@ -107,7 +113,11 @@ function Detail() {
           )}
         </S_ContentWrapper>
       </S_Container>
-      <ApplySection price={data.price} mentoringId={mentoringId} />
+      <ApplySection
+        id="apply-section"
+        price={data.price}
+        mentoringId={mentoringId}
+      />
     </>
   );
 }
@@ -188,4 +198,28 @@ const S_SpinnerWrapper = styled.div<{ height: number }>`
   justify-content: center;
 
   height: ${({ height }) => `${height}px`};
+`;
+
+const S_SkipLink = styled.a`
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-100%);
+
+  z-index: 9999;
+
+  padding: 1.2rem 2rem;
+  border-radius: 0 0 8px 8px;
+
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY800};
+
+  color: ${({ theme }) => theme.BG.WHITE};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+
+  transition: transform 0.2s ease;
+
+  &:focus {
+    transform: translateY(0);
+  }
 `;

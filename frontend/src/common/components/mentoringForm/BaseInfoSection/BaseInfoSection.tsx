@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
 
 import { getUserInfoSummary } from '../../../apis/getUserInfoSummary';
 import { captureSentryError } from '../../../utils/captureSentryError';
@@ -9,7 +8,6 @@ import Input from '../../Input/Input';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
-import type { UserInfoResponse } from '../../../types/userInfoResponse';
 
 interface BaseInfoSectionProps {
   priceErrorMessage: string;
@@ -24,32 +22,37 @@ function BaseInfoSection({
   priceErrorMessage,
   price,
 }: BaseInfoSectionProps) {
-  const [userInfo, setUserInfo] = useState<UserInfoResponse>({
-    name: '',
-    phoneNumber: '',
+  const storedData = localStorage.getItem('memberId');
+  const parsedData = storedData ? JSON.parse(storedData) : null;
+  const memberId = parsedData ? parsedData.memberId : null;
+
+  const { data: userInfo, error } = useQuery({
+    queryKey: ['userInfoSummary', memberId],
+    queryFn: getUserInfoSummary,
+    enabled: !!memberId,
+    initialData: {
+      name: '',
+      phoneNumber: '',
+    },
   });
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await getUserInfoSummary();
-        setUserInfo(response);
-      } catch (error) {
-        console.error('사용자 정보 조회 실패:', error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'mentoring',
-          step: 'base-info-fetch',
-        });
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
+  if (error) {
+    console.error('사용자 정보 조회 실패:', error);
+    captureSentryError({
+      error,
+      level: 'warning',
+      feature: 'mentoring',
+      step: 'base-info-fetch',
+    });
+  }
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onBaseInfoChange({ price: Number(e.target.value) });
+    const price = Number(e.target.value);
+    if (Number.isNaN(price)) {
+      return;
+    }
+
+    onBaseInfoChange({ price });
   };
 
   return (
@@ -71,6 +74,7 @@ function BaseInfoSection({
             onChange={handlePriceChange}
             errored={priceErrorMessage !== ''}
             value={price}
+            type="tel"
           />
         </FormField>
       </S_FormFieldWrapper>

@@ -1,26 +1,30 @@
 package fittoring.application.auth.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.response.AuthTokenResponse;
-import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.repository.RefreshTokenRepository;
+import fittoring.application.auth.service.dto.AuthTokenDto;
+import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.member.service.dto.RegisterOAuthDto;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.RefreshToken;
-import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willReturn;
 
 class AuthServiceTest extends IntegrationTestSupport {
 
@@ -33,9 +37,6 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    @Autowired
-    private JwtProvider jwtProvider;
-
     @DisplayName("회원을 저장할 때 암호화된 비밀번호가 저장된다.")
     @Test
     void register() {
@@ -45,7 +46,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         SignUpRequest request = new SignUpRequest(
                 "loginId",
                 "이름",
-                "MALE",
+                Gender.MALE,
                 "010-1234-5678",
                 password);
 
@@ -131,23 +132,23 @@ class AuthServiceTest extends IntegrationTestSupport {
         String rawPassword = "password";
 
         //when
-        LoginResponse actual = authService.login(loginId, rawPassword);
+        LoginInfoDto actual = authService.login(loginId, rawPassword);
 
         //then
-        RefreshToken refreshToken = refreshTokenRepository.findByTokenValue(actual.authToken().refreshToken())
+        RefreshToken refreshToken = refreshTokenRepository.findByTokenValue(actual.authTokenDto().refreshToken())
                 .orElseThrow(null);
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(actual.memberLoginResponse().memberId()).isEqualTo(mentee.getId());
-                    assertThat(actual.authToken().accessToken()).isNotNull();
-                    assertThat(actual.authToken().refreshToken()).isNotNull();
+                    assertThat(actual.memberId()).isEqualTo(mentee.getId());
+                    assertThat(actual.authTokenDto().accessToken()).isNotNull();
+                    assertThat(actual.authTokenDto().refreshToken()).isNotNull();
                     assertThat(refreshToken).isNotNull();
                     assertThat(refreshToken.getMember().getId()).isEqualTo(mentee.getId());
-                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.authToken().refreshToken());
+                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.authTokenDto().refreshToken());
                 }
         );
     }
 
-    @DisplayName("refreshToken을 이용해 accessToken과 refreshToken을 재발급 할 수 있다.")
+    @DisplayName("refreshToken을 이용해 accessToken과 refreshToken을 재발급 할 수가 있다.")
     @Test
     void reissue() {
         //given
@@ -162,7 +163,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         refreshTokenRepository.save(savedRefreshToken);
 
         //when
-        AuthTokenResponse actual = authService.reissue(refreshToken);
+        AuthTokenDto actual = authService.reissue(refreshToken);
 
         //then
         RefreshToken newRefreshToken = refreshTokenRepository.findById(savedRefreshToken.getId())
@@ -210,5 +211,44 @@ class AuthServiceTest extends IntegrationTestSupport {
         // then
         assertThatCode(() -> authService.logout(memberId))
                 .doesNotThrowAnyException();
+    }
+
+    @DisplayName("oauth 회원가입이 가능하다.")
+    @Test
+    void registerOauthMember() {
+        // given
+        String phoneNumber = "010-1234-5678";
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, phoneNumber);
+        willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
+
+        // when
+        RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(registerOAuthDto).isNotNull();
+                    assertThat(memberRepository.findById(registerOAuthDto.memberId()).isPresent()).isTrue();
+                }
+        );
+    }
+
+    @DisplayName("기존 회원도 oauth 회원가입이 가능하다.")
+    @Test
+    void registerOauthMember2() {
+        // given
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, mentee.getPhoneNumber());
+        willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
+
+        // when
+        RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+                    assertThat(registerOAuthDto).isNotNull();
+                    assertThat(memberRepository.findById(registerOAuthDto.memberId()).isPresent()).isTrue();
+                }
+        );
     }
 }

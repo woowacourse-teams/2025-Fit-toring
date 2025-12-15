@@ -2,40 +2,34 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import downIcon from '../../common/assets/images/downIcon.svg';
+import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
+import useMyMentoringId from '../home/hooks/useMyMentoringId';
 
 import MentoringApplicationItem from './components/MentoringApplicationItem/MentoringApplicationItem';
 import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
 import useMentoringApplicationList from './hooks/useMentoringApplicationList';
-import useMineMentoring from './hooks/useMineMentoring';
-
-import type { StatusType } from '../../common/types/statusType';
 
 function CreatedMentoring() {
-  const { mentoringApplicationList, updateMentoringApplicationListStatus } =
+  const { mentoringApplicationList, refetchMentoringApplicationList } =
     useMentoringApplicationList();
 
-  const handleActionButtonsClick = ({
-    reservationId,
-    status,
-  }: {
-    reservationId: number;
-    status: StatusType;
-  }) => {
-    updateMentoringApplicationListStatus({ reservationId, status });
+  const handleActionButtonsClick = async () => {
+    await refetchMentoringApplicationList();
   };
 
-  const { mineMentoring } = useMineMentoring();
+  const { authenticated } = useAuth();
+  const { myMentoringId } = useMyMentoringId(authenticated);
 
   const navigate = useNavigate();
 
   const handleMentoringShowButtonClick = () => {
-    if (!mineMentoring) {
+    if (!myMentoringId) {
       return;
     }
 
-    navigate(`${PAGE_URL.DETAIL}/${mineMentoring.id}`);
+    navigate(`${PAGE_URL.DETAIL}/${myMentoringId}`);
   };
 
   const handleFilterClick = () => {
@@ -44,7 +38,7 @@ function CreatedMentoring() {
 
   return (
     <S_Container>
-      {mineMentoring ? (
+      {myMentoringId ? (
         <>
           <S_ContentsWrapper>
             <S_MentoringSectionHeader>

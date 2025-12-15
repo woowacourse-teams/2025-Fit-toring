@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 
 import { apiClient } from '../../../../common/apis/apiClient';
+import ApiError from '../../../../common/apis/ApiError';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
+import { SMS_ERROR_MESSAGE } from '../../constants/message';
 import BookingSummarySection from '../BookingSummarySection/BookingSummarySection';
 
 interface BookingFormProps {
@@ -55,15 +57,23 @@ function BookingForm({
     } catch (error) {
       console.error('예약 중 에러 발생', error);
 
-      captureSentryError({
-        error,
-        level: 'error',
-        feature: 'reservation',
-        step: 'reservation-apply',
-        extras: {
-          content: counselContent,
-        },
-      });
+      if (error instanceof ApiError) {
+        const { message, status } = error;
+
+        if (status === 500 && SMS_ERROR_MESSAGE.includes(message)) {
+          handleBookingButtonClick();
+        }
+
+        captureSentryError({
+          error,
+          level: 'error',
+          feature: 'reservation',
+          step: 'reservation-apply',
+          extras: {
+            content: counselContent,
+          },
+        });
+      }
     }
   };
 
@@ -113,6 +123,9 @@ function BookingForm({
               {`(${counselContent.length}/5000)`}
             </S_TextAreaCounter>
           </S_TextareaWrapper>
+          <S_ScreenReaderOnly id="details-limit" hidden>
+            최대 5000자까지 입력할 수 있습니다.
+          </S_ScreenReaderOnly>
         </FormField>
       </S_UserInfoWrapper>
 
@@ -201,4 +214,18 @@ const S_TextAreaCounter = styled.p`
   color: ${({ theme }) => theme.FONT.G01};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   text-align: right;
+`;
+
+const S_ScreenReaderOnly = styled.span`
+  overflow: hidden;
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
 `;

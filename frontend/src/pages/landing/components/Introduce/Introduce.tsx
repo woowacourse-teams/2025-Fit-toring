@@ -7,26 +7,28 @@ function Introduce() {
   return (
     <S_Container>
       <S_TextWrapper>
-        <S_Title>
-          온라인 운동 멘토링
-          <br />
-          중개 플랫폼
+        <S_Title aria-label="온라인 운동 멘토링 중개 플랫폼">
+          <span aria-hidden="true">온라인 운동 멘토링 플랫폼</span>
         </S_Title>
-        <S_Texts>
-          <S_Text>
+        <S_Texts
+          role="region"
+          aria-label="핏토링은 운동 숙련자들이 자신의 경험과 노하우를 공유합니다. 운동 초보자들이 합리적인 비용으로 1회성 멘토링을 받을 수 있습니다. 원하는 멘토에게 신청하여 카카오톡 오픈 채팅을 통해 상담을 받을 수 있어요."
+          tabIndex={0}
+        >
+          <S_Text aria-hidden="true">
             핏토링은 운동 숙련자들이
             <br />
             자신의 경험과 노하우를 공유합니다.
           </S_Text>
-          <S_Text>
+          <S_Text aria-hidden="true">
             운동 초보자들이 합리적인 비용으로
             <br />
             1회성 멘토링을 받을 수 있습니다.
           </S_Text>
-          <S_Text>
-            원하는 멘토에게 신청하여 카카오톡
+          <S_Text aria-hidden="true">
+            원하는 멘토에게 신청하여
             <br />
-            오픈 채팅을 통해 상담을 받을 수 있어요
+            채팅을 통해 상담을 받을 수 있어요
           </S_Text>
         </S_Texts>
       </S_TextWrapper>
@@ -42,7 +44,7 @@ function Introduce() {
 
 export default Introduce;
 
-const S_Container = styled.div`
+const S_Container = styled.section`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -52,7 +54,11 @@ const S_Container = styled.div`
   line-height: normal;
 `;
 
-const S_Title = styled.p`
+const S_Title = styled.h2`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
   font-weight: bold;
   font-size: 2.5rem;
 `;

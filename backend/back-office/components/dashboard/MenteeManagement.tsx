@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,76 +9,25 @@ import {
 } from "../ui/table";
 import { Badge } from "../ui/badge";
 
-// 사용자 데이터 타입
-interface UserItem {
-  id: number;
-  name: string;
-  loginId: string;
-  gender: string;
-  phoneNumber: string;
-  role: "MENTOR" | "MENTEE" | "ADMIN";
-}
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "../ui/pagination";
 
-// 더미 데이터
-const mockUserData: UserItem[] = [
-  {
-    id: 1,
-    name: "김민수",
-    loginId: "minsu123",
-    gender: "남성",
-    phoneNumber: "010-1234-5678",
-    role: "MENTEE",
-  },
-  {
-    id: 2,
-    name: "박지영",
-    loginId: "jiyoung456",
-    gender: "여성",
-    phoneNumber: "010-2345-6789",
-    role: "MENTEE",
-  },
-  {
-    id: 3,
-    name: "이성훈",
-    loginId: "seonghun789",
-    gender: "남성",
-    phoneNumber: "010-3456-7890",
-    role: "MENTOR",
-  },
-  {
-    id: 4,
-    name: "최수진",
-    loginId: "sujin012",
-    gender: "여성",
-    phoneNumber: "010-4567-8901",
-    role: "MENTEE",
-  },
-  {
-    id: 5,
-    name: "정태현",
-    loginId: "taehyun345",
-    gender: "남성",
-    phoneNumber: "010-5678-9012",
-    role: "MENTOR",
-  },
-  {
-    id: 6,
-    name: "관리자",
-    loginId: "admin",
-    gender: "남성",
-    phoneNumber: "010-0000-0000",
-    role: "ADMIN",
-  },
-];
+import { fetchMembers, MemberItem } from "@/services/memberApi";
 
-// 역할별 색상 매핑
+// 역할별 색상
 const roleColors = {
   MENTOR: "bg-blue-100 text-blue-800",
   MENTEE: "bg-green-100 text-green-800",
   ADMIN: "bg-purple-100 text-purple-800",
 };
 
-// 역할별 한글명
 const roleLabels = {
   MENTOR: "멘토",
   MENTEE: "멘티",
@@ -86,16 +35,116 @@ const roleLabels = {
 };
 
 export function MenteeManagement() {
-  const [selectedRole, setSelectedRole] = useState<string>("ALL");
+  const [members, setMembers] = useState<MemberItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 역할별 필터링
-  const filteredUsers = selectedRole === "ALL" 
-    ? mockUserData 
-    : mockUserData.filter(user => user.role === selectedRole);
+  const [currentPage, setCurrentPage] = useState(1); // 1-based
+  const pageSize = 20;
 
-  const handleViewDetail = (userId: number) => {
-    // TODO: 사용자 상세 페이지로 이동
-    console.log("사용자 상세 보기:", userId);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+
+  useEffect(() => {
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        // 서버는 page=1 이 첫페이지라 그대로 사용
+        const data = await fetchMembers(currentPage, pageSize);
+
+        setMembers(data.content);
+        setTotalPages(data.totalPages);
+        setTotalElements(data.total);
+      } catch (err) {
+        console.error("❌ 사용자 목록 조회 실패:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    load();
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  // Pagination rendering
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pagesToShow = 5;
+    const start = Math.max(1, currentPage - 2);
+    const end = Math.min(totalPages, start + pagesToShow - 1);
+
+    return (
+      <div className="flex justify-end py-4 px-6">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPage - 1);
+                }}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+
+            {start > 1 && (
+              <>
+                <PaginationItem>
+                  <PaginationLink href="#" onClick={() => handlePageChange(1)}>1</PaginationLink>
+                </PaginationItem>
+                {start > 2 && <PaginationEllipsis />}
+              </>
+            )}
+
+            {Array.from({ length: end - start + 1 }, (_, i) => start + i).map((num) => (
+              <PaginationItem key={num}>
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(num);
+                  }}
+                  isActive={currentPage === num}
+                >
+                  {num}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            {end < totalPages && (
+              <>
+                {end < totalPages - 1 && <PaginationEllipsis />}
+                <PaginationItem>
+                  <PaginationLink href="#" onClick={() => handlePageChange(totalPages)}>
+                    {totalPages}
+                  </PaginationLink>
+                </PaginationItem>
+              </>
+            )}
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPage + 1);
+                }}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+    );
+  };
+
+  const handleViewDetail = (id: number) => {
+    console.log("상세 이동:", id);
   };
 
   return (
@@ -104,70 +153,56 @@ export function MenteeManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h2>멘티 관리</h2>
-          <p className="text-muted-foreground">
-            등록된 사용자를 조회할 수 있습니다.
-          </p>
+          <p className="text-muted-foreground">등록된 사용자를 조회할 수 있습니다. (총 {totalElements}명)</p>
         </div>
       </div>
-      {/* 사용자 목록 테이블 */}
-      <div className="space-y-4">
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
+
+      {/* 테이블 */}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="pl-8">로그인 ID</TableHead>
+              <TableHead>이름</TableHead>
+              <TableHead>성별</TableHead>
+              <TableHead>전화번호</TableHead>
+              <TableHead>역할</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {isLoading ? (
               <TableRow>
-                <TableHead className="pl-8">
-                  사용자 ID
-                </TableHead>
-                <TableHead>이름</TableHead>
-                <TableHead>로그인 ID</TableHead>
-                <TableHead>성별</TableHead>
-                <TableHead>전화번호</TableHead>
-                <TableHead>역할</TableHead>
+                <TableCell colSpan={6} className="text-center py-10">
+                  불러오는 중...
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow
-                  key={user.id}
-                  className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => handleViewDetail(user.id)}
-                >
-                  <TableCell className="font-medium pl-8 py-3">
-                    {user.id}
-                  </TableCell>
-                  <TableCell className="py-3">
-                    {user.name}
-                  </TableCell>
-                  <TableCell className="py-3">
-                    {user.loginId}
-                  </TableCell>
-                  <TableCell className="py-3">
-                    {user.gender}
-                  </TableCell>
-                  <TableCell className="py-3">
-                    {user.phoneNumber}
-                  </TableCell>
-                  <TableCell className="py-3">
-                    <Badge
-                      variant="outline"
-                      className={roleColors[user.role]}
-                    >
+            ) : members.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
+                  표시할 사용자가 없습니다.
+                </TableCell>
+              </TableRow>
+            ) : (
+              members.map((user, idx) => (
+                <TableRow key={`${currentPage}-${idx}`} onClick={() => handleViewDetail(idx)}>
+                  <TableCell className="font-medium pl-8">{user.loginId}</TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.gender}</TableCell>
+                  <TableCell>{user.phoneNumber}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={roleColors[user.role]}>
                       {roleLabels[user.role]}
                     </Badge>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        
-        {/* 검색 결과가 없을 때 */}
-        {filteredUsers.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            표시할 사용자가 없습니다.
-          </div>
-        )}
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
+
+      {renderPagination()}
     </div>
   );
 }

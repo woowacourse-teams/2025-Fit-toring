@@ -8,6 +8,7 @@ import fittoring.application.mentoring.repository.CertificateRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -51,7 +52,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
         super.setUp(restDocumentation);
         admin = memberRepository.save(new Member(
                 "adminId",
-                "남",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-0000-0000"),
                 Password.from("pw"),
@@ -60,7 +61,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
         adminAccessToken = jwtProvider.createAccessToken(admin.getId());
         user = memberRepository.save(new Member(
                 "userId",
-                "남",
+                Gender.MALE,
                 "멘티",
                 new Phone("010-1111-1111"),
                 Password.from("pw")

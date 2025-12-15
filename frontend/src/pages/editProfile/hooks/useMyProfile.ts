@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { getUserInfo } from '../../../common/apis/getUserInfo';
 
 import type { UserInfo } from '../../../common/types/userInfo';
 import type { UserProfileResponse } from '../types/userProfile';
+
+export const MY_PROFILE_QUERY_KEY = {
+  myProfile: (key: string | null) => ['myProfile', key],
+} as const;
 
 const convertResponse = (response: UserInfo): UserProfileResponse => {
   const { name, gender, phoneNumber, image } = response;
@@ -16,21 +20,17 @@ const convertResponse = (response: UserInfo): UserProfileResponse => {
 };
 
 const useMyProfile = () => {
-  const [myProfile, setMyProfile] = useState<UserProfileResponse | null>(null);
+  const storedData = localStorage.getItem('memberId');
+  const parsedData = storedData ? JSON.parse(storedData) : null;
+  const memberId = parsedData ? parsedData.memberId : null;
 
-  useEffect(() => {
-    const fetchMyProfile = async () => {
-      try {
-        const response = await getUserInfo();
-
-        setMyProfile(convertResponse(response));
-      } catch (error) {
-        console.error('회원 정보 불러오기 실패', error);
-        setMyProfile(null);
-      }
-    };
-    fetchMyProfile();
-  }, []);
+  const { data: myProfile } = useQuery({
+    queryKey: MY_PROFILE_QUERY_KEY.myProfile(memberId),
+    queryFn: async () => {
+      const response = await getUserInfo();
+      return convertResponse(response);
+    },
+  });
 
   return { myProfile };
 };
