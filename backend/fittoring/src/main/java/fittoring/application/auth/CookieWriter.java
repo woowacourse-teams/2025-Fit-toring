@@ -15,7 +15,7 @@ public class CookieWriter {
 
     public void write(HttpServletResponse response, AuthTokenDto tokens) {
         ResponseCookie accessToken = cookieProvider.createCookie("accessToken", tokens.accessToken());
-        ResponseCookie refreshToken = cookieProvider.createCookie("refreshToken", tokens.refreshToken());
+        ResponseCookie refreshToken = cookieProvider.createCookieWithMaxAge("refreshToken", tokens.refreshToken());
         response.addHeader(HttpHeaders.SET_COOKIE, accessToken.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshToken.toString());
     }

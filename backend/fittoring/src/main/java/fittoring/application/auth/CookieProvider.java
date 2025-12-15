@@ -13,23 +13,30 @@ public class CookieProvider {
         this.sameSite = sameSite;
     }
 
-    private ResponseCookie.ResponseCookieBuilder baseBuilder(final String name, final String value) {
-        return ResponseCookie.from(name, value)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .sameSite(sameSite);
-    }
-
     public ResponseCookie createCookie(final String name, final String value) {
         return baseBuilder(name, value)
                 .build();
     }
 
+    public ResponseCookie createCookieWithMaxAge(final String name, final String value) {
+        final long maxAgeSeconds = 604800L;
+        return baseBuilder(name, value)
+                .maxAge(maxAgeSeconds)
+                .build();
+    }
+
     public ResponseCookie clearCookie(final String name) {
-        final int maxAgeSeconds = 0;
+        final long maxAgeSeconds = 0L;
         return baseBuilder(name, "")
                 .maxAge(maxAgeSeconds)
                 .build();
+    }
+
+    private ResponseCookie.ResponseCookieBuilder baseBuilder(String name, String value) {
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite(sameSite);
     }
 }
