@@ -10,6 +10,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import java.time.Duration;
 import java.util.Date;
 import java.util.UUID;
 import javax.crypto.SecretKey;
@@ -49,10 +50,16 @@ public class JwtProvider {
         return buildToken(UUID.randomUUID().toString(), now, refreshMillis);
     }
 
-    public String createOauthSignUpToken(String providerMemberId){
+    public String createOauthSignUpToken(String providerMemberId) {
         Date now = new Date();
         Date oauthMillis = new Date(now.getTime() + accessExpirationMillis);
         return buildToken(providerMemberId, now, oauthMillis);
+    }
+
+    public String createStateToken() {
+        Date now = new Date();
+        Date stateMillis = new Date(now.getTime() + Duration.ofMinutes(3).toMillis());
+        return buildToken(UUID.randomUUID().toString(), now, stateMillis);
     }
 
     private String buildToken(String subject, Date issuedAt, Date expiresAt) {
