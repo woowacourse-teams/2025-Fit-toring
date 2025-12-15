@@ -1,9 +1,9 @@
-import type { Gender } from '../../pages/signup/types/signupInfo';
+import type { GenderClient } from './gender';
 
 export interface UserInfo {
   loginId: string;
   name: string;
-  gender: Gender;
+  gender: GenderClient;
   phoneNumber: string;
   image: string | null;
 }
