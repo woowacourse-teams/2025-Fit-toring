@@ -71,4 +71,4 @@ domain:
   sub-domain: test-sub-domain
 
 client:
-  base-url: ${CLIENT_BASE_URL}
+  base-url: http://localhost:3000
