@@ -1,9 +1,13 @@
-import type { GenderClient } from './gender';
+import type { GenderClient, GenderServer } from './gender';
 
-export interface UserInfo {
+interface UserInfo<TGender> {
   loginId: string;
   name: string;
-  gender: GenderClient;
+  gender: TGender;
   phoneNumber: string;
   image: string | null;
 }
+
+export type UserInfoClient = UserInfo<GenderClient>;
+
+export type UserInfoServer = UserInfo<GenderServer>;
