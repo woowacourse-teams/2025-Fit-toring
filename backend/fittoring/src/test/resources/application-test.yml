@@ -69,3 +69,6 @@ image-session:
 
 domain:
   sub-domain: test-sub-domain
+
+cookie:
+  same-site: None
