@@ -18,5 +18,7 @@ public interface MemberRepository extends ListCrudRepository<Member, Long>, Cust
 
     boolean existsByLoginId(String loginId);
 
-    boolean existsByPhone_Number(String phone);
+    boolean existsByPhone_Number(String phoneNumber);
+
+    Optional<Member> findByPhone_Number(String phoneNumber);
 }
