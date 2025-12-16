@@ -2,12 +2,7 @@ package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieProvider;
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignInRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
-import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.request.*;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
 import fittoring.application.auth.service.JwtProvider;
@@ -15,37 +10,31 @@ import fittoring.application.auth.service.PhoneVerificationFacadeService;
 import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
+import fittoring.application.exception.OauthLoginException;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
 
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
-    public static final String KAKAO_STATE = "KAKAO_STATE";
 
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
@@ -118,9 +107,7 @@ public class AuthController {
     }
 
     @GetMapping("/kakao/login")
-    public ResponseEntity<Void> redirectKakaoAuth(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        // SameSite 정책으로 세션 유지 X -> JWT로 state 변경
+    public ResponseEntity<Void> redirectKakaoAuth() {
         String state = jwtProvider.createStateToken();
 
         // redirect url 구성
@@ -142,16 +129,18 @@ public class AuthController {
             @RequestParam(required = false) String error,
             @RequestParam(required = false, value = "error_description") String errorDescription,
             @RequestParam(required = false) String state,
-            HttpServletRequest request,
             HttpServletResponse response
     ) {
+        if (error != null) {
+            throw new OauthLoginException("OAuth callback error : " + errorDescription);
+        }
+
         // state 토큰 검증
         jwtProvider.validateToken(state);
 
         // 로그인
         LoginInfoDto loginInfoDto = authService.kakaoLogin(code);
         AuthTokenDto authTokenDto = loginInfoDto.authTokenDto();
-        LoginResponse loginResponse = new LoginResponse(loginInfoDto.memberId());
 
         // 기존 회원 로그인 성공 토큰 응답
         // 메인 페이지로 리다이랙트
