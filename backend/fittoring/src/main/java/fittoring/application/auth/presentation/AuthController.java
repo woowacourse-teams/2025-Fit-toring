@@ -4,6 +4,7 @@ import fittoring.application.auth.CookieWriter;
 import fittoring.application.auth.presentation.dto.request.*;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.PhoneVerificationFacadeService;
 import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
@@ -16,9 +17,15 @@ import fittoring.config.auth.LoginInfo;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,7 +36,17 @@ public class AuthController {
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
+    private final JwtProvider jwtProvider;
     private final CookieWriter cookieWriter;
+
+    @Value("${kakao.client-id}")
+    private String kakaoClientId;
+
+    @Value("${kakao.redirect-url}")
+    private String kakaoRedirectUrl;
+
+    @Value("${client.base-url}")
+    private String clientBaseUrl;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
@@ -87,35 +104,59 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("/kakao/callback")
-    public ResponseEntity<Void> kakaoCallBackSuccess() {
-        return ResponseEntity.status(HttpStatus.OK).build();
+    @GetMapping("/kakao/login")
+    public ResponseEntity<Void> redirectKakaoAuth() {
+        String state = jwtProvider.createStateToken();
+
+        // redirect url 구성
+        URI url = UriComponentsBuilder.fromUriString("https://kauth.kakao.com/oauth/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("client_id", kakaoClientId)
+                .queryParam("redirect_uri", kakaoRedirectUrl)
+                .queryParam("state", URLEncoder.encode(state, StandardCharsets.UTF_8))
+                .build()
+                .toUri();
+
+        // redirect
+        return ResponseEntity.status(HttpStatus.FOUND).location(url).build();
     }
 
-    @PostMapping("/kakao/callback")
-    public ResponseEntity<?> kakaoCallback(
+    @GetMapping("/kakao/callback")
+    public ResponseEntity<Void> kakaoCallBack(
             @RequestParam String code,
             @RequestParam(required = false) String error,
             @RequestParam(required = false, value = "error_description") String errorDescription,
             @RequestParam(required = false) String state,
-            HttpServletResponse httpResponse
+            HttpServletResponse response
     ) {
-        // TODO : state 검증
         if (error != null) {
-            throw new OauthLoginException("카카오 로그인 에러 : " + error + " : " + errorDescription);
+            throw new OauthLoginException("OAuth callback error : " + errorDescription);
         }
 
+        // state 토큰 검증
+        jwtProvider.validateToken(state);
+
+        // 로그인
         LoginInfoDto loginInfoDto = authService.kakaoLogin(code);
         AuthTokenDto authTokenDto = loginInfoDto.authTokenDto();
-        LoginResponse loginResponse = new LoginResponse(loginInfoDto.memberId());
 
+        // 기존 회원 로그인 성공 토큰 응답 & 메인 페이지로 리다이랙트
         if (authTokenDto.isLoginSuccess()) {
-            cookieWriter.write(httpResponse, authTokenDto);
-            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+            cookieWriter.write(response, authTokenDto);
+            URI homeUri = URI.create(clientBaseUrl);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(homeUri)
+                    .build();
         }
 
-        cookieWriter.writeOauthSignUpToken(httpResponse, authTokenDto.oauthSignUpToken());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        // 신규 회원 카카오 회원가입 토큰 응답
+        cookieWriter.writeOauthSignUpToken(response, authTokenDto.oauthSignUpToken());
+
+        // OAuth 회원가입 페이지로 리다이랙트
+        URI identityVerificationUri = URI.create(clientBaseUrl + "/identity-verification");
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(identityVerificationUri)
+                .build();
     }
 
     @PostMapping("/oauth-signup")

@@ -92,7 +92,7 @@ dependencies {
 }
 
 openapi3 {
-    servers = [
+    servers = [ 
             { url = "https://devapi.fittoring.com"; description = "Dev Server" },
             { url = "http://localhost:8080"; description = "localHost" },
     ]

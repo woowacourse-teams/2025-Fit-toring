@@ -70,5 +70,8 @@ image-session:
 domain:
   sub-domain: test-sub-domain
 
+client:
+  base-url: http://localhost:3000
+
 cookie:
   same-site: None
