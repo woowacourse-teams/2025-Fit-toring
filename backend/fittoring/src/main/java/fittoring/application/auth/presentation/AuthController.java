@@ -1,6 +1,5 @@
 package fittoring.application.auth.presentation;
 
-import fittoring.application.auth.CookieProvider;
 import fittoring.application.auth.CookieWriter;
 import fittoring.application.auth.presentation.dto.request.*;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
@@ -19,9 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -40,6 +37,7 @@ public class AuthController {
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
     private final JwtProvider jwtProvider;
+    private final CookieWriter cookieWriter;
 
     @Value("${kakao.client-id}")
     private String kakaoClientId;
@@ -61,7 +59,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid SignInRequest request,
                                                HttpServletResponse httpResponse) {
         LoginInfoDto loginInfo = authService.login(request.loginId(), request.password());
-        CookieWriter.write(httpResponse, loginInfo.authTokenDto());
+        cookieWriter.write(httpResponse, loginInfo.authTokenDto());
         return ResponseEntity.ok(new LoginResponse(loginInfo.memberId()));
     }
 
@@ -69,7 +67,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@Login LoginInfo loginInfo, HttpServletResponse httpResponse) {
         authService.logout(loginInfo.memberId());
-        CookieWriter.clearCookies(httpResponse);
+        cookieWriter.clearCookies(httpResponse);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }
@@ -80,7 +78,7 @@ public class AuthController {
             HttpServletResponse httpResponse
     ) {
         AuthTokenDto response = authService.reissue(refreshToken);
-        CookieWriter.write(httpResponse, response);
+        cookieWriter.write(httpResponse, response);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
@@ -142,10 +140,9 @@ public class AuthController {
         LoginInfoDto loginInfoDto = authService.kakaoLogin(code);
         AuthTokenDto authTokenDto = loginInfoDto.authTokenDto();
 
-        // 기존 회원 로그인 성공 토큰 응답
-        // 메인 페이지로 리다이랙트
+        // 기존 회원 로그인 성공 토큰 응답 & 메인 페이지로 리다이랙트
         if (authTokenDto.isLoginSuccess()) {
-            CookieWriter.write(response, authTokenDto);
+            cookieWriter.write(response, authTokenDto);
             URI homeUri = URI.create(clientBaseUrl);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(homeUri)
@@ -153,9 +150,7 @@ public class AuthController {
         }
 
         // 신규 회원 카카오 회원가입 토큰 응답
-        ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
-                authTokenDto.oauthSignUpToken());
-        response.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
+        cookieWriter.writeOauthSignUpToken(response, authTokenDto.oauthSignUpToken());
 
         // OAuth 회원가입 페이지로 리다이랙트
         URI identityVerificationUri = URI.create(clientBaseUrl + "/identity-verification");
@@ -172,8 +167,8 @@ public class AuthController {
         RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, oauthSignUpToken);
         LoginResponse response = new LoginResponse(registerOAuthDto.memberId());
         AuthTokenDto authTokenDto = registerOAuthDto.authTokenDto();
-        CookieWriter.clearCookies(httpResponse);
-        CookieWriter.write(httpResponse, authTokenDto);
+        cookieWriter.clearCookies(httpResponse);
+        cookieWriter.write(httpResponse, authTokenDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }

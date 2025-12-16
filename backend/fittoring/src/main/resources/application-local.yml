@@ -23,6 +23,8 @@ spring:
     aws:
       sqs:
         enabled: false
+cookie:
+  same-site: ${COOKIE_SAME_SITE_LOCAL}
 aws:
   s3:
     env-prefix: local/
