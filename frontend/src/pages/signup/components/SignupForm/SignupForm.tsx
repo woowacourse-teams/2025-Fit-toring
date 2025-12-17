@@ -282,7 +282,7 @@ function SignupForm() {
       return;
     }
 
-    if (verificationStep !== 'verified') {
+    if (verificationStep !== 'verified' || verificationCodeError) {
       return;
     }
 
