@@ -55,7 +55,6 @@ function SignupForm() {
     setGender(value);
   };
 
-  // 아이디
   const [userIdDuplicateChecked, setUserIdDuplicateChecked] = useState(false);
 
   const {
