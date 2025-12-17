@@ -202,16 +202,6 @@ function SignupForm() {
     return '';
   };
 
-  const getDisplayedVerificationErrorMessage = () => {
-    const errorMessage = getFinalVerificationCodeErrorMessage();
-
-    if (verificationStep !== 'verified') {
-      return errorMessage;
-    }
-
-    return errorMessage;
-  };
-
   const validateForm = () => {
     const validations = [
       nameValidated,
@@ -337,7 +327,7 @@ function SignupForm() {
         <PhoneFields
           phoneNumber={phoneNumber}
           verificationCode={verificationCode}
-          verificationCodeErrorMessage={getDisplayedVerificationErrorMessage()}
+          verificationCodeErrorMessage={getFinalVerificationCodeErrorMessage()}
           phoneNumberErrorMessage={getFinalPhoneNumberErrorMessage()}
           onPhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
