@@ -170,6 +170,7 @@ function SignupForm() {
       const response = await postAuthCodeVerify(phoneNumber, verificationCode);
       if (response.status === 200) {
         alert('인증 성공');
+        completeVerification();
       }
     } catch (error) {
       setVerificationCodeError(true);
@@ -181,8 +182,6 @@ function SignupForm() {
         feature: 'sms',
         step: 'verify-code',
       });
-    } finally {
-      completeVerification();
     }
   };
 
@@ -191,7 +190,7 @@ function SignupForm() {
       return verificationCodeErrorMessage;
     }
 
-    if (verificationStep === 'verified' && verificationCodeError) {
+    if (verificationCodeError) {
       return '인증 실패';
     }
 
@@ -272,7 +271,7 @@ function SignupForm() {
       return;
     }
 
-    if (verificationStep !== 'verified' || verificationCodeError) {
+    if (verificationStep !== 'verified' || !verificationCodeValidated) {
       return;
     }
 
