@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
 
@@ -12,18 +12,23 @@ interface useUserIdDuplicateCheckParams {
 
 const useUserIdDuplicateCheck = ({ userId }: useUserIdDuplicateCheckParams) => {
   const [duplicateError, setDuplicateError] = useState(false);
-  const [duplicateChecked, setDuplicateChecked] = useState(false);
+  const [checkedUserId, setCheckedUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDuplicateError(false);
+  }, [userId]);
 
   const { mutate: validateIdMutate } = useMutation({
     mutationFn: postValidateId,
     onSuccess: (response) => {
       if (response.status === 200) {
-        setDuplicateChecked(true);
+        setCheckedUserId(userId);
       }
     },
     onError: (error) => {
       console.error('아이디 중복 확인 에러:', error);
       setDuplicateError(true);
+      setCheckedUserId(null);
 
       captureSentryError({
         error,
@@ -40,15 +45,11 @@ const useUserIdDuplicateCheck = ({ userId }: useUserIdDuplicateCheckParams) => {
     validateIdMutate(userId);
   };
 
-  const resetDuplicateCheck = () => {
-    setDuplicateChecked(false);
-    setDuplicateError(false);
-  };
+  const duplicateChecked = checkedUserId === userId;
 
   return {
     duplicateError,
     handleDuplicateConfirmClick,
-    resetDuplicateCheck,
     duplicateChecked,
   };
 };
