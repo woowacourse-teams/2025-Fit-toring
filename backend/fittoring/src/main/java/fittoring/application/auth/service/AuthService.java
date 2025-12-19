@@ -14,6 +14,7 @@ import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtExtractor jwtExtractor;
     private final JwtProvider jwtProvider;
     private final OauthClientService oauthClientService;
     private final MemberOauthRepository memberOAuthRepository;
@@ -162,5 +164,18 @@ public class AuthService {
                 new Phone(request.phone()),
                 Password.from(randomPw)
         );
+    }
+
+    public Long extractMemberId(Cookie[] cookies) {
+        // 쿠키가 아예 없는 경우, 첫 접속 or 비회원
+        if(cookies==null||cookies.length==0){
+            return null;
+        }
+        try {
+            String accessToken = jwtExtractor.extractTokenFromCookie("accessToken", cookies);
+            return jwtProvider.getSubjectFromPayloadBy(accessToken);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
