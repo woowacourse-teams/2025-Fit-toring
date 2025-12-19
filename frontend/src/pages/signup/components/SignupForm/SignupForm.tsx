@@ -24,7 +24,8 @@ import useUserIdDuplicateCheck from '../../hooks/useUserIdDuplicateCheck';
 import PasswordFields from '../PasswordFields/PasswordFields';
 import UserIdField from '../UserIdField/UserIdField';
 
-import type { Gender, SignupInfo } from '../../types/signupInfo';
+import type { GenderClient } from '../../../../common/types/gender';
+import type { SignupInfo } from '../../types/signupInfo';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 
@@ -38,7 +39,7 @@ function SignupForm() {
     validated: nameValidated,
   } = useNameInput();
 
-  const [gender, setGender] = useState<Gender>('남');
+  const [gender, setGender] = useState<GenderClient>('남');
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;

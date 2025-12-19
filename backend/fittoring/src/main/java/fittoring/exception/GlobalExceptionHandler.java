@@ -8,6 +8,7 @@ import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.InvalidCertificateException;
 import fittoring.application.exception.InvalidCursorException;
@@ -34,11 +35,13 @@ import fittoring.infrastructure.exception.SmsException;
 import fittoring.logging.dto.ErrorLog;
 import fittoring.util.ResponseDurationCalculator;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -95,6 +98,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(EmptyRequestException.class)
+    public ResponseEntity<ErrorResponse> handle(EmptyRequestException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(DuplicateLoginIdException.class)
     public ResponseEntity<ErrorResponse> handle(DuplicateLoginIdException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
@@ -112,7 +120,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException e) {
-        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+        String message = getRequestValidExceptionMessage(e);
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(ReviewAlreadyExistsException.class)
@@ -234,6 +243,14 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {
         logErrorJson(e, status);
         return ErrorResponse.of(status, message).toResponseEntity();
+    }
+
+    private String getRequestValidExceptionMessage(MethodArgumentNotValidException e) {
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        return fieldErrors.stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .findFirst()
+                .orElse("잘못된 요청입니다.");
     }
 
     private void logErrorJson(Throwable e, HttpStatus status) {

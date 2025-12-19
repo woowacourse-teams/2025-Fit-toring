@@ -1,37 +1,31 @@
 package fittoring.application.auth.presentation;
 
-import fittoring.application.auth.CookieProvider;
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignInRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
-import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.request.*;
+import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.PhoneVerificationFacadeService;
 import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.OauthLoginException;
-import fittoring.application.auth.presentation.dto.response.LoginResponse;
+import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.domain.model.MemberOauth;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @RestController
@@ -42,6 +36,17 @@ public class AuthController {
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
+    private final JwtProvider jwtProvider;
+    private final CookieWriter cookieWriter;
+
+    @Value("${kakao.client-id}")
+    private String kakaoClientId;
+
+    @Value("${kakao.redirect-url}")
+    private String kakaoRedirectUrl;
+
+    @Value("${client.base-url}")
+    private String clientBaseUrl;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
@@ -54,7 +59,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid SignInRequest request,
                                                HttpServletResponse httpResponse) {
         LoginInfoDto loginInfo = authService.login(request.loginId(), request.password());
-        CookieWriter.write(httpResponse, loginInfo.authTokenDto());
+        cookieWriter.write(httpResponse, loginInfo.authTokenDto());
         return ResponseEntity.ok(new LoginResponse(loginInfo.memberId()));
     }
 
@@ -62,7 +67,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@Login LoginInfo loginInfo, HttpServletResponse httpResponse) {
         authService.logout(loginInfo.memberId());
-        CookieWriter.clearCookies(httpResponse);
+        cookieWriter.clearCookies(httpResponse);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }
@@ -73,7 +78,7 @@ public class AuthController {
             HttpServletResponse httpResponse
     ) {
         AuthTokenDto response = authService.reissue(refreshToken);
-        CookieWriter.write(httpResponse, response);
+        cookieWriter.write(httpResponse, response);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
@@ -99,48 +104,71 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("/kakao/callback")
-    public ResponseEntity<Void> kakaoCallBackSuccess() {
-        return ResponseEntity.status(HttpStatus.OK).build();
+    @GetMapping("/kakao/login")
+    public ResponseEntity<Void> redirectKakaoAuth() {
+        String state = jwtProvider.createStateToken();
+
+        // redirect url 구성
+        URI url = UriComponentsBuilder.fromUriString("https://kauth.kakao.com/oauth/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("client_id", kakaoClientId)
+                .queryParam("redirect_uri", kakaoRedirectUrl)
+                .queryParam("state", URLEncoder.encode(state, StandardCharsets.UTF_8))
+                .build()
+                .toUri();
+
+        // redirect
+        return ResponseEntity.status(HttpStatus.FOUND).location(url).build();
     }
 
-    @PostMapping("/kakao/callback")
-    public ResponseEntity<?> kakaoCallback(
+    @GetMapping("/kakao/callback")
+    public ResponseEntity<Void> kakaoCallBack(
             @RequestParam String code,
             @RequestParam(required = false) String error,
             @RequestParam(required = false, value = "error_description") String errorDescription,
             @RequestParam(required = false) String state,
-            HttpServletResponse httpResponse
+            HttpServletResponse response
     ) {
-        // TODO : state 검증
         if (error != null) {
-            throw new OauthLoginException("카카오 로그인 에러 : " + error + " : " + errorDescription);
+            throw new OauthLoginException("OAuth callback error : " + errorDescription);
         }
 
+        // state 토큰 검증
+        jwtProvider.validateToken(state);
+
+        // 로그인
         LoginInfoDto loginInfoDto = authService.kakaoLogin(code);
         AuthTokenDto authTokenDto = loginInfoDto.authTokenDto();
-        LoginResponse loginResponse = new LoginResponse(loginInfoDto.memberId());
 
+        // 기존 회원 로그인 성공 토큰 응답 & 메인 페이지로 리다이랙트
         if (authTokenDto.isLoginSuccess()) {
-            CookieWriter.write(httpResponse, authTokenDto);
-            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+            cookieWriter.write(response, authTokenDto);
+            URI homeUri = URI.create(clientBaseUrl);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(homeUri)
+                    .build();
         }
 
-        ResponseCookie oauthCookie = CookieProvider.createCookie("oauthSignUpToken",
-                authTokenDto.oauthSignUpToken());
-        httpResponse.addHeader(HttpHeaders.SET_COOKIE, oauthCookie.toString());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        // 신규 회원 카카오 회원가입 토큰 응답
+        cookieWriter.writeOauthSignUpToken(response, authTokenDto.oauthSignUpToken());
+
+        // OAuth 회원가입 페이지로 리다이랙트
+        URI identityVerificationUri = URI.create(clientBaseUrl + "/identity-verification");
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(identityVerificationUri)
+                .build();
     }
 
     @PostMapping("/oauth-signup")
-    public ResponseEntity<LoginResponse> oauthSignUp(@RequestBody @Valid OauthSignUpRequest request,
-                                            @CookieValue("oauthSignUpToken") String oauthSignUpToken,
-                                            HttpServletResponse httpResponse) {
-        MemberOauth memberOauth = authService.registerOauthMember(request, oauthSignUpToken);
-        LoginResponse response = new LoginResponse(memberOauth.getMemberId());
-        AuthTokenDto authTokenDto = authService.loginOauthMember(memberOauth);
-        CookieWriter.clearCookies(httpResponse);
-        CookieWriter.write(httpResponse, authTokenDto);
+    public ResponseEntity<LoginResponse> oauthSignUp(
+            @RequestBody @Valid OauthSignUpRequest request,
+            @CookieValue("oauthSignUpToken") String oauthSignUpToken,
+            HttpServletResponse httpResponse) {
+        RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, oauthSignUpToken);
+        LoginResponse response = new LoginResponse(registerOAuthDto.memberId());
+        AuthTokenDto authTokenDto = registerOAuthDto.authTokenDto();
+        cookieWriter.clearCookies(httpResponse);
+        cookieWriter.write(httpResponse, authTokenDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }

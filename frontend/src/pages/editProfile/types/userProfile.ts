@@ -1,8 +1,8 @@
-import type { UserInfo } from '../../../common/types/userInfo';
+import type { UserInfoClient } from '../../../common/types/userInfo';
 
-export type UserProfileResponse = Omit<UserInfo, 'loginId'>;
+export type UserProfileResponse = Omit<UserInfoClient, 'loginId'>;
 
-type UserProfileRequest = Omit<UserInfo, 'loginId' | 'image'> & {
+type UserProfileRequest = Omit<UserInfoClient, 'loginId' | 'image'> & {
   password: string;
 };
 

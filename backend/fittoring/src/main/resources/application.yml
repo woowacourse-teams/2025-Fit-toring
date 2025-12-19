@@ -105,3 +105,6 @@ image-session:
 
 domain:
   sub-domain: ${SUB_DOMAIN}
+
+client:
+  base-url: ${CLIENT_BASE_URL}

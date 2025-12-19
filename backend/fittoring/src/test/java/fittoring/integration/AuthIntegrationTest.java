@@ -12,6 +12,7 @@ import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.PhoneVerification;
@@ -48,7 +49,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         String loginId = "loginId";
         String name = "이름";
-        String gender = "남";
+        Gender gender = Gender.MALE;
         String phone = "010-1234-5678";
         String password = "password";
         SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
@@ -76,7 +77,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         String loginId = null;
         String name = "이름";
-        String gender = "남";
+        Gender gender = Gender.MALE;
         String phone = "010-1234-5678";
         String password = "password";
         SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
@@ -101,8 +102,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member member = new Member(
                 "loginId",
+                Gender.MALE,
                 "이름",
-                "남",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         );
@@ -135,8 +136,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member member = new Member(
                 "loginId",
+                Gender.MALE,
                 "이름",
-                "남",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         );
@@ -172,8 +173,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member member = new Member(
                 "loginId",
+                Gender.MALE,
                 "이름",
-                "남",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         );
@@ -208,8 +209,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member member = new Member(
                 "loginId",
+                Gender.MALE,
                 "이름",
-                "남",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         );
@@ -239,14 +240,14 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                     cookie.startsWith("accessToken=;")
                     && cookie.contains("Max-Age=0")
                     && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=Strict")
+                    && cookie.contains("SameSite=None")
                     && cookie.contains("HttpOnly")
                     && cookie.contains("Secure"));
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("refreshToken=;")
                     && cookie.contains("Max-Age=0")
                     && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=Strict")
+                    && cookie.contains("SameSite=None")
                     && cookie.contains("HttpOnly")
                     && cookie.contains("Secure"));
         });
@@ -258,8 +259,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member member = new Member(
                 "loginId",
+                Gender.MALE,
                 "이름",
-                "남",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         );
@@ -334,8 +335,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member member = new Member(
                 "loginId",
+                Gender.MALE,
                 "이름",
-                "남",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         );
@@ -344,7 +345,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
         String loginId = "loginId";
         String name = "이름";
-        String gender = "남";
+        Gender gender = Gender.MALE;
         String phone = "010-1234-5678";
         String password = "password";
         SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
@@ -390,8 +391,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         memberRepository.save(
                 new Member(
                         "uniqueLoginId",
+                        Gender.MALE,
                         "이름",
-                        "남",
                         new Phone("010-1234-5678"),
                         Password.from("password")
                 )
@@ -400,8 +401,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         memberRepository.save(
                 new Member(
                         "LoginId",
+                        Gender.MALE,
                         "이름",
-                        "남",
                         new Phone("010-5678-9123"),
                         Password.from("password")
                 )

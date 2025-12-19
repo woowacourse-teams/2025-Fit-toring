@@ -2,14 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getUserInfo } from '../../../common/apis/getUserInfo';
 
-import type { UserInfo } from '../../../common/types/userInfo';
+import type { UserInfoClient } from '../../../common/types/userInfo';
 import type { UserProfileResponse } from '../types/userProfile';
 
 export const MY_PROFILE_QUERY_KEY = {
   myProfile: (key: string | null) => ['myProfile', key],
 } as const;
 
-const convertResponse = (response: UserInfo): UserProfileResponse => {
+const convertResponse = (response: UserInfoClient): UserProfileResponse => {
   const { name, gender, phoneNumber, image } = response;
   return {
     name,
