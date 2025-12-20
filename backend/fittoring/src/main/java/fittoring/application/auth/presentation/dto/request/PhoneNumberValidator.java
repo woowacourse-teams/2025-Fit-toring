@@ -9,7 +9,10 @@ public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, St
     private static final String REGEXP = "^\\d{2,3}-\\d{3,4}-\\d{4}$";
 
     @Override
-    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return Pattern.matches(REGEXP, s);
+    public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
+        if (value == null) {
+            return true;
+        }
+        return Pattern.matches(REGEXP, value);
     }
 }
