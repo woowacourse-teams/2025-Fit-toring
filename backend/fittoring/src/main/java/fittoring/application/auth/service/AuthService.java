@@ -12,6 +12,7 @@ import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
@@ -39,6 +40,8 @@ public class AuthService {
     private final OauthClientService oauthClientService;
     private final MemberOauthRepository memberOAuthRepository;
     private final PhoneVerificationService phoneVerificationService;
+
+    private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
 
     @Transactional
     public void register(SignUpRequest request) {
@@ -100,7 +103,7 @@ public class AuthService {
 
     private Member getMemberByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new NotFoundMemberException(LOGIN_ID_NOT_FOUND_MESSAGE));
     }
 
     private Member createMember(SignUpRequest request) {
@@ -171,5 +174,16 @@ public class AuthService {
                 new Phone(request.phone()),
                 Password.from(randomPw)
         );
+    }
+
+    public String findLoginId(String name, String phoneNumber) {
+        // 일치하는 전화번호 없으면 예외
+        Member member = memberRepository.findByPhone_Number(phoneNumber)
+                .orElseThrow(() -> new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE));
+        // 전화번호 주인과 이름이 일치하지 않으면 예외
+        if(!member.getName().equals(name)){
+            throw new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE);
+        }
+        return member.getLoginId();
     }
 }

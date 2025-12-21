@@ -413,7 +413,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/validate-id");
+                .post("/validate-login-id");
 
         //then
         assertThat(response.statusCode()).isEqualTo(200);
@@ -453,7 +453,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/validate-id");
+                .post("/validate-login-id");
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);

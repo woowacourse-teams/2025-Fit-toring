@@ -1,12 +1,14 @@
 package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieWriter;
+import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
 import fittoring.application.auth.service.JwtProvider;
@@ -92,7 +94,7 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/validate-id")
+    @PostMapping("/validate-login-id")
     public ResponseEntity<Void> validateDuplicateLoginId(@RequestBody @Valid ValidateDuplicateLoginIdRequest request) {
         authService.validateDuplicateLoginId(request.loginId());
         return ResponseEntity.status(HttpStatus.OK)
@@ -180,5 +182,12 @@ public class AuthController {
         cookieWriter.write(httpResponse, authTokenDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @GetMapping("/find-login-id")
+    public ResponseEntity<LoginIdResponse> findLoginId(@RequestBody @Valid FindLoginIdRequest request) {
+        String loginId = authService.findLoginId(request.name(), request.phoneNumber());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new LoginIdResponse(loginId));
     }
 }

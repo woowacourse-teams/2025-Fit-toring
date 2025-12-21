@@ -266,4 +266,17 @@ class AuthServiceTest extends IntegrationTestSupport {
                 }
         );
     }
+
+    @DisplayName("이름과 전화번호로 loginId를 찾을 수 있다.")
+    @Test
+    void findLoginId() {
+        //given
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.save(mentee);
+
+        //when
+        //then
+        assertThat(authService.findLoginId(mentee.getName(), mentee.getPhoneNumber()))
+                .isEqualTo(mentee.getLoginId());
+    }
 }
