@@ -70,7 +70,8 @@ class AuthServiceTest extends IntegrationTestSupport {
 
         //then
         String actual = memberRepository.findById(1L)
-                .orElseThrow(null).getPassword();
+                .orElseThrow(null)
+                .getPasswordValue();
         assertThat(actual).isNotEqualTo(password);
     }
 
