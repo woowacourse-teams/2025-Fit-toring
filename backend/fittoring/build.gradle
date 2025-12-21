@@ -89,10 +89,13 @@ dependencies {
 
     // String util
     implementation 'org.apache.commons:commons-lang3:3.14.0'
+
+    // push notification
+    implementation 'com.google.firebase:firebase-admin:9.7.0'
 }
 
 openapi3 {
-    servers = [ 
+    servers = [
             { url = "https://devapi.fittoring.com"; description = "Dev Server" },
             { url = "http://localhost:8080"; description = "localHost" },
     ]

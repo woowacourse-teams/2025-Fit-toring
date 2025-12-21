@@ -47,6 +47,7 @@ public enum BusinessErrorMessage {
     INVALID_STATUS_CHAT_ROOM_ACCESS("승인 또는 완료된 예약의 채팅방만 접속할 수 있습니다."),
     UNSUPPORTED_IMAGE_EXTENSION("지원하지 않는 확장자입니다."),
     EMPTY_REQUEST("요청 정보가 비어있어 요청을 수행할 수 없습니다."),
+    MEMBER_FCM_TOKEN_NOT_FOUND("해당 멤버의 FCM 토큰이 존재하지 않습니다."),
     ;
 
     private final String message;
