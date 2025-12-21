@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,6 +29,7 @@ public class MemberFcmToken {
     @Column(name = "member_id", nullable = false, unique = true)
     private Long memberId;
 
+    @Getter
     @Column(nullable = false, unique = true)
     private String token;
 
