@@ -34,4 +34,12 @@ public class MemberFcmToken {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    public MemberFcmToken(Long memberId, String token) {
+        this(null, memberId, token, null);
+    }
+
+    public void updateToken(String token) {
+        this.token = token;
+    }
 }
