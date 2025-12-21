@@ -184,4 +184,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new LoginIdResponse(loginId));
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        authService.resetPassword(request.loginId(), request.phoneNumber(), request.password());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

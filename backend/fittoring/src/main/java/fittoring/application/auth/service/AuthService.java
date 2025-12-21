@@ -172,9 +172,20 @@ public class AuthService {
         Member member = memberRepository.findByPhone_Number(phoneNumber)
                 .orElseThrow(() -> new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE));
         // 전화번호 주인과 이름이 일치하지 않으면 예외
-        if(!member.getName().equals(name)){
+        if (!member.getName().equals(name)) {
             throw new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE);
         }
         return member.getLoginId();
+    }
+
+    public Member resetPassword(String loginId, String phoneNumber, String password) {
+        // 전화번호 인증 확인
+        phoneVerificationService.existValidPhoneVerification(new Phone(phoneNumber));
+        // loginId(unique)로 Member 탐색
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        // 패스워드 변경
+        member.updatePassword(password);
+        return member;
     }
 }
