@@ -4,6 +4,7 @@ import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
@@ -14,6 +15,8 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.PhoneVerification;
 import fittoring.domain.model.RefreshToken;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +38,9 @@ class AuthServiceTest extends IntegrationTestSupport {
     private MemberRepository memberRepository;
 
     @Autowired
+    private PhoneVerificationRepository phoneVerificationRepository;
+
+    @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
     @DisplayName("회원을 저장할 때 암호화된 비밀번호가 저장된다.")
@@ -43,12 +49,20 @@ class AuthServiceTest extends IntegrationTestSupport {
         //given
         String password = "password";
 
+        String phoneNumber = "010-1234-5678";
         SignUpRequest request = new SignUpRequest(
                 "loginId",
                 "이름",
                 Gender.MALE,
-                "010-1234-5678",
+                phoneNumber,
                 password);
+
+        phoneVerificationRepository.save(new PhoneVerification(
+                        new Phone(phoneNumber),
+                        "123456",
+                        LocalDateTime.now().plusMinutes(3)
+                )
+        );
 
         //when
         authService.register(request);

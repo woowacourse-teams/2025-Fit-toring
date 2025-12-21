@@ -1,7 +1,12 @@
 package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.*;
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
+import fittoring.application.auth.presentation.dto.request.SignInRequest;
+import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
+import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
 import fittoring.application.auth.service.JwtProvider;
@@ -16,16 +21,20 @@ import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @RestController
@@ -92,7 +101,7 @@ public class AuthController {
 
     @PostMapping("/auth-code")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
-        phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
+        phoneVerificationFacadeService.sendPhoneVerificationCode(request.phoneNumber());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }

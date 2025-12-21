@@ -16,7 +16,7 @@ public record SignUpRequest(
         Gender gender,
         @PhoneNumber
         @NotBlank
-        String phone,
+        String phoneNumber,
         @Size(min = 5, max = 20, message = "비밀번호는 5자 이상 20자 이하로 입력해주세요.")
         @NotBlank
         String password

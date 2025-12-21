@@ -705,7 +705,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         PhoneNumberResponse response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/get-reservations-id-phone-success"))
+                .filter(documentWithTag("reservation/get-reservations-id-phoneNumber-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()

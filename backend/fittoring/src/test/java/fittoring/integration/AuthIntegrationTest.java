@@ -1,6 +1,7 @@
 package fittoring.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
@@ -11,6 +12,7 @@ import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequ
 import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
@@ -43,16 +45,23 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
 
-    @DisplayName("사용자는 회원가입을 할 수 있다.")
+    @DisplayName("전화번호를 인증한 사용자는 회원가입을 할 수 있다.")
     @Test
     void signUp() {
         //given
         String loginId = "loginId";
         String name = "이름";
         Gender gender = Gender.MALE;
-        String phone = "010-1234-5678";
+        String phoneNumber = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
+
+        phoneVerificationRepository.save(new PhoneVerification(
+                        new Phone(phoneNumber),
+                        "123456",
+                        LocalDateTime.now().plusMinutes(3)
+                )
+        );
 
         //when
         RestAssured
@@ -71,16 +80,42 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(memberRepository.findById(1L)).isNotNull();
     }
 
-    @DisplayName("사용자는 유효하지 않은 정보로 회원가입을 할 수 없다.")
+    @DisplayName("전화번호 인증 정보가 없는 사용자는 회원가입을 할 수 없다.")
     @Test
     void signUp2() {
+        //given
+        String loginId = "loginId";
+        String name = "이름";
+        Gender gender = Gender.MALE;
+        String phoneNumber = "010-1234-5678";
+        String password = "password";
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
+
+        //when
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-signup-invalid-phoneNumber-verification"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/signup")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo(BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage()))
+        ;
+    }
+
+    @DisplayName("사용자는 유효하지 않은 정보로 회원가입을 할 수 없다.")
+    @Test
+    void signUp3() {
         //given
         String loginId = null;
         String name = "이름";
         Gender gender = Gender.MALE;
-        String phone = "010-1234-5678";
+        String phoneNumber = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
 
         //when
         Response response = RestAssured
@@ -238,18 +273,18 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.statusCode()).isEqualTo(204);
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("accessToken=;")
-                    && cookie.contains("Max-Age=0")
-                    && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=None")
-                    && cookie.contains("HttpOnly")
-                    && cookie.contains("Secure"));
+                            && cookie.contains("Max-Age=0")
+                            && cookie.contains("Path=/")
+                            && cookie.contains("SameSite=None")
+                            && cookie.contains("HttpOnly")
+                            && cookie.contains("Secure"));
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("refreshToken=;")
-                    && cookie.contains("Max-Age=0")
-                    && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=None")
-                    && cookie.contains("HttpOnly")
-                    && cookie.contains("Secure"));
+                            && cookie.contains("Max-Age=0")
+                            && cookie.contains("Path=/")
+                            && cookie.contains("SameSite=None")
+                            && cookie.contains("HttpOnly")
+                            && cookie.contains("Secure"));
         });
     }
 
@@ -331,7 +366,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")
     @Test
-    void signUp3() {
+    void signUp4() {
         //given
         Member member = new Member(
                 "loginId",
@@ -346,9 +381,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         String loginId = "loginId";
         String name = "이름";
         Gender gender = Gender.MALE;
-        String phone = "010-1234-5678";
+        String phoneNumber = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
 
         //when
         Response response = RestAssured

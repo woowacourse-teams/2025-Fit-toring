@@ -8,19 +8,26 @@ import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
-import fittoring.application.exception.*;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
-import fittoring.domain.model.*;
+import fittoring.domain.model.AuthProvider;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberOauth;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -31,11 +38,13 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final OauthClientService oauthClientService;
     private final MemberOauthRepository memberOAuthRepository;
+    private final PhoneVerificationService phoneVerificationService;
 
     @Transactional
     public void register(SignUpRequest request) {
         validateDuplicateLoginId(request.loginId());
-        validateDuplicatePhone(request.phone());
+        validateDuplicatePhone(request.phoneNumber());
+        phoneVerificationService.existValidPhoneVerification(new Phone(request.phoneNumber()));
         Member member = createMember(request);
         memberRepository.save(member);
     }
@@ -99,7 +108,7 @@ public class AuthService {
                 request.loginId(),
                 request.gender(),
                 request.name(),
-                new Phone(request.phone()),
+                new Phone(request.phoneNumber()),
                 Password.from(request.password())
         );
     }

@@ -19,7 +19,7 @@ public enum BusinessErrorMessage {
     EMPTY_TOKEN("토큰이 비어있습니다."),
     TOKEN_NOT_FOUND("토큰을 찾을 수 없습니다."),
     EMPTY_COOKIE("쿠키가 존재하지 않습니다."),
-    PHONE_VERIFICATION_INVALID("만료 혹은 인증되지 않은 요청입니다."),
+    PHONE_VERIFICATION_INVALID("만료 혹은 인증되지 않은 전화번호입니다."),
     IMAGE_NOT_FOUND("존재하지 않는 이미지입니다."),
     CERTIFICATE_NOT_FOUND("존재하지 않는 자격증명입니다."),
     ALREADY_PROCESSED_CERTIFICATE("이미 처리된 자격증명입니다."),
