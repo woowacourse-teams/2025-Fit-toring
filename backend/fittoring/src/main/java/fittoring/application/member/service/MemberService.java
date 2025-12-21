@@ -91,7 +91,7 @@ public class MemberService {
 
     private boolean isEmptyRequest(MemberInfoUpdateRequest request) {
         return request.name() == null && request.gender() == null
-               && request.phoneNumber() == null && request.password() == null;
+                && request.phoneNumber() == null && request.password() == null;
     }
 
     private Member getMember(Long memberId) {

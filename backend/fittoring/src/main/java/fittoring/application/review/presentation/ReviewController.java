@@ -1,17 +1,17 @@
 package fittoring.application.review.presentation;
 
-import fittoring.config.auth.AuthRequired;
-import fittoring.config.auth.Login;
-import fittoring.config.auth.LoginInfo;
+import fittoring.application.review.presentation.dto.request.ReviewCreateRequest;
+import fittoring.application.review.presentation.dto.request.ReviewModifyRequest;
+import fittoring.application.review.presentation.dto.response.MemberReviewGetResponse;
+import fittoring.application.review.presentation.dto.response.ReviewCreateResponse;
+import fittoring.application.review.presentation.dto.response.ReviewGetResponse;
 import fittoring.application.review.service.ReviewService;
 import fittoring.application.review.service.dto.ReviewCreateDto;
 import fittoring.application.review.service.dto.ReviewDeleteDto;
 import fittoring.application.review.service.dto.ReviewModifyDto;
-import fittoring.application.review.presentation.dto.response.MemberReviewGetResponse;
-import fittoring.application.review.presentation.dto.request.ReviewCreateRequest;
-import fittoring.application.review.presentation.dto.response.ReviewCreateResponse;
-import fittoring.application.review.presentation.dto.response.ReviewGetResponse;
-import fittoring.application.review.presentation.dto.request.ReviewModifyRequest;
+import fittoring.config.auth.AuthRequired;
+import fittoring.config.auth.Login;
+import fittoring.config.auth.LoginInfo;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

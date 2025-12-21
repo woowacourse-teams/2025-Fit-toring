@@ -59,14 +59,14 @@ public class MentoringStatistics {
 
     public static MentoringStatistics defaultOf(Mentoring mentoring) {
         return new MentoringStatistics(
-            mentoring.getId(),
-            0,
-            0,
-            0,
-            0.0,
-            null,
-            false,
-            null
+                mentoring.getId(),
+                0,
+                0,
+                0,
+                0.0,
+                null,
+                false,
+                null
         );
     }
 }

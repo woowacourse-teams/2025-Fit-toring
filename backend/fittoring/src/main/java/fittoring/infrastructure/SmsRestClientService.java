@@ -25,7 +25,8 @@ public class SmsRestClientService {
     @Value("${COOL_SMS_FROM_PHONE}")
     private String fromPhone;
 
-    public SmsRestClientService(@Qualifier("smsRestClient") RestClient smsRestClient, SmsAuthHeaderGenerator authHeaderGenerator) {
+    public SmsRestClientService(@Qualifier("smsRestClient") RestClient smsRestClient,
+                                SmsAuthHeaderGenerator authHeaderGenerator) {
         this.smsRestClient = smsRestClient;
         this.authHeaderGenerator = authHeaderGenerator;
     }
