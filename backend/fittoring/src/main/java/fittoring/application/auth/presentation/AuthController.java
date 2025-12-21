@@ -1,13 +1,7 @@
 package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignInRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
-import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.request.*;
 import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
@@ -61,7 +55,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        authService.register(request);
+        authService.register(request.loginId(), request.name(), request.gender(), request.phoneNumber(), request.password());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }

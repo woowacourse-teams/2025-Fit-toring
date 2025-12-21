@@ -1,34 +1,25 @@
 package fittoring.application.auth.service;
 
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
 import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
 import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.DuplicateLoginIdException;
-import fittoring.application.exception.DuplicatePhoneException;
-import fittoring.application.exception.InvalidTokenException;
-import fittoring.application.exception.MemberNotFoundException;
-import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.exception.*;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
-import fittoring.domain.model.AuthProvider;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberOauth;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.RefreshToken;
+import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -44,11 +35,11 @@ public class AuthService {
     private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
 
     @Transactional
-    public void register(SignUpRequest request) {
-        validateDuplicateLoginId(request.loginId());
-        validateDuplicatePhone(request.phoneNumber());
-        phoneVerificationService.existValidPhoneVerification(new Phone(request.phoneNumber()));
-        Member member = createMember(request);
+    public void register(String loginId, String name, Gender gender, String phoneNumber, String password) {
+        validateDuplicateLoginId(loginId);
+        validateDuplicatePhone(phoneNumber);
+        phoneVerificationService.existValidPhoneVerification(new Phone(phoneNumber));
+        Member member = createMember(loginId, name, gender, phoneNumber, password);
         memberRepository.save(member);
     }
 
@@ -62,6 +53,16 @@ public class AuthService {
         if (memberRepository.existsByPhone_Number(phone)) {
             throw new DuplicatePhoneException(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
         }
+    }
+
+    private Member createMember(String loginId, String name, Gender gender, String phoneNumber, String password) {
+        return new Member(
+                loginId,
+                gender,
+                name,
+                new Phone(phoneNumber),
+                Password.from(password)
+        );
     }
 
     @Transactional
@@ -104,16 +105,6 @@ public class AuthService {
     private Member getMemberByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new NotFoundMemberException(LOGIN_ID_NOT_FOUND_MESSAGE));
-    }
-
-    private Member createMember(SignUpRequest request) {
-        return new Member(
-                request.loginId(),
-                request.gender(),
-                request.name(),
-                new Phone(request.phoneNumber()),
-                Password.from(request.password())
-        );
     }
 
     @Transactional
