@@ -1,20 +1,9 @@
 package fittoring.application;
 
-import fittoring.domain.model.Certificate;
-import fittoring.domain.model.CertificateType;
-import fittoring.domain.model.ChatRoom;
-import fittoring.domain.model.Gender;
-import fittoring.domain.model.Image;
-import fittoring.domain.model.ImageType;
-import fittoring.domain.model.ImageVariant;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
-import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.Reservation;
-import fittoring.domain.model.Review;
-import fittoring.domain.model.Status;
+import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
+
+import java.time.LocalDateTime;
 
 public class FixtureUtil {
 
@@ -122,5 +111,15 @@ public class FixtureUtil {
                 menteeId,
                 mentorId
         );
+    }
+
+    public static PhoneVerification getVerifiedPhoneVerification(Phone phone){
+        PhoneVerification phoneVerification = new PhoneVerification(
+                phone,
+                "123456",
+                LocalDateTime.now().plusMinutes(3)
+        );
+        phoneVerification.verify();
+        return phoneVerification;
     }
 }

@@ -178,6 +178,7 @@ public class AuthService {
         return member.getLoginId();
     }
 
+    @Transactional
     public Member resetPassword(String loginId, String phoneNumber, String password) {
         phoneVerificationService.checkVerificationStatus(new Phone(phoneNumber));
         Member member = memberRepository.findByLoginId(loginId)

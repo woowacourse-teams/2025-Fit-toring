@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
@@ -23,9 +24,11 @@ import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,11 +59,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         String password = "password";
         SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
 
-        phoneVerificationRepository.save(new PhoneVerification(
-                        new Phone(phoneNumber),
-                        "123456",
-                        LocalDateTime.now().plusMinutes(3)
-                )
+        phoneVerificationRepository.save(
+                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
         );
 
         //when

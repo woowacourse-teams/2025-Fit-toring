@@ -54,12 +54,13 @@ class AuthServiceTest extends IntegrationTestSupport {
                 phoneNumber,
                 password);
 
-        phoneVerificationRepository.save(new PhoneVerification(
-                        new Phone(phoneNumber),
-                        "123456",
-                        LocalDateTime.now().plusMinutes(3)
-                )
+        PhoneVerification phoneVerification = new PhoneVerification(
+                new Phone(phoneNumber),
+                "123456",
+                LocalDateTime.now().plusMinutes(3)
         );
+        phoneVerification.verify();
+        phoneVerificationRepository.save(phoneVerification);
 
         //when
         authService.register(request.toRegisterMemberDto());
@@ -284,13 +285,8 @@ class AuthServiceTest extends IntegrationTestSupport {
         Member mentee = FixtureUtil.getTestMentee();
         Password before = mentee.getPassword();
         memberRepository.save(mentee);
-
         phoneVerificationRepository.save(
-                new PhoneVerification(
-                        mentee.getPhone(),
-                        "123456",
-                        LocalDateTime.now().plusMinutes(3)
-                )
+                FixtureUtil.getVerifiedPhoneVerification(mentee.getPhone())
         );
         //when
         Member changed = authService.resetPassword(mentee.getLoginId(), mentee.getPhoneNumber(), "after");
