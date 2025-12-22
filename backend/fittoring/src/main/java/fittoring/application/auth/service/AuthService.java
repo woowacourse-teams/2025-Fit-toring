@@ -2,12 +2,12 @@ package fittoring.application.auth.service;
 
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.service.dto.AuthTokenDto;
-import fittoring.application.auth.service.dto.LoginInfoDto;
-import fittoring.application.auth.repository.MemberOauthRepository;
-import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
 import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
+import fittoring.application.auth.repository.MemberOauthRepository;
+import fittoring.application.auth.repository.RefreshTokenRepository;
+import fittoring.application.auth.service.dto.AuthTokenDto;
+import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
@@ -83,16 +83,21 @@ public class AuthService {
     public AuthTokenDto reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMember().getId());
         String newRefreshToken = jwtProvider.createRefreshToken();
-        findRefreshToken.update(newRefreshToken, LocalDateTime.now());
+        int updateRowCount = refreshTokenRepository.updateToken(refreshToken, newRefreshToken, LocalDateTime.now());
 
+        if (updateRowCount == 0) {
+            throw new InvalidTokenException(BusinessErrorMessage.INVALID_TOKEN.getMessage());
+        }
+
+        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMember().getId());
         return new AuthTokenDto(newAccessToken, newRefreshToken, null);
     }
 
     private RefreshToken getRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByTokenValue(refreshToken)
-                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage()));
+                .orElseThrow(
+                        () -> new InvalidTokenException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage()));
     }
 
     private Member getMemberByLoginId(String loginId) {
