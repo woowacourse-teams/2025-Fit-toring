@@ -62,7 +62,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         );
 
         //when
-        authService.register(request.loginId(), request.name(), request.gender(), request.phoneNumber(), request.password());
+        authService.register(request.toRegisterMemberDto());
 
         //then
         String actual = memberRepository.findById(1L)

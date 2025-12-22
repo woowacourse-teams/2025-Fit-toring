@@ -7,6 +7,7 @@ import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
+import fittoring.application.auth.service.dto.RegisterMemberDto;
 import fittoring.application.exception.*;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
@@ -35,11 +36,11 @@ public class AuthService {
     private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
 
     @Transactional
-    public void register(String loginId, String name, Gender gender, String phoneNumber, String password) {
-        validateDuplicateLoginId(loginId);
-        validateDuplicatePhone(phoneNumber);
-        phoneVerificationService.existValidPhoneVerification(new Phone(phoneNumber));
-        Member member = createMember(loginId, name, gender, phoneNumber, password);
+    public void register(RegisterMemberDto dto) {
+        validateDuplicateLoginId(dto.loginId());
+        validateDuplicatePhone(dto.phoneNumber());
+        phoneVerificationService.existValidPhoneVerification(new Phone(dto.phoneNumber()));
+        Member member = createMember(dto);
         memberRepository.save(member);
     }
 
@@ -55,13 +56,13 @@ public class AuthService {
         }
     }
 
-    private Member createMember(String loginId, String name, Gender gender, String phoneNumber, String password) {
+    private Member createMember(RegisterMemberDto dto) {
         return new Member(
-                loginId,
-                gender,
-                name,
-                new Phone(phoneNumber),
-                Password.from(password)
+                dto.loginId(),
+                dto.gender(),
+                dto.name(),
+                new Phone(dto.phoneNumber()),
+                Password.from(dto.password())
         );
     }
 
@@ -168,10 +169,8 @@ public class AuthService {
     }
 
     public String findLoginId(String name, String phoneNumber) {
-        // 일치하는 전화번호 없으면 예외
         Member member = memberRepository.findByPhone_Number(phoneNumber)
                 .orElseThrow(() -> new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE));
-        // 전화번호 주인과 이름이 일치하지 않으면 예외
         if (!member.getName().equals(name)) {
             throw new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE);
         }
@@ -179,12 +178,9 @@ public class AuthService {
     }
 
     public Member resetPassword(String loginId, String phoneNumber, String password) {
-        // 전화번호 인증 확인
         phoneVerificationService.existValidPhoneVerification(new Phone(phoneNumber));
-        // loginId(unique)로 Member 탐색
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        // 패스워드 변경
         member.updatePassword(password);
         return member;
     }

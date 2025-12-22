@@ -1,5 +1,6 @@
 package fittoring.application.auth.presentation.dto.request;
 
+import fittoring.application.auth.service.dto.RegisterMemberDto;
 import fittoring.domain.model.Gender;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,5 +22,7 @@ public record SignUpRequest(
         @NotBlank
         String password
 ) {
-
+    public RegisterMemberDto toRegisterMemberDto() {
+        return new RegisterMemberDto(loginId, name, gender, phoneNumber, password);
+    }
 }

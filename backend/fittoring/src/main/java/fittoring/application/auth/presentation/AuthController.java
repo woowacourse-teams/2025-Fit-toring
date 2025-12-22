@@ -55,7 +55,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        authService.register(request.loginId(), request.name(), request.gender(), request.phoneNumber(), request.password());
+        authService.register(request.toRegisterMemberDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
