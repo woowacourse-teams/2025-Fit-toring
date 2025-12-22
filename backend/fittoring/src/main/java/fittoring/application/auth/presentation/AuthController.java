@@ -9,12 +9,10 @@ import fittoring.application.auth.presentation.dto.request.VerificationCodeReque
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
-import fittoring.application.auth.service.AuthService;
-import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.auth.service.PhoneVerificationFacadeService;
-import fittoring.application.auth.service.PhoneVerificationService;
+import fittoring.application.auth.service.*;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
+import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.OauthLoginException;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.config.auth.AuthRequired;
@@ -48,6 +46,7 @@ public class AuthController {
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
+    private final JwtExtractor jwtExtractor;
     private final JwtProvider jwtProvider;
     private final CookieWriter cookieWriter;
 
@@ -84,12 +83,21 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("/isLoggedIn")
+    @GetMapping("/auth/check")
     public ResponseEntity<LoginStatusDto> isLoggedIn(HttpServletRequest httpRequest) {
         Cookie[] cookies = httpRequest.getCookies();
-        Long memberId = authService.extractMemberId(cookies);
+        if (cookies == null || cookies.length == 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        String accessToken;
+        try {
+            accessToken = jwtExtractor.extractTokenFromCookie("accessToken", cookies);
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        Long memberId = authService.extractMemberId(accessToken);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new LoginStatusDto(memberId != null, memberId));
+                .body(new LoginStatusDto(memberId));
     }
 
     @PostMapping("/reissue")

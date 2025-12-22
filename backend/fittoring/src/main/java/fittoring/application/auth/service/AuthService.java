@@ -166,16 +166,7 @@ public class AuthService {
         );
     }
 
-    public Long extractMemberId(Cookie[] cookies) {
-        // 쿠키가 아예 없는 경우, 첫 접속 or 비회원
-        if(cookies==null||cookies.length==0){
-            return null;
-        }
-        try {
-            String accessToken = jwtExtractor.extractTokenFromCookie("accessToken", cookies);
-            return jwtProvider.getSubjectFromPayloadBy(accessToken);
-        } catch (Exception e) {
-            return null;
-        }
+    public Long extractMemberId(String accessToken) {
+        return jwtProvider.getSubjectFromPayloadBy(accessToken);
     }
 }
