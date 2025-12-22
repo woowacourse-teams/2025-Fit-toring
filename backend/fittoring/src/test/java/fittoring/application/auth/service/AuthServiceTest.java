@@ -54,13 +54,7 @@ class AuthServiceTest extends IntegrationTestSupport {
                 phoneNumber,
                 password);
 
-        PhoneVerification phoneVerification = new PhoneVerification(
-                new Phone(phoneNumber),
-                "123456",
-                LocalDateTime.now().plusMinutes(3)
-        );
-        phoneVerification.verify();
-        phoneVerificationRepository.save(phoneVerification);
+        phoneVerificationRepository.save(FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber)));
 
         //when
         authService.register(request.toRegisterMemberDto());

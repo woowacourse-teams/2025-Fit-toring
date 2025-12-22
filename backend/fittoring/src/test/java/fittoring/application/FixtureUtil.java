@@ -4,6 +4,7 @@ import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class FixtureUtil {
 
@@ -117,7 +118,8 @@ public class FixtureUtil {
         PhoneVerification phoneVerification = new PhoneVerification(
                 phone,
                 "123456",
-                LocalDateTime.now().plusMinutes(3)
+                LocalDateTime.now(ZoneId.of("Asia/Seoul"))
+                        .plusMinutes(15)
         );
         phoneVerification.verify();
         return phoneVerification;
