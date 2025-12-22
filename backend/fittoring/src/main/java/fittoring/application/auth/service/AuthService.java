@@ -39,7 +39,7 @@ public class AuthService {
     public void register(RegisterMemberDto dto) {
         validateDuplicateLoginId(dto.loginId());
         validateDuplicatePhone(dto.phoneNumber());
-        phoneVerificationService.existValidPhoneVerification(new Phone(dto.phoneNumber()));
+        phoneVerificationService.checkVerificationStatus(new Phone(dto.phoneNumber()));
         Member member = createMember(dto);
         memberRepository.save(member);
     }
@@ -168,6 +168,7 @@ public class AuthService {
         );
     }
 
+    @Transactional(readOnly = true)
     public String findLoginId(String name, String phoneNumber) {
         Member member = memberRepository.findByPhone_Number(phoneNumber)
                 .orElseThrow(() -> new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE));
@@ -178,7 +179,7 @@ public class AuthService {
     }
 
     public Member resetPassword(String loginId, String phoneNumber, String password) {
-        phoneVerificationService.existValidPhoneVerification(new Phone(phoneNumber));
+        phoneVerificationService.checkVerificationStatus(new Phone(phoneNumber));
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         member.updatePassword(password);

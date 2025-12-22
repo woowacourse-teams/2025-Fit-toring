@@ -37,6 +37,7 @@ public class PhoneVerificationService {
                 .plusMinutes(EXPIRE_TIME_MINUTE);
     }
 
+    @Transactional
     public void verifyCode(VerificationCodeRequest request) {
         Phone phone = new Phone(request.phoneNumber());
         LocalDateTime requestTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -45,17 +46,19 @@ public class PhoneVerificationService {
                         request.code()
                 )
                 .orElseThrow(() -> new InvalidPhoneVerificationException(INVALID_PHONE_VERIFICATION_MESSAGE));
-        if (phoneVerification.isExpired(requestTime)) {
+        if (phoneVerification.isExpired(requestTime) || phoneVerification.isVerified()) {
             throw new InvalidPhoneVerificationException(INVALID_PHONE_VERIFICATION_MESSAGE);
         }
+        phoneVerification.verify();
     }
 
-    public void existValidPhoneVerification(Phone phone) {
+    @Transactional(readOnly = true)
+    public void checkVerificationStatus(Phone phone) {
         PhoneVerification phoneVerification = phoneVerificationRepository.findByPhone(phone)
                 .orElseThrow(() -> new InvalidPhoneVerificationException(INVALID_PHONE_VERIFICATION_MESSAGE));
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        if (phoneVerification.isExpired(now)) {
-            new InvalidPhoneVerificationException(INVALID_PHONE_VERIFICATION_MESSAGE);
+        if (phoneVerification.isExpired(now) || !phoneVerification.isVerified()) {
+            throw new InvalidPhoneVerificationException(INVALID_PHONE_VERIFICATION_MESSAGE);
         }
     }
 }
