@@ -8,8 +8,8 @@ export const QUERY_KEY = {
 
 const useMyMentoringId = (authenticated: boolean) => {
   const storedData = localStorage.getItem('memberId');
-  const parsedData = storedData ? JSON.parse(storedData) : null;
-  const memberId = parsedData ? parsedData.memberId : null;
+  const memberId = storedData ? JSON.parse(storedData) : null;
+
   const { data: myMentoringId = null, error } = useQuery({
     queryKey: QUERY_KEY.myMentoringId(memberId),
     queryFn: getMineMentoring,
