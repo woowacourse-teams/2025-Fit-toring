@@ -6,12 +6,13 @@ interface AuthCodeVerifyBody {
   code: string;
 }
 
-const BASE_URL = process.env.API_BASE_URL;
-
 const DUMMY_AUTH_CODE = '123456';
 
+const BASE_URL = process.env.API_BASE_URL;
+const AUTH_CODE_VERIFY_URL = `${BASE_URL}${API_ENDPOINTS.AUTH_CODE_VERIFY}`;
+
 export const postAuthCodeVerify = http.post(
-  `${BASE_URL}${API_ENDPOINTS.AUTH_CODE_VERIFY}`,
+  `${AUTH_CODE_VERIFY_URL}`,
   async ({ request }) => {
     const body = await request.json();
 
