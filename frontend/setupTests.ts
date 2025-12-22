@@ -2,10 +2,7 @@
 import '@testing-library/jest-dom/vitest';
 
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { config } from 'dotenv';
 import { expect, afterEach, beforeAll, afterAll } from 'vitest';
-
-config({ path: '.env.prod' });
 
 import { server } from './src/common/mock/server';
 
