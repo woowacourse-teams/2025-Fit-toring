@@ -25,7 +25,7 @@ public class FcmNotificationService implements NotificationService {
         MemberFcmToken memberFcmToken = memberFcmTokenRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new MemberFcmTokenNotFoundException(
                         BusinessErrorMessage.MEMBER_FCM_TOKEN_NOT_FOUND.getMessage()));
-        sendNotification(title, body, memberFcmToken.getToken());
+        sendNotification(memberFcmToken.getToken(), title, body);
     }
 
     private void sendNotification(String fcmToken, String title, String body) {
