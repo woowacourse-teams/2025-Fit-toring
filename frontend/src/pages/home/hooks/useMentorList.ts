@@ -20,6 +20,7 @@ const useMentorList = () => {
   const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
   const [hasNext, setHasNext] = useState(true);
   const [cursorCode, setCursorCode] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getMentors = useCallback(
     async (
@@ -59,8 +60,10 @@ const useMentorList = () => {
       sortKey: SortKey,
       cursorCode: string | null = null,
     ) => {
+      setIsLoading(true);
       const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
       initializeMentorList(data);
+      setIsLoading(false);
     },
     [getMentors, initializeMentorList],
   );
@@ -94,6 +97,7 @@ const useMentorList = () => {
     mentorList,
     hasNext,
     cursorCode,
+    isLoading,
     fetchInitialMentors,
     fetchMoreMentors,
   };
