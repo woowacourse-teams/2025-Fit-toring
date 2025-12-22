@@ -11,8 +11,8 @@ import { PAGE_URL } from '../../common/constants/url';
 import { THEME } from '../../common/styles/theme';
 
 import HomeHeader from './components/HomeHeader/HomeHeader';
-import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
+import MentorCardListContent from './components/MentorCardListContent/MentorCardListContent';
 import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
@@ -57,6 +57,7 @@ function Home() {
     mentorList,
     hasNext,
     cursorCode,
+    isLoading,
   } = useMentorList();
 
   const handleSortButtonClick = async (option: SortKey) => {
@@ -142,9 +143,11 @@ function Home() {
           ))}
         </S_CheckboxWrapper>
         <MentorCardList>
-          {mentorList.map((mentor) => (
-            <MentorCardItem key={mentor.id} mentor={mentor} />
-          ))}
+          <MentorCardListContent
+            isLoading={isLoading}
+            mentorList={mentorList}
+            hasFilter={selectedSpecialties.length > 0}
+          />
           <S_Trigger ref={elementRef} />
         </MentorCardList>
       </S_Contents>
