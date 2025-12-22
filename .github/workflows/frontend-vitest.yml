@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize]
     paths:
       - 'frontend/**'
+      - '.github/workflows/frontend-vitest.yml'
 
 jobs:
   Vitest:
