@@ -157,7 +157,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         List<String> cookies = response.getHeaders().getValues("Set-Cookie");
 
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(response.statusCode()).isEqualTo(400);
+                    assertThat(response.statusCode()).isEqualTo(404);
                     assertThat(response.getHeaders().hasHeaderWithName("Set-Cookie")).isFalse();
                     assertThat(cookies).noneMatch(cookie -> cookie.startsWith("accessToken="));
                     assertThat(cookies).noneMatch(cookie -> cookie.startsWith("refreshToken="));
