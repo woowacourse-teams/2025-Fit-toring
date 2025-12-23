@@ -9,6 +9,7 @@ import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
@@ -109,7 +110,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         //when
         //then
         assertThatThrownBy(() -> authService.login(loginId, password))
-                .isInstanceOf(NotFoundMemberException.class);
+                .isInstanceOf(MemberNotFoundException.class);
     }
 
     @DisplayName("잘못된 비밀번호로 로그인에 실패하면 예외가 발생한다.")

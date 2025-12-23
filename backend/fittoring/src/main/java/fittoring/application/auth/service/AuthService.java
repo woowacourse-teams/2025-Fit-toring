@@ -105,7 +105,7 @@ public class AuthService {
 
     private Member getMemberByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new NotFoundMemberException(LOGIN_ID_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
     @Transactional
@@ -181,8 +181,7 @@ public class AuthService {
     @Transactional
     public Member resetPassword(String loginId, String phoneNumber, String password) {
         phoneVerificationService.checkVerificationStatus(new Phone(phoneNumber));
-        Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        Member member = getMemberByLoginId(loginId);
         member.updatePassword(password);
         return member;
     }
