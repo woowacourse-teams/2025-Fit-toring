@@ -2,17 +2,7 @@ package fittoring.domain.model;
 
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidStatusException;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +11,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -70,17 +62,19 @@ public class Reservation {
         this.status = updateStatus;
     }
 
-    public void changeStatus(Status updateStatus) {
-        validateReservation(updateStatus);
-        this.status = updateStatus;
+    public void approve() {
+        validateStatus();
+        this.status = Status.APPROVED;
     }
 
-    private void validateReservation(Status updateStatus) {
-        if (this.status.isReject() || this.status.isComplete()) {
+    public void reject() {
+        validateStatus();
+        this.status = Status.REJECTED;
+    }
+
+    private void validateStatus() {
+        if (this.status.isReject() || this.status.isComplete() || this.status.isApprove()) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
-        }
-        if (this.status.equals(updateStatus)) {
-            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
         }
     }
 
@@ -115,7 +109,7 @@ public class Reservation {
     public Member getMentor() {
         return mentoring.getMentor();
     }
-    
+
     public String getMenteePhone() {
         return mentee.getPhoneNumber();
     }
