@@ -4,12 +4,7 @@ import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chat.service.ChatRoomService;
 import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.MentorAndMenteeIsSameException;
-import fittoring.application.exception.MentoringNotFoundException;
-import fittoring.application.exception.NotFoundMemberException;
-import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.exception.*;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
@@ -22,22 +17,13 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.domain.model.ChatRoom;
-import fittoring.domain.model.ImageType;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
-import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Reservation;
-import fittoring.domain.model.Status;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import fittoring.domain.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -183,18 +169,29 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationInfo updateStatus(Long reservationId, String updateStatus) {
+    public ReservationInfo approveStatus(Long memberId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
-        Status status = Status.of(updateStatus);
-        reservation.changeStatus(status);
-
-        String url = "";
-        if (reservation.isApprove()) {
-            ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
-            url = chatRoomCreatedInfo.url();
+        if (reservation.getMentor().getId() != memberId) {
+            throw new IllegalArgumentException("자신의 멘토링이 아닙니다.");
         }
 
+        reservation.approve();
+
+        ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
+        String url = chatRoomCreatedInfo.url();
+
         return new ReservationInfo(reservation, url);
+    }
+
+    @Transactional
+    public ReservationInfo rejectStatus(Long memberId, Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        if (reservation.getMentor().getId() != memberId) {
+            throw new IllegalArgumentException("자신의 멘토링이 아닙니다.");
+        }
+
+        reservation.reject();
+        return new ReservationInfo(reservation, null);
     }
 
     private Reservation getReservation(Long reservationId) {
