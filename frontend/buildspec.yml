@@ -5,10 +5,12 @@ phases:
     runtime-versions:
       nodejs: 22
     commands:
+      - echo "======= install 단계 ======="
       - cd frontend
       - npm install
   build:
     commands:
+      - echo "======= build 단계 ======="
       - |
         S3_BASE_PATH="s3://fittoring-s3/fit-toring"
         if [ "$APP_ENV" = "production" ]; then
@@ -27,6 +29,7 @@ phases:
 
   post_build:
     commands:
+      - echo "======= post_build 단계 ======="
       - echo "🚀 Deploying to $S3_PATH with proper cache headers..."
       - |
         aws s3 cp dist/index.html $S3_PATH/index.html \
