@@ -10,7 +10,7 @@ phases:
   build:
     commands:
       - |
-        S3_BASE_PATH="s3://techcourse-project-2025/fit-toring"
+        S3_BASE_PATH="s3://fittoring-s3/fit-toring"
         if [ "$APP_ENV" = "production" ]; then
           echo "✅ Building for PRODUCTION..."
           npm run build:prod
@@ -30,7 +30,7 @@ phases:
       - echo "🚀 Deploying to $S3_PATH with proper cache headers..."
       - |
         aws s3 cp dist/index.html $S3_PATH/index.html \
-          --cache-control "no-store, no-cache, must-revalidate" \
+          --cache-control "no-cache, no-store, must-revalidate" \
           --content-type "text/html" \
           --metadata-directive REPLACE
       - |
