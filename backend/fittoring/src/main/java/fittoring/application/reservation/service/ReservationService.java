@@ -180,7 +180,7 @@ public class ReservationService {
         ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
         String url = chatRoomCreatedInfo.url();
 
-        return new ReservationInfo(reservation, url);
+        return ReservationInfo.from(reservation, url);
     }
 
     @Transactional
@@ -191,7 +191,7 @@ public class ReservationService {
         }
 
         reservation.reject();
-        return new ReservationInfo(reservation, null);
+        return ReservationInfo.from(reservation, null);
     }
 
     private Reservation getReservation(Long reservationId) {

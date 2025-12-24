@@ -22,21 +22,19 @@ public class MentoringReservationFacadeService {
 
     public void updateApproveStatusAndSendSms(Long memberId, Long reservationId) {
         ReservationInfo reservationInfo = reservationService.approveStatus(memberId, reservationId);
-        Reservation reservation = reservationInfo.reservation();
         reservationNotificationService.sendReservationApproveSmsMessage(
-                reservation.getMentorName(),
-                reservation.getContent(),
-                reservation.getMentee().getPhone(),
+                reservationInfo.mentorName(),
+                reservationInfo.content(),
+                reservationInfo.menteePhoneNumber(),
                 reservationInfo.chatRoomUrl()
         );
     }
 
     public void updateRejectStatusAndSendSms(Long memberId, Long reservationId) {
         ReservationInfo reservationInfo = reservationService.rejectStatus(memberId, reservationId);
-        Reservation reservation = reservationInfo.reservation();
         reservationNotificationService.sendReservationRejectSmsMessage(
-                reservation.getMentorName(),
-                reservation.getMentee().getPhone()
+                reservationInfo.mentorName(),
+                reservationInfo.menteePhoneNumber()
         );
     }
 }
