@@ -192,7 +192,7 @@ public class ReservationService {
 
     private void validateMentorAuthority(Long reservationAuthorId, Long memberId) {
         if (!Objects.equals(reservationAuthorId, memberId)) {
-            throw new IllegalArgumentException("자신의 멘토링이 아닙니다.");
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
     }
 

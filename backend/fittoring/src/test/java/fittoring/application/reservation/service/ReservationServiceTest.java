@@ -5,10 +5,7 @@ import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
 import fittoring.application.chat.repository.ChatRoomRepository;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.MentorAndMenteeIsSameException;
-import fittoring.application.exception.MentoringNotFoundException;
-import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.exception.*;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
@@ -266,8 +263,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
         // when // then
         long invalidMentorId = 999L;
         assertThatThrownBy(() -> reservationService.approveStatus(invalidMentorId, reservation.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("자신의 멘토링이 아닙니다.");
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
     @DisplayName("자신의 멘토링이 아니라면 거절을 할 수 없다.")
@@ -285,8 +282,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
         // when // then
         long invalidMentorId = 999L;
         assertThatThrownBy(() -> reservationService.rejectStatus(invalidMentorId, reservation.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("자신의 멘토링이 아닙니다.");
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
     @DisplayName("예약자(멘티)의 전화번호를 반환할 수 있다.")
