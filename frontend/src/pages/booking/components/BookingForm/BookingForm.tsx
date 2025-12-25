@@ -7,6 +7,7 @@ import ApiError from '../../../../common/apis/ApiError';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
+import useAsyncLock from '../../../../common/hooks/useAsyncLock';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { SMS_ERROR_MESSAGE } from '../../constants/message';
@@ -77,6 +78,9 @@ function BookingForm({
     }
   };
 
+  const { lockedCallback: handleLockedBooking, isLoading } = useAsyncLock({
+    callback: handleBooking,
+  });
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -84,7 +88,7 @@ function BookingForm({
       return;
     }
 
-    handleBooking();
+    handleLockedBooking();
   };
 
   useEffect(() => {
@@ -129,7 +133,7 @@ function BookingForm({
         </FormField>
       </S_UserInfoWrapper>
 
-      <BookingSummarySection price={mentoringPrice} />
+      <BookingSummarySection price={mentoringPrice} isLoading={isLoading} />
     </S_Container>
   );
 }
