@@ -3,13 +3,18 @@ import styled from '@emotion/styled';
 
 import timeIcon from '../../../../common/assets/images/timeIcon.svg';
 import Button from '../../../../common/components/Button/Button';
+import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
 interface BookingSummarySectionProps {
   price: number;
+  isLoading: boolean;
 }
 
-function BookingSummarySection({ price }: BookingSummarySectionProps) {
+function BookingSummarySection({
+  price,
+  isLoading,
+}: BookingSummarySectionProps) {
   return (
     <S_Container>
       <S_Wrapper>
@@ -25,6 +30,7 @@ function BookingSummarySection({ price }: BookingSummarySectionProps) {
       >
         예약하기
       </Button>
+          {isLoading ? <LoadingSpinner /> : '예약하기'}
     </S_Container>
   );
 }
