@@ -16,6 +16,7 @@ import fittoring.application.mentoring.repository.CategoryRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
+import fittoring.application.mentoring.service.dto.ReservationInfo;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
@@ -35,7 +36,6 @@ import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class ReservationServiceTest extends IntegrationTestSupport {
 
@@ -205,6 +205,50 @@ class ReservationServiceTest extends IntegrationTestSupport {
 
         // then
         assertThat(actual).isEmpty();
+    }
+
+    @DisplayName("자신의 예약을 승인할 수 있다.")
+    @Test
+    void approve() {
+        //given
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
+
+        // when
+        ReservationInfo actual = reservationService.approveStatus(mentor.getId(), reservation.getId());
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(actual.reservationId()).isEqualTo(reservation.getId());
+            assertThat(actual.mentorName()).isEqualTo(mentor.getName());
+            assertThat(actual.menteeName()).isEqualTo(mentee.getName());
+            assertThat(actual.menteePhone()).isEqualTo(mentee.getPhone());
+            assertThat(actual.chatRoomUrl()).isNotNull();
+        });
+    }
+
+    @DisplayName("자신의 예약을 거절할 수 있다.")
+    @Test
+    void reject() {
+        //given
+        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
+
+        // when
+        ReservationInfo actual = reservationService.rejectStatus(mentor.getId(), reservation.getId());
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(actual.reservationId()).isEqualTo(reservation.getId());
+            assertThat(actual.mentorName()).isEqualTo(mentor.getName());
+            assertThat(actual.menteeName()).isEqualTo(mentee.getName());
+            assertThat(actual.menteePhone()).isEqualTo(mentee.getPhone());
+            assertThat(actual.chatRoomUrl()).isNull();
+        });
     }
 
     @DisplayName("자신의 멘토링이 아니라면 승인을 할 수 없다.")
@@ -431,7 +475,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         Reservation deletedReservation = reservationRepository.findDeletedById(reservation.getId());
         Review deletedReview = reviewRepository.findDeletedById(review.getId());
 
-        assertSoftly(softly -> {
+        SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(deletedReservation.isDeleted()).isTrue();
             softly.assertThat(deletedReview.isDeleted()).isTrue();
             softly.assertThat(
