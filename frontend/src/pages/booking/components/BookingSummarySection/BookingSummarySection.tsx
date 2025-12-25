@@ -23,14 +23,13 @@ function BookingSummarySection({
       </S_Wrapper>
       <Button
         customStyle={css`
-          flex-grow: 1;
-
-          padding: 0.8rem 0;
+          height: 100%;
         `}
+        size="full"
+        disabled={isLoading}
       >
-        예약하기
+        {isLoading ? <LoadingSpinner /> : '예약하기'}
       </Button>
-          {isLoading ? <LoadingSpinner /> : '예약하기'}
     </S_Container>
   );
 }
@@ -43,13 +42,16 @@ const S_Container = styled.div`
   gap: 1rem;
 
   width: 100%;
-  height: 100%;
+  height: 4rem;
 `;
 
 const S_Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   gap: 0.22rem;
+
+  height: 100%;
 `;
 
 const S_Price = styled.span`
