@@ -14,20 +14,28 @@ const useAsyncLock = <T extends (...args: any[]) => Promise<any>>({
     callbackRef.current = callback;
   }, [callback]);
 
-  const lockedCallback = useCallback(async (...args: Parameters<T>) => {
-    if (lockedRef.current) {
-      return;
-    }
-    setIsLoading(true);
-    lockedRef.current = true;
+  const lockedCallback = useCallback(
+    async (
+      ...args: Parameters<T>
+    ): Promise<Awaited<ReturnType<T>> | undefined> => {
+      if (lockedRef.current) {
+        return;
+      }
+      setIsLoading(true);
+      lockedRef.current = true;
 
-    try {
-      await callbackRef.current(...args);
-    } finally {
-      setIsLoading(false);
-      lockedRef.current = false;
-    }
-  }, []);
+      try {
+        return await callbackRef.current(...args);
+      } catch (error) {
+        console.error('Error in lockedCallback:', error);
+        throw error;
+      } finally {
+        setIsLoading(false);
+        lockedRef.current = false;
+      }
+    },
+    [],
+  );
 
   return { isLoading, lockedCallback };
 };
