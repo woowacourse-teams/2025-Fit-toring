@@ -8,7 +8,7 @@ public record ReservationInfo(
         Long reservationId,
         String mentorName,
         String menteeName,
-        Phone menteePhoneNumber,
+        Phone menteePhone,
         String content,
         String chatRoomUrl
 ) {
@@ -18,7 +18,7 @@ public record ReservationInfo(
                 reservation.getId(),
                 reservation.getMentorName(),
                 reservation.getMenteeName(),
-                reservation.getMentor().getPhone(),
+                reservation.getMentee().getPhone(),
                 reservation.getContent(),
                 chatRoomUrl
         );

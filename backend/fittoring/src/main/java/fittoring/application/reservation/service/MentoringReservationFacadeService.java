@@ -25,7 +25,7 @@ public class MentoringReservationFacadeService {
         reservationNotificationService.sendReservationApproveSmsMessage(
                 reservationInfo.mentorName(),
                 reservationInfo.content(),
-                reservationInfo.menteePhoneNumber(),
+                reservationInfo.menteePhone(),
                 reservationInfo.chatRoomUrl()
         );
     }
@@ -34,7 +34,7 @@ public class MentoringReservationFacadeService {
         ReservationInfo reservationInfo = reservationService.rejectStatus(memberId, reservationId);
         reservationNotificationService.sendReservationRejectSmsMessage(
                 reservationInfo.mentorName(),
-                reservationInfo.menteePhoneNumber()
+                reservationInfo.menteePhone()
         );
     }
 }
