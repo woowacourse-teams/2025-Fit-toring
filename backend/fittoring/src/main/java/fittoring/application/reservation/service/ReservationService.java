@@ -171,7 +171,7 @@ public class ReservationService {
     @Transactional
     public ReservationInfo approveStatus(Long memberId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
-        if (reservation.getMentor().getId() != memberId) {
+        if (!Objects.equals(reservation.getMentor().getId(), memberId)) {
             throw new IllegalArgumentException("자신의 멘토링이 아닙니다.");
         }
 
@@ -186,7 +186,7 @@ public class ReservationService {
     @Transactional
     public ReservationInfo rejectStatus(Long memberId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
-        if (reservation.getMentor().getId() != memberId) {
+        if (!Objects.equals(reservation.getMentor().getId(), memberId)) {
             throw new IllegalArgumentException("자신의 멘토링이 아닙니다.");
         }
 
