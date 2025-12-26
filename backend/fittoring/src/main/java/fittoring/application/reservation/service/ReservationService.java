@@ -169,7 +169,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationInfo approveStatus(Long memberId, Long reservationId) {
+    public ReservationInfo approve(Long memberId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
         validateMentorAuthority(reservation.getMentor().getId(), memberId);
 
@@ -182,7 +182,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationInfo rejectStatus(Long memberId, Long reservationId) {
+    public ReservationInfo reject(Long memberId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
         validateMentorAuthority(reservation.getMentor().getId(), memberId);
 

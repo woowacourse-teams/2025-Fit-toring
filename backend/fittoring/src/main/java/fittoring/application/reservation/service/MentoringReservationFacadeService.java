@@ -21,7 +21,7 @@ public class MentoringReservationFacadeService {
     }
 
     public void approveAndSendSms(Long memberId, Long reservationId) {
-        ReservationInfo reservationInfo = reservationService.approveStatus(memberId, reservationId);
+        ReservationInfo reservationInfo = reservationService.approve(memberId, reservationId);
         reservationNotificationService.sendReservationApproveSmsMessage(
                 reservationInfo.mentorName(),
                 reservationInfo.content(),
@@ -31,7 +31,7 @@ public class MentoringReservationFacadeService {
     }
 
     public void rejectAndSendSms(Long memberId, Long reservationId) {
-        ReservationInfo reservationInfo = reservationService.rejectStatus(memberId, reservationId);
+        ReservationInfo reservationInfo = reservationService.reject(memberId, reservationId);
         reservationNotificationService.sendReservationRejectSmsMessage(
                 reservationInfo.mentorName(),
                 reservationInfo.menteePhone()

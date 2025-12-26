@@ -214,7 +214,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
 
         // when
-        ReservationInfo actual = reservationService.approveStatus(mentor.getId(), reservation.getId());
+        ReservationInfo actual = reservationService.approve(mentor.getId(), reservation.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -236,7 +236,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
 
         // when
-        ReservationInfo actual = reservationService.rejectStatus(mentor.getId(), reservation.getId());
+        ReservationInfo actual = reservationService.reject(mentor.getId(), reservation.getId());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -262,7 +262,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
 
         // when // then
         long invalidMentorId = 999L;
-        assertThatThrownBy(() -> reservationService.approveStatus(invalidMentorId, reservation.getId()))
+        assertThatThrownBy(() -> reservationService.approve(invalidMentorId, reservation.getId()))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
@@ -281,7 +281,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
 
         // when // then
         long invalidMentorId = 999L;
-        assertThatThrownBy(() -> reservationService.rejectStatus(invalidMentorId, reservation.getId()))
+        assertThatThrownBy(() -> reservationService.reject(invalidMentorId, reservation.getId()))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
