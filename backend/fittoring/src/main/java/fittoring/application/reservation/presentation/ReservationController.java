@@ -73,7 +73,7 @@ public class ReservationController {
             @Login LoginInfo loginInfo,
             @PathVariable Long reservationId
     ) {
-        mentoringReservationFacadeService.updateApproveStatusAndSendSms(loginInfo.memberId(), reservationId);
+        mentoringReservationFacadeService.approveAndSendSms(loginInfo.memberId(), reservationId);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
@@ -84,7 +84,7 @@ public class ReservationController {
             @Login LoginInfo loginInfo,
             @PathVariable Long reservationId
     ) {
-        mentoringReservationFacadeService.updateRejectStatusAndSendSms(loginInfo.memberId(), reservationId);
+        mentoringReservationFacadeService.rejectAndSendSms(loginInfo.memberId(), reservationId);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
