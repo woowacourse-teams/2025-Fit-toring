@@ -41,7 +41,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     private boolean attemptAuthentication(HttpServletRequest request) {
         Cookie[] cookies = getCookies(request);
         String accessToken = getAccessToken(cookies);
-        jwtProvider.validateToken(accessToken);
 
         Long memberId = jwtProvider.getSubjectFromPayloadBy(accessToken);
         request.setAttribute("memberId", memberId);
