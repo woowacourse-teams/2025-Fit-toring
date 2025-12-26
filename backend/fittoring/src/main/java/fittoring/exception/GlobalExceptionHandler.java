@@ -1,41 +1,11 @@
 package fittoring.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.CategoryNotFoundException;
-import fittoring.application.exception.CertificateNotFoundException;
-import fittoring.application.exception.ChatRoomAlreadyExistsException;
-import fittoring.application.exception.ChatRoomNotFoundException;
-import fittoring.application.exception.DuplicateLoginIdException;
-import fittoring.application.exception.DuplicatePhoneException;
-import fittoring.application.exception.EmptyRequestException;
-import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.InvalidCertificateException;
-import fittoring.application.exception.InvalidCursorException;
-import fittoring.application.exception.InvalidPhoneVerificationException;
-import fittoring.application.exception.InvalidStatusException;
-import fittoring.application.exception.InvalidTokenException;
-import fittoring.application.exception.MemberNotFoundException;
-import fittoring.application.exception.MentorAndMenteeIsSameException;
-import fittoring.application.exception.MentoringAlreadyExistException;
-import fittoring.application.exception.MentoringNotFoundException;
-import fittoring.application.exception.MisMatchPasswordException;
-import fittoring.application.exception.NotFoundMemberException;
-import fittoring.application.exception.NotFoundStatusException;
-import fittoring.application.exception.OauthLoginException;
-import fittoring.application.exception.PasswordEncryptionException;
-import fittoring.application.exception.ReservationNotCompletedException;
-import fittoring.application.exception.ReservationNotFoundException;
-import fittoring.application.exception.ReviewAlreadyExistsException;
-import fittoring.application.exception.ReviewNotFoundException;
-import fittoring.application.exception.UnauthorizedChatRoomAccessException;
-import fittoring.application.exception.UnsupportedImageExtensionException;
+import fittoring.application.exception.*;
 import fittoring.infrastructure.exception.S3UploadException;
 import fittoring.infrastructure.exception.SmsException;
 import fittoring.logging.dto.ErrorLog;
 import fittoring.util.ResponseDurationCalculator;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -50,6 +20,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -127,6 +100,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ReviewAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handle(ReviewAlreadyExistsException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<ErrorResponse> handle(UnAuthorizedException e) {
+        return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(InvalidTokenException.class)
