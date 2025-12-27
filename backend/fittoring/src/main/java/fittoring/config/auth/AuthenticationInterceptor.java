@@ -4,6 +4,7 @@ import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.UnAuthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +45,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         String accessToken = getAccessToken(cookies);
 
         TokenPayload payload = jwtProvider.getSubjectFromPayloadBy(accessToken);
+        validateAdminRole(request, payload.role());
         request.setAttribute("memberId", payload.sub());
         return true;
     }
@@ -58,6 +60,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     private String getAccessToken(Cookie[] cookies) {
         return jwtExtractor.extractTokenFromCookie("accessToken", cookies);
+    }
+
+    private void validateAdminRole(HttpServletRequest request, String role) {
+        if (request.getRequestURI().startsWith("/admin")) {
+            if (!"ADMIN".equals(role)) {
+                throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+            }
+        }
     }
 }
 
