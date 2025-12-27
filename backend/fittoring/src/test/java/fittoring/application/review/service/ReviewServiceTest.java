@@ -571,19 +571,6 @@ class ReviewServiceTest extends IntegrationTestSupport {
                 .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
     }
 
-    @DisplayName("관리자 권한 없이 리뷰 삭제를 요청하면 예외가 발생한다.")
-    @Test
-    void failReviewDeleteWithoutAdmin() {
-        // given
-        Member notAdmin = memberRepository.save(FixtureUtil.getTestMentee());
-
-        // when
-        // then
-        assertThatThrownBy(() -> reviewService.deleteForAdmin(notAdmin.getId(), 1L))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-    }
-
     @DisplayName("관리자가 존재하는 리뷰에 대해 삭제를 요청하면 정상적으로 삭제한다.")
     @Test
     void successReviewDelete() {

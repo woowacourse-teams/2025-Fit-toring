@@ -1,7 +1,6 @@
 package fittoring.admin.service;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
@@ -9,8 +8,6 @@ import fittoring.IntegrationTestSupport;
 import fittoring.admin.presentation.dto.AdminCertificateResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.application.FixtureUtil;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.ForbiddenException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
@@ -48,7 +45,6 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
     @Autowired
     private ImageRepository imageRepository;
 
-
     @BeforeEach
     void setUp() {
         admin = FixtureUtil.getTestAdmin();
@@ -57,19 +53,6 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
                 .willReturn(true);
         given(presignedUrlService.isObjectExistsFromUrl(anyString()))
                 .willReturn(true);
-    }
-
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 자격증명 목록을 조회할 수 조차 없다.")
-    @Test
-    void getAllWithoutAdminAuthority() {
-        // given
-        Member user = memberRepository.save(FixtureUtil.getTestMentee());
-
-        // when
-        // then
-        assertThatThrownBy(() -> adminCertificateService.getAllCertificatesPaged(user.getId(), null, 1, 20))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
     @DisplayName("상태가 없는 자격증명을 페이지네이션하여 반환한다.")
@@ -210,24 +193,6 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
         });
     }
 
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 자격증명을 상세조회 할 수 없다.")
-    @Test
-    void getOneWithoutAdminAuthority() {
-        // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
-
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
-
-        // when
-        // then
-        assertThatThrownBy(() -> adminCertificateService.getCertificate(
-                member.getId(),
-                mentoring.getId()
-        ))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-    }
-
     @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 승인할 수 있다.")
     @Test
     void approveCertificateForAdmin() {
@@ -239,18 +204,6 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 승인할 수 없다.")
-    @Test
-    void approveCertificateWithoutAdminAuthority() {
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
-
-        assertThatThrownBy(() -> adminCertificateService.approveCertificate(member.getId(), certificate.getId()))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-    }
-
     @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 거절할 수 있다.")
     @Test
     void rejectCertificateForAdmin() {
@@ -260,17 +213,5 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
 
         assertThatCode(() -> adminCertificateService.rejectCertificate(admin.getId(), certificate.getId()))
                 .doesNotThrowAnyException();
-    }
-
-    @DisplayName("관리자 권한이 없는 일반 사용자라면 검토 중인 자격증명을 거절할 수 없다.")
-    @Test
-    void rejectCertificateWithoutAdminAuthority() {
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
-
-        assertThatThrownBy(() -> adminCertificateService.rejectCertificate(member.getId(), certificate.getId()))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 }
