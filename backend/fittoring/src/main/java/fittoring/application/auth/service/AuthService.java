@@ -146,7 +146,8 @@ public class AuthService {
 
     @Transactional
     public RegisterOAuthDto registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
-        String oauthId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
+        TokenPayload payload = jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken);
+        String oauthId = String.valueOf(payload.sub());
         Member member = memberRepository.findByPhone_Number(request.phone())
                 .orElseGet(() -> {
                     Member newMember = getRandomIdPwMember(request);
