@@ -96,6 +96,8 @@ aws:
     region: ap-northeast-2
     bucket-name: fittoring-s3
     project-prefix: fit-toring/
+  sqs:
+    push-notification-queue: fittoring-push-notification-queue
 
 image-session:
   merge:
