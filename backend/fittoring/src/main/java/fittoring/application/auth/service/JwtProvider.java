@@ -2,6 +2,8 @@ package fittoring.application.auth.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidTokenException;
+import fittoring.domain.model.MemberRole;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtProvider {
+
+    private static final String CLAIM_NAME = "role";
 
     private final SecretKey secretKey;
     private final JwtParser jwtParser;
@@ -38,31 +42,31 @@ public class JwtProvider {
                 .build();
     }
 
-    public String createAccessToken(Long memberId) {
+    public String createAccessToken(Long memberId, MemberRole role) {
         Date now = new Date();
         Date accessMillis = new Date(now.getTime() + accessExpirationMillis);
-        return buildToken(memberId.toString(), now, accessMillis);
+        return buildToken(memberId.toString(), role.name(), now, accessMillis);
     }
 
     public String createRefreshToken() {
         Date now = new Date();
         Date refreshMillis = new Date(now.getTime() + refreshExpirationMillis);
-        return buildToken(UUID.randomUUID().toString(), now, refreshMillis);
+        return buildToken(UUID.randomUUID().toString(), null, now, refreshMillis);
     }
 
     public String createOauthSignUpToken(String providerMemberId) {
         Date now = new Date();
         Date oauthMillis = new Date(now.getTime() + accessExpirationMillis);
-        return buildToken(providerMemberId, now, oauthMillis);
+        return buildToken(providerMemberId, null, now, oauthMillis);
     }
 
     public String createStateToken() {
         Date now = new Date();
         Date stateMillis = new Date(now.getTime() + Duration.ofMinutes(3).toMillis());
-        return buildToken(UUID.randomUUID().toString(), now, stateMillis);
+        return buildToken(UUID.randomUUID().toString(), null, now, stateMillis);
     }
 
-    private String buildToken(String subject, Date issuedAt, Date expiresAt) {
+    private String buildToken(String subject, Object claim, Date issuedAt, Date expiresAt) {
         JwtBuilder builder = Jwts.builder()
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .setIssuedAt(issuedAt)
@@ -71,6 +75,10 @@ public class JwtProvider {
 
         if (subject != null) {
             builder.setSubject(subject);
+        }
+
+        if (claim != null) {
+            builder.claim(CLAIM_NAME, claim);
         }
         return builder.compact();
     }

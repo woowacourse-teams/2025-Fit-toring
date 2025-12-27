@@ -8,19 +8,26 @@ import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
-import fittoring.application.exception.*;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
-import fittoring.domain.model.*;
+import fittoring.domain.model.AuthProvider;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberOauth;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -62,7 +69,7 @@ public class AuthService {
     }
 
     private AuthTokenDto getAuthorizedTokenResponse(Member member) {
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken saveRefreshToken = new RefreshToken(
@@ -77,7 +84,8 @@ public class AuthService {
     public AuthTokenDto reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMember().getId());
+        Member memberByRT = findRefreshToken.getMember();
+        String newAccessToken = jwtProvider.createAccessToken(memberByRT.getId(), memberByRT.getRole());
         String newRefreshToken = jwtProvider.createRefreshToken();
         findRefreshToken.update(newRefreshToken, LocalDateTime.now());
 
