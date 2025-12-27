@@ -14,6 +14,7 @@ import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.PhoneVerification;
 import fittoring.domain.model.RefreshToken;
@@ -216,7 +217,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         );
         Member savedMember = memberRepository.save(member);
 
-        String accessToken = jwtProvider.createAccessToken(savedMember.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
         refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
 
@@ -238,18 +239,18 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.statusCode()).isEqualTo(204);
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("accessToken=;")
-                    && cookie.contains("Max-Age=0")
-                    && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=None")
-                    && cookie.contains("HttpOnly")
-                    && cookie.contains("Secure"));
+                            && cookie.contains("Max-Age=0")
+                            && cookie.contains("Path=/")
+                            && cookie.contains("SameSite=None")
+                            && cookie.contains("HttpOnly")
+                            && cookie.contains("Secure"));
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("refreshToken=;")
-                    && cookie.contains("Max-Age=0")
-                    && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=None")
-                    && cookie.contains("HttpOnly")
-                    && cookie.contains("Secure"));
+                            && cookie.contains("Max-Age=0")
+                            && cookie.contains("Path=/")
+                            && cookie.contains("SameSite=None")
+                            && cookie.contains("HttpOnly")
+                            && cookie.contains("Secure"));
         });
     }
 
@@ -265,7 +266,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 Password.from("password")
         );
         Member savedMember = memberRepository.save(member);
-        String accessToken = jwtProvider.createAccessToken(savedMember.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
         refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
@@ -295,7 +296,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void reissue2() {
         //given
-        String accessToken = jwtProvider.createAccessToken(1L);
+        String accessToken = jwtProvider.createAccessToken(1L, MemberRole.MENTOR);
         String refreshToken = jwtProvider.createRefreshToken();
 
         //when

@@ -140,7 +140,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newContent,
                 Collections.emptyList()
         );
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
@@ -186,7 +186,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newContent,
                 Collections.emptyList()
         );
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         // when
         // then
@@ -244,7 +244,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newContent,
                 Collections.emptyList()
         );
-        String accessToken = jwtProvider.createAccessToken(invalidMember.getId());
+        String accessToken = jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole());
 
         // when
         // then
@@ -270,7 +270,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             //given
             Member mentee = memberRepository.save(
                     new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
-            String accessToken = jwtProvider.createAccessToken(mentee.getId());
+            String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
             Member mentor1 = memberRepository.save(
                     new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
@@ -365,7 +365,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             Member savedMentor = memberRepository.save(mentor);
 
             //토큰 생성
-            String accessToken = jwtProvider.createAccessToken(mentor.getId());
+            String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
@@ -468,7 +468,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             //given
             Member mentee = memberRepository.save(
                     new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
-            String accessToken = jwtProvider.createAccessToken(mentee.getId());
+            String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
             Member mentor1 = memberRepository.save(
                     new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw")));

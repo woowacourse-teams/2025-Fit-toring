@@ -44,7 +44,7 @@ public class AdminMemberIntegrationTest extends AbstractApiDocumentationTest {
                 Password.from("pw"),
                 MemberRole.ADMIN
         ));
-        adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
         user = memberRepository.save(new Member(
                 "userId",
                 Gender.MALE,
@@ -52,7 +52,7 @@ public class AdminMemberIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1111-1111"),
                 Password.from("pw")
         ));
-        userAccessToken = jwtProvider.createAccessToken(user.getId());
+        userAccessToken = jwtProvider.createAccessToken(user.getId(), user.getRole());
     }
 
     @DisplayName("관리자 사용자 목록 조회")

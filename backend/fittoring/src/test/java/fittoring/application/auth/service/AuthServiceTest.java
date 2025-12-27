@@ -1,5 +1,11 @@
 package fittoring.application.auth.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willReturn;
+
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
@@ -15,16 +21,11 @@ import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.RefreshToken;
+import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.willReturn;
 
 class AuthServiceTest extends IntegrationTestSupport {
 
@@ -153,7 +154,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     void reissue() {
         //given
         Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
-        String accessToken = jwtProvider.createAccessToken(1L);
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken savedRefreshToken = new RefreshToken(
@@ -219,7 +220,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         // given
         String phoneNumber = "010-1234-5678";
         OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, phoneNumber);
-        willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
+        willReturn(new TokenPayload(1L, "ROLE")).given(jwtProvider).getSubjectFromPayloadBy(any());
 
         // when
         RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");
@@ -239,7 +240,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
         OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, mentee.getPhoneNumber());
-        willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
+        willReturn(new TokenPayload(1L, mentee.getRole().name())).given(jwtProvider).getSubjectFromPayloadBy(any());
 
         // when
         RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");

@@ -30,7 +30,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(
                 new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         // when
         // then
@@ -55,7 +55,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         Member mentor = memberRepository.save(
                 new Member("id", Gender.MALE, "멘토1", new Phone("010-1231-1231"), Password.from("pw")));
         mentor.registerAsMentor();
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         // when
         // then
@@ -106,7 +106,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 )
         );
 
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
 
         String newName = "newName";
         Gender newGender = Gender.FEMALE;
@@ -158,7 +158,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         String newName = "newName";
         String newPhoneNumber = "010-5678-9123";
 
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
                 newName,
                 null,
@@ -214,7 +214,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 newPhoneNumber
         );
 
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
 
         // when
         // then
@@ -247,7 +247,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 null
         );
 
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
 
         //when //then
         RestAssured
