@@ -11,7 +11,9 @@ import static org.mockito.Mockito.verify;
 
 import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.UnAuthorizedException;
 import jakarta.servlet.http.Cookie;
 import org.assertj.core.api.SoftAssertions;
@@ -61,7 +63,7 @@ class AuthenticationInterceptorTest {
         request.setCookies(cookie);
 
         given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
-        given(jwtProvider.getSubjectFromPayloadBy("valid-token")).willReturn(1L);
+        given(jwtProvider.getSubjectFromPayloadBy("valid-token")).willReturn(new TokenPayload(1L, "ADMIN"));
 
         // when
         boolean result = interceptor.preHandle(request, response, handlerMethod);
@@ -73,6 +75,27 @@ class AuthenticationInterceptorTest {
         });
     }
 
+    @DisplayName("어드민 권한 인증에 실패하면 예외가 발생한다.")
+    @Test
+    void failAdminAuthentication() {
+        // given
+        AuthRequired authAnnotation = mock(AuthRequired.class);
+        given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(authAnnotation);
+
+        request.setRequestURI("/admin");
+
+        Cookie cookie = new Cookie("accessToken", "valid-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
+        given(jwtProvider.getSubjectFromPayloadBy("valid-token"))
+                .willReturn(new TokenPayload(1L, "INVALID_ROLE"));
+
+        // when // then
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+                .isInstanceOf(ForbiddenException.class).hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+    }
+
     @DisplayName("인증 어노테이션이 존재하고 쿠키가 유효하지 않으면 인증에 실패하고, 예외가 발생한다.")
     @Test
     void failAuthentication() {
@@ -81,8 +104,8 @@ class AuthenticationInterceptorTest {
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(authAnnotation);
 
         // when // then
-        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod)).isInstanceOf(
-                UnAuthorizedException.class).hasMessage(BusinessErrorMessage.EMPTY_COOKIE.getMessage());
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+                .isInstanceOf(UnAuthorizedException.class).hasMessage(BusinessErrorMessage.EMPTY_COOKIE.getMessage());
     }
 
     @DisplayName("HTTP 메서드가 OPTIONS이면 인증을 수행하지 않고 true를 반환한다")
