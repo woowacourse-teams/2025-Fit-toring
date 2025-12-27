@@ -2,6 +2,7 @@ package fittoring.config.auth;
 
 import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.UnAuthorizedException;
 import jakarta.servlet.http.Cookie;
@@ -42,8 +43,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         Cookie[] cookies = getCookies(request);
         String accessToken = getAccessToken(cookies);
 
-        Long memberId = jwtProvider.getSubjectFromPayloadBy(accessToken);
-        request.setAttribute("memberId", memberId);
+        TokenPayload payload = jwtProvider.getSubjectFromPayloadBy(accessToken);
+        request.setAttribute("memberId", payload.sub());
         return true;
     }
 

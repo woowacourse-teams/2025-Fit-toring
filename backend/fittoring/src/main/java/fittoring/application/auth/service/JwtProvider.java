@@ -83,9 +83,10 @@ public class JwtProvider {
         return builder.compact();
     }
 
-    public Long getSubjectFromPayloadBy(String token) {
+    public TokenPayload getSubjectFromPayloadBy(String token) {
         validateToken(token);
-        return Long.valueOf(getJwtParser(token));
+        Claims claims = getJwtParser(token);
+        return new TokenPayload(Long.valueOf(claims.getSubject()), claims.get(CLAIM_NAME, String.class));
     }
 
     public void validateToken(String token) {
@@ -100,10 +101,9 @@ public class JwtProvider {
         }
     }
 
-    private String getJwtParser(String token) {
+    private Claims getJwtParser(String token) {
         return jwtParser
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 }
