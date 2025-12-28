@@ -174,11 +174,15 @@ class ReservationServiceTest extends IntegrationTestSupport {
         reservation2.changeStatus(Status.APPROVED);
         Reservation reservation3 = FixtureUtil.getTestPendingReservation(mentoring, mentee3);
         reservation3.changeStatus(Status.APPROVED);
-        List<Reservation> savedReservations = reservationRepository.saveAll(List.of(reservation1, reservation2, reservation3));
+        List<Reservation> savedReservations = reservationRepository.saveAll(
+                List.of(reservation1, reservation2, reservation3));
 
-        ChatRoom chatRoom1 = FixtureUtil.getTestChatRoom(savedReservations.get(0).getId(), savedMentees.get(0).getId(), mentor.getId());
-        ChatRoom chatRoom2 = FixtureUtil.getTestChatRoom(savedReservations.get(1).getId(), savedMentees.get(1).getId(), mentor.getId());
-        ChatRoom chatRoom3 = FixtureUtil.getTestChatRoom(savedReservations.get(2).getId(), savedMentees.get(2).getId(), mentor.getId());
+        ChatRoom chatRoom1 = FixtureUtil.getTestChatRoom(savedReservations.get(0).getId(), savedMentees.get(0).getId(),
+                mentor.getId());
+        ChatRoom chatRoom2 = FixtureUtil.getTestChatRoom(savedReservations.get(1).getId(), savedMentees.get(1).getId(),
+                mentor.getId());
+        ChatRoom chatRoom3 = FixtureUtil.getTestChatRoom(savedReservations.get(2).getId(), savedMentees.get(2).getId(),
+                mentor.getId());
         List<ChatRoom> savedChatRooms = chatRoomRepository.saveAll(List.of(chatRoom1, chatRoom2, chatRoom3));
 
         // when
@@ -286,17 +290,19 @@ class ReservationServiceTest extends IntegrationTestSupport {
                 new Reservation("신청 내용1", Status.APPROVED, mentoring1, mentee)
         );
         Reservation reservation2 = reservationRepository.save(
-            new Reservation("신청 내용2", Status.COMPLETE, mentoring2, mentee)
+                new Reservation("신청 내용2", Status.COMPLETE, mentoring2, mentee)
         );
         Reservation reservation3 = reservationRepository.save(
-            new Reservation("신청 내용3", Status.PENDING, mentoring2, mentee)
+                new Reservation("신청 내용3", Status.PENDING, mentoring2, mentee)
         );
         Reservation reservation4 = reservationRepository.save(
-            new Reservation("신청 내용4", Status.REJECTED, mentoring2, mentee)
+                new Reservation("신청 내용4", Status.REJECTED, mentoring2, mentee)
         );
 
-        ChatRoom chatRoom1 = chatRoomRepository.save(new ChatRoom(reservation1.getId(), mentee.getId(), mentor1.getId()));
-        ChatRoom chatRoom2 = chatRoomRepository.save(new ChatRoom(reservation2.getId(), mentee.getId(), mentor2.getId()));
+        ChatRoom chatRoom1 = chatRoomRepository.save(
+                new ChatRoom(reservation1.getId(), mentee.getId(), mentor1.getId()));
+        ChatRoom chatRoom2 = chatRoomRepository.save(
+                new ChatRoom(reservation2.getId(), mentee.getId(), mentor2.getId()));
 
         // 리뷰는 두 번째 예약에만 달림 → expected의 마지막 boolean = true
         reviewRepository.save(new Review(4, "좋았습니다.", reservation2, mentee));
@@ -314,43 +320,42 @@ class ReservationServiceTest extends IntegrationTestSupport {
                         false
                 ),
                 new ParticipatedReservationResponse(
-                    reservation2.getId(),
-                    mentoring2.getId(),
-                    mentoring2.getMentorName(),
-                    null,
-                    reservation2.getCreatedAt().toLocalDate(),
-                    reservation2.getContent(),
-                    Status.COMPLETE.name(),
-                    chatRoom2.getId(),
-                    true
+                        reservation2.getId(),
+                        mentoring2.getId(),
+                        mentoring2.getMentorName(),
+                        null,
+                        reservation2.getCreatedAt().toLocalDate(),
+                        reservation2.getContent(),
+                        Status.COMPLETE.name(),
+                        chatRoom2.getId(),
+                        true
                 ),
                 new ParticipatedReservationResponse(
-                    reservation3.getId(),
-                    mentoring2.getId(),
-                    mentoring2.getMentorName(),
-                    null,
-                    reservation3.getCreatedAt().toLocalDate(),
-                    reservation3.getContent(),
-                    Status.PENDING.name(),
-                    null,
-                    false
+                        reservation3.getId(),
+                        mentoring2.getId(),
+                        mentoring2.getMentorName(),
+                        null,
+                        reservation3.getCreatedAt().toLocalDate(),
+                        reservation3.getContent(),
+                        Status.PENDING.name(),
+                        null,
+                        false
                 ),
                 new ParticipatedReservationResponse(
-                    reservation4.getId(),
-                    mentoring2.getId(),
-                    mentoring2.getMentorName(),
-                    null,
-                    reservation4.getCreatedAt().toLocalDate(),
-                    reservation4.getContent(),
-                    Status.REJECTED.name(),
-                    null,
-                    false
+                        reservation4.getId(),
+                        mentoring2.getId(),
+                        mentoring2.getMentorName(),
+                        null,
+                        reservation4.getCreatedAt().toLocalDate(),
+                        reservation4.getContent(),
+                        Status.REJECTED.name(),
+                        null,
+                        false
                 )
         );
 
         // when
-        List<ParticipatedReservationResponse> actual =
-                reservationService.findMemberReservations(mentee.getId());
+        List<ParticipatedReservationResponse> actual = reservationService.findMemberReservations(mentee.getId());
 
         // then
         assertThat(actual)
