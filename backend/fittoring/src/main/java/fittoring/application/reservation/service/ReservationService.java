@@ -206,9 +206,13 @@ public class ReservationService {
     }
 
     private void validateMentorAuthority(Long mentoringMentorId, Long requestMentorId) {
-        if (!Objects.equals(mentoringMentorId, requestMentorId)) {
+        if (isNotMentoringOwner(mentoringMentorId, requestMentorId)) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
+    }
+
+    private boolean isNotMentoringOwner(Long mentoringMentorId, Long requestMentorId) {
+        return !Objects.equals(mentoringMentorId, requestMentorId);
     }
 
     private Reservation getReservation(Long reservationId) {
