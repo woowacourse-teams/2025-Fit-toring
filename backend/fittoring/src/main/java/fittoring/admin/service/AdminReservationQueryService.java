@@ -16,9 +16,7 @@ public class AdminReservationQueryService {
 
     private final ReservationRepository reservationRepository;
 
-    public PageResult<AdminReservationResponse> findMentoringReservationsForAdmin(
-            AdminMentoringReservationDto dto
-    ) {
+    public PageResult<AdminReservationResponse> findMentoringReservationsForAdmin(AdminMentoringReservationDto dto) {
         List<AdminReservationResponse> content = reservationRepository.findReservationsForAdmin(
                 dto.page(),
                 dto.size()

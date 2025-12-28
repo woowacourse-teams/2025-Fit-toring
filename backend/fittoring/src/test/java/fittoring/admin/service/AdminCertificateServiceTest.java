@@ -81,17 +81,17 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
 
         // when
         PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(
-                admin.getId(), null, 1, 20);
+                null, 1, 20);
         PageResult<AdminCertificateResponse> secondResponse = adminCertificateService.getAllCertificatesPaged(
-                admin.getId(), null, 2, 20);
+                null, 2, 20);
         PageResult<AdminCertificateResponse> thirdResponse = adminCertificateService.getAllCertificatesPaged(
-                admin.getId(), null, 3, 20);
+                null, 3, 20);
         PageResult<AdminCertificateResponse> fourthResponse = adminCertificateService.getAllCertificatesPaged(
-                admin.getId(), null, 4, 20);
+                null, 4, 20);
         PageResult<AdminCertificateResponse> fifthResponse = adminCertificateService.getAllCertificatesPaged(
-                admin.getId(), null, 5, 20);
+                null, 5, 20);
         PageResult<AdminCertificateResponse> sixthResponse = adminCertificateService.getAllCertificatesPaged(
-                admin.getId(), null, 6, 20);
+                null, 6, 20);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -154,9 +154,9 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
 
         // when
         PageResult<AdminCertificateResponse> firstResponse = adminCertificateService.getAllCertificatesPaged(
-                admin.getId(), Status.REJECTED, 1, 20);
+                Status.REJECTED, 1, 20);
         PageResult<AdminCertificateResponse> secondResponse = adminCertificateService.getAllCertificatesPaged(
-                admin.getId(), Status.REJECTED, 2, 20);
+                Status.REJECTED, 2, 20);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -173,7 +173,7 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
         });
     }
 
-    @DisplayName("관리자 권한이 있다면 자격증명을 상세조회할 수 있다.")
+    @DisplayName("자격증명을 상세조회할 수 있다.")
     @Test
     void getOneForAdmin() {
         // given
@@ -184,7 +184,7 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
         Image image = imageRepository.save(new Image("url", ImageType.CERTIFICATE, certificate.getId(), "baseName"));
 
         // when
-        CertificateDetailResponse detail = adminCertificateService.getCertificate(admin.getId(), mentoring.getId());
+        CertificateDetailResponse detail = adminCertificateService.getCertificate(mentoring.getId());
 
         // then
         SoftAssertions.assertSoftly(s -> {
@@ -193,25 +193,25 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
         });
     }
 
-    @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 승인할 수 있다.")
+    @DisplayName("검토 중인 자격증명을 승인할 수 있다.")
     @Test
     void approveCertificateForAdmin() {
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
         Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
 
-        assertThatCode(() -> adminCertificateService.approveCertificate(admin.getId(), certificate.getId()))
+        assertThatCode(() -> adminCertificateService.approveCertificate(certificate.getId()))
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("관리자 권한이 있으면 검토 중인 자격증명을 거절할 수 있다.")
+    @DisplayName("검토 중인 자격증명을 거절할 수 있다.")
     @Test
     void rejectCertificateForAdmin() {
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
         Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
 
-        assertThatCode(() -> adminCertificateService.rejectCertificate(admin.getId(), certificate.getId()))
+        assertThatCode(() -> adminCertificateService.rejectCertificate(certificate.getId()))
                 .doesNotThrowAnyException();
     }
 }

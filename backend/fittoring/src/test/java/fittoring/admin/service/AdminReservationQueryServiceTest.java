@@ -53,7 +53,6 @@ class AdminReservationQueryServiceTest extends IntegrationTestSupport {
                     FixtureUtil.getTestPendingReservation(mentoring, mentee2));
 
             AdminMentoringReservationDto dto = new AdminMentoringReservationDto(
-                    admin.getId(),
                     mentoring.getId(),
                     1,
                     20

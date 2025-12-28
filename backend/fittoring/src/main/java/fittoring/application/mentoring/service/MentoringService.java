@@ -25,7 +25,6 @@ import fittoring.application.mentoring.service.dto.RatingStatsDto;
 import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.config.auth.LoginInfo;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Certificate;
@@ -257,7 +256,7 @@ public class MentoringService {
     }
 
     @Transactional
-    public void deleteMentoringByAdmin(LoginInfo loginInfo, Long mentoringId) {
+    public void deleteMentoringByAdmin(Long mentoringId) {
         Mentoring mentoring = getMentoringById(mentoringId);
         List<Reservation> allReservationByMentoring = reservationRepository.findAllByMentoring(mentoring);
         for (Reservation reservation : allReservationByMentoring) {

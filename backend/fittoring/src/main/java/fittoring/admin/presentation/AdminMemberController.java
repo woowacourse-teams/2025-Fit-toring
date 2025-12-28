@@ -4,8 +4,6 @@ import fittoring.admin.presentation.dto.AdminMemberResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.AdminMemberService;
 import fittoring.config.auth.AuthRequired;
-import fittoring.config.auth.Login;
-import fittoring.config.auth.LoginInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,11 +21,10 @@ public class AdminMemberController {
     @AuthRequired
     @GetMapping
     public ResponseEntity<PageResult<AdminMemberResponse>> getMembers(
-            @Login LoginInfo loginInfo,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        PageResult<AdminMemberResponse> response = memberService.findAllForAdminPaged(loginInfo.memberId(), page, size);
+        PageResult<AdminMemberResponse> response = memberService.findAllForAdminPaged(page, size);
         return ResponseEntity.ok(response);
     }
 }

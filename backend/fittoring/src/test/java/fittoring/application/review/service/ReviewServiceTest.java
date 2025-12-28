@@ -566,7 +566,7 @@ class ReviewServiceTest extends IntegrationTestSupport {
         Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
 
         // when & then
-        assertThatThrownBy(() -> reviewService.deleteForAdmin(admin.getId(), 1L))
+        assertThatThrownBy(() -> reviewService.deleteForAdmin(1L))
                 .isInstanceOf(ReviewNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
     }
@@ -585,7 +585,7 @@ class ReviewServiceTest extends IntegrationTestSupport {
         Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
         // when
-        reviewService.deleteForAdmin(admin.getId(), review.getId());
+        reviewService.deleteForAdmin(review.getId());
 
         // then
         assertThat(reviewRepository.findById(review.getId())).isEmpty();

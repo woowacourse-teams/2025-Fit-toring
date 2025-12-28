@@ -115,7 +115,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public AdminReviewInfoResponse findAllByMentoringForAdmin(Long memberId, Long mentoringId) {
+    public AdminReviewInfoResponse findAllByMentoringForAdmin(Long mentoringId) {
         validateMentoringExists(mentoringId);
         List<AdminReviewResponse> reviewResponses = findReviewResponsesForAdmin(mentoringId);
         MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.findById(mentoringId).get();
@@ -167,7 +167,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteForAdmin(Long memberId, Long reviewId) {
+    public void deleteForAdmin(Long reviewId) {
         Review review = reviewRepository.findById((reviewId))
                 .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
         Mentoring mentoring = review.getReservation().getMentoring();

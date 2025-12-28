@@ -5,8 +5,6 @@ import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.AdminMentoringService;
 import fittoring.application.mentoring.service.MentoringService;
 import fittoring.config.auth.AuthRequired;
-import fittoring.config.auth.Login;
-import fittoring.config.auth.LoginInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,22 +26,16 @@ public class AdminMentoringController {
     @AuthRequired
     @GetMapping
     public ResponseEntity<PageResult<AdminMentoringResponse>> getMentorings(
-            @Login LoginInfo loginInfo,
-            @RequestParam(defaultValue = "1") int page
-    ) {
-        PageResult<AdminMentoringResponse> response = adminMentoringService.findAllForAdminPaged(
-                loginInfo.memberId(),
-                page
-        );
+            @RequestParam(defaultValue = "1") int page) {
+        PageResult<AdminMentoringResponse> response = adminMentoringService.findAllForAdminPaged(page);
 
         return ResponseEntity.ok(response);
     }
 
     @AuthRequired
     @DeleteMapping("/{mentoringId}")
-    public ResponseEntity<Void> deleteMentoring(@Login LoginInfo loginInfo,
-                                                @PathVariable("mentoringId") Long mentoringId) {
-        mentoringService.deleteMentoringByAdmin(loginInfo, mentoringId);
+    public ResponseEntity<Void> deleteMentoring(@PathVariable("mentoringId") Long mentoringId) {
+        mentoringService.deleteMentoringByAdmin(mentoringId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }

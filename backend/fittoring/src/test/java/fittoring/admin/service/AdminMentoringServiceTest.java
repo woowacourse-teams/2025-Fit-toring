@@ -83,10 +83,8 @@ class AdminMentoringServiceTest extends IntegrationTestSupport {
         Member testAdmin = memberRepository.save(FixtureUtil.getTestAdmin());
 
         //when
-        PageResult<AdminMentoringResponse> allForAdminPaged1 = adminMentoringService.findAllForAdminPaged(
-                testAdmin.getId(), 1);
-        PageResult<AdminMentoringResponse> allForAdminPaged2 = adminMentoringService.findAllForAdminPaged(
-                testAdmin.getId(), 2);
+        PageResult<AdminMentoringResponse> allForAdminPaged1 = adminMentoringService.findAllForAdminPaged(1);
+        PageResult<AdminMentoringResponse> allForAdminPaged2 = adminMentoringService.findAllForAdminPaged(2);
 
         //then
         SoftAssertions.assertSoftly(softly -> {

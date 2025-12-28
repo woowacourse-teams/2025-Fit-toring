@@ -386,8 +386,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
                 new Reservation("예약 내용", originalStatus, mentoring, mentee)
         );
 
-        AdminReservationStatusUpdateDto dto =
-                new AdminReservationStatusUpdateDto(admin.getId(), reservation.getId(), newStatus);
+        AdminReservationStatusUpdateDto dto = new AdminReservationStatusUpdateDto(reservation.getId(), newStatus);
 
         // when
         reservationService.updateStatusWithAdminAuthorization(dto);
@@ -413,7 +412,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         long originalReservationCount = stats.getReservationCount();
 
         AdminReservationDeleteDto dto =
-                new AdminReservationDeleteDto(admin.getId(), reservation.getId());
+                new AdminReservationDeleteDto(reservation.getId());
 
         // when
         reservationService.deleteReservationWithAdminAuthorization(dto);
@@ -443,8 +442,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         // mentee 저장됨
 
         Long invalidReservationId = 999L;
-        AdminReservationDeleteDto dto =
-                new AdminReservationDeleteDto(admin.getId(), invalidReservationId);
+        AdminReservationDeleteDto dto = new AdminReservationDeleteDto(invalidReservationId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteReservationWithAdminAuthorization(dto))

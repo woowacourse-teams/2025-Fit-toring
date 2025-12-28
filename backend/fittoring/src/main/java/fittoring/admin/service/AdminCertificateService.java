@@ -27,8 +27,7 @@ public class AdminCertificateService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Long memberId, Status status, int page,
-                                                                        int size) {
+    public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Status status, int page, int size) {
         List<Long> certificateIds = certificateRepository.findCertificateIdsForAdmin(status, page, size);
         List<AdminCertificateResponse> certificates = certificateRepository.findCertificatesByIdsOrdered(
                 certificateIds);
@@ -39,7 +38,7 @@ public class AdminCertificateService {
 
 
     @Transactional(readOnly = true)
-    public CertificateDetailResponse getCertificate(Long memberId, Long certificateId) {
+    public CertificateDetailResponse getCertificate(Long certificateId) {
         Certificate certificate = getCertificateOne(certificateId);
         Image certificateImage = imageService.findByImageTypeAndRelationId(ImageType.CERTIFICATE, certificateId)
                 .orElseThrow(() -> new ImageNotFoundException(
@@ -56,13 +55,13 @@ public class AdminCertificateService {
     }
 
     @Transactional
-    public void approveCertificate(Long memberId, Long certificateId) {
+    public void approveCertificate(Long certificateId) {
         Certificate certificate = getCertificateOne(certificateId);
         certificate.approve();
     }
 
     @Transactional
-    public void rejectCertificate(Long memberId, Long certificateId) {
+    public void rejectCertificate(Long certificateId) {
         Certificate certificate = getCertificateOne(certificateId);
         certificate.reject();
     }
