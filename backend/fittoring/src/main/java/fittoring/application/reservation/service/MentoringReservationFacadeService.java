@@ -20,8 +20,8 @@ public class MentoringReservationFacadeService {
         return ReservationCreateResponse.from(reservation);
     }
 
-    public void approveAndSendSms(Long memberId, Long reservationId) {
-        ReservationInfo reservationInfo = reservationService.approve(memberId, reservationId);
+    public void approveAndSendSms(Long mentorId, Long reservationId) {
+        ReservationInfo reservationInfo = reservationService.approve(mentorId, reservationId);
         reservationNotificationService.sendReservationApproveSmsMessage(
                 reservationInfo.mentorName(),
                 reservationInfo.content(),
@@ -30,8 +30,8 @@ public class MentoringReservationFacadeService {
         );
     }
 
-    public void rejectAndSendSms(Long memberId, Long reservationId) {
-        ReservationInfo reservationInfo = reservationService.reject(memberId, reservationId);
+    public void rejectAndSendSms(Long mentorId, Long reservationId) {
+        ReservationInfo reservationInfo = reservationService.reject(mentorId, reservationId);
         reservationNotificationService.sendReservationRejectSmsMessage(
                 reservationInfo.mentorName(),
                 reservationInfo.menteePhone()

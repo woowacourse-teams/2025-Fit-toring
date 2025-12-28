@@ -4,7 +4,12 @@ import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chat.service.ChatRoomService;
 import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
-import fittoring.application.exception.*;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.MentorAndMenteeIsSameException;
+import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
@@ -17,13 +22,23 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.domain.model.*;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Status;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -169,9 +184,9 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationInfo approve(Long memberId, Long reservationId) {
+    public ReservationInfo approve(Long mentorId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
-        validateMentorAuthority(reservation.getMentor().getId(), memberId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
 
         reservation.approve();
 
@@ -182,16 +197,16 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationInfo reject(Long memberId, Long reservationId) {
+    public ReservationInfo reject(Long mentorId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
-        validateMentorAuthority(reservation.getMentor().getId(), memberId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
 
         reservation.reject();
         return ReservationInfo.from(reservation, null);
     }
 
-    private void validateMentorAuthority(Long reservationAuthorId, Long memberId) {
-        if (!Objects.equals(reservationAuthorId, memberId)) {
+    private void validateMentorAuthority(Long mentoringMentorId, Long requestMentorId) {
+        if (!Objects.equals(mentoringMentorId, requestMentorId)) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
     }
