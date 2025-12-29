@@ -23,3 +23,15 @@ export function registerServiceWorker() {
     });
   });
 }
+
+export async function cleanupServiceWorkerInDev() {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
+  if (!('serviceWorker' in navigator)) {
+    return;
+  }
+
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(registrations.map((reg) => reg.unregister()));
+}
