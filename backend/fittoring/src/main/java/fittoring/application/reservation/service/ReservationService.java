@@ -205,6 +205,14 @@ public class ReservationService {
         return ReservationInfo.from(reservation, null);
     }
 
+    @Transactional
+    public void complete(Long mentorId, Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
+
+        reservation.complete();
+    }
+
     private void validateMentorAuthority(Long mentoringMentorId, Long requestMentorId) {
         if (isNotMentoringOwner(mentoringMentorId, requestMentorId)) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
