@@ -10,6 +10,7 @@ import App from './App';
 import AuthProvider from './common/components/AuthProvider/AuthProvider';
 import { resetCss } from './common/styles/reset';
 import { THEME } from './common/styles/theme';
+import { registerServiceWorker } from './pwa/registerServiceWorker';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -52,4 +53,6 @@ enableMocking().then(() => {
       </ThemeProvider>
     </React.StrictMode>,
   );
+
+  registerServiceWorker();
 });
