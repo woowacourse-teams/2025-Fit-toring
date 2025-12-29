@@ -146,10 +146,7 @@ function IdentityVerificationForm() {
       if (response.status === 201) {
         alert('본인 인증이 완료되었습니다.');
         if (data?.memberId) {
-          localStorage.setItem(
-            'memberId',
-            JSON.stringify({ memberId: data.memberId }),
-          );
+          localStorage.setItem('memberId', data.memberId);
         }
         login();
         navigate(PAGE_URL.HOME);

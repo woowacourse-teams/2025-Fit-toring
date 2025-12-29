@@ -30,10 +30,7 @@ function KakaoCallback() {
         if (response.status === 200) {
           const data = await response.json();
           if (data?.memberId) {
-            localStorage.setItem(
-              'memberId',
-              JSON.stringify({ memberId: data.memberId }),
-            );
+            localStorage.setItem('memberId', data.memberId);
           }
           login();
           navigate(PAGE_URL.HOME, { replace: true });

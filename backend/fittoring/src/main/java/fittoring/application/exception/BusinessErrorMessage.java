@@ -28,7 +28,6 @@ public enum BusinessErrorMessage {
     DUPLICATED_REVIEW("한 번의 예약당 한 번만 리뷰를 남길 수 있습니다."),
     FORBIDDEN_MEMBER("접근 권한이 없습니다."),
     RESERVATION_STATUS_ALREADY_UPDATE("이미 처리된 예약은 상태 변경이 불가합니다."),
-    RESERVATION_STATUS_ALREADY_EQUAL("동일한 상태로는 변경할 수 없습니다."),
     STATUS_NOT_FOUND("존재하지 않는 상태입니다."),
     MENTORING_ALREADY_EXIST("이미 멘토링을 개설한 회원입니다."),
     CERTIFICATE_INFO_IMAGE_MISMATCH("자격증 정보와 자격증 이미지의 수가 일치하지 않습니다."),
