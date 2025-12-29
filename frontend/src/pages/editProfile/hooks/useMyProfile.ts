@@ -20,9 +20,7 @@ const convertResponse = (response: UserInfoClient): UserProfileResponse => {
 };
 
 const useMyProfile = () => {
-  const storedData = localStorage.getItem('memberId');
-  const parsedData = storedData ? JSON.parse(storedData) : null;
-  const memberId = parsedData ? parsedData.memberId : null;
+  const memberId = localStorage.getItem('memberId');
 
   const { data: myProfile } = useQuery({
     queryKey: MY_PROFILE_QUERY_KEY.myProfile(memberId),
