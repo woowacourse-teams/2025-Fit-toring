@@ -7,10 +7,9 @@ import {
   type StatusType,
 } from '../../../../common/types/statusType';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
-import { patchReservationStatus } from '../../apis/patchReservationStatus';
-import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
-
-import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
+import { patchReservationApprove } from '../../apis/patchReservationApprove';
+import { patchReservationComplete } from '../../apis/patchReservationComplete';
+import { patchReservationReject } from '../../apis/patchReservationReject';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -27,32 +26,15 @@ function ActionButtons({
 }: ActionButtonsProps) {
   const navigate = useNavigate();
 
-  const updateStatus = async (newStatus: MENTORING_APPLICATION_STATUS) => {
-    try {
-      const response = await patchReservationStatus(reservationId, {
-        status: newStatus,
-      });
-
-      if (response.status !== 200) {
-        throw new Error('status update failed');
-      }
-    } catch (error) {
-      console.error(`Error updating reservation status:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'patch-reservation-status',
-      });
-    }
-  };
-
   const handleApproveButtonClick = async () => {
     try {
       if (
         confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
       ) {
-        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
+        const response = await patchReservationApprove(reservationId);
+        if (response.status !== 200) {
+          throw new Error('reservation approve failed');
+        }
         await onClick();
       }
     } catch (error) {
@@ -71,7 +53,10 @@ function ActionButtons({
       if (
         confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
       ) {
-        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
+        const response = await patchReservationReject(reservationId);
+        if (response.status !== 200) {
+          throw new Error('reservation reject failed');
+        }
         await onClick();
       }
     } catch (error) {
@@ -90,7 +75,10 @@ function ActionButtons({
       if (
         confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
       ) {
-        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
+        const response = await patchReservationComplete(reservationId);
+        if (response.status !== 200) {
+          throw new Error('reservation complete failed');
+        }
         await onClick();
       }
     } catch (error) {
