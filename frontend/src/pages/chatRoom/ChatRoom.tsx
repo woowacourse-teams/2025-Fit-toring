@@ -31,8 +31,7 @@ function ChatRoom() {
 
   const { chatRoomId } = useParams();
 
-  const storedData = localStorage.getItem('memberId');
-  const memberId = storedData ? JSON.parse(storedData) : null;
+  const memberId = localStorage.getItem('memberId');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;

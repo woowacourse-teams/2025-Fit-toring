@@ -3,18 +3,18 @@ import { useQuery } from '@tanstack/react-query';
 import { getMineMentoring } from '../../../common/apis/getMineMentoring';
 
 export const QUERY_KEY = {
-  myMentoringId: (key: string) => ['myMentoringId', key],
+  myMentoringId: (key: string | null) => ['myMentoringId', key],
 } as const;
 
 const useMyMentoringId = (authenticated: boolean) => {
-  const storedData = localStorage.getItem('memberId');
-  const memberId = storedData ? JSON.parse(storedData) : null;
+  const memberId = localStorage.getItem('memberId');
+  const enabled = authenticated && !!memberId;
 
   const { data: myMentoringId = null, error } = useQuery({
     queryKey: QUERY_KEY.myMentoringId(memberId),
     queryFn: getMineMentoring,
     select: (data) => data.id,
-    enabled: authenticated,
+    enabled,
     retry: 1,
   });
 
@@ -22,7 +22,9 @@ const useMyMentoringId = (authenticated: boolean) => {
     console.error(error);
   }
 
-  return { myMentoringId };
+  return {
+    myMentoringId: enabled ? (myMentoringId ?? null) : null,
+  };
 };
 
 export default useMyMentoringId;
