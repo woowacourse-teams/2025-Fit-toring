@@ -61,9 +61,14 @@ const useMentorList = () => {
       cursorCode: string | null = null,
     ) => {
       setIsLoading(true);
-      const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
-      initializeMentorList(data);
-      setIsLoading(false);
+      try {
+        const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
+        initializeMentorList(data);
+      } catch (error) {
+        console.error('Failed to fetch initial mentors:', error);
+      } finally {
+        setIsLoading(false);
+      }
     },
     [getMentors, initializeMentorList],
   );
@@ -87,8 +92,12 @@ const useMentorList = () => {
       sortKey: SortKey,
       cursorCode: string | null,
     ) => {
-      const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
-      appendMentorList(data);
+      try {
+        const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
+        appendMentorList(data);
+      } catch (error) {
+        console.error('Failed to fetch more mentors:', error);
+      }
     },
     [appendMentorList, getMentors],
   );
