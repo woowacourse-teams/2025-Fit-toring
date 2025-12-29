@@ -43,6 +43,9 @@ module.exports = merge(common, {
           from: 'public/robots.prod.txt',
           to: 'robots.txt',
         },
+        { from: 'public/manifest.webmanifest', to: 'manifest.webmanifest' },
+        { from: 'public/fittoring-icon-192.png', to: 'fittoring-icon-192.png' },
+        { from: 'public/fittoring-icon-512.png', to: 'fittoring-icon-512.png' },
       ],
     }),
     sentryWebpackPlugin({
