@@ -44,11 +44,12 @@ async function enableMocking() {
 ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
 
 (async () => {
-  if (process.env.NODE_ENV !== 'production') {
-    await cleanupServiceWorkerInDev();
-  }
+  const isProd = process.env.NODE_ENV === 'production';
 
-  await enableMocking();
+  if (!isProd) {
+    await cleanupServiceWorkerInDev();
+    await enableMocking();
+  }
 
   createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
@@ -63,7 +64,7 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
     </React.StrictMode>,
   );
 
-  if (process.env.NODE_ENV === 'production') {
-    registerServiceWorker();
+  if (isProd) {
+    void registerServiceWorker();
   }
 })();
