@@ -9,6 +9,7 @@ import fittoring.application.chat.service.dto.ChatMessagePaginationResultDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
+import fittoring.application.notification.service.NotificationService;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
 import fittoring.util.Cursor;
@@ -24,6 +25,7 @@ public class ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public ChatMessageResponse registerMessage(Long chatRoomId, ChatMessageRequest request, Long senderId) {
@@ -32,6 +34,9 @@ public class ChatMessageService {
 
         ChatMessage chatMessage = new ChatMessage(chatRoomId, senderId, request.content());
         chatMessageRepository.save(chatMessage);
+
+        Long opponentId = chatRoom.getOpponentIdOf(senderId);
+        notificationService.sendNotification(opponentId, "핏토링", "채팅이 도착하였습니다.");
         return ChatMessageResponse.from(chatMessage, request.tempId());
     }
 
