@@ -2,7 +2,6 @@ package fittoring.application.reservation.service;
 
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
-import fittoring.domain.model.Status;
 import fittoring.infrastructure.SmsMessageFormatter;
 import fittoring.infrastructure.SmsRestClientService;
 import lombok.RequiredArgsConstructor;
@@ -29,35 +28,18 @@ public class ReservationNotificationService {
         );
     }
 
-    public void sendReservationStatusUpdateSmsMessage(
-            Reservation reservation,
-            String updateStatus,
+    public void sendReservationApproveSmsMessage(
+            String mentorName,
+            String content,
+            Phone menteePhoneNumber,
             String chatRoomUrl
     ) {
-        Status status = Status.of(updateStatus);
-        String mentorName = reservation.getMentorName();
-        String context = reservation.getContent();
-
-        if (status.isNotifiable()) {
-            String message = createMessage(status, mentorName, context, chatRoomUrl);
-            Phone menteePhone = reservation.getMentee().getPhone();
-            smsRestClientService.sendSms(menteePhone, message, RESERVATION_SUBJECT);
-        }
+        String message = smsMessageFormatter.approvedReservationMessage(mentorName, content, chatRoomUrl);
+        smsRestClientService.sendSms(menteePhoneNumber, message, RESERVATION_SUBJECT);
     }
 
-    private String createMessage(
-            Status updateStatus,
-            String mentorName,
-            String context,
-            String chatRoomUrl
-    ) {
-        if (updateStatus.isApprove()) {
-            return smsMessageFormatter.approvedReservationMessage(
-                    mentorName,
-                    context,
-                    chatRoomUrl
-            );
-        }
-        return smsMessageFormatter.rejectedReservationMessage(mentorName);
+    public void sendReservationRejectSmsMessage(String mentorName, Phone menteePhoneNumber) {
+        String message = smsMessageFormatter.rejectedReservationMessage(mentorName);
+        smsRestClientService.sendSms(menteePhoneNumber, message, RESERVATION_SUBJECT);
     }
 }

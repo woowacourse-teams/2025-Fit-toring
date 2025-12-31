@@ -1,9 +1,5 @@
 package fittoring.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.doNothing;
-
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.chat.repository.ChatRoomRepository;
@@ -14,32 +10,25 @@ import fittoring.application.mentoring.repository.CategoryRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.reservation.presentation.dto.request.ReservationCreateRequest;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.domain.model.Category;
-import fittoring.domain.model.CategoryMentoring;
-import fittoring.domain.model.ChatRoom;
-import fittoring.domain.model.Gender;
-import fittoring.domain.model.Image;
-import fittoring.domain.model.ImageType;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
-import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.Reservation;
-import fittoring.domain.model.Status;
+import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.doNothing;
 
 class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -63,6 +52,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private JwtProvider jwtProvider;
+
     @Autowired
     private ChatRoomRepository chatRoomRepository;
 
@@ -502,9 +492,9 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(response).isEmpty();
     }
 
-    @DisplayName("예약의 상태가 대기(PENDING)에서 승인(APPROVE)으로 변경되면 sms를 전송하고, 200 OK를 반환한다.")
+    @DisplayName("예약이 승인되면 sms를 전송하고, 200 OK를 반환한다.")
     @Test
-    void updateStatus() {
+    void approveStatus() {
         //given
         doNothing()
                 .when(smsRestClientService)
@@ -543,18 +533,15 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee)
         );
 
-        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVED");
-
         //when
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/patch-reservations-id-status-success"))
+                .filter(documentWithTag("reservation/patch-reservations-id-approve-success"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .body(request)
-                .patch("/reservations/" + savedReservation.getId() + "/status")
+                .patch("/reservations/" + savedReservation.getId() + "/approve")
                 .then().log().all()
                 .statusCode(200);
 
@@ -567,7 +554,69 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 );
     }
 
-    @DisplayName("이미 처리(완료, 승인, 거절)된 예약의 상태를 변경하면 400 Bad Request가 발생한다.")
+    @DisplayName("예약이 거절되면 sms를 전송하고, 200 OK를 반환한다.")
+    @Test
+    void rejectStatus() {
+        //given
+        doNothing()
+                .when(smsRestClientService)
+                .sendSms(
+                        ArgumentMatchers.any(Phone.class),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString()
+                );
+
+        Member mentor = memberRepository.save(
+                new Member("id1",
+                        Gender.MALE,
+                        "박멘토",
+                        new Phone("010-1234-5679"),
+                        Password.from("pw"))
+        );
+        Member savedMentor = memberRepository.save(mentor);
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+
+        //멘토링 생성
+        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
+        Mentoring savedMentoring = mentoringRepository.save(mentoring);
+
+        //멘티 생성
+        Member mentee = memberRepository.save(
+                new Member("id2",
+                        Gender.MALE,
+                        "김멘티",
+                        new Phone("010-5678-9123"),
+                        Password.from("pw"))
+        );
+        Member savedMentee = memberRepository.save(mentee);
+        Reservation savedReservation = reservationRepository.save(
+                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee)
+        );
+
+        //when
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/patch-reservations-id-reject-success"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .patch("/reservations/" + savedReservation.getId() + "/reject")
+                .then().log().all()
+                .statusCode(200);
+
+        //then
+        assertThat(reservationRepository.findById(savedReservation.getId()))
+                .isPresent()
+                .hasValueSatisfying(
+                        reservation ->
+                                assertThat(reservation.getStatus()).isEqualTo(Status.REJECTED.name())
+                );
+    }
+
+    @DisplayName("이미 처리(완료, 승인, 거절)된 예약을 승인하면 400 Bad Request가 발생한다.")
     @Test
     void updateStatus2() {
         //given
@@ -601,8 +650,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 new Reservation("멘토링 예약 내용", Status.COMPLETE, savedMentoring, savedMentee)
         );
 
-        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVED");
-
         //when
         Response response = RestAssured
                 .given(spec)
@@ -611,14 +658,13 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .body(request)
-                .patch("/reservations/" + savedReservation.getId() + "/status");
+                .patch("/reservations/" + savedReservation.getId() + "/approve");
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
-    @DisplayName("예약의 상태를 현재 상태와 동일한 상태로 변경하면 400 Bad Request가 발생한다.")
+    @DisplayName("이미 처리된(거절, 승인, 완료) 예약을 거절하면 400 Bad Request가 발생한다.")
     @Test
     void updateStatus3() {
         //given
@@ -652,16 +698,13 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 new Reservation("멘토링 예약 내용", Status.APPROVED, savedMentoring, savedMentee)
         );
 
-        ReservationStatusUpdateRequest request = new ReservationStatusUpdateRequest("APPROVED");
-
         //when
         Response response = RestAssured
                 .given()
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .body(request)
-                .patch("/reservations/" + savedReservation.getId() + "/status");
+                .patch("/reservations/" + savedReservation.getId() + "/reject");
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);

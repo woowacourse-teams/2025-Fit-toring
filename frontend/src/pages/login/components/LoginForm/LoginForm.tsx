@@ -36,10 +36,7 @@ function LoginForm() {
       const data = await response.json();
 
       if (data?.memberId) {
-        localStorage.setItem(
-          'memberId',
-          JSON.stringify({ memberId: data.memberId }),
-        );
+        localStorage.setItem('memberId', data.memberId);
       }
 
       if (response.status === 200) {
@@ -70,7 +67,7 @@ function LoginForm() {
   };
 
   const handleSocialLoginButtonClick = () => {
-    window.location.href = `${process.env.API_BASE_URL}/kakao/login`
+    window.location.href = `${process.env.API_BASE_URL}/kakao/login`;
   };
 
   const loginFormValidated = userId !== '' && password !== '';

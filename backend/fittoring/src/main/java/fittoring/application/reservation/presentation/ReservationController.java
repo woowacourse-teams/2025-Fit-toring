@@ -2,7 +2,6 @@ package fittoring.application.reservation.presentation;
 
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.reservation.presentation.dto.request.ReservationCreateRequest;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
@@ -73,12 +72,34 @@ public class ReservationController {
     }
 
     @AuthRequired
-    @PatchMapping("/reservations/{reservationId}/status")
-    public ResponseEntity<Void> updateStatus(
-            @PathVariable Long reservationId,
-            @RequestBody @Valid ReservationStatusUpdateRequest request
+    @PatchMapping("/reservations/{reservationId}/approve")
+    public ResponseEntity<Void> approveStatus(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long reservationId
     ) {
-        mentoringReservationFacadeService.updateReservationStatusAndSendSms(reservationId, request.status());
+        mentoringReservationFacadeService.approveAndSendSms(loginInfo.memberId(), reservationId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
+    }
+
+    @AuthRequired
+    @PatchMapping("/reservations/{reservationId}/reject")
+    public ResponseEntity<Void> rejectStatus(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long reservationId
+    ) {
+        mentoringReservationFacadeService.rejectAndSendSms(loginInfo.memberId(), reservationId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
+    }
+
+    @AuthRequired
+    @PatchMapping("/reservations/{reservationId}/complete")
+    public ResponseEntity<Void> completeStatus(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long reservationId
+    ) {
+        reservationService.complete(loginInfo.memberId(), reservationId);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }

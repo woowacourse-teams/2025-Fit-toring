@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
 import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
+import { SPECIALTIES } from '../../../common/mock/getSpecialties/data';
 import { getSpecialties } from '../../../common/mock/getSpecialties/handlers';
 
 import { MENTORINGS } from './data';
@@ -15,25 +16,29 @@ export const testStateStore = {
 };
 
 const BASE_URL = process.env.API_BASE_URL;
-const MENTORING_URL = `${BASE_URL}${API_ENDPOINTS.MENTORINGS}`;
+const MENTORING_URL = `${BASE_URL}${API_ENDPOINTS.MENTORINGS_PAGE}`;
 const getMentorList = http.get(MENTORING_URL, ({ request }) => {
   const url = new URL(request.url);
   const { searchParams } = url;
 
-  const categoryTitle1 = searchParams.get('categoryTitle1');
-  const categoryTitle2 = searchParams.get('categoryTitle2');
-  const categoryTitle3 = searchParams.get('categoryTitle3');
+  const searchParamsCategoryIds = searchParams.get('categoryIds') ?? '';
+  const categoryIds = searchParamsCategoryIds
+    .split(',')
+    .filter((val) => val !== '' || val !== null)
+    .map(Number);
 
-  const categoryValues = [
-    categoryTitle1,
-    categoryTitle2,
-    categoryTitle3,
-  ].filter((category) => category !== null) as string[];
+  const categoryValues = SPECIALTIES.filter(({ id }) =>
+    categoryIds.includes(id),
+  );
 
   if (categoryValues.length > 0) {
-    const response = MENTORINGS.filter((mentor) =>
-      categoryValues.every((category) => mentor.categories.includes(category)),
-    );
+    const response = {
+      hasNext: false,
+      mentoringSummaryResponses: MENTORINGS.filter((mentor) =>
+        categoryValues.every(({ title }) => mentor.categories.includes(title)),
+      ),
+      nextCursorCode: null,
+    };
 
     if (testStateStore.shouldFailRequest) {
       return new HttpResponse(
@@ -46,7 +51,11 @@ const getMentorList = http.get(MENTORING_URL, ({ request }) => {
 
     return HttpResponse.json(response);
   } else {
-    const response = [...MENTORINGS];
+    const response = {
+      hasNext: false,
+      mentoringSummaryResponses: [...MENTORINGS],
+      nextCursorCode: null,
+    };
 
     if (testStateStore.shouldFailRequest) {
       return new HttpResponse(

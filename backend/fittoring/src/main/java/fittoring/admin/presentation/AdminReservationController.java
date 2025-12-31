@@ -2,11 +2,11 @@ package fittoring.admin.presentation;
 
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.presentation.dto.AdminReservationResponse;
+import fittoring.admin.presentation.dto.AdminReservationStatusUpdateRequest;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.AdminReservationQueryService;
 import fittoring.admin.service.dto.AdminMentoringReservationDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import fittoring.application.reservation.service.ReservationService;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
@@ -56,7 +56,7 @@ public class AdminReservationController {
     public ResponseEntity<Void> updateStatus(
             @Login LoginInfo loginInfo,
             @PathVariable Long reservationId,
-            @RequestBody @Valid ReservationStatusUpdateRequest request
+            @RequestBody @Valid AdminReservationStatusUpdateRequest request
     ) {
         AdminReservationStatusUpdateDto adminReservationStatusUpdateDto
                 = AdminReservationStatusUpdateDto.of(loginInfo.memberId(), reservationId, request.status());
