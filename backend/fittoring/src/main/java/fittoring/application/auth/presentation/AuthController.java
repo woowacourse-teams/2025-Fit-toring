@@ -1,27 +1,37 @@
 package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.*;
+import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
+import fittoring.application.auth.presentation.dto.request.ResetPasswordRequest;
+import fittoring.application.auth.presentation.dto.request.SignInRequest;
+import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
+import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
 import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
+import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
 import fittoring.application.auth.service.AuthService;
+import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.PhoneVerificationFacadeService;
 import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
+import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.OauthLoginException;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -43,6 +53,7 @@ public class AuthController {
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
+    private final JwtExtractor jwtExtractor;
     private final JwtProvider jwtProvider;
     private final CookieWriter cookieWriter;
 
@@ -77,6 +88,23 @@ public class AuthController {
         cookieWriter.clearCookies(httpResponse);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
+    }
+
+    @GetMapping("/auth/check")
+    public ResponseEntity<LoginStatusDto> isLoggedIn(HttpServletRequest httpRequest) {
+        Cookie[] cookies = httpRequest.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        String accessToken;
+        try {
+            accessToken = jwtExtractor.extractTokenFromCookie("accessToken", cookies);
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        Long memberId = authService.extractMemberId(accessToken);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new LoginStatusDto(memberId));
     }
 
     @PostMapping("/reissue")

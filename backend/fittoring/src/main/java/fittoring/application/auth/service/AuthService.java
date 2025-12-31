@@ -8,32 +8,39 @@ import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.auth.service.dto.RegisterMemberDto;
-import fittoring.application.exception.*;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
-import fittoring.domain.model.*;
+import fittoring.domain.model.AuthProvider;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberOauth;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @RequiredArgsConstructor
 @Service
 public class AuthService {
 
+    private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtExtractor jwtExtractor;
     private final JwtProvider jwtProvider;
     private final OauthClientService oauthClientService;
     private final MemberOauthRepository memberOAuthRepository;
     private final PhoneVerificationService phoneVerificationService;
-
-    private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
 
     @Transactional
     public void register(RegisterMemberDto dto) {
@@ -184,5 +191,9 @@ public class AuthService {
         Member member = getMemberByLoginId(loginId);
         member.updatePassword(password);
         return member;
+    }
+
+    public Long extractMemberId(String accessToken) {
+        return jwtProvider.getSubjectFromPayloadBy(accessToken);
     }
 }
