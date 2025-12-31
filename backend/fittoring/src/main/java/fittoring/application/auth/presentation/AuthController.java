@@ -1,15 +1,22 @@
 package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieWriter;
+import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
+import fittoring.application.auth.presentation.dto.request.ResetPasswordRequest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
-import fittoring.application.auth.service.*;
+import fittoring.application.auth.service.AuthService;
+import fittoring.application.auth.service.JwtExtractor;
+import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.auth.service.PhoneVerificationFacadeService;
+import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.InvalidTokenException;
@@ -61,7 +68,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        authService.register(request);
+        authService.register(request.toRegisterMemberDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
@@ -111,7 +118,7 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/validate-id")
+    @PostMapping("/validate-login-id")
     public ResponseEntity<Void> validateDuplicateLoginId(@RequestBody @Valid ValidateDuplicateLoginIdRequest request) {
         authService.validateDuplicateLoginId(request.loginId());
         return ResponseEntity.status(HttpStatus.OK)
@@ -120,7 +127,7 @@ public class AuthController {
 
     @PostMapping("/auth-code")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
-        phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
+        phoneVerificationFacadeService.sendPhoneVerificationCode(request.phoneNumber());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
@@ -199,5 +206,18 @@ public class AuthController {
         cookieWriter.write(httpResponse, authTokenDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @GetMapping("/login-id")
+    public ResponseEntity<LoginIdResponse> findLoginId(@RequestBody @Valid FindLoginIdRequest request) {
+        String loginId = authService.findLoginId(request.name(), request.phoneNumber());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new LoginIdResponse(loginId));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        authService.resetPassword(request.loginId(), request.phoneNumber(), request.password());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

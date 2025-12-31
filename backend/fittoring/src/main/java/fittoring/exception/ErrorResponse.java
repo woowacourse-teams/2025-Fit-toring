@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public record ErrorResponse(
-    HttpStatus status,
-    String message,
-    LocalDateTime timestamp
+        HttpStatus status,
+        String message,
+        LocalDateTime timestamp
 ) {
 
-    public static ErrorResponse of(HttpStatus httpStatus, String errorMessage){
+    public static ErrorResponse of(HttpStatus httpStatus, String errorMessage) {
         return new ErrorResponse(
                 httpStatus,
                 errorMessage,

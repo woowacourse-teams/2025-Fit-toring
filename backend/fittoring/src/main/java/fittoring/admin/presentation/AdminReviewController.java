@@ -1,10 +1,10 @@
 package fittoring.admin.presentation;
 
+import fittoring.admin.presentation.dto.AdminReviewInfoResponse;
+import fittoring.application.review.service.ReviewService;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.application.review.service.ReviewService;
-import fittoring.admin.presentation.dto.AdminReviewInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

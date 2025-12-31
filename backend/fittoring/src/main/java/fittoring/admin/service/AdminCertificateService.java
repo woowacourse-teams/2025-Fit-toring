@@ -31,10 +31,12 @@ public class AdminCertificateService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Long memberId, Status status, int page, int size) {
+    public PageResult<AdminCertificateResponse> getAllCertificatesPaged(Long memberId, Status status, int page,
+                                                                        int size) {
         checkAdminAuthority(memberId);
         List<Long> certificateIds = certificateRepository.findCertificateIdsForAdmin(status, page, size);
-        List<AdminCertificateResponse> certificates = certificateRepository.findCertificatesByIdsOrdered(certificateIds);
+        List<AdminCertificateResponse> certificates = certificateRepository.findCertificatesByIdsOrdered(
+                certificateIds);
         long total = certificateRepository.countByStatus(status);
         int totalPages = (int) Math.max(1, (total + size - 1) / size);
         return new PageResult<>(certificates, page, certificates.size(), total, totalPages);
@@ -42,7 +44,7 @@ public class AdminCertificateService {
 
     private void checkAdminAuthority(Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         if (MemberRole.isNotAdmin(member.getRole())) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
@@ -53,17 +55,17 @@ public class AdminCertificateService {
         checkAdminAuthority(memberId);
         Certificate certificate = getCertificateOne(certificateId);
         Image certificateImage = imageService.findByImageTypeAndRelationId(ImageType.CERTIFICATE, certificateId)
-            .orElseThrow(() -> new ImageNotFoundException(
-                BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage()
-            ));
+                .orElseThrow(() -> new ImageNotFoundException(
+                        BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage()
+                ));
         return CertificateDetailResponse.of(certificate, certificateImage);
     }
 
     private Certificate getCertificateOne(Long certificateId) {
         return certificateRepository.findById(certificateId)
-            .orElseThrow(() -> new CertificateNotFoundException(
-                BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage()
-            ));
+                .orElseThrow(() -> new CertificateNotFoundException(
+                        BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage()
+                ));
     }
 
     @Transactional

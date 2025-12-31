@@ -1,28 +1,37 @@
 package fittoring.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
-import fittoring.application.auth.presentation.dto.request.*;
+import fittoring.application.auth.presentation.dto.request.SignInRequest;
+import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
+import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.domain.model.*;
+import fittoring.domain.model.Gender;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.PhoneVerification;
+import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -38,16 +47,20 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
 
-    @DisplayName("사용자는 회원가입을 할 수 있다.")
+    @DisplayName("전화번호를 인증한 사용자는 회원가입을 할 수 있다.")
     @Test
     void signUp() {
         //given
         String loginId = "loginId";
         String name = "이름";
         Gender gender = Gender.MALE;
-        String phone = "010-1234-5678";
+        String phoneNumber = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
+
+        phoneVerificationRepository.save(
+                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
+        );
 
         //when
         RestAssured
@@ -66,16 +79,42 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(memberRepository.findById(1L)).isNotNull();
     }
 
-    @DisplayName("사용자는 유효하지 않은 정보로 회원가입을 할 수 없다.")
+    @DisplayName("전화번호 인증 정보가 없는 사용자는 회원가입을 할 수 없다.")
     @Test
     void signUp2() {
+        //given
+        String loginId = "loginId";
+        String name = "이름";
+        Gender gender = Gender.MALE;
+        String phoneNumber = "010-1234-5678";
+        String password = "password";
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
+
+        //when
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-signup-invalid-phoneNumber-verification"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/signup")
+                .then().log().all()
+                .statusCode(400)
+                .body("message", equalTo(BusinessErrorMessage.PHONE_VERIFICATION_INVALID.getMessage()))
+        ;
+    }
+
+    @DisplayName("사용자는 유효하지 않은 정보로 회원가입을 할 수 없다.")
+    @Test
+    void signUp3() {
         //given
         String loginId = null;
         String name = "이름";
         Gender gender = Gender.MALE;
-        String phone = "010-1234-5678";
+        String phoneNumber = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
 
         //when
         Response response = RestAssured
@@ -117,7 +156,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         List<String> cookies = response.getHeaders().getValues("Set-Cookie");
 
         SoftAssertions.assertSoftly(softly -> {
-                    assertThat(response.statusCode()).isEqualTo(400);
+                    assertThat(response.statusCode()).isEqualTo(404);
                     assertThat(response.getHeaders().hasHeaderWithName("Set-Cookie")).isFalse();
                     assertThat(cookies).noneMatch(cookie -> cookie.startsWith("accessToken="));
                     assertThat(cookies).noneMatch(cookie -> cookie.startsWith("refreshToken="));
@@ -363,7 +402,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
     @DisplayName("사용자는 중복된 아이디로 회원가입을 할 수 없다.")
     @Test
-    void signUp3() {
+    void signUp4() {
         //given
         Member member = new Member(
                 "loginId",
@@ -378,9 +417,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         String loginId = "loginId";
         String name = "이름";
         Gender gender = Gender.MALE;
-        String phone = "010-1234-5678";
+        String phoneNumber = "010-1234-5678";
         String password = "password";
-        SignUpRequest request = new SignUpRequest(loginId, name, gender, phone, password);
+        SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
 
         //when
         Response response = RestAssured
@@ -410,7 +449,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/validate-id");
+                .post("/validate-login-id");
 
         //then
         assertThat(response.statusCode()).isEqualTo(200);
@@ -450,7 +489,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .post("/validate-id");
+                .post("/validate-login-id");
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);

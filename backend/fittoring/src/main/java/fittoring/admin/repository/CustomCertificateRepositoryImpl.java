@@ -4,7 +4,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import fittoring.admin.presentation.dto.AdminCertificateResponse;
-import fittoring.admin.presentation.dto.AdminMemberResponse;
 import fittoring.domain.model.QCertificate;
 import fittoring.domain.model.QMember;
 import fittoring.domain.model.QMentoring;
@@ -26,12 +25,12 @@ public class CustomCertificateRepositoryImpl implements CustomCertificateReposit
         long offset = (long) (page - 1) * size;
 
         return jpaQueryFactory.select(CERTIFICATE.id)
-            .from(CERTIFICATE)
-            .where(buildStatusFilterCondition(status))
-            .orderBy(CERTIFICATE.createdAt.desc())
-            .offset(offset)
-            .limit(size)
-            .fetch();
+                .from(CERTIFICATE)
+                .where(buildStatusFilterCondition(status))
+                .orderBy(CERTIFICATE.createdAt.desc())
+                .offset(offset)
+                .limit(size)
+                .fetch();
     }
 
     private BooleanExpression buildStatusFilterCondition(Status status) {
@@ -44,24 +43,25 @@ public class CustomCertificateRepositoryImpl implements CustomCertificateReposit
     @Override
     public List<AdminCertificateResponse> findCertificatesByIdsOrdered(List<Long> ids) {
         return jpaQueryFactory.select(
-                Projections.constructor(
-                    AdminCertificateResponse.class,
-                    CERTIFICATE.id, CERTIFICATE.mentoring.mentor.name, CERTIFICATE.title, CERTIFICATE.type, CERTIFICATE.verificationStatus, CERTIFICATE.createdAt
-                ))
-            .from(CERTIFICATE)
-            .join(CERTIFICATE.mentoring, MENTORING)
-            .join(MENTORING.mentor, MEMBER)
-            .where(CERTIFICATE.id.in(ids))
-            .orderBy(CERTIFICATE.id.desc())
-            .fetch();
+                        Projections.constructor(
+                                AdminCertificateResponse.class,
+                                CERTIFICATE.id, CERTIFICATE.mentoring.mentor.name, CERTIFICATE.title, CERTIFICATE.type,
+                                CERTIFICATE.verificationStatus, CERTIFICATE.createdAt
+                        ))
+                .from(CERTIFICATE)
+                .join(CERTIFICATE.mentoring, MENTORING)
+                .join(MENTORING.mentor, MEMBER)
+                .where(CERTIFICATE.id.in(ids))
+                .orderBy(CERTIFICATE.id.desc())
+                .fetch();
     }
 
     @Override
     public long countByStatus(Status status) {
         return jpaQueryFactory
-            .select(CERTIFICATE.count())
-            .from(CERTIFICATE)
-            .where(buildStatusFilterCondition(status))
-            .fetchOne();
+                .select(CERTIFICATE.count())
+                .from(CERTIFICATE)
+                .where(buildStatusFilterCondition(status))
+                .fetchOne();
     }
 }
