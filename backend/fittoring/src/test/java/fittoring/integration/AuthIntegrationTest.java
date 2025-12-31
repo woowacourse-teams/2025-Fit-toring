@@ -1,33 +1,28 @@
 package fittoring.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import fittoring.AbstractApiDocumentationTest;
-import fittoring.application.auth.presentation.dto.request.SignInRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
-import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.FixtureUtil;
+import fittoring.application.auth.presentation.dto.request.*;
+import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.domain.model.Gender;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.PhoneVerification;
-import fittoring.domain.model.RefreshToken;
+import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -207,14 +202,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void logout() {
         //given
-        Member member = new Member(
-                "loginId",
-                Gender.MALE,
-                "이름",
-                new Phone("010-1234-5678"),
-                Password.from("password")
-        );
-        Member savedMember = memberRepository.save(member);
+        Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
 
         String accessToken = jwtProvider.createAccessToken(savedMember.getId());
         String refreshToken = jwtProvider.createRefreshToken();
@@ -238,19 +226,63 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.statusCode()).isEqualTo(204);
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("accessToken=;")
-                    && cookie.contains("Max-Age=0")
-                    && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=None")
-                    && cookie.contains("HttpOnly")
-                    && cookie.contains("Secure"));
+                            && cookie.contains("Max-Age=0")
+                            && cookie.contains("Path=/")
+                            && cookie.contains("SameSite=None")
+                            && cookie.contains("HttpOnly")
+                            && cookie.contains("Secure"));
             softly.assertThat(cookies).anyMatch(cookie ->
                     cookie.startsWith("refreshToken=;")
-                    && cookie.contains("Max-Age=0")
-                    && cookie.contains("Path=/")
-                    && cookie.contains("SameSite=None")
-                    && cookie.contains("HttpOnly")
-                    && cookie.contains("Secure"));
+                            && cookie.contains("Max-Age=0")
+                            && cookie.contains("Path=/")
+                            && cookie.contains("SameSite=None")
+                            && cookie.contains("HttpOnly")
+                            && cookie.contains("Secure"));
         });
+    }
+
+    @DisplayName("로그인 상태 요청 - accessToken이 존재하면 true와 사용자 id를 반환한다.")
+    @Test
+    void isLoggedIn() {
+        //given
+        Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId());
+
+        //when
+        //then
+        LoginStatusDto response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/get-isLoggedIn-success"))
+                .cookie("accessToken", accessToken)
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .get("/auth/check")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(LoginStatusDto.class);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.memberId()).isEqualTo(savedMember.getId());
+        });
+    }
+
+    @DisplayName("로그인 상태 요청 - accessToken이 존재하지 않으면 false와 null을 반환한다.")
+    @Test
+    void isLoggedIn2() {
+        //given
+        //when
+        //then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/get-isLoggedIn-noAccessToken"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .get("/auth/check")
+                .then()
+                .statusCode(204);
     }
 
     @DisplayName("토큰을 재발급 하면 상태코드 200을 응답하고, 새로운 accessToken과 refreshToken을 쿠키에 저장한다.")
