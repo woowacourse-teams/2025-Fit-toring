@@ -1,11 +1,5 @@
 package fittoring.application.auth.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.willReturn;
-
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
@@ -15,20 +9,23 @@ import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
-import fittoring.domain.model.Gender;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.PhoneVerification;
-import fittoring.domain.model.RefreshToken;
-import java.time.LocalDateTime;
+import fittoring.domain.model.*;
+import fittoring.domain.model.password.Password;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willReturn;
 
 class AuthServiceTest extends IntegrationTestSupport {
 
@@ -58,19 +55,15 @@ class AuthServiceTest extends IntegrationTestSupport {
                 phoneNumber,
                 password);
 
-        phoneVerificationRepository.save(new PhoneVerification(
-                        new Phone(phoneNumber),
-                        "123456",
-                        LocalDateTime.now().plusMinutes(3)
-                )
-        );
+        phoneVerificationRepository.save(FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber)));
 
         //when
-        authService.register(request);
+        authService.register(request.toRegisterMemberDto());
 
         //then
         String actual = memberRepository.findById(1L)
-                .orElseThrow(null).getPassword();
+                .orElseThrow(null)
+                .getPasswordValue();
         assertThat(actual).isNotEqualTo(password);
     }
 
@@ -117,7 +110,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         //when
         //then
         assertThatThrownBy(() -> authService.login(loginId, password))
-                .isInstanceOf(NotFoundMemberException.class);
+                .isInstanceOf(MemberNotFoundException.class);
     }
 
     @DisplayName("잘못된 비밀번호로 로그인에 실패하면 예외가 발생한다.")
@@ -278,5 +271,22 @@ class AuthServiceTest extends IntegrationTestSupport {
         //then
         assertThat(authService.findLoginId(mentee.getName(), mentee.getPhoneNumber()))
                 .isEqualTo(mentee.getLoginId());
+    }
+
+    @DisplayName("기존 회원 ID로 전화번호 인증 후 PW를 변경할 수 있다.")
+    @Test
+    void resetPassword() {
+        //given
+        Member mentee = FixtureUtil.getTestMentee();
+        Password before = mentee.getPassword();
+        memberRepository.save(mentee);
+        phoneVerificationRepository.save(
+                FixtureUtil.getVerifiedPhoneVerification(mentee.getPhone())
+        );
+        //when
+        Member changed = authService.resetPassword(mentee.getLoginId(), mentee.getPhoneNumber(), "after");
+
+        //then
+        assertThat(changed.getPasswordValue()).isEqualTo(Password.from("after").getValue());
     }
 }

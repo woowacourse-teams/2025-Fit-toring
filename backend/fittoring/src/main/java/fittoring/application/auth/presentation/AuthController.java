@@ -1,13 +1,7 @@
 package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignInRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
-import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
-import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.request.*;
 import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.service.AuthService;
@@ -23,9 +17,11 @@ import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -61,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        authService.register(request);
+        authService.register(request.toRegisterMemberDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
@@ -184,10 +180,16 @@ public class AuthController {
                 .body(response);
     }
 
-    @GetMapping("/find-login-id")
+    @GetMapping("/login-id")
     public ResponseEntity<LoginIdResponse> findLoginId(@RequestBody @Valid FindLoginIdRequest request) {
         String loginId = authService.findLoginId(request.name(), request.phoneNumber());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new LoginIdResponse(loginId));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        authService.resetPassword(request.loginId(), request.phoneNumber(), request.password());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

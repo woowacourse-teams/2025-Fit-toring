@@ -1,34 +1,26 @@
 package fittoring.application.auth.service;
 
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
 import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
 import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.DuplicateLoginIdException;
-import fittoring.application.exception.DuplicatePhoneException;
-import fittoring.application.exception.InvalidTokenException;
-import fittoring.application.exception.MemberNotFoundException;
-import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.auth.service.dto.RegisterMemberDto;
+import fittoring.application.exception.*;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
-import fittoring.domain.model.AuthProvider;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberOauth;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.RefreshToken;
+import fittoring.domain.model.*;
 import fittoring.domain.model.password.Password;
 import fittoring.infrastructure.OauthClientService;
-import java.time.LocalDateTime;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -44,11 +36,11 @@ public class AuthService {
     private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
 
     @Transactional
-    public void register(SignUpRequest request) {
-        validateDuplicateLoginId(request.loginId());
-        validateDuplicatePhone(request.phoneNumber());
-        phoneVerificationService.existValidPhoneVerification(new Phone(request.phoneNumber()));
-        Member member = createMember(request);
+    public void register(RegisterMemberDto dto) {
+        validateDuplicateLoginId(dto.loginId());
+        validateDuplicatePhone(dto.phoneNumber());
+        phoneVerificationService.checkVerificationStatus(new Phone(dto.phoneNumber()));
+        Member member = createMember(dto);
         memberRepository.save(member);
     }
 
@@ -62,6 +54,16 @@ public class AuthService {
         if (memberRepository.existsByPhone_Number(phone)) {
             throw new DuplicatePhoneException(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
         }
+    }
+
+    private Member createMember(RegisterMemberDto dto) {
+        return new Member(
+                dto.loginId(),
+                dto.gender(),
+                dto.name(),
+                new Phone(dto.phoneNumber()),
+                Password.from(dto.password())
+        );
     }
 
     @Transactional
@@ -103,17 +105,7 @@ public class AuthService {
 
     private Member getMemberByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new NotFoundMemberException(LOGIN_ID_NOT_FOUND_MESSAGE));
-    }
-
-    private Member createMember(SignUpRequest request) {
-        return new Member(
-                request.loginId(),
-                request.gender(),
-                request.name(),
-                new Phone(request.phoneNumber()),
-                Password.from(request.password())
-        );
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
     @Transactional
@@ -176,14 +168,21 @@ public class AuthService {
         );
     }
 
+    @Transactional(readOnly = true)
     public String findLoginId(String name, String phoneNumber) {
-        // 일치하는 전화번호 없으면 예외
         Member member = memberRepository.findByPhone_Number(phoneNumber)
                 .orElseThrow(() -> new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE));
-        // 전화번호 주인과 이름이 일치하지 않으면 예외
-        if(!member.getName().equals(name)){
+        if (!member.getName().equals(name)) {
             throw new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE);
         }
         return member.getLoginId();
+    }
+
+    @Transactional
+    public Member resetPassword(String loginId, String phoneNumber, String password) {
+        phoneVerificationService.checkVerificationStatus(new Phone(phoneNumber));
+        Member member = getMemberByLoginId(loginId);
+        member.updatePassword(password);
+        return member;
     }
 }
