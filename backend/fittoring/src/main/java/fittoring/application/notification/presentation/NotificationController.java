@@ -17,7 +17,7 @@ public class NotificationController {
 
     private final MemberFcmTokenService memberFcmTokenService;
 
-    @PostMapping("/token")
+    @PostMapping("/tokens")
     public ResponseEntity<Void> upsertFcmToken(@RequestBody FcmTokenUpsertRequest requestBody) {
         memberFcmTokenService.upsertFcmToken(requestBody.memberId(), requestBody.token());
         return ResponseEntity.status(HttpStatus.OK)
