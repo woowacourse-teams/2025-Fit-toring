@@ -25,6 +25,7 @@ public enum BusinessErrorMessage {
     ALREADY_PROCESSED_CERTIFICATE("이미 처리된 자격증명입니다."),
     MEMBER_NOT_FOUND("존재하지 않는 회원입니다."),
     REVIEWING_RESERVATION_NOT_FOUND("신청 이력이 있는 멘토링에만 리뷰를 남길 수 있습니다."),
+    DUPLICATED_RESERVATION("이미 예약을 신청하였거나 진행 중인 멘토링입니다."),
     DUPLICATED_REVIEW("한 번의 예약당 한 번만 리뷰를 남길 수 있습니다."),
     FORBIDDEN_MEMBER("접근 권한이 없습니다."),
     RESERVATION_STATUS_ALREADY_UPDATE("이미 처리된 예약은 상태 변경이 불가합니다."),
