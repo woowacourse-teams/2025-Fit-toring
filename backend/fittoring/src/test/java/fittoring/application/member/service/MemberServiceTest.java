@@ -135,14 +135,14 @@ class MemberServiceTest extends IntegrationTestSupport {
         String rawName = "이름";
         Gender rawGender = Gender.MALE;
         String rawPhoneNumber = "010-1234-5678";
-        Password rawPassword = Password.from("password");
+        Password password = Password.from("password");
         Member member = memberRepository.save(
                 new Member(
                         "menteeId",
                         rawGender,
                         rawName,
                         new Phone(rawPhoneNumber),
-                        rawPassword
+                        password
                 )
         );
 
@@ -169,7 +169,7 @@ class MemberServiceTest extends IntegrationTestSupport {
             softly.assertThat(actual).isNotNull();
             softly.assertThat(actual.getName()).isNotEqualTo(rawName);
             softly.assertThat(actual.getGender()).isNotEqualTo(rawGender);
-            softly.assertThat(actual.getPassword()).isNotEqualTo(rawPassword.getPassword());
+            softly.assertThat(actual.getPassword()).isEqualTo(Password.from(newPassword));
             softly.assertThat(actual.getPhoneNumber()).isNotEqualTo(rawPhoneNumber);
         });
     }
@@ -181,14 +181,15 @@ class MemberServiceTest extends IntegrationTestSupport {
         String rawName = "이름";
         Gender rawGender = Gender.MALE;
         String rawPhoneNumber = "010-1234-5678";
-        Password rawPassword = Password.from("password");
+        Password password = Password.from("password");
+        System.out.println(password.getValue());
         Member member = memberRepository.save(
                 new Member(
                         "menteeId",
                         rawGender,
                         rawName,
                         new Phone(rawPhoneNumber),
-                        rawPassword
+                        password
                 )
         );
 
@@ -213,7 +214,7 @@ class MemberServiceTest extends IntegrationTestSupport {
             softly.assertThat(actual).isNotNull();
             softly.assertThat(actual.getName()).isNotEqualTo(rawName);
             softly.assertThat(actual.getGender()).isEqualTo(rawGender);
-            softly.assertThat(actual.getPassword()).isEqualTo(rawPassword.getPassword());
+            softly.assertThat(actual.getPasswordValue()).isEqualTo(password.getValue());
             softly.assertThat(actual.getPhoneNumber()).isNotEqualTo(rawPhoneNumber);
         });
     }

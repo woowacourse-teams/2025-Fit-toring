@@ -1,12 +1,18 @@
 import { API_ENDPOINTS } from '../constants/apiEndpoints';
+import { convertGenderServerToClient } from '../utils/genderConverter';
 
 import { apiClient } from './apiClient';
 
-import type { UserInfo } from '../types/userInfo';
+import type { UserInfoServer } from '../types/userInfo';
 
 export const getUserInfo = async () => {
-  return await apiClient.get<UserInfo>({
+  const response = await apiClient.get<UserInfoServer>({
     endpoint: API_ENDPOINTS.MEMBERS_ME,
     withCredentials: true,
   });
+
+  return {
+    ...response,
+    gender: convertGenderServerToClient(response.gender),
+  };
 };

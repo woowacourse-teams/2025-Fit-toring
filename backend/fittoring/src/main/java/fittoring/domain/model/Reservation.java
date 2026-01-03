@@ -70,26 +70,33 @@ public class Reservation {
         this.status = updateStatus;
     }
 
-    public void changeStatus(Status updateStatus) {
-        validateReservationStatus(updateStatus);
-        this.status = updateStatus;
-    }
-
-    private void validateReservationStatus(Status updateStatus) {
-        if (canChangeStatus() || isRejectingAfterApproved(updateStatus)) {
+    public void approve() {
+        if (isNotPending()) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
-        if (this.status == updateStatus) {
-            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
+        this.status = Status.APPROVED;
+    }
+
+    public void reject() {
+        if (isNotPending()) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
+        this.status = Status.REJECTED;
     }
 
-    private boolean canChangeStatus() {
-        return this.status.isReject() || this.status.isComplete();
+    public void complete() {
+        if (isNotApprove()) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
+        }
+        this.status = Status.COMPLETE;
     }
 
-    private boolean isRejectingAfterApproved(Status updateStatus) {
-        return updateStatus.isReject() && this.status.isApprove();
+    private boolean isNotPending() {
+        return !this.status.isPending();
+    }
+
+    private boolean isNotApprove() {
+        return !this.status.isApprove();
     }
 
     public boolean isCreatedByMember(Long memberId) {
@@ -123,7 +130,7 @@ public class Reservation {
     public Member getMentor() {
         return mentoring.getMentor();
     }
-    
+
     public String getMenteePhone() {
         return mentee.getPhoneNumber();
     }

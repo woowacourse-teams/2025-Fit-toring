@@ -1,10 +1,10 @@
 package fittoring.application.image.presentation;
 
-import fittoring.config.auth.AuthRequired;
-import fittoring.application.image.service.PresignedUrlService;
-import fittoring.application.image.service.dto.IssuedPresignedDto;
 import fittoring.application.image.presentation.dto.request.IssuedPresignedRequest;
 import fittoring.application.image.presentation.dto.response.PresignedIssueResponse;
+import fittoring.application.image.service.PresignedUrlService;
+import fittoring.application.image.service.dto.IssuedPresignedDto;
+import fittoring.config.auth.AuthRequired;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

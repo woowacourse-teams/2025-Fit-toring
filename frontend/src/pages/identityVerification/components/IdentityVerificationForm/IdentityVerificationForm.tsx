@@ -19,10 +19,8 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postIdentityVerification } from '../../apis/postIdentityVerification';
 
-import type {
-  Gender,
-  IdentityVerificationInfo,
-} from '../types/IdentityVerificationInfo';
+import type { GenderClient } from '../../../../common/types/gender';
+import type { IdentityVerificationInfo } from '../types/IdentityVerificationInfo';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 
@@ -37,7 +35,7 @@ function IdentityVerificationForm() {
     validated: nameValidated,
   } = useNameInput();
 
-  const [gender, setGender] = useState<Gender>('남');
+  const [gender, setGender] = useState<GenderClient>('남');
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -148,10 +146,7 @@ function IdentityVerificationForm() {
       if (response.status === 201) {
         alert('본인 인증이 완료되었습니다.');
         if (data?.memberId) {
-          localStorage.setItem(
-            'memberId',
-            JSON.stringify({ memberId: data.memberId }),
-          );
+          localStorage.setItem('memberId', data.memberId);
         }
         login();
         navigate(PAGE_URL.HOME);

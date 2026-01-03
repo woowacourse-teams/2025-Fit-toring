@@ -20,10 +20,9 @@ import org.springframework.test.context.ActiveProfiles;
 public abstract class RepositoryTestSupport {
 
     @Autowired
-    private DbCleaner dbCleaner;
-
-    @Autowired
     protected TestEntityManager em;
+    @Autowired
+    private DbCleaner dbCleaner;
 
     @BeforeEach
     void setUp() {

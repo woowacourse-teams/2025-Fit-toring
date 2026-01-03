@@ -7,7 +7,7 @@ import { postAuthCodeVerify } from '../../../common/mock/authCodeVerify/handlers
 const BASE_URL = process.env.API_BASE_URL;
 const SIGNUP_URL = `${BASE_URL}${API_ENDPOINTS.SIGNUP}`;
 
-const postSignup = http.post(SIGNUP_URL, async () => {
+const postSignup = http.post(`${SIGNUP_URL}`, async () => {
   return await HttpResponse.json({ message: '회원가입 성공' }, { status: 201 });
 });
 
@@ -15,11 +15,11 @@ interface AuthCodeBody {
   loginId: string;
 }
 
-const AUTH_CODE_URL = `${BASE_URL}${API_ENDPOINTS.VALIDATE_ID}`;
-
 const DUMMY_DUPLICATE_USER_ID = 'test1234';
 
-const postValidateId = http.post(AUTH_CODE_URL, async ({ request }) => {
+const VALIDATE_ID_URL = `${BASE_URL}${API_ENDPOINTS.VALIDATE_ID}`;
+
+const postValidateId = http.post(`${VALIDATE_ID_URL}`, async ({ request }) => {
   const body = await request.json();
 
   if (!body) {

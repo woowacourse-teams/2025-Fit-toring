@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
-import type { Gender, SignupInfo } from '../../signup/types/signupInfo';
+import type { GenderClient } from '../../../common/types/gender';
+import type { SignupInfo } from '../../signup/types/signupInfo';
 
-const useGender = (initialGender?: Gender) => {
-  const [gender, setGender] = useState<Gender>(initialGender || '남');
+const useGender = (initialGender?: GenderClient) => {
+  const [gender, setGender] = useState<GenderClient>(initialGender || '남');
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
