@@ -7,20 +7,20 @@ import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.notification.repository.MemberFcmTokenRepository;
+import fittoring.application.notification.repository.FcmTokenRepository;
 import fittoring.domain.model.Member;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class MemberFcmTokenServiceTest extends IntegrationTestSupport {
+class FcmTokenServiceTest extends IntegrationTestSupport {
 
     @Autowired
-    private MemberFcmTokenService memberFcmTokenService;
+    private FcmTokenService fcmTokenService;
 
     @Autowired
-    private MemberFcmTokenRepository memberFcmTokenRepository;
+    private FcmTokenRepository fcmTokenRepository;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -33,12 +33,12 @@ class MemberFcmTokenServiceTest extends IntegrationTestSupport {
         String token = "testFcmTokentestFcmTokentestFcmToken";
 
         // when
-        memberFcmTokenService.upsertFcmToken(member.getId(), token);
+        fcmTokenService.upsertFcmToken(member.getId(), token);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(memberFcmTokenRepository.findByMemberId(member.getId())).isPresent();
-            softAssertions.assertThat(memberFcmTokenRepository.findByMemberId(member.getId()).get().getToken())
+            softAssertions.assertThat(fcmTokenRepository.findByMemberId(member.getId())).isPresent();
+            softAssertions.assertThat(fcmTokenRepository.findByMemberId(member.getId()).get().getToken())
                     .isEqualTo(token);
         });
     }
@@ -50,15 +50,15 @@ class MemberFcmTokenServiceTest extends IntegrationTestSupport {
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
         String newToken = "newTestFcmTokennewTestFcmTokennewTestFcmToken";
-        memberFcmTokenService.upsertFcmToken(member.getId(), originalToken);
+        fcmTokenService.upsertFcmToken(member.getId(), originalToken);
 
         // when
-        memberFcmTokenService.upsertFcmToken(member.getId(), newToken);
+        fcmTokenService.upsertFcmToken(member.getId(), newToken);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(memberFcmTokenRepository.findByMemberId(member.getId())).isPresent();
-            softAssertions.assertThat(memberFcmTokenRepository.findByMemberId(member.getId()).get().getToken())
+            softAssertions.assertThat(fcmTokenRepository.findByMemberId(member.getId())).isPresent();
+            softAssertions.assertThat(fcmTokenRepository.findByMemberId(member.getId()).get().getToken())
                     .isEqualTo(newToken);
         });
     }
@@ -70,7 +70,7 @@ class MemberFcmTokenServiceTest extends IntegrationTestSupport {
         String token = "testFcmTokentestFcmTokentestFcmToken";
 
         // when & then
-        assertThatThrownBy(() -> memberFcmTokenService.upsertFcmToken(999L, token))
+        assertThatThrownBy(() -> fcmTokenService.upsertFcmToken(999L, token))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }

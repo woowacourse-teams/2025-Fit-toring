@@ -3,8 +3,8 @@ package fittoring.application.notification.service;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.notification.repository.MemberFcmTokenRepository;
-import fittoring.domain.model.MemberFcmToken;
+import fittoring.application.notification.repository.FcmTokenRepository;
+import fittoring.domain.model.FcmToken;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class MemberFcmTokenService {
+public class FcmTokenService {
 
-    private final MemberFcmTokenRepository memberFcmTokenRepository;
+    private final FcmTokenRepository fcmTokenRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
     public void upsertFcmToken(Long memberId, String token) {
-        Optional<MemberFcmToken> tokenOptional = memberFcmTokenRepository.findByMemberId(memberId);
+        Optional<FcmToken> tokenOptional = fcmTokenRepository.findByMemberId(memberId);
         if (tokenOptional.isEmpty()) {
             saveNewFcmToken(memberId, token);
             return;
@@ -29,8 +29,8 @@ public class MemberFcmTokenService {
 
     private void saveNewFcmToken(Long memberId, String token) {
         validateMemberExists(memberId);
-        MemberFcmToken memberFcmToken = new MemberFcmToken(memberId, token);
-        memberFcmTokenRepository.save(memberFcmToken);
+        FcmToken fcmToken = new FcmToken(memberId, token);
+        fcmTokenRepository.save(fcmToken);
     }
 
     private void validateMemberExists(Long memberId) {
@@ -39,8 +39,8 @@ public class MemberFcmTokenService {
         }
     }
 
-    private void renewFcmToken(MemberFcmToken memberFcmToken, String newToken) {
-        memberFcmToken.updateToken(newToken);
-        memberFcmTokenRepository.save(memberFcmToken);
+    private void renewFcmToken(FcmToken fcmToken, String newToken) {
+        fcmToken.updateToken(newToken);
+        fcmTokenRepository.save(fcmToken);
     }
 }

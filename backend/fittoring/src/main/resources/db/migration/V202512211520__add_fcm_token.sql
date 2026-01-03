@@ -1,4 +1,4 @@
-CREATE TABLE member_fcm_token(
+CREATE TABLE fcm_token(
     id          BIGINT  AUTO_INCREMENT  PRIMARY KEY,
     member_id   BIGINT  NOT NULL,
     token       VARCHAR(255) NOT NULL,
