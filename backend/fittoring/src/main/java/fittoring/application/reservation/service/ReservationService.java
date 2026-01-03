@@ -5,6 +5,7 @@ import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chat.service.ChatRoomService;
 import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicateReservationException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
@@ -32,6 +33,7 @@ import fittoring.domain.model.Status;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,10 +55,22 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
+        validateNoOngoingReservation(dto);
         Reservation reservation = createReservationEntity(dto);
         Reservation savedReservation = reservationRepository.save(reservation);
         mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
         return savedReservation;
+    }
+
+    private void validateNoOngoingReservation(ReservationCreateDto dto) {
+        boolean existsOngoingReservation = reservationRepository.existsByMentoringIdAndMenteeIdAndStatusIn(
+            dto.mentoringId(),
+            dto.menteeId(),
+            List.of(Status.PENDING, Status.APPROVED)
+        );
+        if (existsOngoingReservation) {
+            throw new DuplicateReservationException(BusinessErrorMessage.DUPLICATED_RESERVATION.getMessage());
+        }
     }
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {
@@ -183,18 +197,43 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationInfo updateStatus(Long reservationId, String updateStatus) {
+    public ReservationInfo approve(Long mentorId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
-        Status status = Status.of(updateStatus);
-        reservation.changeStatus(status);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
 
-        String url = "";
-        if (reservation.isApprove()) {
-            ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
-            url = chatRoomCreatedInfo.url();
+        reservation.approve();
+
+        ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
+        String url = chatRoomCreatedInfo.url();
+
+        return ReservationInfo.from(reservation, url);
+    }
+
+    @Transactional
+    public ReservationInfo reject(Long mentorId, Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
+
+        reservation.reject();
+        return ReservationInfo.from(reservation, null);
+    }
+
+    @Transactional
+    public void complete(Long mentorId, Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
+
+        reservation.complete();
+    }
+
+    private void validateMentorAuthority(Long mentoringMentorId, Long requestMentorId) {
+        if (isNotMentoringOwner(mentoringMentorId, requestMentorId)) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
+    }
 
-        return new ReservationInfo(reservation, url);
+    private boolean isNotMentoringOwner(Long mentoringMentorId, Long requestMentorId) {
+        return !Objects.equals(mentoringMentorId, requestMentorId);
     }
 
     private Reservation getReservation(Long reservationId) {

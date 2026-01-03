@@ -116,8 +116,8 @@ public class Member {
         return this.role != MemberRole.ADMIN;
     }
 
-    public String getPassword() {
-        return password.getPassword();
+    public String getPasswordValue() {
+        return password.getValue();
     }
 
     public String getPhoneNumber() {

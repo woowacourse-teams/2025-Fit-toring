@@ -15,9 +15,7 @@ function ChatContent({
   pageFirstElRef,
   listElRef,
 }: ChatContentProps) {
-  const storedData = localStorage.getItem('memberId');
-  const parsedData = storedData ? JSON.parse(storedData) : null;
-  const memberId = parsedData ? parsedData.memberId : null;
+  const memberId = localStorage.getItem('memberId');
 
   if (!memberId) {
     return null; // TODO: 에러 UI로 변경할 예정

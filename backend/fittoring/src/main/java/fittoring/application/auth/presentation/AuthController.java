@@ -1,31 +1,48 @@
 package fittoring.application.auth.presentation;
 
 import fittoring.application.auth.CookieWriter;
-import fittoring.application.auth.presentation.dto.request.*;
+import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
+import fittoring.application.auth.presentation.dto.request.ResetPasswordRequest;
+import fittoring.application.auth.presentation.dto.request.SignInRequest;
+import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
+import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
+import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
 import fittoring.application.auth.service.AuthService;
+import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.PhoneVerificationFacadeService;
 import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
+import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.OauthLoginException;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,6 +53,7 @@ public class AuthController {
     private final AuthService authService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
+    private final JwtExtractor jwtExtractor;
     private final JwtProvider jwtProvider;
     private final CookieWriter cookieWriter;
 
@@ -50,7 +68,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        authService.register(request);
+        authService.register(request.toRegisterMemberDto());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
@@ -72,6 +90,23 @@ public class AuthController {
                 .build();
     }
 
+    @GetMapping("/auth/check")
+    public ResponseEntity<LoginStatusDto> isLoggedIn(HttpServletRequest httpRequest) {
+        Cookie[] cookies = httpRequest.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        String accessToken;
+        try {
+            accessToken = jwtExtractor.extractTokenFromCookie("accessToken", cookies);
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        Long memberId = authService.extractMemberId(accessToken);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new LoginStatusDto(memberId));
+    }
+
     @PostMapping("/reissue")
     public ResponseEntity<Void> reissue(
             @CookieValue(REFRESH_TOKEN_COOKIE_NAME) String refreshToken,
@@ -83,7 +118,7 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/validate-id")
+    @PostMapping("/validate-login-id")
     public ResponseEntity<Void> validateDuplicateLoginId(@RequestBody @Valid ValidateDuplicateLoginIdRequest request) {
         authService.validateDuplicateLoginId(request.loginId());
         return ResponseEntity.status(HttpStatus.OK)
@@ -92,7 +127,7 @@ public class AuthController {
 
     @PostMapping("/auth-code")
     public ResponseEntity<Void> verifyPhoneNumber(@RequestBody @Valid VerifyPhoneNumberRequest request) {
-        phoneVerificationFacadeService.sendPhoneVerificationCode(request.phone());
+        phoneVerificationFacadeService.sendPhoneVerificationCode(request.phoneNumber());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
     }
@@ -171,5 +206,18 @@ public class AuthController {
         cookieWriter.write(httpResponse, authTokenDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @GetMapping("/login-id")
+    public ResponseEntity<LoginIdResponse> findLoginId(@RequestBody @Valid FindLoginIdRequest request) {
+        String loginId = authService.findLoginId(request.name(), request.phoneNumber());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new LoginIdResponse(loginId));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        authService.resetPassword(request.loginId(), request.phoneNumber(), request.password());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

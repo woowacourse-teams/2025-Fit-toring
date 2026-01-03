@@ -21,7 +21,7 @@ class PasswordTest {
         Password actual = Password.from(password);
 
         //then
-        assertThat(actual.getPassword()).isNotEqualTo(password);
+        assertThat(actual.getValue()).isNotEqualTo(password);
     }
 
     @DisplayName("비밀번호가 일치하지 않으면 예외가 발생한다.")

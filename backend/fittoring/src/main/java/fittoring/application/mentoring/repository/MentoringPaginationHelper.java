@@ -31,16 +31,16 @@ public class MentoringPaginationHelper {
     /**
      * 멘토링 페이지네이션 조회에 사용되는 where절을 생성한다.
      *
-     * @param sortKey 페이지네이션 조회 시 정렬 기준
-     * @param cursor 현재 커서의 위치
+     * @param sortKey     페이지네이션 조회 시 정렬 기준
+     * @param cursor      현재 커서의 위치
      * @param categoryIds 필터링에 사용할 카테고리 id
      * @return 생성한 where절
      */
     public Predicate buildWhereClause(SortKey sortKey, Cursor cursor, List<Long> categoryIds) {
         return ExpressionUtils.allOf(
-            buildSoftDeleteCondition(),
-            buildCursorCondition(sortKey, cursor),
-            buildCategoryFilterCondition(categoryIds)
+                buildSoftDeleteCondition(),
+                buildCursorCondition(sortKey, cursor),
+                buildCategoryFilterCondition(categoryIds)
         );
     }
 
@@ -61,23 +61,23 @@ public class MentoringPaginationHelper {
         switch (sortKey) {
             case CREATED_AT -> {
                 LocalDateTime cursorDateTime = Instant.ofEpochMilli(cursor.sortValue())
-                    .atZone(ZoneId.of("Asia/Seoul"))
-                    .toLocalDateTime();
+                        .atZone(ZoneId.of("Asia/Seoul"))
+                        .toLocalDateTime();
                 return mentoring.createdAt.lt(cursorDateTime)
-                    .or(mentoring.createdAt.eq(cursorDateTime)
-                        .and(mentoring.id.loe(cursor.id())));
+                        .or(mentoring.createdAt.eq(cursorDateTime)
+                                .and(mentoring.id.loe(cursor.id())));
             }
             case RESERVATION_COUNT -> {
                 long cursorReservationCount = cursor.sortValue();
                 return mentoringStatistics.reservationCount.lt(cursorReservationCount)
-                    .or(mentoringStatistics.reservationCount.eq(cursorReservationCount)
-                        .and(mentoring.id.loe(cursor.id())));
+                        .or(mentoringStatistics.reservationCount.eq(cursorReservationCount)
+                                .and(mentoring.id.loe(cursor.id())));
             }
             case AVERAGE_RATING -> {
                 double cursorAverageCount = Double.longBitsToDouble(cursor.sortValue());
                 return mentoringStatistics.averageRating.lt(cursorAverageCount)
-                    .or(mentoringStatistics.averageRating.eq(cursorAverageCount)
-                        .and(mentoring.id.loe(cursor.id())));
+                        .or(mentoringStatistics.averageRating.eq(cursorAverageCount)
+                                .and(mentoring.id.loe(cursor.id())));
             }
         }
         return null;
@@ -93,15 +93,15 @@ public class MentoringPaginationHelper {
         NumberExpression<Long> distinctCnt = categoryMentoring.category.id.countDistinct();
 
         return mentoring.id.in(
-            JPAExpressions
-                .select(categoryMentoring.mentoring.id)
-                .from(categoryMentoring)
-                .where(
-                    categoryMentoring.isDeleted.isFalse(),
-                    categoryMentoring.category.id.in(categoryIds)
-                )
-                .groupBy(categoryMentoring.mentoring.id)
-                .having(distinctCnt.eq((long) categoryIds.size()))
+                JPAExpressions
+                        .select(categoryMentoring.mentoring.id)
+                        .from(categoryMentoring)
+                        .where(
+                                categoryMentoring.isDeleted.isFalse(),
+                                categoryMentoring.category.id.in(categoryIds)
+                        )
+                        .groupBy(categoryMentoring.mentoring.id)
+                        .having(distinctCnt.eq((long) categoryIds.size()))
         );
     }
 
@@ -114,16 +114,16 @@ public class MentoringPaginationHelper {
     public OrderSpecifier<?>[] buildOrderSpecifiers(SortKey sortKey) {
         return switch (sortKey) {
             case CREATED_AT -> new OrderSpecifier<?>[]{
-                mentoring.createdAt.desc(),
-                mentoring.id.desc()
+                    mentoring.createdAt.desc(),
+                    mentoring.id.desc()
             };
             case RESERVATION_COUNT -> new OrderSpecifier<?>[]{
-                mentoringStatistics.reservationCount.desc(),
-                mentoring.id.desc()
+                    mentoringStatistics.reservationCount.desc(),
+                    mentoring.id.desc()
             };
             case AVERAGE_RATING -> new OrderSpecifier[]{
-                mentoringStatistics.averageRating.desc(),
-                mentoring.id.desc()
+                    mentoringStatistics.averageRating.desc(),
+                    mentoring.id.desc()
             };
         };
     }
@@ -133,7 +133,7 @@ public class MentoringPaginationHelper {
      *
      * @param sortKey 페이지네이션 조회 시 정렬 기준
      * @param hasNext 다음 페이지에 값 존재 여부
-     * @param rows 현재 페이지 조회 결과 튜플 (Mentoring, MentoringStatics)
+     * @param rows    현재 페이지 조회 결과 튜플 (Mentoring, MentoringStatics)
      * @return 커서를 문자열으로 변환한 값
      */
     public String generateNextCursorCode(SortKey sortKey, boolean hasNext, List<Tuple> rows) {
@@ -143,7 +143,9 @@ public class MentoringPaginationHelper {
             MentoringStatistics nextMentoringStatistics = nextTuple.get(mentoringStatistics);
             return switch (sortKey) {
                 case CREATED_AT -> getNextCursorCodeOfCreatedAt(nextMentoring);
-                case RESERVATION_COUNT -> getNextCursorCodeOfReservationCount(nextMentoringStatistics.getReservationCount(), nextMentoring.getId());
+                case RESERVATION_COUNT ->
+                        getNextCursorCodeOfReservationCount(nextMentoringStatistics.getReservationCount(),
+                                nextMentoring.getId());
                 case AVERAGE_RATING -> getNextCursorCodeOfAverageRating(nextMentoringStatistics);
             };
         }
@@ -151,8 +153,7 @@ public class MentoringPaginationHelper {
     }
 
     /**
-     * 정렬 기준이 created_at인 경우의 다음 커서를 문자열화 한다.
-     * LocalDateTime 타입의 created_at을 long 타입으로 변환하여 Cursor 객체를 만든 후 문자열화 한다.
+     * 정렬 기준이 created_at인 경우의 다음 커서를 문자열화 한다. LocalDateTime 타입의 created_at을 long 타입으로 변환하여 Cursor 객체를 만든 후 문자열화 한다.
      */
     private String getNextCursorCodeOfCreatedAt(Mentoring nextMentoring) {
         String nextCursorCode;
@@ -165,16 +166,15 @@ public class MentoringPaginationHelper {
     }
 
     /**
-     * 정렬 기준이 reservation_count인 경우의 다음 커서를 문자열화 한다.
-     * 다음 멘토링 값의 reservation_count를 사용하여 Cursor 객체를 만든 후 문자열화 한다.
+     * 정렬 기준이 reservation_count인 경우의 다음 커서를 문자열화 한다. 다음 멘토링 값의 reservation_count를 사용하여 Cursor 객체를 만든 후 문자열화 한다.
      */
     private String getNextCursorCodeOfReservationCount(long nextReservationCount, long nextMentoringId) {
         return CursorCodec.encode(new Cursor(nextReservationCount, nextMentoringId));
     }
 
     /**
-     * 정렬 기준이 average_count인 경우의 다음 커서를 문자열화 한다.
-     * double 타입의 다음 별점 평균을 바로 커서에 저장할 수 없으므로 double 타입을 bit화 하여 long 타입으로 변환하여 커서에 저장한다.
+     * 정렬 기준이 average_count인 경우의 다음 커서를 문자열화 한다. double 타입의 다음 별점 평균을 바로 커서에 저장할 수 없으므로 double 타입을 bit화 하여 long 타입으로
+     * 변환하여 커서에 저장한다.
      */
     private String getNextCursorCodeOfAverageRating(MentoringStatistics nextMentoringStatistics) {
         double nextAverageRating = nextMentoringStatistics.getAverageRating();

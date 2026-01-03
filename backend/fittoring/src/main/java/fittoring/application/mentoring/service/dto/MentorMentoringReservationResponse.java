@@ -43,32 +43,32 @@ public record MentorMentoringReservationResponse(
     }
 
     private static MentorMentoringReservationResponse ofApprovedOrRejected(
-        Reservation reservation,
-        ChatRoom chatRoom
+            Reservation reservation,
+            ChatRoom chatRoom
     ) {
         if (chatRoom == null) {
             return new MentorMentoringReservationResponse(
+                    reservation.getId(),
+                    reservation.getMenteeName(),
+                    reservation.getMenteePhone(),
+                    reservation.getMentoring().getPrice(),
+                    reservation.getContent(),
+                    reservation.getStatus(),
+                    null,
+                    null,
+                    reservation.getCreatedAt()
+            );
+        }
+        return new MentorMentoringReservationResponse(
                 reservation.getId(),
                 reservation.getMenteeName(),
                 reservation.getMenteePhone(),
                 reservation.getMentoring().getPrice(),
                 reservation.getContent(),
                 reservation.getStatus(),
-                null,
-                null,
+                chatRoom.getId(),
+                chatRoom.getStatus(),
                 reservation.getCreatedAt()
-            );
-        }
-        return new MentorMentoringReservationResponse(
-            reservation.getId(),
-            reservation.getMenteeName(),
-            reservation.getMenteePhone(),
-            reservation.getMentoring().getPrice(),
-            reservation.getContent(),
-            reservation.getStatus(),
-            chatRoom.getId(),
-            chatRoom.getStatus(),
-            reservation.getCreatedAt()
         );
     }
 }

@@ -1,4 +1,4 @@
 export type Specialty = {
-  id: string;
+  id: number;
   title: string;
 };
