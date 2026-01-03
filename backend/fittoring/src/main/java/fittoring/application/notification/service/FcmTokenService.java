@@ -29,7 +29,7 @@ public class FcmTokenService {
 
     private void saveNewFcmToken(Long memberId, String token) {
         validateMemberExists(memberId);
-        FcmToken fcmToken = new FcmToken(memberId, token);
+        FcmToken fcmToken = new FcmToken(memberId, token, true);
         fcmTokenRepository.save(fcmToken);
     }
 

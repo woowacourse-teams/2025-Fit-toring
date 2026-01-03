@@ -33,15 +33,20 @@ public class FcmToken {
     @Column(nullable = false, unique = true)
     private String token;
 
+    @Getter
+    @Column(nullable = false)
+    private boolean isEnabled;
+
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public FcmToken(Long memberId, String token) {
-        this(null, memberId, token, null);
+    public FcmToken(Long memberId, String token, boolean isEnabled) {
+        this(null, memberId, token, isEnabled, null);
     }
 
     public void updateToken(String token) {
         this.token = token;
     }
+
 }

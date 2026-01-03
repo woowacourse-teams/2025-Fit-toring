@@ -37,7 +37,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .body(request)
                 .when()
-                .post("/notification/token")
+                .post("/notification/tokens")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -60,7 +60,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .body(originalRequest)
                 .when()
-                .post("/notification/token")
+                .post("/notification/tokens")
                 .then().log().all()
                 .statusCode(200);
 
@@ -71,7 +71,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .body(newRequest)
                 .when()
-                .post("/notification/token")
+                .post("/notification/tokens")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -93,7 +93,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .body(request)
                 .when()
-                .post("/notification/token")
+                .post("/notification/tokens")
                 .then().log().all()
                 .statusCode(404);
     }
