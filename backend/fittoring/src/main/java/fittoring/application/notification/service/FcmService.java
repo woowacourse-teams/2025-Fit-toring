@@ -3,8 +3,8 @@ package fittoring.application.notification.service;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.notification.repository.FcmTokenRepository;
-import fittoring.domain.model.FcmToken;
+import fittoring.application.notification.repository.DeviceRepository;
+import fittoring.domain.model.Device;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,25 +12,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class FcmTokenService {
+public class FcmService {
 
-    private final FcmTokenRepository fcmTokenRepository;
+    private final DeviceRepository deviceRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
     public void upsertFcmToken(Long memberId, String token) {
-        Optional<FcmToken> tokenOptional = fcmTokenRepository.findByMemberId(memberId);
-        if (tokenOptional.isEmpty()) {
-            saveNewFcmToken(memberId, token);
+        // TODO: 중복해서 나올 수 있음. 여러 대에 동시에 보낼 것인가?
+        Optional<Device> deviceOptional = deviceRepository.findByMemberId(memberId);
+        if (deviceOptional.isEmpty()) {
+            registerNewDevice(memberId, token);
             return;
         }
-        renewFcmToken(tokenOptional.get(), token);
+        renewFcmToken(deviceOptional.get(), token);
     }
 
-    private void saveNewFcmToken(Long memberId, String token) {
+    private void registerNewDevice(Long memberId, String token) {
         validateMemberExists(memberId);
-        FcmToken fcmToken = new FcmToken(memberId, token, true);
-        fcmTokenRepository.save(fcmToken);
+        Device device = new Device(memberId, token, true);
+        deviceRepository.save(device);
     }
 
     private void validateMemberExists(Long memberId) {
@@ -39,8 +40,8 @@ public class FcmTokenService {
         }
     }
 
-    private void renewFcmToken(FcmToken fcmToken, String newToken) {
-        fcmToken.updateToken(newToken);
-        fcmTokenRepository.save(fcmToken);
+    private void renewFcmToken(Device device, String newToken) {
+        device.updateToken(newToken);
+        deviceRepository.save(device);
     }
 }

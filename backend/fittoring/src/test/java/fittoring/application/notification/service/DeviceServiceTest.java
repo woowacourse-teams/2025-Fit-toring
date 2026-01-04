@@ -7,25 +7,25 @@ import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.notification.repository.FcmTokenRepository;
+import fittoring.application.notification.repository.DeviceRepository;
 import fittoring.domain.model.Member;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class FcmTokenServiceTest extends IntegrationTestSupport {
+class DeviceServiceTest extends IntegrationTestSupport {
 
     @Autowired
-    private FcmTokenService fcmTokenService;
+    private FcmService fcmService;
 
     @Autowired
-    private FcmTokenRepository fcmTokenRepository;
+    private DeviceRepository deviceRepository;
 
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("FCM 토큰이 저장되지 않은 유저가 FCM 토큰 업서트 요청 시 새로운 FCM 토큰이 저장된다.")
+    @DisplayName("새 디바이스로 FCM 토큰 업서트 요청 시 유효 토큰을 가진 디바이스를 새로 생성한다.")
     @Test
     void upsertFcmToken1() {
         // given
@@ -33,32 +33,32 @@ class FcmTokenServiceTest extends IntegrationTestSupport {
         String token = "testFcmTokentestFcmTokentestFcmToken";
 
         // when
-        fcmTokenService.upsertFcmToken(member.getId(), token);
+        fcmService.upsertFcmToken(member.getId(), token);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(fcmTokenRepository.findByMemberId(member.getId())).isPresent();
-            softAssertions.assertThat(fcmTokenRepository.findByMemberId(member.getId()).get().getToken())
+            softAssertions.assertThat(deviceRepository.findByMemberId(member.getId())).isPresent();
+            softAssertions.assertThat(deviceRepository.findByMemberId(member.getId()).get().getToken())
                     .isEqualTo(token);
         });
     }
 
-    @DisplayName("FCM 토큰이 저장된 유저가 FCM 토큰 업서트 요청 시  FCM 토큰 값이 갱신된다.")
+    @DisplayName("기존 디바이스에 FCM 토큰 업서트 요청 시 토큰 값이 갱신된다.")
     @Test
     void upsertFcmToken2() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
         String newToken = "newTestFcmTokennewTestFcmTokennewTestFcmToken";
-        fcmTokenService.upsertFcmToken(member.getId(), originalToken);
+        fcmService.upsertFcmToken(member.getId(), originalToken);
 
         // when
-        fcmTokenService.upsertFcmToken(member.getId(), newToken);
+        fcmService.upsertFcmToken(member.getId(), newToken);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(fcmTokenRepository.findByMemberId(member.getId())).isPresent();
-            softAssertions.assertThat(fcmTokenRepository.findByMemberId(member.getId()).get().getToken())
+            softAssertions.assertThat(deviceRepository.findByMemberId(member.getId())).isPresent();
+            softAssertions.assertThat(deviceRepository.findByMemberId(member.getId()).get().getToken())
                     .isEqualTo(newToken);
         });
     }
@@ -70,7 +70,7 @@ class FcmTokenServiceTest extends IntegrationTestSupport {
         String token = "testFcmTokentestFcmTokentestFcmToken";
 
         // when & then
-        assertThatThrownBy(() -> fcmTokenService.upsertFcmToken(999L, token))
+        assertThatThrownBy(() -> fcmService.upsertFcmToken(999L, token))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }

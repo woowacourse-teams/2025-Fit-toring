@@ -6,9 +6,9 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.FcmTokenNotFoundException;
-import fittoring.application.notification.repository.FcmTokenRepository;
+import fittoring.application.notification.repository.DeviceRepository;
 import fittoring.application.notification.service.NotificationService;
-import fittoring.domain.model.FcmToken;
+import fittoring.domain.model.Device;
 import fittoring.infrastructure.exception.FcmSendException;
 import fittoring.infrastructure.exception.InfraErrorMessage;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +18,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class FcmNotificationService implements NotificationService {
 
-    private final FcmTokenRepository fcmTokenRepository;
+    private final DeviceRepository deviceRepository;
 
     @Override
     public void sendNotification(Long memberId, String title, String body) {
-        FcmToken fcmToken = fcmTokenRepository.findByMemberId(memberId)
+        Device device = deviceRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new FcmTokenNotFoundException(
                         BusinessErrorMessage.FCM_TOKEN_NOT_FOUND.getMessage()));
-        if (fcmToken.isEnabled()) {
-            sendNotification(fcmToken.getToken(), title, body);
+        if (device.isEnabled()) {
+            sendNotification(device.getToken(), title, body);
         }
     }
 

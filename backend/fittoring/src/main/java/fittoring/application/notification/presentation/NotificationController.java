@@ -1,7 +1,7 @@
 package fittoring.application.notification.presentation;
 
 import fittoring.application.notification.presentation.dto.request.FcmTokenUpsertRequest;
-import fittoring.application.notification.service.FcmTokenService;
+import fittoring.application.notification.service.FcmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class NotificationController {
 
-    private final FcmTokenService fcmTokenService;
+    private final FcmService fcmService;
 
     @PostMapping("/tokens")
     public ResponseEntity<Void> upsertFcmToken(@RequestBody FcmTokenUpsertRequest requestBody) {
-        fcmTokenService.upsertFcmToken(requestBody.memberId(), requestBody.token());
+        fcmService.upsertFcmToken(requestBody.memberId(), requestBody.token());
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }

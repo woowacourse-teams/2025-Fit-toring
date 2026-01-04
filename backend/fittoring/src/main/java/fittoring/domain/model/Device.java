@@ -18,15 +18,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "fcm_token")
+@Table(name = "device")
 @Entity
-public class FcmToken {
+public class Device {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @Column(name = "member_id", nullable = false, unique = true)
+    @Column(name = "member_id", nullable = false)
     private Long memberId;
 
     @Getter
@@ -41,12 +41,11 @@ public class FcmToken {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public FcmToken(Long memberId, String token, boolean isEnabled) {
+    public Device(Long memberId, String token, boolean isEnabled) {
         this(null, memberId, token, isEnabled, null);
     }
 
     public void updateToken(String token) {
         this.token = token;
     }
-
 }
