@@ -21,11 +21,6 @@ public enum ImageExtension {
         this.value = value;
     }
 
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
     @JsonCreator
     public static ImageExtension from(String value) {
         return Arrays.stream(values())
@@ -34,5 +29,10 @@ public enum ImageExtension {
                 .orElseThrow(() -> new UnsupportedImageExtensionException(
                         BusinessErrorMessage.UNSUPPORTED_IMAGE_EXTENSION.getMessage())
                 );
+    }
+
+    @JsonValue
+    public String getValue() {
+        return value;
     }
 }

@@ -4,6 +4,7 @@ import fittoring.admin.repository.CustomReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Status;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
@@ -15,8 +16,6 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
 
     @Query(value = "SELECT * FROM reservation WHERE id = :id AND is_deleted = true;", nativeQuery = true)
     Reservation findDeletedById(@Param("id") Long id);
-
-    List<Reservation> findAllByMentoringId(Long id);
 
     @Query("""
                 select
@@ -44,9 +43,15 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
             JOIN FETCH r.mentoring m
             JOIN FETCH r.mentee mt
             WHERE m.mentor.id = :mentorId
-            ORDER BY r.createdAt desc, r.id desc 
+            ORDER BY r.createdAt desc, r.id desc
             """)
     List<Reservation> findAllByMentorId(Long mentorId);
 
     List<Reservation> findAllByMentoring(Mentoring mentoring);
+
+    boolean existsByMentoringIdAndMenteeIdAndStatusIn(
+        Long mentoringId,
+        Long menteeId,
+        List<Status> statuses
+    );
 }

@@ -19,11 +19,34 @@ public class LogMaskingUtil {
 
     private final Set<String> MASKING_KEYS = Set.of(
             "phoneNumber",
-            "phone",
             "password",
             "accessToken",
             "refreshToken"
     );
+
+    /**
+     * 가운데 4자리 마스킹: 010-****-1234
+     */
+    public static String maskPhoneMid4(String phone) {
+        if (phone == null) {
+            return null;
+        }
+        return phone.replaceAll("(?<=^\\d{2,3}-)\\d{3,4}(?=-\\d{4}$)", "****");
+    }
+
+    /**
+     * 끝 2자리만 남기고 마스킹: 123456 -> ****56
+     */
+    private static String maskSecret(String s) {
+        if (s == null) {
+            return null;
+        }
+        int len = s.length();
+        if (len <= 2) {
+            return "**";
+        }
+        return "*".repeat(len - 2) + s.substring(len - 2);
+    }
 
     /**
      * 문자열을 JsonNode로 파싱 (실패 시 null)
@@ -80,34 +103,10 @@ public class LogMaskingUtil {
             return null;
         }
 
-        if ("phoneNumber".equals(key) || "phone".equals(key)) {
+        if ("phoneNumber".equals(key) || "phoneNumber".equals(key)) {
             return maskPhoneMid4(original);
         }
         // password / accessToken / refreshToken
         return maskSecret(original);
-    }
-
-    /**
-     * 가운데 4자리 마스킹: 010-****-1234
-     */
-    public static String maskPhoneMid4(String phone) {
-        if (phone == null) {
-            return null;
-        }
-        return phone.replaceAll("(?<=^\\d{2,3}-)\\d{3,4}(?=-\\d{4}$)", "****");
-    }
-
-    /**
-     * 끝 2자리만 남기고 마스킹: 123456 -> ****56
-     */
-    private static String maskSecret(String s) {
-        if (s == null) {
-            return null;
-        }
-        int len = s.length();
-        if (len <= 2) {
-            return "**";
-        }
-        return "*".repeat(len - 2) + s.substring(len - 2);
     }
 }
