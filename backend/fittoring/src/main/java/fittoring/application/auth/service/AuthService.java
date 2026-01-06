@@ -36,7 +36,6 @@ public class AuthService {
     private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtExtractor jwtExtractor;
     private final JwtProvider jwtProvider;
     private final OauthClientService oauthClientService;
     private final MemberOauthRepository memberOAuthRepository;
