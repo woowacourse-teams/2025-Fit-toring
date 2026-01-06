@@ -84,13 +84,21 @@ public class JwtProvider {
     }
 
     public TokenPayload extractTokenPayload(String token) {
-        validateToken(token);
         return parseTokenPayload(token);
     }
 
     public void validateToken(String token) {
+        parseClaims(token);
+    }
+
+    private TokenPayload parseTokenPayload(String token) {
+        Claims claims = parseClaims(token);
+        return new TokenPayload(Long.valueOf(claims.getSubject()), claims.get(CLAIM_NAME, String.class));
+    }
+
+    private Claims parseClaims(String token) {
         try {
-            jwtParser.parseClaimsJws(token);
+            return jwtParser.parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
             throw new InvalidTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
         } catch (MalformedJwtException | UnsupportedJwtException e) {
@@ -98,12 +106,5 @@ public class JwtProvider {
         } catch (IllegalArgumentException e) {
             throw new InvalidTokenException(BusinessErrorMessage.EMPTY_TOKEN.getMessage());
         }
-    }
-
-    private TokenPayload parseTokenPayload(String token) {
-        Claims claims = jwtParser
-                .parseClaimsJws(token)
-                .getBody();
-        return new TokenPayload(Long.valueOf(claims.getSubject()), claims.get(CLAIM_NAME, String.class));
     }
 }
