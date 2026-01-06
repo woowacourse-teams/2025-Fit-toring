@@ -24,7 +24,7 @@ public class NotificationService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void upsertFcmToken(Long memberId, String hardwareId, String pushToken) {
+    public void upsertPushToken(Long memberId, String hardwareId, String pushToken) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
 

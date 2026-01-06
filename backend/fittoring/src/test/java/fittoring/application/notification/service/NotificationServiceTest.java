@@ -27,14 +27,14 @@ class NotificationServiceTest extends IntegrationTestSupport {
 
     @DisplayName("새 디바이스로 FCM 토큰 업서트 요청 시 유효 토큰을 가진 디바이스를 새로 생성한다.")
     @Test
-    void upsertFcmToken1() {
+    void upsertPushToken1() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         String hardwareId = "hardwareIdhardwareIdhardwareId";
         String pushToken = "testFcmTokentestFcmTokentestFcmToken";
 
         // when
-        notificationService.upsertFcmToken(member.getId(), hardwareId, pushToken);
+        notificationService.upsertPushToken(member.getId(), hardwareId, pushToken);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -46,17 +46,17 @@ class NotificationServiceTest extends IntegrationTestSupport {
 
     @DisplayName("기존 디바이스에 FCM 토큰 업서트 요청 시 토큰 값이 갱신된다.")
     @Test
-    void upsertFcmToken2() {
+    void upsertPushToken2() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         String hardwareId = "hardwareIdhardwareIdhardwareId";
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
         String newToken = "newTestFcmTokennewTestFcmTokennewTestFcmToken";
 
-        notificationService.upsertFcmToken(member.getId(), hardwareId, originalToken);
+        notificationService.upsertPushToken(member.getId(), hardwareId, originalToken);
 
         // when
-        notificationService.upsertFcmToken(member.getId(), hardwareId, newToken);
+        notificationService.upsertPushToken(member.getId(), hardwareId, newToken);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -68,13 +68,13 @@ class NotificationServiceTest extends IntegrationTestSupport {
 
     @DisplayName("존재하지 않는 유저가 FCM 토큰 업서트 요청 시 예외가 발생한다.")
     @Test
-    void upsertFcmTokenFail() {
+    void upsertPushTokenFail() {
         // given
         String hardwareId = "hardwareIdhardwareIdhardwareId";
         String token = "testFcmTokentestFcmTokentestFcmToken";
 
         // when & then
-        assertThatThrownBy(() -> notificationService.upsertFcmToken(999L, hardwareId, token))
+        assertThatThrownBy(() -> notificationService.upsertPushToken(999L, hardwareId, token))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }
