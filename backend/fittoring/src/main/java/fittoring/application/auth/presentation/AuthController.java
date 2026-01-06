@@ -102,7 +102,7 @@ public class AuthController {
         } catch (InvalidTokenException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        Long memberId = authService.extractMemberId(accessToken).sub();
+        Long memberId = jwtProvider.extractTokenPayload(accessToken).sub();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new LoginStatusDto(memberId));
     }

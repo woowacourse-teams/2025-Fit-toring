@@ -194,8 +194,4 @@ public class AuthService {
         member.updatePassword(password);
         return member;
     }
-
-    public TokenPayload extractMemberId(String accessToken) {
-        return jwtProvider.extractTokenPayload(accessToken);
-    }
 }
