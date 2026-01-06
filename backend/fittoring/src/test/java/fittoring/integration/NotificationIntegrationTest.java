@@ -4,7 +4,7 @@ import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.notification.presentation.dto.request.FcmTokenUpsertRequest;
+import fittoring.application.notification.presentation.dto.request.PushTokenUpsertRequest;
 import fittoring.domain.model.Member;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -28,7 +28,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(member.getId());
         String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String token = "testFcmTokentestFcmTokentestFcmToken";
-        FcmTokenUpsertRequest request = new FcmTokenUpsertRequest(member.getId(), hardwareId, token);
+        PushTokenUpsertRequest request = new PushTokenUpsertRequest(member.getId(), hardwareId, token);
 
         RestAssured
                 .given(spec)
@@ -52,8 +52,8 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
         String newToken = "testFcmTokentestFcmTokentestFcmToken";
-        FcmTokenUpsertRequest originalRequest = new FcmTokenUpsertRequest(member.getId(), hardwareId, originalToken);
-        FcmTokenUpsertRequest newRequest = new FcmTokenUpsertRequest(member.getId(), hardwareId, newToken);
+        PushTokenUpsertRequest originalRequest = new PushTokenUpsertRequest(member.getId(), hardwareId, originalToken);
+        PushTokenUpsertRequest newRequest = new PushTokenUpsertRequest(member.getId(), hardwareId, newToken);
 
         RestAssured
                 .given(spec)
@@ -86,7 +86,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(invalidMemberId);
         String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String token = "testFcmTokentestFcmTokentestFcmToken";
-        FcmTokenUpsertRequest request = new FcmTokenUpsertRequest(invalidMemberId, hardwareId, token);
+        PushTokenUpsertRequest request = new PushTokenUpsertRequest(invalidMemberId, hardwareId, token);
 
         RestAssured
                 .given(spec)

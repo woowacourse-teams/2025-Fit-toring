@@ -1,8 +1,8 @@
 package fittoring.application.notification.presentation.dto.request;
 
-public record FcmTokenUpsertRequest(
+public record PushTokenUpsertRequest(
         Long memberId,
         String hardwareId,
-        String token
+        String pushToken
 ) {
 }
