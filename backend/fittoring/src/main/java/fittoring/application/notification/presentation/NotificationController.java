@@ -19,7 +19,7 @@ public class NotificationController {
 
     @PostMapping("/tokens")
     public ResponseEntity<Void> upsertFcmToken(@RequestBody FcmTokenUpsertRequest requestBody) {
-        fcmService.upsertFcmToken(requestBody.memberId(), requestBody.token());
+        fcmService.upsertFcmToken(requestBody.memberId(), requestBody.hardwareId(), requestBody.token());
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }

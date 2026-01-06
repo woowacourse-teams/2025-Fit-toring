@@ -30,16 +30,17 @@ class DeviceServiceTest extends IntegrationTestSupport {
     void upsertFcmToken1() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        String token = "testFcmTokentestFcmTokentestFcmToken";
+        String hardwareId = "hardwareIdhardwareIdhardwareId";
+        String pushToken = "testFcmTokentestFcmTokentestFcmToken";
 
         // when
-        fcmService.upsertFcmToken(member.getId(), token);
+        fcmService.upsertFcmToken(member.getId(), hardwareId, pushToken);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(deviceRepository.findByMemberId(member.getId())).isPresent();
-            softAssertions.assertThat(deviceRepository.findByMemberId(member.getId()).get().getToken())
-                    .isEqualTo(token);
+            softAssertions.assertThat(deviceRepository.findByMemberId(member.getId()).get().getPushToken())
+                    .isEqualTo(pushToken);
         });
     }
 
@@ -48,17 +49,19 @@ class DeviceServiceTest extends IntegrationTestSupport {
     void upsertFcmToken2() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        String hardwareId = "hardwareIdhardwareIdhardwareId";
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
         String newToken = "newTestFcmTokennewTestFcmTokennewTestFcmToken";
-        fcmService.upsertFcmToken(member.getId(), originalToken);
+
+        fcmService.upsertFcmToken(member.getId(), hardwareId, originalToken);
 
         // when
-        fcmService.upsertFcmToken(member.getId(), newToken);
+        fcmService.upsertFcmToken(member.getId(), hardwareId, newToken);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(deviceRepository.findByMemberId(member.getId())).isPresent();
-            softAssertions.assertThat(deviceRepository.findByMemberId(member.getId()).get().getToken())
+            softAssertions.assertThat(deviceRepository.findByMemberId(member.getId()).get().getPushToken())
                     .isEqualTo(newToken);
         });
     }
@@ -67,10 +70,11 @@ class DeviceServiceTest extends IntegrationTestSupport {
     @Test
     void upsertFcmTokenFail() {
         // given
+        String hardwareId = "hardwareIdhardwareIdhardwareId";
         String token = "testFcmTokentestFcmTokentestFcmToken";
 
         // when & then
-        assertThatThrownBy(() -> fcmService.upsertFcmToken(999L, token))
+        assertThatThrownBy(() -> fcmService.upsertFcmToken(999L, hardwareId, token))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }

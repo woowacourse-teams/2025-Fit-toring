@@ -48,6 +48,7 @@ public enum BusinessErrorMessage {
     UNSUPPORTED_IMAGE_EXTENSION("지원하지 않는 확장자입니다."),
     EMPTY_REQUEST("요청 정보가 비어있어 요청을 수행할 수 없습니다."),
     FCM_TOKEN_NOT_FOUND("해당 멤버의 FCM 토큰이 존재하지 않습니다."),
+    TOO_MANY_DEVICE("인당 기기 등록 제한 수를 초과했습니다.")
     ;
 
     private final String message;

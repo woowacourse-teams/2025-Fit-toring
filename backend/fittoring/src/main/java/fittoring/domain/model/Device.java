@@ -1,12 +1,7 @@
 package fittoring.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,26 +21,27 @@ public class Device {
     @Id
     private Long id;
 
-    @Column(name = "member_id", nullable = false)
-    private Long memberId;
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
 
     @Getter
     @Column(nullable = false, unique = true)
-    private String token;
+    private String hardwareId;
 
     @Getter
     @Column(nullable = false)
-    private boolean isEnabled;
+    private String pushToken;
 
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public Device(Long memberId, String token, boolean isEnabled) {
-        this(null, memberId, token, isEnabled, null);
+    public Device(Member member, String hardwareId, String pushToken) {
+        this(null, member, hardwareId, pushToken, null);
     }
 
     public void updateToken(String token) {
-        this.token = token;
+        this.pushToken = token;
     }
 }

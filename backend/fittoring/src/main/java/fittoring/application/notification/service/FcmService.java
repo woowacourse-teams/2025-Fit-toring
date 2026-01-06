@@ -5,7 +5,7 @@ import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.repository.DeviceRepository;
 import fittoring.domain.model.Device;
-import java.util.Optional;
+import fittoring.domain.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,30 +18,18 @@ public class FcmService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void upsertFcmToken(Long memberId, String token) {
-        // TODO: 중복해서 나올 수 있음. 여러 대에 동시에 보낼 것인가?
-        Optional<Device> deviceOptional = deviceRepository.findByMemberId(memberId);
-        if (deviceOptional.isEmpty()) {
-            registerNewDevice(memberId, token);
-            return;
-        }
-        renewFcmToken(deviceOptional.get(), token);
+    public void upsertFcmToken(Long memberId, String hardwareId, String pushToken) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+
+        deviceRepository.findByMemberAndHardwareId(member, hardwareId).ifPresentOrElse(
+                device -> device.updateToken(pushToken),
+                () -> registerNewDevice(member, hardwareId, pushToken)
+        );
     }
 
-    private void registerNewDevice(Long memberId, String token) {
-        validateMemberExists(memberId);
-        Device device = new Device(memberId, token, true);
-        deviceRepository.save(device);
-    }
-
-    private void validateMemberExists(Long memberId) {
-        if (!memberRepository.existsById(memberId)) {
-            throw new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
-        }
-    }
-
-    private void renewFcmToken(Device device, String newToken) {
-        device.updateToken(newToken);
+    private void registerNewDevice(Member member, String hardwareId, String pushToken) {
+        Device device = new Device(member, hardwareId, pushToken);
         deviceRepository.save(device);
     }
 }

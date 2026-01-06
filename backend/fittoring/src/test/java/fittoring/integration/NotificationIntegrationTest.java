@@ -26,8 +26,9 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId());
+        String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String token = "testFcmTokentestFcmTokentestFcmToken";
-        FcmTokenUpsertRequest request = new FcmTokenUpsertRequest(member.getId(), token);
+        FcmTokenUpsertRequest request = new FcmTokenUpsertRequest(member.getId(), hardwareId, token);
 
         RestAssured
                 .given(spec)
@@ -48,10 +49,11 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId());
+        String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
         String newToken = "testFcmTokentestFcmTokentestFcmToken";
-        FcmTokenUpsertRequest originalRequest = new FcmTokenUpsertRequest(member.getId(), originalToken);
-        FcmTokenUpsertRequest newRequest = new FcmTokenUpsertRequest(member.getId(), newToken);
+        FcmTokenUpsertRequest originalRequest = new FcmTokenUpsertRequest(member.getId(), hardwareId, originalToken);
+        FcmTokenUpsertRequest newRequest = new FcmTokenUpsertRequest(member.getId(), hardwareId, newToken);
 
         RestAssured
                 .given(spec)
@@ -82,8 +84,9 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Long invalidMemberId = 999L;
         String accessToken = jwtProvider.createAccessToken(invalidMemberId);
+        String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String token = "testFcmTokentestFcmTokentestFcmToken";
-        FcmTokenUpsertRequest request = new FcmTokenUpsertRequest(invalidMemberId, token);
+        FcmTokenUpsertRequest request = new FcmTokenUpsertRequest(invalidMemberId, hardwareId, token);
 
         RestAssured
                 .given(spec)
