@@ -39,7 +39,6 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
             Cookie[] cookies = httpServletRequest.getCookies();
             validateCookie(cookies);
             String token = jwtExtractor.extractTokenFromCookie(TOKEN_NAME, cookies);
-            jwtProvider.validateToken(token);
             TokenPayload payload = jwtProvider.extractTokenPayload(token);
             attributes.put(LOGIN_INFO_KEY, new LoginInfo(payload.sub()));
         }
