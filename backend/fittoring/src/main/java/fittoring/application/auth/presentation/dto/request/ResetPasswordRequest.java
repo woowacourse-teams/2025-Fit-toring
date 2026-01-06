@@ -1,20 +1,12 @@
 package fittoring.application.auth.presentation.dto.request;
 
-import fittoring.application.auth.service.dto.RegisterMemberDto;
-import fittoring.domain.model.Gender;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record SignUpRequest(
+public record ResetPasswordRequest(
         @Size(min = 5, max = 15, message = "아이디는 5자 이상 15자 이하로 입력해주세요.")
         @NotBlank
         String loginId,
-        @Size(min = 2, max = 5, message = "이름은 2자 이상 5자 이하로 입력해주세요.")
-        @NotBlank
-        String name,
-        @NotNull
-        Gender gender,
         @PhoneNumber
         @NotBlank
         String phoneNumber,
@@ -22,7 +14,4 @@ public record SignUpRequest(
         @NotBlank
         String password
 ) {
-    public RegisterMemberDto toRegisterMemberDto() {
-        return new RegisterMemberDto(loginId, name, gender, phoneNumber, password);
-    }
 }

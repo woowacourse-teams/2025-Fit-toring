@@ -8,7 +8,7 @@ public class SmsMessageFormatter {
     private static final String VERIFICATION_MESSAGE_PREFIX = "핏토링 인증번호는 [";
     private static final String VERIFICATION_MESSAGE_SUFFIX = "] 입니다.";
 
-    public String approvedReservationMessage(String mentorName, String context, String chatRoomUrl) {
+    public String approvedReservationMessage(String mentorName, String content, String chatRoomUrl) {
         return String.format("""
                         [핏토링] 멘토링 예약이 승인되었습니다.
                         
@@ -20,7 +20,7 @@ public class SmsMessageFormatter {
                         해당 채팅방 링크를 통해 온라인으로 멘토링을 진행하세요!
                         """,
                 mentorName,
-                context,
+                content,
                 chatRoomUrl
         );
     }

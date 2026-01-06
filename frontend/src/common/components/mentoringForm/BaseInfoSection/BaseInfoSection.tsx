@@ -22,9 +22,7 @@ function BaseInfoSection({
   priceErrorMessage,
   price,
 }: BaseInfoSectionProps) {
-  const storedData = localStorage.getItem('memberId');
-  const parsedData = storedData ? JSON.parse(storedData) : null;
-  const memberId = parsedData ? parsedData.memberId : null;
+  const memberId = localStorage.getItem('memberId');
 
   const { data: userInfo, error } = useQuery({
     queryKey: ['userInfoSummary', memberId],

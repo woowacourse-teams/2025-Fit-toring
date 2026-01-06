@@ -1,11 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
-
-import { postReissue } from '../../apis/postReissue';
-import { captureSentryError } from '../../utils/captureSentryError';
-
 interface AuthContextValue {
   authenticated: boolean;
   login: () => void;
@@ -17,30 +12,11 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 function AuthProvider({ children }: PropsWithChildren) {
   const [authenticated, setAuthenticated] = useState(false);
 
-  const { mutate: reissueMutate } = useMutation({
-    mutationFn: postReissue,
-    onSuccess: () => {
-      setAuthenticated(true);
-    },
-    onError: (error) => {
-      console.error(error);
-      setAuthenticated(false);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'auth',
-        step: 'auth-check',
-      });
-    },
-  });
-
   useEffect(() => {
-    const checkAuth = async () => {
-      reissueMutate();
-    };
+    const memberId = localStorage.getItem('memberId');
 
-    checkAuth();
-  }, [reissueMutate]);
+    setAuthenticated(!!memberId);
+  }, []);
 
   const login = () => {
     setAuthenticated(true);

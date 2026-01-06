@@ -1,10 +1,10 @@
 package fittoring.integration.admin;
 
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.admin.presentation.dto.AdminReservationStatusUpdateRequest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Gender;
@@ -196,8 +196,8 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         String adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
 
-        ReservationStatusUpdateRequest reservationStatusUpdateRequest
-                = new ReservationStatusUpdateRequest(Status.COMPLETE.name());
+        AdminReservationStatusUpdateRequest reservationStatusUpdateRequest
+                = new AdminReservationStatusUpdateRequest(Status.COMPLETE.name());
 
         // when
         // then

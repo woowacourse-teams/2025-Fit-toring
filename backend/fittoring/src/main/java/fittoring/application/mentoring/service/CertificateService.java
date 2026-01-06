@@ -12,7 +12,6 @@ import fittoring.domain.model.Certificate;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Status;
 import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.logging.JsonLogger;
 import java.util.ArrayList;

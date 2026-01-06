@@ -1,17 +1,16 @@
 package fittoring.application.reservation.presentation;
 
+import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
+import fittoring.application.reservation.presentation.dto.request.ReservationCreateRequest;
+import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
+import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
+import fittoring.application.reservation.service.MentoringReservationFacadeService;
+import fittoring.application.reservation.service.ReservationService;
+import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.application.reservation.service.MentoringReservationFacadeService;
-import fittoring.application.reservation.service.ReservationService;
-import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
-import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
-import fittoring.application.reservation.service.dto.ReservationCreateDto;
-import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
-import fittoring.application.reservation.presentation.dto.request.ReservationCreateRequest;
-import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -69,18 +68,40 @@ public class ReservationController {
                 loginInfo.memberId()
         );
         return ResponseEntity.status(HttpStatus.OK)
-            .body(response);
+                .body(response);
     }
 
     @AuthRequired
-    @PatchMapping("/reservations/{reservationId}/status")
-    public ResponseEntity<Void> updateStatus(
-            @PathVariable Long reservationId,
-            @RequestBody @Valid ReservationStatusUpdateRequest request
+    @PatchMapping("/reservations/{reservationId}/approve")
+    public ResponseEntity<Void> approveStatus(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long reservationId
     ) {
-        mentoringReservationFacadeService.updateReservationStatusAndSendSms(reservationId, request.status());
+        mentoringReservationFacadeService.approveAndSendSms(loginInfo.memberId(), reservationId);
         return ResponseEntity.status(HttpStatus.OK)
-            .build();
+                .build();
+    }
+
+    @AuthRequired
+    @PatchMapping("/reservations/{reservationId}/reject")
+    public ResponseEntity<Void> rejectStatus(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long reservationId
+    ) {
+        mentoringReservationFacadeService.rejectAndSendSms(loginInfo.memberId(), reservationId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
+    }
+
+    @AuthRequired
+    @PatchMapping("/reservations/{reservationId}/complete")
+    public ResponseEntity<Void> completeStatus(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long reservationId
+    ) {
+        reservationService.complete(loginInfo.memberId(), reservationId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
     }
 
     @AuthRequired
@@ -88,6 +109,6 @@ public class ReservationController {
     public ResponseEntity<PhoneNumberResponse> getPhone(@PathVariable Long reservationId) {
         PhoneNumberResponse response = reservationService.getPhone(reservationId);
         return ResponseEntity.status(HttpStatus.OK)
-            .body(response);
+                .body(response);
     }
 }

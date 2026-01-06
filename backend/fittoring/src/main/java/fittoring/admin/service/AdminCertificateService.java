@@ -36,7 +36,6 @@ public class AdminCertificateService {
         return new PageResult<>(certificates, page, certificates.size(), total, totalPages);
     }
 
-
     @Transactional(readOnly = true)
     public CertificateDetailResponse getCertificate(Long certificateId) {
         Certificate certificate = getCertificateOne(certificateId);

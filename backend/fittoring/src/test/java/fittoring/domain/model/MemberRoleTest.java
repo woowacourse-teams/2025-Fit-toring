@@ -2,7 +2,6 @@ package fittoring.domain.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import fittoring.domain.model.MemberRole;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

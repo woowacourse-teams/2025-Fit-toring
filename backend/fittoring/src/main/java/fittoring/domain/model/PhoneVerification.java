@@ -7,7 +7,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,16 +34,24 @@ public class PhoneVerification {
     private String code;
 
     @Column(nullable = false)
+    private boolean isVerified;
+
+    @Column(nullable = false)
     private LocalDateTime expireAt;
 
     public PhoneVerification(Phone phone, String code, LocalDateTime expireAt) {
-        this(null, phone, code, expireAt);
+        this(null, phone, code, false, expireAt);
     }
 
-    public void refresh(Phone phone, String code, LocalDateTime expireAt){
+    public void refresh(Phone phone, String code, LocalDateTime expireAt) {
         this.phone = phone;
         this.code = code;
         this.expireAt = expireAt;
+        this.isVerified = false;
+    }
+
+    public void verify() {
+        isVerified = true;
     }
 
     public boolean isExpired(LocalDateTime requestTime) {
