@@ -14,10 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class DeviceServiceTest extends IntegrationTestSupport {
+class NotificationServiceTest extends IntegrationTestSupport {
 
     @Autowired
-    private FcmService fcmService;
+    private NotificationService notificationService;
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -34,7 +34,7 @@ class DeviceServiceTest extends IntegrationTestSupport {
         String pushToken = "testFcmTokentestFcmTokentestFcmToken";
 
         // when
-        fcmService.upsertFcmToken(member.getId(), hardwareId, pushToken);
+        notificationService.upsertFcmToken(member.getId(), hardwareId, pushToken);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -53,10 +53,10 @@ class DeviceServiceTest extends IntegrationTestSupport {
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
         String newToken = "newTestFcmTokennewTestFcmTokennewTestFcmToken";
 
-        fcmService.upsertFcmToken(member.getId(), hardwareId, originalToken);
+        notificationService.upsertFcmToken(member.getId(), hardwareId, originalToken);
 
         // when
-        fcmService.upsertFcmToken(member.getId(), hardwareId, newToken);
+        notificationService.upsertFcmToken(member.getId(), hardwareId, newToken);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -74,7 +74,7 @@ class DeviceServiceTest extends IntegrationTestSupport {
         String token = "testFcmTokentestFcmTokentestFcmToken";
 
         // when & then
-        assertThatThrownBy(() -> fcmService.upsertFcmToken(999L, hardwareId, token))
+        assertThatThrownBy(() -> notificationService.upsertFcmToken(999L, hardwareId, token))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage());
     }

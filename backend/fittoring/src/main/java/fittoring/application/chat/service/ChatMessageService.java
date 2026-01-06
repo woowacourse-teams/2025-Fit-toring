@@ -14,7 +14,9 @@ import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
 import fittoring.util.Cursor;
 import fittoring.util.CursorCodec;
+
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +38,7 @@ public class ChatMessageService {
         chatMessageRepository.save(chatMessage);
 
         Long opponentId = chatRoom.getOpponentIdOf(senderId);
-        notificationService.sendNotification(opponentId, "핏토링", "채팅이 도착하였습니다.");
+        notificationService.notifyNewMessage(opponentId);
         return ChatMessageResponse.from(chatMessage, request.tempId());
     }
 

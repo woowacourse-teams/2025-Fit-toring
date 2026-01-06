@@ -3,6 +3,7 @@ package fittoring.domain.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,6 @@ public class Device {
     @Id
     private Long id;
 
-    @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
@@ -33,15 +33,27 @@ public class Device {
     @Column(nullable = false)
     private String pushToken;
 
+    @Getter
+    @Column(nullable = false)
+    private boolean isPushEnabled;
+
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     public Device(Member member, String hardwareId, String pushToken) {
-        this(null, member, hardwareId, pushToken, null);
+        this(null, member, hardwareId, pushToken, true, null);
     }
 
     public void updateToken(String token) {
         this.pushToken = token;
+    }
+
+    public void enablePush() {
+        this.isPushEnabled = true;
+    }
+
+    public void disablePush(){
+        this.isPushEnabled = false;
     }
 }

@@ -1,13 +1,10 @@
 package fittoring.infrastructure;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.TooManyDeviceException;
 import fittoring.application.notification.repository.DeviceRepository;
-import fittoring.application.notification.service.NotificationService;
+import fittoring.application.notification.service.NotificationSender;
 import fittoring.domain.model.Device;
 import fittoring.infrastructure.exception.FcmSendException;
 import fittoring.infrastructure.exception.InfraErrorMessage;
@@ -18,23 +15,16 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class FcmNotificationService implements NotificationService {
+public class FcmNotificationSender implements NotificationSender {
 
-    public static final int DEVICE_LIMIT = 5;
     private final DeviceRepository deviceRepository;
 
     @Override
-    public void sendNotification(Long memberId, String title, String body) {
-        List<Device> devices = deviceRepository.findAllByMemberId(memberId);
-        validateDeviceCount(devices);
+    public void send(List<Device> devices, String title, String body) {
         for (Device device : devices) {
-            sendNotification(device.getPushToken(), title, body);
-        }
-    }
-
-    private void validateDeviceCount(List<Device> devices) {
-        if (devices.size() > DEVICE_LIMIT) {
-            throw new TooManyDeviceException(BusinessErrorMessage.TOO_MANY_DEVICE.getMessage());
+            if (device.isPushEnabled()) {
+                sendNotification(device.getPushToken(), title, body);
+            }
         }
     }
 

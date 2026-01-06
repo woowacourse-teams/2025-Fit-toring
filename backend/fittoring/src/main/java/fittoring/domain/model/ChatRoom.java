@@ -9,8 +9,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -84,8 +86,7 @@ public class ChatRoom {
     public Long getOpponentIdOf(Long senderId) {
         if (Objects.equals(menteeId, senderId)) {
             return mentorId;
-        } else {
-            return menteeId;
         }
+        return menteeId;
     }
 }
