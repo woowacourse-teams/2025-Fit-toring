@@ -7,9 +7,9 @@ import {
   type StatusType,
 } from '../../../../common/types/statusType';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
-import { patchReservationApprove } from '../../apis/patchReservationApprove';
 import { patchReservationComplete } from '../../apis/patchReservationComplete';
 import { patchReservationReject } from '../../apis/patchReservationReject';
+import useReservationApprove from '../../hooks/useReservationApprove';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -26,25 +26,13 @@ function ActionButtons({
 }: ActionButtonsProps) {
   const navigate = useNavigate();
 
+  const { mutate: approveMutate } = useReservationApprove(onClick);
+
   const handleApproveButtonClick = async () => {
-    try {
-      if (
-        confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
-      ) {
-        const response = await patchReservationApprove(reservationId);
-        if (response.status !== 200) {
-          throw new Error('reservation approve failed');
-        }
-        await onClick();
-      }
-    } catch (error) {
-      console.error(`Error handling approve button click:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'approve-button-click',
-      });
+    if (
+      confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
+    ) {
+      approveMutate(reservationId);
     }
   };
 
