@@ -69,9 +69,9 @@ class AuthenticationInterceptorTest {
         boolean result = interceptor.preHandle(request, response, handlerMethod);
 
         // then
-        SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(result).isTrue();
-            assertThat(request.getAttribute("memberId")).isEqualTo(1L);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(result).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isEqualTo(1L);
         });
     }
 

@@ -35,8 +35,8 @@ class JwtProviderTest {
 
         //then
         SoftAssertions.assertSoftly(softly -> {
-            assertThat(actual.sub()).isEqualTo(1L);
-            assertThat(actual.role()).isEqualTo("ADMIN");
+            softly.assertThat(actual.sub()).isEqualTo(1L);
+            softly.assertThat(actual.role()).isEqualTo("ADMIN");
         });
     }
 
@@ -52,8 +52,8 @@ class JwtProviderTest {
 
         //then
         SoftAssertions.assertSoftly(softly -> {
-            assertThat(actual.sub()).isEqualTo(memberId);
-            assertThat(actual.role()).isEqualTo(MemberRole.ADMIN.name());
+            softly.assertThat(actual.sub()).isEqualTo(memberId);
+            softly.assertThat(actual.role()).isEqualTo(MemberRole.ADMIN.name());
         });
     }
 
