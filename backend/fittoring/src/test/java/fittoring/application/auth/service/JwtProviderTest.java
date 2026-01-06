@@ -31,7 +31,7 @@ class JwtProviderTest {
 
         //when
         String token = jwtProvider.createAccessToken(memberId, role);
-        TokenPayload actual = jwtProvider.getSubjectFromPayloadBy(token);
+        TokenPayload actual = jwtProvider.extractTokenPayload(token);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -42,13 +42,13 @@ class JwtProviderTest {
 
     @DisplayName("만료되지 않은 토큰에서 subject를 추출할 수 있다.")
     @Test
-    void getSubjectFromPayloadBy() {
+    void extractTokenPayload() {
         //given
         Long memberId = 1L;
         String token = jwtProvider.createAccessToken(memberId, MemberRole.ADMIN);
 
         //when
-        TokenPayload actual = jwtProvider.getSubjectFromPayloadBy(token);
+        TokenPayload actual = jwtProvider.extractTokenPayload(token);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -59,7 +59,7 @@ class JwtProviderTest {
 
     @DisplayName("만료된 토큰 에서 subject를 추출하려고 하면 예외가 발생한다.")
     @Test
-    void getSubjectFromPayloadBy2() throws InterruptedException {
+    void extractTokenPayload2() throws InterruptedException {
         //given
         Long memberId = 1L;
         String token = jwtProvider.createAccessToken(memberId, MemberRole.ADMIN);
@@ -68,7 +68,7 @@ class JwtProviderTest {
 
         //when
         //then
-        assertThatThrownBy(() -> jwtProvider.getSubjectFromPayloadBy(token))
+        assertThatThrownBy(() -> jwtProvider.extractTokenPayload(token))
                 .isInstanceOf(InvalidTokenException.class);
     }
 

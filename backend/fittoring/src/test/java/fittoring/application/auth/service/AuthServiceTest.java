@@ -19,11 +19,11 @@ import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
-import fittoring.domain.model.*;
-import fittoring.domain.model.password.Password;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
+import fittoring.domain.model.password.Password;
 import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -230,7 +230,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         // given
         String phoneNumber = "010-1234-5678";
         OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, phoneNumber);
-        willReturn(new TokenPayload(1L, "ROLE")).given(jwtProvider).getSubjectFromPayloadBy(any());
+        willReturn(new TokenPayload(1L, "ROLE")).given(jwtProvider).extractTokenPayload(any());
 
         // when
         RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");
@@ -250,7 +250,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
         OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, mentee.getPhoneNumber());
-        willReturn(new TokenPayload(1L, mentee.getRole().name())).given(jwtProvider).getSubjectFromPayloadBy(any());
+        willReturn(new TokenPayload(1L, mentee.getRole().name())).given(jwtProvider).extractTokenPayload(any());
 
         // when
         RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");

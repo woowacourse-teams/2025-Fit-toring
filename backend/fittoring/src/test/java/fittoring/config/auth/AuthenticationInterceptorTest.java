@@ -63,7 +63,7 @@ class AuthenticationInterceptorTest {
         request.setCookies(cookie);
 
         given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
-        given(jwtProvider.getSubjectFromPayloadBy("valid-token")).willReturn(new TokenPayload(1L, "ADMIN"));
+        given(jwtProvider.extractTokenPayload("valid-token")).willReturn(new TokenPayload(1L, "ADMIN"));
 
         // when
         boolean result = interceptor.preHandle(request, response, handlerMethod);
@@ -88,7 +88,7 @@ class AuthenticationInterceptorTest {
         request.setCookies(cookie);
 
         given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
-        given(jwtProvider.getSubjectFromPayloadBy("valid-token"))
+        given(jwtProvider.extractTokenPayload("valid-token"))
                 .willReturn(new TokenPayload(1L, "INVALID_ROLE"));
 
         // when // then
@@ -120,7 +120,7 @@ class AuthenticationInterceptorTest {
         // then
         assertThat(result).isTrue();
         verify(jwtExtractor, times(0)).extractTokenFromCookie(anyString(), any());
-        verify(jwtProvider, times(0)).getSubjectFromPayloadBy(anyString());
+        verify(jwtProvider, times(0)).extractTokenPayload(anyString());
     }
 
     @DisplayName("인증 어노테이션이 존재하지 않으면 인증을 진행하지 않고, true를 반환한다.")

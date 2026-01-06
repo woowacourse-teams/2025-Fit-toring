@@ -150,7 +150,7 @@ public class AuthService {
 
     @Transactional
     public RegisterOAuthDto registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
-        TokenPayload payload = jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken);
+        TokenPayload payload = jwtProvider.extractTokenPayload(oauthSignUpToken);
         String oauthId = String.valueOf(payload.sub());
         Member member = memberRepository.findByPhone_Number(request.phone())
                 .orElseGet(() -> {
@@ -196,6 +196,6 @@ public class AuthService {
     }
 
     public TokenPayload extractMemberId(String accessToken) {
-        return jwtProvider.getSubjectFromPayloadBy(accessToken);
+        return jwtProvider.extractTokenPayload(accessToken);
     }
 }

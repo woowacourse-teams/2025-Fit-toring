@@ -44,7 +44,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         Cookie[] cookies = getCookies(request);
         String accessToken = getAccessToken(cookies);
 
-        TokenPayload payload = jwtProvider.getSubjectFromPayloadBy(accessToken);
+        TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
         validateAdminRole(request, payload.role());
         request.setAttribute("memberId", payload.sub());
         return true;

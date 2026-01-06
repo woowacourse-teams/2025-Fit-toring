@@ -83,7 +83,7 @@ public class JwtProvider {
         return builder.compact();
     }
 
-    public TokenPayload getSubjectFromPayloadBy(String token) {
+    public TokenPayload extractTokenPayload(String token) {
         validateToken(token);
         return parseTokenPayload(token);
     }

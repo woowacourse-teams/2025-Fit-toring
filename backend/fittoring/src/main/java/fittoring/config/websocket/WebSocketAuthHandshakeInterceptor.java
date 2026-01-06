@@ -40,7 +40,7 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
             validateCookie(cookies);
             String token = jwtExtractor.extractTokenFromCookie(TOKEN_NAME, cookies);
             jwtProvider.validateToken(token);
-            TokenPayload payload = jwtProvider.getSubjectFromPayloadBy(token);
+            TokenPayload payload = jwtProvider.extractTokenPayload(token);
             attributes.put(LOGIN_INFO_KEY, new LoginInfo(payload.sub()));
         }
         return true;
