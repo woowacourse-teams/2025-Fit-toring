@@ -8,8 +8,8 @@ import {
 } from '../../../../common/types/statusType';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { patchReservationComplete } from '../../apis/patchReservationComplete';
-import { patchReservationReject } from '../../apis/patchReservationReject';
 import useReservationApprove from '../../hooks/useReservationApprove';
+import useReservationReject from '../../hooks/useReservationReject';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -36,25 +36,13 @@ function ActionButtons({
     }
   };
 
+  const { mutate: rejectMutate } = useReservationReject(onClick);
+
   const handleRejectedButtonClick = async () => {
-    try {
-      if (
-        confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
-      ) {
-        const response = await patchReservationReject(reservationId);
-        if (response.status !== 200) {
-          throw new Error('reservation reject failed');
-        }
-        await onClick();
-      }
-    } catch (error) {
-      console.error(`Error handling reject button click:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'reject-button-click',
-      });
+    if (
+      confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
+    ) {
+      rejectMutate(reservationId);
     }
   };
 
