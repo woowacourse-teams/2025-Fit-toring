@@ -6,9 +6,8 @@ import {
   StatusTypeEnum,
   type StatusType,
 } from '../../../../common/types/statusType';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
-import { patchReservationComplete } from '../../apis/patchReservationComplete';
 import useReservationApprove from '../../hooks/useReservationApprove';
+import useReservationComplete from '../../hooks/useReservationComplete';
 import useReservationReject from '../../hooks/useReservationReject';
 
 interface ActionButtonsProps {
@@ -46,25 +45,13 @@ function ActionButtons({
     }
   };
 
+  const { mutate: completeMutate } = useReservationComplete(onClick);
+
   const handleCompleteButtonClick = async () => {
-    try {
-      if (
-        confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
-      ) {
-        const response = await patchReservationComplete(reservationId);
-        if (response.status !== 200) {
-          throw new Error('reservation complete failed');
-        }
-        await onClick();
-      }
-    } catch (error) {
-      console.error(`Error handling complete button click:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'complete-button-click',
-      });
+    if (
+      confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
+    ) {
+      completeMutate(reservationId);
     }
   };
 
