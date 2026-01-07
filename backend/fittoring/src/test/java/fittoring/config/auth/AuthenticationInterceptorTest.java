@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -56,8 +55,30 @@ class AuthenticationInterceptorTest {
     @Test
     void successAuthentication() {
         // given
-        AuthRequired authAnnotation = mock(AuthRequired.class);
-        given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(authAnnotation);
+        given(handlerMethod.hasMethodAnnotation(AuthRequired.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "valid-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
+        given(jwtProvider.extractTokenPayload("valid-token")).willReturn(new TokenPayload(1L, "MEMBER"));
+
+        // when
+        boolean result = interceptor.preHandle(request, response, handlerMethod);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(result).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isEqualTo(1L);
+        });
+    }
+
+    @DisplayName("어드민 어노테이션이 존재하고 어드민 권한이 있으면 인증에 성공한다.")
+    @Test
+    void successAdminAuthentication() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(Admin.class)).willReturn(true);
+        given(handlerMethod.hasMethodAnnotation(AuthRequired.class)).willReturn(false);
 
         Cookie cookie = new Cookie("accessToken", "valid-token");
         request.setCookies(cookie);
@@ -75,21 +96,19 @@ class AuthenticationInterceptorTest {
         });
     }
 
-    @DisplayName("어드민 권한 인증에 실패하면 예외가 발생한다.")
+    @DisplayName("어드민 어노테이션이 존재하고 어드민 권한이 없으면 예외가 발생한다.")
     @Test
     void failAdminAuthentication() {
         // given
-        AuthRequired authAnnotation = mock(AuthRequired.class);
-        given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(authAnnotation);
-
-        request.setRequestURI("/admin");
+        given(handlerMethod.hasMethodAnnotation(Admin.class)).willReturn(true);
+        given(handlerMethod.hasMethodAnnotation(AuthRequired.class)).willReturn(false);
 
         Cookie cookie = new Cookie("accessToken", "valid-token");
         request.setCookies(cookie);
 
         given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
         given(jwtProvider.extractTokenPayload("valid-token"))
-                .willReturn(new TokenPayload(1L, "INVALID_ROLE"));
+                .willReturn(new TokenPayload(1L, "MEMBER"));
 
         // when // then
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
@@ -100,12 +119,34 @@ class AuthenticationInterceptorTest {
     @Test
     void failAuthentication() {
         // given
-        AuthRequired authAnnotation = mock(AuthRequired.class);
-        given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(authAnnotation);
+        given(handlerMethod.hasMethodAnnotation(AuthRequired.class)).willReturn(true);
 
         // when // then
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
                 .isInstanceOf(UnauthorizedException.class).hasMessage(BusinessErrorMessage.EMPTY_COOKIE.getMessage());
+    }
+
+    @DisplayName("인증 어노테이션과 어드민 어노테이션이 모두 존재하고 어드민 권한이 있으면 인증에 성공한다.")
+    @Test
+    void successAdminAuthenticationWithAuthRequired() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(Admin.class)).willReturn(true);
+        given(handlerMethod.hasMethodAnnotation(AuthRequired.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "valid-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
+        given(jwtProvider.extractTokenPayload("valid-token")).willReturn(new TokenPayload(1L, "ADMIN"));
+
+        // when
+        boolean result = interceptor.preHandle(request, response, handlerMethod);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(result).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isEqualTo(1L);
+        });
     }
 
     @DisplayName("HTTP 메서드가 OPTIONS이면 인증을 수행하지 않고 true를 반환한다")
