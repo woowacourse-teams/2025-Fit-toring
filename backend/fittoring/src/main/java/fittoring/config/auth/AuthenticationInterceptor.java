@@ -29,23 +29,24 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (isAuthenticationNotRequired(handler)) {
             return true;
         }
-        return attemptAuthentication(request);
+        return attemptAuthentication(request, handler);
     }
 
     private boolean isAuthenticationNotRequired(final Object handler) {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
-        AuthRequired authRequired = handlerMethod.getMethodAnnotation(AuthRequired.class);
-        return authRequired == null;
+        boolean hasAuthRequired = handlerMethod.hasMethodAnnotation(AuthRequired.class);
+        boolean hasAdmin = handlerMethod.hasMethodAnnotation(Admin.class);
+        return !hasAuthRequired && !hasAdmin;
     }
 
-    private boolean attemptAuthentication(HttpServletRequest request) {
+    private boolean attemptAuthentication(HttpServletRequest request, Object handler) {
         Cookie[] cookies = getCookies(request);
         String accessToken = getAccessToken(cookies);
 
         TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
-        validateAdminRole(request, payload.role());
+        validateAdminRole(handler, payload.role());
         request.setAttribute("memberId", payload.sub());
         return true;
     }
@@ -62,12 +63,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         return jwtExtractor.extractTokenFromCookie("accessToken", cookies);
     }
 
-    private void validateAdminRole(HttpServletRequest request, String role) {
-        if (request.getRequestURI().startsWith("/admin")) {
-            if (!"ADMIN".equals(role)) {
+    private void validateAdminRole(Object handler, String role) {
+        if (handler instanceof HandlerMethod handlerMethod) {
+            if (isNotAdmin(role, handlerMethod)) {
                 throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
             }
         }
     }
-}
 
+    private boolean isNotAdmin(String role, HandlerMethod handlerMethod) {
+        return handlerMethod.hasMethodAnnotation(Admin.class) && !"ADMIN".equals(role);
+    }
+}

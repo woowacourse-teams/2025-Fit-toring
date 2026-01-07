@@ -8,7 +8,7 @@ import fittoring.admin.service.AdminReservationQueryService;
 import fittoring.admin.service.dto.AdminMentoringReservationDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.reservation.service.ReservationService;
-import fittoring.config.auth.AuthRequired;
+import fittoring.config.auth.Admin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,7 @@ public class AdminReservationController {
     private final AdminReservationQueryService reservationQueryService;
     private final ReservationService reservationCommandService;
 
-    @AuthRequired
+    @Admin
     @GetMapping("/admin/mentorings/{mentoringId}/reservations")
     public ResponseEntity<PageResult<AdminReservationResponse>> findMentoringReservations(
             @PathVariable("mentoringId") Long mentoringId,
@@ -47,7 +47,7 @@ public class AdminReservationController {
                 .body(responseBody);
     }
 
-    @AuthRequired
+    @Admin
     @PatchMapping("/admin/reservations/{reservationId}/status")
     public ResponseEntity<Void> updateStatus(
             @PathVariable Long reservationId,
@@ -60,7 +60,7 @@ public class AdminReservationController {
                 .build();
     }
 
-    @AuthRequired
+    @Admin
     @DeleteMapping("/admin/reservations/{reservationId}")
     public ResponseEntity<Void> deleteReservation(
             @PathVariable Long reservationId

@@ -3,7 +3,7 @@ package fittoring.admin.presentation;
 import fittoring.admin.presentation.dto.AdminMemberResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.AdminMemberService;
-import fittoring.config.auth.AuthRequired;
+import fittoring.config.auth.Admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ public class AdminMemberController {
 
     private final AdminMemberService memberService;
 
-    @AuthRequired
+    @Admin
     @GetMapping
     public ResponseEntity<PageResult<AdminMemberResponse>> getMembers(
             @RequestParam(defaultValue = "1") int page,

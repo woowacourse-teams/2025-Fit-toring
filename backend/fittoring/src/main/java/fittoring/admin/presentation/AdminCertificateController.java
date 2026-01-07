@@ -4,7 +4,7 @@ import fittoring.admin.presentation.dto.AdminCertificateResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.AdminCertificateService;
 import fittoring.application.mentoring.presentation.dto.response.CertificateDetailResponse;
-import fittoring.config.auth.AuthRequired;
+import fittoring.config.auth.Admin;
 import fittoring.domain.model.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class AdminCertificateController {
 
     private final AdminCertificateService adminCertificateService;
 
-    @AuthRequired
+    @Admin
     @GetMapping
     public ResponseEntity<PageResult<AdminCertificateResponse>> getAllCertificates(
             @RequestParam(value = "type", required = false) Status status,
@@ -39,7 +39,7 @@ public class AdminCertificateController {
                 .body(certificates);
     }
 
-    @AuthRequired
+    @Admin
     @GetMapping("/{certificateId}")
     public ResponseEntity<CertificateDetailResponse> getCertificate(
             @PathVariable("certificateId") Long certificateId
@@ -49,7 +49,7 @@ public class AdminCertificateController {
                 .body(response);
     }
 
-    @AuthRequired
+    @Admin
     @PostMapping("/{certificateId}/approve")
     public ResponseEntity<Void> approveCertificate(
             @PathVariable("certificateId") Long certificateId
@@ -59,7 +59,7 @@ public class AdminCertificateController {
                 .build();
     }
 
-    @AuthRequired
+    @Admin
     @PostMapping("/{certificateId}/reject")
     public ResponseEntity<Void> rejectCertificate(
             @PathVariable("certificateId") Long certificateId
