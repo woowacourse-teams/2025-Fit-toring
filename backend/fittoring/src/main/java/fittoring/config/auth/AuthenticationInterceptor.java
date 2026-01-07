@@ -6,6 +6,7 @@ import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.UnauthorizedException;
+import fittoring.domain.model.MemberRole;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -72,6 +73,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private boolean isNotAdmin(String role, HandlerMethod handlerMethod) {
-        return handlerMethod.hasMethodAnnotation(Admin.class) && !"ADMIN".equals(role);
+        return handlerMethod.hasMethodAnnotation(Admin.class) && MemberRole.isNotAdmin(MemberRole.of(role));
     }
+
 }

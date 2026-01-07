@@ -12,6 +12,7 @@ import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.InvalidCertificateException;
 import fittoring.application.exception.InvalidCursorException;
+import fittoring.application.exception.InvalidMemberRoleException;
 import fittoring.application.exception.InvalidPhoneVerificationException;
 import fittoring.application.exception.InvalidStatusException;
 import fittoring.application.exception.InvalidTokenException;
@@ -244,6 +245,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedChatRoomAccessException.class)
     public ResponseEntity<ErrorResponse> handle(UnauthorizedChatRoomAccessException e) {
         return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidMemberRoleException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidMemberRoleException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {
