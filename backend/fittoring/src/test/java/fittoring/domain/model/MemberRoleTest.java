@@ -1,7 +1,11 @@
 package fittoring.domain.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.InvalidMemberRoleException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,4 +43,26 @@ class MemberRoleTest {
         });
     }
 
+    @DisplayName("존재하지 않는 권한으로 생성하는 경우 예외가 발생한다.")
+    @Test
+    void invalidRole() {
+        //given
+        String invalidRole = "INVALID";
+
+        //when //then
+        assertThatThrownBy(() -> MemberRole.of(invalidRole))
+                .isInstanceOf(InvalidMemberRoleException.class)
+                .hasMessage(BusinessErrorMessage.ROLE_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("존재하는 권한으로 정상 생성된다.")
+    @Test
+    void create() {
+        //given
+        String invalidRole = "ADMIN";
+
+        //when //then
+        assertThatCode(() -> MemberRole.of(invalidRole))
+                .doesNotThrowAnyException();
+    }
 }
