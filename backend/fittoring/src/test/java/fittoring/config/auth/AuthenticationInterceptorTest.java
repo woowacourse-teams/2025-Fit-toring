@@ -61,7 +61,9 @@ class AuthenticationInterceptorTest {
         request.setCookies(cookie);
 
         given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
-        given(jwtProvider.extractTokenPayload("valid-token")).willReturn(new TokenPayload(1L, "MEMBER"));
+        given(jwtProvider.extractTokenPayload("valid-token")).willReturn(
+                new TokenPayload(1L, "MENTEE")
+        );
 
         // when
         boolean result = interceptor.preHandle(request, response, handlerMethod);
@@ -108,7 +110,7 @@ class AuthenticationInterceptorTest {
 
         given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
         given(jwtProvider.extractTokenPayload("valid-token"))
-                .willReturn(new TokenPayload(1L, "MEMBER"));
+                .willReturn(new TokenPayload(1L, "MENTEE"));
 
         // when // then
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))

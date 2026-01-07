@@ -43,13 +43,16 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private boolean attemptAuthentication(HttpServletRequest request, Object handler) {
+        TokenPayload payload = authenticate(request);
+        validateAdminAccess(handler, MemberRole.of(payload.role()));
+        bindAuthenticationContext(request, payload);
+        return true;
+    }
+
+    private TokenPayload authenticate(HttpServletRequest request) {
         Cookie[] cookies = getCookies(request);
         String accessToken = getAccessToken(cookies);
-
-        TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
-        validateAdminRole(handler, payload.role());
-        request.setAttribute("memberId", payload.sub());
-        return true;
+        return jwtProvider.extractTokenPayload(accessToken);
     }
 
     private Cookie[] getCookies(HttpServletRequest request) {
@@ -64,16 +67,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         return jwtExtractor.extractTokenFromCookie("accessToken", cookies);
     }
 
-    private void validateAdminRole(Object handler, String role) {
+    private void validateAdminAccess(Object handler, MemberRole role) {
         if (handler instanceof HandlerMethod handlerMethod) {
-            if (isNotAdmin(role, handlerMethod)) {
+            if (handlerMethod.hasMethodAnnotation(Admin.class) && MemberRole.isNotAdmin(role)) {
                 throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
             }
         }
     }
 
-    private boolean isNotAdmin(String role, HandlerMethod handlerMethod) {
-        return handlerMethod.hasMethodAnnotation(Admin.class) && MemberRole.isNotAdmin(MemberRole.of(role));
+    private void bindAuthenticationContext(HttpServletRequest request, TokenPayload payload) {
+        request.setAttribute("memberId", payload.sub());
     }
-
 }
