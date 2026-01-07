@@ -5,7 +5,7 @@ import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.UnAuthorizedException;
+import fittoring.application.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,7 +53,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     private Cookie[] getCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null || cookies.length == 0) {
-            throw new UnAuthorizedException(BusinessErrorMessage.EMPTY_COOKIE.getMessage());
+            throw new UnauthorizedException(BusinessErrorMessage.EMPTY_COOKIE.getMessage());
         }
         return cookies;
     }

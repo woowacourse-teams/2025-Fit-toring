@@ -14,7 +14,7 @@ import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.UnAuthorizedException;
+import fittoring.application.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -105,7 +105,7 @@ class AuthenticationInterceptorTest {
 
         // when // then
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
-                .isInstanceOf(UnAuthorizedException.class).hasMessage(BusinessErrorMessage.EMPTY_COOKIE.getMessage());
+                .isInstanceOf(UnauthorizedException.class).hasMessage(BusinessErrorMessage.EMPTY_COOKIE.getMessage());
     }
 
     @DisplayName("HTTP 메서드가 OPTIONS이면 인증을 수행하지 않고 true를 반환한다")
