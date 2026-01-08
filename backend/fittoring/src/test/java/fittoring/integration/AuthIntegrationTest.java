@@ -18,6 +18,7 @@ import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.PhoneVerification;
 import fittoring.domain.model.RefreshToken;
@@ -243,7 +244,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
 
-        String accessToken = jwtProvider.createAccessToken(savedMember.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
         refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
 
@@ -285,7 +286,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     void isLoggedIn() {
         //given
         Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
-        String accessToken = jwtProvider.createAccessToken(savedMember.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
 
         //when
         //then
@@ -336,7 +337,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 Password.from("password")
         );
         Member savedMember = memberRepository.save(member);
-        String accessToken = jwtProvider.createAccessToken(savedMember.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
         refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
@@ -366,7 +367,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void reissue2() {
         //given
-        String accessToken = jwtProvider.createAccessToken(1L);
+        String accessToken = jwtProvider.createAccessToken(1L, MemberRole.MENTOR);
         String refreshToken = jwtProvider.createRefreshToken();
 
         //when

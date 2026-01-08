@@ -1,5 +1,9 @@
 package fittoring.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.doNothing;
+
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.chat.repository.ChatRoomRepository;
@@ -13,22 +17,28 @@ import fittoring.application.reservation.presentation.dto.request.ReservationCre
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.domain.model.*;
+import fittoring.domain.model.Category;
+import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Gender;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.doNothing;
 
 class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -92,7 +102,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         ReservationCreateRequest request = new ReservationCreateRequest("멘토링 예약 내용");
 
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         //when
         ReservationCreateResponse response = RestAssured
@@ -139,7 +149,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 "또 봐요 미스터 채플린~~"
         ));
 
-        String mentorAccessToken = jwtProvider.createAccessToken(mentor.getId());
+        String mentorAccessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
         ReservationCreateRequest requestBody = new ReservationCreateRequest(
                 "그 이름도 내겐 사랑스런 채플린~"
         );
@@ -165,7 +175,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //given
         Member mentee = memberRepository.save(
                 new Member("id1", Gender.MALE, "김멘티", new Phone("010-1234-5679"), Password.from("pw")));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         doNothing()
                 .when(smsRestClientService)
                 .sendSms(
@@ -267,7 +277,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("reservation/get-reservations-participated-success"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
                 .get("/reservations/participated")
                 .then()
@@ -290,7 +300,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Member savedMentor = memberRepository.save(mentor);
 
         //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(
@@ -367,7 +377,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Member savedMentor = memberRepository.save(mentor);
 
         //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
@@ -467,7 +477,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Member savedMentor = memberRepository.save(mentor);
 
         //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
@@ -514,7 +524,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Member savedMentor = memberRepository.save(mentor);
 
         //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
@@ -576,7 +586,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Member savedMentor = memberRepository.save(mentor);
 
         //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
@@ -630,7 +640,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Member savedMentor = memberRepository.save(mentor);
 
         //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
@@ -678,7 +688,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Member savedMentor = memberRepository.save(mentor);
 
         //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
@@ -724,7 +734,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Member savedMentor = memberRepository.save(mentor);
 
         //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId());
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");

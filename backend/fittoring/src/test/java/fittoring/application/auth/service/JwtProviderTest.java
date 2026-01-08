@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.application.exception.InvalidTokenException;
+import fittoring.domain.model.MemberRole;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,40 +27,48 @@ class JwtProviderTest {
     void createAccessToken() {
         //given
         Long memberId = 1L;
+        MemberRole role = MemberRole.ADMIN;
 
         //when
-        String actual = jwtProvider.createAccessToken(memberId);
+        String token = jwtProvider.createAccessToken(memberId, role);
+        TokenPayload actual = jwtProvider.extractTokenPayload(token);
 
         //then
-        assertThat(actual).isNotNull();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual.sub()).isEqualTo(1L);
+            softly.assertThat(actual.role()).isEqualTo("ADMIN");
+        });
     }
 
     @DisplayName("만료되지 않은 토큰에서 subject를 추출할 수 있다.")
     @Test
-    void getSubjectFromPayloadBy() {
+    void extractTokenPayload() {
         //given
         Long memberId = 1L;
-        String token = jwtProvider.createAccessToken(memberId);
+        String token = jwtProvider.createAccessToken(memberId, MemberRole.ADMIN);
 
         //when
-        Long actual = jwtProvider.getSubjectFromPayloadBy(token);
+        TokenPayload actual = jwtProvider.extractTokenPayload(token);
 
         //then
-        assertThat(actual).isEqualTo(memberId);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual.sub()).isEqualTo(memberId);
+            softly.assertThat(actual.role()).isEqualTo(MemberRole.ADMIN.name());
+        });
     }
 
     @DisplayName("만료된 토큰 에서 subject를 추출하려고 하면 예외가 발생한다.")
     @Test
-    void getSubjectFromPayloadBy2() throws InterruptedException {
+    void extractTokenPayload2() throws InterruptedException {
         //given
         Long memberId = 1L;
-        String token = jwtProvider.createAccessToken(memberId);
+        String token = jwtProvider.createAccessToken(memberId, MemberRole.ADMIN);
 
         Thread.sleep(2000); // 2초 대기
 
         //when
         //then
-        assertThatThrownBy(() -> jwtProvider.getSubjectFromPayloadBy(token))
+        assertThatThrownBy(() -> jwtProvider.extractTokenPayload(token))
                 .isInstanceOf(InvalidTokenException.class);
     }
 

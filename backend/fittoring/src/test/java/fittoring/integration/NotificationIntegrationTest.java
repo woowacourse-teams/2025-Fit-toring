@@ -6,6 +6,7 @@ import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.presentation.dto.request.PushTokenUpsertRequest;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +26,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
     void upsertFcmToken1() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String token = "testFcmTokentestFcmTokentestFcmToken";
         PushTokenUpsertRequest request = new PushTokenUpsertRequest(member.getId(), hardwareId, token);
@@ -48,7 +49,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
     void upsertFcmToken2() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
         String newToken = "testFcmTokentestFcmTokentestFcmToken";
@@ -83,7 +84,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
     void upsertFcmTokenFail1() {
         // given
         Long invalidMemberId = 999L;
-        String accessToken = jwtProvider.createAccessToken(invalidMemberId);
+        String accessToken = jwtProvider.createAccessToken(invalidMemberId, MemberRole.MENTEE);
         String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
         String token = "testFcmTokentestFcmTokentestFcmToken";
         PushTokenUpsertRequest request = new PushTokenUpsertRequest(invalidMemberId, hardwareId, token);

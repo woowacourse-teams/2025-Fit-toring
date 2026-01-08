@@ -58,7 +58,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                 Password.from("pw"),
                 MemberRole.ADMIN
         ));
-        adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
         user = memberRepository.save(new Member(
                 "userId",
                 Gender.MALE,
@@ -66,7 +66,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1111-1111"),
                 Password.from("pw")
         ));
-        userAccessToken = jwtProvider.createAccessToken(user.getId());
+        userAccessToken = jwtProvider.createAccessToken(user.getId(), user.getRole());
     }
 
     @DisplayName("관리자 자격증명 목록 조회")

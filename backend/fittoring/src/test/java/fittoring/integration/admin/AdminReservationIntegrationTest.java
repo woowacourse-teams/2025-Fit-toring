@@ -94,7 +94,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 mentoring,
                 mentee1
         ));
-        String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        String adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
 
         // when
         // then
@@ -137,7 +137,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 "Last Fantasy",
                 "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
-        String normalAccessToken = jwtProvider.createAccessToken(normalMember.getId());
+        String normalAccessToken = jwtProvider.createAccessToken(normalMember.getId(), normalMember.getRole());
 
         // when
         // then
@@ -194,7 +194,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 mentoring,
                 mentee
         ));
-        String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        String adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
 
         AdminReservationStatusUpdateRequest reservationStatusUpdateRequest
                 = new AdminReservationStatusUpdateRequest(Status.COMPLETE.name());
@@ -261,7 +261,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 reservation,
                 mentee
         ));
-        String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        String adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
 
         // when
         // then

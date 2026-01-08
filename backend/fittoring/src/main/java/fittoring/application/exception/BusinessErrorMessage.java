@@ -14,6 +14,7 @@ public enum BusinessErrorMessage {
     DUPLICATE_LOGIN_ID("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요."),
     DUPLICATE_PHONE("이미 사용 중인 전화번호입니다. 다른 전화번호를 입력해주세요."),
     LOGIN_ID_NOT_FOUND("로그인 아이디를 찾을 수 없습니다."),
+    ROLE_NOT_FOUND("존재하지 않는 권한 입니다."),
     EXPIRED_TOKEN("유효시간이 만료된 토큰입니다."),
     INVALID_TOKEN("유효하지 않은 토큰입니다."),
     EMPTY_TOKEN("토큰이 비어있습니다."),
@@ -48,8 +49,7 @@ public enum BusinessErrorMessage {
     UNSUPPORTED_IMAGE_EXTENSION("지원하지 않는 확장자입니다."),
     EMPTY_REQUEST("요청 정보가 비어있어 요청을 수행할 수 없습니다."),
     FCM_TOKEN_NOT_FOUND("해당 멤버의 FCM 토큰이 존재하지 않습니다."),
-    TOO_MANY_DEVICE("인당 기기 등록 제한 수를 초과했습니다.")
-    ;
+    TOO_MANY_DEVICE("인당 기기 등록 제한 수를 초과했습니다.");
 
     private final String message;
 

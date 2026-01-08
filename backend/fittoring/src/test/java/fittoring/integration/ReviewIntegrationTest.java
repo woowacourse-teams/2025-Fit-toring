@@ -13,6 +13,7 @@ import fittoring.application.review.presentation.dto.request.ReviewModifyRequest
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
@@ -61,7 +62,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -144,7 +145,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 rating,
                 content
         );
-        String accessTokenWithUnexistMemberId = jwtProvider.createAccessToken(999L);
+        String accessTokenWithUnexistMemberId = jwtProvider.createAccessToken(999L, MemberRole.MENTEE);
 
         // when
         // then
@@ -207,7 +208,8 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-5679"),
                 Password.from("password")
         ));
-        String accessTokenWithAnotherMember = jwtProvider.createAccessToken(anotherMember.getId());
+        String accessTokenWithAnotherMember = jwtProvider.createAccessToken(anotherMember.getId(),
+                anotherMember.getRole());
 
         // when
         // then
@@ -243,7 +245,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -310,7 +312,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -412,7 +414,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 reservation2,
                 mentee
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         // when
         // then
@@ -485,7 +487,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 reservation2,
                 mentee2
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee1.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee1.getId(), mentee1.getRole());
 
         // when
         // then
@@ -552,7 +554,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given()
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
                 .patch("/reviews/" + review.getId())
@@ -609,7 +611,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // then
         RestAssured
                 .given().log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
                 .patch("/reviews/" + review.getId())
@@ -670,7 +672,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("review/patch-reviews-id-success"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
                 .patch("/reviews/" + review.getId())
@@ -734,7 +736,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("review/patch-reviews-id-not-mine"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .body(requestBody)
                 .when()
                 .patch("/reviews/" + review.getId())
@@ -787,7 +789,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("review/delete-reviews-id-success"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
                 .delete("/reviews/" + review.getId())
                 .then().log().all()
@@ -810,7 +812,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // then
         RestAssured
                 .given().log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
                 .delete("/reviews/999")
                 .then().log().all()
@@ -869,7 +871,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("review/delete-reviews-id-not-mine"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .when()
                 .delete("/reviews/" + review.getId())
                 .then().log().all()

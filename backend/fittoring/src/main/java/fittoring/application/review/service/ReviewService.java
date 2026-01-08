@@ -115,8 +115,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public AdminReviewInfoResponse findAllByMentoringForAdmin(Long memberId, Long mentoringId) {
-        validateAdmin(memberId);
+    public AdminReviewInfoResponse findAllByMentoringForAdmin(Long mentoringId) {
         validateMentoringExists(mentoringId);
         List<AdminReviewResponse> reviewResponses = findReviewResponsesForAdmin(mentoringId);
         MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.findById(mentoringId).get();
@@ -126,14 +125,6 @@ public class ReviewService {
                 mentoringStatistics.getReviewCount()
         );
         return AdminReviewInfoResponse.of(reviewResponses, reviewInfo);
-    }
-
-    private void validateAdmin(Long memberId) {
-        Member admin = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        if (admin.isNotAdmin()) {
-            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-        }
     }
 
     private void validateMentoringExists(Long mentoringId) {
@@ -176,8 +167,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteForAdmin(Long memberId, Long reviewId) {
-        validateAdmin(memberId);
+    public void deleteForAdmin(Long reviewId) {
         Review review = reviewRepository.findById((reviewId))
                 .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
         Mentoring mentoring = review.getReservation().getMentoring();

@@ -36,7 +36,6 @@ public class AuthService {
     private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtExtractor jwtExtractor;
     private final JwtProvider jwtProvider;
     private final OauthClientService oauthClientService;
     private final MemberOauthRepository memberOAuthRepository;
@@ -83,7 +82,7 @@ public class AuthService {
     }
 
     private AuthTokenDto getAuthorizedTokenResponse(Member member) {
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken saveRefreshToken = new RefreshToken(
@@ -98,7 +97,8 @@ public class AuthService {
     public AuthTokenDto reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMember().getId());
+        Member memberByRT = findRefreshToken.getMember();
+        String newAccessToken = jwtProvider.createAccessToken(memberByRT.getId(), memberByRT.getRole());
         String newRefreshToken = jwtProvider.createRefreshToken();
         findRefreshToken.update(newRefreshToken, LocalDateTime.now());
 
@@ -149,7 +149,8 @@ public class AuthService {
 
     @Transactional
     public RegisterOAuthDto registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
-        String oauthId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
+        TokenPayload payload = jwtProvider.extractTokenPayload(oauthSignUpToken);
+        String oauthId = String.valueOf(payload.sub());
         Member member = memberRepository.findByPhone_Number(request.phone())
                 .orElseGet(() -> {
                     Member newMember = getRandomIdPwMember(request);
@@ -191,9 +192,5 @@ public class AuthService {
         Member member = getMemberByLoginId(loginId);
         member.updatePassword(password);
         return member;
-    }
-
-    public Long extractMemberId(String accessToken) {
-        return jwtProvider.getSubjectFromPayloadBy(accessToken);
     }
 }

@@ -73,7 +73,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                         MemberRole.MENTOR
                 ));
 
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개"));
 
@@ -137,7 +137,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                         MemberRole.MENTOR
                 ));
 
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개"));
 
@@ -218,7 +218,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content21"));
         chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content22"));
 
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         //when
         ChatMessagePaginationResponse firstResponse = RestAssured
