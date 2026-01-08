@@ -7,6 +7,11 @@ const DotenvWebpackPlugin = require('dotenv-webpack');
 module.exports = merge(common, {
   mode: 'development',
   devtool: 'eval-source-map',
+  devServer: {
+    static: {
+      directory: path.resolve(__dirname, 'public'),
+    },
+  },
   plugins: [
     new DotenvWebpackPlugin({
       path: path.resolve(__dirname, '.env.dev'),
