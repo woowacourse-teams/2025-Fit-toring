@@ -67,7 +67,7 @@ function LoginForm() {
     loginMutate({ loginId: userId, password });
   };
 
-  const handleSocialLoginButtonClick = async () => {
+  const handleSocialLoginButtonClick = () => {
     window.location.href = `${process.env.API_BASE_URL}${API_ENDPOINTS.KAKAO_LOGIN}`;
   };
 
