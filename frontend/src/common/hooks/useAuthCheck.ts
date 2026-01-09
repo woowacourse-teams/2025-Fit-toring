@@ -20,16 +20,22 @@ const useAuthCheck = () => {
     if (isError) {
       logout();
       localStorage.removeItem('memberId');
+      return;
     }
 
-    if (isSuccess) {
-      if (data.memberId) {
-        localStorage.setItem('memberId', data.memberId.toString());
-        login();
-      } else {
-        logout();
-      }
+    if (!isSuccess) {
+      return;
     }
+
+    const memberId = data.memberId;
+    if (!memberId) {
+      logout();
+      localStorage.removeItem('memberId');
+      return;
+    }
+
+    login();
+    localStorage.setItem('memberId', memberId.toString());
   }, [data?.memberId, isError, isSuccess, login, logout]);
 };
 
