@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getAuthCheck } from '../apis/authCheck';
+import { getAuthCheck } from '../apis/getAuthCheck';
 import { useAuth } from '../components/AuthProvider/AuthProvider';
 
 export const AUTH_CHECK_QUERY_KEY = ['authCheck'] as const;
