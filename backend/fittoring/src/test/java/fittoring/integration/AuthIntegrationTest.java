@@ -2,6 +2,7 @@ package fittoring.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 import fittoring.AbstractApiDocumentationTest;
@@ -774,5 +775,26 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .then()
                 .log().all()
                 .statusCode(404);
+    }
+
+    @DisplayName("카카오 로그인 요청 시 카카오 인증 페이지로 리다이랙트되고, 302 Found를 반환한다.")
+    @Test
+    void redirectKakaoAuth() {
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .redirects().follow(false) // 리다이랙트 자동 이동 방지
+                .filter(documentWithTag("auth/get-kakao-login"))
+                .log().all()
+                .when()
+                .get("/kakao/login")
+                .then()
+                .log().all()
+                .statusCode(302)
+                .header("Location", containsString("https://kauth.kakao.com/oauth/authorize"))
+                .header("Location", containsString("client_id="))
+                .header("Location", containsString("redirect_uri="))
+                .header("Location", containsString("response_type=code"));
     }
 }
