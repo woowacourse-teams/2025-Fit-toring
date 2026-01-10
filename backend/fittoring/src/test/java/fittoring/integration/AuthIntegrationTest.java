@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
+import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
@@ -148,7 +149,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-login-invalid-loginId"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -391,7 +394,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         //when
         Response reissueResponse = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-reissue-no-token"))
                 .log().all()
                 .when()
                 .post("/reissue");
@@ -505,7 +510,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
         // when
         // then
-        RestAssured.given()
+        RestAssured.given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-auth-code-invalid-phoneNumber"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -593,5 +600,60 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .then()
                 .log().all()
                 .statusCode(200);
+    }
+
+    @DisplayName("사용자가 이름과 전화번호로 아이디를 찾으면 200 OK를 반환한다.")
+    @Test
+    void findLoginId() {
+        // given
+        String loginId = "loginId";
+        String name = "이름";
+        String phoneNumber = "010-1234-5678";
+        Member member = new Member(
+                loginId,
+                Gender.MALE,
+                name,
+                new Phone(phoneNumber),
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        FindLoginIdRequest request = new FindLoginIdRequest(name, phoneNumber);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/get-login-id-success"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .get("/login-id")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("loginId", equalTo(loginId));
+    }
+
+    @DisplayName("사용자가 존재하지 않는 정보로 아이디를 찾으면 404 Bad Request를 반환한다.")
+    @Test
+    void findLoginIdFail() {
+        // given
+        FindLoginIdRequest request = new FindLoginIdRequest("없는이름", "010-0000-0000");
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/get-login-id-fail"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .get("/login-id")
+                .then()
+                .log().all()
+                .statusCode(404);
     }
 }
