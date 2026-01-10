@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doNothing;
 
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.image.repository.ImageRepository;
@@ -436,7 +437,9 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         //when
         List<MentorMentoringReservationResponse> response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/get-mentorings-mine-reservation-success-multiple"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -710,7 +713,9 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/patch-reservations-id-status-already-patched-reject"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -718,6 +723,109 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @DisplayName("예약이 완료되면 200 OK를 반환한다.")
+    @Test
+    void completeStatus() {
+        //given
+        Member savedMentor = memberRepository.save(FixtureUtil.getTestMentor());
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
+
+        //멘토링 생성
+        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(savedMentor));
+
+        //멘티 생성
+        Member savedMentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Reservation savedReservation = reservationRepository.save(
+                FixtureUtil.getTestApprovedReservation(savedMentoring, savedMentee)
+        );
+
+        //when
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/patch-reservations-id-complete-success"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .patch("/reservations/" + savedReservation.getId() + "/complete")
+                .then().log().all()
+                .statusCode(200);
+
+        //then
+        assertThat(reservationRepository.findById(savedReservation.getId()))
+                .isPresent()
+                .hasValueSatisfying(
+                        reservation ->
+                                assertThat(reservation.getStatus()).isEqualTo(Status.COMPLETE.name())
+                );
+    }
+
+    @DisplayName("승인되지 않은 예약을 완료하면 400 Bad Request가 발생한다.")
+    @Test
+    void completeStatusFail() {
+        //given
+        Member savedMentor = memberRepository.save(FixtureUtil.getTestMentor());
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
+
+        //멘토링 생성
+        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(savedMentor));
+
+        //멘티 생성
+        Member savedMentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Reservation savedReservation = reservationRepository.save(
+                FixtureUtil.getTestPendingReservation(savedMentoring, savedMentee)
+        );
+
+        //when
+        Response response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/patch-reservations-id-complete-fail"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .patch("/reservations/" + savedReservation.getId() + "/complete");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @DisplayName("자신의 예약이 아닌 예약을 완료하면 403 Forbidden이 발생한다.")
+    @Test
+    void completeStatusFail2() {
+        //given
+        Member savedMentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member savedOtherMentor = memberRepository.save(FixtureUtil.getTestMentor(1));
+
+        //토큰 생성
+        String accessToken = jwtProvider.createAccessToken(savedOtherMentor.getId(), savedOtherMentor.getRole());
+
+        //멘토링 생성
+        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(savedMentor));
+
+        //멘티 생성
+        Member savedMentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Reservation savedReservation = reservationRepository.save(
+                FixtureUtil.getTestApprovedReservation(savedMentoring, savedMentee)
+        );
+
+        //when //then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/patch-reservations-forbidden-fail"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .patch("/reservations/" + savedReservation.getId() + "/complete")
+                .then().log().all()
+                .statusCode(403);
     }
 
     @DisplayName("예약자의 전화번호 요청하면 200 OK와 전화번호를 반환한다.")
@@ -772,4 +880,3 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(response.phoneNumber()).isEqualTo(savedMentee.getPhoneNumber());
     }
 }
-
