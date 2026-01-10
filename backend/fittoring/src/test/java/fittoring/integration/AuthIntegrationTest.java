@@ -1,11 +1,13 @@
 package fittoring.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.hamcrest.Matchers.equalTo;
 
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.ResetPasswordRequest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
@@ -652,6 +654,123 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .when()
                 .body(request)
                 .get("/login-id")
+                .then()
+                .log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("사용자가 아이디와 전화번호로 비밀번호를 재설정하면 204 No Content를 반환한다.")
+    @Test
+    void resetPassword() {
+        // given
+        String loginId = "loginId";
+        String name = "이름";
+        String phoneNumber = "010-1234-5678";
+        String oldPassword = "oldPassword";
+        Member member = new Member(
+                loginId,
+                Gender.MALE,
+                name,
+                new Phone(phoneNumber),
+                Password.from(oldPassword)
+        );
+        memberRepository.save(member);
+
+        phoneVerificationRepository.save(
+                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
+        );
+
+        String newPassword = "newPassword";
+        ResetPasswordRequest request = new ResetPasswordRequest(loginId, phoneNumber, newPassword);
+
+        // when
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-reset-password-success"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/reset-password")
+                .then()
+                .log().all()
+                .statusCode(204);
+
+        // then
+        Member updatedMember = memberRepository.findByLoginId(loginId).orElseThrow();
+        assertThatCode(() -> updatedMember.getPassword().validateMatches(newPassword))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("사용자가 전화번호 인증 없이 비밀번호를 재설정하면 400 bad request를 반환한다.")
+    @Test
+    void resetPasswordFail_NoVerification() {
+        // given
+        String loginId = "loginId";
+        String name = "이름";
+        String phoneNumber = "010-1234-5678";
+        String oldPassword = "oldPassword";
+        Member member = new Member(
+                loginId,
+                Gender.MALE,
+                name,
+                new Phone(phoneNumber),
+                Password.from(oldPassword)
+        );
+        memberRepository.save(member);
+
+        String newPassword = "newPassword";
+        ResetPasswordRequest request = new ResetPasswordRequest(loginId, phoneNumber, newPassword);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-reset-password-fail-no-verification"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/reset-password")
+                .then()
+                .log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("사용자가 일치하지 않는 정보로 비밀번호를 재설정하면 404 not found를 반환한다.")
+    @Test
+    void resetPasswordFail_InvalidInfo() {
+        // given
+        String loginId = "loginId";
+        String name = "이름";
+        String phoneNumber = "010-1234-5678";
+        String oldPassword = "oldPassword";
+        Member member = new Member(
+                loginId,
+                Gender.MALE,
+                name,
+                new Phone(phoneNumber),
+                Password.from(oldPassword)
+        );
+        memberRepository.save(member);
+
+        phoneVerificationRepository.save(
+                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
+        );
+
+        String newPassword = "newPassword";
+        ResetPasswordRequest request = new ResetPasswordRequest("wrongLoginId", phoneNumber, newPassword);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-reset-password-fail-invalid-info"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/reset-password")
                 .then()
                 .log().all()
                 .statusCode(404);
