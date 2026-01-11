@@ -2,6 +2,7 @@ package fittoring.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
 
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
@@ -10,14 +11,19 @@ import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
+import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
+import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.domain.model.AuthProvider;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.PhoneVerification;
@@ -47,6 +53,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
+
+    @Autowired
+    private MemberOauthRepository memberOauthRepository;
 
     @DisplayName("전화번호를 인증한 사용자는 회원가입을 할 수 있다.")
     @Test
@@ -593,5 +602,94 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .then()
                 .log().all()
                 .statusCode(200);
+    }
+
+    @DisplayName("카카오 로그인 콜백 - 기존 회원이면 로그인 성공 후 메인 페이지로 리다이랙트된다.")
+    @Test
+    void kakaoCallBack_LoginSuccess() {
+        // given
+        String code = "authCode";
+        String state = jwtProvider.createStateToken();
+        String kakaoAccessToken = "kakaoAccessToken";
+        Long kakaoId = 12345L;
+
+        // 기존 회원 생성 및 연동
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        memberOauthRepository.save(new MemberOauth(member, AuthProvider.KAKAO, String.valueOf(kakaoId)));
+
+        // Mocking
+        when(oauthClientService.requestKakaoToken(code))
+                .thenReturn(
+                        new KakaoTokenResponse(
+                                kakaoAccessToken,
+                                3600,
+                                "refreshToken",
+                                3600
+                        ));
+        when(oauthClientService.requestKakaoId(kakaoAccessToken))
+                .thenReturn(new KakaoUserInfoResponse(kakaoId));
+
+        // when
+        Response response = RestAssured
+                .given(spec)
+                .redirects().follow(false)
+                .filter(documentWithTag("auth/get-kakao-callback-login"))
+                .queryParam("code", code)
+                .queryParam("state", state)
+                .log().all()
+                .when()
+                .get("/kakao/callback");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(302);
+            softly.assertThat(response.getHeader("Location")).contains("http://localhost:3000"); // client.base-url
+            softly.assertThat(cookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
+            softly.assertThat(cookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
+        });
+    }
+
+    @DisplayName("카카오 로그인 콜백 - 신규 회원이면 회원가입 페이지로 리다이랙트된다.")
+    @Test
+    void kakaoCallBack_SignUp() {
+        // given
+        String code = "authCode";
+        String state = jwtProvider.createStateToken();
+        String kakaoAccessToken = "kakaoAccessToken";
+        Long kakaoId = 67890L;
+
+        // Mocking
+        when(oauthClientService.requestKakaoToken(code))
+                .thenReturn(
+                        new KakaoTokenResponse(
+                                kakaoAccessToken,
+                                3600,
+                                "refreshToken",
+                                3600
+                        ));
+        when(oauthClientService.requestKakaoId(kakaoAccessToken))
+                .thenReturn(new KakaoUserInfoResponse(kakaoId));
+
+        // when
+        Response response = RestAssured
+                .given(spec)
+                .redirects().follow(false)
+                .filter(documentWithTag("auth/get-kakao-callback-signup"))
+                .queryParam("code", code)
+                .queryParam("state", state)
+                .log().all()
+                .when()
+                .get("/kakao/callback");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(302);
+            softly.assertThat(response.getHeader("Location")).contains("/identity-verification");
+            softly.assertThat(cookies).anyMatch(cookie -> cookie.startsWith("oauthSignUpToken="));
+        });
     }
 }
