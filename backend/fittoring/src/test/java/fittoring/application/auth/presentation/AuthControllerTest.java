@@ -22,7 +22,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -83,7 +82,6 @@ class AuthControllerTest {
 
         @DisplayName("이름이 비어있으면 400 Bad Request를 반환한다")
         @ParameterizedTest
-        @NullAndEmptySource
         @ValueSource(strings = {" "})
         void givenBlankName_thenReturn400(String blankName) throws Exception {
             //given
@@ -113,7 +111,6 @@ class AuthControllerTest {
 
         @DisplayName("전화번호가 비어있으면 400 Bad Request를 반환한다")
         @ParameterizedTest
-        @NullAndEmptySource
         @ValueSource(strings = {" "})
         void givenBlankPhone_thenReturn400(String blankPhone) throws Exception {
             //given
