@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.equalTo;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ResetPasswordRequest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
@@ -15,6 +16,7 @@ import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLogi
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
+import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.JwtProvider;
@@ -51,6 +53,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
+
+    @Autowired
+    private MemberOauthRepository memberOauthRepository;
 
     @DisplayName("전화번호를 인증한 사용자는 회원가입을 할 수 있다.")
     @Test
@@ -796,5 +801,81 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .header("Location", containsString("client_id="))
                 .header("Location", containsString("redirect_uri="))
                 .header("Location", containsString("response_type=code"));
+    }
+
+    @DisplayName("OAuth 회원가입을 성공하면 201 Created와 토큰을 반환한다.")
+    @Test
+    void oauthSignUp() {
+        // given
+        String oauthId = "123456789";
+        String oauthSignUpToken = jwtProvider.createOauthSignUpToken(oauthId);
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, "010-1234-5678");
+
+        // when
+        Response response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-oauth-signup-success"))
+                .cookie("oauthSignUpToken", oauthSignUpToken)
+                .log().all().contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/oauth-signup");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(201);
+            softly.assertThat(cookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
+            softly.assertThat(cookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
+        });
+    }
+
+    @DisplayName("OAuth 회원가입 시 유효하지 않은 토큰이면 401 Unauthorized를 반환한다.")
+    @Test
+    void oauthSignUpFail_InvalidToken() {
+        // given
+        String invalidToken = "invalidToken";
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, "010-1234-5678");
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-oauth-signup-fail-invalid-token"))
+                .cookie("oauthSignUpToken", invalidToken)
+                .log().all().contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/oauth-signup")
+                .then()
+                .log().all()
+                .statusCode(401);
+    }
+
+    @DisplayName("OAuth 회원가입 시 유효하지 않은 정보가 포함되어 있으면 400 Bad Request를 반환한다.")
+    @Test
+    void oauthSignUpFail_InvalidInput() {
+        // given
+        String oauthId = "123456789";
+        String oauthSignUpToken = jwtProvider.createOauthSignUpToken(oauthId);
+        OauthSignUpRequest request = new OauthSignUpRequest("", null, "invalid-phone");
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-oauth-signup-fail-invalid-input"))
+                .cookie("oauthSignUpToken", oauthSignUpToken)
+                .log().all().contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/oauth-signup")
+                .then()
+                .log().all()
+                .statusCode(400);
     }
 }
