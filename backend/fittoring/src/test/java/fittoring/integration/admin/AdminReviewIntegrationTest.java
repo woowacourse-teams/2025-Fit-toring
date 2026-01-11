@@ -102,7 +102,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
                     .cookie("accessToken", userAccessToken)
                     .filter(documentWithTag("admin/reviews/get-reviews-forbidden"))
                     .when()
-                    .get("/admin/mentorings/" + savedMentoring.getId() + "/reviews")
+                    .get("/admin/mentorings/{mentoringId}/reviews", savedMentoring.getId())
                     .then()
                     .log().all()
                     .statusCode(403);
@@ -121,7 +121,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
                     .cookie("accessToken", adminAccessToken)
                     .filter(documentWithTag("admin/reviews/get-reviews-not-found"))
                     .when()
-                    .get("/admin/mentorings/" + invalidMentoringId + "/reviews")
+                    .get("/admin/mentorings/{mentoringId}/reviews", invalidMentoringId)
                     .then()
                     .log().all()
                     .statusCode(404);
@@ -157,7 +157,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
                     .cookie("accessToken", adminAccessToken)
                     .filter(documentWithTag("admin/reviews/get-reviews-success"))
                     .when()
-                    .get("/admin/mentorings/" + savedMentoring.getId() + "/reviews")
+                    .get("/admin/mentorings/{mentoringId}/reviews", savedMentoring.getId())
                     .then()
                     .log().all()
                     .statusCode(200)

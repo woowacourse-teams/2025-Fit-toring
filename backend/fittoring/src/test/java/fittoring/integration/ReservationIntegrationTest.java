@@ -114,7 +114,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .body(request)
                 .when()
-                .post("/mentorings/" + mentoringId + "/reservation")
+                .post("/mentorings/{mentoringId}/reservation", mentoringId)
                 .then().log().all()
                 .statusCode(201)
                 .extract()
@@ -165,7 +165,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", mentorAccessToken)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/reservation")
+                .post("/mentorings/{mentoringId}/reservation", mentoring.getId())
                 .then()
                 .statusCode(400);
     }
@@ -200,7 +200,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .body(request)
                 .when()
-                .post("/mentorings/" + invalidMentoringId + "/reservation");
+                .post("/mentorings/{mentoringId}/reservation", invalidMentoringId);
 
         //then
         assertThat(response.statusCode()).isEqualTo(404);
@@ -554,7 +554,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .patch("/reservations/" + savedReservation.getId() + "/approve")
+                .patch("/reservations/{reservationId}/approve", savedReservation.getId())
                 .then().log().all()
                 .statusCode(200);
 
@@ -616,7 +616,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .patch("/reservations/" + savedReservation.getId() + "/reject")
+                .patch("/reservations/{reservationId}/reject", savedReservation.getId())
                 .then().log().all()
                 .statusCode(200);
 
@@ -671,7 +671,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .patch("/reservations/" + savedReservation.getId() + "/approve");
+                .patch("/reservations/{reservationId}/approve", savedReservation.getId());
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
@@ -719,7 +719,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .patch("/reservations/" + savedReservation.getId() + "/reject");
+                .patch("/reservations/{reservationId}/reject", savedReservation.getId());
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
@@ -751,7 +751,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .patch("/reservations/" + savedReservation.getId() + "/complete")
+                .patch("/reservations/{reservationId}/complete", savedReservation.getId())
                 .then().log().all()
                 .statusCode(200);
 
@@ -790,7 +790,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .patch("/reservations/" + savedReservation.getId() + "/complete");
+                .patch("/reservations/{reservationId}/complete", savedReservation.getId());
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
@@ -823,7 +823,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .patch("/reservations/" + savedReservation.getId() + "/complete")
+                .patch("/reservations/{reservationId}/complete", savedReservation.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -870,7 +870,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .get("/reservations/" + savedReservation.getId() + "/phone")
+                .get("/reservations/{reservationId}/phone", savedReservation.getId())
                 .then().log().all()
                 .statusCode(200)
                 .extract()

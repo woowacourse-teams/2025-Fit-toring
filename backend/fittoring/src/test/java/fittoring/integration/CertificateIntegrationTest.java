@@ -68,7 +68,7 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .delete("/certificates/" + certificate.getId())
+                .delete("/certificates/{certificateId}", certificate.getId())
                 .then().log().all()
                 .statusCode(204);
 
@@ -117,7 +117,7 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .delete("/certificates/" + certificate.getId())
+                .delete("/certificates/{certificateId}", certificate.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -144,7 +144,7 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .delete("/certificates/" + invalidCertificateId)
+                .delete("/certificates/{certificateId}", invalidCertificateId)
                 .then().log().all()
                 .statusCode(404);
     }

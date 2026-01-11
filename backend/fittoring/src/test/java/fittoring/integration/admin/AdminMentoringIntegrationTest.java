@@ -157,7 +157,7 @@ class AdminMentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .filter(documentWithTag("admin/mentorings/delete-mentoring-success"))
                 .when()
-                .delete("/admin/mentorings/" + mentoring.getId())
+                .delete("/admin/mentorings/{mentoringId}", mentoring.getId())
                 .then().log().all()
                 .statusCode(204);
 
@@ -214,7 +214,7 @@ class AdminMentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .filter(documentWithTag("admin/mentorings/delete-mentoring-forbidden"))
                 .when()
-                .delete("/admin/mentorings/1")
+                .delete("/admin/mentorings/{mentoringId}", 1)
                 .then().log().all()
                 .statusCode(403);
     }

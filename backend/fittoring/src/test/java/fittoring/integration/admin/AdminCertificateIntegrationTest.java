@@ -146,7 +146,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
-                    .get("/admin/certificates/" + certificate.getId())
+                    .get("/admin/certificates/{certificateId}", certificate.getId())
                     .then().log().all()
                     .statusCode(200);
         }
@@ -183,7 +183,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
-                    .get("/admin/certificates/" + certificate.getId())
+                    .get("/admin/certificates/{certificateId}", certificate.getId())
                     .then().log().all()
                     .statusCode(403);
         }
@@ -225,7 +225,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
-                    .post("/admin/certificates/" + certificate.getId() + "/approve")
+                    .post("/admin/certificates/{certificateId}/approve", certificate.getId())
                     .then().log().all()
                     .statusCode(204);
         }
@@ -262,7 +262,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
-                    .post("/admin/certificates/" + certificate.getId() + "/approve")
+                    .post("/admin/certificates/{certificateId}/approve", certificate.getId())
                     .then().log().all()
                     .statusCode(403);
         }
@@ -304,7 +304,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
-                    .post("/admin/certificates/" + certificate.getId() + "/reject")
+                    .post("/admin/certificates/{certificateId}/reject", certificate.getId())
                     .then().log().all()
                     .statusCode(204);
         }
@@ -341,7 +341,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
-                    .post("/admin/certificates/" + certificate.getId() + "/reject")
+                    .post("/admin/certificates/{certificateId}/reject", certificate.getId())
                     .then().log().all()
                     .statusCode(403);
         }

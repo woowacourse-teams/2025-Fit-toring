@@ -157,7 +157,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessTokenWithUnexistMemberId)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/mentorings/{mentoringId}/review", mentoring.getId())
                 .then().log().all()
                 .statusCode(404);
     }
@@ -223,7 +223,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessTokenWithAnotherMember)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/mentorings/{mentoringId}/review", mentoring.getId())
                 .then().log().all()
                 .statusCode(404);
     }
@@ -292,7 +292,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/mentorings/{mentoringId}/review", mentoring.getId())
                 .then().log().all()
                 .statusCode(404);
     }
@@ -502,7 +502,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .get("/mentorings/" + mentoring.getId() + "/reviews")
+                .get("/mentorings/{mentoringId}/reviews", mentoring.getId())
                 .then().log().all()
                 .statusCode(200)
                 .body("", hasSize(2));
@@ -563,7 +563,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -623,7 +623,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -684,7 +684,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -748,7 +748,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -800,7 +800,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
-                .delete("/reviews/" + review.getId())
+                .delete("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(204);
     }
@@ -826,7 +826,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
-                .delete("/reviews/999")
+                .delete("/reviews/{reviewId}", 999)
                 .then().log().all()
                 .statusCode(404);
     }
@@ -885,7 +885,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .when()
-                .delete("/reviews/" + review.getId())
+                .delete("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(403);
     }

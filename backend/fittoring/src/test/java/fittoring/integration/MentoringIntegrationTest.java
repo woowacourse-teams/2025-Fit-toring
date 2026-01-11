@@ -230,7 +230,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
                 .when()
-                .put("/mentorings/" + mentoring.getId())
+                .put("/mentorings/{mentoringId}", mentoring.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -274,7 +274,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
                 .when()
-                .put("/mentorings/999")
+                .put("/mentorings/{mentoringId}", 999)
                 .then().log().all()
                 .statusCode(404);
     }
@@ -333,7 +333,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
                 .when()
-                .put("/mentorings/" + mentoring.getId())
+                .put("/mentorings/{mentoringId}", mentoring.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -411,7 +411,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                     .queryParam("categoryTitle1", savedCategory.getTitle())
                     .queryParam("categoryTitle2", savedCategory2.getTitle())
                     .when()
-                    .get("/mentorings/" + mentoringId)
+                    .get("/mentorings/{mentoringId}", mentoringId)
                     .then().log().all()
                     .statusCode(200)
                     .extract()
@@ -605,7 +605,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                     .queryParam("categoryTitle1", savedCategory.getTitle())
                     .queryParam("categoryTitle2", savedCategory.getTitle())
                     .when()
-                    .get("/mentorings/" + invalidId);
+                    .get("/mentorings/{mentoringId}", invalidId);
 
             //then
             String responseMessage = response.jsonPath().getString("message");
@@ -1580,6 +1580,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                     .statusCode(200)
                     .extract()
                     .as(MentoringSummaryPaginationResponse.class);
+
             //then
             SoftAssertions.assertSoftly(softAssertions -> {
                 assertThat(firstResponse.mentoringSummaryResponses()).hasSize(10);   // 카테고리 1, 2번 동시 보유 조건
