@@ -150,7 +150,9 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-reviews-fail-member-not-found"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessTokenWithUnexistMemberId)
                 .body(requestBody)
@@ -269,7 +271,9 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 content
         );
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-reviews-success-first"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -552,7 +556,9 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/patch-reviews-id-success-rating"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
@@ -610,7 +616,10 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/patch-reviews-id-success-content"))
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
@@ -811,7 +820,10 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/delete-reviews-id-fail-not-found"))
+                .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
                 .delete("/reviews/999")
