@@ -1,5 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+
+import { apiClient } from '../common/apis/apiClient';
+import { API_ENDPOINTS } from '../common/constants/apiEndpoints';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyCrUhONRlAeig6WSRTrvwZBPYjIeTiC5sA',
   authDomain: 'fittoring-dev.firebaseapp.com',
@@ -34,4 +38,20 @@ export async function fetchFcmToken() {
   } else {
     return null;
   }
+}
+
+export async function registerFcmTokenToServer({
+  token,
+  memberId,
+}: {
+  token: string;
+  memberId: number;
+}) {
+  await apiClient.post({
+    endpoint: API_ENDPOINTS.FCM_TOKENS,
+    body: {
+      pushToken: token,
+      memberId,
+    },
+  });
 }
