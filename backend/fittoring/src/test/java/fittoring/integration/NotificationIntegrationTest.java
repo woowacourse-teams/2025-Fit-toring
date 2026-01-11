@@ -34,7 +34,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/post-upsert-fcm-token-success-1"))
+                .filter(documentWithTag("notification/post-upsert-fcm-token-success-1"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -59,6 +59,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
+                .filter(documentWithTag("notification/post-upsert-fcm-token-success-2"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(originalRequest)
@@ -70,6 +71,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
+                .filter(documentWithTag("notification/post-upsert-fcm-token-success-3"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(newRequest)
@@ -92,7 +94,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/post-upsert-fcm-token-success-1"))
+                .filter(documentWithTag("notification/post-upsert-fcm-token-fail-not-found"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
