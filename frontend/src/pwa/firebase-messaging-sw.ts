@@ -23,3 +23,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const messaging = getMessaging(app);
+
+onBackgroundMessage(messaging, (payload) => {
+  const iconPath = `${self.location.origin}/fittoring-icon-192.png`;
+
+  const notificationTitle = payload.notification?.title || '제목 없음';
+  const notificationOptions = {
+    body: payload.notification?.body || '내용 없음',
+    icon: iconPath,
+    badge: iconPath,
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
