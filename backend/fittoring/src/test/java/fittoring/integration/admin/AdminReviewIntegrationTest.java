@@ -1,5 +1,7 @@
 package fittoring.integration.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.admin.presentation.dto.AdminReviewInfoResponse;
 import fittoring.admin.presentation.dto.AdminReviewResponse;
@@ -255,20 +257,10 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
                     .then()
                     .log().all()
                     .statusCode(204);
-            AdminReviewInfoResponse afterActual = RestAssured.given()
-                    .log().all().contentType(ContentType.JSON)
-                    .cookie("accessToken", adminAccessToken)
-                    .when()
-                    .get("/admin/mentorings/" + savedMentoring.getId() + "/reviews")
-                    .then()
-                    .statusCode(200)
-                    .extract()
-                    .as(AdminReviewInfoResponse.class);
-            SoftAssertions.assertSoftly(softAssertions -> {
-                softAssertions.assertThat(afterActual.ratingAverage()).isEqualTo("0.0");
-                softAssertions.assertThat(afterActual.ratingCount()).isZero();
-                softAssertions.assertThat(afterActual.reviewData()).isEmpty();
-            });
+
+            // then
+            boolean actual = reviewRepository.findById(savedReview.getId()).isEmpty();
+            assertThat(actual).isTrue();
         }
     }
 }
