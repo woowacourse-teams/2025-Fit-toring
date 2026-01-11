@@ -83,7 +83,6 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
     @DisplayName("관리자 리뷰 목록 조회")
     @Nested
     class ReviewsForAdmin {
-
         @DisplayName("관리자가 아닌 사용자가 리뷰 목록 조회롤 요청하면 403을 반환한다.")
         @Test
         void returnForbiddenReview() {
@@ -98,9 +97,10 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
 
             // when
             // then
-            RestAssured.given()
+            RestAssured.given(spec)
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
+                    .filter(documentWithTag("admin/reviews/get-reviews-forbidden"))
                     .when()
                     .get("/admin/mentorings/" + savedMentoring.getId() + "/reviews")
                     .then()
@@ -112,13 +112,16 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
         @Test
         void returnNotFoundReviewWithoutMentoring() {
             // given
+            long invalidMentoringId = 99L;
+
             // when
             // then
-            RestAssured.given()
+            RestAssured.given(spec)
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
+                    .filter(documentWithTag("admin/reviews/get-reviews-not-found"))
                     .when()
-                    .get("/admin/mentorings/1/reviews")
+                    .get("/admin/mentorings/" + invalidMentoringId + "/reviews")
                     .then()
                     .log().all()
                     .statusCode(404);
@@ -148,19 +151,22 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
             mentoringStatisticsRepository.updateReviewStatisticsPlus(savedMentoring.getId(), 5);
 
             // when
-            // then
-            var actual = RestAssured.given()
+            AdminReviewInfoResponse actual = RestAssured
+                    .given(spec)
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
+                    .filter(documentWithTag("admin/reviews/get-reviews-success"))
                     .when()
                     .get("/admin/mentorings/" + savedMentoring.getId() + "/reviews")
                     .then()
                     .log().all()
                     .statusCode(200)
                     .extract()
-                    .as(new TypeRef<AdminReviewInfoResponse>() {
+                    .as(new TypeRef<>() {
                     });
-            var expected = new AdminReviewInfoResponse(
+
+            // then
+            AdminReviewInfoResponse expected = new AdminReviewInfoResponse(
                     String.format("%.1f", savedReview.getRating() + 0.0),
                     1,
                     List.of(new AdminReviewResponse(
@@ -171,6 +177,7 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
                             savedReview.getContent(),
                             savedReview.getCreatedAt().truncatedTo(ChronoUnit.SECONDS)
                     )));
+
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(actual.ratingAverage())
                         .isEqualTo(expected.ratingAverage());
@@ -193,15 +200,17 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
         @Test
         void failReviewDeleteWithoutAdmin() {
             // given
+            long reviewId = 1L;
             // when
             // then
-            RestAssured.given()
+            RestAssured.given(spec)
                     .log()
                     .all()
                     .contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
+                    .filter(documentWithTag("admin/reviews/delete-review-forbidden"))
                     .when()
-                    .delete("/admin/reviews/1")
+                    .delete("/admin/reviews/{reviewId}", reviewId)
                     .then()
                     .log()
                     .all()
@@ -212,13 +221,16 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
         @Test
         void failReviewDeleteWithoutReview() {
             // given
+            long invalidReviewId = 99L;
+
             // when
             // then
-            RestAssured.given()
+            RestAssured.given(spec)
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
+                    .filter(documentWithTag("admin/reviews/delete-review-not-found"))
                     .when()
-                    .delete("/admin/reviews/1")
+                    .delete("/admin/reviews/{reviewId}", invalidReviewId)
                     .then()
                     .log().all()
                     .statusCode(404);
@@ -248,12 +260,12 @@ class AdminReviewIntegrationTest extends AbstractApiDocumentationTest {
             mentoringStatisticsRepository.updateReviewStatisticsPlus(savedMentoring.getId(), 5);
 
             // when
-            // then
-            RestAssured.given()
+            RestAssured.given(spec)
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
+                    .filter(documentWithTag("admin/reviews/delete-review-success"))
                     .when()
-                    .delete("/admin/reviews/" + savedReview.getId())
+                    .delete("/admin/reviews/{reviewId}", savedReview.getId())
                     .then()
                     .log().all()
                     .statusCode(204);
