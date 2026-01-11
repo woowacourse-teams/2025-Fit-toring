@@ -12,3 +12,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const messaging = getMessaging(app);
+
+export async function requestPermissionToUser() {
+  const permission = await Notification.requestPermission();
+
+  if (permission === 'granted') {
+    return true;
+  } else if (permission === 'denied') {
+    return false;
+  }
+}
