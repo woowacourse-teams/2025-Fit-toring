@@ -23,4 +23,5 @@ export const API_ENDPOINTS = {
   REQUEST_PRESIGNED_URL: '/images/presigned',
   KAKAO_LOGIN: '/kakao/callback',
   IDENTITY_VERIFICATION: '/oauth-signup',
+  FCM_TOKENS: '/notification/tokens',
 } as const;
