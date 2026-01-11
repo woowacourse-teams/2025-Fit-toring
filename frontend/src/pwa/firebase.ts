@@ -22,3 +22,16 @@ export async function requestPermissionToUser() {
     return false;
   }
 }
+
+export async function fetchFcmToken() {
+  const currentToken = await getToken(messaging, {
+    vapidKey:
+      'BLkcntwvB-0yrGk9KF2Of72t7omeI1a8E5pL5KSxroG7yhSGE59JvUhMVZ0qZ3750u1P5cvUnSpg_TfKhbFcaRk',
+  });
+
+  if (currentToken) {
+    return currentToken;
+  } else {
+    return null;
+  }
+}
