@@ -7,10 +7,12 @@ import static org.mockito.BDDMockito.given;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
 import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
 import fittoring.application.mentoring.presentation.dto.response.CertificateSpecAndImageResponse;
 import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
@@ -85,6 +87,79 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @DisplayName("멘토링 등록에 성공하면 201 Created를 반환한다")
+    @Test
+    void registerMentoring() throws IOException {
+        // given
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        categoryRepository.save(new Category("category1"));
+
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
+                1000,
+                List.of("category1"),
+                "멘토링 소개",
+                "profileImageUrl",
+                3,
+                "한 줄 소개",
+                List.of(new CertificateInfoRequest(CertificateType.LICENSE, "자격증", "certificateImageUrl"))
+        );
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
+
+        given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                .willReturn(true);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/register-mentoring-success"))
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(requestBody))
+                .when()
+                .post("/mentorings")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("이미 멘토링을 등록한 멘토가 멘토링을 등록하려고 하면 400 Bad Request를 반환한다")
+    @Test
+    void registerMentoringFail() throws IOException {
+        // given
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        categoryRepository.save(new Category("category1"));
+
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
+                1000,
+                List.of("category1"),
+                "멘토링 소개",
+                "profileImageUrl",
+                3,
+                "한 줄 소개",
+                List.of(new CertificateInfoRequest(CertificateType.LICENSE, "자격증", "certificateImageUrl"))
+        );
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
+
+        given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                .willReturn(true);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/register-mentoring-fail-duplicate"))
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(requestBody))
+                .when()
+                .post("/mentorings")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
     @Test
     void modifyMentoring() throws IOException {
@@ -148,8 +223,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
                 .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/modift-mentoring-success"))
                 .cookie("accessToken", accessToken)
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
@@ -191,8 +267,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
                 .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/modift-mentoring-fail-not-found"))
                 .cookie("accessToken", accessToken)
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
@@ -249,8 +326,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
                 .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/modift-mentoring-fail-forbidden"))
                 .cookie("accessToken", accessToken)
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
@@ -326,7 +404,8 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             //when
             MentoringResponse response = RestAssured
-                    .given()
+                    .given(spec)
+                    .filter(documentWithTag("mentoring/get-mentoring-success"))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
