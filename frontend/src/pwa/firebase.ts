@@ -55,3 +55,19 @@ export async function registerFcmTokenToServer({
     },
   });
 }
+
+export function setupForegroundMessageListener() {
+  onMessage(messaging, (payload) => {
+    if (payload.notification && Notification.permission === 'granted') {
+      const iconPath = '/fittoring-icon-192.png';
+      const notificationTitle = payload.notification.title || '제목 없음';
+      const notificationOptions = {
+        body: payload.notification.body || '내용 없음',
+        icon: iconPath,
+        badge: iconPath,
+      };
+
+      new Notification(notificationTitle, notificationOptions);
+    }
+  });
+}
