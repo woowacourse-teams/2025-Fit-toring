@@ -1,5 +1,16 @@
+/// <reference lib="WebWorker" />
 import { initializeApp } from 'firebase/app';
 import { onBackgroundMessage, getMessaging } from 'firebase/messaging/sw';
+import { clientsClaim, skipWaiting } from 'workbox-core';
+import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
+
+declare let self: ServiceWorkerGlobalScope;
+
+clientsClaim();
+skipWaiting();
+cleanupOutdatedCaches();
+precacheAndRoute(self.__WB_MANIFEST);
+
 const firebaseConfig = {
   apiKey: 'AIzaSyCrUhONRlAeig6WSRTrvwZBPYjIeTiC5sA',
   authDomain: 'fittoring-dev.firebaseapp.com',
