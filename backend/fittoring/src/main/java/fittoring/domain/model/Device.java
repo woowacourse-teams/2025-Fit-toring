@@ -34,7 +34,7 @@ public class Device {
     private Member member;
 
     @Getter
-    @Column(nullable = false)
+    @Column(name = "push_token", nullable = false)
     private String pushToken;
 
     @Getter

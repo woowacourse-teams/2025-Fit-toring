@@ -8,6 +8,8 @@ import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.presentation.dto.request.RegisterDeviceRequest;
+import fittoring.application.notification.repository.DeviceRepository;
+import fittoring.domain.model.Device;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import io.restassured.RestAssured;
@@ -20,6 +22,9 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     @Autowired
     private JwtProvider jwtProvider;
@@ -54,20 +59,12 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String originalToken = "testpushtokentestpushtokentestpushtoken";
         String newToken = "newtestpushtokennewtestpushtokennewtest";
-        RegisterDeviceRequest originalRequest = new RegisterDeviceRequest(member.getId(), originalToken);
         RegisterDeviceRequest newRequest = new RegisterDeviceRequest(member.getId(), newToken);
 
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .body(originalRequest)
-                .when()
-                .post("/notification/tokens")
-                .then().log().all()
-                .statusCode(200);
+        deviceRepository.save(new Device(member, originalToken));
 
+        // when
+        // then
         RestAssured
                 .given(spec)
                 .accept("application/json")
@@ -89,6 +86,8 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         String token = "testpushtokentestpushtokentestpushtoken";
         RegisterDeviceRequest request = new RegisterDeviceRequest(invalidMemberId, token);
 
+        // when
+        // then
         RestAssured
                 .given(spec)
                 .accept("application/json")
@@ -110,18 +109,10 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String pushToken = "testpushtokentestpushtokentestpushtoken";
         RegisterDeviceRequest request = new RegisterDeviceRequest(member.getId(), pushToken);
+        deviceRepository.save(new Device(member, pushToken));
 
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .body(request)
-                .when()
-                .post("/notification/tokens")
-                .then().log().all()
-                .statusCode(200);
-
+        // when
+        // then
         RestAssured
                 .given(spec)
                 .accept("application/json")
