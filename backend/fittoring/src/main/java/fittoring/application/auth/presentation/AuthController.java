@@ -210,7 +210,7 @@ public class AuthController {
                 .body(response);
     }
 
-    @GetMapping("/login-id")
+    @PostMapping("/login-id")
     public ResponseEntity<LoginIdResponse> findLoginId(@RequestBody @Valid FindLoginIdRequest request) {
         String loginId = authService.findLoginId(request.name(), request.phoneNumber());
         return ResponseEntity.status(HttpStatus.OK)

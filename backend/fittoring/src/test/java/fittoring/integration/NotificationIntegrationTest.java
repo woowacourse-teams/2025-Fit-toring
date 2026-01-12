@@ -68,6 +68,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
+                .filter(documentWithTag("notification/post-register-device-success-multiple"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(newRequest)
@@ -91,7 +92,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("notification/post-register-device-fail-1"))
+                .filter(documentWithTag("notification/post-register-device-fail-not-found-user"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -116,6 +117,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
+                .filter(documentWithTag("notification/post-upsert-register-device-fail-duplicate-device"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)

@@ -4,6 +4,7 @@ import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
+import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
@@ -11,6 +12,7 @@ import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.assertj.core.api.SoftAssertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +62,9 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("member/get-members-me-success-mentor"))
                 .cookie("accessToken", accessToken)
                 .log().all().then()
                 .when()
@@ -223,7 +227,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .filter(documentWithTag("member/patch-memberInfo-success-optional"))
+                .filter(documentWithTag("member/patch-memberInfo-fail-duplicated-phoneNumber"))
                 .log().all()
                 .body(request)
                 .when()
@@ -255,7 +259,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .filter(documentWithTag("member/patch-memberInfo-success-optional"))
+                .filter(documentWithTag("member/patch-memberInfo-fail-empty-request"))
                 .log().all()
                 .body(request)
                 .when()
@@ -263,5 +267,34 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .then()
                 .log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("회원은 자신의 요약 정보를 조회할 수 있다.")
+    @Test
+    void getMyInfoSummary() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+
+        // when
+        MyInfoSummaryResponse actual = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("member/get-members-summary-success"))
+                .cookie("accessToken", accessToken)
+                .log().all()
+                .when()
+                .get("/members/summary")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .as(MyInfoSummaryResponse.class);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual.name()).isEqualTo(member.getName());
+            softly.assertThat(actual.phoneNumber()).isEqualTo(member.getPhoneNumber());
+        });
     }
 }

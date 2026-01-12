@@ -1,11 +1,16 @@
 package fittoring.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
+import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
+import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
+import fittoring.application.auth.presentation.dto.request.ResetPasswordRequest;
 import fittoring.application.auth.presentation.dto.request.SignInRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
@@ -13,6 +18,7 @@ import fittoring.application.auth.presentation.dto.request.VerificationCodeReque
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
 import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
 import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
+import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
 import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
@@ -157,7 +163,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
         //when
         Response response = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-login-invalid-loginId"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -400,7 +408,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         //given
         //when
         Response reissueResponse = RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-reissue-no-token"))
                 .log().all()
                 .when()
                 .post("/reissue");
@@ -514,7 +524,9 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
         // when
         // then
-        RestAssured.given()
+        RestAssured.given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-auth-code-invalid-phoneNumber"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -602,6 +614,278 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .then()
                 .log().all()
                 .statusCode(200);
+    }
+
+    @DisplayName("사용자가 이름과 전화번호로 아이디를 찾으면 200 OK를 반환한다.")
+    @Test
+    void findLoginId() {
+        // given
+        String loginId = "loginId";
+        String name = "이름";
+        String phoneNumber = "010-1234-5678";
+        Member member = new Member(
+                loginId,
+                Gender.MALE,
+                name,
+                new Phone(phoneNumber),
+                Password.from("password")
+        );
+        memberRepository.save(member);
+
+        FindLoginIdRequest request = new FindLoginIdRequest(name, phoneNumber);
+
+        // when
+        LoginIdResponse actual = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/get-login-id-success"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/login-id")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .as(LoginIdResponse.class);
+
+        // then
+        assertThat(actual.loginId()).isEqualTo(loginId);
+    }
+
+    @DisplayName("사용자가 존재하지 않는 정보로 아이디를 찾으면 404 Not Found를 반환한다.")
+    @Test
+    void findLoginIdFail() {
+        // given
+        FindLoginIdRequest request = new FindLoginIdRequest("없는이름", "010-0000-0000");
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/get-login-id-fail"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/login-id")
+                .then()
+                .log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("사용자가 아이디와 전화번호로 비밀번호를 재설정하면 204 No Content를 반환한다.")
+    @Test
+    void resetPassword() {
+        // given
+        String loginId = "loginId";
+        String name = "이름";
+        String phoneNumber = "010-1234-5678";
+        String oldPassword = "oldPassword";
+        Member member = new Member(
+                loginId,
+                Gender.MALE,
+                name,
+                new Phone(phoneNumber),
+                Password.from(oldPassword)
+        );
+        memberRepository.save(member);
+
+        phoneVerificationRepository.save(
+                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
+        );
+
+        String newPassword = "newPassword";
+        ResetPasswordRequest request = new ResetPasswordRequest(loginId, phoneNumber, newPassword);
+
+        // when
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-reset-password-success"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/reset-password")
+                .then()
+                .log().all()
+                .statusCode(204);
+
+        // then
+        Member updatedMember = memberRepository.findByLoginId(loginId).orElseThrow();
+        assertThatCode(() -> updatedMember.getPassword().validateMatches(newPassword))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("사용자가 전화번호 인증 없이 비밀번호를 재설정하면 400 bad request를 반환한다.")
+    @Test
+    void resetPasswordFail_NoVerification() {
+        // given
+        String loginId = "loginId";
+        String name = "이름";
+        String phoneNumber = "010-1234-5678";
+        String oldPassword = "oldPassword";
+        Member member = new Member(
+                loginId,
+                Gender.MALE,
+                name,
+                new Phone(phoneNumber),
+                Password.from(oldPassword)
+        );
+        memberRepository.save(member);
+
+        String newPassword = "newPassword";
+        ResetPasswordRequest request = new ResetPasswordRequest(loginId, phoneNumber, newPassword);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-reset-password-fail-no-verification"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/reset-password")
+                .then()
+                .log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("사용자가 일치하지 않는 정보로 비밀번호를 재설정하면 404 not found를 반환한다.")
+    @Test
+    void resetPasswordFail_InvalidInfo() {
+        // given
+        String loginId = "loginId";
+        String name = "이름";
+        String phoneNumber = "010-1234-5678";
+        String oldPassword = "oldPassword";
+        Member member = new Member(
+                loginId,
+                Gender.MALE,
+                name,
+                new Phone(phoneNumber),
+                Password.from(oldPassword)
+        );
+        memberRepository.save(member);
+
+        phoneVerificationRepository.save(
+                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
+        );
+
+        String newPassword = "newPassword";
+        ResetPasswordRequest request = new ResetPasswordRequest("wrongLoginId", phoneNumber, newPassword);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-reset-password-fail-invalid-info"))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .post("/reset-password")
+                .then()
+                .log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("카카오 로그인 요청 시 카카오 인증 페이지로 리다이랙트되고, 302 Found를 반환한다.")
+    @Test
+    void redirectKakaoAuth() {
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .redirects().follow(false) // 리다이랙트 자동 이동 방지
+                .filter(documentWithTag("auth/get-kakao-login"))
+                .log().all()
+                .when()
+                .get("/kakao/login")
+                .then()
+                .log().all()
+                .statusCode(302)
+                .header("Location", containsString("https://kauth.kakao.com/oauth/authorize"))
+                .header("Location", containsString("client_id="))
+                .header("Location", containsString("redirect_uri="))
+                .header("Location", containsString("response_type=code"));
+    }
+
+    @DisplayName("OAuth 회원가입을 성공하면 201 Created와 토큰을 반환한다.")
+    @Test
+    void oauthSignUp() {
+        // given
+        String oauthId = "123456789";
+        String oauthSignUpToken = jwtProvider.createOauthSignUpToken(oauthId);
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, "010-1234-5678");
+
+        // when
+        Response response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-oauth-signup-success"))
+                .cookie("oauthSignUpToken", oauthSignUpToken)
+                .log().all().contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/oauth-signup");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(201);
+            softly.assertThat(cookies).anyMatch(cookie -> cookie.startsWith("accessToken="));
+            softly.assertThat(cookies).anyMatch(cookie -> cookie.startsWith("refreshToken="));
+        });
+    }
+
+    @DisplayName("OAuth 회원가입 시 유효하지 않은 토큰이면 401 Unauthorized를 반환한다.")
+    @Test
+    void oauthSignUpFail_InvalidToken() {
+        // given
+        String invalidToken = "invalidToken";
+        OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, "010-1234-5678");
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-oauth-signup-fail-invalid-token"))
+                .cookie("oauthSignUpToken", invalidToken)
+                .log().all().contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/oauth-signup")
+                .then()
+                .log().all()
+                .statusCode(401);
+    }
+
+    @DisplayName("OAuth 회원가입 시 유효하지 않은 정보가 포함되어 있으면 400 Bad Request를 반환한다.")
+    @Test
+    void oauthSignUpFail_InvalidInput() {
+        // given
+        String oauthId = "123456789";
+        String oauthSignUpToken = jwtProvider.createOauthSignUpToken(oauthId);
+        OauthSignUpRequest request = new OauthSignUpRequest("", null, "invalid-phone");
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-oauth-signup-fail-invalid-input"))
+                .cookie("oauthSignUpToken", oauthSignUpToken)
+                .log().all().contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/oauth-signup")
+                .then()
+                .log().all()
+                .statusCode(400);
     }
 
     @DisplayName("카카오 로그인 콜백 - 기존 회원이면 로그인 성공 후 메인 페이지로 리다이랙트된다.")

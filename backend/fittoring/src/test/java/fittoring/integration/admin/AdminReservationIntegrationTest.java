@@ -105,7 +105,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", adminAccessToken)
                 .when()
-                .get("/admin/mentorings/" + mentoring.getId() + "/reservations")
+                .get("/admin/mentorings/{mentoringId}/reservations", mentoring.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -148,7 +148,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", normalAccessToken)
                 .when()
-                .get("/admin/mentorings/" + mentoring.getId() + "/reservations")
+                .get("/admin/mentorings/{mentoringId}/reservations", mentoring.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -209,7 +209,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", adminAccessToken)
                 .body(reservationStatusUpdateRequest)
                 .when()
-                .patch("/admin/reservations/" + reservation.getId() + "/status")
+                .patch("/admin/reservations/{reservationId}/status", reservation.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -272,7 +272,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", adminAccessToken)
                 .when()
-                .delete("/admin/reservations/" + mentoring.getId())
+                .delete("/admin/reservations/{reservationId}", mentoring.getId())
                 .then().log().all()
                 .statusCode(204);
     }
