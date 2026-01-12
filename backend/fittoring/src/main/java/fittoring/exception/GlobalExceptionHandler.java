@@ -6,6 +6,7 @@ import fittoring.application.exception.CategoryNotFoundException;
 import fittoring.application.exception.CertificateNotFoundException;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.ChatRoomNotFoundException;
+import fittoring.application.exception.DuplicateDeviceException;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.exception.EmptyRequestException;
@@ -250,6 +251,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidMemberRoleException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidMemberRoleException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateDeviceException.class)
+    public ResponseEntity<ErrorResponse> handle(DuplicateDeviceException e) {
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {

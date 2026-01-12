@@ -1,14 +1,21 @@
 package fittoring.domain.model;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -22,31 +29,24 @@ public class Device {
     @Id
     private Long id;
 
+    @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
     @Getter
-    @Column(nullable = false, unique = true)
-    private String hardwareId;
-
-    @Getter
-    @Column(nullable = false)
+    @Column(name = "push_token", nullable = false)
     private String pushToken;
 
     @Getter
     @Column(nullable = false)
     private boolean isPushEnabled;
 
-    @LastModifiedDate
+    @CreatedDate
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
 
-    public Device(Member member, String hardwareId, String pushToken) {
-        this(null, member, hardwareId, pushToken, true, null);
-    }
-
-    public void updateToken(String token) {
-        this.pushToken = token;
+    public Device(Member member,String pushToken) {
+        this(null, member, pushToken, true, null);
     }
 
     public void enablePush() {

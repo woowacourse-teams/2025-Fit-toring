@@ -1,10 +1,15 @@
 package fittoring.integration;
 
+import static org.hamcrest.Matchers.equalTo;
+
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.notification.presentation.dto.request.PushTokenUpsertRequest;
+import fittoring.application.notification.presentation.dto.request.RegisterDeviceRequest;
+import fittoring.application.notification.repository.DeviceRepository;
+import fittoring.domain.model.Device;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import io.restassured.RestAssured;
@@ -19,22 +24,24 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
     private MemberRepository memberRepository;
 
     @Autowired
+    private DeviceRepository deviceRepository;
+
+    @Autowired
     private JwtProvider jwtProvider;
 
-    @DisplayName("FCM 토큰이 저장되지 않은 유저가 FCM 토큰 업서트 요청 시 200 OK를 반환한다.")
+    @DisplayName("디바이스 등록 성공 시 200 OK를 반환한다.")
     @Test
-    void upsertFcmToken1() {
+    void registerDevice1() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-        String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
-        String token = "testFcmTokentestFcmTokentestFcmToken";
-        PushTokenUpsertRequest request = new PushTokenUpsertRequest(member.getId(), hardwareId, token);
+        String token = "testpushtokentestpushtokentestpushtoken";
+        RegisterDeviceRequest request = new RegisterDeviceRequest(member.getId(), token);
 
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/post-upsert-fcm-token-success-1"))
+                .filter(documentWithTag("notification/post-register-device-success-1"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -44,29 +51,20 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
                 .statusCode(200);
     }
 
-    @DisplayName("FCM 토큰이 저장된 유저가 FCM 토큰 업서트 요청 시 FCM 토큰 업서트 요청 시 200 OK를 반환한다.")
+    @DisplayName("푸시 토큰이 다른 디바이스를 추가로 등록할 수 있다.")
     @Test
-    void upsertFcmToken2() {
+    void registerDevice2() {
         // given
         Member member = memberRepository.save(FixtureUtil.getTestMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-        String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
-        String originalToken = "testFcmTokentestFcmTokentestFcmToken";
-        String newToken = "testFcmTokentestFcmTokentestFcmToken";
-        PushTokenUpsertRequest originalRequest = new PushTokenUpsertRequest(member.getId(), hardwareId, originalToken);
-        PushTokenUpsertRequest newRequest = new PushTokenUpsertRequest(member.getId(), hardwareId, newToken);
+        String originalToken = "testpushtokentestpushtokentestpushtoken";
+        String newToken = "newtestpushtokennewtestpushtokennewtest";
+        RegisterDeviceRequest newRequest = new RegisterDeviceRequest(member.getId(), newToken);
 
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .body(originalRequest)
-                .when()
-                .post("/notification/tokens")
-                .then().log().all()
-                .statusCode(200);
+        deviceRepository.save(new Device(member, originalToken));
 
+        // when
+        // then
         RestAssured
                 .given(spec)
                 .accept("application/json")
@@ -79,20 +77,21 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
                 .statusCode(200);
     }
 
-    @DisplayName("존재하지 않는 유저가 FCM 토큰 업서트 요청 시 404 Not Found를 반환한다.")
+    @DisplayName("존재하지 않는 유저가 디바이스 등록 요청 시 404 Not Found를 반환한다.")
     @Test
-    void upsertFcmTokenFail1() {
+    void registerDeviceFail1() {
         // given
         Long invalidMemberId = 999L;
         String accessToken = jwtProvider.createAccessToken(invalidMemberId, MemberRole.MENTEE);
-        String hardwareId = "hardwareIdhardwareIdhardwareIdhardwareId";
-        String token = "testFcmTokentestFcmTokentestFcmToken";
-        PushTokenUpsertRequest request = new PushTokenUpsertRequest(invalidMemberId, hardwareId, token);
+        String token = "testpushtokentestpushtokentestpushtoken";
+        RegisterDeviceRequest request = new RegisterDeviceRequest(invalidMemberId, token);
 
+        // when
+        // then
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/post-upsert-fcm-token-success-1"))
+                .filter(documentWithTag("notification/post-register-device-fail-1"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -100,5 +99,30 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
                 .post("/notification/tokens")
                 .then().log().all()
                 .statusCode(404);
+    }
+
+    @DisplayName("이미 등록된 푸시 토큰으로 새 디바이스 등록 요청 시 400 예외가 발생한다.")
+    @Test
+    void registerDeviceFail2() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        String pushToken = "testpushtokentestpushtokentestpushtoken";
+        RegisterDeviceRequest request = new RegisterDeviceRequest(member.getId(), pushToken);
+        deviceRepository.save(new Device(member, pushToken));
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/notification/tokens")
+                .then().log().all()
+                .statusCode(409)
+                .body("message", equalTo(BusinessErrorMessage.ALREADY_REGISTERED_DEVICE.getMessage()));
     }
 }
