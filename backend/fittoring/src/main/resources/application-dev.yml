@@ -28,6 +28,7 @@ spring:
     user: ${DEV_WRITER_USER}
     password: ${DEV_WRITER_PASSWORD}
     baseline-on-migrate: true
+    out-of-order: true
 cookie:
   same-site: ${COOKIE_SAME_SITE_DEV}
 aws:

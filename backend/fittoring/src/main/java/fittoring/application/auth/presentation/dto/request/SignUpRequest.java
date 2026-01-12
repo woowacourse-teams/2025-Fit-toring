@@ -1,5 +1,6 @@
 package fittoring.application.auth.presentation.dto.request;
 
+import fittoring.application.auth.service.dto.RegisterMemberDto;
 import fittoring.domain.model.Gender;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,10 +17,12 @@ public record SignUpRequest(
         Gender gender,
         @PhoneNumber
         @NotBlank
-        String phone,
+        String phoneNumber,
         @Size(min = 5, max = 20, message = "비밀번호는 5자 이상 20자 이하로 입력해주세요.")
         @NotBlank
         String password
 ) {
-
+    public RegisterMemberDto toRegisterMemberDto() {
+        return new RegisterMemberDto(loginId, name, gender, phoneNumber, password);
+    }
 }

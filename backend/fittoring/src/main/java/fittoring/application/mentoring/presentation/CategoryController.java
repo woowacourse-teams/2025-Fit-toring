@@ -1,7 +1,7 @@
 package fittoring.application.mentoring.presentation;
 
-import fittoring.application.mentoring.service.CategoryService;
 import fittoring.application.mentoring.presentation.dto.response.CategoryResponse;
+import fittoring.application.mentoring.service.CategoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

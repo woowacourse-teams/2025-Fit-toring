@@ -84,9 +84,9 @@ class AdminMentoringServiceTest extends IntegrationTestSupport {
 
         //when
         PageResult<AdminMentoringResponse> allForAdminPaged1 = adminMentoringService.findAllForAdminPaged(
-                testAdmin.getId(), 1);
+                1, 20);
         PageResult<AdminMentoringResponse> allForAdminPaged2 = adminMentoringService.findAllForAdminPaged(
-                testAdmin.getId(), 2);
+                2, 20);
 
         //then
         SoftAssertions.assertSoftly(softly -> {

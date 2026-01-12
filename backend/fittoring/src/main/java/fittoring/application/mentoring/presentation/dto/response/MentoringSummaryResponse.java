@@ -1,8 +1,8 @@
 package fittoring.application.mentoring.presentation.dto.response;
 
+import fittoring.application.mentoring.service.dto.RatingStatsDto;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.Mentoring;
-import fittoring.application.mentoring.service.dto.RatingStatsDto;
 import java.util.List;
 
 public record MentoringSummaryResponse(
@@ -18,10 +18,10 @@ public record MentoringSummaryResponse(
 ) {
 
     public static MentoringSummaryResponse of(
-        Mentoring mentoring,
-        List<String> categories,
-        Image image,
-        RatingStatsDto ratingStatsDto
+            Mentoring mentoring,
+            List<String> categories,
+            Image image,
+            RatingStatsDto ratingStatsDto
     ) {
         if (image == null) {
             return MentoringSummaryResponse.of(mentoring, categories, ratingStatsDto);
@@ -40,9 +40,9 @@ public record MentoringSummaryResponse(
     }
 
     private static MentoringSummaryResponse of(
-        Mentoring mentoring,
-        List<String> categories,
-        RatingStatsDto ratingStatsDto
+            Mentoring mentoring,
+            List<String> categories,
+            RatingStatsDto ratingStatsDto
     ) {
         return new MentoringSummaryResponse(
                 mentoring.getId(),

@@ -1,30 +1,34 @@
 package fittoring.application.auth.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willReturn;
+
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
 import fittoring.application.auth.presentation.dto.request.SignUpRequest;
+import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MisMatchPasswordException;
-import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
+import fittoring.domain.model.password.Password;
+import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.willReturn;
 
 class AuthServiceTest extends IntegrationTestSupport {
 
@@ -35,6 +39,9 @@ class AuthServiceTest extends IntegrationTestSupport {
     private MemberRepository memberRepository;
 
     @Autowired
+    private PhoneVerificationRepository phoneVerificationRepository;
+
+    @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
     @DisplayName("회원을 저장할 때 암호화된 비밀번호가 저장된다.")
@@ -43,19 +50,23 @@ class AuthServiceTest extends IntegrationTestSupport {
         //given
         String password = "password";
 
+        String phoneNumber = "010-1234-5678";
         SignUpRequest request = new SignUpRequest(
                 "loginId",
                 "이름",
                 Gender.MALE,
-                "010-1234-5678",
+                phoneNumber,
                 password);
 
+        phoneVerificationRepository.save(FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber)));
+
         //when
-        authService.register(request);
+        authService.register(request.toRegisterMemberDto());
 
         //then
         String actual = memberRepository.findById(1L)
-                .orElseThrow(null).getPassword();
+                .orElseThrow(null)
+                .getPasswordValue();
         assertThat(actual).isNotEqualTo(password);
     }
 
@@ -102,7 +113,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         //when
         //then
         assertThatThrownBy(() -> authService.login(loginId, password))
-                .isInstanceOf(NotFoundMemberException.class);
+                .isInstanceOf(MemberNotFoundException.class);
     }
 
     @DisplayName("잘못된 비밀번호로 로그인에 실패하면 예외가 발생한다.")
@@ -153,7 +164,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     void reissue() {
         //given
         Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
-        String accessToken = jwtProvider.createAccessToken(1L);
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken savedRefreshToken = new RefreshToken(
@@ -219,7 +230,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         // given
         String phoneNumber = "010-1234-5678";
         OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, phoneNumber);
-        willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
+        willReturn(new TokenPayload(1L, "ROLE")).given(jwtProvider).extractTokenPayload(any());
 
         // when
         RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");
@@ -239,7 +250,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
 
         OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, mentee.getPhoneNumber());
-        willReturn(1L).given(jwtProvider).getSubjectFromPayloadBy(any());
+        willReturn(new TokenPayload(1L, mentee.getRole().name())).given(jwtProvider).extractTokenPayload(any());
 
         // when
         RegisterOAuthDto registerOAuthDto = authService.registerOauthMember(request, "validOauthSignUpToken");
@@ -250,5 +261,35 @@ class AuthServiceTest extends IntegrationTestSupport {
                     assertThat(memberRepository.findById(registerOAuthDto.memberId()).isPresent()).isTrue();
                 }
         );
+    }
+
+    @DisplayName("이름과 전화번호로 loginId를 찾을 수 있다.")
+    @Test
+    void findLoginId() {
+        //given
+        Member mentee = FixtureUtil.getTestMentee();
+        memberRepository.save(mentee);
+
+        //when
+        //then
+        assertThat(authService.findLoginId(mentee.getName(), mentee.getPhoneNumber()))
+                .isEqualTo(mentee.getLoginId());
+    }
+
+    @DisplayName("기존 회원 ID로 전화번호 인증 후 PW를 변경할 수 있다.")
+    @Test
+    void resetPassword() {
+        //given
+        Member mentee = FixtureUtil.getTestMentee();
+        Password before = mentee.getPassword();
+        memberRepository.save(mentee);
+        phoneVerificationRepository.save(
+                FixtureUtil.getVerifiedPhoneVerification(mentee.getPhone())
+        );
+        //when
+        Member changed = authService.resetPassword(mentee.getLoginId(), mentee.getPhoneNumber(), "after");
+
+        //then
+        assertThat(changed.getPasswordValue()).isEqualTo(Password.from("after").getValue());
     }
 }

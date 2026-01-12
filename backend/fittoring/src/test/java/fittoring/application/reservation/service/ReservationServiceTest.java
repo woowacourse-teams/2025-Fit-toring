@@ -1,5 +1,8 @@
 package fittoring.application.reservation.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import fittoring.IntegrationTestSupport;
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
@@ -19,7 +22,17 @@ import fittoring.application.reservation.presentation.dto.response.PhoneNumberRe
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.domain.model.*;
+import fittoring.domain.model.Category;
+import fittoring.domain.model.CategoryMentoring;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.MentoringStatistics;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import fittoring.domain.model.Status;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,12 +40,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.List;
 import java.util.TimeZone;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationServiceTest extends IntegrationTestSupport {
 
@@ -399,8 +408,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         );
 
         // when
-        List<ParticipatedReservationResponse> actual =
-                reservationService.findMemberReservations(mentee.getId());
+        List<ParticipatedReservationResponse> actual = reservationService.findMemberReservations(mentee.getId());
 
         // then
         assertThat(actual)
@@ -436,8 +444,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
                 new Reservation("예약 내용", originalStatus, mentoring, mentee)
         );
 
-        AdminReservationStatusUpdateDto dto =
-                new AdminReservationStatusUpdateDto(admin.getId(), reservation.getId(), newStatus);
+        AdminReservationStatusUpdateDto dto = new AdminReservationStatusUpdateDto(reservation.getId(), newStatus);
 
         // when
         reservationService.updateStatusWithAdminAuthorization(dto);
@@ -463,7 +470,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         long originalReservationCount = stats.getReservationCount();
 
         AdminReservationDeleteDto dto =
-                new AdminReservationDeleteDto(admin.getId(), reservation.getId());
+                new AdminReservationDeleteDto(reservation.getId());
 
         // when
         reservationService.deleteReservationWithAdminAuthorization(dto);
@@ -493,8 +500,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         // mentee 저장됨
 
         Long invalidReservationId = 999L;
-        AdminReservationDeleteDto dto =
-                new AdminReservationDeleteDto(admin.getId(), invalidReservationId);
+        AdminReservationDeleteDto dto = new AdminReservationDeleteDto(invalidReservationId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.deleteReservationWithAdminAuthorization(dto))

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
 import { PAGE_URL } from '../../common/constants/url';
+import useAuthCheck from '../../common/hooks/useAuthCheck';
 import { THEME } from '../../common/styles/theme';
 
 import HomeHeader from './components/HomeHeader/HomeHeader';
@@ -107,6 +108,8 @@ function Home() {
     fetchNextPage,
     hasNext,
   );
+
+  useAuthCheck();
 
   return (
     <S_Container>

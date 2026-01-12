@@ -566,22 +566,9 @@ class ReviewServiceTest extends IntegrationTestSupport {
         Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
 
         // when & then
-        assertThatThrownBy(() -> reviewService.deleteForAdmin(admin.getId(), 1L))
+        assertThatThrownBy(() -> reviewService.deleteForAdmin(1L))
                 .isInstanceOf(ReviewNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
-    }
-
-    @DisplayName("관리자 권한 없이 리뷰 삭제를 요청하면 예외가 발생한다.")
-    @Test
-    void failReviewDeleteWithoutAdmin() {
-        // given
-        Member notAdmin = memberRepository.save(FixtureUtil.getTestMentee());
-
-        // when
-        // then
-        assertThatThrownBy(() -> reviewService.deleteForAdmin(notAdmin.getId(), 1L))
-                .isInstanceOf(ForbiddenException.class)
-                .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
     @DisplayName("관리자가 존재하는 리뷰에 대해 삭제를 요청하면 정상적으로 삭제한다.")
@@ -598,7 +585,7 @@ class ReviewServiceTest extends IntegrationTestSupport {
         Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
         // when
-        reviewService.deleteForAdmin(admin.getId(), review.getId());
+        reviewService.deleteForAdmin(review.getId());
 
         // then
         assertThat(reviewRepository.findById(review.getId())).isEmpty();

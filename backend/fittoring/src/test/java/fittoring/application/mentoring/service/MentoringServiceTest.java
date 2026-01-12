@@ -25,7 +25,6 @@ import fittoring.application.mentoring.service.dto.ModifyMentoringDto;
 import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.config.auth.LoginInfo;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Certificate;
@@ -90,8 +89,6 @@ class MentoringServiceTest extends IntegrationTestSupport {
         Member admin = FixtureUtil.getTestAdmin();
         memberRepository.saveAll(List.of(mentor, admin));
 
-        LoginInfo adminLoginId = new LoginInfo(admin.getId());
-
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
         Long mentoringId = mentoring.getId();
 
@@ -122,7 +119,7 @@ class MentoringServiceTest extends IntegrationTestSupport {
                 new Certificate(CertificateType.LICENSE, "자격증1", mentoring));
 
         // when
-        mentoringService.deleteMentoringByAdmin(adminLoginId, mentoringId);
+        mentoringService.deleteMentoringByAdmin(mentoringId);
 
         // then
         Review deletedReview = reviewRepository.findDeletedById(review.getId());

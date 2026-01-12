@@ -2,6 +2,7 @@ package fittoring.config.websocket;
 
 import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.config.auth.LoginInfo;
@@ -38,9 +39,8 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
             Cookie[] cookies = httpServletRequest.getCookies();
             validateCookie(cookies);
             String token = jwtExtractor.extractTokenFromCookie(TOKEN_NAME, cookies);
-            jwtProvider.validateToken(token);
-            Long memberId = jwtProvider.getSubjectFromPayloadBy(token);
-            attributes.put(LOGIN_INFO_KEY, new LoginInfo(memberId));
+            TokenPayload payload = jwtProvider.extractTokenPayload(token);
+            attributes.put(LOGIN_INFO_KEY, new LoginInfo(payload.sub()));
         }
         return true;
     }

@@ -5,6 +5,7 @@ import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chat.service.ChatRoomService;
 import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicateReservationException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
@@ -25,7 +26,6 @@ import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
@@ -54,10 +54,22 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
+        validateNoOngoingReservation(dto);
         Reservation reservation = createReservationEntity(dto);
         Reservation savedReservation = reservationRepository.save(reservation);
         mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
         return savedReservation;
+    }
+
+    private void validateNoOngoingReservation(ReservationCreateDto dto) {
+        boolean existsOngoingReservation = reservationRepository.existsByMentoringIdAndMenteeIdAndStatusIn(
+            dto.mentoringId(),
+            dto.menteeId(),
+            List.of(Status.PENDING, Status.APPROVED)
+        );
+        if (existsOngoingReservation) {
+            throw new DuplicateReservationException(BusinessErrorMessage.DUPLICATED_RESERVATION.getMessage());
+        }
     }
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {
@@ -175,14 +187,6 @@ public class ReservationService {
                 || statusName.equals(Status.COMPLETE.name());
     }
 
-    private void checkAdminAuthority(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        if (MemberRole.isNotAdmin(member.getRole())) {
-            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-        }
-    }
-
     @Transactional
     public ReservationInfo approve(Long mentorId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
@@ -205,6 +209,14 @@ public class ReservationService {
         return ReservationInfo.from(reservation, null);
     }
 
+    @Transactional
+    public void complete(Long mentorId, Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
+
+        reservation.complete();
+    }
+
     private void validateMentorAuthority(Long mentoringMentorId, Long requestMentorId) {
         if (isNotMentoringOwner(mentoringMentorId, requestMentorId)) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
@@ -225,7 +237,6 @@ public class ReservationService {
 
     @Transactional
     public void updateStatusWithAdminAuthorization(AdminReservationStatusUpdateDto adminReservationStatusUpdateDto) {
-        checkAdminAuthority(adminReservationStatusUpdateDto.memberId());
         Reservation reservation = getReservation(adminReservationStatusUpdateDto.reservationId());
         Status status = Status.of(adminReservationStatusUpdateDto.status());
         reservation.changeStatusWithoutValidation(status);
@@ -233,7 +244,6 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationWithAdminAuthorization(AdminReservationDeleteDto adminReservationDeleteDto) {
-        checkAdminAuthority(adminReservationDeleteDto.memberId());
         Reservation reservation = getReservation(adminReservationDeleteDto.reservationId());
         reviewRepository.deleteByReservation(reservation);
         mentoringStatisticsRepository.updateReservationCountMinus(reservation.getMentoring().getId());

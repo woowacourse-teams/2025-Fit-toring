@@ -13,9 +13,9 @@ import org.springframework.web.client.RestClient;
 @Service
 public class OauthClientService {
 
-    private final RestClient restClient;
     private static final String kakaoTokenRequestUri = "https://kauth.kakao.com/oauth/token";
     private static final String kakaoUserInfoRequestUri = "https://kapi.kakao.com/v2/user/me";
+    private final RestClient restClient;
     @Value("${kakao.redirect-url}")
     private String redirectUrl;
     @Value("${kakao.client-id}")

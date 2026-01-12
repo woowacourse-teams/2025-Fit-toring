@@ -73,7 +73,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                         MemberRole.MENTOR
                 ));
 
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개"));
 
@@ -107,7 +107,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("chat_room/get-chatroom-success"))
                 .cookie("accessToken", accessToken)
                 .when()
-                .get("/chatrooms/" + chatRoom.getId())
+                .get("/chatrooms/{chatRoomId}", chatRoom.getId())
                 .then().log().all()
                 .statusCode(200)
                 .extract()
@@ -137,7 +137,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                         MemberRole.MENTOR
                 ));
 
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         Mentoring mentoring = mentoringRepository.save(new Mentoring(mentor, 1000, 3, "내용", "자기소개"));
 
@@ -167,7 +167,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("chat_room/get-chatroom-success-non-mentoring-profile-image"))
                 .cookie("accessToken", accessToken)
                 .when()
-                .get("/chatrooms/" + chatRoom.getId())
+                .get("/chatrooms/{chatRoomId}", chatRoom.getId())
                 .then().log().all()
                 .statusCode(200)
                 .extract()
@@ -218,7 +218,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content21"));
         chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content22"));
 
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         //when
         ChatMessagePaginationResponse firstResponse = RestAssured
@@ -228,7 +228,7 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .get("/chatrooms/" + chatRoom.getId() + "/messages")
+                .get("/chatrooms/{chatRoomId}/messages", chatRoom.getId())
                 .then().log().all()
                 .statusCode(200)
                 .extract()

@@ -50,11 +50,11 @@ public class MemberOauth {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public MemberOauth(Member member, AuthProvider provider, String providerMemberId){
+    public MemberOauth(Member member, AuthProvider provider, String providerMemberId) {
         this(null, member, provider, providerMemberId, false, null);
     }
 
-    public Long getMemberId(){
+    public Long getMemberId() {
         return member.getId();
     }
 }
