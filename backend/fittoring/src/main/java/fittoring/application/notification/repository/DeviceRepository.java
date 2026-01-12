@@ -10,8 +10,6 @@ import org.springframework.data.repository.ListCrudRepository;
 
 public interface DeviceRepository extends ListCrudRepository<Device, Long> {
 
-    Optional<Device> findByMemberAndPushToken(Member member, String pushToken);
-
     List<Device> findAllByMemberId(Long memberId);
 
     boolean existsByMemberAndPushToken(Member member, String pushToken);

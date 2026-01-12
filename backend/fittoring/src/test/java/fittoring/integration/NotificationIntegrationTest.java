@@ -1,5 +1,7 @@
 package fittoring.integration;
 
+import static org.hamcrest.Matchers.equalTo;
+
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
@@ -130,6 +132,6 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
                 .post("/notification/tokens")
                 .then().log().all()
                 .statusCode(409)
-                .onFailMessage(BusinessErrorMessage.ALREADY_REGISTERED_DEVICE.getMessage());
+                .body("message", equalTo(BusinessErrorMessage.ALREADY_REGISTERED_DEVICE.getMessage()));
     }
 }

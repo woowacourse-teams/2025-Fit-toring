@@ -10,6 +10,7 @@ import fittoring.domain.model.Device;
 import fittoring.domain.model.Member;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,11 @@ public class NotificationService {
         validateAlreadyRegistered(member, pushToken);
         List<Device> devices = deviceRepository.findAllByMemberId(memberId);
         validateDeviceCount(devices);
-        deviceRepository.save(new Device(member, pushToken));
+        try {
+            deviceRepository.save(new Device(member, pushToken));
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateDeviceException(BusinessErrorMessage.ALREADY_REGISTERED_DEVICE.getMessage());
+        }
     }
 
     private void validateAlreadyRegistered(Member member, String pushToken) {

@@ -74,7 +74,7 @@ class NotificationServiceTest extends IntegrationTestSupport {
 
         // when & then
         SoftAssertions.assertSoftly(softAssertions -> {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 6; i++) {
                 String pushToken = pushTokens.get(i);
                 if (i < 5) {
                     softAssertions.assertThatCode(() -> notificationService.registerDevice(member.getId(), pushToken))
