@@ -1,8 +1,7 @@
 package fittoring.application.notification.presentation.dto.request;
 
-public record PushTokenUpsertRequest(
+public record RegisterDeviceRequest(
         Long memberId,
-        String hardwareId,
         String pushToken
 ) {
 }
