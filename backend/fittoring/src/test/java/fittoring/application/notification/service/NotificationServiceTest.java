@@ -7,9 +7,12 @@ import fittoring.application.FixtureUtil;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicateDeviceException;
 import fittoring.application.exception.MemberNotFoundException;
+import fittoring.application.exception.TooManyDeviceException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.repository.DeviceRepository;
 import fittoring.domain.model.Member;
+import java.util.ArrayList;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -55,8 +58,34 @@ class NotificationServiceTest extends IntegrationTestSupport {
 
         // when & then
         Assertions.assertThatThrownBy(
-                () -> notificationService.registerDevice(member.getId(), originalToken))
+                        () -> notificationService.registerDevice(member.getId(), originalToken))
                 .isInstanceOf(DuplicateDeviceException.class);
+    }
+
+    @DisplayName("유저는 최대 5개까지 기기를 등록할 수 있다.")
+    @Test
+    void registerDevice3() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        List<String> pushTokens = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            pushTokens.add("deviceTokenValue" + i);
+        }
+
+        // when & then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            for (int i = 0; i < 5; i++) {
+                String pushToken = pushTokens.get(i);
+                if (i < 5) {
+                    softAssertions.assertThatCode(() -> notificationService.registerDevice(member.getId(), pushToken))
+                            .doesNotThrowAnyException();
+                } else {
+                    softAssertions.assertThatThrownBy(
+                                    () -> notificationService.registerDevice(member.getId(), pushToken))
+                            .isInstanceOf(TooManyDeviceException.class);
+                }
+            }
+        });
     }
 
     @DisplayName("존재하지 않는 유저가 디바이스 등록 요청 시 예외가 발생한다.")

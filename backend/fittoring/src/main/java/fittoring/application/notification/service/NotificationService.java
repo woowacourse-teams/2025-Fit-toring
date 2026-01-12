@@ -28,6 +28,8 @@ public class NotificationService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         validateAlreadyRegistered(member, pushToken);
+        List<Device> devices = deviceRepository.findAllByMemberId(memberId);
+        validateDeviceCount(devices);
         deviceRepository.save(new Device(member, pushToken));
     }
 
@@ -39,12 +41,11 @@ public class NotificationService {
 
     public void notifyNewMessage(Long memberId) {
         List<Device> devices = deviceRepository.findAllByMemberId(memberId);
-        validateDeviceCount(devices);
         notificationSender.send(devices, "핏토링", "채팅이 도착하였습니다.");
     }
 
     private void validateDeviceCount(List<Device> devices) {
-        if (devices.size() > DEVICE_LIMIT) {
+        if (devices.size() >= DEVICE_LIMIT) {
             throw new TooManyDeviceException(BusinessErrorMessage.TOO_MANY_DEVICE.getMessage());
         }
     }
