@@ -9,6 +9,7 @@ import {
 
 const useInitializeFcm = () => {
   const isInitialized = useRef(false);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const memberId = localStorage.getItem('memberId');
@@ -39,7 +40,8 @@ const useInitializeFcm = () => {
           memberId: Number(memberId),
         });
 
-        setupForegroundMessageListener();
+        unsubscribeRef.current = setupForegroundMessageListener();
+
         isInitialized.current = true;
       } catch (error) {
         console.error('FCM 초기화 중 오류 발생:', error);
@@ -47,6 +49,14 @@ const useInitializeFcm = () => {
     }
 
     initializeFcm();
+
+    return () => {
+      if (!isInitialized.current) {
+        return;
+      }
+
+      unsubscribeRef.current?.();
+    };
   }, []);
 };
 

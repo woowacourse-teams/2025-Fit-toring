@@ -57,7 +57,7 @@ export async function registerFcmTokenToServer({
 }
 
 export function setupForegroundMessageListener() {
-  onMessage(messaging, (payload) => {
+  return onMessage(messaging, (payload) => {
     if (payload.notification && Notification.permission === 'granted') {
       const iconPath = '/fittoring-icon-192.png';
       const notificationTitle = payload.notification.title || '제목 없음';
