@@ -19,6 +19,7 @@ spring:
     user: ${PROD_DATABASE_USER}
     password: ${PROD_DATABASE_PASSWORD}
     baseline-on-migrate: true
+    out-of-order: true
   cloud:
     aws:
       sqs:
