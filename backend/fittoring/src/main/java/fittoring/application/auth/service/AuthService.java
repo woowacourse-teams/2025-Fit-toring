@@ -1,8 +1,6 @@
 package fittoring.application.auth.service;
 
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
-import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
 import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
@@ -21,7 +19,6 @@ import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
-import fittoring.infrastructure.OauthClientService;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +34,6 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
-    private final OauthClientService oauthClientService;
     private final MemberOauthRepository memberOAuthRepository;
     private final PhoneVerificationService phoneVerificationService;
 
@@ -120,23 +116,18 @@ public class AuthService {
         refreshTokenRepository.deleteAllByMemberId(memberId);
     }
 
-    public LoginInfoDto kakaoLogin(String code) {
-        KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code);
-        String kakaoAccessToken = tokenResponse.access_token();
-        KakaoUserInfoResponse userInfoResponse = oauthClientService.requestKakaoId(kakaoAccessToken);
-        Long kakaoId = userInfoResponse.id();
+    @Transactional
+    public LoginInfoDto processKakaoLogin(Long kakaoId) {
         Optional<MemberOauth> memberOauth = memberOAuthRepository.findByProviderAndProviderMemberId(
                 AuthProvider.KAKAO,
                 String.valueOf(kakaoId)
         );
-        if (memberOauth.isPresent()) {
-            return allowOauthLogin(memberOauth);
-        }
-        return allowOauthRegistration(kakaoId);
+        return memberOauth.map(this::allowOauthLogin)
+                .orElseGet(() -> allowOauthRegistration(kakaoId));
     }
 
-    private LoginInfoDto allowOauthLogin(Optional<MemberOauth> memberOauth) {
-        Member member = memberOauth.get().getMember();
+    private LoginInfoDto allowOauthLogin(MemberOauth memberOauth) {
+        Member member = memberOauth.getMember();
         AuthTokenDto authTokenDto = getAuthorizedTokenResponse(member);
         return new LoginInfoDto(member.getId(), authTokenDto);
     }
