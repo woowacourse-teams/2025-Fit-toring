@@ -115,7 +115,6 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .filter(documentWithTag("mentoring/register-mentoring-success"))
                 .cookie("accessToken", accessToken)
-                .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
                 .when()
                 .post("/mentorings")
