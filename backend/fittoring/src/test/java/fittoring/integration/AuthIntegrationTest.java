@@ -648,7 +648,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(actual.loginId()).isEqualTo(loginId);
     }
 
-    @DisplayName("사용자가 존재하지 않는 정보로 아이디를 찾으면 404 Bad Request를 반환한다.")
+    @DisplayName("사용자가 존재하지 않는 정보로 아이디를 찾으면 404 Not Found를 반환한다.")
     @Test
     void findLoginIdFail() {
         // given
