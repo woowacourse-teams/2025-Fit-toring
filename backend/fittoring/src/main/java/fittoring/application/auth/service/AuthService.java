@@ -1,8 +1,6 @@
 package fittoring.application.auth.service;
 
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
-import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
 import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
@@ -21,7 +19,6 @@ import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
-import fittoring.infrastructure.OauthClientService;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +33,7 @@ public class AuthService {
     private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtExtractor jwtExtractor;
     private final JwtProvider jwtProvider;
-    private final OauthClientService oauthClientService;
     private final MemberOauthRepository memberOAuthRepository;
     private final PhoneVerificationService phoneVerificationService;
 
@@ -83,7 +78,7 @@ public class AuthService {
     }
 
     private AuthTokenDto getAuthorizedTokenResponse(Member member) {
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken saveRefreshToken = new RefreshToken(
@@ -98,7 +93,8 @@ public class AuthService {
     public AuthTokenDto reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMember().getId());
+        Member memberByRT = findRefreshToken.getMember();
+        String newAccessToken = jwtProvider.createAccessToken(memberByRT.getId(), memberByRT.getRole());
         String newRefreshToken = jwtProvider.createRefreshToken();
         findRefreshToken.update(newRefreshToken, LocalDateTime.now());
 
@@ -120,23 +116,18 @@ public class AuthService {
         refreshTokenRepository.deleteAllByMemberId(memberId);
     }
 
-    public LoginInfoDto kakaoLogin(String code) {
-        KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code);
-        String kakaoAccessToken = tokenResponse.access_token();
-        KakaoUserInfoResponse userInfoResponse = oauthClientService.requestKakaoId(kakaoAccessToken);
-        Long kakaoId = userInfoResponse.id();
+    @Transactional
+    public LoginInfoDto processKakaoLogin(Long kakaoId) {
         Optional<MemberOauth> memberOauth = memberOAuthRepository.findByProviderAndProviderMemberId(
                 AuthProvider.KAKAO,
                 String.valueOf(kakaoId)
         );
-        if (memberOauth.isPresent()) {
-            return allowOauthLogin(memberOauth);
-        }
-        return allowOauthRegistration(kakaoId);
+        return memberOauth.map(this::allowOauthLogin)
+                .orElseGet(() -> allowOauthRegistration(kakaoId));
     }
 
-    private LoginInfoDto allowOauthLogin(Optional<MemberOauth> memberOauth) {
-        Member member = memberOauth.get().getMember();
+    private LoginInfoDto allowOauthLogin(MemberOauth memberOauth) {
+        Member member = memberOauth.getMember();
         AuthTokenDto authTokenDto = getAuthorizedTokenResponse(member);
         return new LoginInfoDto(member.getId(), authTokenDto);
     }
@@ -149,7 +140,8 @@ public class AuthService {
 
     @Transactional
     public RegisterOAuthDto registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
-        String oauthId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
+        TokenPayload payload = jwtProvider.extractTokenPayload(oauthSignUpToken);
+        String oauthId = String.valueOf(payload.sub());
         Member member = memberRepository.findByPhone_Number(request.phone())
                 .orElseGet(() -> {
                     Member newMember = getRandomIdPwMember(request);
@@ -191,9 +183,5 @@ public class AuthService {
         Member member = getMemberByLoginId(loginId);
         member.updatePassword(password);
         return member;
-    }
-
-    public Long extractMemberId(String accessToken) {
-        return jwtProvider.getSubjectFromPayloadBy(accessToken);
     }
 }

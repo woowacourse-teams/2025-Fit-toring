@@ -14,13 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminReservationQueryService {
 
-    private final AdminMemberQueryService memberService;
     private final ReservationRepository reservationRepository;
 
-    public PageResult<AdminReservationResponse> findMentoringReservationsForAdmin(
-            AdminMentoringReservationDto dto
-    ) {
-        memberService.validateAdminAuthorization(dto.memberId());
+    public PageResult<AdminReservationResponse> findMentoringReservationsForAdmin(AdminMentoringReservationDto dto) {
         List<AdminReservationResponse> content = reservationRepository.findReservationsForAdmin(
                 dto.page(),
                 dto.size()

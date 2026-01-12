@@ -15,19 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminMentoringService {
 
-    private static final int PAGE_SIZE = 20;
-
     private final MentoringRepository mentoringRepository;
 
     @Transactional(readOnly = true)
-    public PageResult<AdminMentoringResponse> findAllForAdminPaged(Long memberId, int page) {
-        Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE, Sort.by("createdAt").descending());
+    public PageResult<AdminMentoringResponse> findAllForAdminPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         Page<AdminMentoringResponse> allPagination = mentoringRepository.findAllWithPagination(pageable);
 
         return new PageResult<>(
                 allPagination.getContent(),
                 allPagination.getNumber(),
-                PAGE_SIZE,
+                size,
                 allPagination.getTotalElements(),
                 allPagination.getTotalPages()
         );

@@ -13,6 +13,7 @@ import fittoring.application.review.presentation.dto.request.ReviewModifyRequest
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
@@ -61,7 +62,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -144,17 +145,19 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 rating,
                 content
         );
-        String accessTokenWithUnexistMemberId = jwtProvider.createAccessToken(999L);
+        String accessTokenWithUnexistMemberId = jwtProvider.createAccessToken(999L, MemberRole.MENTEE);
 
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-reviews-fail-member-not-found"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessTokenWithUnexistMemberId)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/reviews")
                 .then().log().all()
                 .statusCode(404);
     }
@@ -207,7 +210,8 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-5679"),
                 Password.from("password")
         ));
-        String accessTokenWithAnotherMember = jwtProvider.createAccessToken(anotherMember.getId());
+        String accessTokenWithAnotherMember = jwtProvider.createAccessToken(anotherMember.getId(),
+                anotherMember.getRole());
 
         // when
         // then
@@ -219,12 +223,12 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessTokenWithAnotherMember)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/reviews")
                 .then().log().all()
                 .statusCode(404);
     }
 
-    @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 404 Not Found를 반환한다")
+    @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 400 Bad Request를 반환한다")
     @Test
     void createReviewFail3() {
         // given
@@ -243,7 +247,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -267,7 +271,9 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 content
         );
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-reviews-success-first"))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -286,9 +292,9 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/reviews")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @DisplayName("멘토링이 완료되지 않은 예약에 리뷰 작성을 요청하면 400 Bad Request를 반환한다")
@@ -310,7 +316,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -412,7 +418,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 reservation2,
                 mentee
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         // when
         // then
@@ -485,7 +491,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 reservation2,
                 mentee2
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee1.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee1.getId(), mentee1.getRole());
 
         // when
         // then
@@ -496,7 +502,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .get("/mentorings/" + mentoring.getId() + "/reviews")
+                .get("/mentorings/{mentoringId}/reviews", mentoring.getId())
                 .then().log().all()
                 .statusCode(200)
                 .body("", hasSize(2));
@@ -550,12 +556,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/patch-reviews-id-success-rating"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -608,11 +616,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/patch-reviews-id-success-content"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -670,10 +681,10 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("review/patch-reviews-id-success"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -734,10 +745,10 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("review/patch-reviews-id-not-mine"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -787,9 +798,9 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("review/delete-reviews-id-success"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
-                .delete("/reviews/" + review.getId())
+                .delete("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(204);
     }
@@ -809,10 +820,13 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/delete-reviews-id-fail-not-found"))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
-                .delete("/reviews/999")
+                .delete("/reviews/{reviewId}", 999)
                 .then().log().all()
                 .statusCode(404);
     }
@@ -869,9 +883,9 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .filter(documentWithTag("review/delete-reviews-id-not-mine"))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .when()
-                .delete("/reviews/" + review.getId())
+                .delete("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(403);
     }

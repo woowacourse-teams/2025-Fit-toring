@@ -14,6 +14,7 @@ public enum BusinessErrorMessage {
     DUPLICATE_LOGIN_ID("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요."),
     DUPLICATE_PHONE("이미 사용 중인 전화번호입니다. 다른 전화번호를 입력해주세요."),
     LOGIN_ID_NOT_FOUND("로그인 아이디를 찾을 수 없습니다."),
+    ROLE_NOT_FOUND("존재하지 않는 권한 입니다."),
     EXPIRED_TOKEN("유효시간이 만료된 토큰입니다."),
     INVALID_TOKEN("유효하지 않은 토큰입니다."),
     EMPTY_TOKEN("토큰이 비어있습니다."),
@@ -36,6 +37,7 @@ public enum BusinessErrorMessage {
     REVIEW_NOT_FOUND("존재하지 않는 리뷰입니다."),
     NOT_REVIEW_OWNER("자신이 남긴 리뷰가 아닙니다."),
     MENTOR_NOT_SAME("자신이 개설한 멘토링이 아닙니다."),
+    KAKAO_LOGIN_FAILED("카카오 로그인 처리 중 오류가 발생했습니다"),
     MENTOR_AND_MENTEE_IS_SAME("본인이 개설한 멘토링에는 예약할 수 없습니다."),
     RESERVATION_NOT_COMPLETED("멘토링이 완료된 후에만 리뷰를 남길 수 있습니다."),
     FORBIDDEN_URL("권한이 없는 URL 입니다"),
@@ -47,7 +49,9 @@ public enum BusinessErrorMessage {
     INVALID_STATUS_CHAT_ROOM_ACCESS("승인 또는 완료된 예약의 채팅방만 접속할 수 있습니다."),
     UNSUPPORTED_IMAGE_EXTENSION("지원하지 않는 확장자입니다."),
     EMPTY_REQUEST("요청 정보가 비어있어 요청을 수행할 수 없습니다."),
-    ;
+    FCM_TOKEN_NOT_FOUND("해당 멤버의 FCM 토큰이 존재하지 않습니다."),
+    TOO_MANY_DEVICE("인당 기기 등록 제한 수를 초과했습니다. 사용하지 않는 기기를 해제해 주세요"),
+    ALREADY_REGISTERED_DEVICE("이미 등록된 기기입니다.");
 
     private final String message;
 

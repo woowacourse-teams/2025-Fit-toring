@@ -12,6 +12,7 @@ import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequ
 import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginResponse;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
+import fittoring.application.auth.service.AuthFacadeService;
 import fittoring.application.auth.service.AuthService;
 import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
@@ -51,6 +52,7 @@ public class AuthController {
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     private final AuthService authService;
+    private final AuthFacadeService authFacadeService;
     private final PhoneVerificationFacadeService phoneVerificationFacadeService;
     private final PhoneVerificationService phoneVerificationService;
     private final JwtExtractor jwtExtractor;
@@ -102,7 +104,7 @@ public class AuthController {
         } catch (InvalidTokenException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        Long memberId = authService.extractMemberId(accessToken);
+        Long memberId = jwtProvider.extractTokenPayload(accessToken).sub();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new LoginStatusDto(memberId));
     }
@@ -172,7 +174,7 @@ public class AuthController {
         jwtProvider.validateToken(state);
 
         // 로그인
-        LoginInfoDto loginInfoDto = authService.kakaoLogin(code);
+        LoginInfoDto loginInfoDto = authFacadeService.kakaoLogin(code);
         AuthTokenDto authTokenDto = loginInfoDto.authTokenDto();
 
         // 기존 회원 로그인 성공 토큰 응답 & 메인 페이지로 리다이랙트
@@ -208,7 +210,7 @@ public class AuthController {
                 .body(response);
     }
 
-    @GetMapping("/login-id")
+    @PostMapping("/login-id")
     public ResponseEntity<LoginIdResponse> findLoginId(@RequestBody @Valid FindLoginIdRequest request) {
         String loginId = authService.findLoginId(request.name(), request.phoneNumber());
         return ResponseEntity.status(HttpStatus.OK)

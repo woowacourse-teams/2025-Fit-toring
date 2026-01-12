@@ -26,7 +26,6 @@ import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
@@ -188,14 +187,6 @@ public class ReservationService {
                 || statusName.equals(Status.COMPLETE.name());
     }
 
-    private void checkAdminAuthority(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        if (MemberRole.isNotAdmin(member.getRole())) {
-            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-        }
-    }
-
     @Transactional
     public ReservationInfo approve(Long mentorId, Long reservationId) {
         Reservation reservation = getReservation(reservationId);
@@ -246,7 +237,6 @@ public class ReservationService {
 
     @Transactional
     public void updateStatusWithAdminAuthorization(AdminReservationStatusUpdateDto adminReservationStatusUpdateDto) {
-        checkAdminAuthority(adminReservationStatusUpdateDto.memberId());
         Reservation reservation = getReservation(adminReservationStatusUpdateDto.reservationId());
         Status status = Status.of(adminReservationStatusUpdateDto.status());
         reservation.changeStatusWithoutValidation(status);
@@ -254,7 +244,6 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationWithAdminAuthorization(AdminReservationDeleteDto adminReservationDeleteDto) {
-        checkAdminAuthority(adminReservationDeleteDto.memberId());
         Reservation reservation = getReservation(adminReservationDeleteDto.reservationId());
         reviewRepository.deleteByReservation(reservation);
         mentoringStatisticsRepository.updateReservationCountMinus(reservation.getMentoring().getId());
