@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import {
   fetchFcmToken,
@@ -8,11 +8,12 @@ import {
 } from '../../pwa/firebase';
 
 const useInitializeFcm = () => {
+  const isInitialized = useRef(false);
+
   useEffect(() => {
     const memberId = localStorage.getItem('memberId');
-    let isInitialized = false;
 
-    if (isInitialized || !memberId) {
+    if (isInitialized.current || !memberId) {
       return;
     }
 
@@ -39,16 +40,13 @@ const useInitializeFcm = () => {
         });
 
         setupForegroundMessageListener();
+        isInitialized.current = true;
       } catch (error) {
         console.error('FCM 초기화 중 오류 발생:', error);
       }
     }
 
     initializeFcm();
-
-    return () => {
-      isInitialized = true;
-    };
   }, []);
 };
 
