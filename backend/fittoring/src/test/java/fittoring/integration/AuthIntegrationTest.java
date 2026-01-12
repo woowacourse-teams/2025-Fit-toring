@@ -15,6 +15,7 @@ import fittoring.application.auth.presentation.dto.request.SignUpRequest;
 import fittoring.application.auth.presentation.dto.request.ValidateDuplicateLoginIdRequest;
 import fittoring.application.auth.presentation.dto.request.VerificationCodeRequest;
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
+import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
 import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
@@ -629,19 +630,22 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         FindLoginIdRequest request = new FindLoginIdRequest(name, phoneNumber);
 
         // when
-        // then
-        RestAssured
+        LoginIdResponse actual = RestAssured
                 .given(spec)
                 .accept("application/json")
                 .filter(documentWithTag("auth/get-login-id-success"))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .get("/login-id")
+                .post("/login-id")
                 .then()
                 .log().all()
                 .statusCode(200)
-                .body("loginId", equalTo(loginId));
+                .extract()
+                .as(LoginIdResponse.class);
+
+        // then
+        assertThat(actual.loginId()).isEqualTo(loginId);
     }
 
     @DisplayName("사용자가 존재하지 않는 정보로 아이디를 찾으면 404 Bad Request를 반환한다.")
@@ -659,7 +663,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
-                .get("/login-id")
+                .post("/login-id")
                 .then()
                 .log().all()
                 .statusCode(404);
