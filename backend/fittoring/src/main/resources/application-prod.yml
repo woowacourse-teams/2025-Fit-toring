@@ -17,6 +17,7 @@ spring:
     user: ${PROD_DATABASE_USER}
     password: ${PROD_DATABASE_PASSWORD}
     baseline-on-migrate: true
+    out-of-order: true
 cookie:
   same-site: ${COOKIE_SAME_SITE_PROD}
 aws:
