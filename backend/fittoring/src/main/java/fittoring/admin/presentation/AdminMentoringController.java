@@ -26,8 +26,10 @@ public class AdminMentoringController {
     @Admin
     @GetMapping
     public ResponseEntity<PageResult<AdminMentoringResponse>> getMentorings(
-            @RequestParam(defaultValue = "1") int page) {
-        PageResult<AdminMentoringResponse> response = adminMentoringService.findAllForAdminPaged(page);
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        PageResult<AdminMentoringResponse> response = adminMentoringService.findAllForAdminPaged(page, size);
 
         return ResponseEntity.ok(response);
     }

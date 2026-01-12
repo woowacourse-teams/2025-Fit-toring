@@ -100,7 +100,7 @@ class AdminMentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .filter(documentWithTag("admin/mentorings/get-mentorings-success"))
-                .queryParam("page", 1)
+                .queryParam("page", 1, "size", 20)
                 .when()
                 .get("/admin/mentorings")
                 .then().log().all()
