@@ -3,17 +3,14 @@ package fittoring.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CertificateRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.domain.model.Certificate;
-import fittoring.domain.model.CertificateType;
-import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
@@ -38,25 +35,9 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void deleteCertificate() {
         // given
-        Member mentor = memberRepository.save(new Member(
-                "id1",
-                Gender.MALE,
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
-        ));
-        Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                mentor,
-                5000,
-                3,
-                "한 줄 소개",
-                "긴 글 소개"
-        ));
-        Certificate certificate = certificateRepository.save(new Certificate(
-                CertificateType.LICENSE,
-                "운전면허증",
-                mentoring
-        ));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
 
         String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
@@ -80,33 +61,11 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void deleteCertificateFail_NotOwner() {
         // given
-        Member mentor = memberRepository.save(new Member(
-                "id1",
-                Gender.MALE,
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
-        ));
-        Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                mentor,
-                5000,
-                3,
-                "한 줄 소개",
-                "긴 글 소개"
-        ));
-        Certificate certificate = certificateRepository.save(new Certificate(
-                CertificateType.LICENSE,
-                "운전면허증",
-                mentoring
-        ));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
 
-        Member otherMember = memberRepository.save(new Member(
-                "id2",
-                Gender.FEMALE,
-                "이회원",
-                new Phone("010-5678-1234"),
-                Password.from("pw")
-        ));
+        Member otherMember = memberRepository.save(FixtureUtil.getTestMentee());
         String accessToken = jwtProvider.createAccessToken(otherMember.getId(), otherMember.getRole());
 
         // when
@@ -126,13 +85,7 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void deleteCertificateFail_NotFound() {
         // given
-        Member mentor = memberRepository.save(new Member(
-                "id1",
-                Gender.MALE,
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
-        ));
+        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
         String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
         long invalidCertificateId = 999L;
 
