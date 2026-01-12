@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.application.auth.CookieWriter;
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
+import fittoring.application.auth.service.AuthFacadeService;
 import fittoring.application.auth.service.AuthService;
 import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
@@ -36,6 +37,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private PhoneVerificationFacadeService phoneVerificationFacadeService;
+
+    @MockitoBean
+    private AuthFacadeService authFacadeService;
 
     @MockitoBean
     private PhoneVerificationService phoneVerificationService;

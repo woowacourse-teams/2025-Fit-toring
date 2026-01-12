@@ -8,6 +8,7 @@ import static org.springframework.restdocs.restassured.RestAssuredRestDocumentat
 
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import fittoring.application.image.service.PresignedUrlService;
+import fittoring.infrastructure.OauthClientService;
 import fittoring.infrastructure.SmsRestClientService;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
@@ -41,6 +42,9 @@ public abstract class AbstractApiDocumentationTest {
 
     @MockitoBean
     protected SmsRestClientService smsRestClientService;
+
+    @MockitoBean
+    protected OauthClientService oauthClientService;
 
     protected RequestSpecification spec;
 

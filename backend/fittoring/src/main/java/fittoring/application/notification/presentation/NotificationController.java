@@ -1,6 +1,6 @@
 package fittoring.application.notification.presentation;
 
-import fittoring.application.notification.presentation.dto.request.PushTokenUpsertRequest;
+import fittoring.application.notification.presentation.dto.request.RegisterDeviceRequest;
 import fittoring.application.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +18,8 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping("/tokens")
-    public ResponseEntity<Void> upsertFcmToken(@RequestBody PushTokenUpsertRequest requestBody) {
-        notificationService.upsertPushToken(requestBody.memberId(), requestBody.hardwareId(), requestBody.pushToken());
+    public ResponseEntity<Void> registerDevice(@RequestBody RegisterDeviceRequest requestBody) {
+        notificationService.registerDevice(requestBody.memberId(), requestBody.pushToken());
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
