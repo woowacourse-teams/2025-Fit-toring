@@ -37,6 +37,7 @@ public enum BusinessErrorMessage {
     REVIEW_NOT_FOUND("존재하지 않는 리뷰입니다."),
     NOT_REVIEW_OWNER("자신이 남긴 리뷰가 아닙니다."),
     MENTOR_NOT_SAME("자신이 개설한 멘토링이 아닙니다."),
+    KAKAO_LOGIN_FAILED("카카오 로그인 처리 중 오류가 발생했습니다"),
     MENTOR_AND_MENTEE_IS_SAME("본인이 개설한 멘토링에는 예약할 수 없습니다."),
     RESERVATION_NOT_COMPLETED("멘토링이 완료된 후에만 리뷰를 남길 수 있습니다."),
     FORBIDDEN_URL("권한이 없는 URL 입니다"),

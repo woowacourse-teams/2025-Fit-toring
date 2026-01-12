@@ -692,4 +692,32 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(cookies).anyMatch(cookie -> cookie.startsWith("oauthSignUpToken="));
         });
     }
+
+    @DisplayName("카카오 로그인 콜백 - 외부 API 호출 실패 시 400 Bad Request를 반환한다.")
+    @Test
+    void kakaoCallBack_Fail() {
+        // given
+        String code = "authCode";
+        String state = jwtProvider.createStateToken();
+
+        // Mocking - 예외 발생
+        when(oauthClientService.requestKakaoToken(code))
+                .thenThrow(new RuntimeException("Kakao API Error"));
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .redirects().follow(false)
+                .filter(documentWithTag("auth/get-kakao-callback-fail"))
+                .queryParam("code", code)
+                .queryParam("state", state)
+                .log().all()
+                .when()
+                .get("/kakao/callback")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .body("message", equalTo(BusinessErrorMessage.KAKAO_LOGIN_FAILED.getMessage()));
+    }
 }
