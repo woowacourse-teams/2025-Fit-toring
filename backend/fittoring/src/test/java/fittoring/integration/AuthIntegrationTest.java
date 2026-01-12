@@ -17,7 +17,6 @@ import fittoring.application.auth.presentation.dto.request.VerificationCodeReque
 import fittoring.application.auth.presentation.dto.request.VerifyPhoneNumberRequest;
 import fittoring.application.auth.presentation.dto.response.LoginIdResponse;
 import fittoring.application.auth.presentation.dto.response.LoginStatusDto;
-import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.JwtProvider;
@@ -54,9 +53,6 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private PhoneVerificationRepository phoneVerificationRepository;
-
-    @Autowired
-    private MemberOauthRepository memberOauthRepository;
 
     @DisplayName("전화번호를 인증한 사용자는 회원가입을 할 수 있다.")
     @Test
