@@ -25,3 +25,5 @@ aws:
     env-prefix: prod/
   sqs:
     image-queue: fittoring-prod-image-queue
+fcm:
+  service-account-key: ${FCM_SERVICE_ACCOUNT_KEY}
