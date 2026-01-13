@@ -18,19 +18,19 @@ public class FcmNotificationSender implements NotificationSender {
 
     @Override
     public List<Device> send(List<Device> devices, String title, String body) {
-        List<Device> failedDevies = new ArrayList<>();
+        List<Device> failedDevices = new ArrayList<>();
         for (Device device : devices) {
             if (device.isPushEnabled()) {
                 try {
                     sendNotification(device.getPushToken(), title, body);
                 } catch (FirebaseMessagingException exception) {
                     if (exception.getMessagingErrorCode().equals(MessagingErrorCode.UNREGISTERED)) {
-                        failedDevies.add(device);
+                        failedDevices.add(device);
                     }
                 }
             }
         }
-        return failedDevies;
+        return failedDevices;
     }
 
     private void sendNotification(String fcmToken, String title, String body) throws FirebaseMessagingException {
