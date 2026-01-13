@@ -18,6 +18,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class NotificationServiceTest extends IntegrationTestSupport {
 
@@ -29,6 +30,9 @@ class NotificationServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @MockitoBean
+    private NotificationSender notificationSender;
 
     @DisplayName("멤버 ID와 푸시 토큰으로 디바이스를 등록할 수 있다.")
     @Test

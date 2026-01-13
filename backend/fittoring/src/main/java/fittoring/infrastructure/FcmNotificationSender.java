@@ -1,34 +1,39 @@
 package fittoring.infrastructure;
 
-import com.google.firebase.messaging.*;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.TooManyDeviceException;
-import fittoring.application.notification.repository.DeviceRepository;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MessagingErrorCode;
+import com.google.firebase.messaging.Notification;
 import fittoring.application.notification.service.NotificationSender;
 import fittoring.domain.model.Device;
-import fittoring.infrastructure.exception.FcmSendException;
-import fittoring.infrastructure.exception.InfraErrorMessage;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class FcmNotificationSender implements NotificationSender {
 
-    private final DeviceRepository deviceRepository;
-
     @Override
-    public void send(List<Device> devices, String title, String body) {
+    public List<Device> send(List<Device> devices, String title, String body) {
+        List<Device> failedDevies = new ArrayList<>();
         for (Device device : devices) {
             if (device.isPushEnabled()) {
-                sendNotification(device.getPushToken(), title, body);
+                try {
+                    sendNotification(device.getPushToken(), title, body);
+                } catch (FirebaseMessagingException exception) {
+                    if (exception.getMessagingErrorCode().equals(MessagingErrorCode.UNREGISTERED)) {
+                        failedDevies.add(device);
+                    }
+                }
             }
         }
+        return failedDevies;
     }
 
-    private void sendNotification(String fcmToken, String title, String body) {
+    private void sendNotification(String fcmToken, String title, String body) throws FirebaseMessagingException {
         Message message = Message.builder()
                 .setToken(fcmToken)
                 .setNotification(Notification.builder()
@@ -36,10 +41,6 @@ public class FcmNotificationSender implements NotificationSender {
                         .setBody(body)
                         .build())
                 .build();
-        try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException exception) {
-            throw new FcmSendException(InfraErrorMessage.FCM_SEND_ERROR + exception.getMessage());
-        }
+        FirebaseMessaging.getInstance().send(message);
     }
 }
