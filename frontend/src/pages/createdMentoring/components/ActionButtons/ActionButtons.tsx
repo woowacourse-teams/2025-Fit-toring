@@ -6,11 +6,9 @@ import {
   StatusTypeEnum,
   type StatusType,
 } from '../../../../common/types/statusType';
-import { captureSentryError } from '../../../../common/utils/captureSentryError';
-import { patchReservationStatus } from '../../apis/patchReservationStatus';
-import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
-
-import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
+import useReservationApprove from '../../hooks/useReservationApprove';
+import useReservationComplete from '../../hooks/useReservationComplete';
+import useReservationReject from '../../hooks/useReservationReject';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -27,80 +25,33 @@ function ActionButtons({
 }: ActionButtonsProps) {
   const navigate = useNavigate();
 
-  const updateStatus = async (newStatus: MENTORING_APPLICATION_STATUS) => {
-    try {
-      const response = await patchReservationStatus(reservationId, {
-        status: newStatus,
-      });
-
-      if (response.status !== 200) {
-        throw new Error('status update failed');
-      }
-    } catch (error) {
-      console.error(`Error updating reservation status:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'patch-reservation-status',
-      });
-    }
-  };
+  const { mutate: approveMutate } = useReservationApprove(onClick);
 
   const handleApproveButtonClick = async () => {
-    try {
-      if (
-        confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
-      ) {
-        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
-        await onClick();
-      }
-    } catch (error) {
-      console.error(`Error handling approve button click:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'approve-button-click',
-      });
+    if (
+      confirm('한번 승인한 후에는 취소할 수 없습니다. 정말 승인하시겠습니까?')
+    ) {
+      approveMutate(reservationId);
     }
   };
+
+  const { mutate: rejectMutate } = useReservationReject(onClick);
 
   const handleRejectedButtonClick = async () => {
-    try {
-      if (
-        confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
-      ) {
-        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
-        await onClick();
-      }
-    } catch (error) {
-      console.error(`Error handling reject button click:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'reject-button-click',
-      });
+    if (
+      confirm('한번 거절한 후에는 취소할 수 없습니다. 정말 거절하시겠습니까?')
+    ) {
+      rejectMutate(reservationId);
     }
   };
 
+  const { mutate: completeMutate } = useReservationComplete(onClick);
+
   const handleCompleteButtonClick = async () => {
-    try {
-      if (
-        confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
-      ) {
-        await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
-        await onClick();
-      }
-    } catch (error) {
-      console.error(`Error handling complete button click:`, error);
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'createdMentoring',
-        step: 'complete-button-click',
-      });
+    if (
+      confirm('한번 완료한 후에는 취소할 수 없습니다. 정말 완료하시겠습니까?')
+    ) {
+      completeMutate(reservationId);
     }
   };
 

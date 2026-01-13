@@ -4,8 +4,6 @@ import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
 import { MENTORING_APPLICATIONS } from './data';
 
-import type { MENTORING_APPLICATION_STATUS } from '../types/mentoringApplicationStatus';
-
 export const testStateStore = {
   shouldFail: false,
   customError: null as string | null,
@@ -30,21 +28,15 @@ const getCreatedMentoringList = http.get(CREATED_MENTORING_URL, () => {
   return HttpResponse.json(MENTORING_APPLICATIONS);
 });
 
-interface PatchReservationStatusBody {
-  status: MENTORING_APPLICATION_STATUS;
-}
-
-const PATCH_MENTORING_STATUS_URL = `${BASE_URL}${API_ENDPOINTS.RESERVATION}/:reservationId${API_ENDPOINTS.PATCH_MENTORING_STATUS}`;
-const patchReservationStatus = http.patch(
-  PATCH_MENTORING_STATUS_URL,
-  async ({ params, request }) => {
+const PATCH_MENTORING_APPROVE_URL = `${BASE_URL}${API_ENDPOINTS.RESERVATIONS}/:reservationId${API_ENDPOINTS.PATCH_MENTORING_APPROVE}`;
+const patchReservationApprove = http.patch(
+  PATCH_MENTORING_APPROVE_URL,
+  async ({ params }) => {
     const { reservationId } = params;
-    const body = await request.json();
-    const { status } = body as PatchReservationStatusBody;
 
     if (testStateStore.shouldFail) {
       return new HttpResponse(
-        { message: testStateStore.customError || 'Patch failed' },
+        { message: testStateStore.customError || 'Approve failed' },
         {
           status: 400,
         },
@@ -52,7 +44,51 @@ const patchReservationStatus = http.patch(
     }
 
     return HttpResponse.json(
-      { message: `${reservationId}의 ${status} 업데이트 성공` },
+      { message: `${reservationId} 승인 성공` },
+      { status: 200 },
+    );
+  },
+);
+
+const PATCH_MENTORING_REJECT_URL = `${BASE_URL}${API_ENDPOINTS.RESERVATIONS}/:reservationId${API_ENDPOINTS.PATCH_MENTORING_REJECT}`;
+const patchReservationReject = http.patch(
+  PATCH_MENTORING_REJECT_URL,
+  async ({ params }) => {
+    const { reservationId } = params;
+
+    if (testStateStore.shouldFail) {
+      return new HttpResponse(
+        { message: testStateStore.customError || 'Reject failed' },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    return HttpResponse.json(
+      { message: `${reservationId} 거절 성공` },
+      { status: 200 },
+    );
+  },
+);
+
+const PATCH_MENTORING_COMPLETE_URL = `${BASE_URL}${API_ENDPOINTS.RESERVATIONS}/:reservationId${API_ENDPOINTS.PATCH_MENTORING_COMPLETE}`;
+const patchReservationComplete = http.patch(
+  PATCH_MENTORING_COMPLETE_URL,
+  async ({ params }) => {
+    const { reservationId } = params;
+
+    if (testStateStore.shouldFail) {
+      return new HttpResponse(
+        { message: testStateStore.customError || 'Complete failed' },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    return HttpResponse.json(
+      { message: `${reservationId} 완료 성공` },
       { status: 200 },
     );
   },
@@ -60,5 +96,7 @@ const patchReservationStatus = http.patch(
 
 export const createdMentoringHandler = [
   getCreatedMentoringList,
-  patchReservationStatus,
+  patchReservationApprove,
+  patchReservationReject,
+  patchReservationComplete,
 ];
