@@ -1,6 +1,9 @@
 package fittoring.application.notification.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
@@ -10,14 +13,20 @@ import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.TooManyDeviceException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.repository.DeviceRepository;
+import fittoring.domain.model.Device;
 import fittoring.domain.model.Member;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class NotificationServiceTest extends IntegrationTestSupport {
 
@@ -29,6 +38,9 @@ class NotificationServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @MockitoBean
+    private NotificationSender notificationSender;
 
     @DisplayName("멤버 ID와 푸시 토큰으로 디바이스를 등록할 수 있다.")
     @Test
@@ -85,6 +97,37 @@ class NotificationServiceTest extends IntegrationTestSupport {
                             .isInstanceOf(TooManyDeviceException.class);
                 }
             }
+        });
+    }
+
+    @DisplayName("메시지 전송 시도 후, 토큰이 유효하지 않은 디바이스를 삭제한다.")
+    @Test
+    void registerDevice4() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        List<Device> devices = new ArrayList<>();
+        List<Device> failedDevices = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Device device = new Device(member, "deviceTokenValue" + i);
+            devices.add(device);
+            // 5개 중 3개는 실패 응답 가정
+            if (i <= 3) {
+                failedDevices.add(device);
+            }
+            deviceRepository.save(device);
+        }
+        BDDMockito.given(notificationSender.send(anyList(), anyString(), anyString()))
+                .willReturn(failedDevices);
+
+        // when
+        notificationService.notifyNewMessage(member.getId());
+
+        // then
+        verify(notificationSender).send(anyList(), anyString(), anyString());
+
+        List<Device> remainingDevices = deviceRepository.findAllByMemberId(member.getId());
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(remainingDevices).hasSize(2);
         });
     }
 

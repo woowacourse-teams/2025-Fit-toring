@@ -46,7 +46,8 @@ public class NotificationService {
 
     public void notifyNewMessage(Long memberId) {
         List<Device> devices = deviceRepository.findAllByMemberId(memberId);
-        notificationSender.send(devices, "핏토링", "채팅이 도착하였습니다.");
+        List<Device> failedDevices = notificationSender.send(devices, "핏토링", "채팅이 도착하였습니다.");
+        deviceRepository.deleteAll(failedDevices);
     }
 
     private void validateDeviceCount(List<Device> devices) {
