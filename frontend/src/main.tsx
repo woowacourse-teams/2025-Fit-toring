@@ -68,7 +68,5 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
     </React.StrictMode>,
   );
 
-  if (isProd) {
-    registerServiceWorker();
-  }
+  registerServiceWorker();
 })();
