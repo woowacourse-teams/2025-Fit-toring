@@ -8,6 +8,7 @@ import {
 
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
+import useInitializeFcm from './common/hooks/useInitializeFcm';
 import Home from './pages/home/Home';
 import Landing from './pages/landing/Landing';
 
@@ -84,6 +85,8 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  useInitializeFcm();
+
   return (
     <MobileLayout>
       <RouterProvider router={router} />
