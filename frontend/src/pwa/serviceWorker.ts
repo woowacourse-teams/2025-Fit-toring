@@ -4,9 +4,6 @@ export function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) {
     return;
   }
-  if (process.env.NODE_ENV !== 'production') {
-    return;
-  }
 
   window.addEventListener('load', () => {
     navigator.serviceWorker
@@ -27,10 +24,10 @@ export function registerServiceWorker() {
 }
 
 export async function cleanupServiceWorkerInDev() {
-  if (process.env.NODE_ENV === 'production') {
+  if (!('serviceWorker' in navigator)) {
     return;
   }
-  if (!('serviceWorker' in navigator)) {
+  if (process.env.NODE_ENV !== 'development') {
     return;
   }
 
