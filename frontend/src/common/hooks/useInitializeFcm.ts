@@ -17,7 +17,6 @@ const useInitializeFcm = () => {
     if (isInitialized.current || !memberId) {
       return;
     }
-
     isInitialized.current = true;
 
     async function initializeFcm() {
@@ -45,6 +44,7 @@ const useInitializeFcm = () => {
         unsubscribeRef.current = setupForegroundMessageListener();
       } catch (error) {
         console.error('FCM 초기화 중 오류 발생:', error);
+        isInitialized.current = false;
       }
     }
 
