@@ -18,6 +18,8 @@ const useInitializeFcm = () => {
       return;
     }
 
+    isInitialized.current = true;
+
     async function initializeFcm() {
       try {
         const permission = await requestPermissionToUser();
@@ -41,8 +43,6 @@ const useInitializeFcm = () => {
         });
 
         unsubscribeRef.current = setupForegroundMessageListener();
-
-        isInitialized.current = true;
       } catch (error) {
         console.error('FCM 초기화 중 오류 발생:', error);
       }
