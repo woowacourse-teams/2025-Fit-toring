@@ -16,6 +16,9 @@ export const API_ENDPOINTS = {
   MEMBERS: '/members/summary',
   REISSUE: '/reissue',
   PATCH_MENTORING_STATUS: '/status',
+  PATCH_MENTORING_APPROVE: '/approve',
+  PATCH_MENTORING_REJECT: '/reject',
+  PATCH_MENTORING_COMPLETE: '/complete',
   REVIEWS: '/reviews',
   CERTIFICATES: '/certificates',
   MENTORINGS_PAGE: '/mentorings-page',
@@ -23,5 +26,6 @@ export const API_ENDPOINTS = {
   REQUEST_PRESIGNED_URL: '/images/presigned',
   KAKAO_LOGIN: '/kakao/login',
   IDENTITY_VERIFICATION: '/oauth-signup',
+  FCM_TOKENS: '/notification/tokens',
   AUTH_CHECK: '/auth/check',
 } as const;

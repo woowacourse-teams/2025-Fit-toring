@@ -4,31 +4,30 @@ export function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) {
     return;
   }
-  if (process.env.NODE_ENV !== 'production') {
-    return;
-  }
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => {
-      if (process.env.NODE_ENV === 'production') {
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'pwa',
-          step: 'service-worker',
-        });
-      } else {
-        console.error(error);
-      }
-    });
+    navigator.serviceWorker
+      .register('/firebase-messaging-sw.js')
+      .catch((error) => {
+        if (process.env.NODE_ENV === 'production') {
+          captureSentryError({
+            error,
+            level: 'warning',
+            feature: 'pwa',
+            step: 'service-worker',
+          });
+        } else {
+          console.error(error);
+        }
+      });
   });
 }
 
 export async function cleanupServiceWorkerInDev() {
-  if (process.env.NODE_ENV === 'production') {
+  if (!('serviceWorker' in navigator)) {
     return;
   }
-  if (!('serviceWorker' in navigator)) {
+  if (process.env.NODE_ENV !== 'development') {
     return;
   }
 

@@ -1,11 +1,10 @@
 package fittoring.application.notification.repository;
 
 import fittoring.domain.model.Device;
+import fittoring.domain.model.Member;
 
 import java.util.List;
-import java.util.Optional;
 
-import fittoring.domain.model.Member;
 import org.springframework.data.repository.ListCrudRepository;
 
 public interface DeviceRepository extends ListCrudRepository<Device, Long> {

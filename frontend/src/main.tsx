@@ -24,7 +24,11 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration(),
   ],
-  tracePropagationTargets: ['localhost', /^https:/, /yourserver\.io\/api/],
+  tracePropagationTargets: [
+    'localhost',
+    'api.fittoring.com',
+    'devapi.fittoring.com',
+  ],
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 });
@@ -64,7 +68,5 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
     </React.StrictMode>,
   );
 
-  if (isProd) {
-    registerServiceWorker();
-  }
+  registerServiceWorker();
 })();
