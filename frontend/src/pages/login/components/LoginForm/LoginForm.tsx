@@ -12,6 +12,7 @@ import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider
 import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
+import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import { PAGE_URL } from '../../../../common/constants/url';
 import usePasswordInput from '../../../../common/hooks/usePasswordInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
@@ -67,7 +68,7 @@ function LoginForm() {
   };
 
   const handleSocialLoginButtonClick = () => {
-    window.location.href = `${process.env.API_BASE_URL}/kakao/login`;
+    window.location.href = `${process.env.API_BASE_URL}${API_ENDPOINTS.KAKAO_LOGIN}`;
   };
 
   const loginFormValidated = userId !== '' && password !== '';

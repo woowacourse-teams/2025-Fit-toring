@@ -1,13 +1,14 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { postLogout } from '../../../../common/apis/postLogout';
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { AUTH_CHECK_QUERY_KEY } from '../../../../common/hooks/useAuthCheck';
 import useOutsideClickRef from '../../../../common/hooks/useOutsideClickRef';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
@@ -61,9 +62,12 @@ function MenuDropDown() {
     item.action();
   };
 
+  const queryClient = useQueryClient();
+
   const { mutate: handleLogout } = useMutation({
     mutationFn: postLogout,
     onSuccess: () => {
+      queryClient.removeQueries({ queryKey: AUTH_CHECK_QUERY_KEY });
       logout();
       localStorage.removeItem('memberId');
       navigate(PAGE_URL.HOME);

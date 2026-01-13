@@ -4,6 +4,7 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const DotenvWebpackPlugin = require('dotenv-webpack');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
+const { GenerateSW } = require('workbox-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -43,7 +44,18 @@ module.exports = merge(common, {
           from: 'public/robots.prod.txt',
           to: 'robots.txt',
         },
+        { from: 'public/manifest.webmanifest', to: 'manifest.webmanifest' },
+        { from: 'public/fittoring-icon-192.png', to: 'fittoring-icon-192.png' },
+        { from: 'public/fittoring-icon-512.png', to: 'fittoring-icon-512.png' },
       ],
+    }),
+    new GenerateSW({
+      swDest: 'sw.js',
+      cleanupOutdatedCaches: true,
+
+      navigateFallback: '/index.html',
+
+      include: [/\.(html|js|css|png|jpg|svg)$/],
     }),
     sentryWebpackPlugin({
       org: 'fittoring',
