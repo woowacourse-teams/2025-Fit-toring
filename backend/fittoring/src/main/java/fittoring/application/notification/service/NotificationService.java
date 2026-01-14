@@ -8,11 +8,12 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.repository.DeviceRepository;
 import fittoring.domain.model.Device;
 import fittoring.domain.model.Member;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service

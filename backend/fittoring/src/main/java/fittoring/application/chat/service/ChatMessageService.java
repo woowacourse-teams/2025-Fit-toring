@@ -18,9 +18,11 @@ import fittoring.util.CursorCodec;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ChatMessageService {
@@ -38,6 +40,7 @@ public class ChatMessageService {
         chatMessageRepository.save(chatMessage);
 
         Long opponentId = chatRoom.getOpponentIdOf(senderId);
+        log.info("받을 사람 id: {}", senderId);
         notificationService.notifyNewMessage(opponentId);
         return ChatMessageResponse.from(chatMessage, request.tempId());
     }
