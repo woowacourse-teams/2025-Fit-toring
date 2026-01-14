@@ -1,17 +1,16 @@
 package fittoring.infrastructure;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.MessagingErrorCode;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import fittoring.application.notification.service.NotificationSender;
 import fittoring.domain.model.Device;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FcmNotificationSender implements NotificationSender {
@@ -19,11 +18,13 @@ public class FcmNotificationSender implements NotificationSender {
     @Override
     public List<Device> send(List<Device> devices, String title, String body) {
         List<Device> failedDevices = new ArrayList<>();
+        log.info("알림 Device 수: {} 개", devices.size());
         for (Device device : devices) {
             if (device.isPushEnabled()) {
                 try {
                     sendNotification(device.getPushToken(), title, body);
                 } catch (FirebaseMessagingException exception) {
+                    log.error("알림 전송 실패 -> PushToken: {}, MessagingErrorCode: {}, Message: {}", device.getPushToken(), exception.getMessagingErrorCode(), exception.getMessage());
                     if (exception.getMessagingErrorCode().equals(MessagingErrorCode.UNREGISTERED)) {
                         failedDevices.add(device);
                     }
