@@ -5,12 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record OauthSignUpRequest(
-        @NotBlank
+        @NotBlank(message = "이름은 필수 입력값입니다.")
         String name,
-        @NotNull
+        @NotNull(message = "성별은 필수 입력값입니다.")
         Gender gender,
         @PhoneNumber
-        @NotBlank
+        @NotBlank(message = "전화번호는 필수 입력값입니다.")
         String phone) {
 
 }

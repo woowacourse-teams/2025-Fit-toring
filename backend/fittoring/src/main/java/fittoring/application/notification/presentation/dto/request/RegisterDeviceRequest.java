@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record RegisterDeviceRequest(
-        @NotNull
+        @NotNull(message = "회원 ID는 필수 입력값입니다.")
         Long memberId,
-        @NotBlank
+        @NotBlank(message = "푸시 토큰은 필수 입력값입니다.")
         String pushToken
 ) {
 }
