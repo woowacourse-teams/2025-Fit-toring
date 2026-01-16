@@ -12,12 +12,12 @@ cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCrUhONRlAeig6WSRTrvwZBPYjIeTiC5sA',
-  authDomain: 'fittoring-dev.firebaseapp.com',
-  projectId: 'fittoring-dev',
-  storageBucket: 'fittoring-dev.firebasestorage.app',
-  messagingSenderId: '263030224988',
-  appId: '1:263030224988:web:0d8da83df7e01155b0ce99',
+  apiKey: 'AIzaSyCbmcTDZNommWF5IJjrSSD8An7OdNROewA',
+  authDomain: 'fittoring.firebaseapp.com',
+  projectId: 'fittoring',
+  storageBucket: 'fittoring.firebasestorage.app',
+  messagingSenderId: '948904127890',
+  appId: '1:948904127890:web:6c40f6a464d523bc9ba54b',
 };
 
 const app = initializeApp(firebaseConfig);
