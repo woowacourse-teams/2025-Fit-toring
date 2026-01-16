@@ -142,7 +142,7 @@ public class AuthService {
     public RegisterOAuthDto registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
         TokenPayload payload = jwtProvider.extractTokenPayload(oauthSignUpToken);
         String oauthId = String.valueOf(payload.sub());
-        Member member = memberRepository.findByPhone_Number(request.phone())
+        Member member = memberRepository.findByPhone_Number(request.phoneNumber())
                 .orElseGet(() -> {
                     Member newMember = getRandomIdPwMember(request);
                     memberRepository.save(newMember);
@@ -162,7 +162,7 @@ public class AuthService {
                 randomLoginId,
                 request.gender(),
                 request.name(),
-                new Phone(request.phone()),
+                new Phone(request.phoneNumber()),
                 Password.from(randomPw)
         );
     }

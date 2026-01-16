@@ -9,8 +9,8 @@ public record OauthSignUpRequest(
         String name,
         @NotNull(message = "성별은 필수 입력값입니다.")
         Gender gender,
-        @PhoneNumber
         @NotBlank(message = "전화번호는 필수 입력값입니다.")
-        String phone) {
-
+        @PhoneNumber
+        String phoneNumber)
+{
 }

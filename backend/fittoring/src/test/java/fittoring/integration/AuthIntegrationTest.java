@@ -870,7 +870,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         // given
         String oauthId = "123456789";
         String oauthSignUpToken = jwtProvider.createOauthSignUpToken(oauthId);
-        OauthSignUpRequest request = new OauthSignUpRequest("", null, "invalid-phone");
+        OauthSignUpRequest request = new OauthSignUpRequest("", null, "invalid-phoneNumber");
 
         // when
         // then
