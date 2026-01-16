@@ -11,6 +11,7 @@ public record OauthSignUpRequest(
         Gender gender,
         @PhoneNumber
         @NotBlank
-        String phone) {
+        String phoneNumber
+) {
 
 }
