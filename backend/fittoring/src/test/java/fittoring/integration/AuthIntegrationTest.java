@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
@@ -96,8 +99,10 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                                 .requestFields(
                                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("아이디 (5~15자)"),
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("이름 (2~5자)"),
-                                        fieldWithPath("gender").type(JsonFieldType.STRING).description("성별 (MALE, FEMALE)"),
-                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호 (010-XXXX-XXXX)"),
+                                        fieldWithPath("gender").type(JsonFieldType.STRING)
+                                                .description("성별 (MALE, FEMALE)"),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING)
+                                                .description("전화번호 (010-XXXX-XXXX)"),
                                         fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호 (5~20자)")
                                 )
                                 .build())))
@@ -280,7 +285,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("인증")
                                 .summary("로그인")
-                                .description("로그인을 진행하고 AccessToken과 RefreshToken을 쿠키에 발급합니다. 성공 시 200 OK, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .description(
+                                        "로그인을 진행하고 AccessToken과 RefreshToken을 쿠키에 발급합니다. 성공 시 200 OK, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
                                 .requestSchema(Schema.schema("SignInRequest"))
                                 .requestFields(
                                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("아이디"),
@@ -382,9 +388,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                 .extract()
                 .as(LoginStatusDto.class);
 
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(response.memberId()).isEqualTo(savedMember.getId());
-        });
+        assertThat(response.memberId()).isEqualTo(savedMember.getId());
     }
 
     @DisplayName("로그인 상태 요청 - accessToken이 존재하지 않으면 false와 null을 반환한다.")
@@ -432,7 +436,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("인증")
                                 .summary("토큰 재발급")
-                                .description("RefreshToken을 이용하여 AccessToken과 RefreshToken을 재발급합니다. 성공 시 200 OK, 실패 시 401 Unauthorized를 반환합니다.")
+                                .description(
+                                        "RefreshToken을 이용하여 AccessToken과 RefreshToken을 재발급합니다. 성공 시 200 OK, 실패 시 401 Unauthorized를 반환합니다.")
                                 .build())))
                 .log().all()
                 .cookie("accessToken", accessToken)
@@ -610,6 +615,39 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @DisplayName("사용자는 유효한 전화번호 형식으로 인증을 요청하면 200 상태코드를 받는다.")
+    @Test
+    void requestAuthCode() {
+        // given
+        String phoneNumber = "010-1234-5678";
+        VerifyPhoneNumberRequest request = new VerifyPhoneNumberRequest(phoneNumber);
+
+        doNothing().when(smsRestClientService).sendSms(any(), anyString());
+
+        // when
+        // then
+        RestAssured.given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("auth/post-auth-code-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("전화번호 인증 요청")
+                                .description("전화번호 인증 코드를 요청합니다. 성공 시 201 Create, 실패 시 400 Bad Request를 반환합니다.")
+                                .requestSchema(Schema.schema("VerifyPhoneNumberRequest"))
+                                .requestFields(
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                )
+                                .build())))
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .body(request)
+                .when()
+                .post("/auth-code")
+                .then()
+                .log().all()
+                .statusCode(201);
     }
 
     @DisplayName("사용자는 잘못된 전화번호 형식으로 인증을 요청하면 400 상태코드를 받는다.")
@@ -847,7 +885,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("인증")
                                 .summary("비밀번호 재설정")
-                                .description("아이디와 전화번호 인증 후 비밀번호를 재설정합니다. 성공 시 204 No Content, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .description(
+                                        "아이디와 전화번호 인증 후 비밀번호를 재설정합니다. 성공 시 204 No Content, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
                                 .requestSchema(Schema.schema("ResetPasswordRequest"))
                                 .requestFields(
                                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("아이디"),
@@ -995,11 +1034,13 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("인증")
                                 .summary("OAuth 회원가입")
-                                .description("OAuth 인증 후 추가 정보를 입력하여 회원가입을 완료합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 401 Unauthorized를 반환합니다.")
+                                .description(
+                                        "OAuth 인증 후 추가 정보를 입력하여 회원가입을 완료합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 401 Unauthorized를 반환합니다.")
                                 .requestSchema(Schema.schema("OauthSignUpRequest"))
                                 .requestFields(
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
-                                        fieldWithPath("gender").type(JsonFieldType.STRING).description("성별 (MALE, FEMALE)"),
+                                        fieldWithPath("gender").type(JsonFieldType.STRING)
+                                                .description("성별 (MALE, FEMALE)"),
                                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
                                 )
                                 .build())))
@@ -1109,7 +1150,8 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("인증")
                                 .summary("카카오 로그인 콜백")
-                                .description("카카오 로그인 성공 시 메인 페이지로 리다이렉트합니다. 성공 시 302 Found, 실패 시 400 Bad Request를 반환합니다.")
+                                .description(
+                                        "카카오 로그인 성공 시 메인 페이지로 리다이렉트합니다. 성공 시 302 Found, 실패 시 400 Bad Request를 반환합니다.")
                                 .build())))
                 .queryParam("code", code)
                 .queryParam("state", state)
