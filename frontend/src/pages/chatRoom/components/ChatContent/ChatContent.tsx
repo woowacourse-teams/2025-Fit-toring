@@ -40,7 +40,7 @@ function ChatContent({
                 <ChatBubble
                   content={content}
                   createdAt={createdAt}
-                  authored={senderId === memberId}
+                  authored={senderId === Number(memberId)}
                   status={status}
                 />
               </S_ChatBubbleWrapper>
