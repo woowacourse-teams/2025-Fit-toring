@@ -1,11 +1,15 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.presentation.dto.request.FindLoginIdRequest;
@@ -45,6 +49,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -82,7 +87,20 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-signup-success"))
+                .filter(documentWithTag("auth/post-signup-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("회원가입")
+                                .description("회원가입을 진행합니다. 성공 시 201 Created, 실패 시 400 Bad Request를 반환합니다.")
+                                .requestSchema(Schema.schema("SignUpRequest"))
+                                .requestFields(
+                                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("아이디 (5~15자)"),
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름 (2~5자)"),
+                                        fieldWithPath("gender").type(JsonFieldType.STRING).description("성별 (MALE, FEMALE)"),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호 (010-XXXX-XXXX)"),
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호 (5~20자)")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -110,7 +128,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-signup-invalid-phoneNumber-verification"))
+                .filter(documentWithTag("auth/post-signup-invalid-phoneNumber-verification",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("SignUpRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -136,7 +159,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-signup-invalid-info"))
+                .filter(documentWithTag("auth/post-signup-invalid-info",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("SignUpRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -165,7 +193,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-login-invalid-loginId"))
+                .filter(documentWithTag("auth/post-login-invalid-loginId",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("SignInRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -201,7 +234,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-login-invalid-password"))
+                .filter(documentWithTag("auth/post-login-invalid-password",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("SignInRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -238,7 +276,17 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-login-success"))
+                .filter(documentWithTag("auth/post-login-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("로그인")
+                                .description("로그인을 진행하고 AccessToken과 RefreshToken을 쿠키에 발급합니다. 성공 시 200 OK, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .requestSchema(Schema.schema("SignInRequest"))
+                                .requestFields(
+                                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("아이디"),
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -269,7 +317,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-logout-success"))
+                .filter(documentWithTag("auth/post-logout-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("로그아웃")
+                                .description("로그아웃을 진행하고 쿠키의 토큰을 만료시킵니다. 성공 시 204 No Content를 반환합니다.")
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .cookie("refreshToken", refreshToken)
                 .log().all().contentType(ContentType.JSON)
@@ -310,7 +363,16 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         LoginStatusDto response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/get-isLoggedIn-success"))
+                .filter(documentWithTag("auth/get-isLoggedIn-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("로그인 상태 확인")
+                                .description("현재 로그인 상태인지 확인합니다. 성공 시 200 OK, 실패 시 204 No Content를 반환합니다.")
+                                .responseSchema(Schema.schema("LoginStatusDto"))
+                                .responseFields(
+                                        fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 ID")
+                                )
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .log().all().contentType(ContentType.JSON)
                 .when()
@@ -334,7 +396,10 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/get-isLoggedIn-noAccessToken"))
+                .filter(documentWithTag("auth/get-isLoggedIn-noAccessToken",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/auth/check")
@@ -363,7 +428,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response reissueResponse = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-reissue-success"))
+                .filter(documentWithTag("auth/post-reissue-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("토큰 재발급")
+                                .description("RefreshToken을 이용하여 AccessToken과 RefreshToken을 재발급합니다. 성공 시 200 OK, 실패 시 401 Unauthorized를 반환합니다.")
+                                .build())))
                 .log().all()
                 .cookie("accessToken", accessToken)
                 .cookie("refreshToken", refreshToken)
@@ -391,7 +461,11 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response reissueResponse = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-reissue-invalid-token"))
+                .filter(documentWithTag("auth/post-reissue-invalid-token",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all()
                 .cookie("accessToken", accessToken)
                 .cookie("refreshToken", refreshToken)
@@ -410,7 +484,11 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response reissueResponse = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-reissue-no-token"))
+                .filter(documentWithTag("auth/post-reissue-no-token",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all()
                 .when()
                 .post("/reissue");
@@ -445,7 +523,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-signup-duplicated-login-id"))
+                .filter(documentWithTag("auth/post-signup-duplicated-login-id",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("SignUpRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -465,7 +548,16 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-validate-id-success"))
+                .filter(documentWithTag("auth/post-validate-id-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("아이디 중복 확인")
+                                .description("아이디 중복 여부를 확인합니다. 성공 시 200 OK, 실패 시 400 Bad Request를 반환합니다.")
+                                .requestSchema(Schema.schema("ValidateDuplicateLoginIdRequest"))
+                                .requestFields(
+                                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("확인할 아이디")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -505,7 +597,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-validate-id-duplicated"))
+                .filter(documentWithTag("auth/post-validate-id-duplicated",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("ValidateDuplicateLoginIdRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -526,7 +623,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         // then
         RestAssured.given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-auth-code-invalid-phoneNumber"))
+                .filter(documentWithTag("auth/post-auth-code-invalid-phoneNumber",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("VerifyPhoneNumberRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -552,7 +654,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-auth-code-verify-invalid-code"))
+                .filter(documentWithTag("auth/post-auth-code-verify-invalid-code",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("VerificationCodeRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -578,7 +685,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-auth-code-verify-expired-code"))
+                .filter(documentWithTag("auth/post-auth-code-verify-expired-code",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("VerificationCodeRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -605,7 +717,17 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-auth-code-verify-success"))
+                .filter(documentWithTag("auth/post-auth-code-verify-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("인증 코드 확인")
+                                .description("전화번호 인증 코드를 확인합니다. 성공 시 200 OK, 실패 시 400 Bad Request를 반환합니다.")
+                                .requestSchema(Schema.schema("VerificationCodeRequest"))
+                                .requestFields(
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호"),
+                                        fieldWithPath("code").type(JsonFieldType.STRING).description("인증 코드")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -638,7 +760,21 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         LoginIdResponse actual = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/get-login-id-success"))
+                .filter(documentWithTag("auth/get-login-id-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("아이디 찾기")
+                                .description("이름과 전화번호로 아이디를 찾습니다. 성공 시 200 OK, 실패 시 404 Not Found를 반환합니다.")
+                                .requestSchema(Schema.schema("FindLoginIdRequest"))
+                                .requestFields(
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                )
+                                .responseSchema(Schema.schema("LoginIdResponse"))
+                                .responseFields(
+                                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("찾은 아이디")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -664,7 +800,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/get-login-id-fail"))
+                .filter(documentWithTag("auth/get-login-id-fail",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("FindLoginIdRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -702,7 +843,18 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-reset-password-success"))
+                .filter(documentWithTag("auth/post-reset-password-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("비밀번호 재설정")
+                                .description("아이디와 전화번호 인증 후 비밀번호를 재설정합니다. 성공 시 204 No Content, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .requestSchema(Schema.schema("ResetPasswordRequest"))
+                                .requestFields(
+                                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("아이디"),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호"),
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("새로운 비밀번호")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -742,7 +894,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-reset-password-fail-no-verification"))
+                .filter(documentWithTag("auth/post-reset-password-fail-no-verification",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("ResetPasswordRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -781,7 +938,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-reset-password-fail-invalid-info"))
+                .filter(documentWithTag("auth/post-reset-password-fail-invalid-info",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("ResetPasswordRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .body(request)
@@ -799,7 +961,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .redirects().follow(false) // 리다이랙트 자동 이동 방지
-                .filter(documentWithTag("auth/get-kakao-login"))
+                .filter(documentWithTag("auth/get-kakao-login",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("카카오 로그인 리다이렉트")
+                                .description("카카오 로그인 페이지로 리다이렉트합니다. 성공 시 302 Found를 반환합니다.")
+                                .build())))
                 .log().all()
                 .when()
                 .get("/kakao/login")
@@ -824,7 +991,18 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-oauth-signup-success"))
+                .filter(documentWithTag("auth/post-oauth-signup-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("OAuth 회원가입")
+                                .description("OAuth 인증 후 추가 정보를 입력하여 회원가입을 완료합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 401 Unauthorized를 반환합니다.")
+                                .requestSchema(Schema.schema("OauthSignUpRequest"))
+                                .requestFields(
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                                        fieldWithPath("gender").type(JsonFieldType.STRING).description("성별 (MALE, FEMALE)"),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                )
+                                .build())))
                 .cookie("oauthSignUpToken", oauthSignUpToken)
                 .log().all().contentType(ContentType.JSON)
                 .body(request)
@@ -853,7 +1031,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-oauth-signup-fail-invalid-token"))
+                .filter(documentWithTag("auth/post-oauth-signup-fail-invalid-token",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("OauthSignUpRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .cookie("oauthSignUpToken", invalidToken)
                 .log().all().contentType(ContentType.JSON)
                 .body(request)
@@ -877,7 +1060,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("auth/post-oauth-signup-fail-invalid-input"))
+                .filter(documentWithTag("auth/post-oauth-signup-fail-invalid-input",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .requestSchema(Schema.schema("OauthSignUpRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .cookie("oauthSignUpToken", oauthSignUpToken)
                 .log().all().contentType(ContentType.JSON)
                 .body(request)
@@ -917,7 +1105,12 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .redirects().follow(false)
-                .filter(documentWithTag("auth/get-kakao-callback-login"))
+                .filter(documentWithTag("auth/get-kakao-callback-login",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .summary("카카오 로그인 콜백")
+                                .description("카카오 로그인 성공 시 메인 페이지로 리다이렉트합니다. 성공 시 302 Found, 실패 시 400 Bad Request를 반환합니다.")
+                                .build())))
                 .queryParam("code", code)
                 .queryParam("state", state)
                 .log().all()
@@ -960,7 +1153,10 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .redirects().follow(false)
-                .filter(documentWithTag("auth/get-kakao-callback-signup"))
+                .filter(documentWithTag("auth/get-kakao-callback-signup",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .build())))
                 .queryParam("code", code)
                 .queryParam("state", state)
                 .log().all()
@@ -993,7 +1189,11 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .redirects().follow(false)
-                .filter(documentWithTag("auth/get-kakao-callback-fail"))
+                .filter(documentWithTag("auth/get-kakao-callback-fail",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("인증")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .queryParam("code", code)
                 .queryParam("state", state)
                 .log().all()

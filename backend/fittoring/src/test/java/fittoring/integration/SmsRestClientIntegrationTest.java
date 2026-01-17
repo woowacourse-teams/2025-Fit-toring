@@ -1,7 +1,9 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import fittoring.IntegrationTestSupport;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.SmsAuthHeaderGenerator;

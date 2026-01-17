@@ -1,5 +1,10 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
@@ -32,6 +37,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -104,7 +110,35 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         ChatRoomInfoResponse response = RestAssured
                 .given(spec)
                 .log().all().contentType(ContentType.JSON)
-                .filter(documentWithTag("chat_room/get-chatroom-success"))
+                .filter(documentWithTag("chat_room/get-chatroom-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("채팅")
+                                .summary("채팅방 정보 조회")
+                                .description("채팅방의 상세 정보를 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("ChatRoomInfoResponse"))
+                                .responseFields(
+                                        fieldWithPath("mentorName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토 이름"),
+                                        fieldWithPath("price")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("멘토링 가격"),
+                                        fieldWithPath("profileImageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토링 프로필 이미지 URL").optional(),
+                                        fieldWithPath("mentoringId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("멘토링 id"),
+                                        fieldWithPath("myRole")
+                                                .type(JsonFieldType.STRING)
+                                                .description("내 역할 (MENTOR | MENTEE)"),
+                                        fieldWithPath("opponentName")
+                                                .type(JsonFieldType.STRING).description("상대방 이름"),
+                                        fieldWithPath("status")
+                                                .type(JsonFieldType.STRING)
+                                                .description("채팅방 상태 (ACTIVATE, DEACTIVATE)")
+                                )
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .when()
                 .get("/chatrooms/{chatRoomId}", chatRoom.getId())
@@ -164,7 +198,10 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         ChatRoomInfoResponse response = RestAssured
                 .given(spec)
                 .log().all().contentType(ContentType.JSON)
-                .filter(documentWithTag("chat_room/get-chatroom-success-non-mentoring-profile-image"))
+                .filter(documentWithTag("chat_room/get-chatroom-success-non-mentoring-profile-image",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("채팅")
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .when()
                 .get("/chatrooms/{chatRoomId}", chatRoom.getId())
@@ -224,7 +261,42 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         ChatMessagePaginationResponse firstResponse = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("chatMessage/get-chatMessage-page-success-first"))
+                .filter(documentWithTag("chatMessage/get-chatMessage-page-success-first",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("채팅")
+                                .summary("채팅 메시지 조회")
+                                .description("채팅방의 메시지 기록을 페이징하여 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("ChatMessagePaginationResponse"))
+                                .responseFields(
+                                        fieldWithPath("chatMessages").type(JsonFieldType.ARRAY)
+                                                .description("채팅 메시지 목록"),
+                                        fieldWithPath("chatMessages[].chatMessageId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("채팅 메시지 ID"),
+                                        fieldWithPath("chatMessages[].tempId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("임시 메시지 ID")
+                                                .optional(),
+                                        fieldWithPath("chatMessages[].chatRoomId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("채팅방 ID"),
+                                        fieldWithPath("chatMessages[].senderId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("보낸 사람 ID"),
+                                        fieldWithPath("chatMessages[].content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("메시지 내용"),
+                                        fieldWithPath("chatMessages[].createdAt")
+                                                .type(JsonFieldType.STRING)
+                                                .description("메시지 생성 시각"),
+                                        fieldWithPath("hasNext")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("다음 페이지 존재 여부"),
+                                        fieldWithPath("nextCursorCode")
+                                                .type(JsonFieldType.STRING)
+                                                .description("다음 페이지 커서 코드").optional()
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
