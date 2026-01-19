@@ -7,6 +7,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
@@ -104,7 +105,8 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("리뷰")
                                 .summary("리뷰 작성")
-                                .description("완료된 멘토링에 대해 리뷰를 작성합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .description(
+                                        "완료된 멘토링에 대해 리뷰를 작성합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
                                 .requestSchema(Schema.schema("ReviewCreateRequest"))
                                 .requestFields(
                                         fieldWithPath("reservationId")
@@ -323,23 +325,8 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 rating,
                 content
         );
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("review/post-reviews-success-first",
-                        resource(ResourceSnippetParameters.builder()
-                                .tag("리뷰")
-                                .summary("리뷰 작성 (첫 번째)")
-                                .description("첫 번째 리뷰 작성은 성공합니다.")
-                                .requestSchema(Schema.schema("ReviewCreateRequest"))
-                                .build())))
-                .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .body(requestBody)
-                .when()
-                .post("/reviews")
-                .then().log().all()
-                .statusCode(201);
+
+        reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
         // when
         // then
@@ -682,9 +669,15 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("review/patch-reviews-id-success-rating",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("리뷰")
-                                .summary("리뷰 수정 - 별점")
-                                .description("리뷰의 별점을 수정합니다. 성공 시 200 OK를 반환합니다.")
+                                .summary("리뷰 수정")
+                                .description("리뷰의 별점 or 내용을 수정합니다. 성공 시 200 OK를 반환합니다.")
                                 .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("rating").type(JsonFieldType.NUMBER).description("평점 (1~5)")
+                                                .optional(),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("리뷰 내용")
+                                                .optional()
+                                )
                                 .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
@@ -749,9 +742,13 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("review/patch-reviews-id-success-content",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("리뷰")
-                                .summary("리뷰 수정 - 내용")
-                                .description("리뷰의 내용을 수정합니다. 성공 시 200 OK를 반환합니다.")
                                 .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("rating").type(JsonFieldType.NUMBER).description("평점 (1~5)")
+                                                .optional(),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("리뷰 내용")
+                                                .optional()
+                                )
                                 .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
@@ -951,7 +948,8 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("리뷰")
                                 .summary("리뷰 삭제")
-                                .description("리뷰를 삭제합니다. 성공 시 204 No Content, 실패 시 403 Forbidden 또는 404 Not Found를 반환합니다.")
+                                .description(
+                                        "리뷰를 삭제합니다. 성공 시 204 No Content, 실패 시 403 Forbidden 또는 404 Not Found를 반환합니다.")
                                 .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))

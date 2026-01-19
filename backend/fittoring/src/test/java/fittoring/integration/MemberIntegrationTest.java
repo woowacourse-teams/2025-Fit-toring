@@ -9,7 +9,6 @@ import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
-import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Gender;
@@ -33,9 +32,9 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수가 있다.")
+    @DisplayName("로그인 중에 사용자는 자신의 정보를 조회할 수가 있다.")
     @Test
-    void loginGetMyInfoForMentee() {
+    void loginGetMyInfo() {
         // given
         Member mentee = memberRepository.save(
                 new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
@@ -49,11 +48,12 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("member/get-members-me-success",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("회원")
-                                .summary("내 정보 조회 (멘티)")
-                                .description("로그인한 멘티의 정보를 조회합니다. 성공 시 200 OK, 실패 시 401 Unauthorized를 반환합니다.")
+                                .summary("자신의 정보 조회")
+                                .description("로그인한 사용자 정보를 조회합니다. 성공 시 200 OK, 실패 시 401 Unauthorized를 반환합니다.")
                                 .responseSchema(Schema.schema("MemberInfoResponse"))
                                 .responseFields(
-                                        fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 URL").optional(),
+                                        fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 URL")
+                                                .optional(),
                                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("로그인 ID"),
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
                                         fieldWithPath("gender").type(JsonFieldType.STRING).description("성별"),
@@ -68,44 +68,6 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .statusCode(200)
                 .body("loginId", Matchers.equalTo("id"))
                 .body("name", Matchers.equalTo("멘티1"));
-    }
-
-    @DisplayName("로그인 중에 멘토는 내 정보를 조회할 수 있다.")
-    @Test
-    void loginGetMyInfoForMentor() {
-        // given
-        Member mentor = memberRepository.save(
-                new Member("id", Gender.MALE, "멘토1", new Phone("010-1231-1231"), Password.from("pw")));
-        mentor.registerAsMentor();
-        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
-
-        // when
-        // then
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("member/get-members-me-success-mentor",
-                        resource(ResourceSnippetParameters.builder()
-                                .tag("회원")
-                                .summary("내 정보 조회 (멘토)")
-                                .description("로그인한 멘토의 정보를 조회합니다. 성공 시 200 OK, 실패 시 401 Unauthorized를 반환합니다.")
-                                .responseSchema(Schema.schema("MemberInfoResponse"))
-                                .responseFields(
-                                        fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 URL").optional(),
-                                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("로그인 ID"),
-                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
-                                        fieldWithPath("gender").type(JsonFieldType.STRING).description("성별"),
-                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
-                                )
-                                .build())))
-                .cookie("accessToken", accessToken)
-                .log().all().then()
-                .when()
-                .get("/members/me")
-                .then()
-                .statusCode(200)
-                .body("loginId", Matchers.equalTo("id"))
-                .body("name", Matchers.equalTo("멘토1"));
     }
 
     @DisplayName("비로그인 중에 멘티는 내 정보를 조회할 수 없다.")
@@ -177,8 +139,10 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                                 .requestFields(
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("이름").optional(),
                                         fieldWithPath("gender").type(JsonFieldType.STRING).description("성별").optional(),
-                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional(),
-                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호").optional()
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
+                                                .optional(),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                                .optional()
                                 )
                                 .build())))
                 .log().all()

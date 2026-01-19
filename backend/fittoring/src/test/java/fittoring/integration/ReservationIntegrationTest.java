@@ -118,7 +118,8 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("예약")
                                 .summary("멘토링 예약")
-                                .description("멘토링을 예약합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .description(
+                                        "멘토링을 예약합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
                                 .requestSchema(Schema.schema("ReservationCreateRequest"))
                                 .requestFields(
                                         fieldWithPath("content").type(JsonFieldType.STRING).description("예약 내용")
@@ -302,19 +303,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         ));
 
-        /*
-                Long reservationId,
-        Long mentoringId,
-        String mentorName,
-        String mentorProfileImage,
-        LocalDate reservedAt,
-        String content,
-        String status,
-        Long chatRoomId,
-        boolean isReviewed
-
-         */
-
         // when
         List<ParticipatedReservationResponse> response = RestAssured
                 .given(spec)
@@ -429,7 +417,7 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("reservation/get-mentorings-mine-reservation-success",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("예약")
-                                .summary("멘토링 예약 조회 (멘토)")
+                                .summary("멘토링 예약 조회")
                                 .description("멘토가 개설한 멘토링의 예약 목록을 조회합니다. 성공 시 200 OK를 반환합니다.")
                                 .responseSchema(Schema.schema("MentorMentoringReservationResponse"))
                                 .responseFields(
@@ -573,8 +561,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("reservation/get-mentorings-mine-reservation-success-multiple",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("예약")
-                                .summary("멘토링 예약 조회 (멘토 - 다중)")
-                                .description("멘토가 개설한 여러 멘토링의 예약 목록을 조회합니다.")
                                 .responseSchema(Schema.schema("MentorMentoringReservationResponse"))
                                 .build())))
                 .log().all().contentType(ContentType.JSON)
@@ -621,7 +607,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
-        Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //when
         List<MentorMentoringReservationResponse> response = RestAssured
@@ -630,8 +615,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("reservation/get-mentorings-mine-reservation-empty-success",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("예약")
-                                .summary("멘토링 예약 조회 (멘토 - 빈 목록)")
-                                .description("예약이 없는 경우 빈 목록을 반환합니다.")
                                 .responseSchema(Schema.schema("MentorMentoringReservationResponse"))
                                 .build())))
                 .log().all().contentType(ContentType.JSON)
@@ -823,8 +806,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("reservation/patch-reservations-id-status-already-patched",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("예약")
-                                .summary("예약 승인 실패 - 이미 처리됨")
-                                .description("이미 처리된 예약을 승인할 수 없습니다.")
                                 .responseSchema(Schema.schema("ErrorResponse"))
                                 .build())))
                 .log().all().contentType(ContentType.JSON)
@@ -877,8 +858,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("reservation/patch-reservations-id-status-already-patched-reject",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("예약")
-                                .summary("예약 거절 실패 - 이미 처리됨")
-                                .description("이미 처리된 예약을 거절할 수 없습니다.")
                                 .responseSchema(Schema.schema("ErrorResponse"))
                                 .build())))
                 .log().all().contentType(ContentType.JSON)
@@ -959,8 +938,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("reservation/patch-reservations-id-complete-fail",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("예약")
-                                .summary("예약 완료 실패 - 미승인")
-                                .description("승인되지 않은 예약을 완료 처리할 수 없습니다.")
                                 .responseSchema(Schema.schema("ErrorResponse"))
                                 .build())))
                 .log().all().contentType(ContentType.JSON)
