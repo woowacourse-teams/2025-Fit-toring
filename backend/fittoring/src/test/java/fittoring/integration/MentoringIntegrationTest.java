@@ -1,5 +1,6 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -125,18 +126,32 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                                 .description("새로운 멘토링을 등록합니다. 성공 시 201 Created, 실패 시 400 Bad Request를 반환합니다.")
                                 .requestSchema(Schema.schema("MentoringRegisterRequest"))
                                 .requestFields(
-                                        fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격"),
-                                        fieldWithPath("category").type(JsonFieldType.ARRAY).description("카테고리 목록"),
-                                        fieldWithPath("introduction").type(JsonFieldType.STRING).description("멘토링 소개"),
-                                        fieldWithPath("profileImageUrl").type(JsonFieldType.STRING)
+                                        fieldWithPath("price")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("가격"),
+                                        fieldWithPath("category")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("카테고리 목록"),
+                                        fieldWithPath("introduction")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토링 소개"),
+                                        fieldWithPath("profileImageUrl")
+                                                .type(JsonFieldType.STRING)
                                                 .description("프로필 이미지 URL"),
-                                        fieldWithPath("career").type(JsonFieldType.NUMBER).description("경력 (년)"),
-                                        fieldWithPath("content").type(JsonFieldType.STRING).description("한 줄 소개"),
-                                        fieldWithPath("certificateInfoRequests[].type").type(JsonFieldType.STRING)
+                                        fieldWithPath("career")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("경력 (년)"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("한 줄 소개"),
+                                        fieldWithPath("certificateInfoRequests[].type")
+                                                .type(JsonFieldType.STRING)
                                                 .description("자격증 타입 (LICENSE, DEGREE, ETC)"),
-                                        fieldWithPath("certificateInfoRequests[].title").type(JsonFieldType.STRING)
+                                        fieldWithPath("certificateInfoRequests[].title")
+                                                .type(JsonFieldType.STRING)
                                                 .description("자격증 이름"),
-                                        fieldWithPath("certificateInfoRequests[].imageUrl").type(JsonFieldType.STRING)
+                                        fieldWithPath("certificateInfoRequests[].imageUrl")
+                                                .type(JsonFieldType.STRING)
                                                 .description("자격증 이미지 URL")
                                 )
                                 .build())))
@@ -261,7 +276,47 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                                 .summary("멘토링 수정")
                                 .description(
                                         "등록된 멘토링 정보를 수정합니다. 성공 시 200 OK, 실패 시 403 Forbidden 또는 404 Not Found를 반환합니다.")
-                                .requestSchema(Schema.schema("MentoringRegisterRequest"))
+                                .requestSchema(Schema.schema("MentoringModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("price")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("가격"),
+                                        fieldWithPath("category")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("카테고리 목록"),
+                                        fieldWithPath("introduction")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토링 소개"),
+                                        fieldWithPath("career")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("경력 (년)"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("한 줄 소개"),
+                                        fieldWithPath("profileImageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("프로필 이미지 URL"),
+                                        fieldWithPath("certificateInfoRequests")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("수정할 자격증 목록")
+                                                .optional(),
+                                        fieldWithPath("certificateInfoRequests[].type")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 타입 (LICENSE, DEGREE, ETC)")
+                                                .optional(),
+                                        fieldWithPath("certificateInfoRequests[].title")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 이름")
+                                                .optional(),
+                                        fieldWithPath("certificateInfoRequests[].imageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 이미지 URL")
+                                                .optional()
+                                )
+                                .pathParameters(
+                                        parameterWithName("mentoringId")
+                                                .description("수정할 멘토링 ID")
+                                )
                                 .build())))
                 .cookie("accessToken", accessToken)
                 .contentType(ContentType.JSON)
@@ -309,7 +364,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("mentoring/modift-mentoring-fail-not-found",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("멘토링")
-                                .requestSchema(Schema.schema("MentoringRegisterRequest"))
+                                .requestSchema(Schema.schema("MentoringModifyRequest"))
                                 .responseSchema(Schema.schema("ErrorResponse"))
                                 .build())))
                 .cookie("accessToken", accessToken)
@@ -373,7 +428,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 .filter(documentWithTag("mentoring/modift-mentoring-fail-forbidden",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("멘토링")
-                                .requestSchema(Schema.schema("MentoringRegisterRequest"))
+                                .requestSchema(Schema.schema("MentoringModifyRequest"))
                                 .responseSchema(Schema.schema("ErrorResponse"))
                                 .build())))
                 .cookie("accessToken", accessToken)
@@ -833,12 +888,83 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (최신순)")
-                                    .description("멘토링 목록을 최신순으로 페이징하여 조회합니다.")
+                                    .summary("멘토링 목록 페이징 조회")
+                                    .description("""
+                                            멘토링 목록을 커서 기반 페이징으로 조회합니다.
+                                            
+                                            - 정렬 기준: CREATED_AT (최신순), RESERVATION_COUNT (예약순), AVERAGE_RATING (평점순)
+                                            - 카테고리 필터링: categoryIds 파라미터로 여러 카테고리 ID를 전달하면 해당 카테고리를 모두 포함하는 멘토링만 조회
+                                            - 페이징: cursorCode를 사용하여 다음 페이지 조회
+                                            
+                                            성공 시 200 OK, 잘못된 커서 또는 정렬 키 시 400 Bad Request를 반환합니다.""")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .responseFields(
+                                            fieldWithPath("mentoringSummaryResponses[]")
+                                                    .type(JsonFieldType.ARRAY)
+                                                    .description("멘토링 요약 정보 목록"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].id")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토링 ID"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].mentorName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토 이름"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].categories[]")
+                                                    .type(JsonFieldType.ARRAY)
+                                                    .description("멘토링 카테고리 목록"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].price")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토링 가격"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].career")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토 경력 (년차)"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].profileImageUrl")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토 프로필 이미지 URL")
+                                                    .optional(),
+
+                                            fieldWithPath("mentoringSummaryResponses[].introduction")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토링 한 줄 소개"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].ratingAverage")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("평균 평점 (소수점 1자리)")
+                                                    .optional(),
+
+                                            fieldWithPath("mentoringSummaryResponses[].ratingCount")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("리뷰 개수"),
+
+                                            fieldWithPath("nextCursorCode")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("다음 페이지 조회를 위한 커서 코드 (마지막 페이지인 경우 null)")
+                                                    .optional(),
+
+                                            fieldWithPath("hasNext")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("다음 페이지 존재 여부")
+                                    )
+                                    .queryParameters(
+                                            parameterWithName("sortKey")
+                                                    .description(
+                                                            "정렬 기준 (CREATED_AT: 최신순, RESERVATION_COUNT: 예약순, AVERAGE_RATING: 평점순)")
+                                                    .defaultValue("CREATED_AT"),
+                                            parameterWithName("cursorCode")
+                                                    .description("다음 페이지 조회를 위한 커서 코드")
+                                                    .optional(),
+                                            parameterWithName("categoryIds")
+                                                    .description("필터링할 카테고리 ID 목록 (쉼표로 구분)")
+                                                    .optional()
+                                    )
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
@@ -853,11 +979,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-next",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-with-cursor",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (다음 페이지)")
-                                    .description("커서를 이용하여 다음 페이지의 멘토링 목록을 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -984,11 +1108,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-single-category",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (카테고리 필터)")
-                                    .description("카테고리로 필터링하여 멘토링 목록을 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1111,11 +1233,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-multi-category-first",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (카테고리 필터)")
-                                    .description("카테고리로 필터링하여 멘토링 목록을 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1132,11 +1252,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-next",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-multi-category-next",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (카테고리 필터 - 다음 페이지)")
-                                    .description("카테고리로 필터링된 멘토링 목록의 다음 페이지를 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1265,11 +1383,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-reservation-count-success-first",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-reservation-count-first",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (예약순)")
-                                    .description("멘토링 목록을 예약 많은 순으로 페이징하여 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1285,11 +1401,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-reservation-count-success-next",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-reservation-count-next",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (예약순 - 다음 페이지)")
-                                    .description("예약 많은 순으로 정렬된 멘토링 목록의 다음 페이지를 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1420,11 +1534,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-reservation-count-success-first",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-reservation-count-category-first",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (예약순, 카테고리 필터)")
-                                    .description("예약 많은 순으로 정렬하고 카테고리로 필터링하여 멘토링 목록을 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1441,11 +1553,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-reservation-count-success-next",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-reservation-count-category-next",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (예약순, 카테고리 필터 - 다음 페이지)")
-                                    .description("예약 많은 순으로 정렬하고 카테고리로 필터링된 멘토링 목록의 다음 페이지를 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1577,11 +1687,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-first",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-average-rating-first",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (평점순)")
-                                    .description("평점 높은 순으로 멘토링 목록을 페이징하여 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1597,11 +1705,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-next",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-average-rating-next",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (평점순 - 다음 페이지)")
-                                    .description("평점 높은 순으로 정렬된 멘토링 목록의 다음 페이지를 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1736,11 +1842,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-first",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-average-rating-category-first",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (평점순, 카테고리 필터)")
-                                    .description("평점 높은 순으로 정렬하고 카테고리로 필터링하여 멘토링 목록을 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
@@ -1757,11 +1861,9 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-next",
+                    .filter(documentWithTag("mentoring/get-mentorings-page-average-rating-category-next",
                             resource(ResourceSnippetParameters.builder()
                                     .tag("멘토링")
-                                    .summary("멘토링 목록 조회 (평점순, 카테고리 필터 - 다음 페이지)")
-                                    .description("평점 높은 순으로 정렬하고 카테고리로 필터링된 멘토링 목록의 다음 페이지를 조회합니다.")
                                     .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
                                     .build())))
                     .log().all().contentType(ContentType.JSON)
