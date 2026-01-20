@@ -9,7 +9,11 @@ export const postIdentityVerification = async (
 ) => {
   return await apiClient.post({
     endpoint: API_ENDPOINTS.IDENTITY_VERIFICATION,
-    body: { ...userInfo, gender: convertGenderClientToServer(userInfo.gender) },
+    body: {
+      ...userInfo,
+      gender: convertGenderClientToServer(userInfo.gender),
+      phoneNumber: userInfo.phone,
+    },
     withCredentials: true,
   });
 };
