@@ -1,7 +1,11 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.mentoring.presentation.dto.response.CategoryResponse;
 import fittoring.application.mentoring.repository.CategoryRepository;
@@ -13,6 +17,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class CategoryIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -31,7 +36,17 @@ class CategoryIntegrationTest extends AbstractApiDocumentationTest {
         List<CategoryResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("category/get-categories-success"))
+                .filter(documentWithTag("category/get-categories-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("카테고리")
+                                .summary("카테고리 목록 조회")
+                                .description("모든 카테고리 목록을 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("CategoryResponse"))
+                                .responseFields(
+                                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("카테고리 ID"),
+                                        fieldWithPath("[].title").type(JsonFieldType.STRING).description("카테고리 이름")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/categories")
@@ -57,7 +72,10 @@ class CategoryIntegrationTest extends AbstractApiDocumentationTest {
         List<CategoryResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("category/get-categories-empty"))
+                .filter(documentWithTag("category/get-categories-empty",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("카테고리")
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .when()
                 .get("/categories")

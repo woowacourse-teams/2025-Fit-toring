@@ -1,7 +1,11 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
@@ -17,6 +21,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class NotificationIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -41,7 +46,17 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("notification/post-register-device-success-1"))
+                .filter(documentWithTag("notification/post-register-device-success-1",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("알림")
+                                .summary("디바이스 등록")
+                                .description("푸시 알림을 위한 디바이스 토큰을 등록합니다. 성공 시 200 OK, 실패 시 404 Not Found 또는 409 Conflict를 반환합니다.")
+                                .requestSchema(Schema.schema("RegisterDeviceRequest"))
+                                .requestFields(
+                                        fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("회원 ID"),
+                                        fieldWithPath("pushToken").type(JsonFieldType.STRING).description("푸시 토큰")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -68,7 +83,13 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("notification/post-register-device-success-multiple"))
+                .filter(documentWithTag("notification/post-register-device-success-multiple",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("알림")
+                                .summary("디바이스 추가 등록")
+                                .description("새로운 디바이스 토큰을 추가로 등록합니다.")
+                                .requestSchema(Schema.schema("RegisterDeviceRequest"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(newRequest)
@@ -92,7 +113,12 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("notification/post-register-device-fail-not-found-user"))
+                .filter(documentWithTag("notification/post-register-device-fail-not-found-user",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("알림")
+                                .requestSchema(Schema.schema("RegisterDeviceRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -117,7 +143,12 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("notification/post-upsert-register-device-fail-duplicate-device"))
+                .filter(documentWithTag("notification/post-upsert-register-device-fail-duplicate-device",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("알림")
+                                .requestSchema(Schema.schema("RegisterDeviceRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)

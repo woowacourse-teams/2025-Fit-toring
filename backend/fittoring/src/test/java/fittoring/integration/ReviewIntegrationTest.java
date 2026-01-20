@@ -1,15 +1,22 @@
 package fittoring.integration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.presentation.dto.request.ReviewCreateRequest;
 import fittoring.application.review.presentation.dto.request.ReviewModifyRequest;
+import fittoring.application.review.presentation.dto.response.MemberReviewGetResponse;
+import fittoring.application.review.presentation.dto.response.ReviewCreateResponse;
+import fittoring.application.review.presentation.dto.response.ReviewGetResponse;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
@@ -21,10 +28,14 @@ import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class ReviewIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -87,11 +98,41 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         );
 
         // when
-        // then
-        RestAssured
+        ReviewCreateResponse response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-reviews-success"))
+                .filter(documentWithTag("review/post-reviews-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("리뷰 작성")
+                                .description(
+                                        "완료된 멘토링에 대해 리뷰를 작성합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .requestFields(
+                                        fieldWithPath("reservationId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("예약 ID"),
+                                        fieldWithPath("rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("평점 (1~5)"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 내용")
+                                                .optional()
+                                )
+                                .responseSchema(Schema.schema("ReviewCreateResponse"))
+                                .responseFields(
+                                        fieldWithPath("mentoringId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰가 작성된 멘토링 ID"),
+                                        fieldWithPath("rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 평점 (1~5)"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 내용")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -99,10 +140,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .post("/reviews")
                 .then().log().all()
                 .statusCode(201)
-                .body(
-                        "rating", equalTo(rating),
-                        "content", equalTo(content)
-                );
+                .extract()
+                .as(ReviewCreateResponse.class);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.rating()).isEqualTo(rating);
+            softly.assertThat(response.content()).isEqualTo(content);
+        });
     }
 
     @DisplayName("존재하지 않는 멤버가 리뷰 작성을 요청하면 404 Not Found를 반환한다")
@@ -152,7 +197,12 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-reviews-fail-member-not-found"))
+                .filter(documentWithTag("review/post-reviews-fail-member-not-found",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessTokenWithUnexistMemberId)
                 .body(requestBody)
@@ -218,7 +268,12 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-mentorings-id-review-have-not-reserved"))
+                .filter(documentWithTag("review/post-mentorings-id-review-have-not-reserved",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessTokenWithAnotherMember)
                 .body(requestBody)
@@ -270,24 +325,20 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 rating,
                 content
         );
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("review/post-reviews-success-first"))
-                .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .body(requestBody)
-                .when()
-                .post("/reviews")
-                .then().log().all()
-                .statusCode(201);
+
+        reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
 
         // when
         // then
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-mentorings-id-review-already-reviewed"))
+                .filter(documentWithTag("review/post-mentorings-id-review-already-reviewed",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -345,7 +396,12 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-reviews-mentoring-not-completed"))
+                .filter(documentWithTag("review/post-reviews-mentoring-not-completed",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -421,18 +477,42 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         // when
-        // then
-        RestAssured
+        List<MemberReviewGetResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/get-reviews-mine-success"))
+                .filter(documentWithTag("review/get-reviews-mine-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("내 리뷰 조회")
+                                .description("내가 작성한 리뷰 목록을 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("ReviewListResponse"))
+                                .responseFields(
+                                        fieldWithPath("[].id")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 ID"),
+                                        fieldWithPath("[].createdAt")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 작성 날짜 (yyyy-MM-dd)"),
+                                        fieldWithPath("[].rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 평점 (1~5)"),
+                                        fieldWithPath("[].content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 내용")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
                 .get("/reviews/mine")
                 .then().log().all()
                 .statusCode(200)
-                .body("", hasSize(2));
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(response).hasSize(2);
     }
 
     @DisplayName("특정 멘토링에 달린 리뷰 조회 성공 시 200 OK를 반환한다")
@@ -495,17 +575,45 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
 
         // when
         // then
-        RestAssured
+        List<ReviewGetResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/get-mentorings-id-reviews-success"))
+                .filter(documentWithTag("review/get-mentorings-id-reviews-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("멘토링 리뷰 조회")
+                                .description("특정 멘토링에 작성된 리뷰 목록을 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("ReviewListResponse"))
+                                .responseFields(
+                                        fieldWithPath("[].id")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 ID"),
+                                        fieldWithPath("[].reviewerName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 작성자 이름"),
+                                        fieldWithPath("[].createdAt")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 작성 날짜 (yyyy-MM-dd)"),
+                                        fieldWithPath("[].rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 평점 (1~5)"),
+                                        fieldWithPath("[].content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 내용")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
                 .get("/mentorings/{mentoringId}/reviews", mentoring.getId())
                 .then().log().all()
                 .statusCode(200)
-                .body("", hasSize(2));
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(response).hasSize(2);
     }
 
     @DisplayName("본인이 남긴 리뷰의 별점을 수정 완료하면 200 OK를 반환한다")
@@ -558,7 +666,19 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/patch-reviews-id-success-rating"))
+                .filter(documentWithTag("review/patch-reviews-id-success-rating",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("리뷰 수정")
+                                .description("리뷰의 별점 or 내용을 수정합니다. 성공 시 200 OK를 반환합니다.")
+                                .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("rating").type(JsonFieldType.NUMBER).description("평점 (1~5)")
+                                                .optional(),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("리뷰 내용")
+                                                .optional()
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
@@ -566,6 +686,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
+
     }
 
     @DisplayName("본인이 남긴 리뷰의 내용을 수정 완료하면 200 OK를 반환한다")
@@ -618,7 +739,17 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/patch-reviews-id-success-content"))
+                .filter(documentWithTag("review/patch-reviews-id-success-content",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("rating").type(JsonFieldType.NUMBER).description("평점 (1~5)")
+                                                .optional(),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("리뷰 내용")
+                                                .optional()
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
@@ -679,7 +810,19 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/patch-reviews-id-success"))
+                .filter(documentWithTag("review/patch-reviews-id-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("리뷰 수정")
+                                .description("리뷰의 별점과 내용을 수정합니다. 성공 시 200 OK를 반환합니다.")
+                                .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("rating").type(JsonFieldType.NUMBER).description("평점 (1~5)")
+                                                .optional(),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("리뷰 내용")
+                                                .optional()
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
@@ -743,7 +886,12 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/patch-reviews-id-not-mine"))
+                .filter(documentWithTag("review/patch-reviews-id-not-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .body(requestBody)
@@ -796,7 +944,13 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/delete-reviews-id-success"))
+                .filter(documentWithTag("review/delete-reviews-id-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("리뷰 삭제")
+                                .description(
+                                        "리뷰를 삭제합니다. 성공 시 204 No Content, 실패 시 403 Forbidden 또는 404 Not Found를 반환합니다.")
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
@@ -822,7 +976,12 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/delete-reviews-id-fail-not-found"))
+                .filter(documentWithTag("review/delete-reviews-id-fail-not-found",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ErrorResponse"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
@@ -881,7 +1040,12 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/delete-reviews-id-not-mine"))
+                .filter(documentWithTag("review/delete-reviews-id-not-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ErrorResponse"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .when()
