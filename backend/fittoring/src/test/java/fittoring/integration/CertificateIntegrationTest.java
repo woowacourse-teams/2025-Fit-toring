@@ -1,7 +1,10 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
@@ -45,7 +48,12 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("certificate/delete-certificate-success"))
+                .filter(documentWithTag("certificate/delete-certificate-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("자격증")
+                                .summary("자격증 삭제")
+                                .description("등록된 자격증을 삭제합니다. 성공 시 204 No Content, 실패 시 403 Forbidden 또는 404 Not Found를 반환합니다.")
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -72,7 +80,11 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("certificate/delete-certificate-fail-not-owner"))
+                .filter(documentWithTag("certificate/delete-certificate-fail-not-owner",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("자격증")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -93,7 +105,11 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("certificate/delete-certificate-fail-not-found"))
+                .filter(documentWithTag("certificate/delete-certificate-fail-not-found",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("자격증")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()

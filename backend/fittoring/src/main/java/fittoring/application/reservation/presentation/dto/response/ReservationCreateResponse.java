@@ -5,7 +5,7 @@ import fittoring.domain.model.Reservation;
 public record ReservationCreateResponse(
         String mentorName,
         String menteeName,
-        String menteePhone
+        String menteePhoneNumber
 ) {
 
     public static ReservationCreateResponse from(Reservation savedReservation) {

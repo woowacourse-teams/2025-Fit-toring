@@ -1,5 +1,10 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
@@ -17,6 +22,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class MemberIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -26,9 +32,9 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("로그인 중에 멘티는 내 정보를 조회할 수가 있다.")
+    @DisplayName("로그인 중에 사용자는 자신의 정보를 조회할 수가 있다.")
     @Test
-    void loginGetMyInfoForMentee() {
+    void loginGetMyInfo() {
         // given
         Member mentee = memberRepository.save(
                 new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
@@ -39,7 +45,21 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("member/get-members-me-success"))
+                .filter(documentWithTag("member/get-members-me-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .summary("자신의 정보 조회")
+                                .description("로그인한 사용자 정보를 조회합니다. 성공 시 200 OK, 실패 시 401 Unauthorized를 반환합니다.")
+                                .responseSchema(Schema.schema("MemberInfoResponse"))
+                                .responseFields(
+                                        fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 URL")
+                                                .optional(),
+                                        fieldWithPath("loginId").type(JsonFieldType.STRING).description("로그인 ID"),
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                                        fieldWithPath("gender").type(JsonFieldType.STRING).description("성별"),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                )
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .log().all()
                 .when()
@@ -48,31 +68,6 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .statusCode(200)
                 .body("loginId", Matchers.equalTo("id"))
                 .body("name", Matchers.equalTo("멘티1"));
-    }
-
-    @DisplayName("로그인 중에 멘토는 내 정보를 조회할 수 있다.")
-    @Test
-    void loginGetMyInfoForMentor() {
-        // given
-        Member mentor = memberRepository.save(
-                new Member("id", Gender.MALE, "멘토1", new Phone("010-1231-1231"), Password.from("pw")));
-        mentor.registerAsMentor();
-        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
-
-        // when
-        // then
-        RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("member/get-members-me-success-mentor"))
-                .cookie("accessToken", accessToken)
-                .log().all().then()
-                .when()
-                .get("/members/me")
-                .then()
-                .statusCode(200)
-                .body("loginId", Matchers.equalTo("id"))
-                .body("name", Matchers.equalTo("멘토1"));
     }
 
     @DisplayName("비로그인 중에 멘티는 내 정보를 조회할 수 없다.")
@@ -84,7 +79,11 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("member/get-members-me-unauthorized"))
+                .filter(documentWithTag("member/get-members-me-unauthorized",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .cookie("accessToken", null)
                 .when()
                 .get("/members/me")
@@ -131,7 +130,21 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .filter(documentWithTag("member/patch-memberInfo-success-partial"))
+                .filter(documentWithTag("member/patch-memberInfo-success-partial",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .summary("회원 정보 수정")
+                                .description("회원 정보를 수정합니다. 성공 시 204 No Content, 실패 시 400 Bad Request를 반환합니다.")
+                                .requestSchema(Schema.schema("MemberInfoUpdateRequest"))
+                                .requestFields(
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름").optional(),
+                                        fieldWithPath("gender").type(JsonFieldType.STRING).description("성별").optional(),
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
+                                                .optional(),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                                .optional()
+                                )
+                                .build())))
                 .log().all()
                 .body(request)
                 .when()
@@ -177,7 +190,13 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .filter(documentWithTag("member/patch-memberInfo-success-optional"))
+                .filter(documentWithTag("member/patch-memberInfo-success-optional",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .summary("회원 정보 수정 - 선택적 수정")
+                                .description("일부 정보만 선택하여 수정할 수 있습니다. 성공 시 204 No Content를 반환합니다.")
+                                .requestSchema(Schema.schema("MemberInfoUpdateRequest"))
+                                .build())))
                 .log().all()
                 .body(request)
                 .when()
@@ -227,7 +246,12 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .filter(documentWithTag("member/patch-memberInfo-fail-duplicated-phoneNumber"))
+                .filter(documentWithTag("member/patch-memberInfo-fail-duplicated-phoneNumber",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .requestSchema(Schema.schema("MemberInfoUpdateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all()
                 .body(request)
                 .when()
@@ -259,7 +283,12 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
-                .filter(documentWithTag("member/patch-memberInfo-fail-empty-request"))
+                .filter(documentWithTag("member/patch-memberInfo-fail-empty-request",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .requestSchema(Schema.schema("MemberInfoUpdateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all()
                 .body(request)
                 .when()
@@ -280,7 +309,17 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         MyInfoSummaryResponse actual = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("member/get-members-summary-success"))
+                .filter(documentWithTag("member/get-members-summary-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .summary("내 요약 정보 조회")
+                                .description("로그인한 회원의 요약 정보를 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("MyInfoSummaryResponse"))
+                                .responseFields(
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                )
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .log().all()
                 .when()

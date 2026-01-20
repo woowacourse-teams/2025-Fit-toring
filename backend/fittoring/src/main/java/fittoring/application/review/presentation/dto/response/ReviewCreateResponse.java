@@ -4,5 +4,4 @@ public record ReviewCreateResponse(
         Long mentoringId,
         int rating,
         String content) {
-
 }

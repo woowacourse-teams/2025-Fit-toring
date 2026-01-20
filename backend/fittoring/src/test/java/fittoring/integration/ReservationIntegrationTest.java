@@ -1,9 +1,12 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
@@ -15,6 +18,7 @@ import fittoring.application.mentoring.repository.CategoryRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.mentoring.service.dto.MentorMentoringReservationResponse;
 import fittoring.application.reservation.presentation.dto.request.ReservationCreateRequest;
+import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
@@ -40,6 +44,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -109,7 +114,24 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         ReservationCreateResponse response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/post-mentorings-id-reservation-success"))
+                .filter(documentWithTag("reservation/post-mentorings-id-reservation-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .summary("멘토링 예약")
+                                .description(
+                                        "멘토링을 예약합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .requestSchema(Schema.schema("ReservationCreateRequest"))
+                                .requestFields(
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("예약 내용")
+                                )
+                                .responseSchema(Schema.schema("ReservationCreateResponse"))
+                                .responseFields(
+                                        fieldWithPath("mentorName").type(JsonFieldType.STRING).description("멘토 이름"),
+                                        fieldWithPath("menteeName").type(JsonFieldType.STRING).description("멘티 이름"),
+                                        fieldWithPath("menteePhoneNumber").type(JsonFieldType.STRING)
+                                                .description("멘티 전화번호")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -160,7 +182,12 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/post-mentorings-id-reservation-mentoring-is-mine"))
+                .filter(documentWithTag("reservation/post-mentorings-id-reservation-mentoring-is-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .requestSchema(Schema.schema("ReservationCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", mentorAccessToken)
                 .body(requestBody)
@@ -195,7 +222,12 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/post-mentorings-id-reservation-not-found"))
+                .filter(documentWithTag("reservation/post-mentorings-id-reservation-not-found",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .requestSchema(Schema.schema("ReservationCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(request)
@@ -272,18 +304,59 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
 
         // when
-        // then
-        RestAssured
+        List<ParticipatedReservationResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/get-reservations-participated-success"))
+                .filter(documentWithTag("reservation/get-reservations-participated-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .summary("내 예약 조회")
+                                .description("내가 신청한 예약 목록을 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("ParticipatedReservationResponse"))
+                                .responseFields(
+                                        fieldWithPath("[].reservationId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("예약 ID"),
+                                        fieldWithPath("[].mentoringId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("멘토링 ID"),
+                                        fieldWithPath("[].mentorName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토 이름"),
+                                        fieldWithPath("[].mentorProfileImage")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토 프로필 이미지 URL")
+                                                .optional(),
+                                        fieldWithPath("[].reservedAt")
+                                                .type(JsonFieldType.STRING)
+                                                .description("예약 날짜"),
+                                        fieldWithPath("[].content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("예약 내용"),
+                                        fieldWithPath("[].status")
+                                                .type(JsonFieldType.STRING)
+                                                .description("예약 상태"),
+                                        fieldWithPath("[].chatRoomId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("채팅방 ID")
+                                                .optional(),
+                                        fieldWithPath("[].isReviewed")
+                                                .type(JsonFieldType.BOOLEAN)
+                                                .description("리뷰 작성 여부")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
                 .get("/reservations/participated")
                 .then()
                 .statusCode(200)
-                .body("", hasSize(2));
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(response).hasSize(2);
     }
 
     @DisplayName("멘토가 개설한 단일 멘토링의 모든 예약을 조회하면 상태코드 200 OK와 예약 정보를 반환한다.")
@@ -341,7 +414,53 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         List<MentorMentoringReservationResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/get-mentorings-mine-reservation-success"))
+                .filter(documentWithTag("reservation/get-mentorings-mine-reservation-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .summary("멘토링 예약 조회")
+                                .description("멘토가 개설한 멘토링의 예약 목록을 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("MentorMentoringReservationResponse"))
+                                .responseFields(
+                                        fieldWithPath("[].reservationId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("예약 ID"),
+
+                                        fieldWithPath("[].menteeName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘티 이름"),
+
+                                        fieldWithPath("[].phoneNumber")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘티 전화번호")
+                                                .optional(),
+
+                                        fieldWithPath("[].price")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("멘토링 가격"),
+
+                                        fieldWithPath("[].content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토링 요청 내용"),
+
+                                        fieldWithPath("[].status")
+                                                .type(JsonFieldType.STRING)
+                                                .description("예약 상태 (PENDING, APPROVED, REJECTED)"),
+
+                                        fieldWithPath("[].chatRoomId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("채팅방 ID")
+                                                .optional(),
+
+                                        fieldWithPath("[].chatStatus")
+                                                .type(JsonFieldType.STRING)
+                                                .description("채팅방 상태")
+                                                .optional(),
+
+                                        fieldWithPath("[].createdAt")
+                                                .type(JsonFieldType.STRING)
+                                                .description("예약 생성 일시")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -439,7 +558,11 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         List<MentorMentoringReservationResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/get-mentorings-mine-reservation-success-multiple"))
+                .filter(documentWithTag("reservation/get-mentorings-mine-reservation-success-multiple",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .responseSchema(Schema.schema("MentorMentoringReservationResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -484,13 +607,16 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         //멘토링 생성
         Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
-        Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //when
         List<MentorMentoringReservationResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/get-mentorings-mine-reservation-empty-success"))
+                .filter(documentWithTag("reservation/get-mentorings-mine-reservation-empty-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .responseSchema(Schema.schema("MentorMentoringReservationResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -550,7 +676,12 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/patch-reservations-id-approve-success"))
+                .filter(documentWithTag("reservation/patch-reservations-id-approve-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .summary("예약 승인")
+                                .description("예약을 승인합니다. 성공 시 200 OK, 실패 시 400 Bad Request를 반환합니다.")
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -612,7 +743,12 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/patch-reservations-id-reject-success"))
+                .filter(documentWithTag("reservation/patch-reservations-id-reject-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .summary("예약 거절")
+                                .description("예약을 거절합니다. 성공 시 200 OK, 실패 시 400 Bad Request를 반환합니다.")
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -667,7 +803,11 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/patch-reservations-id-status-already-patched"))
+                .filter(documentWithTag("reservation/patch-reservations-id-status-already-patched",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -715,7 +855,11 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/patch-reservations-id-status-already-patched-reject"))
+                .filter(documentWithTag("reservation/patch-reservations-id-status-already-patched-reject",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -747,7 +891,12 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/patch-reservations-id-complete-success"))
+                .filter(documentWithTag("reservation/patch-reservations-id-complete-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .summary("예약 완료")
+                                .description("예약을 완료 처리합니다. 성공 시 200 OK, 실패 시 400 Bad Request 또는 403 Forbidden을 반환합니다.")
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -786,7 +935,11 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Response response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/patch-reservations-id-complete-fail"))
+                .filter(documentWithTag("reservation/patch-reservations-id-complete-fail",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -819,7 +972,13 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/patch-reservations-forbidden-fail"))
+                .filter(documentWithTag("reservation/patch-reservations-forbidden-fail",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .summary("예약 완료 실패 - 권한 없음")
+                                .description("자신의 예약이 아닌 경우 완료 처리할 수 없습니다.")
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
@@ -866,7 +1025,16 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         PhoneNumberResponse response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("reservation/get-reservations-id-phoneNumber-success"))
+                .filter(documentWithTag("reservation/get-reservations-id-phoneNumber-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .summary("예약자 전화번호 조회")
+                                .description("예약자의 전화번호를 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("PhoneNumberResponse"))
+                                .responseFields(
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
