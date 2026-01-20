@@ -138,7 +138,7 @@ function ChatRoom() {
     const tempId = Date.now();
 
     const optimisticMsg = {
-      senderId: memberId,
+      senderId: Number(memberId),
       content: message,
       createdAt: new Date().toString(),
       chatRoomId: Number(chatRoomId),
