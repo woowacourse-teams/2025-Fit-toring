@@ -5,12 +5,12 @@ import { apiClient } from '../common/apis/apiClient';
 import { API_ENDPOINTS } from '../common/constants/apiEndpoints';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCrUhONRlAeig6WSRTrvwZBPYjIeTiC5sA',
-  authDomain: 'fittoring-dev.firebaseapp.com',
-  projectId: 'fittoring-dev',
-  storageBucket: 'fittoring-dev.firebasestorage.app',
-  messagingSenderId: '263030224988',
-  appId: '1:263030224988:web:0d8da83df7e01155b0ce99',
+  apiKey: 'AIzaSyCbmcTDZNommWF5IJjrSSD8An7OdNROewA',
+  authDomain: 'fittoring.firebaseapp.com',
+  projectId: 'fittoring',
+  storageBucket: 'fittoring.firebasestorage.app',
+  messagingSenderId: '948904127890',
+  appId: '1:948904127890:web:6c40f6a464d523bc9ba54b',
 };
 
 const app = initializeApp(firebaseConfig);
@@ -30,7 +30,7 @@ export async function requestPermissionToUser() {
 export async function fetchFcmToken() {
   const currentToken = await getToken(messaging, {
     vapidKey:
-      'BLkcntwvB-0yrGk9KF2Of72t7omeI1a8E5pL5KSxroG7yhSGE59JvUhMVZ0qZ3750u1P5cvUnSpg_TfKhbFcaRk',
+      'BBsK6Sa5h6aa286kwoR4wFWSeV3eik4UO42zsQ9tIcOpSPFJPuP16LxreaFTm6t5wI50-ct7IAlYAD4zw3ta_6A',
   });
 
   if (currentToken) {
