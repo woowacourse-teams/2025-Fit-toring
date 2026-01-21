@@ -28,3 +28,11 @@ export function isIOSPushSupported(): boolean {
 export function isPWAStandalone(): boolean {
   return window.matchMedia('(display-mode: standalone)').matches;
 }
+
+export function isNotificationSupported(): boolean {
+  return (
+    'Notification' in window &&
+    'serviceWorker' in navigator &&
+    'PushManager' in window
+  );
+}
