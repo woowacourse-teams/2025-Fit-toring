@@ -13,3 +13,14 @@ export function getIOSVersion(): number | null {
 
   return null;
 }
+
+export function isIOSPushSupported(): boolean {
+  const IOS_PUSH_MIN_VERSION = 16.4;
+  const version = getIOSVersion();
+
+  if (version === null) {
+    return false;
+  }
+
+  return version >= IOS_PUSH_MIN_VERSION;
+}
