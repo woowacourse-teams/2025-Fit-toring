@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const useAsyncLock = <T extends (...args: any[]) => Promise<any>>({
+type AsyncFn<TArgs extends unknown[], TResult> = (
+  ...args: TArgs
+) => Promise<TResult>;
+
+const useAsyncLock = <TArgs extends unknown[], TResult>({
   callback,
 }: {
-  callback: T;
+  callback: AsyncFn<TArgs, TResult>;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const lockedRef = useRef(false);
@@ -15,9 +18,7 @@ const useAsyncLock = <T extends (...args: any[]) => Promise<any>>({
   }, [callback]);
 
   const lockedCallback = useCallback(
-    async (
-      ...args: Parameters<T>
-    ): Promise<Awaited<ReturnType<T>> | undefined> => {
+    async (...args: TArgs): Promise<Awaited<TResult> | undefined> => {
       if (lockedRef.current) {
         return;
       }
