@@ -27,6 +27,8 @@ function BookingSummarySection({
         `}
         size="full"
         disabled={isLoading}
+        aria-label="예약하기"
+        aria-busy={isLoading}
       >
         {isLoading ? <LoadingSpinner /> : '예약하기'}
       </Button>
