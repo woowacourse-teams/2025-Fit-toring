@@ -26,6 +26,11 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 20MB
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_SQS_IAM_ACCESS_KEY}
+        secret-key: ${AWS_SQS_IAM_SECRET_KEY}
 
 server:
   tomcat:
