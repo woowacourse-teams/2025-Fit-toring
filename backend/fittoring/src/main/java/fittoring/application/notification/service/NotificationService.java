@@ -8,12 +8,11 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.repository.DeviceRepository;
 import fittoring.domain.model.Device;
 import fittoring.domain.model.Member;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -45,15 +44,15 @@ public class NotificationService {
         }
     }
 
-    public void notifyNewMessage(Long memberId) {
-        List<Device> devices = deviceRepository.findAllByMemberId(memberId);
-        List<Device> failedDevices = notificationSender.send(devices, "핏토링", "채팅이 도착하였습니다.");
-        deviceRepository.deleteAll(failedDevices);
-    }
-
     private void validateDeviceCount(List<Device> devices) {
         if (devices.size() >= DEVICE_LIMIT) {
             throw new TooManyDeviceException(BusinessErrorMessage.TOO_MANY_DEVICE.getMessage());
         }
+    }
+
+    public void notifyNewMessage(Long memberId) {
+        List<Device> devices = deviceRepository.findAllByMemberId(memberId);
+        List<Device> unRegisteredDevices = notificationSender.send(devices, "핏토링", "채팅이 도착하였습니다.");
+        deviceRepository.deleteAll(unRegisteredDevices);
     }
 }
