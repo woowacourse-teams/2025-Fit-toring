@@ -6,6 +6,7 @@ import {
   requestPermissionToUser,
   setupForegroundMessageListener,
 } from '../../pwa/firebase';
+import { isIOS } from '../utils/deviceDetection';
 
 const useInitializeFcm = () => {
   const isInitialized = useRef(false);
@@ -14,7 +15,7 @@ const useInitializeFcm = () => {
   useEffect(() => {
     const memberId = localStorage.getItem('memberId');
 
-    if (isInitialized.current || !memberId) {
+    if (isIOS() || isInitialized.current || !memberId) {
       return;
     }
     isInitialized.current = true;
