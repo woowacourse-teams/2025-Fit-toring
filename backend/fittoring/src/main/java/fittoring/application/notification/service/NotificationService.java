@@ -55,4 +55,9 @@ public class NotificationService {
         List<Device> devices = deviceRepository.findAllByMemberId(memberId);
         notificationSender.send(devices, notification);
     }
+
+    @Transactional
+    public void deleteDeviceByPushToken(String pushToken) {
+        deviceRepository.deleteByPushToken(pushToken);
+    }
 }
