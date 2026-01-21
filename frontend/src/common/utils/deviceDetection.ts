@@ -24,3 +24,7 @@ export function isIOSPushSupported(): boolean {
 
   return version >= IOS_PUSH_MIN_VERSION;
 }
+
+export function isPWAStandalone(): boolean {
+  return window.matchMedia('(display-mode: standalone)').matches;
+}
