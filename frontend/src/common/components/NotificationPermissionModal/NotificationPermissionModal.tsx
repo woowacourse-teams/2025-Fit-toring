@@ -26,7 +26,7 @@ function NotificationPermissionModal({
         </S_Description>
 
         <S_ButtonGroup>
-          <Button onClick={onAllow} variant="primary" size="full">
+          <Button type="button" onClick={onAllow} variant="primary" size="full">
             알림 허용하기
           </Button>
 
