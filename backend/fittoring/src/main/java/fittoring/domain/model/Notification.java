@@ -18,5 +18,4 @@ public class Notification {
     public void putData(String key, String value) {
         data.put(key, value);
     }
-
 }
