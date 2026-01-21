@@ -1,9 +1,9 @@
 package fittoring.infrastructure.dto;
 
+import java.util.Map;
+
 public record FcmNotificationRequest(
         String fcmToken,
-        String title,
-        String body,
-        Long memberId
+        Map<String, String> data
 ) {
 }

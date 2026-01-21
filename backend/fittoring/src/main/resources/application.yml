@@ -28,6 +28,7 @@ spring:
       max-request-size: 20MB
   cloud:
     aws:
+      region: ap-northeast2
       credentials:
         access-key: ${AWS_SQS_IAM_ACCESS_KEY}
         secret-key: ${AWS_SQS_IAM_SECRET_KEY}

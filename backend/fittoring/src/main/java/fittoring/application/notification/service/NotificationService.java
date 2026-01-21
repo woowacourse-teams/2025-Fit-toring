@@ -8,6 +8,7 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.repository.DeviceRepository;
 import fittoring.domain.model.Device;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.Notification;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -50,9 +51,8 @@ public class NotificationService {
         }
     }
 
-    public void notifyNewMessage(Long memberId) {
+    public void sendNotification(Long memberId, Notification notification) {
         List<Device> devices = deviceRepository.findAllByMemberId(memberId);
-        List<Device> unRegisteredDevices = notificationSender.send(devices, "핏토링", "채팅이 도착하였습니다.");
-        deviceRepository.deleteAll(unRegisteredDevices);
+        notificationSender.send(devices, notification);
     }
 }

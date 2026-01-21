@@ -8,15 +8,17 @@ import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.dto.ChatMessagePaginationResultDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomNotFoundException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.service.NotificationService;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Notification;
 import fittoring.util.Cursor;
 import fittoring.util.CursorCodec;
-
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final NotificationService notificationService;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public ChatMessageResponse registerMessage(Long chatRoomId, ChatMessageRequest request, Long senderId) {
@@ -41,8 +44,17 @@ public class ChatMessageService {
 
         Long opponentId = chatRoom.getOpponentIdOf(senderId);
         log.info("받을 사람 id: {}", senderId);
-        notificationService.notifyNewMessage(opponentId);
+
+        sendNewMessageNotification(chatRoomId, opponentId, chatMessage);
         return ChatMessageResponse.from(chatMessage, request.tempId());
+    }
+
+    private void sendNewMessageNotification(Long chatRoomId, Long opponentId, ChatMessage chatMessage) {
+        Member opponent = memberRepository.findById(opponentId)
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        Notification notification = new Notification(opponent.getName(), chatMessage.getContent());
+        notification.putData("chatRoomId", String.valueOf(chatRoomId));
+        notificationService.sendNotification(opponentId, notification);
     }
 
     @Transactional(readOnly = true)
