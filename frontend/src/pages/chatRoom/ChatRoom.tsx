@@ -167,12 +167,11 @@ function ChatRoom() {
     }
   }, [chatRoomMessage]);
 
-  const ChatRoomInfoQuery = useQuery<ChatRoomInfo>({
-    queryKey: ['chatRoomInfo', chatRoomId],
-    queryFn: () => getChatRoomInfo(Number(chatRoomId!)),
-  });
-
-  const chatRoomInfo = ChatRoomInfoQuery.data;
+  const { data: chatRoomInfoData, isPending: chatRoomInfoIsPending } =
+    useQuery<ChatRoomInfo>({
+      queryKey: ['chatRoomInfo', chatRoomId],
+      queryFn: () => getChatRoomInfo(Number(chatRoomId!)),
+    });
 
   const stompClientRef = useRef<Client | null>(null);
 
@@ -238,16 +237,16 @@ function ChatRoom() {
 
   return (
     <S_Container>
-      {ChatRoomInfoQuery.isPending || !chatRoomInfo ? (
+      {chatRoomInfoIsPending || !chatRoomInfoData ? (
         <div>로딩중</div>
       ) : (
         <div>
-          <ChatRoomHeader name={chatRoomInfo.opponentName} />
+          <ChatRoomHeader name={chatRoomInfoData.opponentName} />
           <MentoringActionPanel
-            mentorName={chatRoomInfo.mentorName}
-            price={chatRoomInfo.price}
-            profileImageUrl={chatRoomInfo.profileImageUrl}
-            mentorOwned={chatRoomInfo.myRole === 'MENTOR'}
+            mentorName={chatRoomInfoData.mentorName}
+            price={chatRoomInfoData.price}
+            profileImageUrl={chatRoomInfoData.profileImageUrl}
+            mentorOwned={chatRoomInfoData.myRole === 'MENTOR'}
             onPaymentRequestClick={handlePaymentRequestClick}
             onReviewRequestClick={handleReviewRequestClick}
             onEndClick={handleEndClick}
