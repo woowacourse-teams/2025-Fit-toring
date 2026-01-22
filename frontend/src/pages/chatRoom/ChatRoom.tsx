@@ -12,8 +12,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
+import ApiError from '../../common/apis/ApiError';
+
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
+import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
@@ -167,11 +170,21 @@ function ChatRoom() {
     }
   }, [chatRoomMessage]);
 
-  const { data: chatRoomInfoData, isPending: chatRoomInfoIsPending } =
-    useQuery<ChatRoomInfo>({
-      queryKey: ['chatRoomInfo', chatRoomId],
-      queryFn: () => getChatRoomInfo(Number(chatRoomId!)),
-    });
+  const {
+    data: chatRoomInfoData,
+    isPending: chatRoomInfoIsPending,
+    error,
+  } = useQuery<ChatRoomInfo, ApiError>({
+    queryKey: ['chatRoomInfo', chatRoomId],
+    queryFn: () => getChatRoomInfo(Number(chatRoomId!)),
+    retry: (failureCount, error) => {
+      if (error instanceof ApiError && error.status === 403) {
+        return false;
+      }
+
+      return failureCount < 1;
+    },
+  });
 
   const stompClientRef = useRef<Client | null>(null);
 
@@ -231,7 +244,11 @@ function ChatRoom() {
     };
   }, [capturePrevScroll, chatRoomId]);
 
-  if (!memberId) {
+  if (error?.status === 403) {
+    return <ChatRoomForbidden />;
+  }
+
+  if (error?.status === 401) {
     return <div>로그인 후 이용 가능합니다.</div>;
   }
 
