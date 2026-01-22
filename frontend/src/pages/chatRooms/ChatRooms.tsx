@@ -125,4 +125,6 @@ const S_ChatRoomListSection = styled.div`
   overflow-y: auto;
 
   flex-grow: 1;
+
+  height: calc(100% - 5.7rem);
 `;
