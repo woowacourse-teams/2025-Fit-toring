@@ -34,6 +34,7 @@ import {
   Award,
   UserCheck,
   BookOpen,
+  Smartphone,
 } from "lucide-react";
 import { CertificationManagement } from "./dashboard/CertificationManagement";
 import { MentoringManagement } from "./dashboard/MentoringManagement";
@@ -44,6 +45,7 @@ import { useAuth } from "./AuthContext";
 import { logout as apiLogout } from "../services/authApi";
 import { ROUTES } from "../constants/routes";
 import { MenteeManagement } from "./dashboard/MenteeManagement";
+import { DeviceManagement } from "./dashboard/DeviceManagement";
 
 export function Dashboard() {
   const [activeMenu, setActiveMenu] = useState("certifications");
@@ -111,6 +113,8 @@ export function Dashboard() {
         return <CertificationManagement />;
       case "mentees":
         return <MenteeManagement />;
+      case "devices":
+        return <DeviceManagement />;
       case "mentoring":
         return <MentoringManagement />;
       case "mentoring-detail":
@@ -128,6 +132,8 @@ export function Dashboard() {
         return "자격증명 관리";
       case "mentees":
         return "멘티 관리";
+      case "devices":
+        return "기기 관리";
       case "mentoring":
         return "멘토링 관리";
       case "mentoring-detail":
@@ -207,10 +213,28 @@ export function Dashboard() {
                       <SidebarMenuButton
                         tooltip="멘티 관리"
                         isActive={activeMenu === "mentees"}
-                        onClick={() => setActiveMenu("mentees")}
+                        onClick={() => {
+                          setActiveMenu("mentees");
+                          navigate(ROUTES.ROOT);
+                        }}
                       >
                         <UserCheck className="h-4 w-4" />
                         <span>멘티 관리</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    {/* 기기 관리 */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        tooltip="기기 관리"
+                        isActive={activeMenu === "devices"}
+                        onClick={() => {
+                          setActiveMenu("devices");
+                          navigate(ROUTES.ROOT);
+                        }}
+                      >
+                        <Smartphone className="h-4 w-4" />
+                        <span>기기 관리</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
 
