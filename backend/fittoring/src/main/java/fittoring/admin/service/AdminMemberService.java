@@ -17,9 +17,9 @@ public class AdminMemberService {
     @Transactional(readOnly = true)
     public PageResult<AdminMemberResponse> findAllForAdminPaged(int page, int size) {
         List<Long> ids = memberRepository.findMemberIdsForAdmin(page, size);
-        List<AdminMemberResponse> responses = memberRepository.findMembersByIdsOrdered(ids);
+        List<AdminMemberResponse> members = memberRepository.findMembersByIdsOrdered(ids);
         long total = memberRepository.count();
         int totalPages = (int) Math.max(1, (total + size - 1) / size);
-        return new PageResult<>(responses, page, responses.size(), total, totalPages);
+        return new PageResult<>(members, page, members.size(), total, totalPages);
     }
 }
