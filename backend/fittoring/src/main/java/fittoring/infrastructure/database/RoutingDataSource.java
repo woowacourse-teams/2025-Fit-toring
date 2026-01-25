@@ -20,8 +20,8 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
     protected Object determineCurrentLookupKey() {
         boolean readOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
         if (readOnly) {
-            log.debug("readOnly = true, request to replica");
-            return DataSourceType.REPLICA;
+            log.debug("readOnly = true, request to source (temporary override)");
+            return DataSourceType.SOURCE;
         }
 
         log.debug("readOnly = false, request to source");
