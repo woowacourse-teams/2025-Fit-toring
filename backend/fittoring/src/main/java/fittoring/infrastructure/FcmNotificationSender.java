@@ -4,6 +4,7 @@ import fittoring.application.notification.service.NotificationSender;
 import fittoring.domain.model.Device;
 import fittoring.domain.model.Notification;
 import fittoring.infrastructure.dto.FcmNotificationRequest;
+import fittoring.infrastructure.exception.InfraErrorMessage;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,17 @@ public class FcmNotificationSender implements NotificationSender {
     @Override
     public void send(List<Device> devices, Notification notification) {
         log.info("알림 Device 수: {} 개", devices.size());
-        devices.stream()
-                .filter(Device::isPushEnabled)
-                .forEach(device -> {
-                            sqsTemplate.send(to -> to.queue(queueName)
-                                    .payload(new FcmNotificationRequest(device.getPushToken(), notification.getData())));
-                        }
-                );
+
+        for (Device device : devices) {
+            if (!device.isPushEnabled()) {
+                continue;
+            }
+            try {
+                sqsTemplate.send(to -> to.queue(queueName)
+                        .payload(new FcmNotificationRequest(device.getPushToken(), notification.getData())));
+            } catch (RuntimeException exception) {
+                log.warn(InfraErrorMessage.SEND_SQS_ERROR.getMessage(), exception);
+            }
+        }
     }
 }
