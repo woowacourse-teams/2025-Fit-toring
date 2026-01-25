@@ -47,32 +47,31 @@ const S_Title = styled.h2`
   margin-bottom: 12px;
 
   color: ${({ theme }) => theme.FONT.B01};
-  font-weight: 700;
-  font-size: 20px;
+  font-size: ${({ theme }) => theme.TYPOGRAPHY.LB3_SB};
 `;
 
 const S_Description = styled.p`
   margin-bottom: 24px;
 
   color: ${({ theme }) => theme.FONT.G01};
-  font-size: 15px;
+  font-size: ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   line-height: 1.5;
 `;
 
 const S_ButtonGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1.2rem;
 `;
 
 const S_SkipButton = styled.button`
-  padding: 8px;
+  padding: 0.8rem;
   border: none;
 
   background: none;
 
   color: ${({ theme }) => theme.FONT.B02};
-  font-size: 14px;
+  font-size: ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   cursor: pointer;
   transition: color 0.2s;
 
