@@ -1,6 +1,11 @@
 export function isIOS(): boolean {
   const userAgent = window.navigator.userAgent.toLowerCase();
-  return /iphone|ipad|ipod/.test(userAgent);
+  const isIPhoneIPadIPod = /iphone|ipad|ipod/.test(userAgent);
+
+  const isIPadDesktopUA =
+    navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+
+  return isIPhoneIPadIPod || isIPadDesktopUA;
 }
 
 export function getIOSVersion(): number | null {
