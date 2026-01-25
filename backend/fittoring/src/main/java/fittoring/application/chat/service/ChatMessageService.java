@@ -14,7 +14,6 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.notification.service.NotificationService;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
-import fittoring.domain.model.Member;
 import fittoring.domain.model.Notification;
 import fittoring.util.Cursor;
 import fittoring.util.CursorCodec;
@@ -42,17 +41,16 @@ public class ChatMessageService {
         ChatMessage chatMessage = new ChatMessage(chatRoomId, senderId, request.content());
         chatMessageRepository.save(chatMessage);
 
+        log.info("채팅을 보낸 사람 id: {}", senderId);
         Long opponentId = chatRoom.getOpponentIdOf(senderId);
-        log.info("받을 사람 id: {}", senderId);
-
-        sendNewMessageNotification(chatRoomId, opponentId, chatMessage);
+        sendNewMessageNotification(chatRoomId, senderId, opponentId, chatMessage);
         return ChatMessageResponse.from(chatMessage, request.tempId());
     }
 
-    private void sendNewMessageNotification(Long chatRoomId, Long opponentId, ChatMessage chatMessage) {
-        Member opponent = memberRepository.findById(opponentId)
+    private void sendNewMessageNotification(Long chatRoomId, Long senderId, Long opponentId, ChatMessage chatMessage) {
+        String senderName = memberRepository.findNameById(senderId)
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        Notification notification = new Notification(opponent.getName(), chatMessage.getContent());
+        Notification notification = new Notification(senderName, chatMessage.getContent());
         notification.putData("chatRoomId", String.valueOf(chatRoomId));
         notificationService.sendNotification(opponentId, notification);
     }
