@@ -17,12 +17,12 @@ function NotificationPermissionModal({
   return (
     <Modal opened={isOpen} onCloseClick={onClose}>
       <S_ModalContent>
-        <S_Title>채팅 알림 받기</S_Title>
+        <S_Title>알림 받기</S_Title>
 
         <S_Description>
-          새로운 메시지가 도착하면
+          채팅 메시지와 주요 안내를
           <br />
-          알림으로 바로 확인할 수 있어요
+          놓치지 않고 바로 받을 수 있어요.
         </S_Description>
 
         <S_ButtonGroup>
