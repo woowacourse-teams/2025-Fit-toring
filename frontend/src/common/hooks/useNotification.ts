@@ -42,6 +42,9 @@ const useNotification = () => {
 
       if (!hasPermission) {
         setShowModal(false);
+        alert(
+          '알림 권한이 거부되었습니다. 알림을 받으시려면 브라우저에서 권한을 허용해주세요.',
+        );
         return;
       }
 
