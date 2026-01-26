@@ -13,4 +13,5 @@ export const PAGE_URL = {
   EDIT_PROFILE: '/my-page/edit-profile',
   IDENTITY_VERIFICATION: '/identity-verification',
   CHAT_ROOM: '/chat/room',
+  CHAT_ROOMS: '/chat/rooms',
 } as const;

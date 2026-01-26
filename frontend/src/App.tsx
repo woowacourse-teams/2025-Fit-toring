@@ -9,6 +9,7 @@ import {
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
 import useInitializeFcm from './common/hooks/useInitializeFcm';
+import ChatRooms from './pages/chatRooms/ChatRooms';
 import Home from './pages/home/Home';
 import Landing from './pages/landing/Landing';
 
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
   },
   { path: PAGE_URL.LOGIN, element: <Login /> },
   { path: `${PAGE_URL.CHAT_ROOM}/:chatRoomId`, element: <ChatRoom /> },
+  { path: `${PAGE_URL.CHAT_ROOMS}`, element: <ChatRooms /> },
   { path: PAGE_URL.IDENTITY_VERIFICATION, element: <IdentityVerification /> },
   {
     path: `${PAGE_URL.MY_PAGE}`,
