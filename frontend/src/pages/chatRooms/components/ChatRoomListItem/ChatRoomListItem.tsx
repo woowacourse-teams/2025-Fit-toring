@@ -14,7 +14,7 @@ function ChatRoomListItem({ chat, onClick }: ChatRoomListItemProps) {
     <S_Container onClick={() => onClick(chat.chatRoomId)}>
       <S_Avatar>
         {chat.imageUrl ? (
-          <S_AvatarImg src={chat.imageUrl} alt="" />
+          <S_AvatarImg src={chat.imageUrl} alt="프로필 사진" />
         ) : (
           <S_AvatarPlaceholder />
         )}
