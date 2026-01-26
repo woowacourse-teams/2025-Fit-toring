@@ -37,7 +37,7 @@ const S_Container = styled.div`
   justify-content: center;
 
   min-height: 100vh;
-  padding: 24px;
+  padding: 2.4rem;
 `;
 
 const S_Card = styled.div`
@@ -54,14 +54,14 @@ const S_Card = styled.div`
 `;
 
 const S_Icon = styled.div`
-  margin-bottom: 14px;
+  margin-bottom: 1.4rem;
 
   font-size: 40px;
   line-height: 1;
 `;
 
 const S_Title = styled.h2`
-  margin: 0 0 10px;
+  margin: 0 0 1rem;
 
   color: #111;
   font-weight: 700;
@@ -80,12 +80,12 @@ const S_ButtonRow = styled.div`
   display: flex;
   justify-content: center;
 
-  margin-top: 18px;
+  margin-top: 1.8rem;
 `;
 
 const S_PrimaryButton = styled.button`
-  min-width: 140px;
-  padding: 12px 14px;
+  min-width: 14rem;
+  padding: 1.2rem 1.4rem;
   border: none;
   border-radius: 12px;
 
