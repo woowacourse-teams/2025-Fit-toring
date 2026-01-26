@@ -7,8 +7,10 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
+import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
+import useNotification from '../../common/hooks/useNotification';
 import { THEME } from '../../common/styles/theme';
 
 import HomeHeader from './components/HomeHeader/HomeHeader';
@@ -36,6 +38,16 @@ function Home() {
   const { myMentoringId } = useMyMentoringId(authenticated);
 
   const navigate = useNavigate();
+
+  const {
+    requestNotificationPermission,
+    showModal: showNotificationModal,
+    closeModal: closeNotificationModal,
+  } = useNotification();
+
+  const handleAllowNotification = async () => {
+    await requestNotificationPermission();
+  };
 
   const handleOpenModal = () => {
     openModal();
@@ -113,6 +125,12 @@ function Home() {
 
   return (
     <S_Container>
+      <NotificationPermissionModal
+        isOpen={showNotificationModal}
+        onAllow={handleAllowNotification}
+        onClose={closeNotificationModal}
+      />
+
       <HomeHeader />
       <S_ActionWrapper>
         <S_FilterWrapper>
