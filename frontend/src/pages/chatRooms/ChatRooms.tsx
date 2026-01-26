@@ -106,7 +106,7 @@ function ChatRooms() {
     <S_Container>
       <ChatRoomsHeader />
       <S_ChatRoomListSection>
-        <ChatRoomList chatList={DUMMY} onChatListClick={() => {}} />
+        <ChatRoomList chatList={DUMMY} onChatRoomListClick={() => {}} />
       </S_ChatRoomListSection>
     </S_Container>
   );

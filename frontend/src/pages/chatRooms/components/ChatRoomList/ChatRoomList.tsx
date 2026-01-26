@@ -6,10 +6,10 @@ import type { ChatRoomListItemType } from '../../ChatRooms';
 
 interface ChatRoomListProps {
   chatList: ChatRoomListItemType[];
-  onChatListClick: (chatId: string) => void;
+  onChatRoomListClick: (chatId: string) => void;
 }
 
-function ChatRoomList({ chatList, onChatListClick }: ChatRoomListProps) {
+function ChatRoomList({ chatList, onChatRoomListClick }: ChatRoomListProps) {
   if (chatList.length === 0) {
     return (
       <S_EmptyContainer>
@@ -27,7 +27,7 @@ function ChatRoomList({ chatList, onChatListClick }: ChatRoomListProps) {
         <ChatRoomListItem
           key={chat.chatRoomId}
           chat={chat}
-          onClick={onChatListClick}
+          onClick={onChatRoomListClick}
         />
       ))}
     </S_List>

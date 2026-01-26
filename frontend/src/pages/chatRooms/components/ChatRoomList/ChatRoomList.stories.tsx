@@ -38,7 +38,7 @@ export const Default: Story = {
         imageUrl: 'https://picsum.photos/seed/chatroom3/80/80',
       },
     ],
-    onChatListClick: () => {},
+    onChatRoomListClick: () => {},
   },
   parameters: {
     docs: {
@@ -53,7 +53,7 @@ export const Default: Story = {
 export const Empty: Story = {
   args: {
     chatList: [],
-    onChatListClick: () => {},
+    onChatRoomListClick: () => {},
   },
   parameters: {
     docs: {
