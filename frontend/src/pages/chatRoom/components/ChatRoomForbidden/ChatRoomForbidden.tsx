@@ -1,11 +1,13 @@
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import { PAGE_URL } from '../../../../common/constants/url';
+
 function ChatRoomForbidden() {
   const navigate = useNavigate();
 
   const handleGoHomeClick = () => {
-    navigate('/');
+    navigate(PAGE_URL.HOME, { replace: true });
   };
 
   return (
