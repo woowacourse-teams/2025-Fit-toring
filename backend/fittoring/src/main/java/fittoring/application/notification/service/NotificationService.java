@@ -60,4 +60,9 @@ public class NotificationService {
     public void deleteDeviceByPushToken(String pushToken) {
         deviceRepository.deleteByPushToken(pushToken);
     }
+
+    @Transactional
+    public void deleteById(Long id){
+        deviceRepository.deleteById(id);
+    }
 }
