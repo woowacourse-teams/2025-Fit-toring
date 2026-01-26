@@ -54,9 +54,6 @@ kakao:
 
 aws:
   s3:
-    region: ap-northeast-2
-    bucket-name: test-bucket
-    project-prefix: fit-toring/
     env-prefix: local/
   sqs:
     listener:

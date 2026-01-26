@@ -26,6 +26,12 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 20MB
+  cloud:
+    aws:
+      region: ap-northeast-2
+      credentials:
+        access-key: ${AWS_SQS_IAM_ACCESS_KEY}
+        secret-key: ${AWS_SQS_IAM_SECRET_KEY}
 
 server:
   tomcat:
@@ -96,6 +102,9 @@ aws:
     region: ap-northeast-2
     bucket-name: fittoring-s3
     project-prefix: fit-toring/
+  sqs:
+    push-notification-queue: fittoring-push-notification-queue
+    push-notification-unregistered-tokens-queue: fittoring-push-notification-unregistered-tokens
 
 image-session:
   merge:
