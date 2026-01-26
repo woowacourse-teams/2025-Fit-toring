@@ -7,13 +7,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
+import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
+import useNotification from '../../common/hooks/useNotification';
 import { THEME } from '../../common/styles/theme';
 
 import HomeHeader from './components/HomeHeader/HomeHeader';
-import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
+import MentorCardListContent from './components/MentorCardListContent/MentorCardListContent';
 import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
@@ -37,6 +39,16 @@ function Home() {
 
   const navigate = useNavigate();
 
+  const {
+    requestNotificationPermission,
+    showModal: showNotificationModal,
+    closeModal: closeNotificationModal,
+  } = useNotification();
+
+  const handleAllowNotification = async () => {
+    await requestNotificationPermission();
+  };
+
   const handleOpenModal = () => {
     openModal();
     ReactGA.event({
@@ -58,6 +70,7 @@ function Home() {
     mentorList,
     hasNext,
     cursorCode,
+    isLoading,
   } = useMentorList();
 
   const handleSortButtonClick = async (option: SortKey) => {
@@ -113,6 +126,12 @@ function Home() {
 
   return (
     <S_Container>
+      <NotificationPermissionModal
+        isOpen={showNotificationModal}
+        onAllow={handleAllowNotification}
+        onClose={closeNotificationModal}
+      />
+
       <HomeHeader />
       <S_ActionWrapper>
         <S_FilterWrapper>
@@ -145,9 +164,11 @@ function Home() {
           ))}
         </S_CheckboxWrapper>
         <MentorCardList>
-          {mentorList.map((mentor) => (
-            <MentorCardItem key={mentor.id} mentor={mentor} />
-          ))}
+          <MentorCardListContent
+            isLoading={isLoading}
+            mentorList={mentorList}
+            hasFilter={selectedSpecialties.length > 0}
+          />
           <S_Trigger ref={elementRef} />
         </MentorCardList>
       </S_Contents>

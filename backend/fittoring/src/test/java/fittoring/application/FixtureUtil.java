@@ -124,4 +124,12 @@ public class FixtureUtil {
         phoneVerification.verify();
         return phoneVerification;
     }
+
+    public static Device getTestDevices(Member member){
+        return new Device(member, "pushToken");
+    }
+
+    public static Device getTestDevices(Member member, String pushTokenPrefix){
+        return new Device(member, pushTokenPrefix + "pushToken");
+    }
 }

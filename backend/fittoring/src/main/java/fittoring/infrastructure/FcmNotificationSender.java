@@ -1,47 +1,41 @@
 package fittoring.infrastructure;
 
-import com.google.firebase.messaging.*;
 import fittoring.application.notification.service.NotificationSender;
 import fittoring.domain.model.Device;
+import fittoring.domain.model.Notification;
+import fittoring.infrastructure.dto.FcmNotificationRequest;
+import fittoring.infrastructure.exception.InfraErrorMessage;
+import io.awspring.cloud.sqs.operations.SqsTemplate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class FcmNotificationSender implements NotificationSender {
 
+    private final SqsTemplate sqsTemplate;
+
+    @Value("${aws.sqs.push-notification-queue}")
+    private String queueName;
+
     @Override
-    public List<Device> send(List<Device> devices, String title, String body) {
-        List<Device> failedDevices = new ArrayList<>();
+    public void send(List<Device> devices, Notification notification) {
         log.info("알림 Device 수: {} 개", devices.size());
+
         for (Device device : devices) {
-            if (device.isPushEnabled()) {
-                try {
-                    sendNotification(device.getPushToken(), title, body);
-                } catch (FirebaseMessagingException exception) {
-                    log.error("알림 전송 실패 -> PushToken: {}, MessagingErrorCode: {}, Message: {}", device.getPushToken(), exception.getMessagingErrorCode(), exception.getMessage());
-                    if (exception.getMessagingErrorCode().equals(MessagingErrorCode.UNREGISTERED)) {
-                        failedDevices.add(device);
-                    }
-                }
+            if (!device.isPushEnabled()) {
+                continue;
+            }
+            try {
+                sqsTemplate.send(to -> to.queue(queueName)
+                        .payload(new FcmNotificationRequest(device.getPushToken(), notification.getData())));
+            } catch (RuntimeException exception) {
+                log.warn(InfraErrorMessage.SEND_SQS_ERROR.getMessage(), exception);
             }
         }
-        return failedDevices;
-    }
-
-    private void sendNotification(String fcmToken, String title, String body) throws FirebaseMessagingException {
-        Message message = Message.builder()
-                .setToken(fcmToken)
-                .setNotification(Notification.builder()
-                        .setTitle(title)
-                        .setBody(body)
-                        .build())
-                .build();
-        FirebaseMessaging.getInstance().send(message);
     }
 }

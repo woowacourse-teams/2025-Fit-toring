@@ -20,6 +20,7 @@ const useMentorList = () => {
   const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
   const [hasNext, setHasNext] = useState(true);
   const [cursorCode, setCursorCode] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getMentors = useCallback(
     async (
@@ -59,8 +60,15 @@ const useMentorList = () => {
       sortKey: SortKey,
       cursorCode: string | null = null,
     ) => {
-      const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
-      initializeMentorList(data);
+      setIsLoading(true);
+      try {
+        const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
+        initializeMentorList(data);
+      } catch (error) {
+        console.error('Failed to fetch initial mentors:', error);
+      } finally {
+        setIsLoading(false);
+      }
     },
     [getMentors, initializeMentorList],
   );
@@ -84,8 +92,12 @@ const useMentorList = () => {
       sortKey: SortKey,
       cursorCode: string | null,
     ) => {
-      const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
-      appendMentorList(data);
+      try {
+        const data = await getMentors(selectedSpecialties, sortKey, cursorCode);
+        appendMentorList(data);
+      } catch (error) {
+        console.error('Failed to fetch more mentors:', error);
+      }
     },
     [appendMentorList, getMentors],
   );
@@ -94,6 +106,7 @@ const useMentorList = () => {
     mentorList,
     hasNext,
     cursorCode,
+    isLoading,
     fetchInitialMentors,
     fetchMoreMentors,
   };

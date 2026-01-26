@@ -3,6 +3,7 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 import { apiClient } from '../common/apis/apiClient';
 import { API_ENDPOINTS } from '../common/constants/apiEndpoints';
+import { PAGE_URL } from '../common/constants/url';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCbmcTDZNommWF5IJjrSSD8An7OdNROewA',
@@ -58,16 +59,32 @@ export async function registerFcmTokenToServer({
 
 export function setupForegroundMessageListener() {
   return onMessage(messaging, (payload) => {
-    if (payload.notification && Notification.permission === 'granted') {
-      const iconPath = '/fittoring-icon-192.png';
-      const notificationTitle = payload.notification.title || '제목 없음';
-      const notificationOptions = {
-        body: payload.notification.body || '내용 없음',
-        icon: iconPath,
-        badge: iconPath,
-      };
-
-      new Notification(notificationTitle, notificationOptions);
+    if (!payload.data || Notification.permission !== 'granted') {
+      return;
     }
+
+    const iconPath = '/fittoring-icon-192.png';
+    const notificationTitle = payload.data.title || '제목 없음';
+    const chatRoomId = payload.data.chatRoomId;
+    const notificationOptions = {
+      body: payload.data.body || '내용 없음',
+      icon: iconPath,
+      badge: iconPath,
+      data: {
+        chatRoomId,
+      },
+    };
+
+    const notification = new Notification(
+      notificationTitle,
+      notificationOptions,
+    );
+
+    notification.onclick = (e) => {
+      e.preventDefault();
+      notification.close();
+
+      window.location.href = `${PAGE_URL.CHAT_ROOM}/${chatRoomId}`;
+    };
   });
 }
