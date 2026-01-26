@@ -26,6 +26,9 @@ export const API_ENDPOINTS = {
   // 자격증명
   ADMIN_CERTIFICATES: `${BASE_URL}/admin/certificates`,
   CERTIFICATES: `${BASE_URL}/certificates`,
+
+  // 기기 관리
+  ADMIN_DEVICES: `${BASE_URL}/admin/devices`,
   
   // 멘토링
   ADMIN_MENTORING: `${BASE_URL}/admin/mentorings`,

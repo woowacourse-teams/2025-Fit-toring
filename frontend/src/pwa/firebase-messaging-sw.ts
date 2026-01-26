@@ -4,6 +4,8 @@ import { onBackgroundMessage, getMessaging } from 'firebase/messaging/sw';
 import { clientsClaim, skipWaiting } from 'workbox-core';
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
+import { PAGE_URL } from '../common/constants/url';
+
 declare let self: ServiceWorkerGlobalScope;
 
 clientsClaim();
@@ -27,12 +29,56 @@ const messaging = getMessaging(app);
 onBackgroundMessage(messaging, (payload) => {
   const iconPath = `${self.location.origin}/fittoring-icon-192.png`;
 
-  const notificationTitle = payload.notification?.title || '제목 없음';
+  const data = payload.data || {};
+
+  const notificationTitle = data.title || '제목 없음';
   const notificationOptions = {
-    body: payload.notification?.body || '내용 없음',
+    body: data.body || '내용 없음',
     icon: iconPath,
     badge: iconPath,
+    data: {
+      chatRoomId: data.chatRoomId,
+    },
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+const getChatRoomURL = (roomId: string) => {
+  return `${self.location.origin}${PAGE_URL.CHAT_ROOM}/${roomId}`;
+};
+
+self.addEventListener('notificationclick', (e) => {
+  const notification = e.notification;
+  notification.close();
+
+  if (!notification.data) {
+    return;
+  }
+
+  const chatRoomId = notification.data.chatRoomId;
+  if (!chatRoomId) {
+    return;
+  }
+
+  const chatRoomURL = getChatRoomURL(chatRoomId);
+
+  e.waitUntil(
+    self.clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windowClients) => {
+        for (const client of windowClients) {
+          if (
+            client.url.startsWith(self.location.origin) &&
+            'focus' in client
+          ) {
+            return client.focus().then(() => client.navigate(chatRoomURL));
+          }
+        }
+
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(chatRoomURL);
+        }
+      }),
+  );
 });
