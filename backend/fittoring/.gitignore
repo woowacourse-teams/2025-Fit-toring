@@ -38,3 +38,6 @@ out/
 
 ### environment variable ###
 .env*
+
+### Frontend Build Artifacts ###
+backend/fittoring/src/main/resources/static/web-admin/
