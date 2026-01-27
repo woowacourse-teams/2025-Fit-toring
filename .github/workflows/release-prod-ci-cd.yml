@@ -54,6 +54,11 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Create .env file
         run: |
           echo "ACTIVE_PROFILE=test" >> .env
@@ -102,6 +107,12 @@ jobs:
 
       - name: clean
         run: ./gradlew clean
+
+      - name: Build Admin Page (back-office)
+        run: |
+          cd ../back-office
+          npm install
+          npm run build
 
       - name: generate API docs
         run: ./gradlew generateApiDocs
