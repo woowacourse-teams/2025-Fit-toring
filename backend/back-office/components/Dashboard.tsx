@@ -53,40 +53,34 @@ export function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams();
 
-  // URL 경로에 따라 activeMenu 설정
+  // 1. URL 경로 및 해시에 따라 activeMenu 상태 복구
   useEffect(() => {
     if (location.pathname.startsWith('/mentoring/')) {
       setActiveMenu('mentoring-detail');
-    } else if (location.pathname === '/' || location.pathname === '/dashboard') {
-      // 해시가 있으면 해당 메뉴로 이동
-      if (location.hash === '#mentoring') setActiveMenu('mentoring');
-      else if (location.hash === '#category') setActiveMenu('category');
-      else setActiveMenu('certifications');
+      return;
+    }
+
+    // URL에서 # 이후의 값을 가져옴 (예: #mentees -> mentees)
+    const currentHash = location.hash.replace('#', '');
+
+    if (currentHash) {
+      setActiveMenu(currentHash);
+    } else {
+      // 해시가 없는 루트 경로일 경우 기본값
+      setActiveMenu('certifications');
     }
   }, [location.pathname, location.hash]);
 
-  const handleMenuClick = (menu: 'certifications'|'mentees'|'mentoring'|'category') => {
-        switch (menu) {
-          case 'certifications':
-            setActiveMenu('certifications');
-            navigate(ROUTES.ROOT);
-            break;
-          case 'mentees':
-            setActiveMenu('mentees');
-            navigate(ROUTES.ROOT);
-            break;
-          case 'mentoring':
-            setActiveMenu('mentoring');
-            navigate(`${ROUTES.ROOT}#mentoring`);
-            break;
-          case 'category':
-            setActiveMenu('category');
-            navigate(`${ROUTES.ROOT}#category`);
-            break;
-        }
-      };
+  // 2. 메뉴 클릭 핸들러 통일 (URL Hash 업데이트 포함)
+  const handleMenuClick = (menu: string) => {
+    setActiveMenu(menu);
+    if (menu === 'certifications') {
+      navigate(ROUTES.ROOT); // 기본 메뉴는 해시 없이
+    } else {
+      navigate(`${ROUTES.ROOT}#${menu}`); // 나머지는 #해시 추가
+    }
+  };
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -189,13 +183,9 @@ export function Dashboard() {
                           <SidebarMenuSub>
                             <SidebarMenuSubItem>
                               <SidebarMenuSubButton
-                                asChild
-                                isActive={
-                                  activeMenu === "certifications"
-                                }
-                                onClick={() =>
-                                  setActiveMenu("certifications")
-                                }
+                                  asChild
+                                  isActive={activeMenu === "certifications"}
+                                  onClick={() => handleMenuClick("certifications")} // ✅ 수정됨
                               >
                                 <div className="flex items-center cursor-pointer">
                                   <Award className="h-4 w-4" />
@@ -211,12 +201,9 @@ export function Dashboard() {
                     {/* 멘티 관리 */}
                     <SidebarMenuItem>
                       <SidebarMenuButton
-                        tooltip="멘티 관리"
-                        isActive={activeMenu === "mentees"}
-                        onClick={() => {
-                          setActiveMenu("mentees");
-                          navigate(ROUTES.ROOT);
-                        }}
+                          tooltip="멘티 관리"
+                          isActive={activeMenu === "mentees"}
+                          onClick={() => handleMenuClick("mentees")} // ✅ 수정됨
                       >
                         <UserCheck className="h-4 w-4" />
                         <span>멘티 관리</span>
@@ -226,12 +213,9 @@ export function Dashboard() {
                     {/* 기기 관리 */}
                     <SidebarMenuItem>
                       <SidebarMenuButton
-                        tooltip="기기 관리"
-                        isActive={activeMenu === "devices"}
-                        onClick={() => {
-                          setActiveMenu("devices");
-                          navigate(ROUTES.ROOT);
-                        }}
+                          tooltip="기기 관리"
+                          isActive={activeMenu === "devices"}
+                          onClick={() => handleMenuClick("devices")} // ✅ 수정됨
                       >
                         <Smartphone className="h-4 w-4" />
                         <span>기기 관리</span>
@@ -299,7 +283,7 @@ export function Dashboard() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
-              
+
               {/* 현재 사용자 정보 표시 */}
               {user && (
                 <div className="px-4 py-2 border-t border-sidebar-border group-data-[collapsible=icon]:hidden">
@@ -322,7 +306,7 @@ export function Dashboard() {
                 </h1>
               </div>
             </header>
-            
+
             <main className="flex-1 overflow-auto p-6">
               {renderContent()}
             </main>
