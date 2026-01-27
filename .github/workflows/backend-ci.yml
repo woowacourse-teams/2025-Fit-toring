@@ -18,6 +18,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 1. back-office 변경 감지 설정
+      - name: Check for back-office changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backoffice:
+              - 'backend/back-office/**'
+
+      # 2. Node.js 환경 세팅 (캐싱 포함)
+      - name: Set up Node.js
+        if: steps.filter.outputs.backoffice == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'backend/back-office/package-lock.json'
+
+      # 3. back-office 빌드 (변경 사항이 있을 때만 실행)
+      - name: Build Admin Page (back-office)
+        if: steps.filter.outputs.backoffice == 'true'
+        run: |
+          cd ../back-office
+          npm install
+          npm run build
+        # Vite 설정에 의해 결과물은 자동으로 fittoring의 static 폴더로 들어갑니다.
+
       - name: Set up Docker Compose
         run: |
           if ! docker compose version; then
