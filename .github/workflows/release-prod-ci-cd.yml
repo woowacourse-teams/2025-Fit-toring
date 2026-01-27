@@ -117,6 +117,9 @@ jobs:
       - name: generate API docs
         run: ./gradlew generateApiDocs
 
+      - name: Build jar
+        run: ./gradlew bootJar
+
       - name: Stop Docker containers (test DB)
         if: always()
         run: docker compose -f ./docker-compose.yml down
