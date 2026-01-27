@@ -78,7 +78,7 @@ pnpm build
 ```
 - 빌드 시 vite 설정으로 인해 fittoring.src.main.resources.static.web-admin 에 빌드 버전이 적용됩니다.
 
-빌드된 파일은 `dist/` 디렉토리에 생성됩니다.
+빌드된 파일은 `dist/` 디렉토리에 생성됩니다
 
 ### 5. 프리뷰 (빌드 결과 확인)
 
