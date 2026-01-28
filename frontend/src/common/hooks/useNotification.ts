@@ -1,9 +1,10 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   fetchFcmToken,
   registerFcmTokenToServer,
   requestPermissionToUser,
+  setupForegroundMessageListener,
 } from '../../pwa/firebase';
 import {
   isIOSPushSupported,
@@ -12,9 +13,10 @@ import {
   isIOS,
 } from '../utils/deviceDetection';
 
-const useNotification = () => {
+const useNotification = (authenticated: boolean) => {
   const [showModal, setShowModal] = useState(() => {
     return (
+      authenticated &&
       isIOS() &&
       isPWAStandalone() &&
       isIOSPushSupported() &&
@@ -40,8 +42,9 @@ const useNotification = () => {
 
       const hasPermission = await requestPermissionToUser();
 
+      setShowModal(false);
+
       if (!hasPermission) {
-        setShowModal(false);
         alert(
           '알림 권한이 거부되었습니다. 알림을 받으시려면 브라우저에서 권한을 허용해주세요.',
         );
@@ -63,11 +66,45 @@ const useNotification = () => {
         });
       }
 
-      setShowModal(false);
+      setupForegroundMessageListener();
     } catch (err) {
       console.error(err);
+      setShowModal(false);
+      alert('알림 설정 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   }, []);
+
+  useEffect(() => {
+    if (!authenticated) {
+      return;
+    }
+
+    async function initializeFcmForIOS() {
+      await navigator.serviceWorker.ready;
+
+      const fcmToken = await fetchFcmToken();
+      if (!fcmToken) {
+        throw new Error('FCM 토큰을 가져올 수 없습니다.');
+      }
+
+      const memberId = localStorage.getItem('memberId');
+      if (memberId) {
+        await registerFcmTokenToServer({
+          token: fcmToken,
+          memberId: Number(memberId),
+        });
+      }
+    }
+
+    if (
+      isIOS() &&
+      isPWAStandalone() &&
+      isIOSPushSupported() &&
+      Notification.permission === 'granted'
+    ) {
+      initializeFcmForIOS();
+    }
+  }, [authenticated]);
 
   return {
     requestNotificationPermission,

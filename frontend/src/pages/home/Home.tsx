@@ -10,6 +10,7 @@ import Button from '../../common/components/Button/Button';
 import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
+import useInitializeFcm from '../../common/hooks/useInitializeFcm';
 import useNotification from '../../common/hooks/useNotification';
 import { THEME } from '../../common/styles/theme';
 
@@ -43,7 +44,9 @@ function Home() {
     requestNotificationPermission,
     showModal: showNotificationModal,
     closeModal: closeNotificationModal,
-  } = useNotification();
+  } = useNotification(authenticated);
+
+  useInitializeFcm();
 
   const handleAllowNotification = async () => {
     await requestNotificationPermission();
