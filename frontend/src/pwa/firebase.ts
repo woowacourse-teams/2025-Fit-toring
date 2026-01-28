@@ -67,7 +67,7 @@ export function setupForegroundMessageListener() {
     const notificationTitle = payload.data.title || '제목 없음';
     const chatRoomId = payload.data.chatRoomId;
     const notificationOptions = {
-      body: payload.data.body || '내용 없음',
+      body: '포그라운드 알림: ' + payload.data.body || '내용 없음',
       icon: iconPath,
       badge: iconPath,
       data: {
