@@ -10,7 +10,6 @@ import { isIOS } from '../utils/deviceDetection';
 
 const useInitializeFcm = () => {
   const isInitialized = useRef(false);
-  const unsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const memberId = localStorage.getItem('memberId');
@@ -42,7 +41,7 @@ const useInitializeFcm = () => {
           memberId: Number(memberId),
         });
 
-        unsubscribeRef.current = setupForegroundMessageListener();
+        setupForegroundMessageListener();
       } catch (error) {
         console.error('FCM 초기화 중 오류 발생:', error);
         isInitialized.current = false;
@@ -50,14 +49,6 @@ const useInitializeFcm = () => {
     }
 
     initializeFcm();
-
-    return () => {
-      if (!isInitialized.current) {
-        return;
-      }
-
-      unsubscribeRef.current?.();
-    };
   }, []);
 };
 
