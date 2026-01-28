@@ -190,11 +190,21 @@ function ChatRoom() {
 
   useEffect(() => {
     const client = new Client({
-      webSocketFactory: () =>
-        new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
+      webSocketFactory: () => {
+        console.log('[sockjs] webSocketFactory called');
+
+        return new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
           withCredentials: true,
-        }),
-      onStompError: (frame) => console.error('STOMP protocol error:', frame),
+        });
+      },
+      // onStompError: (frame) => console.error('STOMP protocol error:', frame),
+      onStompError: (frame) => {
+        console.error('[sockjs][STOMP ERROR]', {
+          command: frame.command,
+          headers: frame.headers,
+          body: frame.body, // 👈 여기에 보통 "token expired" / "invalid jwt" 들어있음
+        });
+      },
       onWebSocketError: (e) => console.error('WebSocket error:', e),
       reconnectDelay: 5000,
       onConnect: () => {
