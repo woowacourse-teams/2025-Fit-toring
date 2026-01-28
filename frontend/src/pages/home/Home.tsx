@@ -44,6 +44,8 @@ function Home() {
     requestNotificationPermission,
     showModal: showNotificationModal,
     closeModal: closeNotificationModal,
+  } = useNotification(authenticated);
+
   useInitializeFcm();
 
   const handleAllowNotification = async () => {
