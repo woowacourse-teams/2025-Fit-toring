@@ -22,15 +22,3 @@ export function registerServiceWorker() {
       });
   });
 }
-
-export async function cleanupServiceWorkerInDev() {
-  if (!('serviceWorker' in navigator)) {
-    return;
-  }
-  if (process.env.NODE_ENV !== 'development') {
-    return;
-  }
-
-  const registrations = await navigator.serviceWorker.getRegistrations();
-  await Promise.all(registrations.map((reg) => reg.unregister()));
-}
