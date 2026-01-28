@@ -10,10 +10,7 @@ import App from './App';
 import AuthProvider from './common/components/AuthProvider/AuthProvider';
 import { resetCss } from './common/styles/reset';
 import { THEME } from './common/styles/theme';
-import {
-  cleanupServiceWorkerInDev,
-  registerServiceWorker,
-} from './pwa/serviceWorker';
+import { registerServiceWorker } from './pwa/serviceWorker';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -51,7 +48,6 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
   const isProd = process.env.NODE_ENV === 'production';
 
   if (!isProd) {
-    await cleanupServiceWorkerInDev();
     await enableMocking();
   }
 
