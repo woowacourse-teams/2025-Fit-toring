@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.chat.repository.ChatRoomRepository;
-import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfoDto;
 import fittoring.application.chat.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
@@ -67,10 +67,10 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
         Reservation reservation = reservationRepository.save(FixtureUtil.getTestApprovedReservation(mentoring, mentee));
 
         //when
-        ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
+        ChatRoomCreatedInfoDto chatRoomCreatedInfoDto = chatRoomService.registerChatRoom(reservation);
 
         //then
-        assertThat(chatRoomCreatedInfo.url()).isNotNull();
+        assertThat(chatRoomCreatedInfoDto.url()).isNotNull();
     }
 
     @DisplayName("멘티는 채팅방 조회를 할 수 있다.")

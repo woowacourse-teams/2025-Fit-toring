@@ -60,7 +60,7 @@ public class ImageService {
                 );
     }
 
-    public Map<Long, String> findMentoringThumbnailMapByImageTypeAndRelationIds(
+    public Map<Long, String> findThumbnailImageMapByImageTypeAndRelationIds(
             ImageType imageType, Collection<Long> relationIds
     ) {
         List<Image> images = imageRepository.findByImageTypeAndRelationIdIn(

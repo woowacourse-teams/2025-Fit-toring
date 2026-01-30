@@ -1,6 +1,6 @@
 package fittoring.application.chat.service.dto;
 
-public record ChatRoomCreatedInfo(
+public record ChatRoomCreatedInfoDto(
         String url
 ) {
 }

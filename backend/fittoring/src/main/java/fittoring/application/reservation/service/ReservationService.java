@@ -3,7 +3,7 @@ package fittoring.application.reservation.service;
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chat.service.ChatRoomService;
-import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicateReservationException;
 import fittoring.application.exception.ForbiddenException;
@@ -23,12 +23,8 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.domain.model.ChatRoom;
-import fittoring.domain.model.ImageType;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Reservation;
-import fittoring.domain.model.Status;
+import fittoring.domain.model.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +138,7 @@ public class ReservationService {
         Set<Long> mentoringIds = rows.stream()
                 .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
                 .collect(Collectors.toSet());
-        Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(
+        Map<Long, String> profileImageByMentoringIds = imageService.findThumbnailImageMapByImageTypeAndRelationIds(
                 ImageType.MENTORING_PROFILE,
                 mentoringIds
         );
@@ -159,7 +155,7 @@ public class ReservationService {
                     participatedReservation.getReservationId(),
                     participatedReservation.getMentoringId(),
                     participatedReservation.getMentorName(),
-                    profileImageByMentoring.get(participatedReservation.getMentoringId()),
+                    profileImageByMentoringIds.get(participatedReservation.getMentoringId()),
                     participatedReservation.getReservedAt(),
                     participatedReservation.getContent(),
                     participatedReservation.getStatus(),
@@ -194,8 +190,8 @@ public class ReservationService {
 
         reservation.approve();
 
-        ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
-        String url = chatRoomCreatedInfo.url();
+        ChatRoomCreatedInfoDto chatRoomCreatedInfoDto = chatRoomService.registerChatRoom(reservation);
+        String url = chatRoomCreatedInfoDto.url();
 
         return ReservationInfo.from(reservation, url);
     }

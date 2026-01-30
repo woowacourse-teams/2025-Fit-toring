@@ -37,7 +37,7 @@ public class ChatRoomService {
     private final MentoringRepository mentoringRepository;
 
     @Transactional
-    public ChatRoomCreatedInfo registerChatRoom(Reservation reservation) {
+    public ChatRoomCreatedInfoDto registerChatRoom(Reservation reservation) {
         Mentoring mentoring = reservation.getMentoring();
         validateMentoringExists(mentoring);
         validateReservationExists(reservation);
