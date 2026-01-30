@@ -37,7 +37,7 @@ public class AdminDeviceIntegrationTest extends AbstractApiDocumentationTest {
     @BeforeEach
     protected void setUp(RestDocumentationContextProvider restDocumentation) {
         super.setUp(restDocumentation);
-        admin = memberRepository.save(FixtureUtil.getTestAdmin());
+        admin = memberRepository.save(FixtureUtil.testAdmin());
         adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
     }
 
@@ -46,9 +46,9 @@ public class AdminDeviceIntegrationTest extends AbstractApiDocumentationTest {
     void getAllDevicesWithAuthority() {
         // given
         for (int i = 0; i < 5; i++) {
-            Member mentee = memberRepository.save(FixtureUtil.getTestMentee(i));
+            Member mentee = memberRepository.save(FixtureUtil.testMentee(i));
             for (int j = 0; j < 5; j++) {
-                deviceRepository.save(FixtureUtil.getTestDevices(mentee, Integer.toString(j)));
+                deviceRepository.save(FixtureUtil.testDevices(mentee, Integer.toString(j)));
             }
         }
         Assertions.assertThat(deviceRepository.count()).isEqualTo(25);
@@ -77,9 +77,9 @@ public class AdminDeviceIntegrationTest extends AbstractApiDocumentationTest {
         void getAllDevicesWithAuthority() {
             // given
             for (int i = 0; i < 5; i++) {
-                Member mentee = memberRepository.save(FixtureUtil.getTestMentee(i));
+                Member mentee = memberRepository.save(FixtureUtil.testMentee(i));
                 for (int j = 0; j < 5; j++) {
-                    deviceRepository.save(FixtureUtil.getTestDevices(mentee, Integer.toString(j)));
+                    deviceRepository.save(FixtureUtil.testDevices(mentee, Integer.toString(j)));
                 }
             }
 
@@ -110,7 +110,7 @@ public class AdminDeviceIntegrationTest extends AbstractApiDocumentationTest {
         @Test
         void getAllDevicesWithoutAdminAuthority() {
             // given
-            Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+            Member mentee = memberRepository.save(FixtureUtil.testMentee());
             String userAccessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
             // when
             // then

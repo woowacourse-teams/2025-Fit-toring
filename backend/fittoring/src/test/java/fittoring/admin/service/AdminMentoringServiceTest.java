@@ -47,14 +47,14 @@ class AdminMentoringServiceTest extends IntegrationTestSupport {
         //given
         List<Member> mentors = new ArrayList<>();
         for (int i = 1; i <= 30; i++) {
-            Member testMentor = FixtureUtil.getTestMentor(i);
+            Member testMentor = FixtureUtil.testMentor(i);
             mentors.add(testMentor);
         }
         memberRepository.saveAll(mentors);
 
         List<Mentoring> mentorings = new ArrayList<>();
         for (int i = 1; i <= 30; i++) {
-            Mentoring testMentoring = FixtureUtil.getTestMentoring(mentors.get(i - 1));
+            Mentoring testMentoring = FixtureUtil.testMentoring(mentors.get(i - 1));
             mentorings.add(testMentoring);
         }
         mentoringRepository.saveAll(mentorings);
@@ -80,7 +80,7 @@ class AdminMentoringServiceTest extends IntegrationTestSupport {
         }
         categoryMentoringRepository.saveAll(categoryMentorings);
 
-        Member testAdmin = memberRepository.save(FixtureUtil.getTestAdmin());
+        Member testAdmin = memberRepository.save(FixtureUtil.testAdmin());
 
         //when
         PageResult<AdminMentoringResponse> allForAdminPaged1 = adminMentoringService.findAllForAdminPaged(

@@ -83,7 +83,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
 
         phoneVerificationRepository.save(
-                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
+                FixtureUtil.testVerifiedPhoneVerification(new Phone(phoneNumber))
         );
 
         //when
@@ -313,7 +313,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void logout() {
         //given
-        Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
+        Member savedMember = memberRepository.save(FixtureUtil.testMentee());
 
         String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
@@ -361,7 +361,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void isLoggedIn() {
         //given
-        Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
+        Member savedMember = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
 
         //when
@@ -871,7 +871,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         memberRepository.save(member);
 
         phoneVerificationRepository.save(
-                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
+                FixtureUtil.testVerifiedPhoneVerification(new Phone(phoneNumber))
         );
 
         String newPassword = "newPassword";
@@ -966,7 +966,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         memberRepository.save(member);
 
         phoneVerificationRepository.save(
-                FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber))
+                FixtureUtil.testVerifiedPhoneVerification(new Phone(phoneNumber))
         );
 
         String newPassword = "newPassword";
@@ -1127,7 +1127,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         Long kakaoId = 12345L;
 
         // 기존 회원 생성 및 연동
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
         memberOauthRepository.save(new MemberOauth(member, AuthProvider.KAKAO, String.valueOf(kakaoId)));
 
         // Mocking

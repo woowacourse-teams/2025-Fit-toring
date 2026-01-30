@@ -38,9 +38,9 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void deleteCertificate() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
-        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        Certificate certificate = certificateRepository.save(FixtureUtil.testCertificate(mentoring));
 
         String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
@@ -69,11 +69,11 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void deleteCertificateFail_NotOwner() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
-        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        Certificate certificate = certificateRepository.save(FixtureUtil.testCertificate(mentoring));
 
-        Member otherMember = memberRepository.save(FixtureUtil.getTestMentee());
+        Member otherMember = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(otherMember.getId(), otherMember.getRole());
 
         // when
@@ -97,7 +97,7 @@ public class CertificateIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void deleteCertificateFail_NotFound() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
         String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
         long invalidCertificateId = 999L;
 

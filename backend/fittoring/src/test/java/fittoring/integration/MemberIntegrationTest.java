@@ -224,7 +224,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 )
         );
 
-        Member testMentee = FixtureUtil.getTestMentee();
+        Member testMentee = FixtureUtil.testMentee();
         memberRepository.save(testMentee);
 
         String newName = "newName";
@@ -265,7 +265,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void emptyRequestByUpdate() {
         //given
-        Member member = FixtureUtil.getTestMentee();
+        Member member = FixtureUtil.testMentee();
         memberRepository.save(member);
 
         MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
@@ -302,7 +302,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void getMyInfoSummary() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
 
         // when

@@ -29,7 +29,7 @@ class AdminMemberServiceTest extends IntegrationTestSupport {
         void findAllForAdminPaged() {
             // given
             for (int i = 1; i <= 12; i++) {
-                memberRepository.save(FixtureUtil.getTestMentee(i));
+                memberRepository.save(FixtureUtil.testMentee(i));
             }
 
             // when
@@ -56,7 +56,7 @@ class AdminMemberServiceTest extends IntegrationTestSupport {
         void findAllForAdminPaged2() {
             // given
             for (int i = 1; i <= 12; i++) {
-                memberRepository.save(FixtureUtil.getTestMentee(i));
+                memberRepository.save(FixtureUtil.testMentee(i));
             }
 
             // when
@@ -83,7 +83,7 @@ class AdminMemberServiceTest extends IntegrationTestSupport {
         void findAllForAdminPaged3() {
             // given
             for (int i = 1; i <= 12; i++) {
-                memberRepository.save(FixtureUtil.getTestMentee(i));
+                memberRepository.save(FixtureUtil.testMentee(i));
             }
 
             // when

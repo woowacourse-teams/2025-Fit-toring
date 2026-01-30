@@ -8,7 +8,7 @@ import java.time.ZoneId;
 
 public class FixtureUtil {
 
-    public static Member getTestMentee() {
+    public static Member testMentee() {
         return new Member(
                 "menteeId",
                 Gender.MALE,
@@ -17,7 +17,7 @@ public class FixtureUtil {
                 Password.from("password"));
     }
 
-    public static Member getTestMentee(int i) {
+    public static Member testMentee(int i) {
         String phoneSuffix = String.format("%02d", i);
         return new Member(
                 "menteeId" + i,
@@ -27,7 +27,7 @@ public class FixtureUtil {
                 Password.from("password"));
     }
 
-    public static Member getTestMentor() {
+    public static Member testMentor() {
         return new Member(
                 "mentorId",
                 Gender.MALE,
@@ -38,8 +38,7 @@ public class FixtureUtil {
         );
     }
 
-    public static Member getTestMentor(int i) {
-        String phoneSuffix = String.format("%02d", i);
+    public static Member testMentor(int i) {
         return new Member(
                 "mentorId" + i,
                 Gender.MALE,
@@ -50,7 +49,7 @@ public class FixtureUtil {
         );
     }
 
-    public static Member getTestAdmin() {
+    public static Member testAdmin() {
         return new Member(
                 "adminId",
                 Gender.FEMALE,
@@ -61,10 +60,10 @@ public class FixtureUtil {
         );
     }
 
-    public static Mentoring getTestMentoring(Member member) {
-        member.registerAsMentor();
+    public static Mentoring testMentoring(Member mentor) {
+        mentor.registerAsMentor();
         return new Mentoring(
-                member,
+                mentor,
                 5000,
                 5,
                 "content",
@@ -72,7 +71,7 @@ public class FixtureUtil {
         );
     }
 
-    public static Certificate getTestCertificate(Mentoring mentoring) {
+    public static Certificate testCertificate(Mentoring mentoring) {
         return new Certificate(
                 CertificateType.LICENSE,
                 "자격증",
@@ -80,33 +79,33 @@ public class FixtureUtil {
         );
     }
 
-    public static Reservation getTestPendingReservation(Mentoring mentoring, Member mentee) {
+    public static Reservation testPendingReservation(Mentoring mentoring, Member mentee) {
         return new Reservation("예약 내용", Status.PENDING, mentoring, mentee);
     }
 
-    public static Reservation getTestCompletedReservation(Mentoring mentoring, Member mentee) {
+    public static Reservation testCompletedReservation(Mentoring mentoring, Member mentee) {
         return new Reservation("예약 내용", Status.COMPLETE, mentoring, mentee);
     }
 
-    public static Reservation getTestApprovedReservation(Mentoring mentoring, Member mentee) {
+    public static Reservation testApprovedReservation(Mentoring mentoring, Member mentee) {
         return new Reservation("예약 내용", Status.APPROVED, mentoring, mentee);
     }
 
-    public static Review getTestReview(Reservation reservation, Member reviewer) {
+    public static Review testReview(Reservation reservation, Member reviewer) {
         return new Review(5, "좋았습니다.", reservation, reviewer);
     }
 
-    public static Image getTestImageForMentoringProfileDefault(Mentoring mentoring) {
+    public static Image testImageForMentoringProfileDefault(Mentoring mentoring) {
         return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.DEFAULT, mentoring.getId(),
                 "baseName");
     }
 
-    public static Image getTestImageForMentoringProfileThumbnail(Mentoring mentoring) {
+    public static Image testImageForMentoringProfileThumbnail(Mentoring mentoring) {
         return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.THUMBNAIL, mentoring.getId(),
                 "baseName");
     }
 
-    public static ChatRoom getTestChatRoom(Long reservationId, Long menteeId, Long mentorId) {
+    public static ChatRoom testChatRoom(Long reservationId, Long menteeId, Long mentorId) {
         return new ChatRoom(
                 reservationId,
                 menteeId,
@@ -114,7 +113,7 @@ public class FixtureUtil {
         );
     }
 
-    public static PhoneVerification getVerifiedPhoneVerification(Phone phone){
+    public static PhoneVerification testVerifiedPhoneVerification(Phone phone){
         PhoneVerification phoneVerification = new PhoneVerification(
                 phone,
                 "123456",
@@ -125,11 +124,11 @@ public class FixtureUtil {
         return phoneVerification;
     }
 
-    public static Device getTestDevices(Member member){
+    public static Device testDevices(Member member){
         return new Device(member, "pushToken");
     }
 
-    public static Device getTestDevices(Member member, String pushTokenPrefix){
+    public static Device testDevices(Member member, String pushTokenPrefix){
         return new Device(member, pushTokenPrefix + "pushToken");
     }
 }

@@ -43,7 +43,7 @@ class MemberServiceTest extends IntegrationTestSupport {
     @Test
     void successGetMyInfoForMentee() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
 
         // when
         MyInfoResponse memberInfo = memberService.getMemberInfo(member.getId());
@@ -62,8 +62,8 @@ class MemberServiceTest extends IntegrationTestSupport {
     @Test
     void successGetMyInfoForMentorWithoutImage() {
         // given
-        Member member = FixtureUtil.getTestMentor();
-        Mentoring mentoring = FixtureUtil.getTestMentoring(member);
+        Member member = FixtureUtil.testMentor();
+        Mentoring mentoring = FixtureUtil.testMentoring(member);
 
         memberRepository.save(member);
         mentoringRepository.save(mentoring);
@@ -85,8 +85,8 @@ class MemberServiceTest extends IntegrationTestSupport {
     @Test
     void successGetMyInfoForMentorWithImage() {
         // given
-        Member member = FixtureUtil.getTestMentee();
-        Mentoring mentoring = FixtureUtil.getTestMentoring(member);
+        Member member = FixtureUtil.testMentee();
+        Mentoring mentoring = FixtureUtil.testMentoring(member);
 
         memberRepository.save(member);
         mentoringRepository.save(mentoring);
@@ -116,7 +116,7 @@ class MemberServiceTest extends IntegrationTestSupport {
     @Test
     void getMyInfoSummary() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
 
         // when
         MyInfoSummaryResponse memberInfo = memberService.getMemberInfoSummary(member.getId());
@@ -237,7 +237,7 @@ class MemberServiceTest extends IntegrationTestSupport {
                 )
         );
 
-        Member testMentee = FixtureUtil.getTestMentee();
+        Member testMentee = FixtureUtil.testMentee();
         memberRepository.save(testMentee);
 
         String newName = "newName";
