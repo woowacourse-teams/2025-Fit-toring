@@ -6,11 +6,11 @@ public record ChatRoomPreviewResponse(
         Long chatRoomId,
         String profileImageUrl,
         String opponentName,
-        String status,
+        String reservationStatus,
         String lastChatContent,
-        LocalDateTime createdAt
+        LocalDateTime lastChatCreatedAt
 ) {
-    public static ChatRoomPreviewResponse of(Long chatRoomId, String profileImageUrl, String opponentName, String status) {
-        return new ChatRoomPreviewResponse(chatRoomId, profileImageUrl, opponentName, status, null, null);
+    public static ChatRoomPreviewResponse of(Long chatRoomId, String profileImageUrl, String opponentName, String reservationStatus) {
+        return new ChatRoomPreviewResponse(chatRoomId, profileImageUrl, opponentName, reservationStatus, null, null);
     }
 }

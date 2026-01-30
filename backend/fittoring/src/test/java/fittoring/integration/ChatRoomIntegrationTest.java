@@ -326,12 +326,11 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         // 시나리오: '멘티' 사용자가 로그인하여 자신이 속한 채팅방 목록을 조회합니다.
         Member mentor = memberRepository.save(FixtureUtil.testMentor());
         Member mentee = memberRepository.save(FixtureUtil.testMentee());
-
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
-        imageRepository.save(FixtureUtil.testImageForMentoringProfileThumbnail(mentoring));
+        Image image = imageRepository.save(FixtureUtil.testImageForMentoringProfileThumbnail(mentoring));
         Reservation reservation = reservationRepository.save(FixtureUtil.testApprovedReservation(mentoring, mentee));
-        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId()));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "이것이 마지막 메시지입니다."));
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(reservation, mentor, mentee));
+        ChatMessage chatMessage = chatMessageRepository.save(FixtureUtil.testChatMessage(chatRoom, mentee));
 
         String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
@@ -346,12 +345,12 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                                 .description("사용자가 참여하고 있는 채팅방의 미리보기 목록을 조회합니다. 성공 시 200 OK와 함께 채팅방 미리보기 정보 배열을 반환합니다.")
                                 .responseSchema(Schema.schema("ChatRoomPreviewResponseList"))
                                 .responseFields(
-                                        fieldWithPath("[].chatroomId").type(JsonFieldType.NUMBER).description("채팅방 ID"),
+                                        fieldWithPath("[].chatRoomId").type(JsonFieldType.NUMBER).description("채팅방 ID"),
                                         fieldWithPath("[].profileImageUrl").type(JsonFieldType.STRING).description("멘토링 프로필 이미지 URL").optional(),
-                                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("상대방 이름"),
+                                        fieldWithPath("[].opponentName").type(JsonFieldType.STRING).description("상대방 이름"),
                                         fieldWithPath("[].reservationStatus").type(JsonFieldType.STRING).description("예약 상태 (APPROVED, PENDING 등)"),
-                                        fieldWithPath("[].lastMessageContent").type(JsonFieldType.STRING).description("마지막 메시지 내용 (메시지가 없으면 null)").optional(),
-                                        fieldWithPath("[].lastMessageCreatedAt").type(JsonFieldType.STRING).description("마지막 메시지 생성 시각 (메시지가 없으면 null, yyyy-MM-dd'T'HH:mm:ss 형식)").optional()
+                                        fieldWithPath("[].lastChatContent").type(JsonFieldType.STRING).description("마지막 메시지 내용 (메시지가 없으면 null)").optional(),
+                                        fieldWithPath("[].lastChatCreatedAt").type(JsonFieldType.STRING).description("마지막 메시지 생성 시각 (메시지가 없으면 null, yyyy-MM-dd'T'HH:mm:ss 형식)").optional()
                                 )
                                 .build())))
                 .cookie("accessToken", accessToken)
@@ -366,12 +365,12 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(previewResponses).hasSize(1);
-            ChatRoomPreviewResponse firstPreview = previewResponses.get(0);
-            softly.assertThat(firstPreview.getChatroomId()).isEqualTo(chatRoom.getId());
-            softly.assertThat(firstPreview.getName()).isEqualTo(mentor.getName());
-            softly.assertThat(firstPreview.getProfileImageUrl()).isEqualTo("https://example.com/mentoring-profile.jpg");
-            softly.assertThat(firstPreview.getLastMessageContent()).isEqualTo("이것이 마지막 메시지입니다.");
-            softly.assertThat(firstPreview.getReservationStatus()).isEqualTo(reservation.getStatus().toString());
+            ChatRoomPreviewResponse firstPreview = previewResponses.getFirst();
+            softly.assertThat(firstPreview.chatRoomId()).isEqualTo(chatRoom.getId());
+            softly.assertThat(firstPreview.opponentName()).isEqualTo(mentor.getName());
+            softly.assertThat(firstPreview.profileImageUrl()).isEqualTo(image.getUrl());
+            softly.assertThat(firstPreview.lastChatContent()).isEqualTo(chatMessage.getContent());
+            softly.assertThat(firstPreview.reservationStatus()).isEqualTo(reservation.getStatus());
         });
     }
 }

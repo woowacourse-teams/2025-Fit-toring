@@ -113,7 +113,7 @@ public class FixtureUtil {
         );
     }
 
-    public static PhoneVerification testVerifiedPhoneVerification(Phone phone){
+    public static PhoneVerification testVerifiedPhoneVerification(Phone phone) {
         PhoneVerification phoneVerification = new PhoneVerification(
                 phone,
                 "123456",
@@ -124,11 +124,19 @@ public class FixtureUtil {
         return phoneVerification;
     }
 
-    public static Device testDevices(Member member){
+    public static Device testDevices(Member member) {
         return new Device(member, "pushToken");
     }
 
-    public static Device testDevices(Member member, String pushTokenPrefix){
+    public static Device testDevices(Member member, String pushTokenPrefix) {
         return new Device(member, pushTokenPrefix + "pushToken");
+    }
+
+    public static ChatRoom testChatRoom(Reservation reservation, Member mentor, Member mentee) {
+        return new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId());
+    }
+
+    public static ChatMessage testChatMessage(ChatRoom chatRoom, Member sender){
+        return new ChatMessage(chatRoom.getId(), sender.getId(), "테스트 메시지입니다.");
     }
 }
