@@ -245,4 +245,8 @@ public class ReservationService {
         mentoringStatisticsRepository.updateReservationCountMinus(reservation.getMentoring().getId());
         reservationRepository.delete(reservation);
     }
+
+    public List<Reservation> findAllByIdsWithMentoring(List<Long> ids){
+        return reservationRepository.findAllByIdInWithMentoring(ids);
+    }
 }

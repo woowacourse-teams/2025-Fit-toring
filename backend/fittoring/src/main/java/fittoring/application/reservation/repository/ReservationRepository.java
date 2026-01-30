@@ -5,6 +5,8 @@ import fittoring.application.reservation.service.dto.ParticipatedReservationWith
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
+
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
@@ -54,4 +56,7 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
         Long menteeId,
         List<Status> statuses
     );
+
+    @Query("SELECT r FROM Reservation r JOIN FETCH r.mentoring WHERE r.id IN :ids")
+    List<Reservation> findAllByIdInWithMentoring(@Param("ids") Collection<Long> ids);
 }

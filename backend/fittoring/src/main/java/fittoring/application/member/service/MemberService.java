@@ -20,6 +20,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -103,5 +107,15 @@ public class MemberService {
         if (memberRepository.existsByPhone_Number(request.phoneNumber())) {
             throw new DuplicatePhoneException(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
         }
+    }
+
+    public Map<Long, String> getIdNameMap(List<Long> ids) {
+
+        return memberRepository.findAllById(ids)
+                .stream()
+                .collect(Collectors.toMap(
+                        Member::getId,
+                        Member::getName
+                ));
     }
 }

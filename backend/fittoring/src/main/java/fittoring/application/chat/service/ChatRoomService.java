@@ -1,7 +1,7 @@
 package fittoring.application.chat.service;
 
 import fittoring.application.chat.repository.ChatRoomRepository;
-import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfoDto;
 import fittoring.application.chat.service.dto.ChatRoomInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
@@ -49,7 +49,7 @@ public class ChatRoomService {
         );
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
         String url = chatRoomUrlGenerator.generate(savedChatRoom.getId());
-        return new ChatRoomCreatedInfo(url);
+        return new ChatRoomCreatedInfoDto(url);
     }
 
     private void validateMentoringExists(Mentoring mentoring) {
@@ -142,5 +142,9 @@ public class ChatRoomService {
                         ChatRoom::getReservationId,
                         Function.identity()
                 ));
+    }
+
+    public List<ChatRoom> findAllByMemberId(Long memberId) {
+        return chatRoomRepository.findAllByMenteeIdOrMentorId(memberId, memberId);
     }
 }
