@@ -8,9 +8,10 @@ import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
+import fittoring.application.chat.presentation.dto.response.ChatRoomInfoResponse;
 import fittoring.application.chat.repository.ChatMessageRepository;
 import fittoring.application.chat.repository.ChatRoomRepository;
-import fittoring.application.chat.service.dto.ChatRoomInfoResponse;
+
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryRepository;
