@@ -247,6 +247,7 @@ public class ReservationService {
         reservationRepository.delete(reservation);
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findReservationsWithMentoring(List<ChatRoom> chatRooms) {
         List<Long> reservationIds = chatRooms.stream()
                 .map(ChatRoom::getReservationId)
