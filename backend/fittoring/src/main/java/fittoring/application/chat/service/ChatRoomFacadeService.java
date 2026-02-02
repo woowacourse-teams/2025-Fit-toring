@@ -55,7 +55,7 @@ public class ChatRoomFacadeService {
         Map<Long, Reservation> reservationsById = reservationService.getReservationMapping(reservations);
 
         List<Long> opponentsIds = chatRoomService.getOpponentIds(memberId, chatRooms);
-        Map<Long, String> names = memberService.findNameMapping(opponentsIds);
+        Map<Long, String> nameByMemberId = memberService.findNameMapping(opponentsIds);
 
         List<Long> mentoringIds = reservationService.getMentoringIds(reservations);
         Map<Long, String> mentoringIdProfileImageUrlMapping = imageService.getRelationIdThumbnailUrlMapping(
@@ -66,7 +66,7 @@ public class ChatRoomFacadeService {
                         room -> {
                             Reservation reservation = getReservation(room, reservationsById);
                             Long mentoringId = reservation.getMentoring().getId();
-                            String opponentName = getOpponentName(memberId, room, names);
+                            String opponentName = getOpponentName(memberId, room, nameByMemberId);
                             String profileImageUrl = mentoringIdProfileImageUrlMapping.get(mentoringId);
                             ChatMessage lastMessage = roomIdLastMessageMapping.get(room.getId());
 

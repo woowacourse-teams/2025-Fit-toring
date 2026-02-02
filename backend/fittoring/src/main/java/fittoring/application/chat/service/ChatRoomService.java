@@ -152,6 +152,7 @@ public class ChatRoomService {
     public List<Long> getOpponentIds(Long memberId, List<ChatRoom> chatRooms) {
         return chatRooms.stream()
                 .map(chatRoom -> chatRoom.getOpponentIdOf(memberId))
+                .distinct()
                 .toList();
     }
 }
