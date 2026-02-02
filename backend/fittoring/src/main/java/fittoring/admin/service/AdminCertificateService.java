@@ -39,7 +39,7 @@ public class AdminCertificateService {
     @Transactional(readOnly = true)
     public CertificateDetailResponse getCertificate(Long certificateId) {
         Certificate certificate = getCertificateOne(certificateId);
-        Image certificateImage = imageService.findByImageTypeAndRelationId(ImageType.CERTIFICATE, certificateId)
+        Image certificateImage = imageService.findDefault(ImageType.CERTIFICATE, certificateId)
                 .orElseThrow(() -> new ImageNotFoundException(
                         BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage()
                 ));

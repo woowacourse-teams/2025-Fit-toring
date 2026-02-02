@@ -11,5 +11,5 @@ public interface CustomChatMessageRepository {
 
     ChatMessagePaginationResultDto findChatMessagesWithPagination(Long chatRoomId, Cursor cursor);
 
-    Map<Long, ChatMessage> getChatRoomToLastChatMessageByChatRoomIds(List<Long> chatRoomIds);
+    Map<Long, ChatMessage> findChatRoomLastChatMessageMapping(List<Long> chatRoomIds);
 }

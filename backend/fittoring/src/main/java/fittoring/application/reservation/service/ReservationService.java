@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -138,7 +139,7 @@ public class ReservationService {
         Set<Long> mentoringIds = rows.stream()
                 .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
                 .collect(Collectors.toSet());
-        Map<Long, String> profileImageByMentoringIds = imageService.findThumbnailImageMapByImageTypeAndRelationIds(
+        Map<Long, String> profileImageByMentoringIds = imageService.getRelationIdThumbnailUrlMapping(
                 ImageType.MENTORING_PROFILE,
                 mentoringIds
         );
@@ -246,7 +247,23 @@ public class ReservationService {
         reservationRepository.delete(reservation);
     }
 
-    public List<Reservation> findAllByIdsWithMentoring(List<Long> ids){
-        return reservationRepository.findAllByIdInWithMentoring(ids);
+    public List<Reservation> findReservationsWithMentoring(List<ChatRoom> chatRooms) {
+        List<Long> reservationIds = chatRooms.stream()
+                .map(ChatRoom::getReservationId)
+                .toList();
+        List<Reservation> reservations = reservationRepository.findAllByIdInWithMentoring(reservationIds);
+        return reservations;
+    }
+
+    public Map<Long, Reservation> getReservationMapping(List<Reservation> reservations){
+        return reservations.stream()
+                .collect(Collectors.toMap(Reservation::getId, Function.identity()));
+    }
+
+    public List<Long> getMentoringIds(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(Reservation::getMentoring)
+                .map(Mentoring::getId)
+                .toList();
     }
 }

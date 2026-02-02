@@ -1,22 +1,25 @@
 package fittoring.application.chat.service;
 
+import fittoring.application.chat.presentation.dto.response.ChatRoomInfoResponse;
 import fittoring.application.chat.presentation.dto.response.ChatRoomPreviewResponse;
 import fittoring.application.chat.service.dto.ChatRoomInfoDto;
-import fittoring.application.chat.presentation.dto.response.ChatRoomInfoResponse;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DataIntegrityException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.member.service.MemberService;
 import fittoring.application.mentoring.service.MentoringService;
 import fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto;
 import fittoring.application.reservation.service.ReservationService;
-import fittoring.domain.model.*;
+import fittoring.domain.model.ChatMessage;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Reservation;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -38,50 +41,34 @@ public class ChatRoomFacadeService {
         return ChatRoomInfoResponse.of(mentoringInfo, chatRoomInfo);
     }
 
+    @Transactional(readOnly = true)
     public List<ChatRoomPreviewResponse> getChatRoomPreviews(Long memberId) {
         List<ChatRoom> chatRooms = chatRoomService.findAllByMemberId(memberId);
         if (chatRooms.isEmpty()) {
             return List.of();
         }
-        /*
-         * N+1문제 방지를 위해 채팅방, 메시지, 예약, 멘토링, 회원, 이미지의 연관된 데이터를
-         * 각각 배치 조회하고, Map 으로 연결하여 조립합니다.
-         */
-        // 마지막 메시지 배치 조회 및 매핑
-        List<Long> chatRoomIds = chatRooms.stream()
-                .map(ChatRoom::getId)
-                .toList();
-        Map<Long, ChatMessage> chatRoomToLastMessage = chatMessageService.getChatRoomToLastChatMessageByChatRoomIds(chatRoomIds);
 
-        // 예약 배치 조회 및 매핑, N+1 방지를 위해 멘토링 Fetch Join
-        List<Long> reservationIds = chatRooms.stream()
-                .map(ChatRoom::getReservationId)
-                .toList();
-        List<Reservation> reservations = reservationService.findAllByIdsWithMentoring(reservationIds);
-        Map<Long, Reservation> reservationMap = reservations.stream()
-                .collect(Collectors.toMap(Reservation::getId, Function.identity()));
+        Map<Long, ChatMessage> roomIdLastMessageMapping = chatMessageService.findChatRoomLastChatMessageMapping(
+                chatRooms);
 
-        // 상대방 이름 배치 조회 및 매핑
-        List<Long> opponentsIds = chatRooms.stream()
-                .map(chatRoom -> chatRoom.getOpponentIdOf(memberId))
-                .toList();
-        Map<Long, String> names = memberService.getIdNameMap(opponentsIds);
+        List<Reservation> reservations = reservationService.findReservationsWithMentoring(chatRooms);
+        Map<Long, Reservation> reservationsById = reservationService.getReservationMapping(reservations);
 
-        // 프로필 이미지 배치 조회 및 매핑
-        List<Long> mentoringIds = reservations.stream()
-                .map(Reservation::getMentoring)
-                .map(Mentoring::getId)
-                .toList();
-        Map<Long, String> mentoringIdToProfileImageUrl = imageService.findThumbnailImageMapByImageTypeAndRelationIds(ImageType.MENTORING_PROFILE, mentoringIds);
+        List<Long> opponentsIds = chatRoomService.getOpponentIds(memberId, chatRooms);
+        Map<Long, String> names = memberService.findNameMapping(opponentsIds);
+
+        List<Long> mentoringIds = reservationService.getMentoringIds(reservations);
+        Map<Long, String> mentoringIdProfileImageUrlMapping = imageService.getRelationIdThumbnailUrlMapping(
+                ImageType.MENTORING_PROFILE, mentoringIds);
 
         return chatRooms.stream()
                 .map(
                         room -> {
-                            Reservation reservation = reservationMap.get(room.getReservationId());
+                            Reservation reservation = getReservation(room, reservationsById);
                             Long mentoringId = reservation.getMentoring().getId();
-                            String opponentName = names.get(room.getOpponentIdOf(memberId));
-                            String profileImageUrl = mentoringIdToProfileImageUrl.get(mentoringId);
-                            ChatMessage lastMessage = chatRoomToLastMessage.get(room.getId());
+                            String opponentName = getOpponentName(memberId, room, names);
+                            String profileImageUrl = mentoringIdProfileImageUrlMapping.get(mentoringId);
+                            ChatMessage lastMessage = roomIdLastMessageMapping.get(room.getId());
 
                             if (lastMessage == null) {
                                 return ChatRoomPreviewResponse.of(room.getId(),
@@ -89,6 +76,7 @@ public class ChatRoomFacadeService {
                                         opponentName,
                                         reservation.getStatus());
                             }
+
                             return new ChatRoomPreviewResponse(room.getId(),
                                     profileImageUrl,
                                     opponentName,
@@ -98,5 +86,17 @@ public class ChatRoomFacadeService {
                             );
                         }
                 ).toList();
+    }
+
+    private String getOpponentName(Long memberId, ChatRoom room, Map<Long, String> names) {
+        return Optional.of(names.get(room.getOpponentIdOf(memberId)))
+                .orElseThrow(() -> new DataIntegrityException(
+                        BusinessErrorMessage.CHAT_ROOM_OPPONENT_NAME_INTEGRITY_EXCEPTION.getMessage()));
+    }
+
+    private Reservation getReservation(ChatRoom room, Map<Long, Reservation> reservationsById) {
+        return Optional.of(reservationsById.get(room.getReservationId()))
+                .orElseThrow(() -> new DataIntegrityException(
+                        BusinessErrorMessage.CHAT_ROOM_RESERVATION_INTEGRITY_EXCEPTION.getMessage()));
     }
 }

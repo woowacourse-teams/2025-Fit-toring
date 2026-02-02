@@ -104,7 +104,11 @@ public class ChatMessageService {
                 .toList();
     }
 
-    public Map<Long, ChatMessage> getChatRoomToLastChatMessageByChatRoomIds(List<Long> chatRoomIds) {
-        return chatMessageRepository.getChatRoomToLastChatMessageByChatRoomIds(chatRoomIds);
+    @Transactional(readOnly = true)
+    public Map<Long, ChatMessage> findChatRoomLastChatMessageMapping(List<ChatRoom> chatRooms) {
+        List<Long> chatRoomIds = chatRooms.stream()
+                .map(ChatRoom::getId)
+                .toList();
+        return chatMessageRepository.findChatRoomLastChatMessageMapping(chatRoomIds);
     }
 }

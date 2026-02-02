@@ -51,7 +51,7 @@ public class MemberService {
     }
 
     private Image findMentoringImage(Mentoring mentoring) {
-        return imageService.findThumbnailByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
+        return imageService.findThumbnail(ImageType.MENTORING_PROFILE, mentoring.getId())
                 .orElse(null);
     }
 
@@ -109,7 +109,7 @@ public class MemberService {
         }
     }
 
-    public Map<Long, String> getIdNameMap(List<Long> ids) {
+    public Map<Long, String> findNameMapping(List<Long> ids) {
 
         return memberRepository.findAllById(ids)
                 .stream()

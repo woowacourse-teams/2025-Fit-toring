@@ -147,4 +147,10 @@ public class ChatRoomService {
     public List<ChatRoom> findAllByMemberId(Long memberId) {
         return chatRoomRepository.findAllByMenteeIdOrMentorId(memberId, memberId);
     }
+
+    public List<Long> getOpponentIds(Long memberId, List<ChatRoom> chatRooms) {
+        return chatRooms.stream()
+                .map(chatRoom -> chatRoom.getOpponentIdOf(memberId))
+                .toList();
+    }
 }

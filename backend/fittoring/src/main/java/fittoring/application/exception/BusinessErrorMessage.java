@@ -51,7 +51,10 @@ public enum BusinessErrorMessage {
     EMPTY_REQUEST("요청 정보가 비어있어 요청을 수행할 수 없습니다."),
     FCM_TOKEN_NOT_FOUND("해당 멤버의 FCM 토큰이 존재하지 않습니다."),
     TOO_MANY_DEVICE("인당 기기 등록 제한 수를 초과했습니다. 사용하지 않는 기기를 해제해 주세요"),
-    ALREADY_REGISTERED_DEVICE("이미 등록된 기기입니다.");
+    ALREADY_REGISTERED_DEVICE("이미 등록된 기기입니다."),
+    CHAT_ROOM_RESERVATION_INTEGRITY_EXCEPTION("채팅방에 연결된 예약 정보가 존재하지 않습니다."),
+    CHAT_ROOM_OPPONENT_NAME_INTEGRITY_EXCEPTION("채팅방에 연결된 상대 이름 정보가 존재하지 않습니다."),
+    ;
 
     private final String message;
 
