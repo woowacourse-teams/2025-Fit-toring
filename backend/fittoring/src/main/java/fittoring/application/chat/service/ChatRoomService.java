@@ -144,6 +144,7 @@ public class ChatRoomService {
                 ));
     }
 
+    @Transactional(readOnly = true)
     public List<ChatRoom> findAllByMemberId(Long memberId) {
         return chatRoomRepository.findAllByMenteeIdOrMentorId(memberId, memberId);
     }
