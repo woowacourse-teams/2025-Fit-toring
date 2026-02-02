@@ -89,13 +89,13 @@ public class ChatRoomFacadeService {
     }
 
     private String getOpponentName(Long memberId, ChatRoom room, Map<Long, String> names) {
-        return Optional.of(names.get(room.getOpponentIdOf(memberId)))
+        return Optional.ofNullable(names.get(room.getOpponentIdOf(memberId)))
                 .orElseThrow(() -> new DataIntegrityException(
                         BusinessErrorMessage.CHAT_ROOM_OPPONENT_NAME_INTEGRITY_EXCEPTION.getMessage()));
     }
 
     private Reservation getReservation(ChatRoom room, Map<Long, Reservation> reservationsById) {
-        return Optional.of(reservationsById.get(room.getReservationId()))
+        return Optional.ofNullable(reservationsById.get(room.getReservationId()))
                 .orElseThrow(() -> new DataIntegrityException(
                         BusinessErrorMessage.CHAT_ROOM_RESERVATION_INTEGRITY_EXCEPTION.getMessage()));
     }
