@@ -1,6 +1,8 @@
 package fittoring.application.exception;
 
-public class DataIntegrityException extends RuntimeException {
+import fittoring.exception.SystemException;
+
+public class DataIntegrityException extends SystemException {
 
     public DataIntegrityException(String message) {
         super(message);

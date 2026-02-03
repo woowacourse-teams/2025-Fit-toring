@@ -58,5 +58,5 @@ public interface ReservationRepository extends ListCrudRepository<Reservation, L
     );
 
     @Query("SELECT r FROM Reservation r JOIN FETCH r.mentoring WHERE r.id IN :ids")
-    List<Reservation> findAllByIdInWithMentoring(@Param("ids") Collection<Long> ids);
+    List<Reservation> findAllByIdInFetchingMentoring(@Param("ids") Collection<Long> ids);
 }

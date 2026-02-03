@@ -111,7 +111,6 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Map<Long, String> findNameMapping(List<Long> ids) {
-
         return memberRepository.findAllById(ids)
                 .stream()
                 .collect(Collectors.toMap(

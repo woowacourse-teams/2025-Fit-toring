@@ -48,53 +48,45 @@ public class ChatRoomFacadeService {
             return List.of();
         }
 
-        Map<Long, ChatMessage> roomIdLastMessageMapping = chatMessageService.findChatRoomLastChatMessageMapping(
+        Map<Long, ChatMessage> lastMessageByRoomId = chatMessageService.findAllLastMessagesByRoomIds(
                 chatRooms);
 
-        List<Reservation> reservations = reservationService.findReservationsWithMentoring(chatRooms);
-        Map<Long, Reservation> reservationsById = reservationService.getReservationMapping(reservations);
+        List<Reservation> reservations = reservationService.findReservationsFetchingMentoring(chatRooms);
+        Map<Long, Reservation> reservationsById = reservationService.getReservationMap(reservations);
 
         List<Long> opponentsIds = chatRoomService.getOpponentIds(memberId, chatRooms);
         Map<Long, String> nameByMemberId = memberService.findNameMapping(opponentsIds);
 
         List<Long> mentoringIds = reservationService.getMentoringIds(reservations);
-        Map<Long, String> mentoringIdProfileImageUrlMapping = imageService.getRelationIdThumbnailUrlMapping(
+        Map<Long, String> profileImageUrlByMentoringId = imageService.getUrlMap(
                 ImageType.MENTORING_PROFILE, mentoringIds);
 
         return chatRooms.stream()
                 .map(
                         room -> {
-                            Reservation reservation = getReservation(room, reservationsById);
+                            Reservation reservation = extractReservationFrom(room, reservationsById);
                             Long mentoringId = reservation.getMentoring().getId();
-                            String opponentName = getOpponentName(memberId, room, nameByMemberId);
-                            String profileImageUrl = mentoringIdProfileImageUrlMapping.get(mentoringId);
-                            ChatMessage lastMessage = roomIdLastMessageMapping.get(room.getId());
+                            String opponentName = extractOpponentNameFrom(memberId, room, nameByMemberId);
+                            String profileImageUrl = profileImageUrlByMentoringId.get(mentoringId);
+                            ChatMessage lastMessage = lastMessageByRoomId.get(room.getId());
 
-                            if (lastMessage == null) {
-                                return ChatRoomPreviewResponse.of(room.getId(),
-                                        profileImageUrl,
-                                        opponentName,
-                                        reservation.getStatus());
-                            }
-
-                            return new ChatRoomPreviewResponse(room.getId(),
+                            return ChatRoomPreviewResponse.of(
+                                    room.getId(),
                                     profileImageUrl,
                                     opponentName,
                                     reservation.getStatus(),
-                                    lastMessage.getContent(),
-                                    lastMessage.getCreatedAt()
-                            );
+                                    lastMessage);
                         }
                 ).toList();
     }
 
-    private String getOpponentName(Long memberId, ChatRoom room, Map<Long, String> names) {
+    private String extractOpponentNameFrom(Long memberId, ChatRoom room, Map<Long, String> names) {
         return Optional.ofNullable(names.get(room.getOpponentIdOf(memberId)))
                 .orElseThrow(() -> new DataIntegrityException(
                         BusinessErrorMessage.CHAT_ROOM_OPPONENT_NAME_INTEGRITY_EXCEPTION.getMessage()));
     }
 
-    private Reservation getReservation(ChatRoom room, Map<Long, Reservation> reservationsById) {
+    private Reservation extractReservationFrom(ChatRoom room, Map<Long, Reservation> reservationsById) {
         return Optional.ofNullable(reservationsById.get(room.getReservationId()))
                 .orElseThrow(() -> new DataIntegrityException(
                         BusinessErrorMessage.CHAT_ROOM_RESERVATION_INTEGRITY_EXCEPTION.getMessage()));

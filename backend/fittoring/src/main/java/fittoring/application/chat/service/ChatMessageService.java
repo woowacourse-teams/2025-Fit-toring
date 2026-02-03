@@ -105,10 +105,10 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, ChatMessage> findChatRoomLastChatMessageMapping(List<ChatRoom> chatRooms) {
+    public Map<Long, ChatMessage> findAllLastMessagesByRoomIds(List<ChatRoom> chatRooms) {
         List<Long> chatRoomIds = chatRooms.stream()
                 .map(ChatRoom::getId)
                 .toList();
-        return chatMessageRepository.findChatRoomLastChatMessageMapping(chatRoomIds);
+        return chatMessageRepository.findAllLastMessagesByRoomIds(chatRoomIds);
     }
 }

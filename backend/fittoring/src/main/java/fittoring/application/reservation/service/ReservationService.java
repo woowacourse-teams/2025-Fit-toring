@@ -139,7 +139,7 @@ public class ReservationService {
         Set<Long> mentoringIds = rows.stream()
                 .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
                 .collect(Collectors.toSet());
-        Map<Long, String> profileImageByMentoringIds = imageService.getRelationIdThumbnailUrlMapping(
+        Map<Long, String> profileImageByMentoringIds = imageService.getUrlMap(
                 ImageType.MENTORING_PROFILE,
                 mentoringIds
         );
@@ -248,15 +248,15 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> findReservationsWithMentoring(List<ChatRoom> chatRooms) {
+    public List<Reservation> findReservationsFetchingMentoring(List<ChatRoom> chatRooms) {
         List<Long> reservationIds = chatRooms.stream()
                 .map(ChatRoom::getReservationId)
                 .toList();
-        List<Reservation> reservations = reservationRepository.findAllByIdInWithMentoring(reservationIds);
+        List<Reservation> reservations = reservationRepository.findAllByIdInFetchingMentoring(reservationIds);
         return reservations;
     }
 
-    public Map<Long, Reservation> getReservationMapping(List<Reservation> reservations){
+    public Map<Long, Reservation> getReservationMap(List<Reservation> reservations){
         return reservations.stream()
                 .collect(Collectors.toMap(Reservation::getId, Function.identity()));
     }

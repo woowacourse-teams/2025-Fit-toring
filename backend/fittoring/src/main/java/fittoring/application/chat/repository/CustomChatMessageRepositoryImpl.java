@@ -49,7 +49,7 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
     }
 
     @Override
-    public Map<Long, ChatMessage> findChatRoomLastChatMessageMapping(List<Long> chatRoomIds) {
+    public Map<Long, ChatMessage> findAllLastMessagesByRoomIds(List<Long> chatRoomIds) {
         if (chatRoomIds == null || chatRoomIds.isEmpty()){
             return Map.of();
         }

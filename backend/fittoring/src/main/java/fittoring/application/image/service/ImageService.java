@@ -60,7 +60,7 @@ public class ImageService {
                 );
     }
 
-    public Map<Long, String> getRelationIdThumbnailUrlMapping(
+    public Map<Long, String> getUrlMap(
             ImageType imageType, Collection<Long> relationIds
     ) {
         List<Image> images = imageRepository.findByImageTypeAndRelationIdIn(
