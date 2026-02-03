@@ -57,11 +57,13 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
             }
             return true;
         } catch (UnauthorizedException | InvalidTokenException e) {
+            logHandshakeError(request, HttpStatus.UNAUTHORIZED, e.getMessage());
             writeErrorResponse(response, HttpStatus.UNAUTHORIZED, e.getMessage());
             return false;
         } catch (Exception e) {
-            writeErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR,
-                    SystemErrorMessage.INTERNAL_SERVER_ERROR.getMessage());
+            String message = SystemErrorMessage.INTERNAL_SERVER_ERROR.getMessage();
+            logHandshakeError(request, HttpStatus.INTERNAL_SERVER_ERROR, message);
+            writeErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, message);
             return false;
         }
     }
@@ -83,6 +85,18 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
         } catch (IOException ignore) {
             // 원래 실패 원인을 덮어쓰지 않기 위해서 비워둠
         }
+    }
+
+    private void logHandshakeError(ServerHttpRequest request, HttpStatus status, String message) {
+        String method = request.getMethod().name();
+        String path = request.getURI().getPath();
+        if (status.is4xxClientError()) {
+            log.warn("WS_HANDSHAKE_ERROR status={} method={} path={} message={}",
+                    status.value(), method, path, message);
+            return;
+        }
+        log.error("WS_HANDSHAKE_ERROR status={} method={} path={} message={}",
+                status.value(), method, path, message);
     }
 
     @Override
