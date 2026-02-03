@@ -1,5 +1,6 @@
-package fittoring.application.chat.service.dto;
+package fittoring.application.chat.presentation.dto.response;
 
+import fittoring.application.chat.service.dto.ChatRoomInfoDto;
 import fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto;
 import fittoring.domain.model.ChatStatus;
 import fittoring.domain.model.MemberRole;

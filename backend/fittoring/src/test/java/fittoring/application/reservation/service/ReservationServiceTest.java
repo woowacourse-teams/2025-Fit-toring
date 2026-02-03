@@ -85,10 +85,10 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void createReservation() {
         // given
-        Member mentee = FixtureUtil.getTestMentee();
-        Member mentor = FixtureUtil.getTestMentor();
+        Member mentee = FixtureUtil.testMentee();
+        Member mentor = FixtureUtil.testMentor();
         memberRepository.saveAll(List.of(mentee, mentor));
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
         MentoringStatistics mentoringStatistics =
                 mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
         long originalReservationCount = mentoringStatistics.getReservationCount();
@@ -119,8 +119,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void createReservationFail1() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
 
         ReservationCreateDto dto = new ReservationCreateDto(
                 mentor.getId(),          // menteeId == mentorId → 동일인 예약 시도
@@ -138,7 +138,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void createReservationFail2() {
         // given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
         long invalidMentoringId = 100L;
 
         ReservationCreateDto dto = new ReservationCreateDto(
@@ -157,28 +157,28 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void getAllReservationByMentor() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
 
-        Member mentee1 = FixtureUtil.getTestMentee(1);
-        Member mentee2 = FixtureUtil.getTestMentee(2);
-        Member mentee3 = FixtureUtil.getTestMentee(3);
+        Member mentee1 = FixtureUtil.testMentee(1);
+        Member mentee2 = FixtureUtil.testMentee(2);
+        Member mentee3 = FixtureUtil.testMentee(3);
         List<Member> savedMentees = memberRepository.saveAll(List.of(mentee1, mentee2, mentee3));
 
-        Reservation reservation1 = FixtureUtil.getTestPendingReservation(mentoring, mentee1);
+        Reservation reservation1 = FixtureUtil.testPendingReservation(mentoring, mentee1);
         reservation1.approve();
-        Reservation reservation2 = FixtureUtil.getTestPendingReservation(mentoring, mentee2);
+        Reservation reservation2 = FixtureUtil.testPendingReservation(mentoring, mentee2);
         reservation2.approve();
-        Reservation reservation3 = FixtureUtil.getTestPendingReservation(mentoring, mentee3);
+        Reservation reservation3 = FixtureUtil.testPendingReservation(mentoring, mentee3);
         reservation3.approve();
         List<Reservation> savedReservations = reservationRepository.saveAll(
                 List.of(reservation1, reservation2, reservation3));
 
-        ChatRoom chatRoom1 = FixtureUtil.getTestChatRoom(savedReservations.get(0).getId(), savedMentees.get(0).getId(),
+        ChatRoom chatRoom1 = FixtureUtil.testChatRoom(savedReservations.get(0).getId(), savedMentees.get(0).getId(),
                 mentor.getId());
-        ChatRoom chatRoom2 = FixtureUtil.getTestChatRoom(savedReservations.get(1).getId(), savedMentees.get(1).getId(),
+        ChatRoom chatRoom2 = FixtureUtil.testChatRoom(savedReservations.get(1).getId(), savedMentees.get(1).getId(),
                 mentor.getId());
-        ChatRoom chatRoom3 = FixtureUtil.getTestChatRoom(savedReservations.get(2).getId(), savedMentees.get(2).getId(),
+        ChatRoom chatRoom3 = FixtureUtil.testChatRoom(savedReservations.get(2).getId(), savedMentees.get(2).getId(),
                 mentor.getId());
         List<ChatRoom> savedChatRooms = chatRoomRepository.saveAll(List.of(chatRoom1, chatRoom2, chatRoom3));
 
@@ -201,8 +201,8 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void getAllReservationByMentor2() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        mentoringRepository.save(FixtureUtil.testMentoring(mentor));
         // 예약 생성 없음!
 
         // when
@@ -217,10 +217,10 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void approve() {
         //given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        Reservation reservation = reservationRepository.save(FixtureUtil.testPendingReservation(mentoring, mentee));
 
         // when
         ReservationInfo actual = reservationService.approve(mentor.getId(), reservation.getId());
@@ -239,10 +239,10 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void reject() {
         //given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        Reservation reservation = reservationRepository.save(FixtureUtil.testPendingReservation(mentoring, mentee));
 
         // when
         ReservationInfo actual = reservationService.reject(mentor.getId(), reservation.getId());
@@ -261,9 +261,9 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void approveByOther() {
         // given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
 
         Reservation reservation = reservationRepository.save(
                 new Reservation("content", Status.PENDING, mentoring, mentee)
@@ -280,9 +280,9 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void rejectByOther() {
         // given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
 
         Reservation reservation = reservationRepository.save(
                 new Reservation("content", Status.PENDING, mentoring, mentee)
@@ -299,9 +299,9 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void getPhone() {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
 
         Reservation reservation = reservationRepository.save(
                 new Reservation("content", Status.PENDING, mentoring, mentee)
@@ -318,11 +318,11 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void findMemberReservations() {
         // given
-        Member mentor1 = memberRepository.save(FixtureUtil.getTestMentor(1));
-        Member mentor2 = memberRepository.save(FixtureUtil.getTestMentor(2));
+        Member mentor1 = memberRepository.save(FixtureUtil.testMentor(1));
+        Member mentor2 = memberRepository.save(FixtureUtil.testMentor(2));
 
-        Mentoring mentoring1 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor1));
-        Mentoring mentoring2 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor2));
+        Mentoring mentoring1 = mentoringRepository.save(FixtureUtil.testMentoring(mentor1));
+        Mentoring mentoring2 = mentoringRepository.save(FixtureUtil.testMentoring(mentor2));
 
         // 멘토링1 프로필 이미지
         Image profileImageOfMentor1 = imageRepository.save(
@@ -337,7 +337,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
         categoryMentoringRepository.save(new CategoryMentoring(c2, mentoring1));
         categoryMentoringRepository.save(new CategoryMentoring(c3, mentoring2));
 
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
 
         Reservation reservation1 = reservationRepository.save(
                 new Reservation("신청 내용1", Status.APPROVED, mentoring1, mentee)
@@ -434,11 +434,11 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @ParameterizedTest
     void updateStatusWithAdminAuthorization(Status originalStatus, String newStatus) {
         // given
-        Member admin = FixtureUtil.getTestAdmin();
-        Member mentor = FixtureUtil.getTestMentor();
-        Member mentee = FixtureUtil.getTestMentee();
+        Member admin = FixtureUtil.testAdmin();
+        Member mentor = FixtureUtil.testMentor();
+        Member mentee = FixtureUtil.testMentee();
         memberRepository.saveAll(List.of(admin, mentor, mentee));
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
 
         Reservation reservation = reservationRepository.save(
                 new Reservation("예약 내용", originalStatus, mentoring, mentee)
@@ -459,13 +459,13 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void deleteReservationWithAdminAuthorization() {
         // given
-        Member admin = FixtureUtil.getTestAdmin();
-        Member mentor = FixtureUtil.getTestMentor();
-        Member mentee = FixtureUtil.getTestMentee();
+        Member admin = FixtureUtil.testAdmin();
+        Member mentor = FixtureUtil.testMentor();
+        Member mentee = FixtureUtil.testMentee();
         memberRepository.saveAll(List.of(admin, mentor, mentee));
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
-        Reservation reservation = reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee));
-        Review review = reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        Reservation reservation = reservationRepository.save(FixtureUtil.testPendingReservation(mentoring, mentee));
+        Review review = reviewRepository.save(FixtureUtil.testReview(reservation, mentee));
         MentoringStatistics stats = mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
         long originalReservationCount = stats.getReservationCount();
 
@@ -492,11 +492,11 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @Test
     void deleteReservationWithAdminAuthorization2() {
         // given
-        Member admin = FixtureUtil.getTestAdmin();
-        Member mentor = FixtureUtil.getTestMentor();
-        Member mentee = FixtureUtil.getTestMentee();
+        Member admin = FixtureUtil.testAdmin();
+        Member mentor = FixtureUtil.testMentor();
+        Member mentee = FixtureUtil.testMentee();
         memberRepository.saveAll(List.of(admin, mentor, mentee));
-        mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        mentoringRepository.save(FixtureUtil.testMentoring(mentor));
         // mentee 저장됨
 
         Long invalidReservationId = 999L;

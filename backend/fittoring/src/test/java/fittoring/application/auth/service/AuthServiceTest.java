@@ -58,7 +58,7 @@ class AuthServiceTest extends IntegrationTestSupport {
                 phoneNumber,
                 password);
 
-        phoneVerificationRepository.save(FixtureUtil.getVerifiedPhoneVerification(new Phone(phoneNumber)));
+        phoneVerificationRepository.save(FixtureUtil.testVerifiedPhoneVerification(new Phone(phoneNumber)));
 
         //when
         authService.register(request.toRegisterMemberDto());
@@ -74,7 +74,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void validateDuplicateLoginId() {
         //given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
 
         String loginId = mentee.getLoginId();
 
@@ -89,7 +89,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void validateDuplicateLoginId2() {
         //given
-        Member mentee = FixtureUtil.getTestMentee();
+        Member mentee = FixtureUtil.testMentee();
         memberRepository.save(mentee);
 
         String loginId = "nonDuplicateId";
@@ -104,7 +104,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void login() {
         //given
-        Member mentee = FixtureUtil.getTestMentee();
+        Member mentee = FixtureUtil.testMentee();
         memberRepository.save(mentee);
 
         String loginId = "wrongLoginId";
@@ -120,7 +120,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void login2() {
         //given
-        Member mentee = FixtureUtil.getTestMentee();
+        Member mentee = FixtureUtil.testMentee();
         memberRepository.save(mentee);
 
         String loginId = "menteeId";
@@ -136,7 +136,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void login3() {
         //given
-        Member mentee = FixtureUtil.getTestMentee();
+        Member mentee = FixtureUtil.testMentee();
         memberRepository.save(mentee);
 
         String loginId = mentee.getLoginId();
@@ -163,7 +163,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void reissue() {
         //given
-        Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
+        Member savedMember = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
@@ -196,7 +196,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void logout() {
         //given
-        Member savedMember = memberRepository.save(FixtureUtil.getTestMentee());
+        Member savedMember = memberRepository.save(FixtureUtil.testMentee());
 
         String refreshToken = jwtProvider.createRefreshToken();
         RefreshToken savedRefreshToken = refreshTokenRepository.save(
@@ -247,7 +247,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void registerOauthMember2() {
         // given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
 
         OauthSignUpRequest request = new OauthSignUpRequest("이름", Gender.MALE, mentee.getPhoneNumber());
         willReturn(new TokenPayload(1L, mentee.getRole().name())).given(jwtProvider).extractTokenPayload(any());
@@ -267,7 +267,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void findLoginId() {
         //given
-        Member mentee = FixtureUtil.getTestMentee();
+        Member mentee = FixtureUtil.testMentee();
         memberRepository.save(mentee);
 
         //when
@@ -280,11 +280,11 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void resetPassword() {
         //given
-        Member mentee = FixtureUtil.getTestMentee();
+        Member mentee = FixtureUtil.testMentee();
         Password before = mentee.getPassword();
         memberRepository.save(mentee);
         phoneVerificationRepository.save(
-                FixtureUtil.getVerifiedPhoneVerification(mentee.getPhone())
+                FixtureUtil.testVerifiedPhoneVerification(mentee.getPhone())
         );
         //when
         Member changed = authService.resetPassword(mentee.getLoginId(), mentee.getPhoneNumber(), "after");

@@ -47,7 +47,7 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setUp() {
-        admin = FixtureUtil.getTestAdmin();
+        admin = FixtureUtil.testAdmin();
         memberRepository.save(admin);
         given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
@@ -59,23 +59,23 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
     @Test
     void getAllCertificatesPaged() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(member));
         for (int i = 0; i < 35; i++) {
             // APPROVED 자격증명 35개
-            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            Certificate certificate = FixtureUtil.testCertificate(mentoring);
             certificate.approve();
             certificateRepository.save(certificate);
         }
         for (int i = 0; i < 35; i++) {
             // REJECTED 자격증명 35개
-            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            Certificate certificate = FixtureUtil.testCertificate(mentoring);
             certificate.reject();
             certificateRepository.save(certificate);
         }
         for (int i = 0; i < 35; i++) {
             // PENDING 자격증명 35개
-            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            Certificate certificate = FixtureUtil.testCertificate(mentoring);
             certificateRepository.save(certificate);
         }
 
@@ -132,23 +132,23 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
     @Test
     void getAllCertificatesPaged2() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(member));
         for (int i = 0; i < 35; i++) {
             // APPROVED 자격증명 35개
-            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            Certificate certificate = FixtureUtil.testCertificate(mentoring);
             certificate.approve();
             certificateRepository.save(certificate);
         }
         for (int i = 0; i < 35; i++) {
             // REJECTED 자격증명 35개
-            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            Certificate certificate = FixtureUtil.testCertificate(mentoring);
             certificate.reject();
             certificateRepository.save(certificate);
         }
         for (int i = 0; i < 35; i++) {
             // PENDING 자격증명 35개
-            Certificate certificate = FixtureUtil.getTestCertificate(mentoring);
+            Certificate certificate = FixtureUtil.testCertificate(mentoring);
             certificateRepository.save(certificate);
         }
 
@@ -177,9 +177,9 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
     @Test
     void getOneForAdmin() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(member));
+        Certificate certificate = certificateRepository.save(FixtureUtil.testCertificate(mentoring));
         // certificate가 영속화된 뒤에는 id 존재
         Image image = imageRepository.save(new Image("url", ImageType.CERTIFICATE, certificate.getId(), "baseName"));
 
@@ -196,9 +196,9 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
     @DisplayName("검토 중인 자격증명을 승인할 수 있다.")
     @Test
     void approveCertificateForAdmin() {
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(member));
+        Certificate certificate = certificateRepository.save(FixtureUtil.testCertificate(mentoring));
 
         assertThatCode(() -> adminCertificateService.approveCertificate(certificate.getId()))
                 .doesNotThrowAnyException();
@@ -207,9 +207,9 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
     @DisplayName("검토 중인 자격증명을 거절할 수 있다.")
     @Test
     void rejectCertificateForAdmin() {
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(member));
-        Certificate certificate = certificateRepository.save(FixtureUtil.getTestCertificate(mentoring));
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(member));
+        Certificate certificate = certificateRepository.save(FixtureUtil.testCertificate(mentoring));
 
         assertThatCode(() -> adminCertificateService.rejectCertificate(certificate.getId()))
                 .doesNotThrowAnyException();

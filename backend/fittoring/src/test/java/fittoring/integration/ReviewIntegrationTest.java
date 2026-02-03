@@ -326,7 +326,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 content
         );
 
-        reviewRepository.save(FixtureUtil.getTestReview(reservation, mentee));
+        reviewRepository.save(FixtureUtil.testReview(reservation, mentee));
 
         // when
         // then

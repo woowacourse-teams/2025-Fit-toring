@@ -40,17 +40,17 @@ class AdminReservationQueryServiceTest extends IntegrationTestSupport {
         @Test
         void findMentoringReservationsWithAdminAuthorization() {
             // given
-            Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
-            Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-            Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+            Member admin = memberRepository.save(FixtureUtil.testAdmin());
+            Member mentor = memberRepository.save(FixtureUtil.testMentor());
+            Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
 
-            Member mentee1 = memberRepository.save(FixtureUtil.getTestMentee(1));
-            Member mentee2 = memberRepository.save(FixtureUtil.getTestMentee(2));
+            Member mentee1 = memberRepository.save(FixtureUtil.testMentee(1));
+            Member mentee2 = memberRepository.save(FixtureUtil.testMentee(2));
 
             Reservation reservation1 = reservationRepository.save(
-                    FixtureUtil.getTestPendingReservation(mentoring, mentee1));
+                    FixtureUtil.testPendingReservation(mentoring, mentee1));
             Reservation reservation2 = reservationRepository.save(
-                    FixtureUtil.getTestPendingReservation(mentoring, mentee2));
+                    FixtureUtil.testPendingReservation(mentoring, mentee2));
 
             AdminMentoringReservationDto dto = new AdminMentoringReservationDto(
                     mentoring.getId(),
