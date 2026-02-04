@@ -8,7 +8,11 @@ import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.FixtureUtil;
 import fittoring.application.chat.repository.ChatRoomRepository;
-import fittoring.application.exception.*;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.MentorAndMenteeIsSameException;
+import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
@@ -33,6 +37,12 @@ import fittoring.domain.model.MentoringStatistics;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,8 +50,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.List;
-import java.util.TimeZone;
 
 class ReservationServiceTest extends IntegrationTestSupport {
 
@@ -506,5 +514,43 @@ class ReservationServiceTest extends IntegrationTestSupport {
         assertThatThrownBy(() -> reservationService.deleteReservationWithAdminAuthorization(dto))
                 .isInstanceOf(ReservationNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("동시에 300개의 예약이 신청될 때 통계 데이터가 정확히 반영되어야 한다.")
+    @Test
+    void mentoringStatisticsConcurrencyTest() throws InterruptedException {
+        // given
+        int threadCount = 300;
+        ExecutorService executorService = Executors.newFixedThreadPool(64);
+        CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            int index = i;
+            executorService.execute(() -> {
+                try {
+                    Member mentee = memberRepository.save(FixtureUtil.testMentee(index));
+                    ReservationCreateDto reservationCreateDto = new ReservationCreateDto(
+                            mentee.getId(),
+                            mentoring.getId(),
+                            "신청합니다."
+                    );
+                    reservationService.createReservation(reservationCreateDto);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
+
+        // then
+        MentoringStatistics result = mentoringStatisticsRepository.findById(mentoring.getId()).orElseThrow();
+        Assertions.assertThat(result.getReservationCount()).isEqualTo(threadCount);
     }
 }
