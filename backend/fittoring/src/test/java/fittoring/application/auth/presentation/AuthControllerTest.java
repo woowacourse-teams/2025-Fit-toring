@@ -18,6 +18,7 @@ import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.Gender;
+import fittoring.logging.ErrorJsonLogger;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -55,6 +56,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private JwtExtractor jwtExtractor;
+
+    @MockitoBean
+    private ErrorJsonLogger errorJsonLogger;
 
     @Autowired
     private MockMvc mockMvc;
