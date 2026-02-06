@@ -8,7 +8,7 @@ import fittoring.domain.model.ImageVariant;
 import fittoring.infrastructure.exception.S3UploadException;
 import fittoring.infrastructure.image.ContentType;
 import fittoring.infrastructure.image.KeyBuilder;
-import fittoring.logging.JsonLogger;
+import fittoring.logging.AppJsonLogger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,7 +34,7 @@ public class PresignedUrlService {
     private final S3Client s3Client;
     private final S3Presigner presigner;
     private final S3Properties properties;
-    private final JsonLogger jsonLogger;
+    private final AppJsonLogger appJsonLogger;
     private final KeyBuilder keyBuilder;
 
     public PresignedIssueResponse issuePresignedUrl(
@@ -82,13 +82,13 @@ public class PresignedUrlService {
                 return false;
             }
             if (e.statusCode() == 403) {
-                jsonLogger.warn("S3 HEAD 권한 거부(403)", Map.of("key", key), e);
+                appJsonLogger.warn("S3 HEAD 권한 거부(403)", Map.of("key", key), e);
                 return false;
             }
-            jsonLogger.warn("S3 HEAD 실패(S3Exception)", Map.of("key", key, "status", e.statusCode()), e);
+            appJsonLogger.warn("S3 HEAD 실패(S3Exception)", Map.of("key", key, "status", e.statusCode()), e);
             return false;
         } catch (Exception e) {
-            jsonLogger.warn("S3 HEAD 실패(unknown)", Map.of("key", key), e);
+            appJsonLogger.warn("S3 HEAD 실패(unknown)", Map.of("key", key), e);
             return false;
         }
     }
@@ -98,10 +98,10 @@ public class PresignedUrlService {
             String key = keyBuilder.extractKeyFromUrl(url);
             return isObjectExistsFromKey(key);
         } catch (S3UploadException e) {
-            jsonLogger.warn("S3 키 추출 실패 (잘못된 URL)", Map.of("url", url), e);
+            appJsonLogger.warn("S3 키 추출 실패 (잘못된 URL)", Map.of("url", url), e);
             return false;
         } catch (Exception e) {
-            jsonLogger.warn("S3 HEAD 실패 (unknown error)", Map.of("url", url), e);
+            appJsonLogger.warn("S3 HEAD 실패 (unknown error)", Map.of("url", url), e);
             return false;
         }
     }
