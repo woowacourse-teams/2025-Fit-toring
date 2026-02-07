@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class JsonLogger {
+public class AppJsonLogger {
 
     private final ObjectMapper objectMapper;
     private final LogMaskingUtil logMaskingUtil;
