@@ -1,6 +1,10 @@
 spring:
   application:
     name: fittoring
+  websocket:
+    message-broker:
+      stats:
+        enabled: true
   profiles:
     active: ${SPRING_PROFILES_ACTIVE}
   config:
