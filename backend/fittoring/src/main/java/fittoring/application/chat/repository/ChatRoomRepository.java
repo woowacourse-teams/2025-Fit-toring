@@ -9,4 +9,6 @@ public interface ChatRoomRepository extends ListCrudRepository<ChatRoom, Long> {
     List<ChatRoom> findAllByReservationIdIn(List<Long> reservationIds);
 
     boolean existsByReservationId(Long reservationId);
+
+    List<ChatRoom> findAllByMenteeIdOrMentorId(Long menteeId, Long mentorId);
 }

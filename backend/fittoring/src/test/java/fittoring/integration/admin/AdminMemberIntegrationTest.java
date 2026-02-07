@@ -32,7 +32,7 @@ public class AdminMemberIntegrationTest extends AbstractApiDocumentationTest {
         void successFindMembersForAdminWithAdmin() {
             // given
             for (int i = 1; i <= 21; i++) {
-                memberRepository.save(FixtureUtil.getTestMentee(i));
+                memberRepository.save(FixtureUtil.testMentee(i));
             }
 
             String adminAccessToken = jwtProvider.createAccessToken(1L, MemberRole.ADMIN);
@@ -64,7 +64,7 @@ public class AdminMemberIntegrationTest extends AbstractApiDocumentationTest {
         void successFindMembersPage2() {
             // given
             for (int i = 1; i <= 21; i++) {
-                memberRepository.save(FixtureUtil.getTestMentee(i));
+                memberRepository.save(FixtureUtil.testMentee(i));
             }
 
             String adminAccessToken = jwtProvider.createAccessToken(1L, MemberRole.ADMIN);
@@ -125,7 +125,7 @@ public class AdminMemberIntegrationTest extends AbstractApiDocumentationTest {
         void successFindMembersWithSize() {
             // given
             for (int i = 1; i <= 15; i++) {
-                memberRepository.save(FixtureUtil.getTestMentee(i));
+                memberRepository.save(FixtureUtil.testMentee(i));
             }
 
             String adminAccessToken = jwtProvider.createAccessToken(1L, MemberRole.ADMIN);

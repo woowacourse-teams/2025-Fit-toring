@@ -18,6 +18,8 @@ import fittoring.domain.model.Notification;
 import fittoring.util.Cursor;
 import fittoring.util.CursorCodec;
 import java.util.List;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -102,4 +104,11 @@ public class ChatMessageService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public Map<Long, ChatMessage> findAllLastMessagesByRoomIds(List<ChatRoom> chatRooms) {
+        List<Long> chatRoomIds = chatRooms.stream()
+                .map(ChatRoom::getId)
+                .toList();
+        return chatMessageRepository.findAllLastMessagesByRoomIds(chatRoomIds);
+    }
 }

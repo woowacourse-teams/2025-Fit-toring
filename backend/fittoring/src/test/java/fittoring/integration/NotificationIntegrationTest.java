@@ -38,7 +38,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void registerDevice1() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String token = "testpushtokentestpushtokentestpushtoken";
         RegisterDeviceRequest request = new RegisterDeviceRequest(member.getId(), token);
@@ -70,7 +70,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void registerDevice2() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String originalToken = "testpushtokentestpushtokentestpushtoken";
         String newToken = "newtestpushtokennewtestpushtokennewtest";
@@ -132,7 +132,7 @@ class NotificationIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void registerDeviceFail2() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String pushToken = "testpushtokentestpushtokentestpushtoken";
         RegisterDeviceRequest request = new RegisterDeviceRequest(member.getId(), pushToken);

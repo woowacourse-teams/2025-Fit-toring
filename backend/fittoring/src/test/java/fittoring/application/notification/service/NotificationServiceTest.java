@@ -38,7 +38,7 @@ class NotificationServiceTest extends IntegrationTestSupport {
     @Test
     void registerDevice1() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
         String pushToken = "testFcmTokentestFcmTokentestFcmToken";
 
         // when
@@ -55,7 +55,7 @@ class NotificationServiceTest extends IntegrationTestSupport {
     @Test
     void registerDevice2() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
         String originalToken = "testFcmTokentestFcmTokentestFcmToken";
 
         notificationService.registerDevice(member.getId(), originalToken);
@@ -70,7 +70,7 @@ class NotificationServiceTest extends IntegrationTestSupport {
     @Test
     void registerDevice3() {
         // given
-        Member member = memberRepository.save(FixtureUtil.getTestMentee());
+        Member member = memberRepository.save(FixtureUtil.testMentee());
         List<String> pushTokens = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
             pushTokens.add("deviceTokenValue" + i);

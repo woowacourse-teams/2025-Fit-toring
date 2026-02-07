@@ -873,18 +873,18 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void completeStatus() {
         //given
-        Member savedMentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member savedMentor = memberRepository.save(FixtureUtil.testMentor());
 
         //토큰 생성
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
-        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(savedMentor));
+        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.testMentoring(savedMentor));
 
         //멘티 생성
-        Member savedMentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member savedMentee = memberRepository.save(FixtureUtil.testMentee());
         Reservation savedReservation = reservationRepository.save(
-                FixtureUtil.getTestApprovedReservation(savedMentoring, savedMentee)
+                FixtureUtil.testApprovedReservation(savedMentoring, savedMentee)
         );
 
         //when
@@ -917,18 +917,18 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void completeStatusFail() {
         //given
-        Member savedMentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member savedMentor = memberRepository.save(FixtureUtil.testMentor());
 
         //토큰 생성
         String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
 
         //멘토링 생성
-        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(savedMentor));
+        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.testMentoring(savedMentor));
 
         //멘티 생성
-        Member savedMentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member savedMentee = memberRepository.save(FixtureUtil.testMentee());
         Reservation savedReservation = reservationRepository.save(
-                FixtureUtil.getTestPendingReservation(savedMentoring, savedMentee)
+                FixtureUtil.testPendingReservation(savedMentoring, savedMentee)
         );
 
         //when
@@ -953,19 +953,19 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void completeStatusFail2() {
         //given
-        Member savedMentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Member savedOtherMentor = memberRepository.save(FixtureUtil.getTestMentor(1));
+        Member savedMentor = memberRepository.save(FixtureUtil.testMentor());
+        Member savedOtherMentor = memberRepository.save(FixtureUtil.testMentor(1));
 
         //토큰 생성
         String accessToken = jwtProvider.createAccessToken(savedOtherMentor.getId(), savedOtherMentor.getRole());
 
         //멘토링 생성
-        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(savedMentor));
+        Mentoring savedMentoring = mentoringRepository.save(FixtureUtil.testMentoring(savedMentor));
 
         //멘티 생성
-        Member savedMentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member savedMentee = memberRepository.save(FixtureUtil.testMentee());
         Reservation savedReservation = reservationRepository.save(
-                FixtureUtil.getTestApprovedReservation(savedMentoring, savedMentee)
+                FixtureUtil.testApprovedReservation(savedMentoring, savedMentee)
         );
 
         //when //then

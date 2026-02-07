@@ -17,9 +17,9 @@ class ReservationTest {
     @Test
     void approve() {
         //given
-        Mentoring mentoring = FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor());
-        Member mentee = FixtureUtil.getTestMentee();
-        Reservation reservation = FixtureUtil.getTestPendingReservation(mentoring, mentee);
+        Mentoring mentoring = FixtureUtil.testMentoring(FixtureUtil.testMentor());
+        Member mentee = FixtureUtil.testMentee();
+        Reservation reservation = FixtureUtil.testPendingReservation(mentoring, mentee);
 
         //when //then
         assertThatCode(reservation::approve)
@@ -31,8 +31,8 @@ class ReservationTest {
     @EnumSource(value = Status.class, names = {"REJECTED", "APPROVED", "COMPLETE"})
     void approveValidate(Status status) {
         //given
-        Mentoring mentoring = FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor());
-        Member mentee = FixtureUtil.getTestMentee();
+        Mentoring mentoring = FixtureUtil.testMentoring(FixtureUtil.testMentor());
+        Member mentee = FixtureUtil.testMentee();
 
         Reservation reservation = new Reservation("내용", status, mentoring, mentee);
 
@@ -47,8 +47,8 @@ class ReservationTest {
     @EnumSource(value = Status.class, names = {"REJECTED", "APPROVED", "COMPLETE"})
     void rejectValidate(Status status) {
         //given
-        Mentoring mentoring = FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor());
-        Member mentee = FixtureUtil.getTestMentee();
+        Mentoring mentoring = FixtureUtil.testMentoring(FixtureUtil.testMentor());
+        Member mentee = FixtureUtil.testMentee();
 
         Reservation reservation = new Reservation("내용", status, mentoring, mentee);
 
@@ -62,9 +62,9 @@ class ReservationTest {
     @Test
     void reject() {
         //given
-        Mentoring mentoring = FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor());
-        Member mentee = FixtureUtil.getTestMentee();
-        Reservation reservation = FixtureUtil.getTestPendingReservation(mentoring, mentee);
+        Mentoring mentoring = FixtureUtil.testMentoring(FixtureUtil.testMentor());
+        Member mentee = FixtureUtil.testMentee();
+        Reservation reservation = FixtureUtil.testPendingReservation(mentoring, mentee);
 
         //when //then
         assertThatCode(reservation::reject)
@@ -75,9 +75,9 @@ class ReservationTest {
     @Test
     void complete() {
         //given
-        Mentoring mentoring = FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor());
-        Member mentee = FixtureUtil.getTestMentee();
-        Reservation reservation = FixtureUtil.getTestApprovedReservation(mentoring, mentee);
+        Mentoring mentoring = FixtureUtil.testMentoring(FixtureUtil.testMentor());
+        Member mentee = FixtureUtil.testMentee();
+        Reservation reservation = FixtureUtil.testApprovedReservation(mentoring, mentee);
 
         //when //then
         assertThatCode(reservation::complete)
@@ -89,8 +89,8 @@ class ReservationTest {
     @EnumSource(value = Status.class, names = {"REJECTED", "PENDING", "COMPLETE"})
     void notComplete(Status status) {
         //given
-        Mentoring mentoring = FixtureUtil.getTestMentoring(FixtureUtil.getTestMentor());
-        Member mentee = FixtureUtil.getTestMentee();
+        Mentoring mentoring = FixtureUtil.testMentoring(FixtureUtil.testMentor());
+        Member mentee = FixtureUtil.testMentee();
 
         Reservation reservation = new Reservation("내용", status, mentoring, mentee);
 

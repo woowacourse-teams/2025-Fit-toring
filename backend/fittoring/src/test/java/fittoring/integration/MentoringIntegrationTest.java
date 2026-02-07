@@ -97,7 +97,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void registerMentoring() throws IOException {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
         categoryRepository.save(new Category("category1"));
 
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
@@ -167,8 +167,8 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void registerMentoringFail() throws IOException {
         // given
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        mentoringRepository.save(FixtureUtil.testMentoring(mentor));
         categoryRepository.save(new Category("category1"));
 
         MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
