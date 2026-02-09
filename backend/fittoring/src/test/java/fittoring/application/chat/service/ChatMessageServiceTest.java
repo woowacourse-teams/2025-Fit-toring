@@ -1,4 +1,4 @@
-package fittoring.application.auth.service;
+package fittoring.application.chat.service;
 
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,9 +12,9 @@ import fittoring.application.chat.presentation.dto.response.ChatImageUrlResponse
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
 import fittoring.application.chat.repository.ChatMessageRepository;
+import fittoring.application.exception.ChatMessageNotImageException;
 import fittoring.domain.model.ChatMessageType;
 import fittoring.application.chat.repository.ChatRoomRepository;
-import fittoring.application.chat.service.ChatMessageService;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatMessageNotFoundException;
 import fittoring.application.exception.ChatRoomNotFoundException;
@@ -185,7 +185,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
         //when //then
         assertThatThrownBy(() ->
                 chatMessageService.reissueImageUrl(chatRoom.getId(), textMessage.getId(), menteeId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ChatMessageNotImageException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
     }
 }

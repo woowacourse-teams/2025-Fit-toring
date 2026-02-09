@@ -99,6 +99,9 @@ public class ChatMessageService {
         String senderName = memberRepository.findNameById(senderId)
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         Notification notification = new Notification(senderName, chatMessage.getContent());
+        if(chatMessage.getMessageType() == ChatMessageType.IMAGE){
+            notification.setImageNotificationBody();
+        }
         notification.putData("chatRoomId", String.valueOf(chatRoomId));
         notificationService.sendNotification(opponentId, notification);
     }
