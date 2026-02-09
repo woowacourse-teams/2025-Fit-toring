@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
+import fittoring.domain.model.ChatMessageType;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.ChatMessageService;
 import fittoring.application.exception.BusinessErrorMessage;
@@ -28,7 +29,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
     void registerMessage() {
         //given
         Long invalidChatRoomId = 999L;
-        ChatMessageRequest request = new ChatMessageRequest("cotent", 123155L);
+        ChatMessageRequest request = new ChatMessageRequest("cotent", 123155L, ChatMessageType.TEXT, null);
         Long senderId = 1L;
 
         //when
@@ -50,7 +51,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
         ChatRoom chatRoom = new ChatRoom(reservationId, menteeId, mentorId);
         chatRoomRepository.save(chatRoom);
 
-        ChatMessageRequest request = new ChatMessageRequest("content", 1234L);
+        ChatMessageRequest request = new ChatMessageRequest("content", 1234L, ChatMessageType.TEXT, null);
         Long unauthorizedUserId = 999L;
 
         //when
