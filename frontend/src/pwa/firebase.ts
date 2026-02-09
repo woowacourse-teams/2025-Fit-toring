@@ -84,7 +84,7 @@ export function setupForegroundMessageListener() {
     const iconPath = '/fittoring-icon-192.png';
     const notificationTitle = payload.data.title || '제목 없음';
     const notificationOptions = {
-      body: '포그라운드 알림: ' + payload.data.body || '내용 없음',
+      body: payload.data.body || '내용 없음',
       icon: iconPath,
       badge: iconPath,
       data: {
