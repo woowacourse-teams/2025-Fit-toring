@@ -1,6 +1,8 @@
 package fittoring.integration;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
@@ -8,11 +10,12 @@ import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.chat.presentation.dto.response.ChatImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatRoomInfoResponse;
+import fittoring.application.chat.presentation.dto.response.ChatRoomPreviewResponse;
 import fittoring.application.chat.repository.ChatMessageRepository;
 import fittoring.application.chat.repository.ChatRoomRepository;
-
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryRepository;
@@ -34,15 +37,14 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.payload.JsonFieldType;
-import fittoring.application.chat.presentation.dto.response.ChatRoomPreviewResponse;
-import io.restassured.common.mapper.TypeRef;
-import java.util.List;
 
 class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -229,36 +231,15 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void findChatMessage() {
         //given
-        Member mentee = memberRepository.save(
-                new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
 
-        Member mentor = memberRepository.save(
-                new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentor.getId(), mentee.getId()));
 
-        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(1L, mentor.getId(), mentee.getId()));
-
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content1"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content2"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content3"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content4"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content5"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content6"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content7"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content8"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content9"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content10"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content11"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content12"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content13"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content14"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content15"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content16"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content17"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content18"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content19"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content20"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentor.getId(), "content21"));
-        chatMessageRepository.save(new ChatMessage(chatRoom.getId(), mentee.getId(), "content22"));
+        Long[] senderIds = {mentor.getId(), mentee.getId()};
+        for (int i = 1; i <= 22; i++) {
+            chatMessageRepository.save(new ChatMessage(chatRoom.getId(), senderIds[i % 2], "content" + i));
+        }
 
         String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
@@ -290,7 +271,19 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                                                 .description("보낸 사람 ID"),
                                         fieldWithPath("chatMessages[].content")
                                                 .type(JsonFieldType.STRING)
-                                                .description("메시지 내용"),
+                                                .description("메시지 내용")
+                                                .optional(),
+                                        fieldWithPath("chatMessages[].messageType")
+                                                .type(JsonFieldType.STRING)
+                                                .description("메시지 타입 (TEXT, IMAGE)"),
+                                        fieldWithPath("chatMessages[].thumbnailUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("이미지 썸네일 URL")
+                                                .optional(),
+                                        fieldWithPath("chatMessages[].originalImageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("이미지 원본 URL")
+                                                .optional(),
                                         fieldWithPath("chatMessages[].createdAt")
                                                 .type(JsonFieldType.STRING)
                                                 .description("메시지 생성 시각"),
@@ -346,11 +339,17 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                                 .responseSchema(Schema.schema("ChatRoomPreviewResponseList"))
                                 .responseFields(
                                         fieldWithPath("[].chatRoomId").type(JsonFieldType.NUMBER).description("채팅방 ID"),
-                                        fieldWithPath("[].profileImageUrl").type(JsonFieldType.STRING).description("멘토링 프로필 이미지 URL").optional(),
-                                        fieldWithPath("[].opponentName").type(JsonFieldType.STRING).description("상대방 이름"),
-                                        fieldWithPath("[].reservationStatus").type(JsonFieldType.STRING).description("예약 상태 (APPROVED, PENDING 등)"),
-                                        fieldWithPath("[].lastChatContent").type(JsonFieldType.STRING).description("마지막 메시지 내용 (메시지가 없으면 null)").optional(),
-                                        fieldWithPath("[].lastChatCreatedAt").type(JsonFieldType.STRING).description("마지막 메시지 생성 시각 (메시지가 없으면 null, yyyy-MM-dd'T'HH:mm:ss 형식)").optional()
+                                        fieldWithPath("[].profileImageUrl").type(JsonFieldType.STRING)
+                                                .description("멘토링 프로필 이미지 URL").optional(),
+                                        fieldWithPath("[].opponentName").type(JsonFieldType.STRING)
+                                                .description("상대방 이름"),
+                                        fieldWithPath("[].reservationStatus").type(JsonFieldType.STRING)
+                                                .description("예약 상태 (APPROVED, PENDING 등)"),
+                                        fieldWithPath("[].lastChatContent").type(JsonFieldType.STRING)
+                                                .description("마지막 메시지 내용 (메시지가 없으면 null)").optional(),
+                                        fieldWithPath("[].lastChatCreatedAt").type(JsonFieldType.STRING)
+                                                .description("마지막 메시지 생성 시각 (메시지가 없으면 null, yyyy-MM-dd'T'HH:mm:ss 형식)")
+                                                .optional()
                                 )
                                 .build())))
                 .cookie("accessToken", accessToken)
@@ -361,7 +360,8 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                 .extract();
 
         // then
-        List<ChatRoomPreviewResponse> previewResponses = response.as(new TypeRef<>() {});
+        List<ChatRoomPreviewResponse> previewResponses = response.as(new TypeRef<>() {
+        });
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(previewResponses).hasSize(1);
@@ -371,6 +371,61 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(firstPreview.profileImageUrl()).isEqualTo(image.getUrl());
             softly.assertThat(firstPreview.lastChatContent()).isEqualTo(chatMessage.getContent());
             softly.assertThat(firstPreview.reservationStatus()).isEqualTo(reservation.getStatus());
+        });
+    }
+
+    @DisplayName("이미지 메시지의 Presigned URL을 재발급 받을 수 있다.")
+    @Test
+    void reissueImageUrl() {
+        //given
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentor.getId(), mentee.getId()));
+
+        ChatMessage imageMessage = chatMessageRepository.save(
+                FixtureUtil.testImageChatMessage(chatRoom, mentee.getId()));
+        imageRepository.save(FixtureUtil.testChatImageDefault(imageMessage));
+        imageRepository.save(FixtureUtil.testChatImageThumbnail(imageMessage));
+
+        when(presignedUrlService.issueGetPresignedUrl(anyString())).thenReturn("https://presigned-get-url");
+
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
+
+        //when
+        ChatImageUrlResponse response = RestAssured
+                .given(spec)
+                .log().all()
+                .accept("application/json")
+                .filter(documentWithTag("chatMessage/reissue-image-url-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("채팅")
+                                .summary("이미지 URL 재발급")
+                                .description("이미지 메시지의 Presigned URL이 만료되었을 때 재발급을 요청합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("ChatImageUrlResponse"))
+                                .responseFields(
+                                        fieldWithPath("thumbnailUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("이미지 썸네일 Presigned URL")
+                                                .optional(),
+                                        fieldWithPath("originalImageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("이미지 원본 Presigned URL")
+                                )
+                                .build())))
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/chatrooms/{chatRoomId}/messages/{messageId}/image-url",
+                        chatRoom.getId(), imageMessage.getId())
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .as(ChatImageUrlResponse.class);
+
+        //then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.thumbnailUrl()).isEqualTo("https://presigned-get-url");
+            softly.assertThat(response.originalImageUrl()).isEqualTo("https://presigned-get-url");
         });
     }
 }
