@@ -71,6 +71,11 @@ export function setupForegroundMessageListener() {
       return;
     }
 
+    const chatRoomId = payload.data.chatRoomId;
+
+    const currentChatRoomURL = chatRoomId
+      ? `${PAGE_URL.CHAT_ROOM}/${chatRoomId}`
+      : '/';
     const iconPath = '/fittoring-icon-192.png';
     const notificationTitle = payload.data.title || '제목 없음';
     const chatRoomId = payload.data.chatRoomId;
