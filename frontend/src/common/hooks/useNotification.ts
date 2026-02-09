@@ -102,8 +102,10 @@ const useNotification = (authenticated: boolean) => {
       return;
     }
 
-    if (isIOS() && isPWAStandalone() && isIOSPushSupported()) {
-      initializeFcm();
+    if (isIOS()) {
+      if (isPWAStandalone() && isIOSPushSupported()) {
+        initializeFcm();
+      }
       return;
     }
 
