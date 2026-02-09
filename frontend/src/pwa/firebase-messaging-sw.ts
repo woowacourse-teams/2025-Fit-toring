@@ -62,11 +62,10 @@ self.addEventListener('notificationclick', (e) => {
   }
 
   const chatRoomId = notification.data.chatRoomId;
-  if (!chatRoomId) {
-    return;
-  }
 
-  const chatRoomURL = getChatRoomURL(chatRoomId);
+  const chatRoomURL = chatRoomId
+    ? getChatRoomURL(chatRoomId)
+    : self.location.origin;
 
   e.waitUntil(
     self.clients
