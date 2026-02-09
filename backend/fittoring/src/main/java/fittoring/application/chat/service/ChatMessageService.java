@@ -1,12 +1,14 @@
 package fittoring.application.chat.service;
 
 import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
+import fittoring.application.chat.presentation.dto.response.ChatImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
 import fittoring.application.chat.repository.ChatMessageRepository;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.dto.ChatMessagePaginationResultDto;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ChatMessageNotFoundException;
 import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.MemberNotFoundException;
@@ -181,6 +183,35 @@ public class ChatMessageService {
         }
 
         return ChatMessageResponse.ofImage(chatMessage, null, thumbnailUrl, originalUrl);
+    }
+
+    @Transactional(readOnly = true)
+    public ChatImageUrlResponse reissueImageUrl(Long chatRoomId, Long messageId, Long memberId) {
+        ChatRoom chatRoom = getChatRoom(chatRoomId);
+        validateParticipant(memberId, chatRoom);
+
+        ChatMessage chatMessage = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new ChatMessageNotFoundException(
+                        BusinessErrorMessage.CHAT_MESSAGE_NOT_FOUND.getMessage()));
+
+        if (chatMessage.getMessageType() != ChatMessageType.IMAGE) {
+            throw new IllegalArgumentException(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
+        }
+
+        boolean hasThumbnail = imageService.findThumbnail(ImageType.CHAT, messageId)
+                .map(img -> img.getImageVariant() == ImageVariant.THUMBNAIL)
+                .orElse(false);
+
+        String originalKey = chatMessage.getContent();
+        String originalUrl = presignedUrlService.issueGetPresignedUrl(originalKey);
+
+        String thumbnailUrl = null;
+        if (hasThumbnail) {
+            String thumbnailKey = originalKey.replace("/default/", "/thumbnail/");
+            thumbnailUrl = presignedUrlService.issueGetPresignedUrl(thumbnailKey);
+        }
+
+        return new ChatImageUrlResponse(thumbnailUrl, originalUrl);
     }
 
     @Transactional(readOnly = true)

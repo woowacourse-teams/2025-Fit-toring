@@ -1,5 +1,6 @@
 package fittoring.application.chat.presentation;
 
+import fittoring.application.chat.presentation.dto.response.ChatImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatRoomPreviewResponse;
 import fittoring.application.chat.service.ChatMessageService;
@@ -56,6 +57,19 @@ public class ChatRoomController {
                 chatRoomId,
                 loginInfo.memberId(),
                 cursorCode
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @AuthRequired
+    @GetMapping("/{chatroomId}/messages/{messageId}/image-url")
+    public ResponseEntity<ChatImageUrlResponse> getImageUrl(
+            @Login LoginInfo loginInfo,
+            @PathVariable("chatroomId") Long chatRoomId,
+            @PathVariable("messageId") Long messageId
+    ) {
+        ChatImageUrlResponse response = chatMessageService.reissueImageUrl(
+                chatRoomId, messageId, loginInfo.memberId()
         );
         return ResponseEntity.ok(response);
     }

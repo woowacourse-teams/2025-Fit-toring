@@ -186,6 +186,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
     }
 
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ImageNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handle(IllegalArgumentException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(UnsupportedImageExtensionException.class)
     public ResponseEntity<ErrorResponse> handle(UnsupportedImageExtensionException e) {
         return buildErrorResponse(e, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
@@ -194,6 +204,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OauthLoginException.class)
     public ResponseEntity<ErrorResponse> handle(OauthLoginException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(ChatMessageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ChatMessageNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(ChatRoomNotFoundException.class)

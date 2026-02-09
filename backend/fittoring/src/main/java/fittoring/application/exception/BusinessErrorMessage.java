@@ -43,6 +43,8 @@ public enum BusinessErrorMessage {
     FORBIDDEN_URL("권한이 없는 URL 입니다"),
     NOT_CERTIFICATE_OWNER("자신의 자격사항이 아닙니다."),
     MEMBER_ROLE_NOT_FOUND("존재하지 않는 사용자 권한입니다. "),
+    CHAT_MESSAGE_NOT_FOUND("존재하지 않는 채팅 메시지입니다."),
+    CHAT_MESSAGE_NOT_IMAGE("이미지 타입의 메시지가 아닙니다."),
     CHAT_ROOM_NOT_FOUND("존재하지 않는 채팅방 입니다."),
     CHAT_ROOM_ALREADY_EXISTS("이미 채팅방이 생성된 예약입니다."),
     UNAUTHORIZED_CHAT_ROOM_ACCESS("채팅방 접근 권한이 없습니다."),
