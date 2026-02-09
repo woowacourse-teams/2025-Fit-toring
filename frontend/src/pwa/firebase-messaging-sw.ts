@@ -69,14 +69,19 @@ self.addEventListener('notificationclick', (e) => {
 
   e.waitUntil(
     self.clients
-      .matchAll({ type: 'window', includeUncontrolled: true })
-      .then((windowClients) => {
-        for (const client of windowClients) {
+      .matchAll({
+        type: 'window',
+        includeUncontrolled: false,
+      })
+      .then((clientList) => {
+        for (const client of clientList) {
           if (
             client.url.startsWith(self.location.origin) &&
             'focus' in client
           ) {
-            return client.focus().then(() => client.navigate(chatRoomURL));
+            return client.focus().then((focusedClient) => {
+              return focusedClient.navigate(chatRoomURL);
+            });
           }
         }
 
