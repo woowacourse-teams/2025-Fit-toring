@@ -11,15 +11,15 @@ public record ChatMessageRequest(
         Long tempId,
         @NotNull(message = "메시지 타입은 필수 입력값입니다.")
         ChatMessageType messageType,
-        String baseName
+        String imageUrl
 ) {
 
     public ChatMessageRequest {
         if (messageType == ChatMessageType.TEXT && (content == null || content.isBlank())) {
             throw new IllegalArgumentException("텍스트 메시지는 내용이 필수입니다.");
         }
-        if (messageType == ChatMessageType.IMAGE && (baseName == null || baseName.isBlank())) {
-            throw new IllegalArgumentException("이미지 메시지는 baseName이 필수입니다.");
+        if (messageType == ChatMessageType.IMAGE && (imageUrl == null || imageUrl.isBlank())) {
+            throw new IllegalArgumentException("이미지 메시지는 imageUrl이 필수입니다.");
         }
     }
 }
