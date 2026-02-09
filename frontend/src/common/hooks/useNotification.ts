@@ -59,14 +59,23 @@ const useNotification = (authenticated: boolean) => {
 
   const requestNotificationPermission = useCallback(async () => {
     try {
+      if (isIOS() && !isPWAStandalone()) {
+        setHasClosedModal(true);
+        alert(
+          '알림을 받으시려면 Safari의 공유 버튼을 눌러 "홈 화면에 추가"를 선택해주세요.',
+        );
+        return;
+      }
+
       if (!isNotificationSupported()) {
         throw new Error('이 브라우저는 푸시 알림을 지원하지 않습니다.');
       }
 
       if (isIOS() && !isIOSPushSupported()) {
-        throw new Error(
-          'iOS 16.4 이상 버전에서만 푸시 알림을 사용할 수 있습니다.',
+        alert(
+          'iOS 16.4 이상 버전에서만 푸시 알림을 사용할 수 있습니다. 업데이트 해주세요.',
         );
+        return;
       }
 
       const hasPermission = await requestPermissionToUser();
