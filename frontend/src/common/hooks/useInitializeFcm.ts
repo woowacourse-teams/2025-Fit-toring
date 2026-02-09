@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import {
   fetchFcmToken,
@@ -9,12 +9,16 @@ import {
 import { isIOS } from '../utils/deviceDetection';
 
 const useInitializeFcm = () => {
+  const isInitialized = useRef(false);
+
   useEffect(() => {
     const memberId = localStorage.getItem('memberId');
 
-    if (isIOS() || !memberId) {
+    if (isIOS() || !memberId || isInitialized.current) {
       return;
     }
+
+    isInitialized.current = true;
 
     async function initializeFcm() {
       try {
