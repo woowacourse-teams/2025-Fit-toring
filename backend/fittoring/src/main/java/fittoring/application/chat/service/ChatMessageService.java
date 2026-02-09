@@ -9,6 +9,7 @@ import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.dto.ChatMessagePaginationResultDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatMessageNotFoundException;
+import fittoring.application.exception.ChatMessageNotImageException;
 import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.MemberNotFoundException;
@@ -214,7 +215,7 @@ public class ChatMessageService {
 
     private void validateImageType(ChatMessage chatMessage) {
         if (chatMessage.getMessageType() != ChatMessageType.IMAGE) {
-            throw new IllegalArgumentException(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
+            throw new ChatMessageNotImageException(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
         }
     }
 

@@ -191,11 +191,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handle(IllegalArgumentException e) {
-        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
-    }
-
     @ExceptionHandler(UnsupportedImageExtensionException.class)
     public ResponseEntity<ErrorResponse> handle(UnsupportedImageExtensionException e) {
         return buildErrorResponse(e, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
@@ -219,6 +214,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ChatRoomAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handle(ChatRoomAlreadyExistsException e) {
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(ChatMessageNotImageException.class)
+    public ResponseEntity<ErrorResponse> handle(ChatMessageNotImageException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(UnauthorizedChatRoomAccessException.class)
