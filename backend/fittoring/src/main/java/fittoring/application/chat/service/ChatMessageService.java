@@ -12,6 +12,7 @@ import fittoring.application.exception.ChatMessageNotFoundException;
 import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.MemberNotFoundException;
+import fittoring.application.exception.UnauthorizedChatMessageAccessException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.image.service.PresignedUrlService;
@@ -173,16 +174,8 @@ public class ChatMessageService {
     }
 
     private ChatMessageResponse toImageResponse(ChatMessage chatMessage, boolean hasThumbnail) {
-        String originalKey = chatMessage.getContent();
-        String originalUrl = presignedUrlService.issueGetPresignedUrl(originalKey);
-
-        String thumbnailUrl = null;
-        if (hasThumbnail) {
-            String thumbnailKey = originalKey.replace("/default/", "/thumbnail/");
-            thumbnailUrl = presignedUrlService.issueGetPresignedUrl(thumbnailKey);
-        }
-
-        return ChatMessageResponse.ofImage(chatMessage, null, thumbnailUrl, originalUrl);
+        ChatImageUrlResponse urls = resolveImageUrls(chatMessage.getContent(), hasThumbnail);
+        return ChatMessageResponse.ofImage(chatMessage, null, urls.thumbnailUrl(), urls.originalImageUrl());
     }
 
     @Transactional(readOnly = true)
@@ -190,19 +183,42 @@ public class ChatMessageService {
         ChatRoom chatRoom = getChatRoom(chatRoomId);
         validateParticipant(memberId, chatRoom);
 
-        ChatMessage chatMessage = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new ChatMessageNotFoundException(
-                        BusinessErrorMessage.CHAT_MESSAGE_NOT_FOUND.getMessage()));
-
-        if (chatMessage.getMessageType() != ChatMessageType.IMAGE) {
-            throw new IllegalArgumentException(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
-        }
+        ChatMessage chatMessage = getImageChatMessage(messageId, chatRoomId);
 
         boolean hasThumbnail = imageService.findThumbnail(ImageType.CHAT, messageId)
                 .map(img -> img.getImageVariant() == ImageVariant.THUMBNAIL)
                 .orElse(false);
 
-        String originalKey = chatMessage.getContent();
+        return resolveImageUrls(chatMessage.getContent(), hasThumbnail);
+    }
+
+    private ChatMessage getImageChatMessage(Long messageId, Long chatRoomId) {
+        ChatMessage chatMessage = getChatMessage(messageId);
+        validateChatMessageBelongsToRoom(chatMessage, chatRoomId);
+        validateImageType(chatMessage);
+        return chatMessage;
+    }
+
+    private ChatMessage getChatMessage(Long messageId) {
+        return chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new ChatMessageNotFoundException(
+                        BusinessErrorMessage.CHAT_MESSAGE_NOT_FOUND.getMessage()));
+    }
+
+    private void validateChatMessageBelongsToRoom(ChatMessage chatMessage, Long chatRoomId) {
+        if (!chatMessage.getChatRoomId().equals(chatRoomId)) {
+            throw new UnauthorizedChatMessageAccessException(
+                    BusinessErrorMessage.UNAUTHORIZED_CHAT_MESSAGE_ACCESS.getMessage());
+        }
+    }
+
+    private void validateImageType(ChatMessage chatMessage) {
+        if (chatMessage.getMessageType() != ChatMessageType.IMAGE) {
+            throw new IllegalArgumentException(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
+        }
+    }
+
+    private ChatImageUrlResponse resolveImageUrls(String originalKey, boolean hasThumbnail) {
         String originalUrl = presignedUrlService.issueGetPresignedUrl(originalKey);
 
         String thumbnailUrl = null;

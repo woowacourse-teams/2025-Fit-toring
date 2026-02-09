@@ -48,6 +48,7 @@ public enum BusinessErrorMessage {
     CHAT_ROOM_NOT_FOUND("존재하지 않는 채팅방 입니다."),
     CHAT_ROOM_ALREADY_EXISTS("이미 채팅방이 생성된 예약입니다."),
     UNAUTHORIZED_CHAT_ROOM_ACCESS("채팅방 접근 권한이 없습니다."),
+    UNAUTHORIZED_CHAT_MESSAGE_ACCESS("메시지 접근 권한이 없습니다."),
     INVALID_STATUS_CHAT_ROOM_ACCESS("승인 또는 완료된 예약의 채팅방만 접속할 수 있습니다."),
     UNSUPPORTED_IMAGE_EXTENSION("지원하지 않는 확장자입니다."),
     EMPTY_REQUEST("요청 정보가 비어있어 요청을 수행할 수 없습니다."),

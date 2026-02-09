@@ -226,6 +226,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
     }
 
+    @ExceptionHandler(UnauthorizedChatMessageAccessException.class)
+    public ResponseEntity<ErrorResponse> handle(UnauthorizedChatMessageAccessException e) {
+        return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
     @ExceptionHandler(InvalidMemberRoleException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidMemberRoleException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
