@@ -1,17 +1,22 @@
 /// <reference lib="WebWorker" />
 import { initializeApp } from 'firebase/app';
 import { onBackgroundMessage, getMessaging } from 'firebase/messaging/sw';
-import { clientsClaim, skipWaiting } from 'workbox-core';
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
 import { PAGE_URL } from '../common/constants/url';
 
 declare let self: ServiceWorkerGlobalScope;
 
-clientsClaim();
-skipWaiting();
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(self.skipWaiting());
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(self.clients.claim());
+});
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCbmcTDZNommWF5IJjrSSD8An7OdNROewA',
