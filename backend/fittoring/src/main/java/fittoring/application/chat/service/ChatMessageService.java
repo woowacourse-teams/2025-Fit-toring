@@ -23,8 +23,12 @@ import fittoring.domain.model.Notification;
 import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.util.Cursor;
 import fittoring.util.CursorCodec;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageVariant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -61,7 +65,7 @@ public class ChatMessageService {
         log.info("채팅을 보낸 사람 id: {}", senderId);
         Long opponentId = chatRoom.getOpponentIdOf(senderId);
         sendNewMessageNotification(chatRoom.getId(), senderId, opponentId, chatMessage);
-        return ChatMessageResponse.from(chatMessage, request.tempId());
+        return ChatMessageResponse.ofText(chatMessage, request.tempId());
     }
 
     private ChatMessageResponse registerImageMessage(ChatRoom chatRoom, ChatMessageRequest request, Long senderId) {
@@ -84,7 +88,7 @@ public class ChatMessageService {
         Long opponentId = chatRoom.getOpponentIdOf(senderId);
         sendNewMessageNotification(chatRoom.getId(), senderId, opponentId, chatMessage);
 
-        return ChatMessageResponse.imageFrom(chatMessage, request.tempId(), null, originalUrl);
+        return ChatMessageResponse.ofImage(chatMessage, request.tempId(), null, originalUrl);
     }
 
     private void sendNewMessageNotification(Long chatRoomId, Long senderId, Long opponentId, ChatMessage chatMessage) {
@@ -136,10 +140,47 @@ public class ChatMessageService {
     }
 
     private List<ChatMessageResponse> getChatMessageResponses(ChatMessagePaginationResultDto paginationResult) {
-        return paginationResult.chatMessages()
-                .stream()
-                .map(ChatMessageResponse::fromHistory)
+        List<ChatMessage> messages = paginationResult.chatMessages();
+
+        List<Long> imageMessageIds = messages.stream()
+                .filter(msg -> msg.getMessageType() == ChatMessageType.IMAGE)
+                .map(ChatMessage::getId)
                 .toList();
+
+        Set<Long> thumbnailExistsIds = findThumbnailExistsIds(imageMessageIds);
+
+        return messages.stream()
+                .map(msg -> {
+                    if (msg.getMessageType() == ChatMessageType.IMAGE) {
+                        return toImageResponse(msg, thumbnailExistsIds.contains(msg.getId()));
+                    }
+                    return ChatMessageResponse.ofTextHistory(msg);
+                })
+                .toList();
+    }
+
+    private Set<Long> findThumbnailExistsIds(List<Long> imageMessageIds) {
+        if (imageMessageIds.isEmpty()) {
+            return Set.of();
+        }
+        List<Image> images = imageService.findAll(imageMessageIds, ImageType.CHAT);
+        return images.stream()
+                .filter(img -> img.getImageVariant() == ImageVariant.THUMBNAIL)
+                .map(Image::getRelationId)
+                .collect(Collectors.toSet());
+    }
+
+    private ChatMessageResponse toImageResponse(ChatMessage chatMessage, boolean hasThumbnail) {
+        String originalKey = chatMessage.getContent();
+        String originalUrl = presignedUrlService.issueGetPresignedUrl(originalKey);
+
+        String thumbnailUrl = null;
+        if (hasThumbnail) {
+            String thumbnailKey = originalKey.replace("/default/", "/thumbnail/");
+            thumbnailUrl = presignedUrlService.issueGetPresignedUrl(thumbnailKey);
+        }
+
+        return ChatMessageResponse.ofImage(chatMessage, null, thumbnailUrl, originalUrl);
     }
 
     @Transactional(readOnly = true)

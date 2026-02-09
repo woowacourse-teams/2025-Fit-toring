@@ -16,7 +16,7 @@ public record ChatMessageResponse(
         LocalDateTime createdAt
 ) {
 
-    public static ChatMessageResponse from(ChatMessage chatMessage, Long tempId) {
+    public static ChatMessageResponse ofText(ChatMessage chatMessage, Long tempId) {
         return new ChatMessageResponse(
                 chatMessage.getId(),
                 tempId,
@@ -30,7 +30,7 @@ public record ChatMessageResponse(
         );
     }
 
-    public static ChatMessageResponse fromHistory(ChatMessage chatMessage) {
+    public static ChatMessageResponse ofTextHistory(ChatMessage chatMessage) {
         return new ChatMessageResponse(
                 chatMessage.getId(),
                 null,
@@ -44,7 +44,7 @@ public record ChatMessageResponse(
         );
     }
 
-    public static ChatMessageResponse imageFrom(
+    public static ChatMessageResponse ofImage(
             ChatMessage chatMessage,
             Long tempId,
             String thumbnailUrl,
