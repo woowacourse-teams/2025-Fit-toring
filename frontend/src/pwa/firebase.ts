@@ -83,7 +83,6 @@ export function setupForegroundMessageListener() {
 
     const iconPath = '/fittoring-icon-192.png';
     const notificationTitle = payload.data.title || '제목 없음';
-    const chatRoomId = payload.data.chatRoomId;
     const notificationOptions = {
       body: '포그라운드 알림: ' + payload.data.body || '내용 없음',
       icon: iconPath,
@@ -102,7 +101,7 @@ export function setupForegroundMessageListener() {
       e.preventDefault();
       notification.close();
 
-      window.location.href = `${PAGE_URL.CHAT_ROOM}/${chatRoomId}`;
+      window.location.href = currentChatRoomURL;
     };
   });
 }
