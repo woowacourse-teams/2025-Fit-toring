@@ -38,7 +38,7 @@ onBackgroundMessage(messaging, (payload) => {
 
   const notificationTitle = data.title || '제목 없음';
   const notificationOptions = {
-    body: '백그라운드 알림: ' + data.body || '내용 없음',
+    body: data.body || '내용 없음',
     icon: iconPath,
     badge: iconPath,
     data: {
