@@ -29,9 +29,17 @@ export async function requestPermissionToUser() {
 }
 
 export async function fetchFcmToken() {
+  const registration = await navigator.serviceWorker.ready;
+
+  if (!registration) {
+    console.error('Service Worker가 등록되지 않았습니다');
+    return null;
+  }
+
   const currentToken = await getToken(messaging, {
     vapidKey:
       'BBsK6Sa5h6aa286kwoR4wFWSeV3eik4UO42zsQ9tIcOpSPFJPuP16LxreaFTm6t5wI50-ct7IAlYAD4zw3ta_6A',
+    serviceWorkerRegistration: registration,
   });
 
   if (currentToken) {
