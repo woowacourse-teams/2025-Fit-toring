@@ -117,13 +117,9 @@ export default ChatRooms;
 const S_Container = styled.div`
   display: flex;
   flex-direction: column;
-
-  height: 100svh;
 `;
 
 const S_ChatRoomListSection = styled.div`
-  overflow-y: auto;
-
   flex-grow: 1;
 
   height: calc(100% - 5.7rem);
