@@ -5,9 +5,11 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
-import org.springframework.messaging.simp.broker.BrokerAvailabilityEvent;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
@@ -18,36 +20,96 @@ import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 @Component
 public class WebSocketMetricsListener {
 
+    /**
+     * 현재 활성 세션
+     */
     private final Set<String> activeSessions = ConcurrentHashMap.newKeySet();
-    private final Counter stompFramesConnect;
-    private final Counter stompFramesConnected;
-    private final Counter stompFramesDisconnect;
-    private final Counter stompSessionsEvents;
-    private final Counter stompSubscriptionsEvents;
-    private final Counter websocketBrokerAvailability;
 
-    public WebSocketMetricsListener(MeterRegistry meterRegistry) {
-        this.stompFramesConnect = meterRegistry.counter("stomp_frames_connect_total");
-        this.stompFramesConnected = meterRegistry.counter("stomp_frames_connected_total");
-        this.stompFramesDisconnect = meterRegistry.counter("stomp_frames_disconnect_total");
-        this.stompSessionsEvents = meterRegistry.counter("stomp_sessions_events_total");
-        this.stompSubscriptionsEvents = meterRegistry.counter("stomp_subscriptions_events_total");
-        this.websocketBrokerAvailability = meterRegistry.counter("websocket_broker_availability_events_total");
-        Gauge.builder("websocket_sessions_active", activeSessions, Set::size)
+    /**
+     * STOMP Frame Counters
+     */
+    private final Counter stompConnect;
+    private final Counter stompConnected;
+    private final Counter stompDisconnect;
+    private final Counter stompSubscribe;
+    private final Counter stompUnsubscribe;
+
+    /**
+     * Message Counters
+     */
+    private final Counter wsMessageIn;
+    private final Counter wsMessageOut;
+
+    public WebSocketMetricsListener(
+            MeterRegistry meterRegistry,
+            @Qualifier("clientInboundChannelExecutor") Executor inbound,
+            @Qualifier("clientOutboundChannelExecutor") Executor outbound
+    ) {
+
+        // ---------- Counters ----------
+        this.stompConnect = meterRegistry.counter("ws_stomp_connect_total");
+        this.stompConnected = meterRegistry.counter("ws_stomp_connected_total");
+        this.stompDisconnect = meterRegistry.counter("ws_stomp_disconnect_total");
+        this.stompSubscribe = meterRegistry.counter("ws_stomp_subscribe_total");
+        this.stompUnsubscribe = meterRegistry.counter("ws_stomp_unsubscribe_total");
+
+        // ---------- Message Counters ----------
+        this.wsMessageIn = meterRegistry.counter("ws_message_in_total");
+        this.wsMessageOut = meterRegistry.counter("ws_message_out_total");
+
+        ThreadPoolTaskExecutor inboundExec = (ThreadPoolTaskExecutor) inbound;
+        ThreadPoolTaskExecutor outboundExec = (ThreadPoolTaskExecutor) outbound;
+
+        // ---------- Active Session Gauge ----------
+        Gauge.builder("ws_sessions_active_count", activeSessions, Set::size)
+                .description("Current active STOMP sessions")
+                .register(meterRegistry);
+
+        // ---------- Inbound Executor Gauges ----------
+        Gauge.builder("ws_inbound_pool_size",
+                        inboundExec,
+                        ThreadPoolTaskExecutor::getPoolSize)
+                .register(meterRegistry);
+
+        Gauge.builder("ws_inbound_active_threads",
+                        inboundExec,
+                        ThreadPoolTaskExecutor::getActiveCount)
+                .register(meterRegistry);
+
+        Gauge.builder("ws_inbound_queue_size",
+                        inboundExec,
+                        ex -> ex.getThreadPoolExecutor().getQueue().size())
+                .register(meterRegistry);
+
+        // ---------- Outbound Executor Gauges ----------
+        Gauge.builder("ws_outbound_pool_size",
+                        outboundExec,
+                        ThreadPoolTaskExecutor::getPoolSize)
+                .register(meterRegistry);
+
+        Gauge.builder("ws_outbound_active_threads",
+                        outboundExec,
+                        ThreadPoolTaskExecutor::getActiveCount)
+                .register(meterRegistry);
+
+        Gauge.builder("ws_outbound_queue_size",
+                        outboundExec,
+                        ex -> ex.getThreadPoolExecutor().getQueue().size())
                 .register(meterRegistry);
     }
 
+    // ---------- Event Listeners ----------
+
     @EventListener
     public void onSessionConnect(SessionConnectEvent event) {
-        stompFramesConnect.increment();
-        stompSessionsEvents.increment();
+        stompConnect.increment();
     }
 
     @EventListener
     public void onSessionConnected(SessionConnectedEvent event) {
-        stompFramesConnected.increment();
-        stompSessionsEvents.increment();
-        String sessionId = headerSessionId(event);
+        stompConnected.increment();
+
+        String sessionId = StompHeaderAccessor.wrap(event.getMessage()).getSessionId();
         if (sessionId != null) {
             activeSessions.add(sessionId);
         }
@@ -55,9 +117,9 @@ public class WebSocketMetricsListener {
 
     @EventListener
     public void onSessionDisconnect(SessionDisconnectEvent event) {
-        stompFramesDisconnect.increment();
-        stompSessionsEvents.increment();
-        String sessionId = headerSessionId(event);
+        stompDisconnect.increment();
+
+        String sessionId = event.getSessionId();
         if (sessionId != null) {
             activeSessions.remove(sessionId);
         }
@@ -65,29 +127,25 @@ public class WebSocketMetricsListener {
 
     @EventListener
     public void onSessionSubscribe(SessionSubscribeEvent event) {
-        stompSubscriptionsEvents.increment();
+        stompSubscribe.increment();
     }
 
     @EventListener
     public void onSessionUnsubscribe(SessionUnsubscribeEvent event) {
-        stompSubscriptionsEvents.increment();
+        stompUnsubscribe.increment();
     }
 
-    @EventListener
-    public void onBrokerAvailability(BrokerAvailabilityEvent event) {
-        websocketBrokerAvailability.increment();
+    /**
+     * Inbound message increment
+     */
+    public void incrementInboundMessage() {
+        wsMessageIn.increment();
     }
 
-    private String headerSessionId(Object event) {
-        if (event instanceof SessionConnectEvent connectEvent) {
-            return StompHeaderAccessor.wrap(connectEvent.getMessage()).getSessionId();
-        }
-        if (event instanceof SessionConnectedEvent connectedEvent) {
-            return StompHeaderAccessor.wrap(connectedEvent.getMessage()).getSessionId();
-        }
-        if (event instanceof SessionDisconnectEvent disconnectEvent) {
-            return StompHeaderAccessor.wrap(disconnectEvent.getMessage()).getSessionId();
-        }
-        return null;
+    /**
+     * Outbound message increment
+     */
+    public void incrementOutboundMessage() {
+        wsMessageOut.increment();
     }
 }
