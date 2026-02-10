@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 
+import ApiError from '../../common/apis/ApiError';
+
 import { getChatRooms } from './apis/getChatRooms';
 import ChatRoomList from './components/ChatRoomList/ChatRoomList';
 import ChatRoomsHeader from './components/ChatRoomsHeader/ChatRoomsHeader';
@@ -17,6 +19,13 @@ function ChatRooms() {
   const { data: chatRoomsData } = useQuery({
     queryKey: ['chatRooms'],
     queryFn: () => getChatRooms(),
+    retry: (failureCount, error) => {
+      if (error instanceof ApiError && error.status === 401) {
+        return false;
+      }
+
+      return failureCount < 1;
+    },
   });
 
   return (
