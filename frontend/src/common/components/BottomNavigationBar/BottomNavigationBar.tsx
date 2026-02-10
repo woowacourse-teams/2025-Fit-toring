@@ -47,6 +47,10 @@ function BottomNavigationBar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const handleItemClick = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <S_Container>
       {NAV_ITEMS.map((item) => {
@@ -56,7 +60,7 @@ function BottomNavigationBar() {
           <S_Item
             key={item.path}
             isActive={isActive}
-            onClick={() => navigate(item.path)}
+            onClick={() => handleItemClick(item.path)}
           >
             <S_IconWrapper isActive={isActive}>
               <S_Icon
