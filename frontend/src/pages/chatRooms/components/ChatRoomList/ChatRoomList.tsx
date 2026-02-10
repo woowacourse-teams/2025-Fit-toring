@@ -2,11 +2,11 @@ import styled from '@emotion/styled';
 
 import ChatRoomListItem from '../ChatRoomListItem/ChatRoomListItem';
 
-import type { ChatRoomListItemType } from '../../ChatRooms';
+import type { ChatRooms } from '../../types/chatRooms';
 
 interface ChatRoomListProps {
-  chatList: ChatRoomListItemType[];
-  onChatRoomListClick: (chatId: string) => void;
+  chatList: ChatRooms[];
+  onChatRoomListClick: (chatId: number) => void;
 }
 
 function ChatRoomList({ chatList, onChatRoomListClick }: ChatRoomListProps) {

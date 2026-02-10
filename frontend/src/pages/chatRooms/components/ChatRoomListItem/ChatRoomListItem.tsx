@@ -2,30 +2,30 @@ import styled from '@emotion/styled';
 
 import { formatToKoreanTime } from '../../../../common/utils/formatToKoreanTime';
 
-import type { ChatRoomListItemType } from '../../ChatRooms';
+import type { ChatRooms } from '../../types/chatRooms';
 
 interface ChatRoomListItemProps {
-  chat: ChatRoomListItemType;
-  onClick: (chatId: string) => void;
+  chat: ChatRooms;
+  onClick: (chatId: number) => void;
 }
 
 function ChatRoomListItem({ chat, onClick }: ChatRoomListItemProps) {
   return (
     <S_Container onClick={() => onClick(chat.chatRoomId)}>
       <S_Avatar>
-        {chat.imageUrl ? (
-          <S_AvatarImg src={chat.imageUrl} alt="프로필 사진" />
+        {chat.profileImageUrl ? (
+          <S_AvatarImg src={chat.profileImageUrl} alt="프로필 사진" />
         ) : (
           <S_AvatarPlaceholder />
         )}
       </S_Avatar>
 
       <S_Middle>
-        <S_Name>{chat.name}</S_Name>
-        <S_Message>{chat.lastMessage}</S_Message>
+        <S_Name>{chat.opponentName}</S_Name>
+        <S_Message>{chat.lastChatContent}</S_Message>
       </S_Middle>
 
-      <S_Time>{formatToKoreanTime(chat.timeText)}</S_Time>
+      <S_Time>{formatToKoreanTime(chat.lastChatCreatedAt)}</S_Time>
     </S_Container>
   );
 }
