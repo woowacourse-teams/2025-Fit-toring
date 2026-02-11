@@ -17,8 +17,13 @@ spring:
     user: ${PROD_DATABASE_USER}
     password: ${PROD_DATABASE_PASSWORD}
     baseline-on-migrate: true
+    out-of-order: true
+cookie:
+  same-site: ${COOKIE_SAME_SITE_PROD}
 aws:
   s3:
     env-prefix: prod/
   sqs:
     image-queue: fittoring-prod-image-queue
+fcm:
+  service-account-key: ${FCM_SERVICE_ACCOUNT_KEY}

@@ -3,8 +3,9 @@ package fittoring.application.reservation.service;
 import fittoring.admin.presentation.dto.AdminReservationDeleteDto;
 import fittoring.admin.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.application.chat.service.ChatRoomService;
-import fittoring.application.chat.service.dto.ChatRoomCreatedInfo;
+import fittoring.application.chat.service.dto.ChatRoomCreatedInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.DuplicateReservationException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MentorAndMenteeIsSameException;
 import fittoring.application.exception.MentoringNotFoundException;
@@ -22,18 +23,15 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.domain.model.ChatRoom;
-import fittoring.domain.model.ImageType;
-import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
-import fittoring.domain.model.Mentoring;
-import fittoring.domain.model.Reservation;
-import fittoring.domain.model.Status;
+import fittoring.domain.model.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,10 +51,22 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
+        validateNoOngoingReservation(dto);
         Reservation reservation = createReservationEntity(dto);
         Reservation savedReservation = reservationRepository.save(reservation);
         mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
         return savedReservation;
+    }
+
+    private void validateNoOngoingReservation(ReservationCreateDto dto) {
+        boolean existsOngoingReservation = reservationRepository.existsByMentoringIdAndMenteeIdAndStatusIn(
+            dto.mentoringId(),
+            dto.menteeId(),
+            List.of(Status.PENDING, Status.APPROVED)
+        );
+        if (existsOngoingReservation) {
+            throw new DuplicateReservationException(BusinessErrorMessage.DUPLICATED_RESERVATION.getMessage());
+        }
     }
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {
@@ -129,7 +139,7 @@ public class ReservationService {
         Set<Long> mentoringIds = rows.stream()
                 .map(ParticipatedReservationWithoutProfileImageDto::getMentoringId)
                 .collect(Collectors.toSet());
-        Map<Long, String> profileImageByMentoring = imageService.findMentoringThumbnailMapByImageTypeAndRelationIds(
+        Map<Long, String> profileImageByMentoringIds = imageService.getUrlMap(
                 ImageType.MENTORING_PROFILE,
                 mentoringIds
         );
@@ -146,7 +156,7 @@ public class ReservationService {
                     participatedReservation.getReservationId(),
                     participatedReservation.getMentoringId(),
                     participatedReservation.getMentorName(),
-                    profileImageByMentoring.get(participatedReservation.getMentoringId()),
+                    profileImageByMentoringIds.get(participatedReservation.getMentoringId()),
                     participatedReservation.getReservedAt(),
                     participatedReservation.getContent(),
                     participatedReservation.getStatus(),
@@ -174,27 +184,44 @@ public class ReservationService {
                 || statusName.equals(Status.COMPLETE.name());
     }
 
-    private void checkAdminAuthority(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        if (MemberRole.isNotAdmin(member.getRole())) {
+    @Transactional
+    public ReservationInfo approve(Long mentorId, Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
+
+        reservation.approve();
+
+        ChatRoomCreatedInfoDto chatRoomCreatedInfoDto = chatRoomService.registerChatRoom(reservation);
+        String url = chatRoomCreatedInfoDto.url();
+
+        return ReservationInfo.from(reservation, url);
+    }
+
+    @Transactional
+    public ReservationInfo reject(Long mentorId, Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
+
+        reservation.reject();
+        return ReservationInfo.from(reservation, null);
+    }
+
+    @Transactional
+    public void complete(Long mentorId, Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        validateMentorAuthority(reservation.getMentor().getId(), mentorId);
+
+        reservation.complete();
+    }
+
+    private void validateMentorAuthority(Long mentoringMentorId, Long requestMentorId) {
+        if (isNotMentoringOwner(mentoringMentorId, requestMentorId)) {
             throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
     }
 
-    @Transactional
-    public ReservationInfo updateStatus(Long reservationId, String updateStatus) {
-        Reservation reservation = getReservation(reservationId);
-        Status status = Status.of(updateStatus);
-        reservation.changeStatus(status);
-
-        String url = "";
-        if (reservation.isApprove()) {
-            ChatRoomCreatedInfo chatRoomCreatedInfo = chatRoomService.registerChatRoom(reservation);
-            url = chatRoomCreatedInfo.url();
-        }
-
-        return new ReservationInfo(reservation, url);
+    private boolean isNotMentoringOwner(Long mentoringMentorId, Long requestMentorId) {
+        return !Objects.equals(mentoringMentorId, requestMentorId);
     }
 
     private Reservation getReservation(Long reservationId) {
@@ -207,7 +234,6 @@ public class ReservationService {
 
     @Transactional
     public void updateStatusWithAdminAuthorization(AdminReservationStatusUpdateDto adminReservationStatusUpdateDto) {
-        checkAdminAuthority(adminReservationStatusUpdateDto.memberId());
         Reservation reservation = getReservation(adminReservationStatusUpdateDto.reservationId());
         Status status = Status.of(adminReservationStatusUpdateDto.status());
         reservation.changeStatusWithoutValidation(status);
@@ -215,10 +241,30 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationWithAdminAuthorization(AdminReservationDeleteDto adminReservationDeleteDto) {
-        checkAdminAuthority(adminReservationDeleteDto.memberId());
         Reservation reservation = getReservation(adminReservationDeleteDto.reservationId());
         reviewRepository.deleteByReservation(reservation);
         mentoringStatisticsRepository.updateReservationCountMinus(reservation.getMentoring().getId());
         reservationRepository.delete(reservation);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Reservation> findReservationsFetchingMentoring(List<ChatRoom> chatRooms) {
+        List<Long> reservationIds = chatRooms.stream()
+                .map(ChatRoom::getReservationId)
+                .toList();
+        List<Reservation> reservations = reservationRepository.findAllByIdInFetchingMentoring(reservationIds);
+        return reservations;
+    }
+
+    public Map<Long, Reservation> getReservationMap(List<Reservation> reservations){
+        return reservations.stream()
+                .collect(Collectors.toMap(Reservation::getId, Function.identity()));
+    }
+
+    public List<Long> getMentoringIds(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(Reservation::getMentoring)
+                .map(Mentoring::getId)
+                .toList();
     }
 }

@@ -12,12 +12,16 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
+import ApiError from '../../common/apis/ApiError';
+
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
+import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
@@ -30,9 +34,7 @@ function ChatRoom() {
 
   const { chatRoomId } = useParams();
 
-  const storedData = localStorage.getItem('memberId');
-  const parsedData = storedData ? JSON.parse(storedData) : null;
-  const memberId = parsedData ? parsedData.memberId : null;
+  const memberId = localStorage.getItem('memberId');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -71,7 +73,7 @@ function ChatRoom() {
     hasNextPage,
   } = useInfiniteChatRoomMessage(Number(chatRoomId!));
 
-  const listElRef = useRef<HTMLDivElement>(null);
+  const listElRef = useRef<HTMLDivElement | null>(null);
   const initialScrolledRef = useRef(false);
   const ioReadyRef = useRef(false);
 
@@ -99,7 +101,7 @@ function ChatRoom() {
     await fetchNextPage();
   }, [fetchNextPage]);
 
-  const { listReadyRef, pageFirstReadyRef, ready } = useUpwardInfiniteScroll({
+  const { pageFirstElRef } = useUpwardInfiniteScroll({
     shouldTrigger: shouldTrigger,
     onIntersect,
     anchorKey: anchorKey!,
@@ -108,7 +110,7 @@ function ChatRoom() {
 
   useLayoutEffect(() => {
     const element = listElRef.current;
-    if (!element || !ready) {
+    if (!element) {
       return;
     }
 
@@ -120,7 +122,47 @@ function ChatRoom() {
         ioReadyRef.current = true;
       });
     }
-  }, [listElRef, messages, ready]);
+  }, [listElRef, messages]);
+
+  const { capturePrevScroll } = useScrollToBottomOnMessageSend({
+    messageCount: messages.length,
+    listElRef,
+  });
+
+  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (message === '') {
+      return;
+    }
+
+    capturePrevScroll();
+
+    const tempId = Date.now();
+
+    const optimisticMsg = {
+      senderId: Number(memberId),
+      content: message,
+      createdAt: new Date().toString(),
+      chatRoomId: Number(chatRoomId),
+      chatMessageId: tempId,
+      tempId,
+      status: 'pending' as const,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessage('');
+
+    const client = stompClientRef.current;
+    if (!client || !client.connected || memberId === null) {
+      return;
+    }
+
+    client.publish({
+      destination: `/app/chatroom/${chatRoomId}`,
+      body: JSON.stringify({ content: message, tempId }),
+    });
+  };
 
   useEffect(() => {
     if (chatRoomMessage) {
@@ -128,28 +170,49 @@ function ChatRoom() {
     }
   }, [chatRoomMessage]);
 
-  const ChatRoomInfoQuery = useQuery<ChatRoomInfo>({
+  const {
+    data: chatRoomInfoData,
+    isPending: chatRoomInfoIsPending,
+    error,
+  } = useQuery<ChatRoomInfo, ApiError>({
     queryKey: ['chatRoomInfo', chatRoomId],
     queryFn: () => getChatRoomInfo(Number(chatRoomId!)),
-  });
+    retry: (failureCount, error) => {
+      if (error instanceof ApiError && error.status === 403) {
+        return false;
+      }
 
-  const chatRoomInfo = ChatRoomInfoQuery.data;
+      return failureCount < 1;
+    },
+  });
 
   const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
     const client = new Client({
-      webSocketFactory: () =>
-        new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
+      webSocketFactory: () => {
+        console.log('[sockjs] webSocketFactory called');
+
+        return new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
           withCredentials: true,
-        }),
-      onStompError: (frame) => console.error('STOMP protocol error:', frame),
+        });
+      },
+      // onStompError: (frame) => console.error('STOMP protocol error:', frame),
+      onStompError: (frame) => {
+        console.error('[sockjs][STOMP ERROR]', {
+          command: frame.command,
+          headers: frame.headers,
+          body: frame.body, // 👈 여기에 보통 "token expired" / "invalid jwt" 들어있음
+        });
+      },
       onWebSocketError: (e) => console.error('WebSocket error:', e),
       reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
           (message: IMessage) => {
+            capturePrevScroll();
+
             const parsedMessage = JSON.parse(message.body);
 
             setMessages((prev) => {
@@ -189,74 +252,40 @@ function ChatRoom() {
     return () => {
       client.deactivate();
     };
-  }, [chatRoomId]);
+  }, [capturePrevScroll, chatRoomId]);
 
-  const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (message === '') {
-      return;
-    }
-
-    const tempId = Date.now();
-
-    const optimisticMsg = {
-      senderId: memberId,
-      content: message,
-      createdAt: new Date().toString(),
-      chatRoomId: Number(chatRoomId),
-      chatMessageId: tempId,
-      tempId,
-      status: 'pending' as const,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setMessage('');
-
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
-
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({ content: message, tempId }),
-    });
-  };
-
-  if (!memberId) {
-    return <div>로그인 후 이용 가능합니다.</div>;
+  if (error?.status === 403) {
+    return <ChatRoomForbidden />;
   }
 
-  if (ChatRoomInfoQuery.isPending || !chatRoomInfo) {
-    return (
-      <S_Container>
-        <div>로딩중</div>
-      </S_Container>
-    );
+  if (error?.status === 401) {
+    return <div>로그인 후 이용 가능합니다.</div>;
   }
 
   return (
     <S_Container>
-      <div>
-        <ChatRoomHeader name={chatRoomInfo.opponentName} />
-        <MentoringActionPanel
-          mentorName={chatRoomInfo.mentorName}
-          price={chatRoomInfo.price}
-          profileImageUrl={chatRoomInfo.profileImageUrl}
-          mentorOwned={chatRoomInfo.myRole === 'MENTOR'}
-          onPaymentRequestClick={handlePaymentRequestClick}
-          onReviewRequestClick={handleReviewRequestClick}
-          onEndClick={handleEndClick}
-          onPaymentClick={handlePaymentClick}
-          onReviewClick={handleReviewClick}
-        />
-      </div>
+      {chatRoomInfoIsPending || !chatRoomInfoData ? (
+        <div>로딩중</div>
+      ) : (
+        <div>
+          <ChatRoomHeader name={chatRoomInfoData.opponentName} />
+          <MentoringActionPanel
+            mentorName={chatRoomInfoData.mentorName}
+            price={chatRoomInfoData.price}
+            profileImageUrl={chatRoomInfoData.profileImageUrl}
+            mentorOwned={chatRoomInfoData.myRole === 'MENTOR'}
+            onPaymentRequestClick={handlePaymentRequestClick}
+            onReviewRequestClick={handleReviewRequestClick}
+            onEndClick={handleEndClick}
+            onPaymentClick={handlePaymentClick}
+            onReviewClick={handleReviewClick}
+          />
+        </div>
+      )}
 
       <ChatContent
         messages={messages}
-        pageFirstRef={pageFirstReadyRef}
-        listRef={listReadyRef}
+        pageFirstElRef={pageFirstElRef}
         listElRef={listElRef}
       />
       <InputSection

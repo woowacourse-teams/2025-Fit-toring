@@ -1,26 +1,24 @@
 package fittoring.application.auth.service;
 
 import fittoring.application.auth.presentation.dto.request.OauthSignUpRequest;
-import fittoring.application.auth.presentation.dto.request.SignUpRequest;
-import fittoring.application.auth.service.dto.AuthTokenDto;
-import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.auth.repository.MemberOauthRepository;
 import fittoring.application.auth.repository.RefreshTokenRepository;
-import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
-import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;
+import fittoring.application.auth.service.dto.AuthTokenDto;
+import fittoring.application.auth.service.dto.LoginInfoDto;
+import fittoring.application.auth.service.dto.RegisterMemberDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.exception.InvalidTokenException;
-import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.AuthProvider;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
-import fittoring.infrastructure.OauthClientService;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -32,17 +30,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthService {
 
+    private static final String LOGIN_ID_NOT_FOUND_MESSAGE = BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage();
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
-    private final OauthClientService oauthClientService;
-    private final MemberOauthRepository memberOauthRepository;
+    private final MemberOauthRepository memberOAuthRepository;
+    private final PhoneVerificationService phoneVerificationService;
 
     @Transactional
-    public void register(SignUpRequest request) {
-        validateDuplicateLoginId(request.loginId());
-        validateDuplicatePhone(request.phone());
-        Member member = createMember(request);
+    public void register(RegisterMemberDto dto) {
+        validateDuplicateLoginId(dto.loginId());
+        validateDuplicatePhone(dto.phoneNumber());
+        phoneVerificationService.checkVerificationStatus(new Phone(dto.phoneNumber()));
+        Member member = createMember(dto);
         memberRepository.save(member);
     }
 
@@ -58,6 +58,16 @@ public class AuthService {
         }
     }
 
+    private Member createMember(RegisterMemberDto dto) {
+        return new Member(
+                dto.loginId(),
+                dto.gender(),
+                dto.name(),
+                new Phone(dto.phoneNumber()),
+                Password.from(dto.password())
+        );
+    }
+
     @Transactional
     public LoginInfoDto login(String loginId, String password) {
         Member member = getMemberByLoginId(loginId);
@@ -68,7 +78,7 @@ public class AuthService {
     }
 
     private AuthTokenDto getAuthorizedTokenResponse(Member member) {
-        String accessToken = jwtProvider.createAccessToken(member.getId());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
         RefreshToken saveRefreshToken = new RefreshToken(
@@ -83,7 +93,8 @@ public class AuthService {
     public AuthTokenDto reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
         RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        String newAccessToken = jwtProvider.createAccessToken(findRefreshToken.getMember().getId());
+        Member memberByRT = findRefreshToken.getMember();
+        String newAccessToken = jwtProvider.createAccessToken(memberByRT.getId(), memberByRT.getRole());
         String newRefreshToken = jwtProvider.createRefreshToken();
         findRefreshToken.update(newRefreshToken, LocalDateTime.now());
 
@@ -97,17 +108,7 @@ public class AuthService {
 
     private Member getMemberByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.LOGIN_ID_NOT_FOUND.getMessage()));
-    }
-
-    private Member createMember(SignUpRequest request) {
-        return new Member(
-                request.loginId(),
-                request.gender(),
-                request.name(),
-                new Phone(request.phone()),
-                Password.from(request.password())
-        );
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
     @Transactional
@@ -115,51 +116,72 @@ public class AuthService {
         refreshTokenRepository.deleteAllByMemberId(memberId);
     }
 
-    public LoginInfoDto kakaoLogin(String code) {
-        KakaoTokenResponse tokenResponse = oauthClientService.requestKakaoToken(code);
-        String kakaoAccessToken = tokenResponse.access_token();
-
-        KakaoUserInfoResponse userInfoResponse = oauthClientService.requestKakaoId(kakaoAccessToken);
-        Long kakaoId = userInfoResponse.id();
-
-        Optional<MemberOauth> memberOauth = memberOauthRepository.findByProviderAndProviderMemberId(
+    @Transactional
+    public LoginInfoDto processKakaoLogin(Long kakaoId) {
+        Optional<MemberOauth> memberOauth = memberOAuthRepository.findByProviderAndProviderMemberId(
                 AuthProvider.KAKAO,
                 String.valueOf(kakaoId)
         );
+        return memberOauth.map(this::allowOauthLogin)
+                .orElseGet(() -> allowOauthRegistration(kakaoId));
+    }
 
-        if (memberOauth.isPresent()) {
-            Member member = memberOauth.get().getMember();
-            AuthTokenDto authTokenDto = getAuthorizedTokenResponse(member);
-            return new LoginInfoDto(member.getId(), authTokenDto);
-        }
+    private LoginInfoDto allowOauthLogin(MemberOauth memberOauth) {
+        Member member = memberOauth.getMember();
+        AuthTokenDto authTokenDto = getAuthorizedTokenResponse(member);
+        return new LoginInfoDto(member.getId(), authTokenDto);
+    }
 
+    private LoginInfoDto allowOauthRegistration(Long kakaoId) {
         String oauthSignUpToken = jwtProvider.createOauthSignUpToken(String.valueOf(kakaoId));
         AuthTokenDto authTokenDto = new AuthTokenDto(null, null, oauthSignUpToken);
         return new LoginInfoDto(null, authTokenDto);
     }
 
     @Transactional
-    public MemberOauth registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
-        String oauthId = String.valueOf(jwtProvider.getSubjectFromPayloadBy(oauthSignUpToken));
+    public RegisterOAuthDto registerOauthMember(OauthSignUpRequest request, String oauthSignUpToken) {
+        TokenPayload payload = jwtProvider.extractTokenPayload(oauthSignUpToken);
+        String oauthId = String.valueOf(payload.sub());
+        Member member = memberRepository.findByPhone_Number(request.phoneNumber())
+                .orElseGet(() -> {
+                    Member newMember = getRandomIdPwMember(request);
+                    memberRepository.save(newMember);
+                    return newMember;
+                });
+        MemberOauth memberOAuth = new MemberOauth(member, AuthProvider.KAKAO, oauthId);
+        memberOAuthRepository.save(memberOAuth);
+        return new RegisterOAuthDto(member.getId(), getAuthorizedTokenResponse(member));
+    }
+
+    private Member getRandomIdPwMember(OauthSignUpRequest request) {
         String randomLoginId = RandomStringUtils.randomAlphanumeric(20);
+        validateDuplicateLoginId(randomLoginId);
         String randomPw = RandomStringUtils.randomAlphanumeric(20);
-        Member member = new Member(
+
+        return new Member(
                 randomLoginId,
                 request.gender(),
                 request.name(),
-                new Phone(request.phone()),
+                new Phone(request.phoneNumber()),
                 Password.from(randomPw)
         );
-        validateDuplicateLoginId(randomLoginId);
-        validateDuplicatePhone(request.phone());
-        memberRepository.save(member);
-        MemberOauth memberOauth = new MemberOauth(member, AuthProvider.KAKAO, oauthId);
-        memberOauthRepository.save(memberOauth);
-        return memberOauth;
     }
 
-    public AuthTokenDto loginOauthMember(MemberOauth memberOauth) {
-        Member member = memberOauth.getMember();
-        return getAuthorizedTokenResponse(member);
+    @Transactional(readOnly = true)
+    public String findLoginId(String name, String phoneNumber) {
+        Member member = memberRepository.findByPhone_Number(phoneNumber)
+                .orElseThrow(() -> new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE));
+        if (!member.getName().equals(name)) {
+            throw new MemberNotFoundException(LOGIN_ID_NOT_FOUND_MESSAGE);
+        }
+        return member.getLoginId();
+    }
+
+    @Transactional
+    public Member resetPassword(String loginId, String phoneNumber, String password) {
+        phoneVerificationService.checkVerificationStatus(new Phone(phoneNumber));
+        Member member = getMemberByLoginId(loginId);
+        member.updatePassword(password);
+        return member;
     }
 }

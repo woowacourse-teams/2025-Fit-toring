@@ -19,10 +19,13 @@ spring:
     user: ${PROD_DATABASE_USER}
     password: ${PROD_DATABASE_PASSWORD}
     baseline-on-migrate: true
+    out-of-order: true
   cloud:
     aws:
       sqs:
         enabled: false
+cookie:
+  same-site: ${COOKIE_SAME_SITE_LOCAL}
 aws:
   s3:
     env-prefix: local/

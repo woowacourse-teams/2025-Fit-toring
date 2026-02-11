@@ -1,16 +1,23 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.presentation.dto.request.CertificateInfoRequest;
 import fittoring.application.mentoring.presentation.dto.request.MentoringRegisterRequest;
 import fittoring.application.mentoring.presentation.dto.response.CertificateSpecAndImageResponse;
 import fittoring.application.mentoring.presentation.dto.response.MentoringResponse;
@@ -26,6 +33,7 @@ import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -48,6 +56,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -84,13 +93,125 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @DisplayName("멘토링 등록에 성공하면 201 Created를 반환한다")
+    @Test
+    void registerMentoring() throws IOException {
+        // given
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        categoryRepository.save(new Category("category1"));
+
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
+                1000,
+                List.of("category1"),
+                "멘토링 소개",
+                "profileImageUrl",
+                3,
+                "한 줄 소개",
+                List.of(new CertificateInfoRequest(CertificateType.LICENSE, "자격증", "certificateImageUrl"))
+        );
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
+
+        given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                .willReturn(true);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/register-mentoring-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("멘토링")
+                                .summary("멘토링 등록")
+                                .description("새로운 멘토링을 등록합니다. 성공 시 201 Created, 실패 시 400 Bad Request를 반환합니다.")
+                                .requestSchema(Schema.schema("MentoringRegisterRequest"))
+                                .requestFields(
+                                        fieldWithPath("price")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("가격"),
+                                        fieldWithPath("category")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("카테고리 목록"),
+                                        fieldWithPath("introduction")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토링 소개"),
+                                        fieldWithPath("profileImageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("프로필 이미지 URL"),
+                                        fieldWithPath("career")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("경력 (년)"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("한 줄 소개"),
+                                        fieldWithPath("certificateInfoRequests[].type")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 타입 (LICENSE, DEGREE, ETC)"),
+                                        fieldWithPath("certificateInfoRequests[].title")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 이름"),
+                                        fieldWithPath("certificateInfoRequests[].imageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 이미지 URL")
+                                )
+                                .build())))
+                .cookie("accessToken", accessToken)
+                .body(objectMapper.writeValueAsString(requestBody))
+                .when()
+                .post("/mentorings")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("이미 멘토링을 등록한 멘토가 멘토링을 등록하려고 하면 400 Bad Request를 반환한다")
+    @Test
+    void registerMentoringFail() throws IOException {
+        // given
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        categoryRepository.save(new Category("category1"));
+
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
+                1000,
+                List.of("category1"),
+                "멘토링 소개",
+                "profileImageUrl",
+                3,
+                "한 줄 소개",
+                List.of(new CertificateInfoRequest(CertificateType.LICENSE, "자격증", "certificateImageUrl"))
+        );
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
+
+        given(presignedUrlService.isObjectExistsFromKey(anyString()))
+                .willReturn(true);
+
+        // when
+        // then
+        RestAssured
+                .given(spec)
+                .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/register-mentoring-fail-duplicate",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("멘토링")
+                                .requestSchema(Schema.schema("MentoringRegisterRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(requestBody))
+                .when()
+                .post("/mentorings")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("개설된 멘토링을 수정 성공하면 200 OK를 반환한다")
     @Test
     void modifyMentoring() throws IOException {
         //given
         Member mentor = memberRepository.save(new Member(
                 "id1",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1234-9048"),
                 Password.from("pw")
@@ -139,7 +260,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newContent,
                 Collections.emptyList()
         );
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
@@ -147,13 +268,61 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
                 .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/modift-mentoring-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("멘토링")
+                                .summary("멘토링 수정")
+                                .description(
+                                        "등록된 멘토링 정보를 수정합니다. 성공 시 200 OK, 실패 시 403 Forbidden 또는 404 Not Found를 반환합니다.")
+                                .requestSchema(Schema.schema("MentoringModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("price")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("가격"),
+                                        fieldWithPath("category")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("카테고리 목록"),
+                                        fieldWithPath("introduction")
+                                                .type(JsonFieldType.STRING)
+                                                .description("멘토링 소개"),
+                                        fieldWithPath("career")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("경력 (년)"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("한 줄 소개"),
+                                        fieldWithPath("profileImageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("프로필 이미지 URL"),
+                                        fieldWithPath("certificateInfoRequests")
+                                                .type(JsonFieldType.ARRAY)
+                                                .description("수정할 자격증 목록")
+                                                .optional(),
+                                        fieldWithPath("certificateInfoRequests[].type")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 타입 (LICENSE, DEGREE, ETC)")
+                                                .optional(),
+                                        fieldWithPath("certificateInfoRequests[].title")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 이름")
+                                                .optional(),
+                                        fieldWithPath("certificateInfoRequests[].imageUrl")
+                                                .type(JsonFieldType.STRING)
+                                                .description("자격증 이미지 URL")
+                                                .optional()
+                                )
+                                .pathParameters(
+                                        parameterWithName("mentoringId")
+                                                .description("수정할 멘토링 ID")
+                                )
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
                 .when()
-                .put("/mentorings/" + mentoring.getId())
+                .put("/mentorings/{mentoringId}", mentoring.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -164,7 +333,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "id1",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1234-9048"),
                 Password.from("pw")
@@ -185,18 +354,24 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newContent,
                 Collections.emptyList()
         );
-        String accessToken = jwtProvider.createAccessToken(mentor.getId());
+        String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
                 .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/modift-mentoring-fail-not-found",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("멘토링")
+                                .requestSchema(Schema.schema("MentoringModifyRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
                 .when()
-                .put("/mentorings/999")
+                .put("/mentorings/{mentoringId}", 999)
                 .then().log().all()
                 .statusCode(404);
     }
@@ -207,7 +382,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "id1",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1234-9048"),
                 Password.from("pw")
@@ -222,7 +397,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
         Member invalidMember = memberRepository.save(new Member(
                 "id2",
-                "MALE",
+                Gender.MALE,
                 "박트레이너",
                 new Phone("010-1234-9021"),
                 Password.from("pw")
@@ -243,18 +418,24 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                 newContent,
                 Collections.emptyList()
         );
-        String accessToken = jwtProvider.createAccessToken(invalidMember.getId());
+        String accessToken = jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole());
 
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
                 .log().all().contentType(ContentType.JSON)
+                .filter(documentWithTag("mentoring/modift-mentoring-fail-forbidden",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("멘토링")
+                                .requestSchema(Schema.schema("MentoringModifyRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .cookie("accessToken", accessToken)
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(requestBody))
                 .when()
-                .put("/mentorings/" + mentoring.getId())
+                .put("/mentorings/{mentoringId}", mentoring.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -268,13 +449,13 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoring() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
-            String accessToken = jwtProvider.createAccessToken(mentee.getId());
+                    new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+            String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
             Member mentor1 = memberRepository.save(
-                    new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
+                    new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
             Member mentor2 = memberRepository.save(
-                    new Member("id2", "MALE", "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
+                    new Member("id2", Gender.MALE, "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
@@ -325,13 +506,73 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
 
             //when
             MentoringResponse response = RestAssured
-                    .given()
+                    .given(spec)
+                    .filter(documentWithTag("mentoring/get-mentoring-success",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .summary("멘토링 상세 조회")
+                                    .description("멘토링의 상세 정보를 조회합니다. 성공 시 200 OK, 실패 시 404 Not Found를 반환합니다.")
+                                    .responseSchema(Schema.schema("MentoringResponse"))
+                                    .responseFields(
+                                            fieldWithPath("id")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토링 ID"),
+                                            fieldWithPath("mentorName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토 이름"),
+                                            fieldWithPath("categories[]")
+                                                    .type(JsonFieldType.ARRAY)
+                                                    .description("멘토링 카테고리 목록"),
+                                            fieldWithPath("price")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토링 가격"),
+                                            fieldWithPath("career")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토 경력 (년차)"),
+                                            fieldWithPath("profileImageUrl")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토 프로필 이미지 URL")
+                                                    .optional(),
+                                            fieldWithPath("introduction")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토 한 줄 소개"),
+                                            fieldWithPath("content")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토링 상세 설명"),
+                                            fieldWithPath("certificates")
+                                                    .type(JsonFieldType.ARRAY)
+                                                    .description("멘토가 보유한 자격증 목록"),
+                                            fieldWithPath("certificates[].certificateId")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("자격증 ID")
+                                                    .optional(),
+                                            fieldWithPath("certificates[].title")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("자격증 이름")
+                                                    .optional(),
+                                            fieldWithPath("certificates[].type")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("자격증 유형")
+                                                    .optional(),
+                                            fieldWithPath("certificates[].imageUrl")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("자격증 이미지 URL")
+                                                    .optional(),
+                                            fieldWithPath("ratingAverage")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("평균 평점 (소수점 1자리)"),
+
+                                            fieldWithPath("ratingCount")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("리뷰 개수")
+                                    )
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
                     .queryParam("categoryTitle2", savedCategory2.getTitle())
                     .when()
-                    .get("/mentorings/" + mentoringId)
+                    .get("/mentorings/{mentoringId}", mentoringId)
                     .then().log().all()
                     .statusCode(200)
                     .extract()
@@ -360,11 +601,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             //given
 
             //멘토 생성
-            Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+            Member mentor = new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
             Member savedMentor = memberRepository.save(mentor);
 
             //토큰 생성
-            String accessToken = jwtProvider.createAccessToken(mentor.getId());
+            String accessToken = jwtProvider.createAccessToken(mentor.getId(), mentor.getRole());
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
@@ -430,7 +671,13 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringResponse response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-mine-success"))
+                    .filter(documentWithTag("mentoring/get-mentorings-mine-success",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .summary("내 멘토링 조회")
+                                    .description("로그인한 멘토가 개설한 멘토링을 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                    .responseSchema(Schema.schema("MentoringResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .when()
@@ -466,13 +713,13 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoring2() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("id", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
-            String accessToken = jwtProvider.createAccessToken(mentee.getId());
+                    new Member("id", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+            String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
             Member mentor1 = memberRepository.save(
-                    new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
+                    new Member("id1", Gender.MALE, "멘토1", new Phone("010-1234-5678"), Password.from("pw")));
             Member mentor2 = memberRepository.save(
-                    new Member("id2", "MALE", "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
+                    new Member("id2", Gender.MALE, "멘토2", new Phone("010-1111-2222"), Password.from("pw")));
 
             Mentoring savedMentoring = mentoringRepository.save(
                     new Mentoring(
@@ -519,13 +766,17 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             Response response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-id-not-found"))
+                    .filter(documentWithTag("mentoring/get-mentorings-id-not-found",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("ErrorResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", accessToken)
                     .queryParam("categoryTitle1", savedCategory.getTitle())
                     .queryParam("categoryTitle2", savedCategory.getTitle())
                     .when()
-                    .get("/mentorings/" + invalidId);
+                    .get("/mentorings/{mentoringId}", invalidId);
 
             //then
             String responseMessage = response.jsonPath().getString("message");
@@ -544,7 +795,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPages() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "010-1234-5678",
@@ -564,7 +815,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -637,7 +888,84 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-success",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .summary("멘토링 목록 페이징 조회")
+                                    .description("""
+                                            멘토링 목록을 커서 기반 페이징으로 조회합니다.
+                                            
+                                            - 정렬 기준: CREATED_AT (최신순), RESERVATION_COUNT (예약순), AVERAGE_RATING (평점순)
+                                            - 카테고리 필터링: categoryIds 파라미터로 여러 카테고리 ID를 전달하면 해당 카테고리를 모두 포함하는 멘토링만 조회
+                                            - 페이징: cursorCode를 사용하여 다음 페이지 조회
+                                            
+                                            성공 시 200 OK, 잘못된 커서 또는 정렬 키 시 400 Bad Request를 반환합니다.""")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .responseFields(
+                                            fieldWithPath("mentoringSummaryResponses[]")
+                                                    .type(JsonFieldType.ARRAY)
+                                                    .description("멘토링 요약 정보 목록"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].id")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토링 ID"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].mentorName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토 이름"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].categories[]")
+                                                    .type(JsonFieldType.ARRAY)
+                                                    .description("멘토링 카테고리 목록"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].price")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토링 가격"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].career")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("멘토 경력 (년차)"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].profileImageUrl")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토 프로필 이미지 URL")
+                                                    .optional(),
+
+                                            fieldWithPath("mentoringSummaryResponses[].introduction")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("멘토링 한 줄 소개"),
+
+                                            fieldWithPath("mentoringSummaryResponses[].ratingAverage")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("평균 평점 (소수점 1자리)")
+                                                    .optional(),
+
+                                            fieldWithPath("mentoringSummaryResponses[].ratingCount")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("리뷰 개수"),
+
+                                            fieldWithPath("nextCursorCode")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("다음 페이지 조회를 위한 커서 코드 (마지막 페이지인 경우 null)")
+                                                    .optional(),
+
+                                            fieldWithPath("hasNext")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("다음 페이지 존재 여부")
+                                    )
+                                    .queryParameters(
+                                            parameterWithName("sortKey")
+                                                    .description(
+                                                            "정렬 기준 (CREATED_AT: 최신순, RESERVATION_COUNT: 예약순, AVERAGE_RATING: 평점순)")
+                                                    .defaultValue("CREATED_AT"),
+                                            parameterWithName("cursorCode")
+                                                    .description("다음 페이지 조회를 위한 커서 코드")
+                                                    .optional(),
+                                            parameterWithName("categoryIds")
+                                                    .description("필터링할 카테고리 ID 목록 (쉼표로 구분)")
+                                                    .optional()
+                                    )
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
                     .when()
@@ -651,7 +979,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-next"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-with-cursor",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
                     .queryParam("cursorCode", nextCursorCode)
@@ -679,7 +1011,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory_1() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "111-1234-5678",
@@ -699,7 +1031,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -776,7 +1108,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-single-category",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
                     .queryParam("categoryIds", "1, 2")
@@ -801,7 +1137,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "111-1234-5678",
@@ -821,7 +1157,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -897,7 +1233,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-first"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-multi-category-first",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
                     .queryParam("categoryIds", "1, 2")
@@ -912,7 +1252,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-success-next"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-multi-category-next",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
                     .queryParam("categoryIds", "1, 2")
@@ -941,7 +1285,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPages2() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "010-1234-5678",
@@ -961,7 +1305,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -1039,7 +1383,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-reservation-count-success-first"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-reservation-count-first",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "RESERVATION_COUNT")
                     .when()
@@ -1053,7 +1401,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-reservation-count-success-next"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-reservation-count-next",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "RESERVATION_COUNT")
                     .queryParam("cursorCode", nextCursorCode)
@@ -1082,7 +1434,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory2() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "111-1234-5678",
@@ -1102,7 +1454,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -1182,7 +1534,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-reservation-count-success-first"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-reservation-count-category-first",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "RESERVATION_COUNT")
                     .queryParam("categoryIds", "1, 2")
@@ -1197,7 +1553,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-reservation-count-success-next"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-reservation-count-category-next",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "RESERVATION_COUNT")
                     .queryParam("categoryIds", "1, 2")
@@ -1226,7 +1586,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPages3() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "010-1234-5678",
@@ -1246,7 +1606,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -1327,7 +1687,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-first"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-average-rating-first",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "AVERAGE_RATING")
                     .when()
@@ -1341,7 +1705,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-next"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-average-rating-next",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "AVERAGE_RATING")
                     .queryParam("cursorCode", nextCursorCode)
@@ -1370,7 +1738,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesWithCategory3() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId", "MALE", "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
+                    new Member("menteeId", Gender.MALE, "멘티1", new Phone("010-1231-1231"), Password.from("pw")));
 
             List<String> phoneNumbers = List.of(
                     "111-1234-5678",
@@ -1390,7 +1758,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             for (int i = 0; i < 12; i++) {
                 Member mentor = new Member(
                         "mentorId" + i,
-                        "MALE",
+                        Gender.MALE,
                         "멘토" + i,
                         new Phone(phoneNumbers.get(i)),
                         Password.from("pw"));
@@ -1474,7 +1842,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse firstResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-first"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-average-rating-category-first",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "AVERAGE_RATING")
                     .queryParam("categoryIds", "1, 2")
@@ -1489,7 +1861,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             MentoringSummaryPaginationResponse nextResponse = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-orderby-average-rating-success-next"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-average-rating-category-next",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .responseSchema(Schema.schema("MentoringSummaryPaginationResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "AVERAGE_RATING")
                     .queryParam("categoryIds", "1, 2")
@@ -1500,6 +1876,7 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
                     .statusCode(200)
                     .extract()
                     .as(MentoringSummaryPaginationResponse.class);
+
             //then
             SoftAssertions.assertSoftly(softAssertions -> {
                 assertThat(firstResponse.mentoringSummaryResponses()).hasSize(10);   // 카테고리 1, 2번 동시 보유 조건
@@ -1518,14 +1895,18 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
         void getMentoringSummaryPagesFail_invalidCursor() {
             //given
             Member mentee = memberRepository.save(
-                    new Member("menteeId2", "MALE", "멘티2", new Phone("010-9999-9999"), Password.from("pw")));
+                    new Member("menteeId2", Gender.MALE, "멘티2", new Phone("010-9999-9999"), Password.from("pw")));
             String invalidCursorCode = "invalid-cursor";
 
             //when
             Response response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-fail-invalid-cursor"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-fail-invalid-cursor",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .requestSchema(Schema.schema("ErrorResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "CREATED_AT")
                     .queryParam("cursorCode", invalidCursorCode)
@@ -1547,7 +1928,11 @@ class MentoringIntegrationTest extends AbstractApiDocumentationTest {
             Response response = RestAssured
                     .given(spec)
                     .accept("application/json")
-                    .filter(documentWithTag("mentoring/get-mentorings-page-fail-invalid-sortkey"))
+                    .filter(documentWithTag("mentoring/get-mentorings-page-fail-invalid-sortkey",
+                            resource(ResourceSnippetParameters.builder()
+                                    .tag("멘토링")
+                                    .requestSchema(Schema.schema("ErrorResponse"))
+                                    .build())))
                     .log().all().contentType(ContentType.JSON)
                     .queryParam("sortKey", "INVALID_SORT_KEY")
                     .when()

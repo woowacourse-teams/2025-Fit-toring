@@ -1,12 +1,13 @@
 package fittoring.integration.admin;
 
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.admin.presentation.dto.AdminReservationStatusUpdateRequest;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.reservation.presentation.dto.request.ReservationStatusUpdateRequest;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
@@ -44,7 +45,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member admin = memberRepository.save(new Member(
                 "adminId",
-                "MALE",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-1111-2222"),
                 Password.from("password"),
@@ -52,7 +53,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "아이유",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -67,7 +68,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee1 = memberRepository.save(new Member(
                 "menteeId1",
-                "MALE",
+                Gender.MALE,
                 "김멘티",
                 new Phone("010-1234-5679"),
                 Password.from("password"),
@@ -75,7 +76,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee2 = memberRepository.save(new Member(
                 "menteeId2",
-                "MALE",
+                Gender.MALE,
                 "박멘티",
                 new Phone("010-1234-5670"),
                 Password.from("password"),
@@ -93,7 +94,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 mentoring,
                 mentee1
         ));
-        String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        String adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
 
         // when
         // then
@@ -104,7 +105,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", adminAccessToken)
                 .when()
-                .get("/admin/mentorings/" + mentoring.getId() + "/reservations")
+                .get("/admin/mentorings/{mentoringId}/reservations", mentoring.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -115,7 +116,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member normalMember = memberRepository.save(new Member(
                 "adminId",
-                "MALE",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-1111-2222"),
                 Password.from("password"),
@@ -123,7 +124,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "아이유",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -136,7 +137,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 "Last Fantasy",
                 "아직 모르는 게 많은 나 저 문을 열고 걸어 나가도 되겠죠 날 천천히 기다릴 수 있나요 기도해줘요 넘어지지 않도록"
         ));
-        String normalAccessToken = jwtProvider.createAccessToken(normalMember.getId());
+        String normalAccessToken = jwtProvider.createAccessToken(normalMember.getId(), normalMember.getRole());
 
         // when
         // then
@@ -147,7 +148,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", normalAccessToken)
                 .when()
-                .get("/admin/mentorings/" + mentoring.getId() + "/reservations")
+                .get("/admin/mentorings/{mentoringId}/reservations", mentoring.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -158,7 +159,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member admin = memberRepository.save(new Member(
                 "adminId",
-                "MALE",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-1111-2222"),
                 Password.from("password"),
@@ -166,7 +167,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "고윤하",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -181,7 +182,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee = memberRepository.save(new Member(
                 "menteeId1",
-                "MALE",
+                Gender.MALE,
                 "김멘티",
                 new Phone("010-1234-5679"),
                 Password.from("password"),
@@ -193,10 +194,10 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 mentoring,
                 mentee
         ));
-        String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        String adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
 
-        ReservationStatusUpdateRequest reservationStatusUpdateRequest
-                = new ReservationStatusUpdateRequest(Status.COMPLETE.name());
+        AdminReservationStatusUpdateRequest reservationStatusUpdateRequest
+                = new AdminReservationStatusUpdateRequest(Status.COMPLETE.name());
 
         // when
         // then
@@ -208,7 +209,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .cookie("accessToken", adminAccessToken)
                 .body(reservationStatusUpdateRequest)
                 .when()
-                .patch("/admin/reservations/" + reservation.getId() + "/status")
+                .patch("/admin/reservations/{reservationId}/status", reservation.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -219,7 +220,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member admin = memberRepository.save(new Member(
                 "adminId",
-                "MALE",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-1111-2222"),
                 Password.from("password"),
@@ -227,7 +228,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "최유리",
                 new Phone("010-1234-5678"),
                 Password.from("password"),
@@ -242,7 +243,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee = memberRepository.save(new Member(
                 "menteeId1",
-                "MALE",
+                Gender.MALE,
                 "김멘티",
                 new Phone("010-1234-5679"),
                 Password.from("password"),
@@ -260,7 +261,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 reservation,
                 mentee
         ));
-        String adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        String adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
 
         // when
         // then
@@ -271,7 +272,7 @@ class AdminReservationIntegrationTest extends AbstractApiDocumentationTest {
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", adminAccessToken)
                 .when()
-                .delete("/admin/reservations/" + mentoring.getId())
+                .delete("/admin/reservations/{reservationId}", mentoring.getId())
                 .then().log().all()
                 .statusCode(204);
     }

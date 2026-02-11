@@ -34,17 +34,17 @@ class ReviewRepositoryTest extends RepositoryTestSupport {
     @Test
     void findReviews() {
         // given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
-        Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-        Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
 
         Reservation reservation1 = reservationRepository.save(
-                FixtureUtil.getTestPendingReservation(mentoring, mentee));
+                FixtureUtil.testPendingReservation(mentoring, mentee));
         Reservation reservation2 = reservationRepository.save(
-                FixtureUtil.getTestPendingReservation(mentoring, mentee));
+                FixtureUtil.testPendingReservation(mentoring, mentee));
 
-        reviewRepository.save(FixtureUtil.getTestReview(reservation1, mentee));
-        Review reviewToDelete = reviewRepository.save(FixtureUtil.getTestReview(reservation2, mentee));
+        reviewRepository.save(FixtureUtil.testReview(reservation1, mentee));
+        Review reviewToDelete = reviewRepository.save(FixtureUtil.testReview(reservation2, mentee));
 
         // when
         reviewRepository.delete(reviewToDelete);

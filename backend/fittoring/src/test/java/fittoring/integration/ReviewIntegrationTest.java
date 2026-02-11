@@ -1,17 +1,26 @@
 package fittoring.integration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
+import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.presentation.dto.request.ReviewCreateRequest;
 import fittoring.application.review.presentation.dto.request.ReviewModifyRequest;
+import fittoring.application.review.presentation.dto.response.MemberReviewGetResponse;
+import fittoring.application.review.presentation.dto.response.ReviewCreateResponse;
+import fittoring.application.review.presentation.dto.response.ReviewGetResponse;
 import fittoring.application.review.repository.ReviewRepository;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
@@ -19,10 +28,14 @@ import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 class ReviewIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -48,19 +61,19 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -85,11 +98,41 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         );
 
         // when
-        // then
-        RestAssured
+        ReviewCreateResponse response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-reviews-success"))
+                .filter(documentWithTag("review/post-reviews-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("리뷰 작성")
+                                .description(
+                                        "완료된 멘토링에 대해 리뷰를 작성합니다. 성공 시 201 Created, 실패 시 400 Bad Request 또는 404 Not Found를 반환합니다.")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .requestFields(
+                                        fieldWithPath("reservationId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("예약 ID"),
+                                        fieldWithPath("rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("평점 (1~5)"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 내용")
+                                                .optional()
+                                )
+                                .responseSchema(Schema.schema("ReviewCreateResponse"))
+                                .responseFields(
+                                        fieldWithPath("mentoringId")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰가 작성된 멘토링 ID"),
+                                        fieldWithPath("rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 평점 (1~5)"),
+                                        fieldWithPath("content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 내용")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -97,10 +140,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 .post("/reviews")
                 .then().log().all()
                 .statusCode(201)
-                .body(
-                        "rating", equalTo(rating),
-                        "content", equalTo(content)
-                );
+                .extract()
+                .as(ReviewCreateResponse.class);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.rating()).isEqualTo(rating);
+            softly.assertThat(response.content()).isEqualTo(content);
+        });
     }
 
     @DisplayName("존재하지 않는 멤버가 리뷰 작성을 요청하면 404 Not Found를 반환한다")
@@ -109,14 +156,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -143,17 +190,24 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 rating,
                 content
         );
-        String accessTokenWithUnexistMemberId = jwtProvider.createAccessToken(999L);
+        String accessTokenWithUnexistMemberId = jwtProvider.createAccessToken(999L, MemberRole.MENTEE);
 
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/post-reviews-fail-member-not-found",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessTokenWithUnexistMemberId)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/reviews")
                 .then().log().all()
                 .statusCode(404);
     }
@@ -165,14 +219,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 password
@@ -201,48 +255,54 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         );
         Member anotherMember = memberRepository.save(new Member(
                 "loginId2",
-                "MALE",
+                Gender.MALE,
                 "name2",
                 new Phone("010-1234-5679"),
                 Password.from("password")
         ));
-        String accessTokenWithAnotherMember = jwtProvider.createAccessToken(anotherMember.getId());
+        String accessTokenWithAnotherMember = jwtProvider.createAccessToken(anotherMember.getId(),
+                anotherMember.getRole());
 
         // when
         // then
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-mentorings-id-review-have-not-reserved"))
+                .filter(documentWithTag("review/post-mentorings-id-review-have-not-reserved",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessTokenWithAnotherMember)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/reviews")
                 .then().log().all()
                 .statusCode(404);
     }
 
-    @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 404 Not Found를 반환한다")
+    @DisplayName("이미 리뷰를 작성했던 멘토링에 중복으로 리뷰 작성을 요청하면 400 Bad Request를 반환한다")
     @Test
     void createReviewFail3() {
         // given
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -265,29 +325,27 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 rating,
                 content
         );
-        RestAssured
-                .given()
-                .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .body(requestBody)
-                .when()
-                .post("/reviews")
-                .then().log().all()
-                .statusCode(201);
+
+        reviewRepository.save(FixtureUtil.testReview(reservation, mentee));
 
         // when
         // then
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-mentorings-id-review-already-reviewed"))
+                .filter(documentWithTag("review/post-mentorings-id-review-already-reviewed",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
                 .when()
-                .post("/mentorings/" + mentoring.getId() + "/review")
+                .post("/reviews")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @DisplayName("멘토링이 완료되지 않은 예약에 리뷰 작성을 요청하면 400 Bad Request를 반환한다")
@@ -297,19 +355,19 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
                 "mentor",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-2222-3333"),
                 password
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 password
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
                 mentor,
                 5000,
@@ -338,7 +396,12 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/post-reviews-mentoring-not-completed"))
+                .filter(documentWithTag("review/post-reviews-mentoring-not-completed",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .body(requestBody)
@@ -354,21 +417,21 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor1 = memberRepository.save(new Member(
                 "mentor1Id",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
         Member mentor2 = memberRepository.save(new Member(
                 "mentor2Id",
-                "MALE",
+                Gender.MALE,
                 "박멘토",
                 new Phone("010-2222-3333"),
                 Password.from("password")
@@ -411,21 +474,45 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 reservation2,
                 mentee
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         // when
-        // then
-        RestAssured
+        List<MemberReviewGetResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/get-reviews-mine-success"))
+                .filter(documentWithTag("review/get-reviews-mine-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("내 리뷰 조회")
+                                .description("내가 작성한 리뷰 목록을 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("ReviewListResponse"))
+                                .responseFields(
+                                        fieldWithPath("[].id")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 ID"),
+                                        fieldWithPath("[].createdAt")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 작성 날짜 (yyyy-MM-dd)"),
+                                        fieldWithPath("[].rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 평점 (1~5)"),
+                                        fieldWithPath("[].content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 내용")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
                 .get("/reviews/mine")
                 .then().log().all()
                 .statusCode(200)
-                .body("", hasSize(2));
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(response).hasSize(2);
     }
 
     @DisplayName("특정 멘토링에 달린 리뷰 조회 성공 시 200 OK를 반환한다")
@@ -434,7 +521,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
@@ -448,14 +535,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member mentee1 = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentee2 = memberRepository.save(new Member(
                 "loginId2",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5670"),
                 Password.from("password")
@@ -484,21 +571,49 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
                 reservation2,
                 mentee2
         ));
-        String accessToken = jwtProvider.createAccessToken(mentee1.getId());
+        String accessToken = jwtProvider.createAccessToken(mentee1.getId(), mentee1.getRole());
 
         // when
         // then
-        RestAssured
+        List<ReviewGetResponse> response = RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/get-mentorings-id-reviews-success"))
+                .filter(documentWithTag("review/get-mentorings-id-reviews-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("멘토링 리뷰 조회")
+                                .description("특정 멘토링에 작성된 리뷰 목록을 조회합니다. 성공 시 200 OK를 반환합니다.")
+                                .responseSchema(Schema.schema("ReviewListResponse"))
+                                .responseFields(
+                                        fieldWithPath("[].id")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 ID"),
+                                        fieldWithPath("[].reviewerName")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 작성자 이름"),
+                                        fieldWithPath("[].createdAt")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 작성 날짜 (yyyy-MM-dd)"),
+                                        fieldWithPath("[].rating")
+                                                .type(JsonFieldType.NUMBER)
+                                                .description("리뷰 평점 (1~5)"),
+                                        fieldWithPath("[].content")
+                                                .type(JsonFieldType.STRING)
+                                                .description("리뷰 내용")
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
                 .when()
-                .get("/mentorings/" + mentoring.getId() + "/reviews")
+                .get("/mentorings/{mentoringId}/reviews", mentoring.getId())
                 .then().log().all()
                 .statusCode(200)
-                .body("", hasSize(2));
+                .extract()
+                .as(new TypeRef<>() {
+                });
+
+        // then
+        assertThat(response).hasSize(2);
     }
 
     @DisplayName("본인이 남긴 리뷰의 별점을 수정 완료하면 200 OK를 반환한다")
@@ -507,14 +622,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -549,14 +664,29 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given()
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/patch-reviews-id-success-rating",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("리뷰 수정")
+                                .description("리뷰의 별점 or 내용을 수정합니다. 성공 시 200 OK를 반환합니다.")
+                                .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("rating").type(JsonFieldType.NUMBER).description("평점 (1~5)")
+                                                .optional(),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("리뷰 내용")
+                                                .optional()
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
+
     }
 
     @DisplayName("본인이 남긴 리뷰의 내용을 수정 완료하면 200 OK를 반환한다")
@@ -565,14 +695,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -607,11 +737,24 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/patch-reviews-id-success-content",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("rating").type(JsonFieldType.NUMBER).description("평점 (1~5)")
+                                                .optional(),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("리뷰 내용")
+                                                .optional()
+                                )
+                                .build())))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -622,14 +765,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -667,12 +810,24 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/patch-reviews-id-success"))
+                .filter(documentWithTag("review/patch-reviews-id-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("리뷰 수정")
+                                .description("리뷰의 별점과 내용을 수정합니다. 성공 시 200 OK를 반환합니다.")
+                                .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .requestFields(
+                                        fieldWithPath("rating").type(JsonFieldType.NUMBER).description("평점 (1~5)")
+                                                .optional(),
+                                        fieldWithPath("content").type(JsonFieldType.STRING).description("리뷰 내용")
+                                                .optional()
+                                )
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(200);
     }
@@ -683,14 +838,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
@@ -716,7 +871,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member invalidMember = memberRepository.save(new Member(
                 "loginId2",
-                "MALE",
+                Gender.MALE,
                 "name2",
                 new Phone("010-1234-5679"),
                 Password.from("password")
@@ -731,12 +886,17 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/patch-reviews-id-not-mine"))
+                .filter(documentWithTag("review/patch-reviews-id-not-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ReviewModifyRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .body(requestBody)
                 .when()
-                .patch("/reviews/" + review.getId())
+                .patch("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(403);
     }
@@ -747,14 +907,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "남",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
@@ -784,11 +944,17 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/delete-reviews-id-success"))
+                .filter(documentWithTag("review/delete-reviews-id-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .summary("리뷰 삭제")
+                                .description(
+                                        "리뷰를 삭제합니다. 성공 시 204 No Content, 실패 시 403 Forbidden 또는 404 Not Found를 반환합니다.")
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
-                .delete("/reviews/" + review.getId())
+                .delete("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(204);
     }
@@ -799,7 +965,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
@@ -808,10 +974,18 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // when
         // then
         RestAssured
-                .given().log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("review/delete-reviews-id-fail-not-found",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ErrorResponse"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId(), mentee.getRole()))
                 .when()
-                .delete("/reviews/999")
+                .delete("/reviews/{reviewId}", 999)
                 .then().log().all()
                 .statusCode(404);
     }
@@ -822,14 +996,14 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member mentee = memberRepository.save(new Member(
                 "loginId",
-                "MALE",
+                Gender.MALE,
                 "name",
                 new Phone("010-1234-5678"),
                 Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
                 "mentorId",
-                "MALE",
+                Gender.MALE,
                 "김트레이너",
                 new Phone("010-1111-2222"),
                 Password.from("password")
@@ -855,7 +1029,7 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         ));
         Member invalidMember = memberRepository.save(new Member(
                 "loginId2",
-                "MALE",
+                Gender.MALE,
                 "name2",
                 new Phone("010-1234-5679"),
                 Password.from("password")
@@ -866,11 +1040,16 @@ class ReviewIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured
                 .given(spec)
                 .accept("application/json")
-                .filter(documentWithTag("review/delete-reviews-id-not-mine"))
+                .filter(documentWithTag("review/delete-reviews-id-not-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("리뷰")
+                                .requestSchema(Schema.schema("ErrorResponse"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
+                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId(), invalidMember.getRole()))
                 .when()
-                .delete("/reviews/" + review.getId())
+                .delete("/reviews/{reviewId}", review.getId())
                 .then().log().all()
                 .statusCode(403);
     }

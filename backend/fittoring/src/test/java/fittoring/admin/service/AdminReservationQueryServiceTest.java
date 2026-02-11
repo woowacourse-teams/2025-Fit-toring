@@ -5,8 +5,6 @@ import fittoring.admin.presentation.dto.AdminReservationResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.dto.AdminMentoringReservationDto;
 import fittoring.application.FixtureUtil;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.ForbiddenException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.application.reservation.repository.ReservationRepository;
@@ -42,20 +40,19 @@ class AdminReservationQueryServiceTest extends IntegrationTestSupport {
         @Test
         void findMentoringReservationsWithAdminAuthorization() {
             // given
-            Member admin = memberRepository.save(FixtureUtil.getTestAdmin());
-            Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-            Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
+            Member admin = memberRepository.save(FixtureUtil.testAdmin());
+            Member mentor = memberRepository.save(FixtureUtil.testMentor());
+            Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
 
-            Member mentee1 = memberRepository.save(FixtureUtil.getTestMentee(1));
-            Member mentee2 = memberRepository.save(FixtureUtil.getTestMentee(2));
+            Member mentee1 = memberRepository.save(FixtureUtil.testMentee(1));
+            Member mentee2 = memberRepository.save(FixtureUtil.testMentee(2));
 
             Reservation reservation1 = reservationRepository.save(
-                    FixtureUtil.getTestPendingReservation(mentoring, mentee1));
+                    FixtureUtil.testPendingReservation(mentoring, mentee1));
             Reservation reservation2 = reservationRepository.save(
-                    FixtureUtil.getTestPendingReservation(mentoring, mentee2));
+                    FixtureUtil.testPendingReservation(mentoring, mentee2));
 
             AdminMentoringReservationDto dto = new AdminMentoringReservationDto(
-                    admin.getId(),
                     mentoring.getId(),
                     1,
                     20
@@ -90,32 +87,6 @@ class AdminReservationQueryServiceTest extends IntegrationTestSupport {
                                     reservation1.getContent()
                             )
                     );
-        }
-
-        @DisplayName("관리자가 아닌 회원은 관리자용 예약 조회 기능을 사용할 수 없다")
-        @Test
-        void findMentoringReservationsWithAdminAuthorizationFail() {
-            // given
-            Member normalMember = memberRepository.save(FixtureUtil.getTestMentee());     // 비관리자
-            Member mentor = memberRepository.save(FixtureUtil.getTestMentor());
-            Mentoring mentoring = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor));
-            Member mentee1 = memberRepository.save(FixtureUtil.getTestMentee(1));
-            Member mentee2 = memberRepository.save(FixtureUtil.getTestMentee(2));
-
-            reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee1));
-            reservationRepository.save(FixtureUtil.getTestPendingReservation(mentoring, mentee2));
-
-            AdminMentoringReservationDto dto = new AdminMentoringReservationDto(
-                    normalMember.getId(),
-                    mentoring.getId(),
-                    1,
-                    20
-            );
-
-            // when & then
-            Assertions.assertThatThrownBy(() -> reservationService.findMentoringReservationsForAdmin(dto))
-                    .isInstanceOf(ForbiddenException.class)
-                    .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
     }
 }

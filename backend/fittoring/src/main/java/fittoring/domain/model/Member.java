@@ -37,8 +37,9 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String loginId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String gender;
+    private Gender gender;
 
     @Column(nullable = false)
     private String name;
@@ -62,13 +63,13 @@ public class Member {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public Member(String loginId, String gender, String name, Phone phone, Password password) {
+    public Member(String loginId, Gender gender, String name, Phone phone, Password password) {
         this(null, loginId, gender, name, phone, password, MemberRole.MENTEE, false, null);
     }
 
     public Member(
             String loginId,
-            String gender,
+            Gender gender,
             String name,
             Phone phone,
             Password password,
@@ -77,14 +78,30 @@ public class Member {
         this(null, loginId, gender, name, phone, password, role, false, null);
     }
 
-    public void matchPassword(String password) {
-        this.password.validateMatches(password);
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phone = new Phone(phoneNumber);
+    }
+
+    public void updatePassword(String password) {
+        this.password = Password.from(password);
     }
 
     public void registerAsMentor() {
         if (this.role != MemberRole.ADMIN) {
             this.role = MemberRole.MENTOR;
         }
+    }
+
+    public void matchPassword(String password) {
+        this.password.validateMatches(password);
     }
 
     public boolean isMentee() {
@@ -99,8 +116,8 @@ public class Member {
         return this.role != MemberRole.ADMIN;
     }
 
-    public String getPassword() {
-        return password.getPassword();
+    public String getPasswordValue() {
+        return password.getValue();
     }
 
     public String getPhoneNumber() {

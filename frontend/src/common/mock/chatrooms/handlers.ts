@@ -21,29 +21,28 @@ const mockPages: Record<string, MessageResponse> = {
   '1758712152|0': CHAT_MESSAGES5,
 };
 
-export const getChatRoom = http.get(
-  `*${API_ENDPOINTS.CHATROOMS}/:chatroomId/messages`,
-  ({ request }) => {
-    const url = new URL(request.url);
-    const cursorCode = url.searchParams.get('cursorCode');
+const BASE_URL = process.env.API_BASE_URL;
+const CHATROOM_URL = `${BASE_URL}${API_ENDPOINTS.CHATROOMS}/:chatroomId/messages`;
 
-    const data = mockPages[cursorCode ?? 'null'];
+export const getChatRoom = http.get(`${CHATROOM_URL}`, ({ request }) => {
+  const url = new URL(request.url);
+  const cursorCode = url.searchParams.get('cursorCode');
 
-    if (!data) {
-      return HttpResponse.json(
-        { chatMessages: [], nextCursorCode: null, hasNext: false },
-        { status: 200 },
-      );
-    }
+  const data = mockPages[cursorCode ?? 'null'];
 
-    return HttpResponse.json(data, { status: 200 });
-  },
-);
-const getChatRoomInfo = http.get(
-  `*${API_ENDPOINTS.CHATROOMS}/:chatroomId`,
-  () => {
-    return HttpResponse.json(CHAT_ROOM_INFO);
-  },
-);
+  if (!data) {
+    return HttpResponse.json(
+      { chatMessages: [], nextCursorCode: null, hasNext: false },
+      { status: 200 },
+    );
+  }
+
+  return HttpResponse.json(data, { status: 200 });
+});
+
+const CHATROOM_INFO_URL = `${BASE_URL}${API_ENDPOINTS.CHATROOMS}/:chatroomId`;
+const getChatRoomInfo = http.get(`${CHATROOM_INFO_URL}`, () => {
+  return HttpResponse.json(CHAT_ROOM_INFO);
+});
 
 export const chatRoomHandler = [getChatRoom, getChatRoomInfo];

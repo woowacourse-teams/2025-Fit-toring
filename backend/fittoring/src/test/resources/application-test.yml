@@ -54,9 +54,6 @@ kakao:
 
 aws:
   s3:
-    region: ap-northeast-2
-    bucket-name: test-bucket
-    project-prefix: fit-toring/
     env-prefix: local/
   sqs:
     listener:
@@ -69,3 +66,9 @@ image-session:
 
 domain:
   sub-domain: test-sub-domain
+
+client:
+  base-url: http://localhost:3000
+
+cookie:
+  same-site: None

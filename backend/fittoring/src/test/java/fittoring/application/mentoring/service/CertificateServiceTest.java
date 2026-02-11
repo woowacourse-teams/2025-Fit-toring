@@ -41,7 +41,7 @@ class CertificateServiceTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setUp() {
-        admin = FixtureUtil.getTestAdmin();
+        admin = FixtureUtil.testAdmin();
         memberRepository.save(admin);
         given(presignedUrlService.isObjectExistsFromKey(anyString()))
                 .willReturn(true);
@@ -53,7 +53,7 @@ class CertificateServiceTest extends IntegrationTestSupport {
     @Test
     void deleteCertificateFail1() {
         // given
-        Member mentee = memberRepository.save(FixtureUtil.getTestMentee());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
         CertificateDeleteDto dto = new CertificateDeleteDto(mentee.getId(), 999L);
 
         // when
@@ -67,14 +67,14 @@ class CertificateServiceTest extends IntegrationTestSupport {
     @Test
     void deleteReviewFail2() {
         // given
-        Member mentor1 = FixtureUtil.getTestMentor(1);
-        Member mentor2 = FixtureUtil.getTestMentor(2);
+        Member mentor1 = FixtureUtil.testMentor(1);
+        Member mentor2 = FixtureUtil.testMentor(2);
         memberRepository.saveAll(List.of(mentor1, mentor2));
 
-        Mentoring mentoringForMentor2 = mentoringRepository.save(FixtureUtil.getTestMentoring(mentor2));
+        Mentoring mentoringForMentor2 = mentoringRepository.save(FixtureUtil.testMentoring(mentor2));
 
         Certificate certificateForMentor2 = certificateRepository.save(
-                FixtureUtil.getTestCertificate(mentoringForMentor2));
+                FixtureUtil.testCertificate(mentoringForMentor2));
 
         CertificateDeleteDto dto = new CertificateDeleteDto(mentor1.getId(), certificateForMentor2.getId());
 

@@ -5,6 +5,8 @@ import fittoring.application.exception.InvalidStatusException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,6 +45,7 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
 
@@ -70,18 +73,33 @@ public class Reservation {
         this.status = updateStatus;
     }
 
-    public void changeStatus(Status updateStatus) {
-        validateReservation(updateStatus);
-        this.status = updateStatus;
-    }
-
-    private void validateReservation(Status updateStatus) {
-        if (this.status.isReject() || this.status.isComplete()) {
+    public void approve() {
+        if (isNotPending()) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
-        if (this.status.equals(updateStatus)) {
-            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_EQUAL.getMessage());
+        this.status = Status.APPROVED;
+    }
+
+    public void reject() {
+        if (isNotPending()) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
+        this.status = Status.REJECTED;
+    }
+
+    public void complete() {
+        if (isNotApprove()) {
+            throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
+        }
+        this.status = Status.COMPLETE;
+    }
+
+    private boolean isNotPending() {
+        return !this.status.isPending();
+    }
+
+    private boolean isNotApprove() {
+        return !this.status.isApprove();
     }
 
     public boolean isCreatedByMember(Long memberId) {
@@ -115,7 +133,7 @@ public class Reservation {
     public Member getMentor() {
         return mentoring.getMentor();
     }
-    
+
     public String getMenteePhone() {
         return mentee.getPhoneNumber();
     }

@@ -6,8 +6,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
+import com.epages.restdocs.apispec.ResourceSnippet;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import fittoring.application.image.service.PresignedUrlService;
+import fittoring.infrastructure.OauthClientService;
 import fittoring.infrastructure.SmsRestClientService;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
@@ -42,6 +44,9 @@ public abstract class AbstractApiDocumentationTest {
     @MockitoBean
     protected SmsRestClientService smsRestClientService;
 
+    @MockitoBean
+    protected OauthClientService oauthClientService;
+
     protected RequestSpecification spec;
 
     protected RestDocumentationFilter documentWithTag(String id) {
@@ -49,6 +54,13 @@ public abstract class AbstractApiDocumentationTest {
         return RestAssuredRestDocumentationWrapper.document(
                 id,
                 resource(builder().tag(tag).build())
+        );
+    }
+
+    protected RestDocumentationFilter documentWithTag(String id, ResourceSnippet resourceSnippet) {
+        return RestAssuredRestDocumentationWrapper.document(
+                id,
+                resourceSnippet
         );
     }
 

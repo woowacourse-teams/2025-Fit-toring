@@ -1,9 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { postReissue } from '../../apis/postReissue';
-import { captureSentryError } from '../../utils/captureSentryError';
-
 interface AuthContextValue {
   authenticated: boolean;
   login: () => void;
@@ -16,23 +13,9 @@ function AuthProvider({ children }: PropsWithChildren) {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await postReissue();
-        setAuthenticated(true);
-      } catch (error) {
-        console.error(error);
-        setAuthenticated(false);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'auth',
-          step: 'auth-check',
-        });
-      }
-    };
+    const memberId = localStorage.getItem('memberId');
 
-    checkAuth();
+    setAuthenticated(!!memberId);
   }, []);
 
   const login = () => {

@@ -16,7 +16,8 @@ public class RequestWrappingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-        ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper((HttpServletRequest) servletRequest);
+        ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(
+                (HttpServletRequest) servletRequest);
         filterChain.doFilter(wrappedRequest, servletResponse);
     }
 }

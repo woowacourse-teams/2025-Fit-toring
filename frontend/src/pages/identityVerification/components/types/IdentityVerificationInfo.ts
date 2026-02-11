@@ -1,7 +1,7 @@
-export type Gender = '남' | '여';
+import type { GenderClient } from '../../../../common/types/gender';
 
 export interface IdentityVerificationInfo {
   name: string;
-  gender: Gender;
+  gender: GenderClient;
   phone: string;
 }

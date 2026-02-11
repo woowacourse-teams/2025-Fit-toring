@@ -1,9 +1,9 @@
-export type Gender = '남' | '여';
+import type { GenderClient } from '../../../common/types/gender';
 
 export interface SignupInfo {
   loginId: string;
   name: string;
-  gender: Gender;
-  phone: string;
+  gender: GenderClient;
+  phoneNumber: string;
   password: string;
 }

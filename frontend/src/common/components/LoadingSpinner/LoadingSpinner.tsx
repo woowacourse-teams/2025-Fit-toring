@@ -1,10 +1,21 @@
 import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
+type Size = 'small' | 'medium' | 'large';
 
-const LoadingSpinner = () => {
+interface LoadingSpinnerProps {
+  size?: Size;
+}
+
+const SIZE_MAP: Record<Size, string> = {
+  small: '1.2rem',
+  medium: '2.4rem',
+  large: '3.6rem',
+} as const;
+
+const LoadingSpinner = ({ size = 'medium' }: LoadingSpinnerProps) => {
   return (
     <SpinnerContainer>
-      <SpinnerItem />
+      <SpinnerItem size={SIZE_MAP[size]} />
     </SpinnerContainer>
   );
 };
@@ -29,9 +40,9 @@ const spin = keyframes`
     }
   `;
 
-const SpinnerItem = styled.div`
-  width: 3.6rem;
-  height: 3.6rem;
+const SpinnerItem = styled.div<{ size: string }>`
+  width: ${({ size }) => size};
+  height: ${({ size }) => size};
   border: 4px solid rgb(0 0 0 / 10%);
   border-radius: 50%;
 

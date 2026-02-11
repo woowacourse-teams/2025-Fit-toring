@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
@@ -11,6 +12,7 @@ import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider
 import Button from '../../../../common/components/Button/Button';
 import FormField from '../../../../common/components/FormField/FormField';
 import Input from '../../../../common/components/Input/Input';
+import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
 import { PAGE_URL } from '../../../../common/constants/url';
 import usePasswordInput from '../../../../common/hooks/usePasswordInput';
 import useUserIdInput from '../../../../common/hooks/useUserIdInput';
@@ -29,21 +31,13 @@ function LoginForm() {
 
   const { login } = useAuth();
 
-  const REST_API_KEY = process.env.KAKAO_REST_API_KEY;
-  const KAKAO_REDIRECT_URL = process.env.KAKAO_REDIRECT_URL;
-
-  const KAKAO_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code`;
-
-  const fetchLogin = async () => {
-    try {
-      const response = await postLogin(userId, password);
+  const { mutate: loginMutate } = useMutation({
+    mutationFn: postLogin,
+    onSuccess: async (response) => {
       const data = await response.json();
 
       if (data?.memberId) {
-        localStorage.setItem(
-          'memberId',
-          JSON.stringify({ memberId: data.memberId }),
-        );
+        localStorage.setItem('memberId', data.memberId);
       }
 
       if (response.status === 200) {
@@ -51,7 +45,8 @@ function LoginForm() {
         navigate(PAGE_URL.HOME);
         login();
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error('로그인 실패', error);
       if (error instanceof Error) {
         setErrorMessage(error.message);
@@ -63,17 +58,17 @@ function LoginForm() {
         feature: 'login',
         step: 'login',
       });
-    }
-  };
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    fetchLogin();
+    loginMutate({ loginId: userId, password });
   };
 
   const handleSocialLoginButtonClick = () => {
-    window.location.href = KAKAO_URL;
+    window.location.href = `${process.env.API_BASE_URL}${API_ENDPOINTS.KAKAO_LOGIN}`;
   };
 
   const loginFormValidated = userId !== '' && password !== '';

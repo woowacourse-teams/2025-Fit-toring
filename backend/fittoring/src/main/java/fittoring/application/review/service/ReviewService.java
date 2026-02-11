@@ -1,5 +1,7 @@
 package fittoring.application.review.service;
 
+import fittoring.admin.presentation.dto.AdminReviewInfoResponse;
+import fittoring.admin.presentation.dto.AdminReviewResponse;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MemberNotFoundException;
@@ -8,25 +10,23 @@ import fittoring.application.exception.ReservationNotCompletedException;
 import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.exception.ReviewAlreadyExistsException;
 import fittoring.application.exception.ReviewNotFoundException;
+import fittoring.application.member.repository.MemberRepository;
+import fittoring.application.mentoring.repository.MentoringRepository;
+import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
+import fittoring.application.mentoring.service.dto.RatingStatsDto;
+import fittoring.application.reservation.repository.ReservationRepository;
+import fittoring.application.review.presentation.dto.response.MemberReviewGetResponse;
+import fittoring.application.review.presentation.dto.response.ReviewCreateResponse;
+import fittoring.application.review.presentation.dto.response.ReviewGetResponse;
+import fittoring.application.review.repository.ReviewRepository;
+import fittoring.application.review.service.dto.ReviewCreateDto;
+import fittoring.application.review.service.dto.ReviewDeleteDto;
+import fittoring.application.review.service.dto.ReviewModifyDto;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.MentoringStatistics;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
-import fittoring.application.mentoring.repository.MentoringStatisticsRepository;
-import fittoring.application.reservation.repository.ReservationRepository;
-import fittoring.application.review.repository.ReviewRepository;
-import fittoring.application.mentoring.service.dto.RatingStatsDto;
-import fittoring.application.review.service.dto.ReviewCreateDto;
-import fittoring.application.review.service.dto.ReviewDeleteDto;
-import fittoring.application.review.service.dto.ReviewModifyDto;
-import fittoring.admin.presentation.dto.AdminReviewInfoResponse;
-import fittoring.admin.presentation.dto.AdminReviewResponse;
-import fittoring.application.review.presentation.dto.response.MemberReviewGetResponse;
-import fittoring.application.review.presentation.dto.response.ReviewCreateResponse;
-import fittoring.application.review.presentation.dto.response.ReviewGetResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -115,25 +115,16 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public AdminReviewInfoResponse findAllByMentoringForAdmin(Long memberId, Long mentoringId) {
-        validateAdmin(memberId);
+    public AdminReviewInfoResponse findAllByMentoringForAdmin(Long mentoringId) {
         validateMentoringExists(mentoringId);
         List<AdminReviewResponse> reviewResponses = findReviewResponsesForAdmin(mentoringId);
         MentoringStatistics mentoringStatistics = mentoringStatisticsRepository.findById(mentoringId).get();
         RatingStatsDto reviewInfo = new RatingStatsDto(
-            mentoringId,
-            mentoringStatistics.getAverageRating(),
-            mentoringStatistics.getReviewCount()
+                mentoringId,
+                mentoringStatistics.getAverageRating(),
+                mentoringStatistics.getReviewCount()
         );
         return AdminReviewInfoResponse.of(reviewResponses, reviewInfo);
-    }
-
-    private void validateAdmin(Long memberId) {
-        Member admin = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        if (admin.isNotAdmin()) {
-            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-        }
     }
 
     private void validateMentoringExists(Long mentoringId) {
@@ -176,10 +167,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteForAdmin(Long memberId, Long reviewId) {
-        validateAdmin(memberId);
+    public void deleteForAdmin(Long reviewId) {
         Review review = reviewRepository.findById((reviewId))
-            .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
         Mentoring mentoring = review.getReservation().getMentoring();
         mentoringStatisticsRepository.updateReviewStatisticsMinus(mentoring.getId(), review.getRating());
         reviewRepository.delete(review);

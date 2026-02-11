@@ -25,14 +25,12 @@ import fittoring.application.mentoring.service.dto.RatingStatsDto;
 import fittoring.application.mentoring.service.dto.RegisterMentoringDto;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.config.auth.LoginInfo;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.MentoringStatistics;
 import fittoring.domain.model.Reservation;
@@ -116,14 +114,14 @@ public class MentoringService {
         if (profileImageUrl == null || !presignedUrlService.isObjectExistsFromUrl(profileImageUrl)) {
             return;
         }
-        Optional<Image> nowProfileImage = imageService.findByImageTypeAndRelationId(
+        Optional<Image> nowProfileImage = imageService.findDefault(
                 ImageType.MENTORING_PROFILE,
                 mentoring.getId()
         );
         if (nowProfileImage.isPresent() && profileImageUrl.equals(nowProfileImage.get().getUrl())) {
             return;
         }
-        imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
+        imageService.delete(ImageType.MENTORING_PROFILE, mentoring.getId());
         imageService.save(ImageType.MENTORING_PROFILE, mentoring.getId(), profileImageUrl);
     }
 
@@ -164,7 +162,7 @@ public class MentoringService {
     }
 
     private Image getMentoringProfileImageOrNull(Mentoring mentoring) {
-        return imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
+        return imageService.findDefault(ImageType.MENTORING_PROFILE, mentoring.getId())
                 .orElse(null);
     }
 
@@ -189,7 +187,7 @@ public class MentoringService {
                 .map(Certificate::getId)
                 .toList();
 
-        List<Image> certificateImages = imageService.findByRelationIdsAndImageType(
+        List<Image> certificateImages = imageService.findAll(
                 certificateIds,
                 ImageType.CERTIFICATE
         );
@@ -231,7 +229,7 @@ public class MentoringService {
     private void fetchProfileImage(ModifyMentoringDto dto, Mentoring mentoring) {
         // 수정 폼에 멘토링 이미지가 null 혹은 빈 문자열로 들어옴 -> 기존 이미지 삭제
         if (dto.profileImageUrl() == null || dto.profileImageUrl().isBlank()) {
-            imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId());
+            imageService.delete(ImageType.MENTORING_PROFILE, mentoring.getId());
             return;
         }
         // 수정 폼에 이미지는 들어왔으나 해당 이미지가 S3에 없는 이미지임 -> 아무 처리 하지 않고 넘어감
@@ -258,8 +256,7 @@ public class MentoringService {
     }
 
     @Transactional
-    public void deleteMentoringByAdmin(LoginInfo loginInfo, Long mentoringId) {
-        checkAdminAuthority(loginInfo.memberId());
+    public void deleteMentoringByAdmin(Long mentoringId) {
         Mentoring mentoring = getMentoringById(mentoringId);
         List<Reservation> allReservationByMentoring = reservationRepository.findAllByMentoring(mentoring);
         for (Reservation reservation : allReservationByMentoring) {
@@ -270,13 +267,6 @@ public class MentoringService {
         certificateRepository.deleteAllByMentoring(mentoring);
         mentoringStatisticsRepository.deleteById(mentoring.getId());
         mentoringRepository.delete(mentoring);
-    }
-
-    private void checkAdminAuthority(Long memberId) {
-        Member member = getMemberById(memberId);
-        if (MemberRole.isNotAdmin(member.getRole())) {
-            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
-        }
     }
 
     @Transactional(readOnly = true)
@@ -336,7 +326,7 @@ public class MentoringService {
     }
 
     private Image getProfileImageOrNull(Long mentoringId) {
-        return imageService.findThumbnailByImageTypeAndRelationId(
+        return imageService.findThumbnail(
                 ImageType.MENTORING_PROFILE,
                 mentoringId
         ).orElse(null);

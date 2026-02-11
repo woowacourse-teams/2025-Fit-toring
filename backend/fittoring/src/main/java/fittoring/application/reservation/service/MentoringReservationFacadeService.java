@@ -6,7 +6,6 @@ import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.domain.model.Reservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -21,13 +20,21 @@ public class MentoringReservationFacadeService {
         return ReservationCreateResponse.from(reservation);
     }
 
-    @Transactional
-    public void updateReservationStatusAndSendSms(Long reservationId, String updatedStatus) {
-        ReservationInfo reservationInfo = reservationService.updateStatus(reservationId, updatedStatus);
-        reservationNotificationService.sendReservationStatusUpdateSmsMessage(
-                reservationInfo.reservation(),
-                reservationInfo.reservation().getStatus(),
+    public void approveAndSendSms(Long mentorId, Long reservationId) {
+        ReservationInfo reservationInfo = reservationService.approve(mentorId, reservationId);
+        reservationNotificationService.sendReservationApproveSmsMessage(
+                reservationInfo.mentorName(),
+                reservationInfo.content(),
+                reservationInfo.menteePhone(),
                 reservationInfo.chatRoomUrl()
+        );
+    }
+
+    public void rejectAndSendSms(Long mentorId, Long reservationId) {
+        ReservationInfo reservationInfo = reservationService.reject(mentorId, reservationId);
+        reservationNotificationService.sendReservationRejectSmsMessage(
+                reservationInfo.mentorName(),
+                reservationInfo.menteePhone()
         );
     }
 }

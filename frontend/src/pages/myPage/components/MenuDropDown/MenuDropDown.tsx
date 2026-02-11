@@ -1,13 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import styled from '@emotion/styled';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { postLogout } from '../../../../common/apis/postLogout';
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { AUTH_CHECK_QUERY_KEY } from '../../../../common/hooks/useAuthCheck';
+import useOutsideClickRef from '../../../../common/hooks/useOutsideClickRef';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 
 type MenuItemName =
@@ -23,23 +25,12 @@ interface MenuItem {
 
 function MenuDropDown() {
   const [opened, setOpened] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleOutsideClick = (e: MouseEvent) => {
-    if (
-      containerRef.current &&
-      !containerRef.current.contains(e.target as Node)
-    ) {
-      setOpened(false);
-    }
+  const closeDropDown = () => {
+    setOpened(false);
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, []);
+  const { ref: containerRef } = useOutsideClickRef(closeDropDown);
 
   const handleMenuButtonClick = () => {
     setOpened((prev) => !prev);
@@ -65,15 +56,18 @@ function MenuDropDown() {
 
   const { logout } = useAuth();
 
-  const handleSelectMenu = async (item: MenuItem) => {
+  const handleSelectMenu = (item: MenuItem) => {
     setSelectedMenu(item.name);
-    setOpened((prev) => !prev);
-    await item.action();
+    closeDropDown();
+    item.action();
   };
+
+  const queryClient = useQueryClient();
 
   const { mutate: handleLogout } = useMutation({
     mutationFn: postLogout,
     onSuccess: () => {
+      queryClient.removeQueries({ queryKey: AUTH_CHECK_QUERY_KEY });
       logout();
       localStorage.removeItem('memberId');
       navigate(PAGE_URL.HOME);
@@ -99,7 +93,7 @@ function MenuDropDown() {
         {MENU_ITEMS.map((item) => (
           <S_MenuItem
             key={item.name}
-            onClick={async () => await handleSelectMenu(item)}
+            onClick={() => handleSelectMenu(item)}
             selected={selectedMenu === item.name}
           >
             {item.name}

@@ -8,6 +8,7 @@ import fittoring.application.mentoring.repository.CertificateRepository;
 import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.domain.model.Certificate;
 import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
@@ -51,21 +52,21 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
         super.setUp(restDocumentation);
         admin = memberRepository.save(new Member(
                 "adminId",
-                "남",
+                Gender.MALE,
                 "관리자",
                 new Phone("010-0000-0000"),
                 Password.from("pw"),
                 MemberRole.ADMIN
         ));
-        adminAccessToken = jwtProvider.createAccessToken(admin.getId());
+        adminAccessToken = jwtProvider.createAccessToken(admin.getId(), admin.getRole());
         user = memberRepository.save(new Member(
                 "userId",
-                "남",
+                Gender.MALE,
                 "멘티",
                 new Phone("010-1111-1111"),
                 Password.from("pw")
         ));
-        userAccessToken = jwtProvider.createAccessToken(user.getId());
+        userAccessToken = jwtProvider.createAccessToken(user.getId(), user.getRole());
     }
 
     @DisplayName("관리자 자격증명 목록 조회")
@@ -145,7 +146,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
-                    .get("/admin/certificates/" + certificate.getId())
+                    .get("/admin/certificates/{certificateId}", certificate.getId())
                     .then().log().all()
                     .statusCode(200);
         }
@@ -182,7 +183,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
-                    .get("/admin/certificates/" + certificate.getId())
+                    .get("/admin/certificates/{certificateId}", certificate.getId())
                     .then().log().all()
                     .statusCode(403);
         }
@@ -224,7 +225,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
-                    .post("/admin/certificates/" + certificate.getId() + "/approve")
+                    .post("/admin/certificates/{certificateId}/approve", certificate.getId())
                     .then().log().all()
                     .statusCode(204);
         }
@@ -261,7 +262,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
-                    .post("/admin/certificates/" + certificate.getId() + "/approve")
+                    .post("/admin/certificates/{certificateId}/approve", certificate.getId())
                     .then().log().all()
                     .statusCode(403);
         }
@@ -303,7 +304,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", adminAccessToken)
                     .when()
-                    .post("/admin/certificates/" + certificate.getId() + "/reject")
+                    .post("/admin/certificates/{certificateId}/reject", certificate.getId())
                     .then().log().all()
                     .statusCode(204);
         }
@@ -340,7 +341,7 @@ class AdminCertificateIntegrationTest extends AbstractApiDocumentationTest {
                     .log().all().contentType(ContentType.JSON)
                     .cookie("accessToken", userAccessToken)
                     .when()
-                    .post("/admin/certificates/" + certificate.getId() + "/reject")
+                    .post("/admin/certificates/{certificateId}/reject", certificate.getId())
                     .then().log().all()
                     .statusCode(403);
         }

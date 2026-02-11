@@ -13,7 +13,7 @@ import lombok.Getter;
 public class Phone {
 
     @Column(name = "phoneNumber", nullable = false, unique = true)
-    final private String number;
+    private final String number;
 
     protected Phone() {
         this.number = null;

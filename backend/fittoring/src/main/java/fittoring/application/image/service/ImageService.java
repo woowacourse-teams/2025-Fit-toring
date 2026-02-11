@@ -37,11 +37,11 @@ public class ImageService {
         return imageRepository.saveAll(images);
     }
 
-    public Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId) {
+    public Optional<Image> findDefault(ImageType imageType, Long relationId) {
         return imageRepository.findByImageTypeAndRelationIdAndImageVariant(imageType, relationId, ImageVariant.DEFAULT);
     }
 
-    public Optional<Image> findThumbnailByImageTypeAndRelationId(ImageType imageType, Long relationId) {
+    public Optional<Image> findThumbnail(ImageType imageType, Long relationId) {
         List<Image> thumbnailImages = imageRepository.findThumbnailByImageTypeAndRelationId(
                 relationId,
                 imageType,
@@ -60,7 +60,7 @@ public class ImageService {
                 );
     }
 
-    public Map<Long, String> findMentoringThumbnailMapByImageTypeAndRelationIds(
+    public Map<Long, String> getUrlMap(
             ImageType imageType, Collection<Long> relationIds
     ) {
         List<Image> images = imageRepository.findByImageTypeAndRelationIdIn(
@@ -82,11 +82,11 @@ public class ImageService {
                 ));
     }
 
-    public List<Image> findByRelationIdsAndImageType(List<Long> certificateIds, ImageType imageType) {
-        return imageRepository.findByRelationIdsAndImageType(certificateIds, imageType);
+    public List<Image> findAll(List<Long> relationIds, ImageType imageType) {
+        return imageRepository.findByRelationIdsAndImageType(relationIds, imageType);
     }
 
-    public void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId) {
+    public void delete(ImageType imageType, Long relationId) {
         imageRepository.deleteByImageTypeAndRelationId(imageType, relationId);
     }
 }

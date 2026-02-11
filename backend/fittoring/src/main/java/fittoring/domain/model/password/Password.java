@@ -4,6 +4,7 @@ import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.PasswordEncryptionException;
 import fittoring.infrastructure.HexEncoder;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,10 +19,11 @@ import lombok.Getter;
 @Embeddable
 public class Password {
 
-    private final String password;
+    @Column(name = "password")
+    private final String value;
 
     protected Password() {
-        this.password = null;
+        this.value = null;
     }
 
     public static Password from(String password) {
@@ -47,6 +49,6 @@ public class Password {
     }
 
     private boolean isNotMatches(String password) {
-        return !encrypt(password).equals(this.password);
+        return !encrypt(password).equals(this.value);
     }
 }

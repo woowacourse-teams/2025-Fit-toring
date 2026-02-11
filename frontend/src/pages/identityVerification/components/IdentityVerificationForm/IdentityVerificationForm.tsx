@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
@@ -18,10 +19,8 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 import { getPhoneNumberErrorMessage } from '../../../../common/utils/phoneNumberValidator';
 import { postIdentityVerification } from '../../apis/postIdentityVerification';
 
-import type {
-  Gender,
-  IdentityVerificationInfo,
-} from '../types/IdentityVerificationInfo';
+import type { GenderClient } from '../../../../common/types/gender';
+import type { IdentityVerificationInfo } from '../types/IdentityVerificationInfo';
 
 export type VerificationStep = 'idle' | 'requested' | 'verified';
 
@@ -36,7 +35,7 @@ function IdentityVerificationForm() {
     validated: nameValidated,
   } = useNameInput();
 
-  const [gender, setGender] = useState<Gender>('남');
+  const [gender, setGender] = useState<GenderClient>('남');
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -139,6 +138,35 @@ function IdentityVerificationForm() {
     phoneNumberErrorMessage === '' &&
     verificationCodeValidated;
 
+  const { mutate: identityVerificationMutate } = useMutation({
+    mutationFn: postIdentityVerification,
+    onSuccess: async (response) => {
+      const data = await response.json();
+
+      if (response.status === 201) {
+        alert('본인 인증이 완료되었습니다.');
+        if (data?.memberId) {
+          localStorage.setItem('memberId', data.memberId);
+        }
+        login();
+        navigate(PAGE_URL.HOME);
+      }
+    },
+    onError: (error, variables) => {
+      console.error('본인 인증 실패', error);
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'identityVerification',
+        step: 'identityVerification',
+        extras: {
+          ...variables,
+        },
+      });
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -168,31 +196,7 @@ function IdentityVerificationForm() {
       phone: phoneNumber,
     };
 
-    try {
-      const response = await postIdentityVerification(userInfo);
-      const data = await response.json();
-
-      if (response.status === 201) {
-        alert('본인 인증이 완료되었습니다.');
-        if (data?.memberId) {
-          localStorage.setItem(
-            'memberId',
-            JSON.stringify({ memberId: data.memberId }),
-          );
-        }
-        login();
-        navigate(PAGE_URL.HOME);
-      }
-    } catch (error) {
-      console.error('본인 인증 실패', error);
-
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'identityVerification',
-        step: 'identityVerification',
-      });
-    }
+    identityVerificationMutate(userInfo);
   };
 
   return (

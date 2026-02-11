@@ -7,6 +7,7 @@ import ApiError from '../../../../common/apis/ApiError';
 import { getUserInfo } from '../../../../common/apis/getUserInfo';
 import FormField from '../../../../common/components/FormField/FormField';
 import { API_ENDPOINTS } from '../../../../common/constants/apiEndpoints';
+import useAsyncLock from '../../../../common/hooks/useAsyncLock';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { validateTextarea } from '../../../../common/utils/validateDetail';
 import { SMS_ERROR_MESSAGE } from '../../constants/message';
@@ -29,29 +30,18 @@ function BookingForm({
     phoneNumber: '',
   });
 
-  const [errored, setErrored] = useState({
-    textarea: false,
-  });
-
   const detailErrorMessage = validateTextarea(counselContent);
 
   const handleCounselContentChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setCounselContent(e.target.value);
-    if (!errored.textarea && e.target.value.length > 5000) {
-      setErrored((prev) => ({
-        ...prev,
-        textarea: true,
-      }));
+    const { value } = e.target;
+
+    if (value.length > 5000) {
+      return;
     }
 
-    if (errored.textarea && e.target.value.length <= 5000) {
-      setErrored((prev) => ({
-        ...prev,
-        textarea: false,
-      }));
-    }
+    setCounselContent(value);
   };
 
   const handleBooking = async () => {
@@ -88,6 +78,9 @@ function BookingForm({
     }
   };
 
+  const { lockedCallback: handleLockedBooking, isLoading } = useAsyncLock({
+    callback: handleBooking,
+  });
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -95,7 +88,7 @@ function BookingForm({
       return;
     }
 
-    handleBooking();
+    handleLockedBooking();
   };
 
   useEffect(() => {
@@ -122,22 +115,25 @@ function BookingForm({
           label="상담 내용(선택사항)"
           errorMessage={detailErrorMessage}
         >
-          <S_Textarea
-            id="details"
-            placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
+          <S_TextareaWrapper>
+            <S_Textarea
+              id="details"
+              placeholder="구체적으로 궁금한 내용이나 현재 상황을 적어주시면 
 더 정확한 조언을 받을 수 있습니다."
-            onChange={handleCounselContentChange}
-            errored={errored.textarea}
-            aria-describedby="details-limit"
-            value={counselContent}
-          />
+              onChange={handleCounselContentChange}
+              value={counselContent}
+            />
+            <S_TextAreaCounter>
+              {`(${counselContent.length}/5000)`}
+            </S_TextAreaCounter>
+          </S_TextareaWrapper>
           <S_ScreenReaderOnly id="details-limit" hidden>
             최대 5000자까지 입력할 수 있습니다.
           </S_ScreenReaderOnly>
         </FormField>
       </S_UserInfoWrapper>
 
-      <BookingSummarySection price={mentoringPrice} />
+      <BookingSummarySection price={mentoringPrice} isLoading={isLoading} />
     </S_Container>
   );
 }
@@ -184,23 +180,44 @@ const S_UserInfoText = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
-const S_Textarea = styled.textarea<{ errored: boolean }>`
-  width: 100%;
-  height: 5.8rem;
-  padding: 0.7rem 1.1rem;
-  border: ${({ theme, errored }) =>
-      errored ? theme.FONT.ERROR : theme.OUTLINE.DARK}
-    1px solid;
-  border-radius: 0.7rem;
+const S_TextareaWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
-  resize: none;
+  width: 100%;
+  height: 8rem;
+  padding-bottom: 0.7rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
+  border-radius: 0.7rem;
 
   :focus {
     outline: none;
   }
 
   color: ${({ theme }) => theme.FONT.B01};
+`;
+
+const S_Textarea = styled.textarea`
+  width: 100%;
+  height: 100%;
+  padding: 0.7rem 1.1rem;
+  border: none;
+  border-radius: 0.7rem;
+  resize: none;
+
+  :focus {
+    outline: none;
+  }
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+`;
+
+const S_TextAreaCounter = styled.p`
+  margin-right: 1.1rem;
+
+  color: ${({ theme }) => theme.FONT.G01};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  text-align: right;
 `;
 
 const S_ScreenReaderOnly = styled.span`

@@ -54,6 +54,11 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Create .env file
         run: |
           echo "ACTIVE_PROFILE=test" >> .env
@@ -84,6 +89,8 @@ jobs:
           echo "TOMCAT_MAX_CONNECTIONS=${{ secrets.TOMCAT_MAX_CONNECTIONS }}" >> .env
           echo "TOMCAT_CONNECTION_TIMEOUT=${{ secrets.TOMCAT_CONNECTION_TIMEOUT }}" >> .env
           echo "TOMCAT_KEEP_ALIVE_TIMEOUT=${{ secrets.TOMCAT_KEEP_ALIVE_TIMEOUT }}" >> .env
+          echo "AWS_SQS_IAM_ACCESS_KEY=${{ secrets.AWS_SQS_IAM_ACCESS_KEY }}" >> .env
+          echo "AWS_SQS_IAM_SECRET_KEY=${{ secrets.AWS_SQS_IAM_SECRET_KEY }}" >> .env
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -101,8 +108,17 @@ jobs:
       - name: clean
         run: ./gradlew clean
 
+      - name: Build Admin Page (back-office)
+        run: |
+          cd ../back-office
+          npm install
+          npm run build
+
       - name: generate API docs
         run: ./gradlew generateApiDocs
+
+      - name: Build jar
+        run: ./gradlew bootJar
 
       - name: Stop Docker containers (test DB)
         if: always()
