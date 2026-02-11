@@ -36,6 +36,7 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
             accessor.setHeader(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY, loginInfo);
 
             accessor.setHeader(START_TIME_HEADER, System.nanoTime());
+            metricsListener.incrementInboundMessage();
 
             return MessageBuilder.createMessage(
                     message.getPayload(),
