@@ -270,7 +270,7 @@ function SignupForm() {
       name,
       loginId: userId,
       gender,
-      phone: phoneNumber,
+      phoneNumber,
       password,
     };
 

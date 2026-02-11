@@ -4,6 +4,6 @@ export interface SignupInfo {
   loginId: string;
   name: string;
   gender: GenderClient;
-  phone: string;
+  phoneNumber: string;
   password: string;
 }
