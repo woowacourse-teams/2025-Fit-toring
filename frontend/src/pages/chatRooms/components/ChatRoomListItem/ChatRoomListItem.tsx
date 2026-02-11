@@ -3,10 +3,10 @@ import styled from '@emotion/styled';
 import ProfileImg from '../../../../common/assets/images/profileImg.svg';
 import { formatToKoreanTime } from '../../../../common/utils/formatToKoreanTime';
 
-import type { ChatRooms } from '../../types/chatRooms';
+import type { ChatRoom } from '../../types/chatRoom';
 
 interface ChatRoomListItemProps {
-  chat: ChatRooms;
+  chat: ChatRoom;
   onClick: (chatId: number) => void;
 }
 
