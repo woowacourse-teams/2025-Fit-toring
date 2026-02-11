@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class StompAuthChannelInterceptor implements ChannelInterceptor {
+public class InboundChannelInterceptor implements ChannelInterceptor {
 
     private static final String START_TIME_HEADER = "metrics_start_time";
 

@@ -17,7 +17,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static final String DEV = "https://dev.fittoring.com";
     private static final String LOCAL = "http://localhost:3000";
 
-    private final StompAuthChannelInterceptor stompAuthChannelInterceptor;
+    private final InboundChannelInterceptor inboundChannelInterceptor;
+    private final OutboundChannelInterceptor outboundChannelInterceptor;
     private final WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor;
 
     @Override
@@ -40,6 +41,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompAuthChannelInterceptor);
+        registration.interceptors(inboundChannelInterceptor);
     }
 }
