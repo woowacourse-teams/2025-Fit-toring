@@ -1,13 +1,17 @@
 import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../common/apis/ApiError';
+import { PAGE_URL } from '../../common/constants/url';
 
 import { getChatRooms } from './apis/getChatRooms';
 import ChatRoomList from './components/ChatRoomList/ChatRoomList';
 import ChatRoomsHeader from './components/ChatRoomsHeader/ChatRoomsHeader';
 
 function ChatRooms() {
+  const navigate = useNavigate();
+
   const { data: chatRoomsData } = useQuery({
     queryKey: ['chatRooms'],
     queryFn: () => getChatRooms(),
@@ -20,13 +24,17 @@ function ChatRooms() {
     },
   });
 
+  const handleChatRoomListClick = (chatId: number) => {
+    navigate(`${PAGE_URL.CHAT_ROOM}/${chatId}`);
+  };
+
   return (
     <S_Container>
       <ChatRoomsHeader />
       <S_ChatRoomListSection>
         <ChatRoomList
           chatList={chatRoomsData ?? []}
-          onChatRoomListClick={() => {}}
+          onChatRoomListClick={handleChatRoomListClick}
         />
       </S_ChatRoomListSection>
     </S_Container>
