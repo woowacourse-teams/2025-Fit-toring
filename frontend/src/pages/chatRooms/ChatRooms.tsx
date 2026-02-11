@@ -7,14 +7,6 @@ import { getChatRooms } from './apis/getChatRooms';
 import ChatRoomList from './components/ChatRoomList/ChatRoomList';
 import ChatRoomsHeader from './components/ChatRoomsHeader/ChatRoomsHeader';
 
-export interface ChatRoomListItemType {
-  chatRoomId: string;
-  name: string;
-  lastMessage: string;
-  timeText: string;
-  imageUrl?: string | null;
-}
-
 function ChatRooms() {
   const { data: chatRoomsData } = useQuery({
     queryKey: ['chatRooms'],
