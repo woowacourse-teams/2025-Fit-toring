@@ -3,9 +3,11 @@ package fittoring.config.websocket;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -40,6 +42,16 @@ public class WebSocketMetricsListener {
     private final Counter wsMessageIn;
     private final Counter wsMessageOut;
 
+    /**
+     * Error Counter
+     */
+    private final Counter wsMessageError;
+
+    /**
+     * Message Processing Timer (Latency)
+     */
+    private final Timer wsMessageProcessTimer;
+
     public WebSocketMetricsListener(
             MeterRegistry meterRegistry,
             @Qualifier("clientInboundChannelExecutor") Executor inbound,
@@ -56,6 +68,16 @@ public class WebSocketMetricsListener {
         // ---------- Message Counters ----------
         this.wsMessageIn = meterRegistry.counter("ws_message_in_total");
         this.wsMessageOut = meterRegistry.counter("ws_message_out_total");
+
+        // ---------- Error Counter ----------
+        this.wsMessageError = meterRegistry.counter("ws_message_error_total");
+
+        // ---------- Message Processing Timer ----------
+        this.wsMessageProcessTimer = Timer.builder("ws_message_process_seconds")
+                .description("STOMP message processing latency")
+                .publishPercentileHistogram(true)
+                .publishPercentiles(0.5, 0.95, 0.99)
+                .register(meterRegistry);
 
         ThreadPoolTaskExecutor inboundExec = (ThreadPoolTaskExecutor) inbound;
         ThreadPoolTaskExecutor outboundExec = (ThreadPoolTaskExecutor) outbound;
@@ -147,5 +169,19 @@ public class WebSocketMetricsListener {
      */
     public void incrementOutboundMessage() {
         wsMessageOut.increment();
+    }
+
+    /**
+     * Error increment
+     */
+    public void incrementError() {
+        wsMessageError.increment();
+    }
+
+    /**
+     * Record message processing latency (nanoseconds)
+     */
+    public void recordMessageLatency(long durationNanos) {
+        wsMessageProcessTimer.record(durationNanos, TimeUnit.NANOSECONDS);
     }
 }
