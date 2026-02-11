@@ -4,7 +4,7 @@ export const API_ENDPOINTS = {
   RESERVATION: '/reservation',
   RESERVATIONS: '/reservations',
   SIGNUP: '/signup',
-  VALIDATE_ID: '/validate-id',
+  VALIDATE_ID: '/validate-login-id',
   AUTH_CODE: '/auth-code',
   AUTH_CODE_VERIFY: '/auth-code/verify',
   MEMBERS_ME: '/members/me',
