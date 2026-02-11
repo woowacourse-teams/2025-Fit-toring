@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 
+import ProfileImg from '../../../../common/assets/images/profileImg.svg';
 import { formatToKoreanTime } from '../../../../common/utils/formatToKoreanTime';
 
 import type { ChatRooms } from '../../types/chatRooms';
@@ -13,11 +14,14 @@ function ChatRoomListItem({ chat, onClick }: ChatRoomListItemProps) {
   return (
     <S_Container onClick={() => onClick(chat.chatRoomId)}>
       <S_Avatar>
-        {chat.profileImageUrl ? (
-          <S_AvatarImg src={chat.profileImageUrl} alt="프로필 사진" />
-        ) : (
-          <S_AvatarPlaceholder />
-        )}
+        <S_AvatarImg
+          src={chat.profileImageUrl ?? ProfileImg}
+          alt="프로필 사진"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = ProfileImg;
+          }}
+        />
       </S_Avatar>
 
       <S_Middle>
@@ -63,14 +67,6 @@ const S_AvatarImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-`;
-
-const S_AvatarPlaceholder = styled.div`
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-
-  background: #e9e9e9;
 `;
 
 const S_Middle = styled.div`
