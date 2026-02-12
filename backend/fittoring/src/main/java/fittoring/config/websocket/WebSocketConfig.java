@@ -2,13 +2,13 @@ package fittoring.config.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-@RequiredArgsConstructor
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -20,6 +20,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final InboundChannelInterceptor inboundChannelInterceptor;
     private final OutboundChannelInterceptor outboundChannelInterceptor;
     private final WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor;
+
+    public WebSocketConfig(@Lazy InboundChannelInterceptor inboundChannelInterceptor,
+                           @Lazy OutboundChannelInterceptor outboundChannelInterceptor,
+                           WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor) {
+        this.inboundChannelInterceptor = inboundChannelInterceptor;
+        this.outboundChannelInterceptor = outboundChannelInterceptor;
+        this.webSocketAuthHandshakeInterceptor = webSocketAuthHandshakeInterceptor;
+    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
