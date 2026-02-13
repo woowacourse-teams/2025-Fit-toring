@@ -1,7 +1,6 @@
 package fittoring.application.chat.service;
 
 import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
-import fittoring.application.chat.presentation.dto.response.ChatImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
 import fittoring.application.chat.repository.ChatMessageRepository;
@@ -15,6 +14,7 @@ import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.UnauthorizedChatMessageAccessException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
+import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.image.service.ImageService;
 import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.member.repository.MemberRepository;
@@ -23,16 +23,15 @@ import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatMessageType;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
+import fittoring.domain.model.ImageVariant;
 import fittoring.domain.model.Notification;
 import fittoring.infrastructure.image.KeyBuilder;
 import fittoring.util.Cursor;
 import fittoring.util.CursorCodec;
-import fittoring.domain.model.Image;
-import fittoring.domain.model.ImageVariant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -69,7 +68,7 @@ public class ChatMessageService {
         log.info("채팅을 보낸 사람 id: {}", senderId);
         Long opponentId = chatRoom.getOpponentIdOf(senderId);
         sendNewMessageNotification(chatRoom.getId(), senderId, opponentId, chatMessage);
-        return ChatMessageResponse.ofText(chatMessage, request.tempId());
+        return ChatMessageResponse.from(chatMessage, request.tempId());
     }
 
     private ChatMessageResponse registerImageMessage(ChatRoom chatRoom, ChatMessageRequest request, Long senderId) {
@@ -92,14 +91,14 @@ public class ChatMessageService {
         Long opponentId = chatRoom.getOpponentIdOf(senderId);
         sendNewMessageNotification(chatRoom.getId(), senderId, opponentId, chatMessage);
 
-        return ChatMessageResponse.ofImage(chatMessage, request.tempId(), null, originalUrl);
+        return ChatMessageResponse.from(chatMessage, request.tempId(), null, originalUrl);
     }
 
     private void sendNewMessageNotification(Long chatRoomId, Long senderId, Long opponentId, ChatMessage chatMessage) {
         String senderName = memberRepository.findNameById(senderId)
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         Notification notification = new Notification(senderName, chatMessage.getContent());
-        if(chatMessage.getMessageType() == ChatMessageType.IMAGE){
+        if (chatMessage.getMessageType() == ChatMessageType.IMAGE) {
             notification.setImageNotificationBody();
         }
         notification.putData("chatRoomId", String.valueOf(chatRoomId));
@@ -154,36 +153,27 @@ public class ChatMessageService {
                 .map(ChatMessage::getId)
                 .toList();
 
-        Set<Long> thumbnailExistsIds = findThumbnailExistsIds(imageMessageIds);
+        Set<Long> thumbnailExistsIds = new HashSet<>(
+                imageService.findThumbnailExistsIds(imageMessageIds, ImageType.CHAT)
+        );
 
         return messages.stream()
                 .map(msg -> {
                     if (msg.getMessageType() == ChatMessageType.IMAGE) {
                         return toImageResponse(msg, thumbnailExistsIds.contains(msg.getId()));
                     }
-                    return ChatMessageResponse.ofTextHistory(msg);
+                    return ChatMessageResponse.from(msg);
                 })
                 .toList();
     }
 
-    private Set<Long> findThumbnailExistsIds(List<Long> imageMessageIds) {
-        if (imageMessageIds.isEmpty()) {
-            return Set.of();
-        }
-        List<Image> images = imageService.findAll(imageMessageIds, ImageType.CHAT);
-        return images.stream()
-                .filter(img -> img.getImageVariant() == ImageVariant.THUMBNAIL)
-                .map(Image::getRelationId)
-                .collect(Collectors.toSet());
-    }
-
     private ChatMessageResponse toImageResponse(ChatMessage chatMessage, boolean hasThumbnail) {
-        ChatImageUrlResponse urls = resolveImageUrls(chatMessage.getContent(), hasThumbnail);
-        return ChatMessageResponse.ofImage(chatMessage, null, urls.thumbnailUrl(), urls.originalImageUrl());
+        ImageUrlResponse urls = presignedUrlService.issueGetUrlWithThumbnail(chatMessage.getContent(), hasThumbnail);
+        return ChatMessageResponse.from(chatMessage, null, urls.thumbnailUrl(), urls.originalImageUrl());
     }
 
     @Transactional(readOnly = true)
-    public ChatImageUrlResponse reissueImageUrl(Long chatRoomId, Long messageId, Long memberId) {
+    public ImageUrlResponse reissueImageUrl(Long chatRoomId, Long messageId, Long memberId) {
         ChatRoom chatRoom = getChatRoom(chatRoomId);
         validateParticipant(memberId, chatRoom);
 
@@ -193,7 +183,7 @@ public class ChatMessageService {
                 .map(img -> img.getImageVariant() == ImageVariant.THUMBNAIL)
                 .orElse(false);
 
-        return resolveImageUrls(chatMessage.getContent(), hasThumbnail);
+        return presignedUrlService.issueGetUrlWithThumbnail(chatMessage.getContent(), hasThumbnail);
     }
 
     private ChatMessage getImageChatMessage(Long messageId, Long chatRoomId) {
@@ -220,18 +210,6 @@ public class ChatMessageService {
         if (chatMessage.getMessageType() != ChatMessageType.IMAGE) {
             throw new ChatMessageNotImageException(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
         }
-    }
-
-    private ChatImageUrlResponse resolveImageUrls(String originalKey, boolean hasThumbnail) {
-        String originalUrl = presignedUrlService.issueGetPresignedUrl(originalKey);
-
-        String thumbnailUrl = null;
-        if (hasThumbnail) {
-            String thumbnailKey = originalKey.replace("/default/", "/thumbnail/");
-            thumbnailUrl = presignedUrlService.issueGetPresignedUrl(thumbnailKey);
-        }
-
-        return new ChatImageUrlResponse(thumbnailUrl, originalUrl);
     }
 
     @Transactional(readOnly = true)

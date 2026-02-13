@@ -1,5 +1,6 @@
 package fittoring.application.image.service;
 
+import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.image.presentation.dto.response.PresignedIssueResponse;
 import fittoring.application.image.service.dto.IssuedPresignedDto;
 import fittoring.config.S3Properties;
@@ -68,6 +69,18 @@ public class PresignedUrlService {
                         ZoneId.of("Asia/Seoul")
                 )
         );
+    }
+
+    public ImageUrlResponse issueGetUrlWithThumbnail(String originalKey, boolean hasThumbnail) {
+        String originalUrl = issueGetPresignedUrl(originalKey);
+
+        String thumbnailUrl = null;
+        if (hasThumbnail) {
+            String thumbnailKey = originalKey.replace("/default/", "/thumbnail/");
+            thumbnailUrl = issueGetPresignedUrl(thumbnailKey);
+        }
+
+        return new ImageUrlResponse(thumbnailUrl, originalUrl);
     }
 
     public String issueGetPresignedUrl(String key) {

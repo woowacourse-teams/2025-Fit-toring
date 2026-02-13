@@ -2,6 +2,7 @@ package fittoring.integration;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
@@ -10,7 +11,7 @@ import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.chat.presentation.dto.response.ChatImageUrlResponse;
+import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatRoomInfoResponse;
 import fittoring.application.chat.presentation.dto.response.ChatRoomPreviewResponse;
@@ -388,12 +389,15 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         imageRepository.save(FixtureUtil.testChatImageDefault(imageMessage));
         imageRepository.save(FixtureUtil.testChatImageThumbnail(imageMessage));
 
-        when(presignedUrlService.issueGetPresignedUrl(anyString())).thenReturn("https://presigned-get-url");
+        when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(true)))
+                .thenReturn(new ImageUrlResponse("https://presigned-get-url-thumbnail", "https://presigned-get-url-default"));
+        when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(false)))
+                .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
         //when
-        ChatImageUrlResponse response = RestAssured
+        ImageUrlResponse response = RestAssured
                 .given(spec)
                 .log().all()
                 .accept("application/json")
@@ -420,12 +424,12 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                 .then().log().all()
                 .statusCode(200)
                 .extract()
-                .as(ChatImageUrlResponse.class);
+                .as(ImageUrlResponse.class);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(response.thumbnailUrl()).isEqualTo("https://presigned-get-url");
-            softly.assertThat(response.originalImageUrl()).isEqualTo("https://presigned-get-url");
+            softly.assertThat(response.thumbnailUrl()).isEqualTo("https://presigned-get-url-thumbnail");
+            softly.assertThat(response.originalImageUrl()).isEqualTo("https://presigned-get-url-default");
         });
     }
 }

@@ -3,16 +3,18 @@ package fittoring.application.chat.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
-import fittoring.application.chat.presentation.dto.response.ChatImageUrlResponse;
+import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
 import fittoring.application.chat.repository.ChatMessageRepository;
 import fittoring.application.exception.ChatMessageNotImageException;
+import fittoring.application.image.service.PresignedUrlService;
 import fittoring.domain.model.ChatMessageType;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.exception.BusinessErrorMessage;
@@ -40,6 +42,9 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private PresignedUrlService presignedUrlService;
 
     @DisplayName("존재하지 않는 채팅방에 대한 저장의 경우 예외가 발생한다.")
     @Test
@@ -91,7 +96,10 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
         imageRepository.save(FixtureUtil.testChatImageDefault(imageMessage));
         imageRepository.save(FixtureUtil.testChatImageThumbnail(imageMessage));
 
-        when(presignedUrlService.issueGetPresignedUrl(anyString())).thenReturn("https://presigned-get-url");
+        when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(true)))
+                .thenReturn(new ImageUrlResponse("https://presigned-get-url-thumbnail", "https://presigned-get-url-default"));
+        when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(false)))
+                .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
         ChatMessagePaginationResponse response = chatMessageService.findChatMessages(chatRoom.getId(), menteeId, null);
@@ -100,8 +108,8 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
         ChatMessageResponse msg = response.chatMessages().getFirst();
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(msg.messageType()).isEqualTo(ChatMessageType.IMAGE);
-            softly.assertThat(msg.thumbnailUrl()).isEqualTo("https://presigned-get-url");
-            softly.assertThat(msg.originalImageUrl()).isEqualTo("https://presigned-get-url");
+            softly.assertThat(msg.thumbnailUrl()).isEqualTo("https://presigned-get-url-thumbnail");
+            softly.assertThat(msg.originalImageUrl()).isEqualTo("https://presigned-get-url-default");
             softly.assertThat(msg.content()).isNull();
         });
     }
@@ -117,7 +125,10 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
         ChatMessage imageMessage = chatMessageRepository.save(FixtureUtil.testImageChatMessage(chatRoom, menteeId));
         imageRepository.save(FixtureUtil.testChatImageDefault(imageMessage));
 
-        when(presignedUrlService.issueGetPresignedUrl(anyString())).thenReturn("https://presigned-get-url");
+        when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(true)))
+                .thenReturn(new ImageUrlResponse("https://presigned-get-url-thumbnail", "https://presigned-get-url-default"));
+        when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(false)))
+                .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
         ChatMessagePaginationResponse response = chatMessageService.findChatMessages(chatRoom.getId(), menteeId, null);
@@ -127,7 +138,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(msg.messageType()).isEqualTo(ChatMessageType.IMAGE);
             softly.assertThat(msg.thumbnailUrl()).isNull();
-            softly.assertThat(msg.originalImageUrl()).isEqualTo("https://presigned-get-url");
+            softly.assertThat(msg.originalImageUrl()).isEqualTo("https://presigned-get-url-default");
         });
     }
 
@@ -143,15 +154,18 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
         imageRepository.save(FixtureUtil.testChatImageDefault(imageMessage));
         imageRepository.save(FixtureUtil.testChatImageThumbnail(imageMessage));
 
-        when(presignedUrlService.issueGetPresignedUrl(anyString())).thenReturn("https://presigned-get-url");
+        when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(true)))
+                .thenReturn(new ImageUrlResponse("https://presigned-get-url-thumbnail", "https://presigned-get-url-default"));
+        when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(false)))
+                .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
-        ChatImageUrlResponse response = chatMessageService.reissueImageUrl(chatRoom.getId(), imageMessage.getId(), menteeId);
+        ImageUrlResponse response = chatMessageService.reissueImageUrl(chatRoom.getId(), imageMessage.getId(), menteeId);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(response.thumbnailUrl()).isEqualTo("https://presigned-get-url");
-            softly.assertThat(response.originalImageUrl()).isEqualTo("https://presigned-get-url");
+            softly.assertThat(response.thumbnailUrl()).isEqualTo("https://presigned-get-url-thumbnail");
+            softly.assertThat(response.originalImageUrl()).isEqualTo("https://presigned-get-url-default");
         });
     }
 
