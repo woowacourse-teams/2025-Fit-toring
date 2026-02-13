@@ -20,6 +20,6 @@ public class Notification {
     }
 
     public void setImageNotificationBody(){
-        data.put("title", "이미지를 보냈습니다.");
+        data.put("body", "이미지를 보냈습니다.");
     }
 }
