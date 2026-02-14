@@ -1,8 +1,24 @@
 package fittoring.application;
 
-import fittoring.domain.model.*;
+import fittoring.domain.model.Certificate;
+import fittoring.domain.model.CertificateType;
+import fittoring.domain.model.ChatMessage;
+import fittoring.domain.model.ChatMessageType;
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Device;
+import fittoring.domain.model.Gender;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.ImageVariant;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Phone;
+import fittoring.domain.model.PhoneVerification;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Review;
+import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -136,7 +152,20 @@ public class FixtureUtil {
         return new ChatRoom(reservation.getId(), mentee.getId(), mentor.getId());
     }
 
-    public static ChatMessage testChatMessage(ChatRoom chatRoom, Member sender){
+    public static ChatMessage testChatMessage(ChatRoom chatRoom, Member sender) {
         return new ChatMessage(chatRoom.getId(), sender.getId(), "테스트 메시지입니다.");
+    }
+
+    public static ChatMessage testImageChatMessage(ChatRoom chatRoom, Long senderId) {
+        return new ChatMessage(chatRoom.getId(), senderId, "fittoring/dev/chat-image/default/test.jpg",
+                ChatMessageType.IMAGE);
+    }
+
+    public static Image testChatImageDefault(ChatMessage chatMessage) {
+        return new Image("originalUrl", ImageType.CHAT, ImageVariant.DEFAULT, chatMessage.getId(), "test.jpg");
+    }
+
+    public static Image testChatImageThumbnail(ChatMessage chatMessage) {
+        return new Image("thumbnailUrl", ImageType.CHAT, ImageVariant.THUMBNAIL, chatMessage.getId(), "test.jpg");
     }
 }

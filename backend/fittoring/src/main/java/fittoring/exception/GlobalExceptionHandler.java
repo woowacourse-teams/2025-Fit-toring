@@ -186,6 +186,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
     }
 
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ImageNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
     @ExceptionHandler(UnsupportedImageExtensionException.class)
     public ResponseEntity<ErrorResponse> handle(UnsupportedImageExtensionException e) {
         return buildErrorResponse(e, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
@@ -194,6 +199,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OauthLoginException.class)
     public ResponseEntity<ErrorResponse> handle(OauthLoginException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(ChatMessageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ChatMessageNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(ChatRoomNotFoundException.class)
@@ -206,8 +216,18 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 
+    @ExceptionHandler(ChatMessageNotImageException.class)
+    public ResponseEntity<ErrorResponse> handle(ChatMessageNotImageException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(UnauthorizedChatRoomAccessException.class)
     public ResponseEntity<ErrorResponse> handle(UnauthorizedChatRoomAccessException e) {
+        return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedChatMessageAccessException.class)
+    public ResponseEntity<ErrorResponse> handle(UnauthorizedChatMessageAccessException e) {
         return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
     }
 

@@ -3,6 +3,8 @@ package fittoring.domain.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,6 +42,10 @@ public class ChatMessage {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "message_type", nullable = false)
+    private ChatMessageType messageType;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -51,6 +57,10 @@ public class ChatMessage {
     private LocalDateTime deletedAt;
 
     public ChatMessage(Long chatRoomId, Long senderId, String content) {
-        this(null, chatRoomId, senderId, content, null, false, null);
+        this(null, chatRoomId, senderId, content, ChatMessageType.TEXT, null, false, null);
+    }
+
+    public ChatMessage(Long chatRoomId, Long senderId, String content, ChatMessageType messageType) {
+        this(null, chatRoomId, senderId, content, messageType, null, false, null);
     }
 }
