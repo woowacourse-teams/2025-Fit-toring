@@ -10,7 +10,6 @@ import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
@@ -67,9 +66,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private JwtProvider jwtProvider;
-
-    @Autowired
-    private ChatRoomRepository chatRoomRepository;
 
     @DisplayName("멘토링 예약에 성공하면 201 Created 상태코드와 예약 정보를 반환한다.")
     @Test
@@ -274,6 +270,49 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(409);
+    }
+
+    @DisplayName("예약이 삭제(soft delete) 되면 같은 멘토링에 다시 예약할 수 있다.")
+    @Test
+    void createReservationSuccessAfterSoftDeletedActiveReservation() {
+        // given
+        doNothing()
+                .when(smsRestClientService)
+                .sendSms(
+                        ArgumentMatchers.any(Phone.class),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString()
+                );
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+
+        Reservation approvedReservation = reservationRepository.save(
+                FixtureUtil.testApprovedReservation(mentoring, mentee));
+        reservationRepository.delete(approvedReservation);
+        assertThat(reservationRepository.findDeletedById(approvedReservation.getId())).isNotNull();
+
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
+        ReservationCreateRequest request = new ReservationCreateRequest("재예약 시도");
+
+        // when
+        Response response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/post-mentorings-id-reservation-soft-delete-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .requestSchema(Schema.schema("ReservationCreateRequest"))
+                                .responseSchema(Schema.schema("ReservationCreateResponse"))
+                                .build())))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/mentorings/{mentoringId}/reservation", mentoring.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(201);
     }
 
     @DisplayName("내가 작성한 예약 조회에 성공하면 200 OK를 반환한다")
