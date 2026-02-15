@@ -265,7 +265,22 @@ function ChatRoom() {
   return (
     <S_Container>
       {chatRoomInfoIsPending || !chatRoomInfoData ? (
-        <div>로딩중</div>
+        <S_LoadingHeaderArea>
+          <S_LoadingHeaderWrapper aria-hidden>
+            <ChatRoomHeader name="" />
+            <MentoringActionPanel
+              mentorName=""
+              price={0}
+              profileImageUrl=""
+              mentorOwned={false}
+              onPaymentRequestClick={() => {}}
+              onReviewRequestClick={() => {}}
+              onEndClick={() => {}}
+              onPaymentClick={() => {}}
+              onReviewClick={() => {}}
+            />
+          </S_LoadingHeaderWrapper>
+        </S_LoadingHeaderArea>
       ) : (
         <div>
           <ChatRoomHeader name={chatRoomInfoData.opponentName} />
@@ -304,4 +319,12 @@ const S_Container = styled.div`
   flex-direction: column;
 
   height: 100svh;
+`;
+
+const S_LoadingHeaderArea = styled.div`
+  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+`;
+
+const S_LoadingHeaderWrapper = styled.div`
+  visibility: hidden;
 `;
