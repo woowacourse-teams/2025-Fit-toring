@@ -65,8 +65,34 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member mentee;
 
+    @Column(name = "active_status_checker", insertable = false, updatable = false)
+    private String activeStatusChecker;
+
+    public static Reservation ofPending(String content, Mentoring mentoring, Member mentee) {
+        return new Reservation(
+                null,
+                content,
+                null,
+                Status.PENDING,
+                false,
+                null,
+                mentoring,
+                mentee,
+                null
+        );
+    }
+
     public Reservation(String content, Status status, Mentoring mentoring, Member mentee) {
-        this(null, content, null, status, false, null, mentoring, mentee);
+        this(null,
+                content,
+                null,
+                status,
+                false,
+                null,
+                mentoring,
+                mentee,
+                null
+        );
     }
 
     public void changeStatusWithoutValidation(Status updateStatus) {

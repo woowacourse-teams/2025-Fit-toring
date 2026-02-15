@@ -73,9 +73,8 @@ public class ReservationService {
         Mentoring mentoring = getMentoring(dto.mentoringId());
         validateNotMyMentoring(mentoring, dto.menteeId());
         Member mentee = getMember(dto.menteeId());
-        return new Reservation(
+        return Reservation.ofPending(
                 dto.content(),
-                Status.PENDING,
                 mentoring,
                 mentee
         );
