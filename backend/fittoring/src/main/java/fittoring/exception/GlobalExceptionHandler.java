@@ -1,16 +1,12 @@
 package fittoring.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.application.exception.*;
 import fittoring.infrastructure.exception.S3UploadException;
 import fittoring.infrastructure.exception.SmsException;
-import fittoring.logging.dto.ErrorLog;
-import fittoring.util.ResponseDurationCalculator;
-import java.time.LocalDateTime;
+import fittoring.logging.ErrorJsonLogger;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -18,8 +14,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -28,7 +22,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private final ObjectMapper objectMapper;
+    private final ErrorJsonLogger errorJsonLogger;
 
     @ExceptionHandler(MentoringNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(MentoringNotFoundException e) {
@@ -192,6 +186,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
     }
 
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ImageNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
     @ExceptionHandler(UnsupportedImageExtensionException.class)
     public ResponseEntity<ErrorResponse> handle(UnsupportedImageExtensionException e) {
         return buildErrorResponse(e, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
@@ -200,6 +199,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OauthLoginException.class)
     public ResponseEntity<ErrorResponse> handle(OauthLoginException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(ChatMessageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ChatMessageNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(ChatRoomNotFoundException.class)
@@ -212,8 +216,18 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 
+    @ExceptionHandler(ChatMessageNotImageException.class)
+    public ResponseEntity<ErrorResponse> handle(ChatMessageNotImageException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(UnauthorizedChatRoomAccessException.class)
     public ResponseEntity<ErrorResponse> handle(UnauthorizedChatRoomAccessException e) {
+        return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedChatMessageAccessException.class)
+    public ResponseEntity<ErrorResponse> handle(UnauthorizedChatMessageAccessException e) {
         return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
     }
 
@@ -228,7 +242,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {
-        logErrorJson(e, status);
+        errorJsonLogger.log(e, status);
         return ErrorResponse.of(status, message).toResponseEntity();
     }
 
@@ -240,45 +254,4 @@ public class GlobalExceptionHandler {
                 .orElse("잘못된 요청입니다.");
     }
 
-    private void logErrorJson(Throwable e, HttpStatus status) {
-        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
-        Long durationMs = ResponseDurationCalculator.calculate(attrs);
-        String traceId = MDC.get("traceId");
-        String method = MDC.get("method");
-        String uri = MDC.get("uri");
-        String normalizedUri = MDC.get("normalizedUri");
-
-        ErrorLog dto = new ErrorLog(
-                "ERROR",
-                method,
-                uri,
-                durationMs,
-                status.value(),
-                e.getClass().getName(),
-                e.getMessage(),
-                stackToOneLine(e),
-                normalizedUri,
-                LocalDateTime.now(),
-                traceId
-        );
-        try {
-            String jsonLog = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
-            if (status.is4xxClientError()) {
-                log.warn(jsonLog);
-            } else {
-                log.error(jsonLog);
-            }
-        } catch (Exception ex) {
-            log.error("에러로그 직렬화 실패", ex);
-        }
-    }
-
-    private String stackToOneLine(Throwable e) {
-        StringBuilder sb = new StringBuilder();
-        for (StackTraceElement el : e.getStackTrace()) {
-            sb.append(el).append(" | ");
-        }
-        return sb.toString();
-    }
 }

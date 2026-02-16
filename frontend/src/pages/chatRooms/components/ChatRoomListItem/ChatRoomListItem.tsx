@@ -1,31 +1,35 @@
 import styled from '@emotion/styled';
 
+import ProfileImg from '../../../../common/assets/images/profileImg.svg';
 import { formatToKoreanTime } from '../../../../common/utils/formatToKoreanTime';
 
-import type { ChatRoomListItemType } from '../../ChatRooms';
+import type { ChatRoom } from '../../types/chatRoom';
 
 interface ChatRoomListItemProps {
-  chat: ChatRoomListItemType;
-  onClick: (chatId: string) => void;
+  chat: ChatRoom;
+  onClick: (chatId: number) => void;
 }
 
 function ChatRoomListItem({ chat, onClick }: ChatRoomListItemProps) {
   return (
     <S_Container onClick={() => onClick(chat.chatRoomId)}>
       <S_Avatar>
-        {chat.imageUrl ? (
-          <S_AvatarImg src={chat.imageUrl} alt="프로필 사진" />
-        ) : (
-          <S_AvatarPlaceholder />
-        )}
+        <S_AvatarImg
+          src={chat.profileImageUrl ?? ProfileImg}
+          alt="프로필 사진"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = ProfileImg;
+          }}
+        />
       </S_Avatar>
 
       <S_Middle>
-        <S_Name>{chat.name}</S_Name>
-        <S_Message>{chat.lastMessage}</S_Message>
+        <S_Name>{chat.opponentName}</S_Name>
+        <S_Message>{chat.lastChatContent}</S_Message>
       </S_Middle>
 
-      <S_Time>{formatToKoreanTime(chat.timeText)}</S_Time>
+      <S_Time>{formatToKoreanTime(chat.lastChatCreatedAt)}</S_Time>
     </S_Container>
   );
 }
@@ -63,14 +67,6 @@ const S_AvatarImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-`;
-
-const S_AvatarPlaceholder = styled.div`
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-
-  background: #e9e9e9;
 `;
 
 const S_Middle = styled.div`
