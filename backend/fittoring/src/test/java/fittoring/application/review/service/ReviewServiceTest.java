@@ -31,7 +31,13 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -620,6 +626,62 @@ class ReviewServiceTest extends IntegrationTestSupport {
                     .isEqualTo(originalReviewCount - 1);
             softly.assertThat(mentoringStatisticsRepository.findById(mentoring.getId()).get().getRatingSum())
                     .isEqualTo(originalRatingSum - review.getRating());
+        });
+    }
+
+    @Disabled("CI 속도 향상을 위해 비활성화")
+    @DisplayName("동시에 300개의 리뷰가 등록될 때 평점 통계가 정확히 반영되어야 한다.")
+    @Test
+    void reviewStatisticsDecimalPrecisionTest() throws InterruptedException {
+        // given
+        int threadCount = 300;
+        ExecutorService executorService = Executors.newFixedThreadPool(64);
+        CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
+
+        int[] ratings = {1, 1, 3, 4, 5};
+        List<ReviewCreateDto> dtos = new ArrayList<>();
+        for (int i = 0; i < threadCount; i++) {
+            int rating = ratings[i % 5];
+            Member mentee = memberRepository.save(FixtureUtil.testMentee(i));
+            Reservation reservation = reservationRepository.save(
+                    FixtureUtil.testCompletedReservation(mentoring, mentee));
+            dtos.add(new ReviewCreateDto(
+                    mentee.getId(),
+                    reservation.getId(),
+                    rating,
+                    "소수점 테스트 점수: " + rating
+            ));
+        }
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            ReviewCreateDto dto = dtos.get(i);
+            executorService.execute(() -> {
+                try {
+                    reviewService.createReview(dto);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
+
+        // then
+        MentoringStatistics stats = mentoringStatisticsRepository.findById(mentoring.getId()).orElseThrow();
+
+        long expectedSum = 840L;
+        double expectedAvg = 2.8;
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(stats.getReviewCount()).isEqualTo(threadCount);
+            softly.assertThat(stats.getRatingSum()).isEqualTo(expectedSum);
+            softly.assertThat(stats.getAverageRating()).isEqualTo(expectedAvg);
         });
     }
 }
