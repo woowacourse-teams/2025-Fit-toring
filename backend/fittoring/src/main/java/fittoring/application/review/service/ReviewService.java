@@ -163,8 +163,9 @@ public class ReviewService {
                 .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
         validateReviewOwner(review, reviewDeleteDto.menteeId());
         Mentoring mentoring = review.getReservation().getMentoring();
+        int rating = review.getRating();
         reviewRepository.delete(review);
-        mentoringStatisticsRepository.updateReviewStatisticsMinus(mentoring.getId(), review.getRating());
+        mentoringStatisticsRepository.updateReviewStatisticsMinus(mentoring.getId(), rating);
     }
 
     @Transactional
@@ -172,7 +173,8 @@ public class ReviewService {
         Review review = reviewRepository.findById((reviewId))
                 .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
         Mentoring mentoring = review.getReservation().getMentoring();
+        int rating = review.getRating();
         reviewRepository.delete(review);
-        mentoringStatisticsRepository.updateReviewStatisticsMinus(mentoring.getId(), review.getRating());
+        mentoringStatisticsRepository.updateReviewStatisticsMinus(mentoring.getId(), rating);
     }
 }
