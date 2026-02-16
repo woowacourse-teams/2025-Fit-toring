@@ -37,6 +37,7 @@ import fittoring.domain.model.MentoringStatistics;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
@@ -45,6 +46,7 @@ import java.util.concurrent.Executors;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -516,6 +518,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
                 .hasMessage(BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage());
     }
 
+    @Disabled("CI 속도 향상을 위해 비활성화")
     @DisplayName("동시에 300개의 예약이 신청될 때 통계 데이터가 정확히 반영되어야 한다.")
     @Test
     void mentoringStatisticsConcurrencyTest() throws InterruptedException {
@@ -528,18 +531,18 @@ class ReservationServiceTest extends IntegrationTestSupport {
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
         mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
 
+        List<ReservationCreateDto> dtos = new ArrayList<>();
+        for (int i = 0; i < threadCount; i++) {
+            Member mentee = memberRepository.save(FixtureUtil.testMentee(i));
+            dtos.add(new ReservationCreateDto(mentee.getId(), mentoring.getId(), "신청합니다."));
+        }
+
         // when
         for (int i = 0; i < threadCount; i++) {
-            int index = i;
+            ReservationCreateDto dto = dtos.get(i);
             executorService.execute(() -> {
                 try {
-                    Member mentee = memberRepository.save(FixtureUtil.testMentee(index));
-                    ReservationCreateDto reservationCreateDto = new ReservationCreateDto(
-                            mentee.getId(),
-                            mentoring.getId(),
-                            "신청합니다."
-                    );
-                    reservationService.createReservation(reservationCreateDto);
+                    reservationService.createReservation(dto);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

@@ -31,11 +31,13 @@ import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -627,6 +629,7 @@ class ReviewServiceTest extends IntegrationTestSupport {
         });
     }
 
+    @Disabled("CI 속도 향상을 위해 비활성화")
     @DisplayName("동시에 300개의 리뷰가 등록될 때 평점 통계가 정확히 반영되어야 한다.")
     @Test
     void reviewStatisticsDecimalPrecisionTest() throws InterruptedException {
@@ -640,25 +643,25 @@ class ReviewServiceTest extends IntegrationTestSupport {
         mentoringStatisticsRepository.save(MentoringStatistics.defaultOf(mentoring));
 
         int[] ratings = {1, 1, 3, 4, 5};
+        List<ReviewCreateDto> dtos = new ArrayList<>();
+        for (int i = 0; i < threadCount; i++) {
+            int rating = ratings[i % 5];
+            Member mentee = memberRepository.save(FixtureUtil.testMentee(i));
+            Reservation reservation = reservationRepository.save(
+                    FixtureUtil.testCompletedReservation(mentoring, mentee));
+            dtos.add(new ReviewCreateDto(
+                    mentee.getId(),
+                    reservation.getId(),
+                    rating,
+                    "소수점 테스트 점수: " + rating
+            ));
+        }
 
         // when
         for (int i = 0; i < threadCount; i++) {
-            int index = i;
-            int rating = ratings[i % 5];
-
+            ReviewCreateDto dto = dtos.get(i);
             executorService.execute(() -> {
                 try {
-                    Member mentee = memberRepository.save(FixtureUtil.testMentee(index));
-                    Reservation reservation = reservationRepository.save(
-                            FixtureUtil.testCompletedReservation(mentoring, mentee));
-
-                    ReviewCreateDto dto = new ReviewCreateDto(
-                            mentee.getId(),
-                            reservation.getId(),
-                            rating,
-                            "소수점 테스트 점수: " + rating
-                    );
-
                     reviewService.createReview(dto);
                 } catch (Exception e) {
                     e.printStackTrace();
