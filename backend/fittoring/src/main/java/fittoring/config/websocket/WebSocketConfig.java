@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     public WebSocketConfig(@Lazy InboundChannelInterceptor inboundChannelInterceptor,
                            @Lazy OutboundChannelInterceptor outboundChannelInterceptor,
-                           WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor) {
+                           @Lazy WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor) {
         this.inboundChannelInterceptor = inboundChannelInterceptor;
         this.outboundChannelInterceptor = outboundChannelInterceptor;
         this.webSocketAuthHandshakeInterceptor = webSocketAuthHandshakeInterceptor;

@@ -1,15 +1,20 @@
 package fittoring.config.websocket;
 
+import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.UnauthorizedException;
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -26,6 +31,8 @@ public class WebSocketMetricsListener {
      * 현재 활성 세션
      */
     private final Set<String> activeSessions = ConcurrentHashMap.newKeySet();
+    private final Map<String, Long> sessionConnectTimes = new ConcurrentHashMap<>();
+    private final MeterRegistry meterRegistry;
 
     /**
      * STOMP Frame Counters
@@ -46,17 +53,22 @@ public class WebSocketMetricsListener {
      * Error Counter
      */
     private final Counter wsMessageError;
+    private final Counter handshakeFailureAuth;
+    private final Counter handshakeFailureOther;
 
     /**
      * Message Processing Timer (Latency)
      */
     private final Timer wsMessageProcessTimer;
+    private final Timer wsSessionDuration;
+    private final DistributionSummary wsInboundMessageSizeBytes;
 
     public WebSocketMetricsListener(
             MeterRegistry meterRegistry,
             @Qualifier("clientInboundChannelExecutor") Executor inbound,
             @Qualifier("clientOutboundChannelExecutor") Executor outbound
     ) {
+        this.meterRegistry = meterRegistry;
 
         // ---------- Counters ----------
         this.stompConnect = meterRegistry.counter("ws_stomp_connect_total");
@@ -64,10 +76,19 @@ public class WebSocketMetricsListener {
         this.stompDisconnect = meterRegistry.counter("ws_stomp_disconnect_total");
         this.stompSubscribe = meterRegistry.counter("ws_stomp_subscribe_total");
         this.stompUnsubscribe = meterRegistry.counter("ws_stomp_unsubscribe_total");
+        this.handshakeFailureAuth = meterRegistry.counter("ws_handshake_failure_total", "failure_type", "auth");
+        this.handshakeFailureOther = meterRegistry.counter("ws_handshake_failure_total", "failure_type", "other");
 
         // ---------- Message Counters ----------
         this.wsMessageIn = meterRegistry.counter("ws_message_in_total");
         this.wsMessageOut = meterRegistry.counter("ws_message_out_total");
+        this.wsInboundMessageSizeBytes = DistributionSummary.builder("ws_message_size_bytes")
+                .description("Inbound STOMP message payload size")
+                .baseUnit("bytes")
+                .tag("direction", "inbound")
+                .publishPercentileHistogram(true)
+                .publishPercentiles(0.5, 0.95, 0.99)
+                .register(meterRegistry);
 
         // ---------- Error Counter ----------
         this.wsMessageError = meterRegistry.counter("ws_message_error_total");
@@ -75,6 +96,11 @@ public class WebSocketMetricsListener {
         // ---------- Message Processing Timer ----------
         this.wsMessageProcessTimer = Timer.builder("ws_message_process_seconds")
                 .description("STOMP message processing latency")
+                .publishPercentileHistogram(true)
+                .publishPercentiles(0.5, 0.95, 0.99)
+                .register(meterRegistry);
+        this.wsSessionDuration = Timer.builder("ws_session_duration_seconds")
+                .description("WebSocket session duration")
                 .publishPercentileHistogram(true)
                 .publishPercentiles(0.5, 0.95, 0.99)
                 .register(meterRegistry);
@@ -134,6 +160,7 @@ public class WebSocketMetricsListener {
         String sessionId = StompHeaderAccessor.wrap(event.getMessage()).getSessionId();
         if (sessionId != null) {
             activeSessions.add(sessionId);
+            sessionConnectTimes.put(sessionId, System.currentTimeMillis());
         }
     }
 
@@ -144,6 +171,10 @@ public class WebSocketMetricsListener {
         String sessionId = event.getSessionId();
         if (sessionId != null) {
             activeSessions.remove(sessionId);
+            Long connectedAt = sessionConnectTimes.remove(sessionId);
+            if (connectedAt != null) {
+                wsSessionDuration.record(System.currentTimeMillis() - connectedAt, TimeUnit.MILLISECONDS);
+            }
         }
     }
 
@@ -160,8 +191,9 @@ public class WebSocketMetricsListener {
     /**
      * Inbound message increment
      */
-    public void incrementInboundMessage() {
+    public void incrementInboundMessage(int payloadSizeBytes) {
         wsMessageIn.increment();
+        wsInboundMessageSizeBytes.record(Math.max(payloadSizeBytes, 0));
     }
 
     /**
@@ -174,8 +206,17 @@ public class WebSocketMetricsListener {
     /**
      * Error increment
      */
-    public void incrementError() {
+    public void incrementError(Exception ex) {
         wsMessageError.increment();
+        meterRegistry.counter("ws_message_error_type_total", "error_type", classifyErrorType(ex)).increment();
+    }
+
+    public void incrementHandshakeFailure(String failureType) {
+        if ("auth".equals(failureType)) {
+            handshakeFailureAuth.increment();
+            return;
+        }
+        handshakeFailureOther.increment();
     }
 
     /**
@@ -183,5 +224,24 @@ public class WebSocketMetricsListener {
      */
     public void recordMessageLatency(long durationNanos) {
         wsMessageProcessTimer.record(durationNanos, TimeUnit.NANOSECONDS);
+    }
+
+    private String classifyErrorType(Exception ex) {
+        Throwable cursor = ex;
+        int depth = 0;
+        while (cursor != null && depth < 5) {
+            if (cursor instanceof UnauthorizedException || cursor instanceof InvalidTokenException) {
+                return "auth";
+            }
+            if (cursor instanceof IllegalArgumentException) {
+                return "validation";
+            }
+            if (cursor instanceof MessageDeliveryException) {
+                return "broker";
+            }
+            cursor = cursor.getCause();
+            depth++;
+        }
+        return "internal";
     }
 }

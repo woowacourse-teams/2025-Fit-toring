@@ -1,6 +1,7 @@
 package fittoring.config.websocket;
 
 import fittoring.config.auth.LoginInfo;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
             accessor.setHeader(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY, loginInfo);
 
             accessor.setHeader(START_TIME_HEADER, System.nanoTime());
-            metricsListener.incrementInboundMessage();
+            metricsListener.incrementInboundMessage(resolvePayloadSize(message.getPayload()));
 
             return MessageBuilder.createMessage(
                     message.getPayload(),
@@ -58,9 +59,22 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
             metricsListener.recordMessageLatency(duration);
 
             if (ex != null) {
-                metricsListener.incrementError();
+                metricsListener.incrementError(ex);
                 log.error("WebSocket message processing failed", ex);
             }
         }
+    }
+
+    private int resolvePayloadSize(Object payload) {
+        if (payload == null) {
+            return 0;
+        }
+        if (payload instanceof byte[] bytes) {
+            return bytes.length;
+        }
+        if (payload instanceof String text) {
+            return text.getBytes(StandardCharsets.UTF_8).length;
+        }
+        return payload.toString().getBytes(StandardCharsets.UTF_8).length;
     }
 }
