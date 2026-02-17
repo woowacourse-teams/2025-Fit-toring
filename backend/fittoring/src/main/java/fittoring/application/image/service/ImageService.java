@@ -1,5 +1,6 @@
 package fittoring.application.image.service;
 
+import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -84,6 +86,14 @@ public class ImageService {
 
     public List<Image> findAll(List<Long> relationIds, ImageType imageType) {
         return imageRepository.findByRelationIdsAndImageType(relationIds, imageType);
+    }
+
+    public List<Long> findThumbnailExistsIds(List<Long> relationIds, ImageType imageType) {
+        if (relationIds.isEmpty()) {
+            return List.of();
+        }
+        return imageRepository.findRelationIdsInByImageTypeAndVariant(
+                relationIds, imageType, ImageVariant.THUMBNAIL);
     }
 
     public void delete(ImageType imageType, Long relationId) {

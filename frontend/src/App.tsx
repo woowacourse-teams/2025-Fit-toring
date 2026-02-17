@@ -6,6 +6,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 
+import BottomTabLayout from './common/components/BottomTabLayout/BottomTabLayout';
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
 import ChatRooms from './pages/chatRooms/ChatRooms';
@@ -37,60 +38,69 @@ const IdentityVerification = lazy(
 
 const router = createBrowserRouter([
   {
-    path: PAGE_URL.HOME,
-    element: <Home />,
-    loader: () => {
-      const firstVisited = !sessionStorage.getItem('hasVisited');
-
-      if (firstVisited) {
-        return redirect(PAGE_URL.LANDING);
-      }
-      return null;
-    },
-  },
-  { path: PAGE_URL.LANDING, element: <Landing /> },
-  { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
-  { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
-  { path: PAGE_URL.SIGNUP, element: <Signup /> },
-  { path: PAGE_URL.MENTORING_CREATE, element: <MentoringCreate /> },
-  {
-    path: `${PAGE_URL.MENTORING_UPDATE}/:mentoringId`,
-    element: <MentoringUpdate />,
-  },
-  { path: PAGE_URL.LOGIN, element: <Login /> },
-  { path: `${PAGE_URL.CHAT_ROOM}/:chatRoomId`, element: <ChatRoom /> },
-  { path: `${PAGE_URL.CHAT_ROOMS}`, element: <ChatRooms /> },
-  { path: PAGE_URL.IDENTITY_VERIFICATION, element: <IdentityVerification /> },
-  {
-    path: `${PAGE_URL.MY_PAGE}`,
-    element: <MyPage />,
+    element: <MobileLayout />,
     children: [
       {
-        index: true,
-        element: <CreatedMentoring />,
+        element: <BottomTabLayout />,
+        children: [
+          {
+            path: PAGE_URL.HOME,
+            element: <Home />,
+            loader: () => {
+              const firstVisited = !sessionStorage.getItem('hasVisited');
+
+              if (firstVisited) {
+                return redirect(PAGE_URL.LANDING);
+              }
+              return null;
+            },
+          },
+          { path: `${PAGE_URL.CHAT_ROOMS}`, element: <ChatRooms /> },
+          {
+            path: `${PAGE_URL.MY_PAGE}`,
+            element: <MyPage />,
+            children: [
+              {
+                index: true,
+                element: <CreatedMentoring />,
+              },
+              {
+                path: PAGE_URL.CREATED_MENTORING,
+                element: <CreatedMentoring />,
+              },
+              {
+                path: PAGE_URL.PARTICIPATED_MENTORING,
+                element: <ParticipatedMentoring />,
+              },
+              {
+                path: PAGE_URL.EDIT_PROFILE,
+                element: <EditProfile />,
+              },
+            ],
+          },
+        ],
       },
+      { path: PAGE_URL.LANDING, element: <Landing /> },
+      { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
+      { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
+      { path: PAGE_URL.SIGNUP, element: <Signup /> },
+      { path: PAGE_URL.MENTORING_CREATE, element: <MentoringCreate /> },
       {
-        path: PAGE_URL.CREATED_MENTORING,
-        element: <CreatedMentoring />,
+        path: `${PAGE_URL.MENTORING_UPDATE}/:mentoringId`,
+        element: <MentoringUpdate />,
       },
+      { path: PAGE_URL.LOGIN, element: <Login /> },
+      { path: `${PAGE_URL.CHAT_ROOM}/:chatRoomId`, element: <ChatRoom /> },
       {
-        path: PAGE_URL.PARTICIPATED_MENTORING,
-        element: <ParticipatedMentoring />,
-      },
-      {
-        path: PAGE_URL.EDIT_PROFILE,
-        element: <EditProfile />,
+        path: PAGE_URL.IDENTITY_VERIFICATION,
+        element: <IdentityVerification />,
       },
     ],
   },
 ]);
 
 function App() {
-  return (
-    <MobileLayout>
-      <RouterProvider router={router} />
-    </MobileLayout>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
