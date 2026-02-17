@@ -11,11 +11,14 @@ const useChannelTalk = () => {
   const { authenticated } = useAuth();
 
   useEffect(() => {
+    let ignore = false;
+
     if (authenticated) {
       const memberId = localStorage.getItem('memberId');
 
       getUserInfoSummary()
         .then((userInfo) => {
+          if (ignore) return;
           bootChannelTalk({
             memberId: memberId ?? '',
             name: userInfo.name,
@@ -23,6 +26,7 @@ const useChannelTalk = () => {
           });
         })
         .catch(() => {
+          if (ignore) return;
           bootChannelTalk();
         });
     } else {
@@ -30,6 +34,7 @@ const useChannelTalk = () => {
     }
 
     return () => {
+      ignore = true;
       shutdownChannelTalk();
     };
   }, [authenticated]);
