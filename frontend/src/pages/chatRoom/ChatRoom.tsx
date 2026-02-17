@@ -13,6 +13,10 @@ import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
 import ApiError from '../../common/apis/ApiError';
+import {
+  hideChannelTalk,
+  showChannelTalk,
+} from '../../common/utils/channelTalk';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
@@ -29,6 +33,11 @@ import type { Message } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
 
 function ChatRoom() {
+  useEffect(() => {
+    hideChannelTalk();
+    return () => showChannelTalk();
+  }, []);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState('');
 
