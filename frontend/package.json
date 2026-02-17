@@ -85,7 +85,8 @@
     "react-dom": "^19.1.0",
     "react-ga4": "^2.1.0",
     "react-router-dom": "^7.6.3",
-    "sockjs-client": "^1.6.1"
+    "sockjs-client": "^1.6.1",
+    "yaml": "^2.8.2"
   },
   "msw": {
     "workerDirectory": [
