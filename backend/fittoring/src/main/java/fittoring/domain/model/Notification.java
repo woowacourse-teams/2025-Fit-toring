@@ -18,4 +18,8 @@ public class Notification {
     public void putData(String key, String value) {
         data.put(key, value);
     }
+
+    public void setImageNotificationBody(){
+        data.put("body", "이미지를 보냈습니다.");
+    }
 }

@@ -2,6 +2,7 @@ package fittoring.config.websocket;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +47,7 @@ class WebSocketAuthHandshakeInterceptorTest {
     private JwtProvider jwtProvider;
     private JwtExtractor jwtExtractor;
     private ObjectMapper objectMapper;
+    private WebSocketMetricsListener metricsListener;
     private WebSocketAuthHandshakeInterceptor interceptor;
     private ErrorJsonLogger errorJsonLogger;
 
@@ -53,9 +55,15 @@ class WebSocketAuthHandshakeInterceptorTest {
     void setUp() {
         jwtProvider = mock(JwtProvider.class);
         jwtExtractor = mock(JwtExtractor.class);
+        metricsListener = mock(WebSocketMetricsListener.class);
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         errorJsonLogger = new ErrorJsonLogger(objectMapper);
-        interceptor = new WebSocketAuthHandshakeInterceptor(jwtProvider, jwtExtractor, objectMapper, errorJsonLogger);
+        interceptor = new WebSocketAuthHandshakeInterceptor(
+                jwtProvider,
+                jwtExtractor,
+                objectMapper,
+                metricsListener,
+                errorJsonLogger);
     }
 
     @DisplayName("쿠키의 유효한 토큰이 있으면 로그인 정보를 세션 속성에 저장한다.")
@@ -107,6 +115,7 @@ class WebSocketAuthHandshakeInterceptorTest {
                 .contains("\"status\":\"UNAUTHORIZED\"")
                 .contains("\"message\":\"" + BusinessErrorMessage.EMPTY_COOKIE.getMessage() + "\"")
                 .contains("\"timestamp\"");
+        verify(metricsListener).incrementHandshakeFailure("auth");
     }
 
     @DisplayName("인증 실패 시 예외 로그가 ErrorLog 포맷으로 기록된다.")
@@ -168,6 +177,6 @@ class WebSocketAuthHandshakeInterceptorTest {
         // then
         assertThat(result).isTrue();
         assertThat(attributes).isEmpty();
-        verifyNoInteractions(jwtExtractor, jwtProvider);
+        verifyNoInteractions(jwtExtractor, jwtProvider, metricsListener);
     }
 }

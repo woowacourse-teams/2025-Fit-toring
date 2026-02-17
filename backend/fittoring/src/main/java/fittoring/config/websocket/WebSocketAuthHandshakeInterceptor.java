@@ -43,6 +43,7 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
     private final JwtProvider jwtProvider;
     private final JwtExtractor jwtExtractor;
     private final ObjectMapper objectMapper;
+    private final WebSocketMetricsListener metricsListener;
     private final ErrorJsonLogger errorJsonLogger;
 
     @Override
@@ -63,10 +64,12 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
             }
             return true;
         } catch (UnauthorizedException | InvalidTokenException e) {
+            metricsListener.incrementHandshakeFailure("auth");
             logHandshakeError(request, HttpStatus.UNAUTHORIZED, e);
             writeErrorResponse(response, HttpStatus.UNAUTHORIZED, e.getMessage());
             return false;
         } catch (Exception e) {
+            metricsListener.incrementHandshakeFailure("other");
             String message = SystemErrorMessage.INTERNAL_SERVER_ERROR.getMessage();
             logHandshakeError(request, HttpStatus.INTERNAL_SERVER_ERROR, e);
             writeErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, message);
