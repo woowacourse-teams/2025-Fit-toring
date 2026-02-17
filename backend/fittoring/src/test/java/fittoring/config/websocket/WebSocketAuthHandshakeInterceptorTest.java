@@ -2,6 +2,7 @@ package fittoring.config.websocket;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -38,14 +39,16 @@ class WebSocketAuthHandshakeInterceptorTest {
     private JwtProvider jwtProvider;
     private JwtExtractor jwtExtractor;
     private ObjectMapper objectMapper;
+    private WebSocketMetricsListener metricsListener;
     private WebSocketAuthHandshakeInterceptor interceptor;
 
     @BeforeEach
     void setUp() {
         jwtProvider = mock(JwtProvider.class);
         jwtExtractor = mock(JwtExtractor.class);
+        metricsListener = mock(WebSocketMetricsListener.class);
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        interceptor = new WebSocketAuthHandshakeInterceptor(jwtProvider, jwtExtractor, objectMapper);
+        interceptor = new WebSocketAuthHandshakeInterceptor(jwtProvider, jwtExtractor, objectMapper, metricsListener);
     }
 
     @DisplayName("쿠키의 유효한 토큰이 있으면 로그인 정보를 세션 속성에 저장한다.")
@@ -97,6 +100,7 @@ class WebSocketAuthHandshakeInterceptorTest {
                 .contains("\"status\":\"UNAUTHORIZED\"")
                 .contains("\"message\":\"" + BusinessErrorMessage.EMPTY_COOKIE.getMessage() + "\"")
                 .contains("\"timestamp\"");
+        verify(metricsListener).incrementHandshakeFailure("auth");
     }
 
     @DisplayName("서블릿 요청이 아니면 인증을 생략하고 그대로 통과한다.")
@@ -114,6 +118,6 @@ class WebSocketAuthHandshakeInterceptorTest {
         // then
         assertThat(result).isTrue();
         assertThat(attributes).isEmpty();
-        verifyNoInteractions(jwtExtractor, jwtProvider);
+        verifyNoInteractions(jwtExtractor, jwtProvider, metricsListener);
     }
 }
