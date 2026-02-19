@@ -9,6 +9,7 @@ import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.exception.SystemErrorMessage;
 import fittoring.logging.ErrorJsonLogger;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +91,7 @@ public class ChatWebSocketExceptionHandler {
             String logMessage
     ) {
         String destination = resolveDestination(message);
-        String traceId = java.util.UUID.randomUUID().toString();
+        String traceId = UUID.randomUUID().toString();
         Long chatRoomId = extractChatRoomId(destination);
 
         errorJsonLogger.logWithContext(
