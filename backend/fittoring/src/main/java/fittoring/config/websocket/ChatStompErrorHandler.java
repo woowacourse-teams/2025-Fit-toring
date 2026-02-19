@@ -57,11 +57,12 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
     ) {
         String traceId = UUID.randomUUID().toString();
         String destination = resolveDestination(clientMessage);
+        String wsMethod = resolveWsMethod(clientMessage);
         Long chatRoomId = extractChatRoomId(destination);
         errorJsonLogger.logWithContext(
                 exception,
                 HttpStatus.UNAUTHORIZED,
-                "WS_SEND",
+                wsMethod,
                 destination,
                 destination,
                 null,
@@ -85,6 +86,22 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
             return "unknown";
         }
         return destination;
+    }
+
+    private String resolveWsMethod(@Nullable Message<byte[]> clientMessage) {
+        if (clientMessage == null) {
+            return "WS_UNKNOWN";
+        }
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(clientMessage, StompHeaderAccessor.class);
+        if (accessor == null || accessor.getCommand() == null) {
+            return "WS_UNKNOWN";
+        }
+
+        return switch (accessor.getCommand()) {
+            case SEND -> "WS_SEND";
+            case SUBSCRIBE -> "WS_SUBSCRIBE";
+            default -> "WS_" + accessor.getCommand().name();
+        };
     }
 
     @Nullable
