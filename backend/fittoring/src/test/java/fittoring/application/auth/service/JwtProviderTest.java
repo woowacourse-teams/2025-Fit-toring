@@ -82,4 +82,17 @@ class JwtProviderTest {
         //then
         assertThat(refreshToken).isNotNull();
     }
+
+    @DisplayName("만료되지 않은 토큰에서 만료 시각을 추출할 수 있다.")
+    @Test
+    void extractExpirationMillis() {
+        // given
+        String token = jwtProvider.createAccessToken(1L, MemberRole.ADMIN);
+
+        // when
+        long expirationMillis = jwtProvider.extractExpirationMillis(token);
+
+        // then
+        assertThat(expirationMillis).isGreaterThan(System.currentTimeMillis());
+    }
 }
