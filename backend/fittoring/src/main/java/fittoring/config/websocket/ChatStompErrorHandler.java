@@ -44,7 +44,7 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
     private Throwable unwrapCause(Throwable ex) {
         Throwable cursor = ex;
         int depth = 0;
-        while (cursor.getCause() != null && depth < 5) {
+        while (cursor.getCause() != null && depth < 3) {
             cursor = cursor.getCause();
             depth++;
         }
