@@ -24,7 +24,7 @@ spring:
     show-sql: true
   flyway:
     enabled: true
-    url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
     user: ${DEV_WRITER_USER}
     password: ${DEV_WRITER_PASSWORD}
     baseline-on-migrate: true
