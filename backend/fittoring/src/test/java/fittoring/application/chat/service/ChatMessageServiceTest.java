@@ -46,7 +46,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
     @Autowired
     private PresignedUrlService presignedUrlService;
 
-    @DisplayName("존재하지 않는 채팅방에 대한 저장의 경우 예외가 발생한다.")
+    @DisplayName("존재하지 않는 채팅방 저장의 경우 예외가 발생한다.")
     @Test
     void registerMessage() {
         //given
