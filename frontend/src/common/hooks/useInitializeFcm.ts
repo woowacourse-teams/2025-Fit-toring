@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import {
   fetchFcmToken,
@@ -9,20 +9,22 @@ import {
 import { isIOS } from '../utils/deviceDetection';
 
 const useInitializeFcm = () => {
-  const isInitialized = useRef(false);
-
   useEffect(() => {
     const memberId = localStorage.getItem('memberId');
 
-    if (isIOS() || !memberId || isInitialized.current) {
+    if (isIOS() || !memberId) {
       return;
     }
 
-    isInitialized.current = true;
+    let isInitialized = false;
 
     async function initializeFcm() {
       try {
         const permission = await requestPermissionToUser();
+        if (isInitialized) {
+          return;
+        }
+
         if (!permission) {
           alert(
             '채팅 알림 권한이 거부되었습니다. 채팅 알림을 받으시려면 브라우저에서 권한을 허용해주세요.',
@@ -31,9 +33,12 @@ const useInitializeFcm = () => {
         }
 
         await navigator.serviceWorker.ready;
+        if (isInitialized) {
+          return;
+        }
 
         const currentToken = await fetchFcmToken();
-        if (!currentToken) {
+        if (!currentToken || isInitialized) {
           return;
         }
 
@@ -42,6 +47,10 @@ const useInitializeFcm = () => {
           memberId: Number(memberId),
         });
 
+        if (isInitialized) {
+          return;
+        }
+
         setupForegroundMessageListener();
       } catch (error) {
         console.error('FCM 초기화 중 오류 발생:', error);
@@ -49,6 +58,10 @@ const useInitializeFcm = () => {
     }
 
     initializeFcm();
+
+    return () => {
+      isInitialized = true;
+    };
   }, []);
 };
 
