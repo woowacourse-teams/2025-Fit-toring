@@ -34,6 +34,7 @@ spring:
         secret-key: ${AWS_SQS_IAM_SECRET_KEY}
 
 server:
+  forward-headers-strategy: framework
   tomcat:
     threads:
       max: ${TOMCAT_MAX_THREADS}
