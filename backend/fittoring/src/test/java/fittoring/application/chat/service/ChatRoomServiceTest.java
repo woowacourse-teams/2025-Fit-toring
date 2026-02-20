@@ -73,7 +73,7 @@ class ChatRoomServiceTest extends IntegrationTestSupport {
         assertThat(chatRoomCreatedInfoDto.url()).isNotNull();
     }
 
-    @DisplayName("멘티는 채팅방 조회를 할 수 있다.")
+    @DisplayName("멘티는 채팅방을 조회할 수 있다.")
     @Test
     void findChatRoomByMentee() {
         //given
