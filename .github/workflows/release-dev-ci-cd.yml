@@ -156,6 +156,7 @@ jobs:
     runs-on:
       - self-hosted
       - dev
+      - X64 # AMD64 아키텍처를 사용하는 런너에서만 실행
     env:
       IMAGE: fittoring/fittoring   
       TAG: ${{ needs.build-and-push.outputs.image_tag }}
