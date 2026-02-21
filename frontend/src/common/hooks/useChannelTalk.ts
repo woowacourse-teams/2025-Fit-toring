@@ -20,7 +20,7 @@ const useChannelTalk = () => {
         .then((userInfo) => {
           if (ignore) return;
           bootChannelTalk({
-            memberId: memberId ?? '',
+            memberId: memberId ?? undefined,
             name: userInfo.name,
             phoneNumber: userInfo.phoneNumber,
           });

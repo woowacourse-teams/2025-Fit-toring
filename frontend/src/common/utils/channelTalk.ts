@@ -1,5 +1,5 @@
 interface ChannelTalkMemberInfo {
-  memberId: string;
+  memberId?: string;
   name: string;
   phoneNumber: string;
 }
@@ -9,12 +9,14 @@ const PLUGIN_KEY = process.env.CHANNEL_TALK_PLUGIN_KEY ?? '';
 export const bootChannelTalk = (memberInfo?: ChannelTalkMemberInfo) => {
   if (!window.ChannelIO) return;
 
-  const bootOption: Record<string, unknown> = {
+  const bootOption: BootOption = {
     pluginKey: PLUGIN_KEY,
   };
 
   if (memberInfo) {
-    bootOption.memberId = memberInfo.memberId;
+    if (memberInfo.memberId) {
+      bootOption.memberId = memberInfo.memberId;
+    }
     bootOption.profile = {
       name: memberInfo.name,
       mobileNumber: memberInfo.phoneNumber,
