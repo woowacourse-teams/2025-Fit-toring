@@ -30,8 +30,8 @@ spring:
     aws:
       region: ap-northeast-2
       credentials:
-        access-key: ${AWS_SQS_IAM_ACCESS_KEY}
-        secret-key: ${AWS_SQS_IAM_SECRET_KEY}
+        access-key: ${AWS_IAM_ACCESS_KEY}
+        secret-key: ${AWS_IAM_SECRET_KEY}
 
 server:
   forward-headers-strategy: framework
