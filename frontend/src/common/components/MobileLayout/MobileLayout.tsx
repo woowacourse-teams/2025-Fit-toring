@@ -1,11 +1,7 @@
 import styled from '@emotion/styled';
 import { Outlet } from 'react-router-dom';
 
-import useChannelTalk from '../../hooks/useChannelTalk';
-
 function MobileLayout() {
-  useChannelTalk();
-
   return (
     <S_Container>
       <S_Contents>
