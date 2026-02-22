@@ -243,6 +243,19 @@ function ChatRoom() {
             });
           },
         );
+
+        client.subscribe('/user/queue/errors', (message: IMessage) => {
+          const parsedErrorMessage = JSON.parse(message.body);
+
+          setMessages((prev) => {
+            return prev.map((message) => {
+              if (message.tempId === parsedErrorMessage.tempId) {
+                return { ...message, status: 'fail' };
+              }
+              return message;
+            });
+          });
+        });
       },
     });
 
