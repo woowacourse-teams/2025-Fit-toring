@@ -9,7 +9,8 @@ public record ChatWebSocketErrorResponse(
         String message,
         LocalDateTime timestamp,
         String traceId,
-        Long chatRoomId
+        Long chatRoomId,
+        Long tempId
 ) {
 
     public static ChatWebSocketErrorResponse of(
@@ -17,7 +18,8 @@ public record ChatWebSocketErrorResponse(
             String code,
             String message,
             String traceId,
-            Long chatRoomId
+            Long chatRoomId,
+            Long tempId
     ) {
         return new ChatWebSocketErrorResponse(
                 statusCode,
@@ -25,7 +27,8 @@ public record ChatWebSocketErrorResponse(
                 message,
                 LocalDateTime.now(ZoneId.of("Asia/Seoul")),
                 traceId,
-                chatRoomId
+                chatRoomId,
+                tempId
         );
     }
 }
