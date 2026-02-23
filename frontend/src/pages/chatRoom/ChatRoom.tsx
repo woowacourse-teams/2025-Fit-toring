@@ -22,6 +22,7 @@ import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden'
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
+import { MESSAGE_TYPE } from './constants/message';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
@@ -157,6 +158,7 @@ function ChatRoom() {
       chatMessageId: tempId,
       tempId,
       status: 'pending' as const,
+      messageType: MESSAGE_TYPE.TEXT,
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
@@ -272,6 +274,21 @@ function ChatRoom() {
             });
           },
         );
+
+        const pendingMessages = messagesRef.current.filter(
+          (m) => m.status === 'pending',
+        );
+
+        pendingMessages.forEach((msg) => {
+          client.publish({
+            destination: `/app/chatroom/${chatRoomId}`,
+            body: JSON.stringify({
+              content: msg.content,
+              tempId: msg.tempId,
+              messageType: msg.messageType,
+            }),
+          });
+        });
       },
     });
 
