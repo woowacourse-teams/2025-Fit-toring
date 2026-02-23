@@ -9,10 +9,12 @@ import React, {
 import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
 import ApiError from '../../common/apis/ApiError';
+import { postReissue } from '../../common/apis/postReissue';
+import { PAGE_URL } from '../../common/constants/url';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
@@ -29,7 +31,10 @@ import type { Message } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
 
 function ChatRoom() {
+  const navigate = useNavigate();
+
   const [messages, setMessages] = useState<Message[]>([]);
+  const messagesRef = useRef<Message[]>([]);
   const [message, setMessage] = useState('');
 
   const { chatRoomId } = useParams();
@@ -81,6 +86,10 @@ function ChatRoom() {
     hasNextPage: false,
     isFetchingNextPage: false,
   });
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   useEffect(() => {
     stateRef.current.hasNextPage = !!hasNextPage;
@@ -189,6 +198,8 @@ function ChatRoom() {
   const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
+    let isRefreshing = false;
+
     const client = new Client({
       webSocketFactory: () => {
         console.log('[sockjs] webSocketFactory called');
@@ -197,14 +208,32 @@ function ChatRoom() {
           withCredentials: true,
         });
       },
-      // onStompError: (frame) => console.error('STOMP protocol error:', frame),
-      onStompError: (frame) => {
-        console.error('[sockjs][STOMP ERROR]', {
-          command: frame.command,
-          headers: frame.headers,
-          body: frame.body, // 👈 여기에 보통 "token expired" / "invalid jwt" 들어있음
-        });
+      onStompError: async (frame) => {
+        const parsedBody = JSON.parse(frame.body);
+
+        if (parsedBody.code === 'TOKEN_EXPIRED') {
+          if (isRefreshing) {
+            return;
+          }
+
+          isRefreshing = true;
+
+          try {
+            await postReissue();
+
+            if (client.active) {
+              await client.deactivate();
+            }
+
+            client.activate();
+          } catch (e) {
+            navigate(PAGE_URL.LOGIN);
+          } finally {
+            isRefreshing = false;
+          }
+        }
       },
+
       onWebSocketError: (e) => console.error('WebSocket error:', e),
       reconnectDelay: 5000,
       onConnect: () => {
@@ -252,7 +281,7 @@ function ChatRoom() {
     return () => {
       client.deactivate();
     };
-  }, [capturePrevScroll, chatRoomId]);
+  }, [capturePrevScroll, chatRoomId, navigate]);
 
   if (error?.status === 403) {
     return <ChatRoomForbidden />;
