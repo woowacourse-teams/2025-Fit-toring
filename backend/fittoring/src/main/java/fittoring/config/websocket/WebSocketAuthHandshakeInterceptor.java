@@ -10,6 +10,8 @@ import fittoring.application.exception.UnauthorizedException;
 import fittoring.config.auth.LoginInfo;
 import fittoring.exception.ErrorResponse;
 import fittoring.exception.SystemErrorMessage;
+import fittoring.logging.ErrorJsonLogger;
+import fittoring.util.ResponseDurationCalculator;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +27,8 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
@@ -38,6 +43,8 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
     private final JwtProvider jwtProvider;
     private final JwtExtractor jwtExtractor;
     private final ObjectMapper objectMapper;
+    private final WebSocketMetricsListener metricsListener;
+    private final ErrorJsonLogger errorJsonLogger;
 
     @Override
     public boolean beforeHandshake(
@@ -57,12 +64,14 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
             }
             return true;
         } catch (UnauthorizedException | InvalidTokenException e) {
-            logHandshakeError(request, HttpStatus.UNAUTHORIZED, e.getMessage());
+            metricsListener.incrementHandshakeFailure("auth");
+            logHandshakeError(request, HttpStatus.UNAUTHORIZED, e);
             writeErrorResponse(response, HttpStatus.UNAUTHORIZED, e.getMessage());
             return false;
         } catch (Exception e) {
+            metricsListener.incrementHandshakeFailure("other");
             String message = SystemErrorMessage.INTERNAL_SERVER_ERROR.getMessage();
-            logHandshakeError(request, HttpStatus.INTERNAL_SERVER_ERROR, message);
+            logHandshakeError(request, HttpStatus.INTERNAL_SERVER_ERROR, e);
             writeErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, message);
             return false;
         }
@@ -87,16 +96,14 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
         }
     }
 
-    private void logHandshakeError(ServerHttpRequest request, HttpStatus status, String message) {
-        String method = request.getMethod().name();
+    private void logHandshakeError(ServerHttpRequest request, HttpStatus status, Throwable e) {
+        ServletRequestAttributes attrs =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        Long durationMs = ResponseDurationCalculator.calculate(attrs);
+        String method = request.getMethod() == null ? null : request.getMethod().name();
         String path = request.getURI().getPath();
-        if (status.is4xxClientError()) {
-            log.warn("WS_HANDSHAKE_ERROR status={} method={} path={} message={}",
-                    status.value(), method, path, message);
-            return;
-        }
-        log.error("WS_HANDSHAKE_ERROR status={} method={} path={} message={}",
-                status.value(), method, path, message);
+        String traceId = MDC.get("traceId");
+        errorJsonLogger.logWithContext(e, status, method, path, path, durationMs, traceId);
     }
 
     @Override

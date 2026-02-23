@@ -18,6 +18,7 @@ import fittoring.application.auth.service.PhoneVerificationService;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.Gender;
+import fittoring.logging.ErrorJsonLogger;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,6 +57,9 @@ class AuthControllerTest {
     @MockitoBean
     private JwtExtractor jwtExtractor;
 
+    @MockitoBean
+    private ErrorJsonLogger errorJsonLogger;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -63,7 +67,7 @@ class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @Nested
-    @DisplayName("소셜 회원가입 API(/oauth-signup)는")
+    @DisplayName("소셜 회원가입 API(/oauth-signup)")
     class OauthSignUp {
         @DisplayName("정상적인 요청에 대해 201 Created와 회원 ID를 반환한다")
         @Test

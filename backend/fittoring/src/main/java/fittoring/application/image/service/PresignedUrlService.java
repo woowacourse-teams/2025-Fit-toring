@@ -1,5 +1,6 @@
 package fittoring.application.image.service;
 
+import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.image.presentation.dto.response.PresignedIssueResponse;
 import fittoring.application.image.service.dto.IssuedPresignedDto;
 import fittoring.config.S3Properties;
@@ -8,7 +9,7 @@ import fittoring.domain.model.ImageVariant;
 import fittoring.infrastructure.exception.S3UploadException;
 import fittoring.infrastructure.image.ContentType;
 import fittoring.infrastructure.image.KeyBuilder;
-import fittoring.logging.JsonLogger;
+import fittoring.logging.AppJsonLogger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -22,7 +23,10 @@ import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -34,7 +38,7 @@ public class PresignedUrlService {
     private final S3Client s3Client;
     private final S3Presigner presigner;
     private final S3Properties properties;
-    private final JsonLogger jsonLogger;
+    private final AppJsonLogger appJsonLogger;
     private final KeyBuilder keyBuilder;
 
     public PresignedIssueResponse issuePresignedUrl(
@@ -67,6 +71,33 @@ public class PresignedUrlService {
         );
     }
 
+    public ImageUrlResponse issueGetUrlWithThumbnail(String originalKey, boolean hasThumbnail) {
+        String originalUrl = issueGetPresignedUrl(originalKey);
+
+        String thumbnailUrl = null;
+        if (hasThumbnail) {
+            String thumbnailKey = originalKey.replace("/default/", "/thumbnail/");
+            thumbnailUrl = issueGetPresignedUrl(thumbnailKey);
+        }
+
+        return new ImageUrlResponse(thumbnailUrl, originalUrl);
+    }
+
+    public String issueGetPresignedUrl(String key) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(properties.getBucketName())
+                .key(key)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofHours(1))
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        PresignedGetObjectRequest presigned = presigner.presignGetObject(presignRequest);
+        return presigned.url().toString();
+    }
+
     public boolean isObjectExistsFromKey(String key) {
         try {
             HeadObjectRequest request = HeadObjectRequest.builder()
@@ -82,13 +113,13 @@ public class PresignedUrlService {
                 return false;
             }
             if (e.statusCode() == 403) {
-                jsonLogger.warn("S3 HEAD 권한 거부(403)", Map.of("key", key), e);
+                appJsonLogger.warn("S3 HEAD 권한 거부(403)", Map.of("key", key), e);
                 return false;
             }
-            jsonLogger.warn("S3 HEAD 실패(S3Exception)", Map.of("key", key, "status", e.statusCode()), e);
+            appJsonLogger.warn("S3 HEAD 실패(S3Exception)", Map.of("key", key, "status", e.statusCode()), e);
             return false;
         } catch (Exception e) {
-            jsonLogger.warn("S3 HEAD 실패(unknown)", Map.of("key", key), e);
+            appJsonLogger.warn("S3 HEAD 실패(unknown)", Map.of("key", key), e);
             return false;
         }
     }
@@ -98,10 +129,10 @@ public class PresignedUrlService {
             String key = keyBuilder.extractKeyFromUrl(url);
             return isObjectExistsFromKey(key);
         } catch (S3UploadException e) {
-            jsonLogger.warn("S3 키 추출 실패 (잘못된 URL)", Map.of("url", url), e);
+            appJsonLogger.warn("S3 키 추출 실패 (잘못된 URL)", Map.of("url", url), e);
             return false;
         } catch (Exception e) {
-            jsonLogger.warn("S3 HEAD 실패 (unknown error)", Map.of("url", url), e);
+            appJsonLogger.warn("S3 HEAD 실패 (unknown error)", Map.of("url", url), e);
             return false;
         }
     }

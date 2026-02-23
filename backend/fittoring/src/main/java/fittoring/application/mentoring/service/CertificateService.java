@@ -13,7 +13,7 @@ import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Mentoring;
 import fittoring.infrastructure.image.KeyBuilder;
-import fittoring.logging.JsonLogger;
+import fittoring.logging.AppJsonLogger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class CertificateService {
     private final CertificateRepository certificateRepository;
     private final ImageService imageService;
     private final PresignedUrlService presignedUrlService;
-    private final JsonLogger jsonLogger;
+    private final AppJsonLogger appJsonLogger;
     private final KeyBuilder keyBuilder;
 
     public void mapCertificatesToMentoring(
@@ -51,7 +51,7 @@ public class CertificateService {
             if (presignedUrlService.isObjectExistsFromKey(certificateInfo.imageUrl())) {
                 validCertificateInfos.add(certificateInfo);
             } else {
-                jsonLogger.warn(
+                appJsonLogger.warn(
                         "자격증 이미지 검증 실패 (S3 객체 없음)",
                         Map.of(
                                 "imageUrl", certificateInfo.imageUrl(),

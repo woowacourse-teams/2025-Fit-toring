@@ -57,6 +57,19 @@ public interface ImageRepository extends ListCrudRepository<Image, Long> {
             @Param("imageType") ImageType imageType
     );
 
+    @Query("""
+              SELECT i.relationId
+              FROM Image i
+              WHERE i.relationId IN :relationIds
+                  AND i.imageType = :imageType
+                  AND i.imageVariant = :imageVariant
+            """)
+    List<Long> findRelationIdsInByImageTypeAndVariant(
+            @Param("relationIds") List<Long> relationIds,
+            @Param("imageType") ImageType imageType,
+            @Param("imageVariant") ImageVariant imageVariant
+    );
+
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Transactional
     @Query(value = """
