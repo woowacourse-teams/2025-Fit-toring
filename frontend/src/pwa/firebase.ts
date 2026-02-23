@@ -29,12 +29,14 @@ export async function requestPermissionToUser() {
 }
 
 export async function fetchFcmToken() {
-  const registration = await navigator.serviceWorker.ready;
+  const existingRegistration = await navigator.serviceWorker.getRegistration();
 
-  if (!registration) {
+  if (!existingRegistration) {
     console.error('Service Worker가 등록되지 않았습니다');
     return null;
   }
+
+  const registration = await navigator.serviceWorker.ready;
 
   const currentToken = await getToken(messaging, {
     vapidKey:
