@@ -29,9 +29,19 @@ export async function requestPermissionToUser() {
 }
 
 export async function fetchFcmToken() {
+  const existingRegistration = await navigator.serviceWorker.getRegistration();
+
+  if (!existingRegistration) {
+    console.error('Service Worker가 등록되지 않았습니다');
+    return null;
+  }
+
+  const registration = await navigator.serviceWorker.ready;
+
   const currentToken = await getToken(messaging, {
     vapidKey:
       'BBsK6Sa5h6aa286kwoR4wFWSeV3eik4UO42zsQ9tIcOpSPFJPuP16LxreaFTm6t5wI50-ct7IAlYAD4zw3ta_6A',
+    serviceWorkerRegistration: registration,
   });
 
   if (currentToken) {
@@ -63,11 +73,20 @@ export function setupForegroundMessageListener() {
       return;
     }
 
+    const chatRoomId = payload.data.chatRoomId;
+
+    const currentChatRoomURL = chatRoomId
+      ? `${PAGE_URL.CHAT_ROOM}/${chatRoomId}`
+      : '/';
+
+    if (chatRoomId && window.location.pathname === currentChatRoomURL) {
+      return;
+    }
+
     const iconPath = '/fittoring-icon-192.png';
     const notificationTitle = payload.data.title || '제목 없음';
-    const chatRoomId = payload.data.chatRoomId;
     const notificationOptions = {
-      body: '포그라운드 알림: ' + payload.data.body || '내용 없음',
+      body: payload.data.body || '내용 없음',
       icon: iconPath,
       badge: iconPath,
       data: {
@@ -84,7 +103,7 @@ export function setupForegroundMessageListener() {
       e.preventDefault();
       notification.close();
 
-      window.location.href = `${PAGE_URL.CHAT_ROOM}/${chatRoomId}`;
+      window.location.href = currentChatRoomURL;
     };
   });
 }

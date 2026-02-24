@@ -133,7 +133,8 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
                 TOKEN_EXPIRED_CODE,
                 exception.getMessage(),
                 traceId,
-                chatRoomId
+                chatRoomId,
+                null
         );
     }
 

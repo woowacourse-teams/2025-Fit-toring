@@ -67,7 +67,7 @@ class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @Nested
-    @DisplayName("소셜 회원가입 API(/oauth-signup)는")
+    @DisplayName("소셜 회원가입 API(/oauth-signup)")
     class OauthSignUp {
         @DisplayName("정상적인 요청에 대해 201 Created와 회원 ID를 반환한다")
         @Test

@@ -10,6 +10,7 @@ import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.DuplicateDeviceException;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.DuplicateReservationException;
 import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.ForbiddenException;
@@ -279,6 +280,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateDeviceException.class)
     public ResponseEntity<ErrorResponse> handle(DuplicateDeviceException e) {
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateReservationException.class)
+    public ResponseEntity<ErrorResponse> handle(DuplicateReservationException e) {
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 

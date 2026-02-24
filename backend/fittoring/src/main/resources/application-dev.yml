@@ -1,7 +1,7 @@
 spring:
   datasources:
     writer:
-      jdbc-url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      jdbc-url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
       username: ${DEV_WRITER_USER}
       password: ${DEV_WRITER_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -11,7 +11,7 @@ spring:
       connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
       max-lifetime: ${HIKARI_MAX_LIFETIME}
     reader:
-      jdbc-url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      jdbc-url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
       username: ${DEV_WRITER_USER}
       password: ${DEV_WRITER_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -24,7 +24,7 @@ spring:
     show-sql: true
   flyway:
     enabled: true
-    url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
     user: ${DEV_WRITER_USER}
     password: ${DEV_WRITER_PASSWORD}
     baseline-on-migrate: true

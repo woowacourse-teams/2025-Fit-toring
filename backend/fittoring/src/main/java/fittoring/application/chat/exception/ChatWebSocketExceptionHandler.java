@@ -1,5 +1,8 @@
 package fittoring.application.chat.exception;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
 import fittoring.application.chat.presentation.dto.response.ChatWebSocketErrorResponse;
 import fittoring.application.exception.ChatMessageNotFoundException;
 import fittoring.application.exception.ChatMessageNotImageException;
@@ -8,7 +11,9 @@ import fittoring.application.exception.UnauthorizedChatMessageAccessException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.exception.SystemErrorMessage;
 import fittoring.logging.ErrorJsonLogger;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +32,10 @@ public class ChatWebSocketExceptionHandler {
 
     private static final Pattern CHAT_ROOM_ID_PATTERN = Pattern.compile("/chatroom/(\\d+)");
     private static final String ERROR_PATH = "/queue/errors";
+    private static final String UNKNOWN_DESTINATION = "unknown";
+    private static final String TEMP_ID_FIELD = "tempId";
 
+    private final ObjectMapper objectMapper;
     private final ErrorJsonLogger errorJsonLogger;
 
     @MessageExceptionHandler({
@@ -90,8 +98,9 @@ public class ChatWebSocketExceptionHandler {
             String logMessage
     ) {
         String destination = resolveDestination(message);
-        String traceId = java.util.UUID.randomUUID().toString();
+        String traceId = UUID.randomUUID().toString();
         Long chatRoomId = extractChatRoomId(destination);
+        Long tempId = resolveTempId(message);
 
         errorJsonLogger.logWithContext(
                 e,
@@ -109,7 +118,8 @@ public class ChatWebSocketExceptionHandler {
                 e.getClass().getSimpleName(),
                 responseMessage,
                 traceId,
-                chatRoomId
+                chatRoomId,
+                tempId
         );
     }
 
@@ -124,11 +134,11 @@ public class ChatWebSocketExceptionHandler {
 
     private String resolveDestination(Message<?> message) {
         if (message == null) {
-            return "unknown";
+            return UNKNOWN_DESTINATION;
         }
         String destination = getDestination(message);
         if (destination == null || destination.isBlank()) {
-            return "unknown";
+            return UNKNOWN_DESTINATION;
         }
         return destination;
     }
@@ -145,5 +155,56 @@ public class ChatWebSocketExceptionHandler {
             return null;
         }
         return Long.parseLong(matcher.group(1));
+    }
+
+    @Nullable
+    private Long resolveTempId(Message<?> message) {
+        Object payload = message == null ? null : message.getPayload();
+        if (payload == null) {
+            return null;
+        }
+        if (payload instanceof ChatMessageRequest request) {
+            return request.tempId();
+        }
+        if (payload instanceof Map<?, ?> payloadMap) {
+            return resolveTempIdFromMap(payloadMap);
+        }
+        if (payload instanceof byte[] payloadBytes) {
+            return resolveTempIdFromJsonBytes(payloadBytes);
+        }
+        return null;
+    }
+
+    @Nullable
+    private Long resolveTempIdFromMap(Map<?, ?> payloadMap) {
+        return toLong(payloadMap.get(TEMP_ID_FIELD));
+    }
+
+    @Nullable
+    private Long resolveTempIdFromJsonBytes(byte[] payloadBytes) {
+        try {
+            JsonNode node = objectMapper.readTree(payloadBytes);
+            if (!node.has(TEMP_ID_FIELD) || node.get(TEMP_ID_FIELD).isNull()) {
+                return null;
+            }
+            return node.get(TEMP_ID_FIELD).asLong();
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private Long toLong(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        if (value instanceof String text) {
+            try {
+                return Long.parseLong(text);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
     }
 }

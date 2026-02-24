@@ -160,7 +160,7 @@ function ChatRoom() {
 
     client.publish({
       destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({ content: message, tempId }),
+      body: JSON.stringify({ content: message, tempId, messageType: 'TEXT' }),
     });
   };
 
