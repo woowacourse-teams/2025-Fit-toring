@@ -2,10 +2,7 @@ import { useEffect } from 'react';
 
 import { getUserInfoSummary } from '../apis/getUserInfoSummary';
 import { useAuth } from '../components/AuthProvider/AuthProvider';
-import {
-  bootChannelTalk,
-  shutdownChannelTalk,
-} from '../utils/channelTalk';
+import { bootChannelTalk, shutdownChannelTalk } from '../utils/channelTalk';
 
 const useChannelTalk = () => {
   const { authenticated } = useAuth();
@@ -16,17 +13,26 @@ const useChannelTalk = () => {
     if (authenticated) {
       const memberId = localStorage.getItem('memberId');
 
+      if (!memberId) {
+        bootChannelTalk();
+        return;
+      }
+
       getUserInfoSummary()
         .then((userInfo) => {
-          if (ignore) return;
+          if (ignore) {
+            return;
+          }
           bootChannelTalk({
-            memberId: memberId ?? undefined,
+            memberId,
             name: userInfo.name,
             phoneNumber: userInfo.phoneNumber,
           });
         })
         .catch(() => {
-          if (ignore) return;
+          if (ignore) {
+            return;
+          }
           bootChannelTalk();
         });
     } else {
