@@ -13,7 +13,10 @@ import { useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
 import ApiError from '../../common/apis/ApiError';
-import { showChannelTalk } from '../../common/utils/channelTalk';
+import {
+  hideChannelTalk,
+  showChannelTalk,
+} from '../../common/utils/channelTalk';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
@@ -174,6 +177,14 @@ function ChatRoom() {
       setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
     }
   }, [chatRoomMessage]);
+
+  useEffect(() => {
+    hideChannelTalk();
+
+    return () => {
+      showChannelTalk();
+    };
+  }, []);
 
   const {
     data: chatRoomInfoData,
