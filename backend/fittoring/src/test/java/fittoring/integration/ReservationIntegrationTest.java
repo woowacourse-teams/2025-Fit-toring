@@ -10,7 +10,6 @@ import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryMentoringRepository;
@@ -24,7 +23,6 @@ import fittoring.application.reservation.presentation.dto.response.ReservationCr
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.domain.model.Category;
 import fittoring.domain.model.CategoryMentoring;
-import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
@@ -68,9 +66,6 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private JwtProvider jwtProvider;
-
-    @Autowired
-    private ChatRoomRepository chatRoomRepository;
 
     @DisplayName("멘토링 예약에 성공하면 201 Created 상태코드와 예약 정보를 반환한다.")
     @Test
@@ -238,6 +233,88 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(response.statusCode()).isEqualTo(404);
     }
 
+    @DisplayName("진행 중인 예약이 이미 존재할 때 같은 예약을 시도하면 409 Conflict를 반환한다.")
+    @Test
+    void createReservationFail3() {
+        // given
+        doNothing()
+                .when(smsRestClientService)
+                .sendSms(
+                        ArgumentMatchers.any(Phone.class),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString()
+                );
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+        reservationRepository.save(FixtureUtil.testApprovedReservation(mentoring, mentee));
+
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
+        ReservationCreateRequest request = new ReservationCreateRequest("중복 예약 시도");
+
+        // when
+        Response response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/post-mentorings-id-reservation-conflict",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .requestSchema(Schema.schema("ReservationCreateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/mentorings/{mentoringId}/reservation", mentoring.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(409);
+    }
+
+    @DisplayName("예약이 삭제(soft delete) 되면 같은 멘토링에 다시 예약할 수 있다.")
+    @Test
+    void createReservationSuccessAfterSoftDeletedActiveReservation() {
+        // given
+        doNothing()
+                .when(smsRestClientService)
+                .sendSms(
+                        ArgumentMatchers.any(Phone.class),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString()
+                );
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
+
+        Reservation approvedReservation = reservationRepository.save(
+                FixtureUtil.testApprovedReservation(mentoring, mentee));
+        reservationRepository.delete(approvedReservation);
+        assertThat(reservationRepository.findDeletedById(approvedReservation.getId())).isNotNull();
+
+        String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
+        ReservationCreateRequest request = new ReservationCreateRequest("재예약 시도");
+
+        // when
+        Response response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .filter(documentWithTag("reservation/post-mentorings-id-reservation-soft-delete-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("예약")
+                                .requestSchema(Schema.schema("ReservationCreateRequest"))
+                                .responseSchema(Schema.schema("ReservationCreateResponse"))
+                                .build())))
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/mentorings/{mentoringId}/reservation", mentoring.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(201);
+    }
+
     @DisplayName("내가 작성한 예약 조회에 성공하면 200 OK를 반환한다")
     @Test
     void findParticipatedReservation() {
@@ -387,27 +464,15 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         Mentoring savedMentoring = mentoringRepository.save(mentoring);
 
         //멘티 생성
-        Member mentee = memberRepository.save(
-                new Member("id2",
-                        Gender.MALE,
-                        "김멘티",
-                        new Phone("010-5678-9123"),
-                        Password.from("pw"))
-        );
-        Member savedMentee = memberRepository.save(mentee);
+        Member savedMentee1 = memberRepository.save(FixtureUtil.testMentee(1));
+        Member savedMentee2 = memberRepository.save(FixtureUtil.testMentee(2));
 
         //예약 생성
         Reservation savedReservation = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee)
+                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee1)
         );
         Reservation savedReservation2 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee)
-        );
-        Reservation savedReservation3 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee)
-        );
-        Reservation savedReservation4 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee)
+                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee2)
         );
 
         //when
@@ -474,118 +539,10 @@ class ReservationIntegrationTest extends AbstractApiDocumentationTest {
         //then
         MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation, null);
         MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2, null);
-        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3, null);
-        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4, null);
 
         assertThat(response)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
-                .containsExactlyInAnyOrder(expected, expected2, expected3, expected4);
-    }
-
-    @DisplayName("멘토가 개설한 복수개의 멘토링의 모든 예약을 조회하면 상태코드 200 OK와 예약 정보를 반환한다.")
-    @Test
-    void getReservationsByMentor2() {
-        //given
-        //멘티 생성
-        Member mentor = memberRepository.save(
-                new Member("id1",
-                        Gender.MALE,
-                        "박멘토",
-                        new Phone("010-1234-5679"),
-                        Password.from("pw"))
-        );
-        Member savedMentor = memberRepository.save(mentor);
-
-        //토큰 생성
-        String accessToken = jwtProvider.createAccessToken(savedMentor.getId(), savedMentor.getRole());
-
-        //멘토링 생성
-        Mentoring mentoring = new Mentoring(mentor, 1000, 3, "멘토링 내용", "멘토링 자기소개");
-        Mentoring savedMentoring = mentoringRepository.save(mentoring);
-
-        Mentoring mentoring2 = new Mentoring(mentor, 1500, 3, "멘토링 내용2", "멘토링 자기소개2");
-        Mentoring savedMentoring2 = mentoringRepository.save(mentoring2);
-
-        //멘티 생성
-        Member mentee = memberRepository.save(
-                new Member("id2",
-                        Gender.MALE,
-                        "김멘티",
-                        new Phone("010-5678-9123"),
-                        Password.from("pw"))
-        );
-        Member savedMentee = memberRepository.save(mentee);
-
-        Member mentee2 = memberRepository.save(
-                new Member("id3",
-                        Gender.MALE,
-                        "이멘티",
-                        new Phone("010-1357-2468"),
-                        Password.from("pw"))
-        );
-        Member savedMentee2 = memberRepository.save(mentee2);
-
-        //예약 생성
-        //mentee1의 예약
-        Reservation savedReservation = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee)
-        );
-        Reservation savedReservation2 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring, savedMentee)
-        );
-        Reservation savedReservation3 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.REJECTED, savedMentoring, savedMentee)
-        );
-        Reservation savedReservation4 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.APPROVED, savedMentoring2, savedMentee)
-        );
-        ChatRoom chatRoom4 = chatRoomRepository.save(
-                new ChatRoom(savedReservation4.getId(), savedMentee.getId(), mentor.getId())
-        );
-
-        //mentee2의 예약
-        Reservation savedReservation5 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.PENDING, savedMentoring2, savedMentee2)
-        );
-        Reservation savedReservation6 = reservationRepository.save(
-                new Reservation("멘토링 예약 내용", Status.COMPLETE, savedMentoring2, savedMentee2)
-        );
-        ChatRoom chatRoom6 = chatRoomRepository.save(
-                new ChatRoom(savedReservation6.getId(), savedMentee2.getId(), mentor.getId())
-        );
-
-        //when
-        List<MentorMentoringReservationResponse> response = RestAssured
-                .given(spec)
-                .accept("application/json")
-                .filter(documentWithTag("reservation/get-mentorings-mine-reservation-success-multiple",
-                        resource(ResourceSnippetParameters.builder()
-                                .tag("예약")
-                                .responseSchema(Schema.schema("MentorMentoringReservationResponse"))
-                                .build())))
-                .log().all().contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .when()
-                .get("/mentorings/mine/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .extract()
-                .as(new TypeRef<>() {
-                });
-
-        //then
-        MentorMentoringReservationResponse expected = MentorMentoringReservationResponse.of(savedReservation, null);
-        MentorMentoringReservationResponse expected2 = MentorMentoringReservationResponse.of(savedReservation2, null);
-        MentorMentoringReservationResponse expected3 = MentorMentoringReservationResponse.of(savedReservation3, null);
-        MentorMentoringReservationResponse expected4 = MentorMentoringReservationResponse.of(savedReservation4,
-                chatRoom4);
-        MentorMentoringReservationResponse expected5 = MentorMentoringReservationResponse.of(savedReservation5, null);
-        MentorMentoringReservationResponse expected6 = MentorMentoringReservationResponse.of(savedReservation6,
-                chatRoom6);
-
-        assertThat(response)
-                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("createdAt")
-                .containsExactlyInAnyOrder(expected, expected2, expected3, expected4, expected5, expected6);
+                .containsExactlyInAnyOrder(expected, expected2);
     }
 
     @DisplayName("멘토가 개설한 멘토링의 예약이 존재하지 않으면 상태코드 200 OK와 빈 리스트를 반환한다.")

@@ -23,8 +23,12 @@ import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
-import fittoring.domain.model.*;
-
+import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.Member;
+import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Reservation;
+import fittoring.domain.model.Status;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +38,15 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class ReservationService {
+
+    private static final String ACTIVE_RESERVATION_UNIQUE_CONSTRAINT = "uk_active_reservation";
 
     private final ChatRoomService chatRoomService;
     private final MentoringRepository mentoringRepository;
@@ -51,34 +58,40 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
-        validateNoOngoingReservation(dto);
         Reservation reservation = createReservationEntity(dto);
-        Reservation savedReservation = reservationRepository.save(reservation);
-        mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
-        return savedReservation;
-    }
-
-    private void validateNoOngoingReservation(ReservationCreateDto dto) {
-        boolean existsOngoingReservation = reservationRepository.existsByMentoringIdAndMenteeIdAndStatusIn(
-            dto.mentoringId(),
-            dto.menteeId(),
-            List.of(Status.PENDING, Status.APPROVED)
-        );
-        if (existsOngoingReservation) {
-            throw new DuplicateReservationException(BusinessErrorMessage.DUPLICATED_RESERVATION.getMessage());
+        try {
+            reservationRepository.save(reservation);
+        } catch (DataIntegrityViolationException exception) {
+            if (isDuplicateActiveReservationViolation(exception)) {
+                throw new DuplicateReservationException(BusinessErrorMessage.DUPLICATED_RESERVATION.getMessage());
+            }
+            throw exception;
         }
+        mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
+        return reservation;
     }
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {
         Mentoring mentoring = getMentoring(dto.mentoringId());
         validateNotMyMentoring(mentoring, dto.menteeId());
         Member mentee = getMember(dto.menteeId());
-        return new Reservation(
+        return Reservation.ofPending(
                 dto.content(),
-                Status.PENDING,
                 mentoring,
                 mentee
         );
+    }
+
+    private boolean isDuplicateActiveReservationViolation(DataIntegrityViolationException exception) {
+        Throwable current = exception;
+        while (current != null) {
+            String message = current.getMessage();
+            if (message != null && message.contains(ACTIVE_RESERVATION_UNIQUE_CONSTRAINT)) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 
     private Mentoring getMentoring(Long mentoringId) {
@@ -256,7 +269,7 @@ public class ReservationService {
         return reservations;
     }
 
-    public Map<Long, Reservation> getReservationMap(List<Reservation> reservations){
+    public Map<Long, Reservation> getReservationMap(List<Reservation> reservations) {
         return reservations.stream()
                 .collect(Collectors.toMap(Reservation::getId, Function.identity()));
     }
