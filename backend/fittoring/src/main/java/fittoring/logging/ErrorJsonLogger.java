@@ -44,6 +44,19 @@ public class ErrorJsonLogger {
             Long durationMs,
             String traceId
     ) {
+        logWithContext(e, status, method, uri, normalizedUri, durationMs, traceId, e.getMessage());
+    }
+
+    public void logWithContext(
+            Throwable e,
+            HttpStatus status,
+            String method,
+            String uri,
+            String normalizedUri,
+            Long durationMs,
+            String traceId,
+            String message
+    ) {
         String finalNormalizedUri = (normalizedUri == null || normalizedUri.isBlank())
                 ? uri
                 : normalizedUri;
@@ -54,7 +67,7 @@ public class ErrorJsonLogger {
                 durationMs,
                 status.value(),
                 e.getClass().getName(),
-                e.getMessage(),
+                message,
                 stackToOneLine(e),
                 finalNormalizedUri,
                 LocalDateTime.now(),
