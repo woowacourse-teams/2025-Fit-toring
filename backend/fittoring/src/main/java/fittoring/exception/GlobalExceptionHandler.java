@@ -12,6 +12,7 @@ import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.exception.DuplicateReservationException;
 import fittoring.application.exception.EmptyRequestException;
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.InvalidCertificateException;
@@ -138,6 +139,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidTokenException e) {
+        return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<ErrorResponse> handle(ExpiredTokenException e) {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 

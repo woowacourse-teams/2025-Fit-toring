@@ -83,6 +83,8 @@ class WebSocketAuthHandshakeInterceptorTest {
                 .thenReturn("token-value");
         when(jwtProvider.extractTokenPayload("token-value"))
                 .thenReturn(new TokenPayload(1L, "MENTEE"));
+        when(jwtProvider.extractExpirationMillis("token-value"))
+                .thenReturn(1_800_000_000_000L);
 
         // when
         boolean result = interceptor.beforeHandshake(request, response, wsHandler, attributes);
@@ -91,6 +93,8 @@ class WebSocketAuthHandshakeInterceptorTest {
         assertThat(result).isTrue();
         assertThat(attributes.get(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY))
                 .isEqualTo(new LoginInfo(1L));
+        assertThat(attributes.get(WebSocketAuthHandshakeInterceptor.TOKEN_EXP_EPOCH_MILLIS_KEY))
+                .isEqualTo(1_800_000_000_000L);
     }
 
     @DisplayName("쿠키가 없으면 인증 실패 응답을 반환한다.")
