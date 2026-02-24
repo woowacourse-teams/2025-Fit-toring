@@ -34,6 +34,7 @@ jobs:
           echo "SENTRY_AUTH_TOKEN=dummy_token" >> .env.test
           echo "GOOGLE_ANALYTICS_ID=dummy_ga_id" >> .env.test
           echo "KAKAO_REST_API_KEY=dummy_kakao_key" >> .env.test
+          echo "CHANNEL_TALK_PLUGIN_KEY=dummy_channel_talk_key" >> .env.test
         working-directory: ./frontend # frontend 디렉토리에서 실행
 
       - name: Run Vitest
