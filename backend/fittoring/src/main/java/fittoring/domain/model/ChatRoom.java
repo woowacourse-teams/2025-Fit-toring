@@ -49,6 +49,7 @@ public class ChatRoom {
     @Column(name = "mentor_id", nullable = false)
     private Long mentorId;
 
+    @Getter
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
