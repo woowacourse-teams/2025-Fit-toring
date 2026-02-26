@@ -19,18 +19,21 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final InboundChannelInterceptor inboundChannelInterceptor;
     private final OutboundChannelInterceptor outboundChannelInterceptor;
     private final WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor;
+    private final ChatStompErrorHandler chatStompErrorHandler;
 
     public WebSocketConfig(@Lazy InboundChannelInterceptor inboundChannelInterceptor,
                            @Lazy OutboundChannelInterceptor outboundChannelInterceptor,
-                           @Lazy WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor) {
+                           @Lazy WebSocketAuthHandshakeInterceptor webSocketAuthHandshakeInterceptor,
+                           @Lazy ChatStompErrorHandler chatStompErrorHandler) {
         this.inboundChannelInterceptor = inboundChannelInterceptor;
         this.outboundChannelInterceptor = outboundChannelInterceptor;
         this.webSocketAuthHandshakeInterceptor = webSocketAuthHandshakeInterceptor;
+        this.chatStompErrorHandler = chatStompErrorHandler;
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/topic", "/queue");
         config.setApplicationDestinationPrefixes("/app");
     }
 
@@ -44,6 +47,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 )
                 .addInterceptors(webSocketAuthHandshakeInterceptor)
                 .withSockJS();
+        registry.setErrorHandler(chatStompErrorHandler);
     }
 
     @Override
