@@ -199,9 +199,9 @@ function ChatRoom() {
 
   const stompClientRef = useRef<Client | null>(null);
 
-  useEffect(() => {
-    let isRefreshing = false;
+  const isRefreshingRef = useRef(false);
 
+  useEffect(() => {
     const client = new Client({
       webSocketFactory: () => {
         console.log('[sockjs] webSocketFactory called');
@@ -214,11 +214,11 @@ function ChatRoom() {
         const parsedBody = JSON.parse(frame.body);
 
         if (parsedBody.code === 'TOKEN_EXPIRED') {
-          if (isRefreshing) {
+          if (isRefreshingRef.current) {
             return;
           }
 
-          isRefreshing = true;
+          isRefreshingRef.current = true;
 
           try {
             await postReissue();
@@ -232,7 +232,7 @@ function ChatRoom() {
             navigate(PAGE_URL.LOGIN);
             console.error('토큰 재발급 실패:', e);
           } finally {
-            isRefreshing = false;
+            isRefreshingRef.current = false;
           }
         }
       },
