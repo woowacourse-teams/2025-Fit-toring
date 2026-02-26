@@ -230,6 +230,7 @@ function ChatRoom() {
             client.activate();
           } catch (e) {
             navigate(PAGE_URL.LOGIN);
+            console.error('토큰 재발급 실패:', e);
           } finally {
             isRefreshing = false;
           }
