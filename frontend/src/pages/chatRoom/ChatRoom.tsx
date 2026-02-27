@@ -18,8 +18,10 @@ import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
+import ChatRoomInfoSkeleton from './components/ChatRoomInfoSkeleton/ChatRoomInfoSkeleton';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
+import useDelayedVisibility from './hooks/useDelayedVisibility';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
@@ -65,6 +67,8 @@ function ChatRoom() {
   const handleReviewClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
+
+  const visible = useDelayedVisibility(1000);
 
   const {
     data: chatRoomMessage,
@@ -266,19 +270,8 @@ function ChatRoom() {
     <S_Container>
       {chatRoomInfoIsPending || !chatRoomInfoData ? (
         <S_LoadingHeaderArea>
-          <S_LoadingHeaderWrapper aria-hidden>
-            <ChatRoomHeader name="" />
-            <MentoringActionPanel
-              mentorName=""
-              price={0}
-              profileImageUrl=""
-              mentorOwned={false}
-              onPaymentRequestClick={() => {}}
-              onReviewRequestClick={() => {}}
-              onEndClick={() => {}}
-              onPaymentClick={() => {}}
-              onReviewClick={() => {}}
-            />
+          <S_LoadingHeaderWrapper visible={visible} aria-hidden>
+            <ChatRoomInfoSkeleton />
           </S_LoadingHeaderWrapper>
         </S_LoadingHeaderArea>
       ) : (
@@ -325,6 +318,6 @@ const S_LoadingHeaderArea = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
-const S_LoadingHeaderWrapper = styled.div`
-  visibility: hidden;
+const S_LoadingHeaderWrapper = styled.div<{ visible: boolean }>`
+  visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
 `;
