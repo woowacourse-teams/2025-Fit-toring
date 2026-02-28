@@ -1,3 +1,33 @@
+# [1.16.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.15.0...v1.16.0) (2026-02-28)
+
+
+### Bug Fixes
+
+* ChatImageUrlResponse, ChatMessageNotFoundException 누락 파일 추가 ([6eb4da9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/6eb4da9caf57553c22f1c0ded65cfc70cae0f76b))
+* iOS 홈 화면 아이콘 표시 문제 해결을 위한 apple-touch-icon 추가 [#1258](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1258) ([#1259](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1259)) ([cb96103](https://github.com/woowacourse-teams/2025-Fit-toring/commit/cb96103bb7d002307c0306f67ba543d4e6426314))
+* SMS 읽기 타임아웃 테스트 딜레이 값 수정 ([d322bf7](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d322bf7800c336598e58256d25fc7714ca624efc))
+* 데이터베이스 연결 옵션 수정으로 Flyway 호환성 개선 ([cd6e311](https://github.com/woowacourse-teams/2025-Fit-toring/commit/cd6e3116a777b85975be7dbf9bfe9f79cdfa52e4))
+* 푸시 알림 메시지 필드명 수정 ([60ea2c7](https://github.com/woowacourse-teams/2025-Fit-toring/commit/60ea2c7027730b2a887e54023e955e6c028ce253))
+
+
+### Features
+
+* allow public key retrieval ([b101b96](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b101b968313afe5e47e3bd346506b1b9f49f1d44))
+* S3 Presigned URL GET 요청 기능 추가 ([04c01cd](https://github.com/woowacourse-teams/2025-Fit-toring/commit/04c01cd480d534dedacdf9af9bbeca21928a79f2))
+* S3Configuration에 AWS 자격 증명 제공 로직 추가 ([79d6a37](https://github.com/woowacourse-teams/2025-Fit-toring/commit/79d6a3708c80dcf8fb1e16ea1f3644c4763c8e38))
+* 이미지 메시지 Presigned URL 재발급 및 예외 처리 로직 추가 ([41eab4b](https://github.com/woowacourse-teams/2025-Fit-toring/commit/41eab4b89f2aad84c0ed1cdfb93d41cc3fa57390))
+* 이미지 메시지 푸시 알림 제목 설정 로직 추가 ([a1df3b4](https://github.com/woowacourse-teams/2025-Fit-toring/commit/a1df3b431abf61b43bff5945f42ec56c87dfd800))
+* 채팅 메시지 DTO 필드명 수정 및 검증 로직 변경 ([739a6b0](https://github.com/woowacourse-teams/2025-Fit-toring/commit/739a6b0f05c28e7e55d9c20d6bebb1177c66177f))
+* 채팅 메시지 등록 로직 확장 및 이미지 메시지 처리 추가 ([b885f80](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b885f807e9ef4166930ff9388c89097f8a8f4359))
+* 채팅 메시지 응답 로직 개선 및 이미지 메시지 섬네일 처리 추가 ([27bd16d](https://github.com/woowacourse-teams/2025-Fit-toring/commit/27bd16d6557cfed4658be4d5905727367c55e389))
+* 채팅 메시지 이미지 타입 검증 예외 처리 로직 추가 ([82c4ab7](https://github.com/woowacourse-teams/2025-Fit-toring/commit/82c4ab78f3661d11e188f5639e88a6e3308155f4))
+* 채팅 메시지 전송시 messageType 추가 [#1320](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1320) ([#1321](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1321)) ([8db79ed](https://github.com/woowacourse-teams/2025-Fit-toring/commit/8db79edbd926c424a129dae24d2ea1448b851dae))
+* 채팅 메시지 접근 권한 예외 처리 로직 추가 ([fb831b9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/fb831b92e89207cfb282fe0225bd2413290d8459))
+* 채팅 메시지 타입(enum) 추가 및 관련 로직 수정 ([b6c8fc9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b6c8fc91c295d0cd7b16af62ae620f022f5953b6))
+* 채팅 메시지 타입별 필드 검증 로직 추가 및 DTO 수정 ([c12ef13](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c12ef13fbcc277b5a24079059ab8d6af8ee88f57))
+* 채팅 이미지 메시지 응답 및 Presigned URL 처리 로직 리팩토링 ([3e258ea](https://github.com/woowacourse-teams/2025-Fit-toring/commit/3e258eae23c715508066fbe6c981207fef4f76b4))
+* 채팅 이미지 메시지 테스트 추가 및 관련 로직 문서화 ([8fb01be](https://github.com/woowacourse-teams/2025-Fit-toring/commit/8fb01be76eca7b677da40d4f06708a7169135559))
+
 # [1.15.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.14.0...v1.15.0) (2026-02-11)
 
 
