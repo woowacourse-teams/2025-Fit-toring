@@ -30,11 +30,17 @@ spring:
     aws:
       region: ap-northeast-2
       credentials:
-        access-key: ${AWS_SQS_IAM_ACCESS_KEY}
-        secret-key: ${AWS_SQS_IAM_SECRET_KEY}
+        access-key: ${AWS_IAM_ACCESS_KEY}
+        secret-key: ${AWS_IAM_SECRET_KEY}
 
 server:
+  forward-headers-strategy: framework
   tomcat:
+    remoteip:
+      # 모든 프록시 주소를 신뢰하도록 설정 (도커/Cloudflare 환경에서 필수)
+      internal-proxies: ".*" 
+      protocol-header: x-forwarded-proto
+    use-relative-redirects: true
     threads:
       max: ${TOMCAT_MAX_THREADS}
     max-connections: ${TOMCAT_MAX_CONNECTIONS}

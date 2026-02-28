@@ -1,17 +1,22 @@
 /// <reference lib="WebWorker" />
 import { initializeApp } from 'firebase/app';
 import { onBackgroundMessage, getMessaging } from 'firebase/messaging/sw';
-import { clientsClaim, skipWaiting } from 'workbox-core';
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
 import { PAGE_URL } from '../common/constants/url';
 
 declare let self: ServiceWorkerGlobalScope;
 
-clientsClaim();
-skipWaiting();
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(self.skipWaiting());
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(self.clients.claim());
+});
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCbmcTDZNommWF5IJjrSSD8An7OdNROewA',
@@ -33,7 +38,7 @@ onBackgroundMessage(messaging, (payload) => {
 
   const notificationTitle = data.title || '제목 없음';
   const notificationOptions = {
-    body: '백그라운드 알림: ' + data.body || '내용 없음',
+    body: data.body || '내용 없음',
     icon: iconPath,
     badge: iconPath,
     data: {
@@ -57,22 +62,26 @@ self.addEventListener('notificationclick', (e) => {
   }
 
   const chatRoomId = notification.data.chatRoomId;
-  if (!chatRoomId) {
-    return;
-  }
 
-  const chatRoomURL = getChatRoomURL(chatRoomId);
+  const chatRoomURL = chatRoomId
+    ? getChatRoomURL(chatRoomId)
+    : self.location.origin;
 
   e.waitUntil(
     self.clients
-      .matchAll({ type: 'window', includeUncontrolled: true })
-      .then((windowClients) => {
-        for (const client of windowClients) {
+      .matchAll({
+        type: 'window',
+        includeUncontrolled: false,
+      })
+      .then((clientList) => {
+        for (const client of clientList) {
           if (
             client.url.startsWith(self.location.origin) &&
             'focus' in client
           ) {
-            return client.focus().then(() => client.navigate(chatRoomURL));
+            return client.focus().then((focusedClient) => {
+              return focusedClient.navigate(chatRoomURL);
+            });
           }
         }
 

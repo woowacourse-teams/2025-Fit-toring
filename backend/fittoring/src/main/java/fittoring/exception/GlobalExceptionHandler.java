@@ -1,6 +1,43 @@
 package fittoring.exception;
 
-import fittoring.application.exception.*;
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.CategoryNotFoundException;
+import fittoring.application.exception.CertificateNotFoundException;
+import fittoring.application.exception.ChatMessageNotFoundException;
+import fittoring.application.exception.ChatMessageNotImageException;
+import fittoring.application.exception.ChatRoomAlreadyExistsException;
+import fittoring.application.exception.ChatRoomNotFoundException;
+import fittoring.application.exception.DuplicateDeviceException;
+import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.DuplicatePhoneException;
+import fittoring.application.exception.DuplicateReservationException;
+import fittoring.application.exception.EmptyRequestException;
+import fittoring.application.exception.ExpiredTokenException;
+import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.ImageNotFoundException;
+import fittoring.application.exception.InvalidCertificateException;
+import fittoring.application.exception.InvalidCursorException;
+import fittoring.application.exception.InvalidMemberRoleException;
+import fittoring.application.exception.InvalidPhoneVerificationException;
+import fittoring.application.exception.InvalidStatusException;
+import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.MemberNotFoundException;
+import fittoring.application.exception.MentorAndMenteeIsSameException;
+import fittoring.application.exception.MentoringAlreadyExistException;
+import fittoring.application.exception.MentoringNotFoundException;
+import fittoring.application.exception.MisMatchPasswordException;
+import fittoring.application.exception.NotFoundMemberException;
+import fittoring.application.exception.NotFoundStatusException;
+import fittoring.application.exception.OauthLoginException;
+import fittoring.application.exception.PasswordEncryptionException;
+import fittoring.application.exception.ReservationNotCompletedException;
+import fittoring.application.exception.ReservationNotFoundException;
+import fittoring.application.exception.ReviewAlreadyExistsException;
+import fittoring.application.exception.ReviewNotFoundException;
+import fittoring.application.exception.UnauthorizedChatMessageAccessException;
+import fittoring.application.exception.UnauthorizedChatRoomAccessException;
+import fittoring.application.exception.UnauthorizedException;
+import fittoring.application.exception.UnsupportedImageExtensionException;
 import fittoring.infrastructure.exception.S3UploadException;
 import fittoring.infrastructure.exception.SmsException;
 import fittoring.logging.ErrorJsonLogger;
@@ -105,6 +142,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<ErrorResponse> handle(ExpiredTokenException e) {
+        return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
     @ExceptionHandler(InvalidPhoneVerificationException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidPhoneVerificationException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
@@ -186,6 +228,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.UNAUTHORIZED, BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
     }
 
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ImageNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
     @ExceptionHandler(UnsupportedImageExtensionException.class)
     public ResponseEntity<ErrorResponse> handle(UnsupportedImageExtensionException e) {
         return buildErrorResponse(e, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
@@ -194,6 +241,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OauthLoginException.class)
     public ResponseEntity<ErrorResponse> handle(OauthLoginException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(ChatMessageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(ChatMessageNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(ChatRoomNotFoundException.class)
@@ -206,8 +258,18 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 
+    @ExceptionHandler(ChatMessageNotImageException.class)
+    public ResponseEntity<ErrorResponse> handle(ChatMessageNotImageException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(UnauthorizedChatRoomAccessException.class)
     public ResponseEntity<ErrorResponse> handle(UnauthorizedChatRoomAccessException e) {
+        return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedChatMessageAccessException.class)
+    public ResponseEntity<ErrorResponse> handle(UnauthorizedChatMessageAccessException e) {
         return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getMessage());
     }
 
@@ -218,6 +280,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateDeviceException.class)
     public ResponseEntity<ErrorResponse> handle(DuplicateDeviceException e) {
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateReservationException.class)
+    public ResponseEntity<ErrorResponse> handle(DuplicateReservationException e) {
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 

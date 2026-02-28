@@ -11,6 +11,7 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import { AUTH_CHECK_QUERY_KEY } from '../../../../common/hooks/useAuthCheck';
 import useOutsideClickRef from '../../../../common/hooks/useOutsideClickRef';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+import { shutdownChannelTalk } from '../../../../common/utils/channelTalk';
 
 type MenuItemName =
   | '개설한 멘토링'
@@ -67,6 +68,7 @@ function MenuDropDown() {
   const { mutate: handleLogout } = useMutation({
     mutationFn: postLogout,
     onSuccess: () => {
+      shutdownChannelTalk();
       queryClient.removeQueries({ queryKey: AUTH_CHECK_QUERY_KEY });
       logout();
       localStorage.removeItem('memberId');

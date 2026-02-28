@@ -90,7 +90,10 @@ const router = createBrowserRouter([
         element: <MentoringUpdate />,
       },
       { path: PAGE_URL.LOGIN, element: <Login /> },
-      { path: `${PAGE_URL.CHAT_ROOM}/:chatRoomId`, element: <ChatRoom /> },
+      {
+        path: `${PAGE_URL.CHAT_ROOM}/:chatRoomId`,
+        element: <ChatRoom />,
+      },
       {
         path: PAGE_URL.IDENTITY_VERIFICATION,
         element: <IdentityVerification />,

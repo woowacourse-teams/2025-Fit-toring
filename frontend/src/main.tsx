@@ -8,6 +8,7 @@ import ReactGA from 'react-ga4';
 
 import App from './App';
 import AuthProvider from './common/components/AuthProvider/AuthProvider';
+import ChannelTalkProvider from './common/components/ChannelTalkProvider/ChannelTalkProvider';
 import { resetCss } from './common/styles/reset';
 import { THEME } from './common/styles/theme';
 import { registerServiceWorker } from './pwa/serviceWorker';
@@ -56,8 +57,10 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
       <ThemeProvider theme={THEME}>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <Global styles={[resetCss]} />
-            <App />
+            <ChannelTalkProvider>
+              <Global styles={[resetCss]} />
+              <App />
+            </ChannelTalkProvider>
           </AuthProvider>
         </QueryClientProvider>
       </ThemeProvider>
