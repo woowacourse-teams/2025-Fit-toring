@@ -22,8 +22,10 @@ import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
+import ChatRoomInfoSkeleton from './components/ChatRoomInfoSkeleton/ChatRoomInfoSkeleton';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
+import useDelayedVisibility from './hooks/useDelayedVisibility';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
@@ -73,6 +75,8 @@ function ChatRoom() {
   const handleReviewClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
+
+  const visible = useDelayedVisibility(1000);
 
   const {
     data: chatRoomMessage,
@@ -281,7 +285,11 @@ function ChatRoom() {
   return (
     <S_Container>
       {chatRoomInfoIsPending || !chatRoomInfoData ? (
-        <div>로딩중</div>
+        <S_LoadingHeaderArea>
+          <S_LoadingHeaderWrapper visible={visible} aria-hidden>
+            <ChatRoomInfoSkeleton />
+          </S_LoadingHeaderWrapper>
+        </S_LoadingHeaderArea>
       ) : (
         <div>
           <ChatRoomHeader name={chatRoomInfoData.opponentName} />
@@ -320,4 +328,12 @@ const S_Container = styled.div`
   flex-direction: column;
 
   height: 100svh;
+`;
+
+const S_LoadingHeaderArea = styled.div`
+  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+`;
+
+const S_LoadingHeaderWrapper = styled.div<{ visible: boolean }>`
+  visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
 `;
