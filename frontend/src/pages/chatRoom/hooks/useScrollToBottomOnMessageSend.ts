@@ -6,13 +6,19 @@ interface PrevScroll {
   clientHeight: number;
 }
 
+type MessageId = number | null | undefined;
+
 interface useScrollToBottomOnMessageSendParams {
-  messageCount: number;
+  firstId: MessageId;
+  lastId: MessageId;
   listElRef: React.RefObject<HTMLDivElement | null>;
 }
 
+const BOTTOM_THRESHOLD_PX = 50;
+
 const useScrollToBottomOnMessageSend = ({
-  messageCount,
+  firstId,
+  lastId,
   listElRef,
 }: useScrollToBottomOnMessageSendParams) => {
   const prevScrollRef = useRef<PrevScroll>({
@@ -21,11 +27,14 @@ const useScrollToBottomOnMessageSend = ({
     clientHeight: 0,
   });
 
+  const prevIdsRef = useRef<{ firstId: MessageId; lastId: MessageId }>({
+    firstId: undefined,
+    lastId: undefined,
+  });
+
   const capturePrevScroll = useCallback(() => {
     const element = listElRef.current;
-    const prev = prevScrollRef.current;
-
-    if (!element || !prev) {
+    if (!element) {
       return;
     }
 
@@ -38,24 +47,46 @@ const useScrollToBottomOnMessageSend = ({
 
   useLayoutEffect(() => {
     const element = listElRef.current;
-    const prev = prevScrollRef.current;
-
-    if (!element || !prev) {
+    if (!element) {
       return;
     }
 
-    const isAtBottom =
-      prev.scrollHeight - prev.scrollTop - prev.clientHeight < 50;
+    const prevScroll = prevScrollRef.current;
+    const prevIds = prevIdsRef.current;
 
-    if (isAtBottom) {
-      element.scrollTop = element.scrollHeight;
+    const firstChanged =
+      firstId !== null &&
+      prevIds.firstId !== null &&
+      firstId !== prevIds.firstId;
+    const lastChanged =
+      lastId !== null && prevIds.lastId !== null && lastId !== prevIds.lastId;
+
+    if (prevIds.firstId === null || prevIds.lastId === null) {
+      prevIdsRef.current = { firstId, lastId };
+      return;
     }
-  }, [listElRef, messageCount, prevScrollRef]);
 
-  return {
-    prevScrollRef,
-    capturePrevScroll,
-  };
+    if (firstChanged) {
+      prevIdsRef.current = { firstId, lastId };
+      return;
+    }
+
+    if (lastChanged && !firstChanged) {
+      const wasAtBottom =
+        prevScroll.scrollHeight -
+          prevScroll.scrollTop -
+          prevScroll.clientHeight <
+        BOTTOM_THRESHOLD_PX;
+
+      if (wasAtBottom) {
+        element.scrollTop = element.scrollHeight;
+      }
+    }
+
+    prevIdsRef.current = { firstId, lastId };
+  }, [firstId, lastId, listElRef]);
+
+  return { capturePrevScroll };
 };
 
 export default useScrollToBottomOnMessageSend;
