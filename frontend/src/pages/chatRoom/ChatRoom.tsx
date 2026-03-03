@@ -142,8 +142,12 @@ function ChatRoom() {
     }
   }, [listElRef, messages]);
 
+  const firstId = messages[0]?.chatMessageId ?? null;
+  const lastId = messages[messages.length - 1]?.chatMessageId ?? null;
+
   const { capturePrevScroll } = useScrollToBottomOnMessageSend({
-    messageCount: messages.length,
+    firstId,
+    lastId,
     listElRef,
   });
 
