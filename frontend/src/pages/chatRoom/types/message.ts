@@ -1,3 +1,5 @@
+import type { MESSAGE_TYPE } from '../constants/message';
+
 export interface Message {
   // 서버와 클라이언트 공통
   content: string;
@@ -5,7 +7,7 @@ export interface Message {
   senderId: number;
   chatRoomId: number;
   tempId: number;
-
+  messageType: MessageType;
   // 서버에서 받는 id
   chatMessageId?: number;
 
@@ -18,3 +20,5 @@ export interface MessageResponse {
   nextCursorCode: string | null;
   hasNext: boolean;
 }
+
+export type MessageType = (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE];
