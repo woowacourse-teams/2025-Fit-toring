@@ -28,8 +28,8 @@ const useScrollToBottomOnMessageSend = ({
   });
 
   const prevIdsRef = useRef<{ firstId: MessageId; lastId: MessageId }>({
-    firstId: undefined,
-    lastId: undefined,
+    firstId: null,
+    lastId: null,
   });
 
   const capturePrevScroll = useCallback(() => {
@@ -54,17 +54,18 @@ const useScrollToBottomOnMessageSend = ({
     const prevScroll = prevScrollRef.current;
     const prevIds = prevIdsRef.current;
 
-    const firstChanged =
-      firstId !== null &&
-      prevIds.firstId !== null &&
-      firstId !== prevIds.firstId;
-    const lastChanged =
-      lastId !== null && prevIds.lastId !== null && lastId !== prevIds.lastId;
-
     if (prevIds.firstId === null || prevIds.lastId === null) {
       prevIdsRef.current = { firstId, lastId };
       return;
     }
+
+    if (firstId === null || lastId === null) {
+      prevIdsRef.current = { firstId, lastId };
+      return;
+    }
+
+    const firstChanged = firstId !== prevIds.firstId;
+    const lastChanged = lastId !== prevIds.lastId;
 
     if (firstChanged) {
       prevIdsRef.current = { firstId, lastId };
