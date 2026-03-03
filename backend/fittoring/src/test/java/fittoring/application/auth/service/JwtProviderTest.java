@@ -3,7 +3,7 @@ package fittoring.application.auth.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.domain.model.MemberRole;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +69,7 @@ class JwtProviderTest {
         //when
         //then
         assertThatThrownBy(() -> jwtProvider.extractTokenPayload(token))
-                .isInstanceOf(InvalidTokenException.class);
+                .isInstanceOf(ExpiredTokenException.class);
     }
 
     @DisplayName("refresh 토큰을 발급할 수 있다.")
@@ -81,5 +81,18 @@ class JwtProviderTest {
 
         //then
         assertThat(refreshToken).isNotNull();
+    }
+
+    @DisplayName("만료되지 않은 토큰에서 만료 시각을 추출할 수 있다.")
+    @Test
+    void extractExpirationMillis() {
+        // given
+        String token = jwtProvider.createAccessToken(1L, MemberRole.ADMIN);
+
+        // when
+        long expirationMillis = jwtProvider.extractExpirationMillis(token);
+
+        // then
+        assertThat(expirationMillis).isGreaterThan(System.currentTimeMillis());
     }
 }

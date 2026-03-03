@@ -1,5 +1,6 @@
 package fittoring.config.websocket;
 
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
 import io.micrometer.core.instrument.Counter;
@@ -230,7 +231,9 @@ public class WebSocketMetricsListener {
         Throwable cursor = ex;
         int depth = 0;
         while (cursor != null && depth < 5) {
-            if (cursor instanceof UnauthorizedException || cursor instanceof InvalidTokenException) {
+            if (cursor instanceof UnauthorizedException
+                    || cursor instanceof InvalidTokenException
+                    || cursor instanceof ExpiredTokenException) {
                 return "auth";
             }
             if (cursor instanceof IllegalArgumentException) {

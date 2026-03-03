@@ -1,7 +1,10 @@
 package fittoring.config.websocket;
 
+import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.config.auth.LoginInfo;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +33,16 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        if (accessor == null) {
+            return message;
+        }
 
-        if (StompCommand.SEND.equals(accessor.getCommand())) {
+        StompCommand command = accessor.getCommand();
+        if (StompCommand.SEND.equals(command) || StompCommand.SUBSCRIBE.equals(command)) {
+            validateSessionExpired(accessor);
+        }
+
+        if (StompCommand.SEND.equals(command)) {
             LoginInfo loginInfo = (LoginInfo) Objects.requireNonNull(accessor.getSessionAttributes())
                     .get(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY);
             accessor.setHeader(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY, loginInfo);
@@ -45,6 +56,26 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
             );
         }
         return message;
+    }
+
+    private void validateSessionExpired(StompHeaderAccessor accessor) {
+        long expEpochMillis = getExpEpochMillis(accessor);
+        validateTokenExpired(expEpochMillis);
+    }
+
+    private long getExpEpochMillis(StompHeaderAccessor accessor) {
+        return (long) Objects.requireNonNull(accessor.getSessionAttributes())
+                .get(WebSocketAuthHandshakeInterceptor.TOKEN_EXP_EPOCH_MILLIS_KEY);
+    }
+
+    private void validateTokenExpired(long expEpochMillis) {
+        if (isTokenExpired(expEpochMillis)) {
+            throw new ExpiredTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
+        }
+    }
+
+    private boolean isTokenExpired(long expEpochMillis) {
+        return Instant.now().toEpochMilli() > expEpochMillis;
     }
 
     /**

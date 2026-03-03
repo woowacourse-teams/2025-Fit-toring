@@ -1,6 +1,7 @@
 package fittoring.application.auth.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.domain.model.MemberRole;
 import io.jsonwebtoken.Claims;
@@ -91,6 +92,10 @@ public class JwtProvider {
         parseClaims(token);
     }
 
+    public long extractExpirationMillis(String token) {
+        return parseClaims(token).getExpiration().getTime();
+    }
+
     private TokenPayload parseTokenPayload(String token) {
         Claims claims = parseClaims(token);
         return new TokenPayload(Long.valueOf(claims.getSubject()), claims.get(CLAIM_NAME, String.class));
@@ -100,7 +105,7 @@ public class JwtProvider {
         try {
             return jwtParser.parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
-            throw new InvalidTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
+            throw new ExpiredTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
         } catch (MalformedJwtException | UnsupportedJwtException e) {
             throw new InvalidTokenException(BusinessErrorMessage.INVALID_TOKEN.getMessage());
         } catch (IllegalArgumentException e) {

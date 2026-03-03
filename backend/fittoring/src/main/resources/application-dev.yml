@@ -1,21 +1,11 @@
 spring:
-  datasources:
-    writer:
-      jdbc-url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
-      username: ${DEV_WRITER_USER}
-      password: ${DEV_WRITER_PASSWORD}
-      driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    url: jdbc:mysql://${DEV_DATABASE_HOST}:${DEV_DATABASE_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DEV_DATABASE_USER}
+    password: ${DEV_DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
       pool-name: source-hikari-pool
-      maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
-      minimum-idle: ${HIKARI_MINIMUM_IDLE}
-      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
-      max-lifetime: ${HIKARI_MAX_LIFETIME}
-    reader:
-      jdbc-url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
-      username: ${DEV_WRITER_USER}
-      password: ${DEV_WRITER_PASSWORD}
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      pool-name: replica-hikari-pool
       maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
       minimum-idle: ${HIKARI_MINIMUM_IDLE}
       connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
@@ -24,9 +14,9 @@ spring:
     show-sql: true
   flyway:
     enabled: true
-    url: jdbc:mysql://${DEV_WRITER_HOST}:${DEV_WRITER_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
-    user: ${DEV_WRITER_USER}
-    password: ${DEV_WRITER_PASSWORD}
+    url: jdbc:mysql://${DEV_DATABASE_HOST}:${DEV_DATABASE_PORT}/${DEV_DB}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+    user: ${DEV_DATABASE_USER}
+    password: ${DEV_DATABASE_PASSWORD}
     baseline-on-migrate: true
     out-of-order: true
 cookie:
