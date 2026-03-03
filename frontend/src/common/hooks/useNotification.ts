@@ -52,6 +52,7 @@ const useNotification = (authenticated: boolean) => {
 
       setupForegroundMessageListener();
     } catch (error) {
+      isInitializedRef.current = false;
       console.error('[FCM] 초기화 실패:', error);
       throw error;
     }
