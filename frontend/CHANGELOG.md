@@ -1,3 +1,15 @@
+# [1.17.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.16.0...v1.17.0) (2026-03-03)
+
+
+### Bug Fixes
+
+* MobileLayout의 전역 padding-bottom 제거 및 BottomTabLayout으로 이동 [#1359](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1359) ([#1360](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1360)) ([d29a39a](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d29a39a1c69bd53953eb91715d678af381ed8974))
+
+
+### Features
+
+* 에러 메시지 수신용 WebSocket 채널 구독 및 송신 실패 처리 로직 구현 [#1347](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1347) ([#1349](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1349)) ([e7a15e2](https://github.com/woowacourse-teams/2025-Fit-toring/commit/e7a15e250b27d9fe7f870affddc66020d6829e59))
+
 # [1.16.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.15.0...v1.16.0) (2026-02-28)
 
 
