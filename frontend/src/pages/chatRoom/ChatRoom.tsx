@@ -9,10 +9,12 @@ import React, {
 import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 
 import ApiError from '../../common/apis/ApiError';
+import { postReissue } from '../../common/apis/postReissue';
+import { PAGE_URL } from '../../common/constants/url';
 import {
   hideChannelTalk,
   showChannelTalk,
@@ -22,8 +24,11 @@ import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
+import ChatRoomInfoSkeleton from './components/ChatRoomInfoSkeleton/ChatRoomInfoSkeleton';
 import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
+import { MESSAGE_TYPE } from './constants/message';
+import useDelayedVisibility from './hooks/useDelayedVisibility';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
@@ -33,11 +38,10 @@ import type { Message } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
 
 function ChatRoom() {
-  useEffect(() => {
-    return () => showChannelTalk();
-  }, []);
+  const navigate = useNavigate();
 
   const [messages, setMessages] = useState<Message[]>([]);
+  const messagesRef = useRef<Message[]>([]);
   const [message, setMessage] = useState('');
 
   const { chatRoomId } = useParams();
@@ -74,6 +78,8 @@ function ChatRoom() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {};
 
+  const visible = useDelayedVisibility(1000);
+
   const {
     data: chatRoomMessage,
     fetchNextPage,
@@ -89,6 +95,10 @@ function ChatRoom() {
     hasNextPage: false,
     isFetchingNextPage: false,
   });
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   useEffect(() => {
     stateRef.current.hasNextPage = !!hasNextPage;
@@ -132,8 +142,12 @@ function ChatRoom() {
     }
   }, [listElRef, messages]);
 
+  const firstId = messages[0]?.chatMessageId ?? null;
+  const lastId = messages[messages.length - 1]?.chatMessageId ?? null;
+
   const { capturePrevScroll } = useScrollToBottomOnMessageSend({
-    messageCount: messages.length,
+    firstId,
+    lastId,
     listElRef,
   });
 
@@ -156,6 +170,7 @@ function ChatRoom() {
       chatMessageId: tempId,
       tempId,
       status: 'pending' as const,
+      messageType: MESSAGE_TYPE.TEXT,
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
@@ -204,6 +219,8 @@ function ChatRoom() {
 
   const stompClientRef = useRef<Client | null>(null);
 
+  const isRefreshingRef = useRef(false);
+
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () => {
@@ -213,14 +230,33 @@ function ChatRoom() {
           withCredentials: true,
         });
       },
-      // onStompError: (frame) => console.error('STOMP protocol error:', frame),
-      onStompError: (frame) => {
-        console.error('[sockjs][STOMP ERROR]', {
-          command: frame.command,
-          headers: frame.headers,
-          body: frame.body, // 👈 여기에 보통 "token expired" / "invalid jwt" 들어있음
-        });
+      onStompError: async (frame) => {
+        const parsedBody = JSON.parse(frame.body);
+
+        if (parsedBody.code === 'TOKEN_EXPIRED') {
+          if (isRefreshingRef.current) {
+            return;
+          }
+
+          isRefreshingRef.current = true;
+
+          try {
+            await postReissue();
+
+            if (client.active) {
+              await client.deactivate();
+            }
+
+            client.activate();
+          } catch (e) {
+            navigate(PAGE_URL.LOGIN);
+            console.error('토큰 재발급 실패:', e);
+          } finally {
+            isRefreshingRef.current = false;
+          }
+        }
       },
+
       onWebSocketError: (e) => console.error('WebSocket error:', e),
       reconnectDelay: 5000,
       onConnect: () => {
@@ -259,6 +295,34 @@ function ChatRoom() {
             });
           },
         );
+
+        client.subscribe('/user/queue/errors', (message: IMessage) => {
+          const parsedErrorMessage = JSON.parse(message.body);
+
+          setMessages((prev) => {
+            return prev.map((message) => {
+              if (message.tempId === parsedErrorMessage.tempId) {
+                return { ...message, status: 'fail' };
+              }
+              return message;
+            });
+          });
+        });
+
+        const pendingMessages = messagesRef.current.filter(
+          (m) => m.status === 'pending',
+        );
+
+        pendingMessages.forEach((msg) => {
+          client.publish({
+            destination: `/app/chatroom/${chatRoomId}`,
+            body: JSON.stringify({
+              content: msg.content,
+              tempId: msg.tempId,
+              messageType: msg.messageType,
+            }),
+          });
+        });
       },
     });
 
@@ -268,7 +332,7 @@ function ChatRoom() {
     return () => {
       client.deactivate();
     };
-  }, [capturePrevScroll, chatRoomId]);
+  }, [capturePrevScroll, chatRoomId, navigate]);
 
   if (error?.status === 403) {
     return <ChatRoomForbidden />;
@@ -281,7 +345,11 @@ function ChatRoom() {
   return (
     <S_Container>
       {chatRoomInfoIsPending || !chatRoomInfoData ? (
-        <div>로딩중</div>
+        <S_LoadingHeaderArea>
+          <S_LoadingHeaderWrapper visible={visible} aria-hidden>
+            <ChatRoomInfoSkeleton />
+          </S_LoadingHeaderWrapper>
+        </S_LoadingHeaderArea>
       ) : (
         <div>
           <ChatRoomHeader name={chatRoomInfoData.opponentName} />
@@ -320,4 +388,12 @@ const S_Container = styled.div`
   flex-direction: column;
 
   height: 100svh;
+`;
+
+const S_LoadingHeaderArea = styled.div`
+  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+`;
+
+const S_LoadingHeaderWrapper = styled.div<{ visible: boolean }>`
+  visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
 `;

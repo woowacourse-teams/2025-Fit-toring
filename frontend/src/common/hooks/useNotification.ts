@@ -52,6 +52,7 @@ const useNotification = (authenticated: boolean) => {
 
       setupForegroundMessageListener();
     } catch (error) {
+      isInitializedRef.current = false;
       console.error('[FCM] 초기화 실패:', error);
       throw error;
     }
@@ -104,12 +105,16 @@ const useNotification = (authenticated: boolean) => {
 
     if (isIOS()) {
       if (isPWAStandalone() && isIOSPushSupported()) {
-        initializeFcm();
+        initializeFcm().catch((error) => {
+          console.error('[FCM] 자동 초기화 실패:', error);
+        });
       }
       return;
     }
 
-    initializeFcm();
+    initializeFcm().catch((error) => {
+      console.error('[FCM] 자동 초기화 실패:', error);
+    });
   }, [authenticated, initializeFcm]);
 
   return {

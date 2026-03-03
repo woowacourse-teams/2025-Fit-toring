@@ -25,7 +25,6 @@ const S_Contents = styled.section`
   width: 48rem;
   height: 100%;
   min-height: 100dvh;
-  padding-bottom: 72px;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
 
   background-color: ${({ theme }) => theme.BG.WHITE};
