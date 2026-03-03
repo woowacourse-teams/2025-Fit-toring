@@ -5,7 +5,6 @@ spring:
     password: ${DEV_DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      pool-name: source-hikari-pool
       maximum-pool-size: ${HIKARI_MAXIMUM_POOL_SIZE}
       minimum-idle: ${HIKARI_MINIMUM_IDLE}
       connection-timeout: ${HIKARI_CONNECTION_TIMEOUT}
