@@ -25,7 +25,7 @@ import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import ChatRoomInfoSkeleton from './components/ChatRoomInfoSkeleton/ChatRoomInfoSkeleton';
-import InputSection from './components/InputSection/InputSection';
+import ChatRoomInputArea from './components/ChatRoomInputArea/ChatRoomInputArea';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
@@ -372,7 +372,7 @@ function ChatRoom() {
         pageFirstElRef={pageFirstElRef}
         listElRef={listElRef}
       />
-      <InputSection
+      <ChatRoomInputArea
         value={message}
         onChange={handleChange}
         onSubmit={handleMessageSubmit}
