@@ -29,6 +29,7 @@ export default InputSection;
 
 const S_Container = styled.form`
   display: flex;
+  flex: 1;
   gap: 1rem;
 
   padding: 1.6rem;
