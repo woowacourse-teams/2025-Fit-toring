@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
+import ChatImageBubble from '../ChatImageBubble/ChatImageBubble';
 
 import type { Message } from '../../types/message';
 
@@ -27,10 +28,36 @@ function ChatContent({
 
       <S_BubbleList>
         {messages.map(
-          ({ content, createdAt, senderId, status, chatMessageId }, index) => {
+          (
+            {
+              content,
+              createdAt,
+              senderId,
+              status,
+              chatMessageId,
+              messageType,
+            },
+            index,
+          ) => {
             const prevSenderId =
               index > 0 ? messages[index - 1].senderId : null;
             const senderChanged = prevSenderId !== senderId;
+
+            if (messageType === 'IMAGE') {
+              return (
+                <S_ChatBubbleWrapper
+                  key={chatMessageId}
+                  senderChanged={senderChanged}
+                >
+                  <ChatImageBubble
+                    content={content}
+                    createdAt={createdAt}
+                    authored={senderId === Number(memberId)}
+                    status={status}
+                  />
+                </S_ChatBubbleWrapper>
+              );
+            }
 
             return (
               <S_ChatBubbleWrapper
