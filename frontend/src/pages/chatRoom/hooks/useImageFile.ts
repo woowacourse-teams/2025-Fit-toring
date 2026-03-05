@@ -13,6 +13,7 @@ const useImageFile = () => {
     const file = e.target.files[0];
 
     setSelectedImage(file);
+    e.target.value = '';
   }, []);
 
   const cancelImageSelection = useCallback(() => {
