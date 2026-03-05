@@ -15,6 +15,7 @@ import SockJS from 'sockjs-client';
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
 import { PAGE_URL } from '../../common/constants/url';
+import useS3Upload from '../../common/hooks/useS3Upload';
 import {
   hideChannelTalk,
   showChannelTalk,
@@ -334,6 +335,20 @@ function ChatRoom() {
     };
   }, [capturePrevScroll, chatRoomId, navigate]);
 
+  const [image, setImage] = useState<File | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setImage(null);
+      return;
+    }
+    const file = e.target.files[0];
+    setImage(file);
+  };
+
+  const resetImageInput = () => {
+    setImage(null);
+  };
   if (error?.status === 403) {
     return <ChatRoomForbidden />;
   }
@@ -376,6 +391,7 @@ function ChatRoom() {
         value={message}
         onChange={handleChange}
         onSubmit={handleMessageSubmit}
+        onImageChange={handleImageChange}
       />
     </S_Container>
   );

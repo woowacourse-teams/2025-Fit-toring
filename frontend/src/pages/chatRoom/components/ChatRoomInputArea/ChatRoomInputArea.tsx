@@ -10,12 +10,14 @@ interface ChatRoomInputAreaProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function ChatRoomInputArea({
   value,
   onChange,
   onSubmit,
+  onImageChange,
 }: ChatRoomInputAreaProps) {
   const [menuOpened, setMenuOpened] = useState(false);
 
@@ -33,7 +35,11 @@ function ChatRoomInputArea({
         <S_MenuPanel>
           <S_MenuItemWrapper>
             <S_MenuItemLabel>
-              <S_HiddenInput type="file" accept="image/*" />
+              <S_HiddenInput
+                type="file"
+                accept="image/*"
+                onChange={onImageChange}
+              />
               <S_AlbumIcon src={albumIcon} alt="앨범" />
             </S_MenuItemLabel>
             <S_MenuItemDescription>앨범</S_MenuItemDescription>
