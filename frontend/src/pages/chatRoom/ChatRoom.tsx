@@ -37,7 +37,7 @@ import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSe
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
-import type { Message } from './types/message';
+import type { ImageMessage, Message, TextMessage } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
 
 function ChatRoom() {
@@ -165,7 +165,7 @@ function ChatRoom() {
 
     const tempId = Date.now();
 
-    const optimisticMsg = {
+    const optimisticMsg: TextMessage = {
       senderId: Number(memberId),
       content: message,
       createdAt: new Date().toString(),
@@ -174,6 +174,8 @@ function ChatRoom() {
       tempId,
       status: 'pending' as const,
       messageType: MESSAGE_TYPE.TEXT,
+      originalImageUrl: null,
+      thumbnailUrl: null,
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
@@ -361,15 +363,17 @@ function ChatRoom() {
 
     const tempId = Date.now();
 
-    const optimisticMsg = {
+    const optimisticMsg: ImageMessage = {
       senderId: Number(memberId),
-      content: uploadedUrl,
+      content: null,
       createdAt: new Date().toString(),
       chatRoomId: Number(chatRoomId),
       chatMessageId: tempId,
       tempId,
       status: 'pending' as const,
       messageType: MESSAGE_TYPE.IMAGE,
+      originalImageUrl: uploadedUrl,
+      thumbnailUrl: uploadedUrl,
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
