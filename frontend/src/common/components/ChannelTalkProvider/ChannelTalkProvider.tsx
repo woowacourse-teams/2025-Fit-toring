@@ -1,11 +1,11 @@
-import type { PropsWithChildren } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import useChannelTalk from '../../hooks/useChannelTalk';
 
-function ChannelTalkProvider({ children }: PropsWithChildren) {
+function ChannelTalkProvider() {
   useChannelTalk();
 
-  return <>{children}</>;
+  return <Outlet />;
 }
 
 export default ChannelTalkProvider;
