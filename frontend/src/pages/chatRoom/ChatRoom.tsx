@@ -14,8 +14,6 @@ import SockJS from 'sockjs-client';
 
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
-import Button from '../../common/components/Button/Button';
-import Modal from '../../common/components/Modal/Modal';
 import { PAGE_URL } from '../../common/constants/url';
 import useS3Upload from '../../common/hooks/useS3Upload';
 import {
@@ -29,9 +27,11 @@ import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden'
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import ChatRoomInfoSkeleton from './components/ChatRoomInfoSkeleton/ChatRoomInfoSkeleton';
 import ChatRoomInputArea from './components/ChatRoomInputArea/ChatRoomInputArea';
+import ImageSendModal from './components/ImageSendModal/ImageSendModal';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
+import useImageFile from './hooks/useImageFile';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
@@ -337,36 +337,27 @@ function ChatRoom() {
     };
   }, [capturePrevScroll, chatRoomId, navigate]);
 
-  const [image, setImage] = useState<File | null>(null);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) {
-      setImage(null);
-      return;
-    }
-    const file = e.target.files[0];
-    setImage(file);
-  };
-
-  const resetImageInput = () => {
-    setImage(null);
-  };
+  const { selectedImage, handleImageChange, cancelImageSelection } =
+    useImageFile();
 
   const { uploadFile } = useS3Upload();
 
-  const handleImageSubmit = async () => {
-    if (!image) {
+  const handleImageSend = async () => {
+    if (!selectedImage) {
       return;
     }
-    const imageForUpload = image;
-    resetImageInput();
 
-    const { uploadedUrl } = await uploadFile(imageForUpload, 'CHAT');
+    const file = selectedImage;
+    cancelImageSelection();
+
+    const { uploadedUrl } = await uploadFile(file, 'CHAT');
 
     if (!uploadedUrl) {
       alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
       return;
     }
+
+    capturePrevScroll();
 
     const tempId = Date.now();
 
@@ -381,12 +372,7 @@ function ChatRoom() {
       messageType: MESSAGE_TYPE.IMAGE,
     };
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        ...optimisticMsg,
-      },
-    ]);
+    setMessages((prev) => [...prev, optimisticMsg]);
 
     const client = stompClientRef.current;
     if (!client || !client.connected || memberId === null) {
@@ -448,22 +434,13 @@ function ChatRoom() {
         onImageChange={handleImageChange}
       />
 
-      <Modal opened={image !== null} onCloseClick={resetImageInput}>
-        <S_ImageSendContainer>
-          <S_ImageSendTitle>이미지 전송</S_ImageSendTitle>
-          {image && (
-            <S_ImagePreview src={URL.createObjectURL(image)} alt="미리보기" />
-          )}
-          <S_ButtonWrapper>
-            <S_CancelButton onClick={resetImageInput} size="full">
-              취소
-            </S_CancelButton>
-            <S_SendButton onClick={handleImageSubmit} size="full">
-              전송
-            </S_SendButton>
-          </S_ButtonWrapper>
-        </S_ImageSendContainer>
-      </Modal>
+      {selectedImage && (
+        <ImageSendModal
+          selectedImage={selectedImage}
+          onSend={handleImageSend}
+          onCancel={cancelImageSelection}
+        />
+      )}
     </S_Container>
   );
 }
@@ -483,46 +460,4 @@ const S_LoadingHeaderArea = styled.div`
 
 const S_LoadingHeaderWrapper = styled.div<{ visible: boolean }>`
   visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
-`;
-
-const S_ImageSendContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.8rem;
-`;
-
-const S_ImageSendTitle = styled.h3`
-  ${({ theme }) => theme.TYPOGRAPHY.H3_R};
-`;
-
-const S_ImagePreview = styled.img`
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-`;
-
-const S_ButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-
-  width: 100%;
-  padding: 0.4rem 0;
-`;
-
-const S_CancelButton = styled(Button)`
-  border: 1px solid ${({ theme }) => theme.OUTLINE.BLACK};
-
-  background-color: ${({ theme }) => theme.BG.WHITE};
-
-  color: ${({ theme }) => theme.FONT.B01};
-`;
-
-const S_SendButton = styled(Button)`
-  border: 1px solid ${({ theme }) => theme.OUTLINE.BLACK};
-
-  background-color: ${({ theme }) => theme.BG.BLACK};
 `;
