@@ -36,6 +36,7 @@ function ChatContent({
               status,
               chatMessageId,
               messageType,
+              originalImageUrl,
             },
             index,
           ) => {
@@ -50,7 +51,7 @@ function ChatContent({
                   senderChanged={senderChanged}
                 >
                   <ChatImageBubble
-                    content={content}
+                    content={originalImageUrl}
                     createdAt={createdAt}
                     authored={senderId === Number(memberId)}
                     status={status}
