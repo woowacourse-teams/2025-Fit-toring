@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../constants/apiEndpoints';
 import { apiClient } from './apiClient';
 
 export interface PostPresignedURLRequest {
-  imageType: 'MENTORING_PROFILE' | 'CERTIFICATE';
+  imageType: 'MENTORING_PROFILE' | 'CERTIFICATE' | 'CHAT';
   extension: 'png' | 'jpg' | 'jpeg' | 'webp' | 'avif';
 }
 
