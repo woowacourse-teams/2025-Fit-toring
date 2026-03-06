@@ -21,14 +21,14 @@ function ChatRoomInputArea({
 }: ChatRoomInputAreaProps) {
   const [menuOpened, setMenuOpened] = useState(false);
 
-  const toggleMenu = () => {
+  const handleToggleMenuClick = () => {
     setMenuOpened((prev) => !prev);
   };
 
   return (
     <>
       <S_InputWrapper>
-        <MenuToggleButton opened={menuOpened} onClick={toggleMenu} />
+        <MenuToggleButton opened={menuOpened} onClick={handleToggleMenuClick} />
         <InputSection value={value} onChange={onChange} onSubmit={onSubmit} />
       </S_InputWrapper>
       {menuOpened && (
