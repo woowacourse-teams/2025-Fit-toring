@@ -322,7 +322,10 @@ function ChatRoom() {
           client.publish({
             destination: `/app/chatroom/${chatRoomId}`,
             body: JSON.stringify({
-              content: msg.content,
+              content:
+                msg.messageType === MESSAGE_TYPE.IMAGE
+                  ? msg.originalImageUrl
+                  : msg.content,
               tempId: msg.tempId,
               messageType: msg.messageType,
             }),
