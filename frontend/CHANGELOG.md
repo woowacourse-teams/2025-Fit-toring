@@ -1,3 +1,16 @@
+# [1.18.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.17.0...v1.18.0) (2026-03-07)
+
+
+### Bug Fixes
+
+* Flyway 마이그레이션 명세 불일치로 인한 image_type 필드 NOT NULL 추가 ([99fb364](https://github.com/woowacourse-teams/2025-Fit-toring/commit/99fb364914df2bfa0853d7c3ed7ca8519d04ce8d))
+* Flyway 마이그레이션 호환을 위한 image_type 필드 타입 수정 ([5607f85](https://github.com/woowacourse-teams/2025-Fit-toring/commit/5607f85898f6ab6f486d6e50e7507aa4a56e8a73))
+
+
+### Features
+
+* 메세지 수신 Latency 메트릭 측정 AOP 클래스 추가 ([7b3bd38](https://github.com/woowacourse-teams/2025-Fit-toring/commit/7b3bd38ebb5e6f4ca8ec3a146371ee189f7cc355))
+
 # [1.17.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.16.0...v1.17.0) (2026-03-03)
 
 
