@@ -19,8 +19,7 @@ jobs:
       run:
         working-directory: backend/fittoring
     outputs:
-      image_tag: ${{ steps.tags.outputs.dev_tag }}
-      sha_tag: ${{ steps.tags.outputs.sha_tag }}
+      image_tag: ${{ steps.tags.outputs.dev_sha_tag }}
     steps:
       - uses: actions/checkout@v4
 
@@ -135,7 +134,7 @@ jobs:
         id: tags
         run: |
           echo "dev_tag=dev" >> $GITHUB_OUTPUT
-          echo "sha_tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "dev_sha_tag=dev-sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
       - name: Build & Push
         uses: docker/build-push-action@v6
@@ -146,7 +145,7 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_tag }}
-            ${{ env.IMAGE }}:${{ steps.tags.outputs.sha_tag }}
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_sha_tag }}
           cache-from: type=registry,ref=${{ env.IMAGE }}:cache
           cache-to: type=registry,ref=${{ env.IMAGE }}:cache,mode=max
 
