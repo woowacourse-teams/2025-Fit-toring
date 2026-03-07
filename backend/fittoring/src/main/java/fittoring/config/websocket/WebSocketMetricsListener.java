@@ -57,10 +57,6 @@ public class WebSocketMetricsListener {
     private final Counter handshakeFailureAuth;
     private final Counter handshakeFailureOther;
 
-    /**
-     * Message Processing Timer (Latency)
-     */
-    private final Timer wsMessageProcessTimer;
     private final Timer wsSessionDuration;
     private final DistributionSummary wsInboundMessageSizeBytes;
 
@@ -94,12 +90,6 @@ public class WebSocketMetricsListener {
         // ---------- Error Counter ----------
         this.wsMessageError = meterRegistry.counter("ws_message_error_total");
 
-        // ---------- Message Processing Timer ----------
-        this.wsMessageProcessTimer = Timer.builder("ws_message_process_seconds")
-                .description("STOMP message processing latency")
-                .publishPercentileHistogram(true)
-                .publishPercentiles(0.5, 0.95, 0.99)
-                .register(meterRegistry);
         this.wsSessionDuration = Timer.builder("ws_session_duration_seconds")
                 .description("WebSocket session duration")
                 .publishPercentileHistogram(true)
@@ -218,13 +208,6 @@ public class WebSocketMetricsListener {
             return;
         }
         handshakeFailureOther.increment();
-    }
-
-    /**
-     * Record message processing latency (nanoseconds)
-     */
-    public void recordMessageLatency(long durationNanos) {
-        wsMessageProcessTimer.record(durationNanos, TimeUnit.NANOSECONDS);
     }
 
     private String classifyErrorType(Exception ex) {
