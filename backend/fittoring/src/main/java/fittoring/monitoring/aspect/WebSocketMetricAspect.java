@@ -5,6 +5,7 @@ import io.micrometer.core.instrument.Timer;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -21,8 +22,8 @@ public class WebSocketMetricAspect {
                 .register(registry);
     }
 
-    @Around("@annotation(org.springframework.messaging.handler.annotation.MessageMapping)")
-    public Object measureLatency(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("@annotation(messageMapping)")
+    public Object measureLatency(ProceedingJoinPoint joinPoint, MessageMapping messageMapping) throws Throwable {
         Timer.Sample sample = Timer.start();
         try {
             return joinPoint.proceed();
