@@ -10,7 +10,6 @@ import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
 import fittoring.config.auth.LoginInfo;
 import fittoring.exception.ErrorResponse;
-import fittoring.exception.SystemErrorMessage;
 import fittoring.logging.ErrorJsonLogger;
 import fittoring.util.ResponseDurationCalculator;
 import jakarta.servlet.http.Cookie;
@@ -76,10 +75,8 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
             return false;
         } catch (Exception e) {
             metricsListener.incrementHandshakeFailure("other");
-            String message = SystemErrorMessage.INTERNAL_SERVER_ERROR.getMessage();
             logHandshakeError(request, HttpStatus.INTERNAL_SERVER_ERROR, e);
-            writeErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, message);
-            return false;
+            throw e;
         }
     }
 
