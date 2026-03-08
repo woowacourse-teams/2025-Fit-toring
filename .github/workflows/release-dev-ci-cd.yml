@@ -18,8 +18,7 @@ jobs:
     defaults:
       run:
         working-directory: backend/fittoring
-    outputs:
-      image_tag: ${{ steps.tags.outputs.dev_sha_tag }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -102,16 +101,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: clean
+      - name: Clean
         run: ./gradlew clean
 
       - name: Build Admin Page (back-office)
         run: |
           cd ../back-office
-          npm install
+          npm ci
           npm run build
 
-      - name: generate API docs
+      - name: Generate API docs
         run: ./gradlew generateApiDocs
 
       - name: Build jar
@@ -130,11 +129,19 @@ jobs:
       - name: Setup Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set tags
+      - name: Compute tags
         id: tags
+        shell: bash
         run: |
-          echo "dev_tag=dev" >> $GITHUB_OUTPUT
-          echo "dev_sha_tag=dev-sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          SHORT_SHA="$(echo "$GITHUB_SHA" | cut -c1-7)"
+          DEV_TAG="dev"
+          DEV_SHA_TAG="dev-sha-$SHORT_SHA"
+
+          echo "dev_tag=$DEV_TAG" >> "$GITHUB_OUTPUT"
+          echo "dev_sha_tag=$DEV_SHA_TAG" >> "$GITHUB_OUTPUT"
+
+          echo "[INFO] dev_tag=$DEV_TAG"
+          echo "[INFO] dev_sha_tag=$DEV_SHA_TAG"
 
       - name: Build & Push
         uses: docker/build-push-action@v6
@@ -157,17 +164,31 @@ jobs:
       - dev
       - X64 # AMD64 아키텍처를 사용하는 런너에서만 실행
     env:
-      IMAGE: fittoring/fittoring   
-      TAG: ${{ needs.build-and-push.outputs.image_tag }}
+      IMAGE: fittoring/fittoring
       PROFILE: dev
+
     steps:
+      - name: Compute deploy tag
+        shell: bash
+        run: |
+          SHORT_SHA="$(echo "$GITHUB_SHA" | cut -c1-7)"
+          echo "TAG=dev-sha-$SHORT_SHA" >> "$GITHUB_ENV"
+          echo "[INFO] Computed TAG=dev-sha-$SHORT_SHA"
+
+      - name: Debug deploy env
+        run: |
+          echo "IMAGE=$IMAGE"
+          echo "TAG=$TAG"
+          echo "PROFILE=$PROFILE"
+
       - name: Docker login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        
-      - name: Run deploy script   
+
+      - name: Run deploy script
+        shell: bash
         run: |
           cd /home/ubuntu
-          IMAGE="${IMAGE}" TAG="${TAG}" PROFILE="${PROFILE}" ./deploy-be.sh
+          IMAGE="$IMAGE" TAG="$TAG" PROFILE="$PROFILE" ./deploy-be.sh
 
   test-report:
     if: failure()
