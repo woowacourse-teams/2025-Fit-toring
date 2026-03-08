@@ -5,6 +5,7 @@ import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
 import fittoring.config.auth.LoginInfo;
@@ -68,7 +69,7 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
                 attributes.put(TOKEN_EXP_EPOCH_MILLIS_KEY, expEpochMillis);
             }
             return true;
-        } catch (UnauthorizedException | InvalidTokenException e) {
+        } catch (UnauthorizedException | InvalidTokenException | ExpiredTokenException e) {
             metricsListener.incrementHandshakeFailure("auth");
             logHandshakeError(request, HttpStatus.UNAUTHORIZED, e);
             writeErrorResponse(response, HttpStatus.UNAUTHORIZED, e.getMessage());
