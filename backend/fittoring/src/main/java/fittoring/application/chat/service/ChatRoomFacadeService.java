@@ -18,7 +18,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +63,7 @@ public class ChatRoomFacadeService {
                 ImageType.MENTORING_PROFILE, mentoringIds);
 
         return chatRooms.stream()
+                .filter(room -> lastMessageByRoomId.containsKey(room.getId()))
                 .sorted(getComparing(lastMessageByRoomId))
                 .map(
                         room -> {
@@ -85,13 +85,7 @@ public class ChatRoomFacadeService {
 
     private Comparator<ChatRoom> getComparing(Map<Long, ChatMessage> lastMessageByRoomId) {
         return Comparator.comparing(
-                room -> {
-                    ChatMessage lastMessage = lastMessageByRoomId.get(room.getId());
-                    if (lastMessage == null) {
-                        return room.getCreatedAt();
-                    }
-                    return lastMessage.getCreatedAt();
-                },
+                room -> lastMessageByRoomId.get(room.getId()).getCreatedAt(),
                 Comparator.reverseOrder()
         );
     }
