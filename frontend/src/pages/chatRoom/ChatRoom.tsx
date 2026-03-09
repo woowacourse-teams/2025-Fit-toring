@@ -227,7 +227,7 @@ function ChatRoom() {
 
     const client = new Client({
       webSocketFactory: () => {
-        console.log('[sockjs] webSocketFactory called');
+        console.log('[WebSocket] webSocketFactory called');
         return new WebSocket(wsChatUrl);
       },
       onStompError: async (frame) => {
