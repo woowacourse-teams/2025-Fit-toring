@@ -10,7 +10,6 @@ import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import SockJS from 'sockjs-client';
 
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
@@ -222,13 +221,14 @@ function ChatRoom() {
   const isRefreshingRef = useRef(false);
 
   useEffect(() => {
+    const apiBaseUrl = process.env.API_BASE_URL ?? '';
+    const wsBaseUrl = apiBaseUrl.replace(/^http/, 'ws');
+    const wsChatUrl = `${wsBaseUrl}/ws-chat`;
+
     const client = new Client({
       webSocketFactory: () => {
-        console.log('[sockjs] webSocketFactory called');
-
-        return new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
-          withCredentials: true,
-        });
+        console.log('[WebSocket] webSocketFactory called');
+        return new WebSocket(wsChatUrl);
       },
       onStompError: async (frame) => {
         const parsedBody = JSON.parse(frame.body);
