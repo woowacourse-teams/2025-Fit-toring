@@ -14,6 +14,7 @@ import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Reservation;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,6 +63,8 @@ public class ChatRoomFacadeService {
                 ImageType.MENTORING_PROFILE, mentoringIds);
 
         return chatRooms.stream()
+                .filter(room -> lastMessageByRoomId.containsKey(room.getId()))
+                .sorted(getComparing(lastMessageByRoomId))
                 .map(
                         room -> {
                             Reservation reservation = extractReservationFrom(room, reservationsById);
@@ -78,6 +81,13 @@ public class ChatRoomFacadeService {
                                     lastMessage);
                         }
                 ).toList();
+    }
+
+    private Comparator<ChatRoom> getComparing(Map<Long, ChatMessage> lastMessageByRoomId) {
+        return Comparator.comparing(
+                room -> lastMessageByRoomId.get(room.getId()).getCreatedAt(),
+                Comparator.reverseOrder()
+        );
     }
 
     private String extractOpponentNameFrom(Long memberId, ChatRoom room, Map<Long, String> names) {

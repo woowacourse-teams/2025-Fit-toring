@@ -81,7 +81,6 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     private void validateCookie(final Cookie[] cookies) {
-        log.info("sockJS 쿠키 검증");
         if (cookies == null || cookies.length == 0) {
             throw new UnauthorizedException(BusinessErrorMessage.EMPTY_COOKIE.getMessage());
         }
