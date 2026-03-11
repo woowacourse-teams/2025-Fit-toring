@@ -126,6 +126,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Setup Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -136,12 +139,18 @@ jobs:
           SHORT_SHA="$(echo "$GITHUB_SHA" | cut -c1-7)"
           DEV_TAG="dev"
           DEV_SHA_TAG="dev-sha-$SHORT_SHA"
+          STG_TAG="stg"
+          STG_SHA_TAG="stg-sha-$SHORT_SHA"
 
           echo "dev_tag=$DEV_TAG" >> "$GITHUB_OUTPUT"
           echo "dev_sha_tag=$DEV_SHA_TAG" >> "$GITHUB_OUTPUT"
+          echo "stg_tag=$STG_TAG" >> "$GITHUB_OUTPUT"
+          echo "stg_sha_tag=$STG_SHA_TAG" >> "$GITHUB_OUTPUT"
 
           echo "[INFO] dev_tag=$DEV_TAG"
           echo "[INFO] dev_sha_tag=$DEV_SHA_TAG"
+          echo "[INFO] stg_tag=$STG_TAG"
+          echo "[INFO] stg_sha_tag=$STG_SHA_TAG"
 
       - name: Build & Push
         uses: docker/build-push-action@v6
@@ -155,6 +164,19 @@ jobs:
             ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_sha_tag }}
           cache-from: type=registry,ref=${{ env.IMAGE }}:cache
           cache-to: type=registry,ref=${{ env.IMAGE }}:cache,mode=max
+
+      - name: Build & Push ARM only (stg)
+        uses: docker/build-push-action@v6
+        with:
+          context: backend/fittoring
+          file: backend/fittoring/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.stg_tag }}
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.stg_sha_tag }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:cache-arm64
+          cache-to: type=registry,ref=${{ env.IMAGE }}:cache-arm64,mode=max
 
   deploy-dev:
     if: github.event_name == 'push'
