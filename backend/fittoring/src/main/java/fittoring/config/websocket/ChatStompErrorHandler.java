@@ -3,6 +3,8 @@ package fittoring.config.websocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fittoring.application.chat.presentation.dto.response.ChatWebSocketErrorResponse;
 import fittoring.application.exception.ExpiredTokenException;
+import fittoring.application.exception.InvalidTokenException;
+import fittoring.application.exception.UnauthorizedException;
 import fittoring.logging.ErrorJsonLogger;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -25,6 +27,8 @@ import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
 
     private static final String TOKEN_EXPIRED_CODE = "TOKEN_EXPIRED";
+    private static final String INVALID_TOKEN_CODE = "INVALID_TOKEN";
+    private static final String UNAUTHORIZED_CODE = "UNAUTHORIZED";
     private static final Pattern CHAT_ROOM_ID_PATTERN = Pattern.compile("/chatroom/(\\d+)");
     private static final StompCommand STOMP_COMMAND = StompCommand.ERROR;
 
@@ -35,7 +39,13 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
     public Message<byte[]> handleClientMessageProcessingError(@Nullable Message<byte[]> clientMessage, Throwable ex) {
         Throwable cause = unwrapCause(ex);
         if (cause instanceof ExpiredTokenException expiredException) {
-            return buildExpiredTokenErrorFrame(clientMessage, expiredException);
+            return buildAuthErrorFrame(clientMessage, expiredException, TOKEN_EXPIRED_CODE);
+        }
+        if (cause instanceof InvalidTokenException invalidTokenException) {
+            return buildAuthErrorFrame(clientMessage, invalidTokenException, INVALID_TOKEN_CODE);
+        }
+        if (cause instanceof UnauthorizedException unauthorizedException) {
+            return buildAuthErrorFrame(clientMessage, unauthorizedException, UNAUTHORIZED_CODE);
         }
 
         return super.handleClientMessageProcessingError(clientMessage, ex);
@@ -49,9 +59,10 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
         return cursor;
     }
 
-    private Message<byte[]> buildExpiredTokenErrorFrame(
+    private Message<byte[]> buildAuthErrorFrame(
             @Nullable Message<byte[]> clientMessage,
-            ExpiredTokenException exception
+            RuntimeException exception,
+            String errorCode
     ) {
         String traceId = UUID.randomUUID().toString();
         String destination = resolveDestination(clientMessage);
@@ -67,7 +78,7 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
                 traceId
         );
 
-        return createResponseMessage(clientMessage, exception, traceId, chatRoomId);
+        return createResponseMessage(clientMessage, exception, traceId, chatRoomId, errorCode);
     }
 
     private String resolveDestination(@Nullable Message<byte[]> clientMessage) {
@@ -113,24 +124,26 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
 
     private Message<byte[]> createResponseMessage(
             @Nullable Message<byte[]> clientMessage,
-            ExpiredTokenException exception,
+            RuntimeException exception,
             String traceId,
-            Long chatRoomId
+            Long chatRoomId,
+            String errorCode
     ) {
-        ChatWebSocketErrorResponse response = createErrorResponse(exception, traceId, chatRoomId);
+        ChatWebSocketErrorResponse response = createErrorResponse(exception, traceId, chatRoomId, errorCode);
         byte[] payload = toPayload(response);
         MessageHeaders messageHeaders = getStompMessageHeaders(clientMessage, exception);
         return MessageBuilder.createMessage(payload, messageHeaders);
     }
 
     private ChatWebSocketErrorResponse createErrorResponse(
-            ExpiredTokenException exception,
+            RuntimeException exception,
             String traceId,
-            Long chatRoomId
+            Long chatRoomId,
+            String errorCode
     ) {
         return ChatWebSocketErrorResponse.of(
                 HttpStatus.UNAUTHORIZED.value(),
-                TOKEN_EXPIRED_CODE,
+                errorCode,
                 exception.getMessage(),
                 traceId,
                 chatRoomId,
@@ -148,7 +161,7 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
 
     private MessageHeaders getStompMessageHeaders(
             @Nullable Message<byte[]> clientMessage,
-            ExpiredTokenException exception
+            RuntimeException exception
     ) {
         StompHeaderAccessor accessor = createStompAccessor(clientMessage, exception);
         return accessor.getMessageHeaders();
@@ -156,7 +169,7 @@ public class ChatStompErrorHandler extends StompSubProtocolErrorHandler {
 
     private StompHeaderAccessor createStompAccessor(
             @Nullable Message<byte[]> clientMessage,
-            ExpiredTokenException exception
+            RuntimeException exception
     ) {
         StompHeaderAccessor accessor = StompHeaderAccessor.create(STOMP_COMMAND);
         accessor.setMessage(exception.getMessage());
