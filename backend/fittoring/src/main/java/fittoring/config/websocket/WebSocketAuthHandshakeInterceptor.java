@@ -14,9 +14,6 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 @Component
 public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
 
-    public static final String LOGIN_INFO_KEY = "loginInfo";
-    public static final String TOKEN_EXP_EPOCH_MILLIS_KEY = "tokenExpEpochMillis";
-    public static final String ACCESS_TOKEN_KEY = "accessToken";
     private static final String TOKEN_NAME = "accessToken";
 
     @Override
@@ -28,7 +25,8 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
     ) {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             Cookie[] cookies = servletRequest.getServletRequest().getCookies();
-            extractToken(cookies).ifPresent(token -> attributes.put(ACCESS_TOKEN_KEY, token));
+            extractToken(cookies)
+                    .ifPresent(token -> attributes.put(TOKEN_NAME, token));
         }
         return true;
     }

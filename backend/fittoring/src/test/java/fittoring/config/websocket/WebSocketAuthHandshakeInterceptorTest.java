@@ -46,7 +46,7 @@ class WebSocketAuthHandshakeInterceptorTest {
 
         // then
         assertThat(result).isTrue();
-        assertThat(attributes.get(WebSocketAuthHandshakeInterceptor.ACCESS_TOKEN_KEY))
+        assertThat(attributes.get("accessToken"))
                 .isEqualTo("token-value");
     }
 

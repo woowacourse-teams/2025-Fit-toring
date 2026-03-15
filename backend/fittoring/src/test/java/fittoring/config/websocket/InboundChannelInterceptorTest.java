@@ -58,11 +58,11 @@ class InboundChannelInterceptorTest {
         assertThat(result).isNotNull();
         assertThat(result.getHeaders()
                 .get("simpSessionAttributes", Map.class)
-                .get(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY))
+                .get("loginInfo"))
                 .isEqualTo(new LoginInfo(1L));
         assertThat(result.getHeaders()
                 .get("simpSessionAttributes", Map.class)
-                .get(WebSocketAuthHandshakeInterceptor.TOKEN_EXP_EPOCH_MILLIS_KEY))
+                .get("tokenExpEpochMillis"))
                 .isEqualTo(1_800_000_000_000L);
         verifyNoInteractions(metricsListener);
     }
@@ -80,7 +80,7 @@ class InboundChannelInterceptorTest {
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.getHeaders().get(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY)).isEqualTo(loginInfo);
+        assertThat(result.getHeaders().get("loginInfo")).isEqualTo(loginInfo);
         verify(metricsListener).incrementInboundMessage(2);
     }
 
@@ -140,8 +140,8 @@ class InboundChannelInterceptorTest {
         StompHeaderAccessor accessor = StompHeaderAccessor.create(command);
         accessor.setLeaveMutable(true);
         Map<String, Object> sessionAttributes = new HashMap<>();
-        sessionAttributes.put(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY, loginInfo);
-        sessionAttributes.put(WebSocketAuthHandshakeInterceptor.TOKEN_EXP_EPOCH_MILLIS_KEY, expMillis);
+        sessionAttributes.put("loginInfo", loginInfo);
+        sessionAttributes.put("tokenExpEpochMillis", expMillis);
         accessor.setSessionAttributes(sessionAttributes);
         return MessageBuilder.createMessage("{}".getBytes(StandardCharsets.UTF_8), accessor.getMessageHeaders());
     }
@@ -150,7 +150,7 @@ class InboundChannelInterceptorTest {
         StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
         accessor.setLeaveMutable(true);
         Map<String, Object> sessionAttributes = new HashMap<>();
-        sessionAttributes.put(WebSocketAuthHandshakeInterceptor.ACCESS_TOKEN_KEY, accessToken);
+        sessionAttributes.put("accessToken", accessToken);
         accessor.setSessionAttributes(sessionAttributes);
         return MessageBuilder.createMessage("{}".getBytes(StandardCharsets.UTF_8), accessor.getMessageHeaders());
     }
