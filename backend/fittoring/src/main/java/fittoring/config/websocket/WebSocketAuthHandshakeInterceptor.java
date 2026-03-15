@@ -3,6 +3,7 @@ package fittoring.config.websocket;
 import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -32,9 +33,9 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
         return true;
     }
 
-    private java.util.Optional<String> extractToken(Cookie[] cookies) {
+    private Optional<String> extractToken(Cookie[] cookies) {
         if (cookies == null || cookies.length == 0) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         return Arrays.stream(cookies)
                 .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
