@@ -13,18 +13,23 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
+import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 
+@Slf4j
 @Component
 public class WebSocketMetricsListener {
 
@@ -62,6 +67,7 @@ public class WebSocketMetricsListener {
 
     public WebSocketMetricsListener(
             MeterRegistry meterRegistry,
+            WebSocketMessageBrokerStats webSocketMessageBrokerStats,
             @Qualifier("clientInboundChannelExecutor") Executor inbound,
             @Qualifier("clientOutboundChannelExecutor") Executor outbound
     ) {
@@ -102,6 +108,18 @@ public class WebSocketMetricsListener {
         // ---------- Active Session Gauge ----------
         Gauge.builder("ws_sessions_active_count", activeSessions, Set::size)
                 .description("Current active STOMP sessions")
+                .register(meterRegistry);
+
+        Gauge.builder("ws_transport_sessions_current_count",
+                        webSocketMessageBrokerStats,
+                        this::getCurrentTransportSessionCount)
+                .description("Current WebSocket transport sessions managed by Spring")
+                .register(meterRegistry);
+
+        Gauge.builder("ws_session_count_gap",
+                        webSocketMessageBrokerStats,
+                        this::calculateSessionCountGap)
+                .description("Gap between active STOMP sessions and current transport sessions")
                 .register(meterRegistry);
 
         // ---------- Inbound Executor Gauges ----------
@@ -158,6 +176,7 @@ public class WebSocketMetricsListener {
     @EventListener
     public void onSessionDisconnect(SessionDisconnectEvent event) {
         stompDisconnect.increment();
+        incrementDisconnectByCloseStatus(event.getCloseStatus());
 
         String sessionId = event.getSessionId();
         if (sessionId != null) {
@@ -229,5 +248,28 @@ public class WebSocketMetricsListener {
             depth++;
         }
         return "internal";
+    }
+
+    private void incrementDisconnectByCloseStatus(CloseStatus closeStatus) {
+        String closeCode = "unknown";
+        if (closeStatus != null) {
+            closeCode = String.valueOf(closeStatus.getCode());
+        }
+
+        meterRegistry.counter("ws_disconnect_close_status_total", "close_code", closeCode).increment();
+    }
+
+    private double getCurrentTransportSessionCount(WebSocketMessageBrokerStats webSocketMessageBrokerStats) {
+        SubProtocolWebSocketHandler.Stats stats = webSocketMessageBrokerStats.getWebSocketSessionStats();
+        if (stats == null) {
+            return 0;
+        }
+        return stats.getWebSocketSessions()
+                + stats.getHttpStreamingSessions()
+                + stats.getHttpPollingSessions();
+    }
+
+    private double calculateSessionCountGap(WebSocketMessageBrokerStats webSocketMessageBrokerStats) {
+        return activeSessions.size() - getCurrentTransportSessionCount(webSocketMessageBrokerStats);
     }
 }
