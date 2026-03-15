@@ -230,6 +230,9 @@ function ChatRoom() {
         console.log('[WebSocket] webSocketFactory called');
         return new WebSocket(wsChatUrl);
       },
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
+      reconnectDelay: 5000,
       onStompError: async (frame) => {
         const parsedBody = JSON.parse(frame.body);
 
@@ -258,7 +261,6 @@ function ChatRoom() {
       },
 
       onWebSocketError: (e) => console.error('WebSocket error:', e),
-      reconnectDelay: 5000,
       onConnect: () => {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
