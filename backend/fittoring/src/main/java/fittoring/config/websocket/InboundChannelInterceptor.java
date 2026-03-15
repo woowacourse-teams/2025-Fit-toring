@@ -17,7 +17,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +25,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class InboundChannelInterceptor implements ChannelInterceptor {
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String ACCESS_TOKEN_HEADER = "accessToken";
-    private static final String BEARER_PREFIX = "Bearer ";
+    public static final String LOGIN_INFO_KEY = "loginInfo";
+
+    private static final String TOKEN_EXP_EPOCH_MILLIS_KEY = "tokenExpEpochMillis";
+    private static final String TOKEN_NAME = "accessToken";
 
     private final JwtProvider jwtProvider;
     private final WebSocketMetricsListener metricsListener;
@@ -49,47 +49,42 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
             return message;
         }
 
+        Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
         if (StompCommand.SEND.equals(command) || StompCommand.SUBSCRIBE.equals(command)) {
-            validateAuthenticated(accessor);
-            validateSessionExpired(accessor);
+            validateAuthenticated(sessionAttributes);
         }
 
         if (StompCommand.SEND.equals(command)) {
-            LoginInfo loginInfo = (LoginInfo) getSessionAttributes(accessor)
-                    .get(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY);
-            accessor.setHeader(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY, loginInfo);
+            LoginInfo loginInfo = (LoginInfo) sessionAttributes.get(LOGIN_INFO_KEY);
+            accessor.setHeader(LOGIN_INFO_KEY, loginInfo);
+
             metricsListener.incrementInboundMessage(resolvePayloadSize(message.getPayload()));
 
-            return MessageBuilder.createMessage(
-                    message.getPayload(),
-                    accessor.getMessageHeaders()
-            );
+            return message;
         }
         return message;
     }
 
     private void authenticate(StompHeaderAccessor accessor) {
-        String accessToken = resolveAccessToken(accessor);
+        String accessToken = getTokenFromSession(accessor);
         TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
         long expEpochMillis = jwtProvider.extractExpirationMillis(accessToken);
 
         Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
-        sessionAttributes.put(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY, new LoginInfo(payload.sub()));
-        sessionAttributes.put(WebSocketAuthHandshakeInterceptor.TOKEN_EXP_EPOCH_MILLIS_KEY, expEpochMillis);
+        storeAuthenticationInSession(sessionAttributes, payload, expEpochMillis);
     }
 
-    private String resolveAccessToken(StompHeaderAccessor accessor) {
-        String authorization = accessor.getFirstNativeHeader(AUTHORIZATION_HEADER);
-        if (authorization != null) {
-            return extractBearerToken(authorization);
-        }
+    private void storeAuthenticationInSession(
+            Map<String, Object> sessionAttributes,
+            TokenPayload payload,
+            long expEpochMillis
+    ) {
+        sessionAttributes.put(LOGIN_INFO_KEY, new LoginInfo(payload.sub()));
+        sessionAttributes.put(TOKEN_EXP_EPOCH_MILLIS_KEY, expEpochMillis);
+    }
 
-        String accessToken = accessor.getFirstNativeHeader(ACCESS_TOKEN_HEADER);
-        if (accessToken != null && !accessToken.isBlank()) {
-            return accessToken;
-        }
-
-        Object token = getSessionAttributes(accessor).get(WebSocketAuthHandshakeInterceptor.ACCESS_TOKEN_KEY);
+    private String getTokenFromSession(StompHeaderAccessor accessor) {
+        Object token = getSessionAttributes(accessor).get(TOKEN_NAME);
         if (token instanceof String text && !text.isBlank()) {
             return text;
         }
@@ -97,37 +92,23 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
         throw new UnauthorizedException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
     }
 
-    private String extractBearerToken(String authorization) {
-        if (authorization.isBlank()) {
-            throw new UnauthorizedException(BusinessErrorMessage.EMPTY_TOKEN.getMessage());
-        }
-        if (!authorization.startsWith(BEARER_PREFIX)) {
-            return authorization;
-        }
-
-        String token = authorization.substring(BEARER_PREFIX.length()).trim();
-        if (token.isEmpty()) {
-            throw new UnauthorizedException(BusinessErrorMessage.EMPTY_TOKEN.getMessage());
-        }
-        return token;
-    }
-
-    private void validateAuthenticated(StompHeaderAccessor accessor) {
-        Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
-        if (!sessionAttributes.containsKey(WebSocketAuthHandshakeInterceptor.LOGIN_INFO_KEY)
-                || !sessionAttributes.containsKey(WebSocketAuthHandshakeInterceptor.TOKEN_EXP_EPOCH_MILLIS_KEY)) {
+    private void validateAuthenticated(Map<String, Object> sessionAttributes) {
+        if (!sessionAttributes.containsKey(LOGIN_INFO_KEY) ||
+                !sessionAttributes.containsKey(TOKEN_EXP_EPOCH_MILLIS_KEY)) {
             throw new UnauthorizedException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
         }
+        validateTokenExpired(sessionAttributes);
     }
 
-    private void validateSessionExpired(StompHeaderAccessor accessor) {
-        long expEpochMillis = getExpEpochMillis(accessor);
-        validateTokenExpired(expEpochMillis);
+    private void validateTokenExpired(Map<String, Object> sessionAttributes) {
+        long expEpochMillis = getExpEpochMillis(sessionAttributes);
+        if (isTokenExpired(expEpochMillis)) {
+            throw new ExpiredTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
+        }
     }
 
-    private long getExpEpochMillis(StompHeaderAccessor accessor) {
-        return (long) getSessionAttributes(accessor)
-                .get(WebSocketAuthHandshakeInterceptor.TOKEN_EXP_EPOCH_MILLIS_KEY);
+    private long getExpEpochMillis(Map<String, Object> sessionAttributes) {
+        return (long) sessionAttributes.get(TOKEN_EXP_EPOCH_MILLIS_KEY);
     }
 
     private Map<String, Object> getSessionAttributes(StompHeaderAccessor accessor) {
@@ -136,12 +117,6 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
             throw new UnauthorizedException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage());
         }
         return sessionAttributes;
-    }
-
-    private void validateTokenExpired(long expEpochMillis) {
-        if (isTokenExpired(expEpochMillis)) {
-            throw new ExpiredTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
-        }
     }
 
     private boolean isTokenExpired(long expEpochMillis) {
