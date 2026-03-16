@@ -1,0 +1,72 @@
+name: Dashboard Deploy
+
+on:
+  pull_request:
+    branches: [ release-dev, release-prod ]
+    paths:
+      - 'backend/fittoring/monitoring/grafana/dashboards/**'
+  push:
+    branches: [ release-dev, release-prod ]
+    paths:
+      - 'backend/fittoring/monitoring/grafana/dashboards/**'
+  workflow_dispatch:
+
+env:
+  DASHBOARD_DIR: backend/fittoring/monitoring/grafana/dashboards
+  TARGET_DIR: /home/ssm-user/grafana/provisioning/dashboards
+  GRAFANA_CONTAINER: grafana
+
+jobs:
+  validate-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Validate dashboard JSON files
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=("${DASHBOARD_DIR}"/*.json)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "[INFO] No dashboard JSON files found."
+            exit 0
+          fi
+
+          for file in "${files[@]}"; do
+            echo "[INFO] Validating ${file}"
+            jq empty "${file}"
+          done
+
+  deploy-dashboard:
+    if: github.event_name == 'push'
+    needs: validate-dashboard
+    runs-on:
+      - self-hosted
+      - monitoring
+      - ARM64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deploy tools
+        run: |
+          if ! command -v rsync >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y rsync
+          fi
+
+      - name: Sync dashboards on monitoring server
+        shell: bash
+        run: |
+          sudo mkdir -p "${TARGET_DIR}"
+          sudo rsync -av --delete "${DASHBOARD_DIR}/" "${TARGET_DIR}/"
+
+      - name: Restart Grafana container
+        shell: bash
+        run: |
+          sudo docker restart "${GRAFANA_CONTAINER}"
