@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: "fittoring"
+    orgId: 1
+    folder: "Fittoring"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
