@@ -219,6 +219,7 @@ function ChatRoom() {
   const stompClientRef = useRef<Client | null>(null);
 
   const isRefreshingRef = useRef(false);
+  const pendingMessagesOnRefreshRef = useRef<Message[]>([]);
 
   useEffect(() => {
     const apiBaseUrl = process.env.API_BASE_URL ?? '';
@@ -242,6 +243,9 @@ function ChatRoom() {
           }
 
           isRefreshingRef.current = true;
+          pendingMessagesOnRefreshRef.current = messagesRef.current.filter(
+            (m) => m.status === 'pending',
+          );
 
           try {
             await postReissue();
@@ -311,20 +315,20 @@ function ChatRoom() {
           });
         });
 
-        const pendingMessages = messagesRef.current.filter(
-          (m) => m.status === 'pending',
-        );
-
-        pendingMessages.forEach((msg) => {
-          client.publish({
-            destination: `/app/chatroom/${chatRoomId}`,
-            body: JSON.stringify({
-              content: msg.content,
-              tempId: msg.tempId,
-              messageType: msg.messageType,
-            }),
+        if (pendingMessagesOnRefreshRef.current.length > 0) {
+          pendingMessagesOnRefreshRef.current.forEach((msg) => {
+            client.publish({
+              destination: `/app/chatroom/${chatRoomId}`,
+              body: JSON.stringify({
+                content: msg.content,
+                tempId: msg.tempId,
+                messageType: msg.messageType,
+              }),
+            });
           });
-        });
+
+          pendingMessagesOnRefreshRef.current = [];
+        }
       },
     });
 
