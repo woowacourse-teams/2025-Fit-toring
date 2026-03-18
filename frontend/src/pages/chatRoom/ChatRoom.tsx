@@ -175,12 +175,11 @@ function ChatRoom() {
       messageType: MESSAGE_TYPE.TEXT,
     };
 
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setMessage('');
-
     const client = stompClientRef.current;
 
     if (isReconnectPendingRef.current) {
+      setMessages((prev) => [...prev, optimisticMsg]);
+      setMessage('');
       queuedMessagesDuringReconnectRef.current.push(optimisticMsg);
       return;
     }
@@ -188,6 +187,9 @@ function ChatRoom() {
     if (!client || !client.connected) {
       return;
     }
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setMessage('');
 
     client.publish({
       destination: `/app/chatroom/${chatRoomId}`,
