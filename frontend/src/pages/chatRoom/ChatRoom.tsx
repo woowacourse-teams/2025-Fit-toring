@@ -150,10 +150,13 @@ function ChatRoom() {
     listElRef,
   });
 
+  const queuedMessagesDuringReconnectRef = useRef<Message[]>([]);
+  const isReconnectPendingRef = useRef(false);
+
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (message === '') {
+    if (message === '' || memberId === null) {
       return;
     }
 
@@ -176,7 +179,13 @@ function ChatRoom() {
     setMessage('');
 
     const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
+
+    if (isReconnectPendingRef.current) {
+      queuedMessagesDuringReconnectRef.current.push(optimisticMsg);
+      return;
+    }
+
+    if (!client || !client.connected) {
       return;
     }
 
@@ -243,6 +252,8 @@ function ChatRoom() {
           }
 
           isRefreshingRef.current = true;
+          isReconnectPendingRef.current = true;
+
           pendingMessagesOnRefreshRef.current = messagesRef.current.filter(
             (m) => m.status === 'pending',
           );
@@ -253,9 +264,9 @@ function ChatRoom() {
             if (client.active) {
               await client.deactivate();
             }
-
             client.activate();
           } catch (e) {
+            isReconnectPendingRef.current = false;
             navigate(PAGE_URL.LOGIN);
             console.error('토큰 재발급 실패:', e);
           } finally {
@@ -329,6 +340,23 @@ function ChatRoom() {
 
           pendingMessagesOnRefreshRef.current = [];
         }
+
+        if (queuedMessagesDuringReconnectRef.current.length > 0) {
+          queuedMessagesDuringReconnectRef.current.forEach((msg) => {
+            client.publish({
+              destination: `/app/chatroom/${chatRoomId}`,
+              body: JSON.stringify({
+                content: msg.content,
+                tempId: msg.tempId,
+                messageType: msg.messageType,
+              }),
+            });
+          });
+
+          queuedMessagesDuringReconnectRef.current = [];
+        }
+
+        isReconnectPendingRef.current = false;
       },
     });
 
