@@ -328,8 +328,13 @@ function ChatRoom() {
           });
         });
 
-        if (pendingMessagesOnRefreshRef.current.length > 0) {
-          pendingMessagesOnRefreshRef.current.forEach((msg) => {
+        const queue = [
+          ...pendingMessagesOnRefreshRef.current,
+          ...queuedMessagesDuringReconnectRef.current,
+        ];
+
+        if (queue.length > 0) {
+          queue.forEach((msg) => {
             client.publish({
               destination: `/app/chatroom/${chatRoomId}`,
               body: JSON.stringify({
@@ -341,20 +346,6 @@ function ChatRoom() {
           });
 
           pendingMessagesOnRefreshRef.current = [];
-        }
-
-        if (queuedMessagesDuringReconnectRef.current.length > 0) {
-          queuedMessagesDuringReconnectRef.current.forEach((msg) => {
-            client.publish({
-              destination: `/app/chatroom/${chatRoomId}`,
-              body: JSON.stringify({
-                content: msg.content,
-                tempId: msg.tempId,
-                messageType: msg.messageType,
-              }),
-            });
-          });
-
           queuedMessagesDuringReconnectRef.current = [];
         }
 
