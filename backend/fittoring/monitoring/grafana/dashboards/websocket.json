@@ -2711,7 +2711,7 @@
         "x": 0,
         "y": 67
       },
-      "id": 38,
+      "id": 109,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -2736,12 +2736,11 @@
             "type": "prometheus",
             "uid": "${ds_prometheus}"
           },
-          "expr": "histogram_quantile(0.95, rate(ws_message_process_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
-          "refId": "A",
-          "refid": "a"
+          "expr": "histogram_quantile(0.95, rate(ws_server_internal_end_to_end_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
+          "refId": "A"
         }
       ],
-      "title": "메시지 처리 지연시간 p95",
+      "title": "서버 내부 최종 레이턴시 p95",
       "type": "stat"
     },
     {
@@ -2801,7 +2800,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "ms"
         },
         "overrides": []
       },
@@ -2811,15 +2811,13 @@
         "x": 4,
         "y": 67
       },
-      "id": 8,
+      "id": 110,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "displaymode": "list",
           "placement": "bottom",
-          "showLegend": true,
-          "showlegend": true
+          "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -2834,33 +2832,145 @@
             "type": "prometheus",
             "uid": "${ds_prometheus}"
           },
-          "expr": "histogram_quantile(0.50, rate(ws_message_process_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
-          "legendformat": "p50 latency (ms)",
-          "refId": "A",
-          "refid": "a"
+          "expr": "histogram_quantile(0.50, rate(ws_server_internal_end_to_end_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
+          "legendformat": "p50 end-to-end (ms)",
+          "refId": "A"
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${ds_prometheus}"
           },
-          "expr": "histogram_quantile(0.95, rate(ws_message_process_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
-          "legendformat": "p95 latency (ms)",
-          "refId": "B",
-          "refid": "b"
+          "expr": "histogram_quantile(0.95, rate(ws_server_internal_end_to_end_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
+          "legendformat": "p95 end-to-end (ms)",
+          "refId": "B"
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${ds_prometheus}"
           },
-          "expr": "histogram_quantile(0.99, rate(ws_message_process_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
-          "legendformat": "p99 latency (ms)",
-          "refId": "C",
-          "refid": "c"
+          "expr": "histogram_quantile(0.99, rate(ws_server_internal_end_to_end_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
+          "legendformat": "p99 end-to-end (ms)",
+          "refId": "C"
         }
       ],
-      "title": "메시지 처리 지연시간 퍼센타일 (p50 / p95 / p99)",
+      "title": "서버 내부 최종 레이턴시 퍼센타일 (p50 / p95 / p99)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds_prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 73
+      },
+      "id": 111,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_prometheus}"
+          },
+          "expr": "histogram_quantile(0.95, rate(ws_inbound_queue_wait_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
+          "legendformat": "inbound queue p95 (ms)",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_prometheus}"
+          },
+          "expr": "histogram_quantile(0.95, rate(ws_handler_process_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
+          "legendformat": "handler p95 (ms)",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds_prometheus}"
+          },
+          "expr": "histogram_quantile(0.95, rate(ws_outbound_queue_wait_seconds_bucket{environment=\"$env\"}[5m])) * 1000",
+          "legendformat": "outbound queue p95 (ms)",
+          "refId": "C"
+        }
+      ],
+      "title": "서버 내부 레이턴시 구간별 p95 (inbound / handler / outbound)",
       "type": "timeseries"
     },
     {
@@ -2928,7 +3038,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 73
+        "y": 79
       },
       "id": 108,
       "options": {
@@ -3024,7 +3134,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 73
+        "y": 79
       },
       "id": 14,
       "options": {
@@ -3120,7 +3230,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 79
+        "y": 85
       },
       "id": 15,
       "options": {
@@ -3234,7 +3344,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 79
+        "y": 85
       },
       "id": 16,
       "options": {
@@ -3289,7 +3399,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 85
+        "y": 91
       },
       "id": 105,
       "panels": [],
@@ -3309,7 +3419,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 86
+        "y": 92
       },
       "id": 24,
       "options": {
@@ -3423,5 +3533,5 @@
   "timezone": "browser",
   "title": "websocket monitoring",
   "uid": "websocket-monitoring",
-  "version": 21
+  "version": 27
 }

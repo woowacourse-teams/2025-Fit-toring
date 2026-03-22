@@ -14,19 +14,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.ExecutorChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class InboundChannelInterceptor implements ChannelInterceptor {
+public class InboundChannelInterceptor implements ChannelInterceptor, ExecutorChannelInterceptor {
 
     public static final String LOGIN_INFO_KEY = "loginInfo";
 
+    private static final String INBOUND_ENQUEUED_AT_NS_KEY = "wsInboundEnqueuedAtNs";
     private static final String TOKEN_EXP_EPOCH_MILLIS_KEY = "tokenExpEpochMillis";
     private static final String TOKEN_NAME = "accessToken";
 
@@ -57,12 +60,39 @@ public class InboundChannelInterceptor implements ChannelInterceptor {
         if (StompCommand.SEND.equals(command)) {
             LoginInfo loginInfo = (LoginInfo) sessionAttributes.get(LOGIN_INFO_KEY);
             accessor.setHeader(LOGIN_INFO_KEY, loginInfo);
+            accessor.setHeader(INBOUND_ENQUEUED_AT_NS_KEY, System.nanoTime());
 
             metricsListener.incrementInboundMessage(resolvePayloadSize(message.getPayload()));
 
             return message;
         }
         return message;
+    }
+
+    @Override
+    public Message<?> beforeHandle(Message<?> message, MessageChannel channel, MessageHandler handler) {
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        if (accessor == null || !StompCommand.SEND.equals(accessor.getCommand())) {
+            return message;
+        }
+
+        Long enqueuedAtNs = (Long) accessor.getHeader(INBOUND_ENQUEUED_AT_NS_KEY);
+        if (enqueuedAtNs != null) {
+            metricsListener.recordInboundQueueWait(System.nanoTime() - enqueuedAtNs);
+            WebSocketMetricContext.setInboundEnqueuedAtNs(enqueuedAtNs);
+        }
+
+        return message;
+    }
+
+    @Override
+    public void afterMessageHandled(
+            Message<?> message,
+            MessageChannel channel,
+            MessageHandler handler,
+            @Nullable Exception ex
+    ) {
+        WebSocketMetricContext.clear();
     }
 
     private void authenticate(StompHeaderAccessor accessor) {
