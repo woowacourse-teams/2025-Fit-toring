@@ -63,6 +63,9 @@ public class WebSocketMetricsListener {
     private final Counter handshakeFailureOther;
 
     private final Timer wsSessionDuration;
+    private final Timer wsInboundQueueWait;
+    private final Timer wsOutboundQueueWait;
+    private final Timer wsServerInternalEndToEnd;
     private final DistributionSummary wsInboundMessageSizeBytes;
 
     public WebSocketMetricsListener(
@@ -98,6 +101,21 @@ public class WebSocketMetricsListener {
 
         this.wsSessionDuration = Timer.builder("ws_session_duration_seconds")
                 .description("WebSocket session duration")
+                .publishPercentileHistogram(true)
+                .publishPercentiles(0.5, 0.95, 0.99)
+                .register(meterRegistry);
+        this.wsInboundQueueWait = Timer.builder("ws_inbound_queue_wait_seconds")
+                .description("Time spent waiting in the clientInboundChannel queue before handler execution")
+                .publishPercentileHistogram(true)
+                .publishPercentiles(0.5, 0.95, 0.99)
+                .register(meterRegistry);
+        this.wsOutboundQueueWait = Timer.builder("ws_outbound_queue_wait_seconds")
+                .description("Time spent waiting in the clientOutboundChannel queue before delivery processing")
+                .publishPercentileHistogram(true)
+                .publishPercentiles(0.5, 0.95, 0.99)
+                .register(meterRegistry);
+        this.wsServerInternalEndToEnd = Timer.builder("ws_server_internal_end_to_end_seconds")
+                .description("Server-internal end-to-end latency from inbound enqueue to outbound delivery handling")
                 .publishPercentileHistogram(true)
                 .publishPercentiles(0.5, 0.95, 0.99)
                 .register(meterRegistry);
@@ -211,6 +229,27 @@ public class WebSocketMetricsListener {
      */
     public void incrementOutboundMessage() {
         wsMessageOut.increment();
+    }
+
+    public void recordInboundQueueWait(long waitNanos) {
+        if (waitNanos < 0) {
+            return;
+        }
+        wsInboundQueueWait.record(waitNanos, TimeUnit.NANOSECONDS);
+    }
+
+    public void recordOutboundQueueWait(long waitNanos) {
+        if (waitNanos < 0) {
+            return;
+        }
+        wsOutboundQueueWait.record(waitNanos, TimeUnit.NANOSECONDS);
+    }
+
+    public void recordServerInternalEndToEnd(long elapsedNanos) {
+        if (elapsedNanos < 0) {
+            return;
+        }
+        wsServerInternalEndToEnd.record(elapsedNanos, TimeUnit.NANOSECONDS);
     }
 
     /**
