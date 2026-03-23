@@ -3443,7 +3443,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{job=\"fittoring-backend\"} \n|= `` \n!= \"/metrics\" \n!= \"/healthcheck\"\n!= \"/prometheus-provider\"",
+          "expr": "{job=\"fittoring_${env}_logs\"} \n|= `` \n!= \"/metrics\" \n!= \"/healthcheck\"\n!= \"/prometheus-provider\"",
           "queryType": "range",
           "refId": "A"
         }
