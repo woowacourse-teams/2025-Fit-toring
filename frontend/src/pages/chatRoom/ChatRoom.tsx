@@ -150,7 +150,6 @@ function ChatRoom() {
     listElRef,
   });
 
-  const queuedMessagesDuringReconnectRef = useRef<Message[]>([]);
   const isReconnectPendingRef = useRef(false);
 
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -164,7 +163,7 @@ function ChatRoom() {
 
     const tempId = Date.now();
 
-    const optimisticMsg = {
+    const optimisticMsg: Message = {
       senderId: Number(memberId),
       content: message,
       createdAt: new Date().toString(),
@@ -173,14 +172,19 @@ function ChatRoom() {
       tempId,
       status: 'pending' as const,
       messageType: MESSAGE_TYPE.TEXT,
+      phase: 'normal',
     };
 
     const client = stompClientRef.current;
 
     if (isReconnectPendingRef.current) {
-      setMessages((prev) => [...prev, optimisticMsg]);
+      const reconnectMsg = {
+        ...optimisticMsg,
+        phase: 'during-reconnect' as const,
+      };
+
+      setMessages((prev) => [...prev, reconnectMsg]);
       setMessage('');
-      queuedMessagesDuringReconnectRef.current.push(optimisticMsg);
       return;
     }
 
@@ -230,7 +234,6 @@ function ChatRoom() {
   const stompClientRef = useRef<Client | null>(null);
 
   const isRefreshingRef = useRef(false);
-  const pendingMessagesOnRefreshRef = useRef<Message[]>([]);
 
   useEffect(() => {
     const apiBaseUrl = process.env.API_BASE_URL ?? '';
@@ -256,8 +259,17 @@ function ChatRoom() {
           isRefreshingRef.current = true;
           isReconnectPendingRef.current = true;
 
-          pendingMessagesOnRefreshRef.current = messagesRef.current.filter(
-            (m) => m.status === 'pending',
+          setMessages((prev) =>
+            prev.map((msg) => {
+              if (msg.status !== 'pending') {
+                return msg;
+              }
+              if (msg.phase === 'during-reconnect') {
+                return msg;
+              }
+
+              return { ...msg, phase: 'before-refresh' };
+            }),
           );
 
           try {
@@ -296,6 +308,7 @@ function ChatRoom() {
                   newArr[index] = {
                     ...parsedMessage,
                     status: 'success',
+                    phase: 'normal',
                   };
                   return newArr;
                 }
@@ -310,7 +323,10 @@ function ChatRoom() {
                 return prev;
               }
 
-              return [...prev, { ...parsedMessage, status: 'success' }];
+              return [
+                ...prev,
+                { ...parsedMessage, status: 'success', phase: 'normal' },
+              ];
             });
           },
         );
@@ -319,22 +335,27 @@ function ChatRoom() {
           const parsedErrorMessage = JSON.parse(message.body);
 
           setMessages((prev) => {
-            return prev.map((message) => {
-              if (message.tempId === parsedErrorMessage.tempId) {
-                return { ...message, status: 'fail' };
+            const nextMessages = prev.map((msg) => {
+              if (msg.tempId === parsedErrorMessage.tempId) {
+                return {
+                  ...msg,
+                  status: 'fail' as const,
+                  phase: 'normal' as const,
+                };
               }
-              return message;
+              return msg;
             });
+            messagesRef.current = nextMessages;
+            return nextMessages;
           });
         });
 
-        const queue = [
-          ...pendingMessagesOnRefreshRef.current,
-          ...queuedMessagesDuringReconnectRef.current,
-        ];
+        const pendingToResend = messagesRef.current.filter(
+          (msg) => msg.status === 'pending' && msg.phase !== 'normal',
+        );
 
-        if (queue.length > 0) {
-          queue.forEach((msg) => {
+        if (pendingToResend.length > 0) {
+          pendingToResend.forEach((msg) => {
             client.publish({
               destination: `/app/chatroom/${chatRoomId}`,
               body: JSON.stringify({
@@ -344,9 +365,6 @@ function ChatRoom() {
               }),
             });
           });
-
-          pendingMessagesOnRefreshRef.current = [];
-          queuedMessagesDuringReconnectRef.current = [];
         }
 
         isReconnectPendingRef.current = false;
