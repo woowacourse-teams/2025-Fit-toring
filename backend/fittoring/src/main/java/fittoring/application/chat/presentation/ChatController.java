@@ -1,8 +1,9 @@
 package fittoring.application.chat.presentation;
 
 import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
-import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
-import fittoring.application.chat.service.ChatMessageService;
+import fittoring.application.chat.presentation.dto.response.ChatMessageAcceptedResponse;
+import fittoring.application.chat.service.ChatMessageDispatchService;
+import fittoring.application.chat.service.dto.ChatMessageAcceptedResultDto;
 import fittoring.config.auth.LoginInfo;
 import fittoring.config.websocket.InboundChannelInterceptor;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final ChatMessageService chatMessageService;
+    private final ChatMessageDispatchService chatMessageDispatchService;
 
     @MessageMapping("/chatroom/{chatRoomId}")
     public void chat(
@@ -26,7 +27,12 @@ public class ChatController {
             @Valid ChatMessageRequest request,
             @Header(InboundChannelInterceptor.LOGIN_INFO_KEY) LoginInfo loginInfo
     ) {
-        ChatMessageResponse response = chatMessageService.registerMessage(chatRoomId, request, loginInfo.memberId());
+        ChatMessageAcceptedResultDto acceptedResult = chatMessageDispatchService.dispatch(
+                chatRoomId,
+                request,
+                loginInfo.memberId()
+        );
+        ChatMessageAcceptedResponse response = ChatMessageAcceptedResponse.from(acceptedResult);
 
         messagingTemplate.convertAndSend("/topic/chatroom/" + chatRoomId, response);
     }
