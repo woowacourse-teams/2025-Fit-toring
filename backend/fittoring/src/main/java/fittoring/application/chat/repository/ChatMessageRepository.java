@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatMessageRepository extends ListCrudRepository<ChatMessage, Long>, CustomChatMessageRepository {
+
+    boolean existsByMessageId(String messageId);
 }
