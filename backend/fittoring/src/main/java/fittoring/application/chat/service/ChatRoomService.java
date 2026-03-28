@@ -67,8 +67,7 @@ public class ChatRoomService {
 
     @Transactional(readOnly = true)
     public ChatRoomInfoDto findChatRoom(Long chatroomId, Long memberId) {
-        ChatRoom chatRoom = getChatRoom(chatroomId);
-        validateParticipant(memberId, chatRoom);
+        ChatRoom chatRoom = getAccessibleChatRoom(chatroomId, memberId);
 
         Reservation reservation = getReservation(chatRoom);
         validateReservationStatus(reservation);
@@ -83,6 +82,13 @@ public class ChatRoomService {
                 opponentName,
                 chatRoom.getStatus()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public ChatRoom getAccessibleChatRoom(Long chatroomId, Long memberId) {
+        ChatRoom chatRoom = getChatRoom(chatroomId);
+        validateParticipant(memberId, chatRoom);
+        return chatRoom;
     }
 
     private ChatRoom getChatRoom(Long chatroomId) {
