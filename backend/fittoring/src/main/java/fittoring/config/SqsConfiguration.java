@@ -1,6 +1,8 @@
 package fittoring.config;
 
+import io.awspring.cloud.sqs.listener.QueueNotFoundStrategy;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
+import io.awspring.cloud.sqs.operations.TemplateContentBasedDeduplication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +34,11 @@ public class SqsConfiguration {
 
     @Bean
     public SqsTemplate sqsTemplate(SqsAsyncClient sqsAsyncClient) {
-        return SqsTemplate.newTemplate(sqsAsyncClient);
+        return SqsTemplate.builder()
+                .sqsAsyncClient(sqsAsyncClient)
+                .configure(options -> options
+                        .queueNotFoundStrategy(QueueNotFoundStrategy.FAIL)
+                        .contentBasedDeduplication(TemplateContentBasedDeduplication.DISABLED))
+                .build();
     }
 }

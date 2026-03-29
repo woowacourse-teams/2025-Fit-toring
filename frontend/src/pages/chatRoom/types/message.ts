@@ -13,6 +13,7 @@ export interface Message {
 
   // 클라이언트의 상태 관리를 위한 속성
   status?: 'success' | 'fail' | 'pending';
+  phase?: 'normal' | 'before-refresh' | 'during-reconnect';
 }
 
 export interface MessageResponse {

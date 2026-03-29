@@ -150,10 +150,12 @@ function ChatRoom() {
     listElRef,
   });
 
+  const isReconnectPendingRef = useRef(false);
+
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (message === '') {
+    if (message === '' || memberId === null) {
       return;
     }
 
@@ -161,7 +163,7 @@ function ChatRoom() {
 
     const tempId = Date.now();
 
-    const optimisticMsg = {
+    const optimisticMsg: Message = {
       senderId: Number(memberId),
       content: message,
       createdAt: new Date().toString(),
@@ -170,15 +172,28 @@ function ChatRoom() {
       tempId,
       status: 'pending' as const,
       messageType: MESSAGE_TYPE.TEXT,
+      phase: 'normal',
     };
+
+    const client = stompClientRef.current;
+
+    if (isReconnectPendingRef.current) {
+      const reconnectMsg = {
+        ...optimisticMsg,
+        phase: 'during-reconnect' as const,
+      };
+
+      setMessages((prev) => [...prev, reconnectMsg]);
+      setMessage('');
+      return;
+    }
+
+    if (!client || !client.connected) {
+      return;
+    }
 
     setMessages((prev) => [...prev, optimisticMsg]);
     setMessage('');
-
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
 
     client.publish({
       destination: `/app/chatroom/${chatRoomId}`,
@@ -242,6 +257,20 @@ function ChatRoom() {
           }
 
           isRefreshingRef.current = true;
+          isReconnectPendingRef.current = true;
+
+          setMessages((prev) =>
+            prev.map((msg) => {
+              if (msg.status !== 'pending') {
+                return msg;
+              }
+              if (msg.phase === 'during-reconnect') {
+                return msg;
+              }
+
+              return { ...msg, phase: 'before-refresh' };
+            }),
+          );
 
           try {
             await postReissue();
@@ -249,9 +278,9 @@ function ChatRoom() {
             if (client.active) {
               await client.deactivate();
             }
-
             client.activate();
           } catch (e) {
+            isReconnectPendingRef.current = false;
             navigate(PAGE_URL.LOGIN);
             console.error('토큰 재발급 실패:', e);
           } finally {
@@ -279,6 +308,7 @@ function ChatRoom() {
                   newArr[index] = {
                     ...parsedMessage,
                     status: 'success',
+                    phase: 'normal',
                   };
                   return newArr;
                 }
@@ -293,7 +323,10 @@ function ChatRoom() {
                 return prev;
               }
 
-              return [...prev, { ...parsedMessage, status: 'success' }];
+              return [
+                ...prev,
+                { ...parsedMessage, status: 'success', phase: 'normal' },
+              ];
             });
           },
         );
@@ -302,29 +335,39 @@ function ChatRoom() {
           const parsedErrorMessage = JSON.parse(message.body);
 
           setMessages((prev) => {
-            return prev.map((message) => {
-              if (message.tempId === parsedErrorMessage.tempId) {
-                return { ...message, status: 'fail' };
+            const nextMessages = prev.map((msg) => {
+              if (msg.tempId === parsedErrorMessage.tempId) {
+                return {
+                  ...msg,
+                  status: 'fail' as const,
+                  phase: 'normal' as const,
+                };
               }
-              return message;
+              return msg;
             });
+            messagesRef.current = nextMessages;
+            return nextMessages;
           });
         });
 
-        const pendingMessages = messagesRef.current.filter(
-          (m) => m.status === 'pending',
+        const pendingToResend = messagesRef.current.filter(
+          (msg) => msg.status === 'pending' && msg.phase !== 'normal',
         );
 
-        pendingMessages.forEach((msg) => {
-          client.publish({
-            destination: `/app/chatroom/${chatRoomId}`,
-            body: JSON.stringify({
-              content: msg.content,
-              tempId: msg.tempId,
-              messageType: msg.messageType,
-            }),
+        if (pendingToResend.length > 0) {
+          pendingToResend.forEach((msg) => {
+            client.publish({
+              destination: `/app/chatroom/${chatRoomId}`,
+              body: JSON.stringify({
+                content: msg.content,
+                tempId: msg.tempId,
+                messageType: msg.messageType,
+              }),
+            });
           });
-        });
+        }
+
+        isReconnectPendingRef.current = false;
       },
     });
 
