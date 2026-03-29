@@ -21,7 +21,7 @@ spring:
   cloud:
     aws:
       sqs:
-        enabled: false
+        enabled: true
 cookie:
   same-site: ${COOKIE_SAME_SITE_DEV}
 aws:
