@@ -1,5 +1,6 @@
 package fittoring.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.listener.QueueNotFoundStrategy;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import io.awspring.cloud.sqs.operations.TemplateContentBasedDeduplication;
@@ -33,9 +34,10 @@ public class SqsConfiguration {
     }
 
     @Bean
-    public SqsTemplate sqsTemplate(SqsAsyncClient sqsAsyncClient) {
+    public SqsTemplate sqsTemplate(SqsAsyncClient sqsAsyncClient, ObjectMapper objectMapper) {
         return SqsTemplate.builder()
                 .sqsAsyncClient(sqsAsyncClient)
+                .configureDefaultConverter(converter -> converter.setObjectMapper(objectMapper))
                 .configure(options -> options
                         .queueNotFoundStrategy(QueueNotFoundStrategy.FAIL)
                         .contentBasedDeduplication(TemplateContentBasedDeduplication.DISABLED))
