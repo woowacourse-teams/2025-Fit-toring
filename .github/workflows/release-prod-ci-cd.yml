@@ -91,6 +91,8 @@ jobs:
           echo "TOMCAT_KEEP_ALIVE_TIMEOUT=${{ secrets.TOMCAT_KEEP_ALIVE_TIMEOUT }}" >> .env
           echo "AWS_IAM_ACCESS_KEY=${{ secrets.AWS_IAM_ACCESS_KEY }}" >> .env
           echo "AWS_IAM_SECRET_KEY=${{ secrets.AWS_IAM_SECRET_KEY }}" >> .env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
