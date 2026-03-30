@@ -35,6 +35,10 @@ spring:
     password: ${TEST_DATABASE_PASSWORD}
     baseline-on-migrate: false
     connect-retries: 10
+  data:
+    redis:
+      host: ${TEST_REDIS_HOST:localhost}
+      port: ${TEST_REDIS_PORT:6380}
   cloud:
     aws:
       sqs:

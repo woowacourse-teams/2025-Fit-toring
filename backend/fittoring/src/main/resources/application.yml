@@ -26,6 +26,10 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 20MB
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   cloud:
     aws:
       region: ap-northeast-2
