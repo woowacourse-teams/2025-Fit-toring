@@ -18,6 +18,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -152,7 +153,9 @@ public class ChatRoomService {
 
     @Transactional(readOnly = true)
     public List<ChatRoom> findAllByMemberId(Long memberId) {
-        return chatRoomRepository.findAllByMenteeIdOrMentorId(memberId, memberId);
+        List<ChatRoom> chatRooms = new ArrayList<>(chatRoomRepository.findAllByMenteeId(memberId));
+        chatRooms.addAll(chatRoomRepository.findAllByMentorIdAndMenteeIdNot(memberId, memberId));
+        return chatRooms;
     }
 
     public List<Long> getOpponentIds(Long memberId, List<ChatRoom> chatRooms) {
