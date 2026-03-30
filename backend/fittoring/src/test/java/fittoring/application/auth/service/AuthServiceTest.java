@@ -15,6 +15,7 @@ import fittoring.application.auth.repository.RefreshTokenRepository;
 import fittoring.application.auth.service.dto.AuthTokenDto;
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.DuplicateLoginIdException;
+import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.member.repository.MemberRepository;
@@ -22,9 +23,8 @@ import fittoring.application.member.service.dto.RegisterOAuthDto;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
-import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
-import java.time.LocalDateTime;
+import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +58,7 @@ class AuthServiceTest extends IntegrationTestSupport {
                 phoneNumber,
                 password);
 
-        phoneVerificationRepository.save(FixtureUtil.testVerifiedPhoneVerification(new Phone(phoneNumber)));
+        FixtureUtil.saveVerifiedPhoneVerification(phoneVerificationRepository, new Phone(phoneNumber));
 
         //when
         authService.register(request.toRegisterMemberDto());
@@ -136,8 +136,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void login3() {
         //given
-        Member mentee = FixtureUtil.testMentee();
-        memberRepository.save(mentee);
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
 
         String loginId = mentee.getLoginId();
         String rawPassword = "password";
@@ -146,15 +145,15 @@ class AuthServiceTest extends IntegrationTestSupport {
         LoginInfoDto actual = authService.login(loginId, rawPassword);
 
         //then
-        RefreshToken refreshToken = refreshTokenRepository.findByTokenValue(actual.authTokenDto().refreshToken())
-                .orElseThrow(null);
+        Optional<Long> memberId = refreshTokenRepository.findMemberIdByTokenValue(
+                actual.authTokenDto().refreshToken()
+        );
         SoftAssertions.assertSoftly(softly -> {
                     assertThat(actual.memberId()).isEqualTo(mentee.getId());
                     assertThat(actual.authTokenDto().accessToken()).isNotNull();
                     assertThat(actual.authTokenDto().refreshToken()).isNotNull();
-                    assertThat(refreshToken).isNotNull();
-                    assertThat(refreshToken.getMember().getId()).isEqualTo(mentee.getId());
-                    assertThat(refreshToken.getTokenValue()).isEqualTo(actual.authTokenDto().refreshToken());
+                    assertThat(memberId).isPresent();
+                    assertThat(memberId.get()).isEqualTo(mentee.getId());
                 }
         );
     }
@@ -167,56 +166,58 @@ class AuthServiceTest extends IntegrationTestSupport {
         String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
-        RefreshToken savedRefreshToken = new RefreshToken(
-                refreshToken, LocalDateTime.now().minusDays(1), savedMember
-        );
-
-        refreshTokenRepository.save(savedRefreshToken);
+        refreshTokenRepository.save(refreshToken, savedMember.getId(), jwtProvider.getRefreshExpirationMillis());
 
         //when
         AuthTokenDto actual = authService.reissue(refreshToken);
 
         //then
-        RefreshToken newRefreshToken = refreshTokenRepository.findById(savedRefreshToken.getId())
-                .orElse(null);
+        Optional<Long> oldTokenMemberId = refreshTokenRepository.findMemberIdByTokenValue(refreshToken);
+        Optional<Long> newTokenMemberId = refreshTokenRepository.findMemberIdByTokenValue(actual.refreshToken());
 
         SoftAssertions.assertSoftly(softly -> {
                     assertThat(actual.accessToken()).isNotNull();
                     assertThat(actual.refreshToken()).isNotNull();
                     assertThat(actual.accessToken()).isNotEqualTo(accessToken);
                     assertThat(actual.refreshToken()).isNotEqualTo(refreshToken);
-                    assertThat(newRefreshToken.getTokenValue()).isEqualTo(actual.refreshToken());
-                    assertThat(newRefreshToken.getMember()).isEqualTo(savedRefreshToken.getMember());
-                    assertThat(newRefreshToken.getCreateAt()).isAfterOrEqualTo(savedRefreshToken.getCreateAt());
+                    assertThat(oldTokenMemberId).isEmpty();
+                    assertThat(newTokenMemberId).isPresent();
+                    assertThat(newTokenMemberId.get()).isEqualTo(savedMember.getId());
                 }
         );
     }
 
-    @DisplayName("로그아웃이 성공하면 해당 사용자의 refreshToken이 db에서 제거된다.")
+    @DisplayName("존재하지 않는 refreshToken으로 재발급 시 예외가 발생한다.")
+    @Test
+    void reissueWithInvalidToken() {
+        //given
+        String validButNotStoredToken = jwtProvider.createRefreshToken();
+
+        //when & then
+        assertThatThrownBy(() -> authService.reissue(validButNotStoredToken))
+                .isInstanceOf(InvalidTokenException.class);
+    }
+
+    @DisplayName("로그아웃이 성공하면 해당 사용자의 refreshToken이 삭제된다.")
     @Test
     void logout() {
         //given
         Member savedMember = memberRepository.save(FixtureUtil.testMentee());
-
         String refreshToken = jwtProvider.createRefreshToken();
-        RefreshToken savedRefreshToken = refreshTokenRepository.save(
-                new RefreshToken(refreshToken, LocalDateTime.now(), savedMember)
-        );
+        refreshTokenRepository.save(refreshToken, savedMember.getId(), jwtProvider.getRefreshExpirationMillis());
 
         //when
         authService.logout(savedMember.getId());
 
         //then
-        RefreshToken refreshToken1 = refreshTokenRepository.findById(savedRefreshToken.getId())
-                .orElse(null);
-        assertThat(refreshToken1).isNull();
+        assertThat(refreshTokenRepository.findMemberIdByTokenValue(refreshToken)).isEmpty();
     }
 
     @DisplayName("refreshToken이 존재하지 않아도 로그아웃은 멱등하게 처리된다(예외 없음).")
     @Test
     void logout2() {
         // given
-        Long memberId = 123L; // 토큰이 존재하지 않는 임의의 회원 ID
+        Long memberId = 123L;
 
         // when
         // then
@@ -283,9 +284,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         Member mentee = FixtureUtil.testMentee();
         Password before = mentee.getPassword();
         memberRepository.save(mentee);
-        phoneVerificationRepository.save(
-                FixtureUtil.testVerifiedPhoneVerification(mentee.getPhone())
-        );
+        FixtureUtil.saveVerifiedPhoneVerification(phoneVerificationRepository, mentee.getPhone());
         //when
         Member changed = authService.resetPassword(mentee.getLoginId(), mentee.getPhoneNumber(), "after");
 

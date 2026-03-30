@@ -27,6 +27,7 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+    show-sql: false
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -35,6 +36,10 @@ spring:
     password: ${TEST_DATABASE_PASSWORD}
     baseline-on-migrate: false
     connect-retries: 10
+  data:
+    redis:
+      host: ${TEST_REDIS_HOST:localhost}
+      port: ${TEST_REDIS_PORT:6380}
   cloud:
     aws:
       sqs:

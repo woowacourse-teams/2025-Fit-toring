@@ -39,13 +39,10 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
-import fittoring.domain.model.PhoneVerification;
-import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
@@ -82,9 +79,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         String password = "password";
         SignUpRequest request = new SignUpRequest(loginId, name, gender, phoneNumber, password);
 
-        phoneVerificationRepository.save(
-                FixtureUtil.testVerifiedPhoneVerification(new Phone(phoneNumber))
-        );
+        FixtureUtil.saveVerifiedPhoneVerification(phoneVerificationRepository, new Phone(phoneNumber));
 
         //when
         RestAssured
@@ -317,7 +312,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
         String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
-        refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
+        refreshTokenRepository.save(refreshToken, savedMember.getId(), 604800000);
 
         //when
         Response response = RestAssured
@@ -426,7 +421,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
-        refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
+        refreshTokenRepository.save(refreshToken, savedMember.getId(), 604800000);
 
         //when
         Response reissueResponse = RestAssured
@@ -681,11 +676,10 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void invalidCodeVerification() {
         // given
-        Phone phone = new Phone("010-1234-5678");
+        String phoneNumber = "010-1234-5678";
         String code = "123456";
-        PhoneVerification phoneVerification = new PhoneVerification(phone, code, LocalDateTime.now().plusMinutes(3));
-        phoneVerificationRepository.save(phoneVerification);
-        VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), "invalidCode");
+        phoneVerificationRepository.save(phoneNumber, code, 180);
+        VerificationCodeRequest request = new VerificationCodeRequest(phoneNumber, "invalidCode");
 
         // when
         // then
@@ -710,13 +704,13 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
     @DisplayName("사용자는 만료된 코드로 인증을 요청하면 400 응답을 받는다.")
     @Test
-    void expiredCodeVerification() {
+    void expiredCodeVerification() throws InterruptedException {
         // given
-        Phone phone = new Phone("010-1234-5678");
+        String phoneNumber = "010-1234-5678";
         String code = "123456";
-        PhoneVerification phoneVerification = new PhoneVerification(phone, code, LocalDateTime.now().minusMinutes(3));
-        phoneVerificationRepository.save(phoneVerification);
-        VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), code);
+        phoneVerificationRepository.save(phoneNumber, code, 1);
+        Thread.sleep(1500);
+        VerificationCodeRequest request = new VerificationCodeRequest(phoneNumber, code);
 
         // when
         // then
@@ -745,9 +739,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Phone phone = new Phone("010-1234-5678");
         String code = "123456";
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        PhoneVerification phoneVerification = new PhoneVerification(phone, code, now.plusMinutes(3));
-        phoneVerificationRepository.save(phoneVerification);
+        phoneVerificationRepository.save(phone.getNumber(), code, 180);
         VerificationCodeRequest request = new VerificationCodeRequest(phone.getNumber(), code);
 
         // when
@@ -870,9 +862,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         );
         memberRepository.save(member);
 
-        phoneVerificationRepository.save(
-                FixtureUtil.testVerifiedPhoneVerification(new Phone(phoneNumber))
-        );
+        FixtureUtil.saveVerifiedPhoneVerification(phoneVerificationRepository, new Phone(phoneNumber));
 
         String newPassword = "newPassword";
         ResetPasswordRequest request = new ResetPasswordRequest(loginId, phoneNumber, newPassword);
@@ -965,9 +955,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         );
         memberRepository.save(member);
 
-        phoneVerificationRepository.save(
-                FixtureUtil.testVerifiedPhoneVerification(new Phone(phoneNumber))
-        );
+        FixtureUtil.saveVerifiedPhoneVerification(phoneVerificationRepository, new Phone(phoneNumber));
 
         String newPassword = "newPassword";
         ResetPasswordRequest request = new ResetPasswordRequest("wrongLoginId", phoneNumber, newPassword);
