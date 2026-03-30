@@ -111,7 +111,6 @@ aws:
   sqs:
     push-notification-queue: fittoring-push-notification-queue
     push-notification-unregistered-tokens-queue: fittoring-push-notification-unregistered-tokens
-    chat-message-persist-queue: fittoring-chat-message-persist.fifo
 
 image-session:
   merge:

@@ -29,3 +29,4 @@ aws:
     env-prefix: local/
   sqs:
     image-queue: fittoring-image-queue
+    chat-message-persist-queue: ${CHAT_MESSAGE_PERSIST_QUEUE_NAME}
