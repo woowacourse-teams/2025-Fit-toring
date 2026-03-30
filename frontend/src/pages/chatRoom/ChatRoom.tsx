@@ -29,6 +29,7 @@ import MentoringActionPanel from './components/MentoringActionPanel/MentoringAct
 import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import usePersistPendingMessages from './hooks/usePersistPendingMessages';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 
@@ -98,6 +99,11 @@ function ChatRoom() {
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  const persistPendingMessages = usePersistPendingMessages(
+    chatRoomId,
+    messages,
+  );
 
   useEffect(() => {
     stateRef.current.hasNextPage = !!hasNextPage;
@@ -249,6 +255,8 @@ function ChatRoom() {
       heartbeatOutgoing: 10000,
       reconnectDelay: 5000,
       onStompError: async (frame) => {
+        persistPendingMessages();
+
         const parsedBody = JSON.parse(frame.body);
 
         if (parsedBody.code === 'TOKEN_EXPIRED') {
@@ -289,7 +297,11 @@ function ChatRoom() {
         }
       },
 
-      onWebSocketError: (e) => console.error('WebSocket error:', e),
+      onWebSocketError: (e) => {
+        persistPendingMessages();
+
+        console.error('WebSocket error:', e);
+      },
       onConnect: () => {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
@@ -346,6 +358,7 @@ function ChatRoom() {
               return msg;
             });
             messagesRef.current = nextMessages;
+            persistPendingMessages(nextMessages);
             return nextMessages;
           });
         });
