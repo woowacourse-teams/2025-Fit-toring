@@ -2,10 +2,12 @@ package fittoring.infrastructure.auth;
 
 import fittoring.application.auth.repository.PhoneVerificationData;
 import fittoring.application.auth.repository.PhoneVerificationRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
@@ -16,6 +18,26 @@ public class RedisPhoneVerificationRepository implements PhoneVerificationReposi
     private static final String ATTEMPTS_SUFFIX = ":attempts";
     private static final String FIELD_CODE = "code";
     private static final String FIELD_VERIFIED = "verified";
+
+    private static final DefaultRedisScript<Long> INCREMENT_ATTEMPTS_SCRIPT;
+
+    static {
+        INCREMENT_ATTEMPTS_SCRIPT = new DefaultRedisScript<>();
+        INCREMENT_ATTEMPTS_SCRIPT.setScriptText("""
+                if redis.call('EXISTS', KEYS[1]) == 0 then
+                    return -1
+                end
+                local count = redis.call('INCR', KEYS[2])
+                if count == 1 then
+                    local ttl = redis.call('TTL', KEYS[1])
+                    if ttl > 0 then
+                        redis.call('EXPIRE', KEYS[2], ttl)
+                    end
+                end
+                return count
+                """);
+        INCREMENT_ATTEMPTS_SCRIPT.setResultType(Long.class);
+    }
 
     private final StringRedisTemplate redisTemplate;
 
@@ -50,15 +72,11 @@ public class RedisPhoneVerificationRepository implements PhoneVerificationReposi
 
     @Override
     public int incrementAttempts(String phoneNumber) {
-        String attemptsKey = key(phoneNumber) + ATTEMPTS_SUFFIX;
-        Long count = redisTemplate.opsForValue().increment(attemptsKey);
-        if (count != null && count == 1L) {
-            Long ttl = redisTemplate.getExpire(key(phoneNumber), TimeUnit.SECONDS);
-            if (ttl != null && ttl > 0) {
-                redisTemplate.expire(attemptsKey, ttl, TimeUnit.SECONDS);
-            }
-        }
-        return count == null ? 1 : count.intValue();
+        Long result = redisTemplate.execute(
+                INCREMENT_ATTEMPTS_SCRIPT,
+                List.of(key(phoneNumber), key(phoneNumber) + ATTEMPTS_SUFFIX)
+        );
+        return result == null ? -1 : result.intValue();
     }
 
     @Override

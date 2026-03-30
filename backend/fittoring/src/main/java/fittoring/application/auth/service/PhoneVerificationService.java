@@ -29,6 +29,9 @@ public class PhoneVerificationService {
     public void verifyCode(VerificationCodeRequest request) {
         String phoneNumber = request.phoneNumber();
         int attempts = phoneVerificationRepository.incrementAttempts(phoneNumber);
+        if (attempts < 0) {
+            throw new InvalidPhoneVerificationException(INVALID_PHONE_VERIFICATION_MESSAGE);
+        }
         if (attempts > MAX_ATTEMPTS) {
             phoneVerificationRepository.delete(phoneNumber);
             throw new InvalidPhoneVerificationException(INVALID_PHONE_VERIFICATION_MESSAGE);
