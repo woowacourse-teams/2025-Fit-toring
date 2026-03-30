@@ -12,7 +12,7 @@ public class DbCleaner {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
+    @Autowired(required = false)
     private StringRedisTemplate redisTemplate;
 
     public void clean() {
@@ -31,6 +31,8 @@ public class DbCleaner {
                 jdbcTemplate.execute("TRUNCATE TABLE `" + table + "`")
         );
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
-        redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
+        if (redisTemplate != null && redisTemplate.getConnectionFactory() != null) {
+            redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
+        }
     }
 }
