@@ -2,6 +2,7 @@ package fittoring.util;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +12,15 @@ public class DbCleaner {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     public void clean() {
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
         List<String> tables = jdbcTemplate.queryForList(
                 """
-                        SELECT table_name 
-                        FROM information_schema.tables 
+                        SELECT table_name
+                        FROM information_schema.tables
                         WHERE table_schema = DATABASE()
                           AND table_type = 'BASE TABLE'
                           AND table_name <> 'flyway_schema_history'
@@ -27,5 +31,6 @@ public class DbCleaner {
                 jdbcTemplate.execute("TRUNCATE TABLE `" + table + "`")
         );
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
+        redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
     }
 }

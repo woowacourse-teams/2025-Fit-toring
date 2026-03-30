@@ -39,12 +39,10 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Phone;
-import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
@@ -314,7 +312,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
 
         String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
-        refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
+        refreshTokenRepository.save(refreshToken, savedMember.getId(), 604800000);
 
         //when
         Response response = RestAssured
@@ -423,7 +421,7 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         String accessToken = jwtProvider.createAccessToken(savedMember.getId(), savedMember.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
 
-        refreshTokenRepository.save(new RefreshToken(refreshToken, LocalDateTime.now(), savedMember));
+        refreshTokenRepository.save(refreshToken, savedMember.getId(), 604800000);
 
         //when
         Response reissueResponse = RestAssured
