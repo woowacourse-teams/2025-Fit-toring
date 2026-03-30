@@ -5,10 +5,12 @@ import fittoring.application.chat.service.port.ChatMessagePersistEventPublisher;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
+@Profile({"!local & !test"})
 public class SqsChatMessagePersistEventPublisher implements ChatMessagePersistEventPublisher {
 
     private final SqsTemplate sqsTemplate;
