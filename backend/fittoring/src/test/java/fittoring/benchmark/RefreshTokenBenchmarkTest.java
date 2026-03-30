@@ -44,7 +44,7 @@ class RefreshTokenBenchmarkTest extends IntegrationTestSupport {
         List<Member> members = createMembers(MEMBER_COUNT);
 
         // ========== Pre-load: 토큰 누적 시뮬레이션 ==========
-        // MEMBER_COUNT * PRELOAD_LOGINS_PER_MEMBER = 3000 토큰이 refresh_token 테이블에 적재
+        // MEMBER_COUNT * PRELOAD_LOGINS_PER_MEMBER = 3000 토큰이 Redis에 적재
         long preloadStart = System.nanoTime();
         for (Member member : members) {
             for (int j = 0; j < PRELOAD_LOGINS_PER_MEMBER; j++) {
@@ -67,7 +67,7 @@ class RefreshTokenBenchmarkTest extends IntegrationTestSupport {
         }
 
         // ========== 2. REISSUE (토큰 재발급 - findByTokenValue) 성능 측정 ==========
-        // 핵심: JPA는 FULL TABLE SCAN, Redis는 O(1)
+        // 현재 구현은 Redis key 조회 + 회원 조회(JPA)를 함께 수행
         long[] reissueTimes = new long[MEASURE_COUNT];
 
         for (int i = 0; i < MEASURE_COUNT; i++) {
