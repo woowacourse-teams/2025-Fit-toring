@@ -32,8 +32,8 @@ jobs:
             sudo apt-get install -y netcat-openbsd
           fi
 
-      - name: Start MySQL containers with Docker Compose
-        run: docker compose -f ./docker-compose.yml up -d db-test
+      - name: Start test containers with Docker Compose
+        run: docker compose -f ./docker-compose.yml up -d db-test redis-test
 
       - name: Wait for Test MySQL
         run: |
@@ -41,6 +41,15 @@ jobs:
           for i in {30..0}; do
             nc -z localhost 3307 && echo "Test MySQL is up!" && break
             echo "Still waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Wait for Test Redis
+        run: |
+          echo "Waiting for Test Redis..."
+          for i in {30..0}; do
+            nc -z localhost 6380 && echo "Test Redis is up!" && break
+            echo "Still waiting for Redis..."
             sleep 2
           done
 
@@ -87,8 +96,6 @@ jobs:
           echo "TOMCAT_KEEP_ALIVE_TIMEOUT=${{ secrets.TOMCAT_KEEP_ALIVE_TIMEOUT }}" >> .env
           echo "AWS_IAM_ACCESS_KEY=${{ secrets.AWS_IAM_ACCESS_KEY }}" >> .env
           echo "AWS_IAM_SECRET_KEY=${{ secrets.AWS_IAM_SECRET_KEY }}" >> .env
-          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
-          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
