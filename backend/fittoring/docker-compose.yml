@@ -8,7 +8,7 @@ services:
       MYSQL_DATABASE: fittoring
       MYSQL_ROOT_PASSWORD: 1234
     ports:
-      - "13306:3306"
+      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
     healthcheck:
@@ -31,7 +31,7 @@ services:
       start_period: 10s
       timeout: 2s
     ports:
-      - "13307:3306"
+      - "3307:3306"
 
   redis:
     image: redis:7-alpine
