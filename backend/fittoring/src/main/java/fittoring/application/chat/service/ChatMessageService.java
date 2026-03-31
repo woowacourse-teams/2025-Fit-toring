@@ -30,7 +30,6 @@ import fittoring.util.Cursor;
 import fittoring.util.CursorCodec;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -212,11 +211,4 @@ public class ChatMessageService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public Map<Long, ChatMessage> findAllLastMessagesByRoomIds(List<ChatRoom> chatRooms) {
-        List<Long> chatRoomIds = chatRooms.stream()
-                .map(ChatRoom::getId)
-                .toList();
-        return chatMessageRepository.findAllLastMessagesByRoomIds(chatRoomIds);
-    }
 }
