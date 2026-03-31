@@ -98,6 +98,45 @@ function ChatRoom() {
     isFetchingNextPage: false,
   });
 
+  const outgoingQueueRef = useRef<Message[]>([]);
+
+  const flushOutgoingQueue = useCallback(() => {
+    const client = stompClientRef.current;
+    if (!client || !client.connected || !chatRoomId) {
+      return;
+    }
+
+    const queue = outgoingQueueRef.current;
+    if (queue.length === 0) {
+      return;
+    }
+
+    outgoingQueueRef.current = [];
+
+    queue.forEach((msg) => {
+      client.publish({
+        destination: `/app/chatroom/${chatRoomId}`,
+        body: JSON.stringify({
+          content: msg.content,
+          tempId: msg.tempId,
+          messageType: msg.messageType,
+        }),
+      });
+    });
+  }, [chatRoomId]);
+
+  const enqueueOutgoing = useCallback(
+    (nextMessages: Message[]) => {
+      if (nextMessages.length === 0) {
+        return;
+      }
+
+      outgoingQueueRef.current = [...outgoingQueueRef.current, ...nextMessages];
+      flushOutgoingQueue();
+    },
+    [flushOutgoingQueue],
+  );
+
   const persistPendingMessages = usePersistPendingMessages(
     chatRoomId,
     messages,
@@ -179,8 +218,6 @@ function ChatRoom() {
       phase: 'normal',
     };
 
-    const client = stompClientRef.current;
-
     if (isReconnectPendingRef.current) {
       const reconnectMsg = {
         ...optimisticMsg,
@@ -192,17 +229,10 @@ function ChatRoom() {
       return;
     }
 
-    if (!client || !client.connected) {
-      return;
-    }
-
     setMessages((prev) => [...prev, optimisticMsg]);
     setMessage('');
 
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({ content: message, tempId, messageType: 'TEXT' }),
-    });
+    enqueueOutgoing([optimisticMsg]);
   };
 
   useEffect(() => {
@@ -374,24 +404,14 @@ function ChatRoom() {
         });
 
         const persistedMessages = chatRoomId
-          ? readPersistedMessages()[chatRoomId] ?? []
+          ? (readPersistedMessages()[chatRoomId] ?? [])
           : [];
         const pendingToResend = persistedMessages.filter(
           (msg) => msg.status === 'pending' && msg.phase !== 'normal',
         );
 
-        if (pendingToResend.length > 0) {
-          pendingToResend.forEach((msg) => {
-            client.publish({
-              destination: `/app/chatroom/${chatRoomId}`,
-              body: JSON.stringify({
-                content: msg.content,
-                tempId: msg.tempId,
-                messageType: msg.messageType,
-              }),
-            });
-          });
-        }
+        enqueueOutgoing(pendingToResend);
+        flushOutgoingQueue();
 
         isReconnectPendingRef.current = false;
       },
