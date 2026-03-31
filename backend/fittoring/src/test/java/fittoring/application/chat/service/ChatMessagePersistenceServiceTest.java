@@ -42,6 +42,7 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
     @DisplayName("텍스트 메시지를 저장하면 채팅방 마지막 메시지 snapshot이 함께 갱신된다.")
     @Test
     void persistTextMessageUpdatesChatRoomSnapshot() {
+        // given
         Member mentor = memberRepository.save(FixtureUtil.testMentor());
         Member mentee = memberRepository.save(FixtureUtil.testMentee());
         ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentee.getId(), mentor.getId()));
@@ -56,8 +57,10 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
                 LocalDateTime.now()
         );
 
+        // when
         chatMessagePersistenceService.persist(event);
 
+        // then
         ChatRoom persistedChatRoom = chatRoomRepository.findById(chatRoom.getId()).orElseThrow();
         ChatMessage persistedChatMessage = chatMessageRepository.findById(persistedChatRoom.getLastMessageId())
                 .orElseThrow();
@@ -74,6 +77,7 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
     @DisplayName("이미지 메시지를 저장하면 채팅방 마지막 메시지 snapshot이 함께 갱신된다.")
     @Test
     void persistImageMessageUpdatesChatRoomSnapshot() {
+        // given
         Member mentor = memberRepository.save(FixtureUtil.testMentor());
         Member mentee = memberRepository.save(FixtureUtil.testMentee());
         ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentee.getId(), mentor.getId()));
@@ -88,8 +92,10 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
                 LocalDateTime.now()
         );
 
+        // when
         chatMessagePersistenceService.persist(event);
 
+        // then
         ChatRoom persistedChatRoom = chatRoomRepository.findById(chatRoom.getId()).orElseThrow();
         ChatMessage persistedChatMessage = chatMessageRepository.findById(persistedChatRoom.getLastMessageId())
                 .orElseThrow();
