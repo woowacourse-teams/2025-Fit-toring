@@ -116,4 +116,16 @@ public class ChatRoom {
         }
         return menteeId;
     }
+
+    public void updateLastMessage(ChatMessage chatMessage) {
+        this.lastMessageId = chatMessage.getId();
+        this.lastMessageContent = chatMessage.getContent();
+        this.lastMessageType = chatMessage.getMessageType();
+        this.lastMessageCreatedAt = chatMessage.getCreatedAt();
+        this.lastMessageSenderId = chatMessage.getSenderId();
+    }
+
+    public boolean hasLastMessage() {
+        return lastMessageId != null;
+    }
 }
