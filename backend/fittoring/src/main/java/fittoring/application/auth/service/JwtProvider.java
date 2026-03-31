@@ -92,6 +92,10 @@ public class JwtProvider {
         parseClaims(token);
     }
 
+    public long getRefreshExpirationMillis() {
+        return refreshExpirationMillis;
+    }
+
     public long extractExpirationMillis(String token) {
         return parseClaims(token).getExpiration().getTime();
     }

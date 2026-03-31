@@ -10,7 +10,6 @@ import fittoring.application.member.service.MemberService;
 import fittoring.application.mentoring.service.MentoringService;
 import fittoring.application.mentoring.service.dto.ChatRoomMentoringInfoDto;
 import fittoring.application.reservation.service.ReservationService;
-import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Reservation;
@@ -30,7 +29,6 @@ public class ChatRoomFacadeService {
     private final ReservationService reservationService;
     private final MentoringService mentoringService;
     private final MemberService memberService;
-    private final ChatMessageService chatMessageService;
     private final ImageService imageService;
 
     @Transactional(readOnly = true)
@@ -49,9 +47,6 @@ public class ChatRoomFacadeService {
             return List.of();
         }
 
-        Map<Long, ChatMessage> lastMessageByRoomId = chatMessageService.findAllLastMessagesByRoomIds(
-                chatRooms);
-
         List<Reservation> reservations = reservationService.findReservationsFetchingMentoring(chatRooms);
         Map<Long, Reservation> reservationsById = reservationService.getReservationMap(reservations);
 
@@ -63,29 +58,29 @@ public class ChatRoomFacadeService {
                 ImageType.MENTORING_PROFILE, mentoringIds);
 
         return chatRooms.stream()
-                .filter(room -> lastMessageByRoomId.containsKey(room.getId()))
-                .sorted(getComparing(lastMessageByRoomId))
+                .filter(ChatRoom::hasLastMessage)
+                .sorted(getComparing())
                 .map(
                         room -> {
                             Reservation reservation = extractReservationFrom(room, reservationsById);
                             Long mentoringId = reservation.getMentoring().getId();
                             String opponentName = extractOpponentNameFrom(memberId, room, nameByMemberId);
                             String profileImageUrl = profileImageUrlByMentoringId.get(mentoringId);
-                            ChatMessage lastMessage = lastMessageByRoomId.get(room.getId());
 
                             return ChatRoomPreviewResponse.of(
                                     room.getId(),
                                     profileImageUrl,
                                     opponentName,
                                     reservation.getStatus(),
-                                    lastMessage);
+                                    room.getLastMessageContent(),
+                                    room.getLastMessageCreatedAt());
                         }
                 ).toList();
     }
 
-    private Comparator<ChatRoom> getComparing(Map<Long, ChatMessage> lastMessageByRoomId) {
+    private Comparator<ChatRoom> getComparing() {
         return Comparator.comparing(
-                room -> lastMessageByRoomId.get(room.getId()).getCreatedAt(),
+                ChatRoom::getLastMessageCreatedAt,
                 Comparator.reverseOrder()
         );
     }

@@ -17,9 +17,7 @@ import fittoring.domain.model.AuthProvider;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberOauth;
 import fittoring.domain.model.Phone;
-import fittoring.domain.model.RefreshToken;
 import fittoring.domain.model.password.Password;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -80,30 +78,24 @@ public class AuthService {
     private AuthTokenDto getAuthorizedTokenResponse(Member member) {
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String refreshToken = jwtProvider.createRefreshToken();
-
-        RefreshToken saveRefreshToken = new RefreshToken(
-                refreshToken, LocalDateTime.now(), member
-        );
-        refreshTokenRepository.save(saveRefreshToken);
-
+        refreshTokenRepository.save(refreshToken, member.getId(), jwtProvider.getRefreshExpirationMillis());
         return new AuthTokenDto(accessToken, refreshToken, null);
     }
 
     @Transactional
     public AuthTokenDto reissue(String refreshToken) {
         jwtProvider.validateToken(refreshToken);
-        RefreshToken findRefreshToken = getRefreshToken(refreshToken);
-        Member memberByRT = findRefreshToken.getMember();
-        String newAccessToken = jwtProvider.createAccessToken(memberByRT.getId(), memberByRT.getRole());
+        Long memberId = refreshTokenRepository.findMemberIdByTokenValue(refreshToken)
+                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage()));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+
+        refreshTokenRepository.deleteByTokenValue(refreshToken);
+        String newAccessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
         String newRefreshToken = jwtProvider.createRefreshToken();
-        findRefreshToken.update(newRefreshToken, LocalDateTime.now());
+        refreshTokenRepository.save(newRefreshToken, memberId, jwtProvider.getRefreshExpirationMillis());
 
         return new AuthTokenDto(newAccessToken, newRefreshToken, null);
-    }
-
-    private RefreshToken getRefreshToken(String refreshToken) {
-        return refreshTokenRepository.findByTokenValue(refreshToken)
-                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage()));
     }
 
     private Member getMemberByLoginId(String loginId) {

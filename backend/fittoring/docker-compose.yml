@@ -33,6 +33,26 @@ services:
     ports:
       - "3307:3306"
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: redis-test-container
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
   app:
     image: ${IMAGE}:${TAG}
     container_name: fittoring-app
