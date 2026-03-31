@@ -40,6 +40,8 @@ import type { ChatRoomInfo } from './types/chatRoomInfo';
 import type { Message } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
 
+const IN_FLIGHT_TIMEOUT_MS = 10000;
+
 function ChatRoom() {
   const navigate = useNavigate();
 
@@ -99,8 +101,21 @@ function ChatRoom() {
     isFetchingNextPage: false,
   });
 
+  const persistPendingMessages = usePersistPendingMessages(
+    chatRoomId,
+    messages,
+  );
+
   const outgoingQueueRef = useRef<Message[]>([]);
   const inFlightRef = useRef<Message | null>(null);
+  const inFlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearInFlightTimeout = useCallback(() => {
+    if (inFlightTimeoutRef.current) {
+      clearTimeout(inFlightTimeoutRef.current);
+      inFlightTimeoutRef.current = null;
+    }
+  }, []);
 
   const flushOutgoingQueue = useCallback(() => {
     const client = stompClientRef.current;
@@ -118,6 +133,33 @@ function ChatRoom() {
     }
 
     inFlightRef.current = nextMessage;
+    clearInFlightTimeout();
+
+    inFlightTimeoutRef.current = setTimeout(() => {
+      const currentInFlight = inFlightRef.current;
+      if (!currentInFlight || currentInFlight.tempId !== nextMessage.tempId) {
+        return;
+      }
+
+      setMessages((prev) => {
+        const nextMessages = prev.map((msg) => {
+          if (msg.tempId === nextMessage.tempId) {
+            return {
+              ...msg,
+              status: 'fail' as const,
+              phase: 'normal' as const,
+            };
+          }
+          return msg;
+        });
+        persistPendingMessages(nextMessages);
+        return nextMessages;
+      });
+
+      inFlightRef.current = null;
+      flushOutgoingQueue();
+    }, IN_FLIGHT_TIMEOUT_MS);
+
     client.publish({
       destination: `/app/chatroom/${chatRoomId}`,
       body: JSON.stringify({
@@ -126,7 +168,7 @@ function ChatRoom() {
         messageType: nextMessage.messageType,
       }),
     });
-  }, [chatRoomId]);
+  }, [chatRoomId, clearInFlightTimeout, persistPendingMessages]);
 
   const enqueueOutgoing = useCallback(
     (nextMessages: Message[]) => {
@@ -138,11 +180,6 @@ function ChatRoom() {
       flushOutgoingQueue();
     },
     [flushOutgoingQueue],
-  );
-
-  const persistPendingMessages = usePersistPendingMessages(
-    chatRoomId,
-    messages,
   );
 
   useEffect(() => {
@@ -315,6 +352,7 @@ function ChatRoom() {
           isRefreshingRef.current = true;
           isReconnectPendingRef.current = true;
           inFlightRef.current = null;
+          clearInFlightTimeout();
 
           setMessages((prev) =>
             prev.map((msg) => {
@@ -365,6 +403,7 @@ function ChatRoom() {
                 Number(currentInFlight.tempId) === Number(parsedMessage.tempId)
               ) {
                 inFlightRef.current = null;
+                clearInFlightTimeout();
                 flushOutgoingQueue();
               }
             }
@@ -419,6 +458,16 @@ function ChatRoom() {
             persistPendingMessages(nextMessages);
             return nextMessages;
           });
+
+          const currentInFlight = inFlightRef.current;
+          if (
+            currentInFlight &&
+            Number(currentInFlight.tempId) === Number(parsedErrorMessage.tempId)
+          ) {
+            inFlightRef.current = null;
+            clearInFlightTimeout();
+            flushOutgoingQueue();
+          }
         });
 
         const pendingToResend = messagesRef.current.filter(
