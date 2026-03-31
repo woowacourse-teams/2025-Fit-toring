@@ -29,9 +29,12 @@ import MentoringActionPanel from './components/MentoringActionPanel/MentoringAct
 import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
-import usePersistPendingMessages from './hooks/usePersistPendingMessages';
+import usePersistPendingMessages, {
+  readPersistedMessages,
+} from './hooks/usePersistPendingMessages';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
+import { mergeMessages } from './utils/mergeMessages';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
 import type { Message } from './types/message';
@@ -209,9 +212,21 @@ function ChatRoom() {
 
   useEffect(() => {
     if (chatRoomMessage) {
-      setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
+      const serverMessages = chatRoomMessage.pages.flatMap(
+        (page) => page.chatMessages,
+      );
+      if (!chatRoomId) {
+        setMessages(serverMessages);
+        return;
+      }
+
+      const persistedMessages = readPersistedMessages();
+      const roomMessages = persistedMessages[chatRoomId] ?? [];
+      console.log('서버에서 불러온 메시지:', serverMessages);
+      console.log('지속된 메시지:', roomMessages);
+      setMessages(mergeMessages(serverMessages, roomMessages));
     }
-  }, [chatRoomMessage]);
+  }, [chatRoomId, chatRoomMessage]);
 
   useEffect(() => {
     hideChannelTalk();
@@ -255,6 +270,7 @@ function ChatRoom() {
       heartbeatOutgoing: 10000,
       reconnectDelay: 5000,
       onStompError: async (frame) => {
+        console.error('STOMP error:', frame);
         persistPendingMessages();
 
         const parsedBody = JSON.parse(frame.body);

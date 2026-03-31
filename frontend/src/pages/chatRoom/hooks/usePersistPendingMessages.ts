@@ -4,7 +4,7 @@ import type { Message } from '../types/message';
 
 const PERSIST_MESSAGE_KEY = 'persistMessage';
 
-const readPersistedMessages = (): Record<string, Message[]> => {
+export const readPersistedMessages = (): Record<string, Message[]> => {
   try {
     const raw = localStorage.getItem(PERSIST_MESSAGE_KEY);
     if (!raw) {
@@ -17,9 +17,37 @@ const readPersistedMessages = (): Record<string, Message[]> => {
   }
 };
 
+const dedupeMessages = (messages: Message[]) => {
+  const seen = new Set<string>();
+  const result: Message[] = [];
+
+  messages.forEach((msg) => {
+    const key = String(msg.tempId);
+
+    if (seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    result.push(msg);
+  });
+
+  return result;
+};
+
 const writePersistedMessages = (data: Record<string, Message[]>) => {
   try {
-    localStorage.setItem(PERSIST_MESSAGE_KEY, JSON.stringify(data));
+    const normalized: Record<string, Message[]> = {};
+
+    Object.entries(data).forEach(([roomId, messages]) => {
+      const dedupedMessages = dedupeMessages(messages ?? []);
+
+      if (dedupedMessages.length > 0) {
+        normalized[roomId] = dedupedMessages;
+      }
+    });
+
+    localStorage.setItem(PERSIST_MESSAGE_KEY, JSON.stringify(normalized));
   } catch (error) {
     console.error('persistMessage write failed:', error);
   }
