@@ -44,7 +44,6 @@ function ChatRoom() {
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const messagesRef = useRef<Message[]>([]);
   const [message, setMessage] = useState('');
 
   const { chatRoomId } = useParams();
@@ -98,10 +97,6 @@ function ChatRoom() {
     hasNextPage: false,
     isFetchingNextPage: false,
   });
-
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
 
   const persistPendingMessages = usePersistPendingMessages(
     chatRoomId,
@@ -373,13 +368,15 @@ function ChatRoom() {
               }
               return msg;
             });
-            messagesRef.current = nextMessages;
             persistPendingMessages(nextMessages);
             return nextMessages;
           });
         });
 
-        const pendingToResend = messagesRef.current.filter(
+        const persistedMessages = chatRoomId
+          ? readPersistedMessages()[chatRoomId] ?? []
+          : [];
+        const pendingToResend = persistedMessages.filter(
           (msg) => msg.status === 'pending' && msg.phase !== 'normal',
         );
 
