@@ -53,11 +53,12 @@ public class ChatMessagePersistenceService {
                 event.senderId(),
                 event.content()
         );
-        chatMessageRepository.save(chatMessage);
+        ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
+        chatRoom.updateLastMessage(savedChatMessage);
 
         log.info("채팅을 보낸 사람 id: {}", event.senderId());
         Long opponentId = chatRoom.getOpponentIdOf(event.senderId());
-        sendNewMessageNotification(chatRoom.getId(), event.senderId(), opponentId, chatMessage);
+        sendNewMessageNotification(chatRoom.getId(), event.senderId(), opponentId, savedChatMessage);
     }
 
     private void persistImageMessage(ChatRoom chatRoom, ChatMessagePersistEventDto event) {
@@ -68,11 +69,12 @@ public class ChatMessagePersistenceService {
                 event.content(),
                 ChatMessageType.IMAGE
         );
-        chatMessageRepository.save(chatMessage);
-        imageService.save(ImageType.CHAT, chatMessage.getId(), event.content());
+        ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
+        chatRoom.updateLastMessage(savedChatMessage);
+        imageService.save(ImageType.CHAT, savedChatMessage.getId(), event.content());
 
         Long opponentId = chatRoom.getOpponentIdOf(event.senderId());
-        sendNewMessageNotification(chatRoom.getId(), event.senderId(), opponentId, chatMessage);
+        sendNewMessageNotification(chatRoom.getId(), event.senderId(), opponentId, savedChatMessage);
     }
 
     private void sendNewMessageNotification(Long chatRoomId, Long senderId, Long opponentId, ChatMessage chatMessage) {
