@@ -100,6 +100,7 @@ function ChatRoom() {
   });
 
   const outgoingQueueRef = useRef<Message[]>([]);
+  const inFlightRef = useRef<Message | null>(null);
 
   const flushOutgoingQueue = useCallback(() => {
     const client = stompClientRef.current;
@@ -107,22 +108,23 @@ function ChatRoom() {
       return;
     }
 
-    const queue = outgoingQueueRef.current;
-    if (queue.length === 0) {
+    if (inFlightRef.current) {
       return;
     }
 
-    outgoingQueueRef.current = [];
+    const nextMessage = outgoingQueueRef.current.shift();
+    if (!nextMessage) {
+      return;
+    }
 
-    queue.forEach((msg) => {
-      client.publish({
-        destination: `/app/chatroom/${chatRoomId}`,
-        body: JSON.stringify({
-          content: msg.content,
-          tempId: msg.tempId,
-          messageType: msg.messageType,
-        }),
-      });
+    inFlightRef.current = nextMessage;
+    client.publish({
+      destination: `/app/chatroom/${chatRoomId}`,
+      body: JSON.stringify({
+        content: nextMessage.content,
+        tempId: nextMessage.tempId,
+        messageType: nextMessage.messageType,
+      }),
     });
   }, [chatRoomId]);
 
@@ -312,6 +314,7 @@ function ChatRoom() {
 
           isRefreshingRef.current = true;
           isReconnectPendingRef.current = true;
+          inFlightRef.current = null;
 
           setMessages((prev) =>
             prev.map((msg) => {
@@ -355,6 +358,16 @@ function ChatRoom() {
             capturePrevScroll();
 
             const parsedMessage = JSON.parse(message.body);
+            if (parsedMessage.tempId) {
+              const currentInFlight = inFlightRef.current;
+              if (
+                currentInFlight &&
+                Number(currentInFlight.tempId) === Number(parsedMessage.tempId)
+              ) {
+                inFlightRef.current = null;
+                flushOutgoingQueue();
+              }
+            }
 
             setMessages((prev) => {
               if (parsedMessage.tempId) {
