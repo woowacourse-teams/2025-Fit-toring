@@ -40,7 +40,9 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         CommentResponse response = RestAssured.given(spec)
                 .filter(documentWithTag("comment/post-success",
                         resource(ResourceSnippetParameters.builder()
-                                .tag("comment")
+                                .tag("댓글")
+                                .summary("댓글 작성")
+                                .description("게시글에 댓글 또는 대댓글을 작성합니다.")
                                 .requestSchema(Schema.schema("CommentCreateRequest"))
                                 .responseSchema(Schema.schema("CommentResponse"))
                                 .build())))
@@ -65,7 +67,9 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         List<CommentResponse> response = RestAssured.given(spec)
                 .filter(documentWithTag("comment/get-list",
                         resource(ResourceSnippetParameters.builder()
-                                .tag("comment")
+                                .tag("댓글")
+                                .summary("댓글 목록 조회")
+                                .description("게시글에 등록된 댓글과 대댓글 목록을 조회합니다.")
                                 .responseSchema(Schema.schema("CommentListResponse"))
                                 .build())))
                 .when()
@@ -88,7 +92,9 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured.given(spec)
                 .filter(documentWithTag("comment/patch-success",
                         resource(ResourceSnippetParameters.builder()
-                                .tag("comment")
+                                .tag("댓글")
+                                .summary("댓글 수정")
+                                .description("댓글 또는 대댓글 내용을 수정합니다.")
                                 .requestSchema(Schema.schema("CommentUpdateRequest"))
                                 .build())))
                 .contentType(ContentType.JSON)
@@ -109,7 +115,9 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         RestAssured.given(spec)
                 .filter(documentWithTag("comment/delete-success",
                         resource(ResourceSnippetParameters.builder()
-                                .tag("comment")
+                                .tag("댓글")
+                                .summary("댓글 삭제")
+                                .description("댓글 또는 대댓글을 삭제합니다.")
                                 .requestSchema(Schema.schema("GuestPasswordRequest"))
                                 .build())))
                 .contentType(ContentType.JSON)
