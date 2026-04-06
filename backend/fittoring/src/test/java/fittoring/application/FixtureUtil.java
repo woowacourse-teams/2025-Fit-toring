@@ -14,6 +14,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
+import fittoring.domain.model.Post;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
@@ -106,6 +107,14 @@ public class FixtureUtil {
 
     public static Review testReview(Reservation reservation, Member reviewer) {
         return new Review(5, "좋았습니다.", reservation, reviewer);
+    }
+
+    public static Post testMemberPost(Member member) {
+        return Post.forMember(member, "게시글 제목", "게시글 본문", false, member.getName());
+    }
+
+    public static Post testGuestPost() {
+        return Post.forGuest("게시글 제목", "게시글 본문", "비회원", "1234");
     }
 
     public static Image testImageForMentoringProfileDefault(Mentoring mentoring) {
