@@ -92,4 +92,19 @@ class PostTest {
                 .isInstanceOf(MisMatchPasswordException.class)
                 .hasMessage(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
     }
+
+    @DisplayName("비회원 게시글의 비밀번호가 null 또는 공백이면 예외가 발생한다.")
+    @Test
+    void failGuestPasswordWhenBlank() {
+        //given
+        Post post = FixtureUtil.testGuestPost();
+
+        //when //then
+        assertThatThrownBy(() -> post.matchGuestPassword(" "))
+                .isInstanceOf(MisMatchPasswordException.class)
+                .hasMessage(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
+        assertThatThrownBy(() -> post.matchGuestPassword(null))
+                .isInstanceOf(MisMatchPasswordException.class)
+                .hasMessage(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
+    }
 }

@@ -140,6 +140,9 @@ public class Comment {
     }
 
     public void matchGuestPassword(String rawPassword) {
+        if (rawPassword == null || rawPassword.isBlank()) {
+            throw new MisMatchPasswordException(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
+        }
         String encryptedPassword = encryptPassword(rawPassword);
         if (!encryptedPassword.equals(this.guestPassword)) {
             throw new MisMatchPasswordException(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
