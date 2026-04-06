@@ -57,6 +57,10 @@ public enum BusinessErrorMessage {
     ALREADY_REGISTERED_DEVICE("이미 등록된 기기입니다."),
     CHAT_ROOM_RESERVATION_INTEGRITY_EXCEPTION("채팅방에 연결된 예약 정보가 존재하지 않습니다."),
     CHAT_ROOM_OPPONENT_NAME_INTEGRITY_EXCEPTION("채팅방에 연결된 상대 이름 정보가 존재하지 않습니다."),
+    POST_NOT_FOUND("議댁옱?섏? ?딅뒗 寃뚯떆湲?낅땲??"),
+    COMMENT_NOT_FOUND("議댁옱?섏? ?딅뒗 ?볤??낅땲??"),
+    GUEST_PASSWORD_MISMATCH("鍮꾨?踰덊샇媛 ?쇱튂?섏? ?딆뒿?덈떎."),
+    COMMENT_NOT_BELONG_TO_POST("?대떦 寃뚯떆湲???랁븯吏 ?딅뒗 ?볤??낅땲??"),
     ;
 
     private final String message;

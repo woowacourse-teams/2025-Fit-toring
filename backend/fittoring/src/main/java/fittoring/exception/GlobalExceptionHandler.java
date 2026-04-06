@@ -7,6 +7,7 @@ import fittoring.application.exception.ChatMessageNotFoundException;
 import fittoring.application.exception.ChatMessageNotImageException;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.ChatRoomNotFoundException;
+import fittoring.application.exception.CommentNotFoundException;
 import fittoring.application.exception.DuplicateDeviceException;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
@@ -30,6 +31,7 @@ import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.exception.NotFoundStatusException;
 import fittoring.application.exception.OauthLoginException;
 import fittoring.application.exception.PasswordEncryptionException;
+import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.exception.ReservationNotCompletedException;
 import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.exception.ReviewAlreadyExistsException;
@@ -78,6 +80,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(CategoryNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(PostNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(CommentNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
