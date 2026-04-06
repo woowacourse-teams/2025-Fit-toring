@@ -27,10 +27,21 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             return true;
         }
+        if (isOptionalAuth(handler)) {
+            attemptOptionalAuthentication(request);
+            return true;
+        }
         if (isAuthenticationNotRequired(handler)) {
             return true;
         }
         return attemptAuthentication(request, handler);
+    }
+
+    private boolean isOptionalAuth(Object handler) {
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return false;
+        }
+        return handlerMethod.hasMethodAnnotation(OptionalAuth.class);
     }
 
     private boolean isAuthenticationNotRequired(final Object handler) {
@@ -47,6 +58,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         validateAdminAccess(handler, MemberRole.of(payload.role()));
         bindAuthenticationContext(request, payload);
         return true;
+    }
+
+    private void attemptOptionalAuthentication(HttpServletRequest request) {
+        try {
+            TokenPayload payload = authenticate(request);
+            bindAuthenticationContext(request, payload);
+        } catch (RuntimeException ignored) {
+        }
     }
 
     private TokenPayload authenticate(HttpServletRequest request) {
