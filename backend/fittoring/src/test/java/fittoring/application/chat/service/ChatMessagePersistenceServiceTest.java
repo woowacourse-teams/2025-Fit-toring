@@ -12,6 +12,8 @@ import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatMessageType;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.Member;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +38,9 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
     @MockitoBean
     private NotificationSender notificationSender;
 
@@ -43,6 +48,11 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
     @Test
     void persistTextMessageUpdatesChatRoomSnapshot() {
         // given
+        double initialTotalCount = timerCount("chat_persist_total_seconds");
+        double initialDbCount = timerCount("chat_persist_db_seconds");
+        double initialNotificationCount = timerCount("chat_persist_notification_seconds");
+        double initialImageCount = timerCount("chat_persist_image_seconds");
+
         Member mentor = memberRepository.save(FixtureUtil.testMentor());
         Member mentee = memberRepository.save(FixtureUtil.testMentee());
         ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentee.getId(), mentor.getId()));
@@ -71,6 +81,11 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
             softly.assertThat(persistedChatRoom.getLastMessageType()).isEqualTo(ChatMessageType.TEXT);
             softly.assertThat(persistedChatRoom.getLastMessageSenderId()).isEqualTo(mentee.getId());
             softly.assertThat(persistedChatRoom.getLastMessageCreatedAt()).isNotNull();
+            softly.assertThat(timerCount("chat_persist_total_seconds")).isEqualTo(initialTotalCount + 1);
+            softly.assertThat(timerCount("chat_persist_db_seconds")).isEqualTo(initialDbCount + 1);
+            softly.assertThat(timerCount("chat_persist_notification_seconds"))
+                    .isEqualTo(initialNotificationCount + 1);
+            softly.assertThat(timerCount("chat_persist_image_seconds")).isEqualTo(initialImageCount);
         });
     }
 
@@ -78,6 +93,11 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
     @Test
     void persistImageMessageUpdatesChatRoomSnapshot() {
         // given
+        double initialTotalCount = timerCount("chat_persist_total_seconds");
+        double initialDbCount = timerCount("chat_persist_db_seconds");
+        double initialNotificationCount = timerCount("chat_persist_notification_seconds");
+        double initialImageCount = timerCount("chat_persist_image_seconds");
+
         Member mentor = memberRepository.save(FixtureUtil.testMentor());
         Member mentee = memberRepository.save(FixtureUtil.testMentee());
         ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentee.getId(), mentor.getId()));
@@ -107,6 +127,19 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
             softly.assertThat(persistedChatRoom.getLastMessageSenderId()).isEqualTo(mentee.getId());
             softly.assertThat(persistedChatRoom.getLastMessageCreatedAt()).isNotNull();
             softly.assertThat(imageRepository.findAll()).hasSize(1);
+            softly.assertThat(timerCount("chat_persist_total_seconds")).isEqualTo(initialTotalCount + 1);
+            softly.assertThat(timerCount("chat_persist_db_seconds")).isEqualTo(initialDbCount + 1);
+            softly.assertThat(timerCount("chat_persist_notification_seconds"))
+                    .isEqualTo(initialNotificationCount + 1);
+            softly.assertThat(timerCount("chat_persist_image_seconds")).isEqualTo(initialImageCount + 1);
         });
+    }
+
+    private double timerCount(String metricName) {
+        Timer timer = meterRegistry.find(metricName).timer();
+        if (timer == null) {
+            return 0;
+        }
+        return timer.count();
     }
 }
