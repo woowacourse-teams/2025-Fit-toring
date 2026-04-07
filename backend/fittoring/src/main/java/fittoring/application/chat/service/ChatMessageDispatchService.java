@@ -18,14 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ChatMessageDispatchService {
 
-    private final ChatRoomService chatRoomService;
     private final ChatMessagePersistEventPublisher eventPublisher;
     private final PresignedUrlService presignedUrlService;
     private final KeyBuilder keyBuilder;
 
     public ChatMessageAcceptedResultDto dispatch(Long chatRoomId, ChatMessageRequest request, Long senderId) {
-        chatRoomService.getAccessibleChatRoom(chatRoomId, senderId);
-
         String messageId = UUID.randomUUID().toString();
         LocalDateTime requestedAt = LocalDateTime.now();
         String normalizedContent = normalizeContent(request);

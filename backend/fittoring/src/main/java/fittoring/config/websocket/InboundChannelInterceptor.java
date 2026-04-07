@@ -2,13 +2,17 @@ package fittoring.config.websocket;
 
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
+import fittoring.application.chat.service.ChatRoomService;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ExpiredTokenException;
+import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.exception.UnauthorizedException;
 import fittoring.config.auth.LoginInfo;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -29,11 +33,15 @@ public class InboundChannelInterceptor implements ChannelInterceptor, ExecutorCh
 
     public static final String LOGIN_INFO_KEY = "loginInfo";
 
+    private static final String AUTHORIZED_CHAT_ROOM_IDS_KEY = "authorizedChatRoomIds";
     private static final String INBOUND_ENQUEUED_AT_NS_KEY = "wsInboundEnqueuedAtNs";
     private static final String TOKEN_EXP_EPOCH_MILLIS_KEY = "tokenExpEpochMillis";
     private static final String TOKEN_NAME = "accessToken";
+    private static final String TOPIC_CHATROOM_PREFIX = "/topic/chatroom/";
+    private static final String APP_CHATROOM_PREFIX = "/app/chatroom/";
 
     private final JwtProvider jwtProvider;
+    private final ChatRoomService chatRoomService;
     private final WebSocketMetricsListener metricsListener;
 
     /**
@@ -57,8 +65,14 @@ public class InboundChannelInterceptor implements ChannelInterceptor, ExecutorCh
             validateAuthenticated(sessionAttributes);
         }
 
+        if (StompCommand.SUBSCRIBE.equals(command)) {
+            authorizeChatRoomSubscriptionIfNeeded(accessor, sessionAttributes);
+            return message;
+        }
+
         if (StompCommand.SEND.equals(command)) {
             LoginInfo loginInfo = (LoginInfo) sessionAttributes.get(LOGIN_INFO_KEY);
+            validateChatRoomSendAuthorized(accessor, sessionAttributes);
             accessor.setHeader(LOGIN_INFO_KEY, loginInfo);
             accessor.setHeader(INBOUND_ENQUEUED_AT_NS_KEY, System.nanoTime());
 
@@ -95,7 +109,7 @@ public class InboundChannelInterceptor implements ChannelInterceptor, ExecutorCh
         WebSocketMetricContext.clear();
     }
 
-    private void authenticate(StompHeaderAccessor accessor) {
+    private void authenticate(StompHeaderAccessor accessor) { //토큰 검증
         String accessToken = getTokenFromSession(accessor);
         TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
         long expEpochMillis = jwtProvider.extractExpirationMillis(accessToken);
@@ -151,6 +165,58 @@ public class InboundChannelInterceptor implements ChannelInterceptor, ExecutorCh
 
     private boolean isTokenExpired(long expEpochMillis) {
         return Instant.now().toEpochMilli() > expEpochMillis;
+    }
+
+    private void authorizeChatRoomSubscriptionIfNeeded(
+            StompHeaderAccessor accessor,
+            Map<String, Object> sessionAttributes
+    ) {
+        Long chatRoomId = extractChatRoomId(accessor.getDestination(), TOPIC_CHATROOM_PREFIX);
+        if (chatRoomId == null) {
+            return;
+        }
+
+        LoginInfo loginInfo = (LoginInfo) sessionAttributes.get(LOGIN_INFO_KEY);
+        chatRoomService.getAccessibleChatRoom(chatRoomId, loginInfo.memberId());
+        getAuthorizedChatRoomIds(sessionAttributes).add(chatRoomId);
+    }
+
+    private void validateChatRoomSendAuthorized(
+            StompHeaderAccessor accessor,
+            Map<String, Object> sessionAttributes
+    ) {
+        Long chatRoomId = extractChatRoomId(accessor.getDestination(), APP_CHATROOM_PREFIX);
+        if (chatRoomId == null) {
+            return;
+        }
+
+        if (!getAuthorizedChatRoomIds(sessionAttributes).contains(chatRoomId)) {
+            throw new UnauthorizedChatRoomAccessException(
+                    BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage()
+            );
+        }
+    }
+
+    private Set<Long> getAuthorizedChatRoomIds(Map<String, Object> sessionAttributes) {
+        return (Set<Long>) sessionAttributes.computeIfAbsent(
+                AUTHORIZED_CHAT_ROOM_IDS_KEY,
+                key -> ConcurrentHashMap.newKeySet()
+        );
+    }
+
+    private Long extractChatRoomId(String destination, String prefix) {
+        if (destination == null || !destination.startsWith(prefix)) {
+            return null;
+        }
+
+        String value = destination.substring(prefix.length());
+        try {
+            return Long.valueOf(value);
+        } catch (NumberFormatException ex) {
+            throw new UnauthorizedChatRoomAccessException(
+                    BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage()
+            );
+        }
     }
 
     /**
