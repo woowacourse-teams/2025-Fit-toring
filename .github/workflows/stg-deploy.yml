@@ -1,0 +1,303 @@
+name: Staging CI/CD
+
+on:
+  push:
+    branches:
+      - stg
+    paths:
+      - "backend/**"
+      - ".github/workflows/stg-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+env:
+  IMAGE: fittoring/fittoring
+  APP_DIR: /home/ssm-user/fittoring
+  DEPLOY_SCRIPT: /home/ssm-user/deploy-be.sh
+
+jobs:
+  validate-build-and-push:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/fittoring
+    outputs:
+      image_tag: ${{ steps.meta.outputs.stg_sha_tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose and netcat
+        shell: bash
+        run: |
+          if ! docker compose version >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y docker-compose-plugin
+          fi
+
+          if ! command -v nc >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y netcat-openbsd
+          fi
+
+      - name: Start test containers
+        shell: bash
+        run: docker compose -f ./docker-compose.yml up -d db-test redis-test
+
+      - name: Wait for test MySQL
+        shell: bash
+        run: |
+          echo "[INFO] Waiting for test MySQL..."
+          for i in {30..0}; do
+            if nc -z localhost 3307; then
+              echo "[INFO] Test MySQL is ready."
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "[ERROR] Test MySQL did not become ready in time." >&2
+          exit 1
+
+      - name: Wait for test Redis
+        shell: bash
+        run: |
+          echo "[INFO] Waiting for test Redis..."
+          for i in {30..0}; do
+            if nc -z localhost 6380; then
+              echo "[INFO] Test Redis is ready."
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "[ERROR] Test Redis did not become ready in time." >&2
+          exit 1
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            backend/back-office/package-lock.json
+
+      - name: Create test environment file
+        shell: bash
+        run: |
+          cat <<'EOF' > .env
+          ACTIVE_PROFILE=test
+          TEST_DATABASE_HOST=localhost
+          TEST_DATABASE_PORT=3307
+          TEST_DATABASE_NAME=fittoring-test
+          TEST_DATABASE_USER=root
+          TEST_DATABASE_PASSWORD=1234
+          COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}
+          COOL_SMS_HMAC_HEADER=HMAC-SHA256
+          COOL_SMS_HMAC_HASH=HmacSHA256
+          COOL_SMS_API_KEY=${{ secrets.COOL_SMS_API_KEY }}
+          COOL_SMS_SECRET_KEY=${{ secrets.COOL_SMS_SECRET_KEY }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          ACCESS_TOKEN_EXPIRATION_MILLIS=${{ secrets.ACCESS_TOKEN_EXPIRATION_MILLIS }}
+          REFRESH_TOKEN_EXPIRATION_MILLIS=${{ secrets.REFRESH_TOKEN_EXPIRATION_MILLIS }}
+          KAKAO_REDIRECT_URL=https://dev.fittoring.com/kakao/callback
+          KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+          TRACING_ENABLE=${{ secrets.TRACING_ENABLE }}
+          TEMPO_GRPC_LISTENER_URL=${{ secrets.TEMPO_GRPC_LISTENER_URL }}
+          DB_TRACING_ENABLE=${{ secrets.DB_TRACING_ENABLE }}
+          METRICS_EXPORT_TIME_TO_PROMETHEUS=${{ secrets.METRICS_EXPORT_TIME_TO_PROMETHEUS }}
+          HIKARI_MAXIMUM_POOL_SIZE=${{ secrets.HIKARI_MAXIMUM_POOL_SIZE }}
+          HIKARI_MINIMUM_IDLE=${{ secrets.HIKARI_MINIMUM_IDLE }}
+          HIKARI_CONNECTION_TIMEOUT=${{ secrets.HIKARI_CONNECTION_TIMEOUT }}
+          HIKARI_MAX_LIFETIME=${{ secrets.HIKARI_MAX_LIFETIME }}
+          TOMCAT_MAX_THREADS=${{ secrets.TOMCAT_MAX_THREADS }}
+          TOMCAT_MAX_CONNECTIONS=${{ secrets.TOMCAT_MAX_CONNECTIONS }}
+          TOMCAT_CONNECTION_TIMEOUT=${{ secrets.TOMCAT_CONNECTION_TIMEOUT }}
+          TOMCAT_KEEP_ALIVE_TIMEOUT=${{ secrets.TOMCAT_KEEP_ALIVE_TIMEOUT }}
+          AWS_IAM_ACCESS_KEY=${{ secrets.AWS_IAM_ACCESS_KEY }}
+          AWS_IAM_SECRET_KEY=${{ secrets.AWS_IAM_SECRET_KEY }}
+          EOF
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/fittoring/**/*.gradle*', 'backend/fittoring/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        shell: bash
+        run: chmod +x ./gradlew
+
+      - name: Clean backend build outputs
+        shell: bash
+        run: ./gradlew clean
+
+      - name: Build back-office
+        shell: bash
+        run: |
+          cd ../back-office
+          npm ci
+          npm run build
+
+      - name: Run backend tests and generate API docs
+        shell: bash
+        run: ./gradlew test generateApiDocs
+
+      - name: Prepare failure report
+        if: failure()
+        shell: bash
+        run: |
+          REPORT_DIR="$RUNNER_TEMP/stg-test-report"
+          mkdir -p "$REPORT_DIR"
+
+          cp -R build/reports/tests/test "$REPORT_DIR/html-report" 2>/dev/null || true
+          cp -R build/test-results/test "$REPORT_DIR/junit-xml" 2>/dev/null || true
+
+          {
+            echo "# Staging validation failed"
+            echo ""
+            echo "- Workflow: $GITHUB_WORKFLOW"
+            echo "- Run ID: $GITHUB_RUN_ID"
+            echo "- Branch: $GITHUB_REF_NAME"
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Failed step: backend test/build validation"
+          } > "$REPORT_DIR/summary.md"
+
+      - name: Upload failure report artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stg-test-failure-report-${{ github.run_number }}
+          path: ${{ runner.temp }}/stg-test-report
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Build backend jar
+        shell: bash
+        run: ./gradlew bootJar
+
+      - name: Stop test containers
+        if: always()
+        shell: bash
+        run: docker compose -f ./docker-compose.yml down
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Compute immutable image tag
+        id: meta
+        shell: bash
+        run: |
+          SHORT_SHA="$(echo "$GITHUB_SHA" | cut -c1-7)"
+          echo "stg_tag=stg" >> "$GITHUB_OUTPUT"
+          echo "stg_sha_tag=stg-sha-$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          echo "[INFO] Staging deploy image tag: stg-sha-$SHORT_SHA"
+
+      - name: Build and push staging image
+        uses: docker/build-push-action@v6
+        with:
+          context: backend/fittoring
+          file: backend/fittoring/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.meta.outputs.stg_tag }}
+            ${{ env.IMAGE }}:${{ steps.meta.outputs.stg_sha_tag }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:cache-arm64
+          cache-to: type=registry,ref=${{ env.IMAGE }}:cache-arm64,mode=max
+
+  deploy-staging:
+    needs: validate-build-and-push
+    runs-on:
+      - self-hosted
+      - Linux
+      - ARM64
+      - deploy
+    env:
+      IMAGE_TAG: ${{ needs.validate-build-and-push.outputs.image_tag }}
+
+    steps:
+      - name: Verify deploy environment
+        shell: bash
+        run: |
+          test -x "${DEPLOY_SCRIPT}"
+          test -f "${APP_DIR}/docker-compose.yml"
+          test -f "${APP_DIR}/.env.deploy"
+
+          if ! docker compose version >/dev/null 2>&1; then
+            echo "[ERROR] docker compose plugin not found." >&2
+            exit 1
+          fi
+
+      - name: Update deploy image variables
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+
+          env_file = Path(os.environ["APP_DIR"]) / ".env.deploy"
+          image = os.environ["IMAGE"]
+          tag = os.environ["IMAGE_TAG"]
+
+          lines = env_file.read_text().splitlines()
+          updated = []
+          seen_image = False
+          seen_tag = False
+
+          for line in lines:
+              if line.startswith("IMAGE="):
+                  updated.append(f"IMAGE={image}")
+                  seen_image = True
+              elif line.startswith("TAG="):
+                  updated.append(f"TAG={tag}")
+                  seen_tag = True
+              else:
+                  updated.append(line)
+
+          if not seen_image:
+              updated.append(f"IMAGE={image}")
+
+          if not seen_tag:
+              updated.append(f"TAG={tag}")
+
+          env_file.write_text("\n".join(updated) + "\n")
+          PY
+
+          echo "[INFO] Deploy image: ${IMAGE}:${IMAGE_TAG}"
+
+      - name: Docker login
+        shell: bash
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Deploy staging application
+        shell: bash
+        run: |
+          cd /home/ssm-user
+          IMAGE="${IMAGE}" TAG="${IMAGE_TAG}" "${DEPLOY_SCRIPT}"
