@@ -3,20 +3,18 @@ package fittoring.application.chat.service;
 import fittoring.application.chat.repository.ChatMessageRepository;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.chat.service.dto.ChatMessagePersistEventDto;
+import fittoring.application.chat.service.event.ChatMessagePersistedEvent;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatRoomNotFoundException;
-import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.image.service.ImageService;
-import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.notification.service.NotificationService;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatMessageType;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
-import fittoring.domain.model.Notification;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,28 +24,24 @@ public class ChatMessagePersistenceService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final NotificationService notificationService;
-    private final MemberRepository memberRepository;
     private final ImageService imageService;
+    private final ApplicationEventPublisher eventPublisher;
     private final MeterRegistry meterRegistry;
     private final Timer chatPersistTotalTimer;
     private final Timer chatPersistDbTimer;
-    private final Timer chatPersistNotificationTimer;
     private final Timer chatPersistImageTimer;
 
     public ChatMessagePersistenceService(
             ChatMessageRepository chatMessageRepository,
             ChatRoomRepository chatRoomRepository,
-            NotificationService notificationService,
-            MemberRepository memberRepository,
             ImageService imageService,
+            ApplicationEventPublisher eventPublisher,
             MeterRegistry meterRegistry
     ) {
         this.chatMessageRepository = chatMessageRepository;
         this.chatRoomRepository = chatRoomRepository;
-        this.notificationService = notificationService;
-        this.memberRepository = memberRepository;
         this.imageService = imageService;
+        this.eventPublisher = eventPublisher;
         this.meterRegistry = meterRegistry;
         this.chatPersistTotalTimer = createTimer(
                 meterRegistry,
@@ -58,11 +52,6 @@ public class ChatMessagePersistenceService {
                 meterRegistry,
                 "chat_persist_db_seconds",
                 "Latency of database work in chat persistence flow"
-        );
-        this.chatPersistNotificationTimer = createTimer(
-                meterRegistry,
-                "chat_persist_notification_seconds",
-                "Latency of notification preparation and dispatch in chat persistence flow"
         );
         this.chatPersistImageTimer = createTimer(
                 meterRegistry,
@@ -89,17 +78,12 @@ public class ChatMessagePersistenceService {
                 }
             }
 
-            Timer.Sample notificationSample = Timer.start(meterRegistry);
-            try {
-                sendNewMessageNotification(
-                        event.chatRoomId(),
-                        event.senderId(),
-                        persistedMessage.opponentId(),
-                        persistedMessage.chatMessage()
-                );
-            } finally {
-                notificationSample.stop(chatPersistNotificationTimer);
-            }
+            eventPublisher.publishEvent(new ChatMessagePersistedEvent(
+                    event.chatRoomId(),
+                    event.senderId(),
+                    persistedMessage.opponentId(),
+                    persistedMessage.chatMessage()
+            ));
         } finally {
             totalSample.stop(chatPersistTotalTimer);
         }
@@ -144,18 +128,6 @@ public class ChatMessagePersistenceService {
             );
         }
         return chatMessageRepository.save(chatMessage);
-    }
-
-    private void sendNewMessageNotification(Long chatRoomId, Long senderId, Long opponentId, ChatMessage chatMessage) {
-        String senderName = memberRepository.findNameById(senderId)
-                .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-
-        Notification notification = new Notification(senderName, chatMessage.getContent());
-        if (chatMessage.getMessageType() == ChatMessageType.IMAGE) {
-            notification.setImageNotificationBody();
-        }
-        notification.putData("chatRoomId", String.valueOf(chatRoomId));
-        notificationService.sendNotification(opponentId, notification);
     }
 
     private ChatRoom getChatRoom(Long chatRoomId) {

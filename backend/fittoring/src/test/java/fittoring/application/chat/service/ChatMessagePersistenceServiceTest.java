@@ -15,6 +15,10 @@ import fittoring.domain.model.Member;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.time.LocalDateTime;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doThrow;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -133,6 +137,36 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
                     .isEqualTo(initialNotificationCount + 1);
             softly.assertThat(timerCount("chat_persist_image_seconds")).isEqualTo(initialImageCount + 1);
         });
+    }
+
+    @DisplayName("알림 전송이 실패해도 채팅 메시지 저장은 유지된다.")
+    @Test
+    void persistSucceedsEvenIfNotificationFailsAfterCommit() {
+        // given
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentee.getId(), mentor.getId()));
+        ChatMessagePersistEventDto event = new ChatMessagePersistEventDto(
+                "message-id-3",
+                chatRoom.getId(),
+                mentee.getId(),
+                1L,
+                "알림 실패 테스트",
+                ChatMessageType.TEXT,
+                LocalDateTime.now()
+        );
+        doThrow(new RuntimeException("notification failed"))
+                .when(notificationSender)
+                .send(anyList(), any());
+
+        // when & then
+        assertThatCode(() -> chatMessagePersistenceService.persist(event))
+                .doesNotThrowAnyException();
+        assertThatCode(() -> {
+            if (!chatMessageRepository.existsByMessageId(event.messageId())) {
+                throw new IllegalStateException("message was not persisted");
+            }
+        }).doesNotThrowAnyException();
     }
 
     private double timerCount(String metricName) {
