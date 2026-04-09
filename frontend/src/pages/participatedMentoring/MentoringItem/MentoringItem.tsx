@@ -11,7 +11,6 @@ import ReviewButton from '../ReviewButton/ReviewButton';
 import ReviewModal from '../ReviewModal/ReviewModal';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
-import Button from '../../../common/components/Button/Button';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
   handleReviewSubmitButtonClick: (reservationId: number) => void;
