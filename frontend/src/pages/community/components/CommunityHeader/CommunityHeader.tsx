@@ -17,7 +17,7 @@ function CommunityHeader() {
         <S_BackButton onClick={handleBackButtonClick}>
           <S_BackIcon src={backIcon} alt="뒤로가기 아이콘" />
         </S_BackButton>
-        <S_Title>채팅 목록</S_Title>
+        <S_Title>커뮤니티</S_Title>
       </S_Wrapper>
     </Header>
   );
