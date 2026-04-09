@@ -9,3 +9,9 @@ export interface CommunityPost {
   likeCount: number;
   content: string;
 }
+
+export interface CommunityPostResponse {
+  posts: CommunityPost[];
+  nextCursorCode: string | null;
+  hasNext: boolean;
+}
