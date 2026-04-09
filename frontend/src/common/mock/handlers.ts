@@ -1,3 +1,4 @@
+import { communityPostDetailHandler } from '../../pages/communityPostDetail/msw/handlers';
 import { createdMentoringHandler } from '../../pages/createdMentoring/mock/handlers';
 import { editProfileHandlers } from '../../pages/editProfile/mock/handler';
 import { homeHandler } from '../../pages/home/mock/handlers';
@@ -15,6 +16,7 @@ export const handlers = [
   ...signupHandler,
   ...loginHandler,
   ...createdMentoringHandler,
+  ...communityPostDetailHandler,
   ...mentoringCreateHandler,
   ...mentoringUpdateHandler,
   ...participatedMentoringHandler,
