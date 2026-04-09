@@ -473,8 +473,26 @@ function ChatRoom() {
         const pendingToResend = messagesRef.current.filter(
           (msg) => msg.status === 'pending' && msg.phase !== 'normal',
         );
+        const merged = [...outgoingQueueRef.current, ...pendingToResend];
+        const seen = new Set<number>();
+        const deduped: Message[] = [];
 
-        enqueueOutgoing(pendingToResend);
+        for (const msg of merged) {
+          if (seen.has(msg.tempId)) {
+            continue;
+          }
+          seen.add(msg.tempId);
+          deduped.push(msg);
+        }
+
+        deduped.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() -
+            new Date(b.createdAt).getTime(),
+        );
+
+        outgoingQueueRef.current = deduped;
+
         flushOutgoingQueue();
 
         isReconnectPendingRef.current = false;
