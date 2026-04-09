@@ -1,0 +1,38 @@
+import styled from '@emotion/styled';
+
+interface PostContentProps {
+  title: string;
+  content: string;
+}
+
+function PostContent({ title, content }: PostContentProps) {
+  return (
+    <S_Container>
+      <S_Title>{title}</S_Title>
+      <S_Content>{content}</S_Content>
+    </S_Container>
+  );
+}
+
+export default PostContent;
+
+const S_Container = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+
+  padding: 2.4rem 2rem 3.2rem;
+  border-bottom: 0.8rem solid ${({ theme }) => theme.SYSTEM.GRAY50};
+`;
+
+const S_Title = styled.h2`
+  color: ${({ theme }) => theme.FONT.B01};
+  white-space: pre-wrap;
+  ${({ theme }) => theme.TYPOGRAPHY.H4_SB}
+`;
+
+const S_Content = styled.p`
+  color: ${({ theme }) => theme.FONT.B02};
+  white-space: pre-wrap;
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+`;
