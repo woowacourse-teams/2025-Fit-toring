@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import ChatActiveIcon from '../../../common/assets/images/chatActiveIcon.svg';
 import ChatIcon from '../../../common/assets/images/chatIcon.svg';
+import CommunityActiveIcon from '../../../common/assets/images/communityActiveIcon.svg';
+import CommunityIcon from '../../../common/assets/images/communityIcon.svg';
 import HomeActiveIcon from '../../../common/assets/images/homeActiveIcon.svg';
 import HomeIcon from '../../../common/assets/images/homeIcon.svg';
 import ProfileActiveIcon from '../../../common/assets/images/profileActiveIcon.svg';
@@ -29,12 +31,12 @@ const NAV_ITEMS: NavItem[] = [
     icon: ChatIcon,
     activeIcon: ChatActiveIcon,
   },
-  //   {
-  //     label: '예약 관리',
-  //     path: PAGE_URL.,
-  //     icon: CalendarIcon,
-  //     activeIcon: CalendarActiveIcon,
-  //   },
+  {
+    label: '커뮤니티',
+    path: PAGE_URL.COMMUNITY,
+    icon: CommunityIcon,
+    activeIcon: CommunityActiveIcon,
+  },
   {
     label: '마이',
     path: PAGE_URL.MY_PAGE,
