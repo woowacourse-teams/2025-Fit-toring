@@ -1,5 +1,7 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
+import { PAGE_URL } from '../../../../common/constants/url';
 import { formatTimeAgo } from '../../../../common/utils/formatTimeAgo';
 import ReactionCount from '../ReactionCount/ReactionCount';
 
@@ -10,12 +12,18 @@ interface CommunityPostCardProps {
 }
 
 function CommunityPostCard({ post }: CommunityPostCardProps) {
-  const { title, createdAt, viewCount, likeCount, commentCount, content } =
+  const navigate = useNavigate();
+
+  const { id, title, createdAt, viewCount, likeCount, commentCount, content } =
     post;
   const createdAtLabel = formatTimeAgo(createdAt);
 
+  const handlePostItemClick = () => {
+    navigate(`${PAGE_URL.COMMUNITY}/${id}`);
+  };
+
   return (
-    <S_ListItem>
+    <S_ListItem onClick={handlePostItemClick}>
       <S_Card>
         <S_TextBlock>
           <S_Title>{title}</S_Title>
@@ -37,6 +45,7 @@ export default CommunityPostCard;
 
 const S_ListItem = styled.li`
   list-style: none;
+  cursor: pointer;
 `;
 
 const S_Card = styled.article`
