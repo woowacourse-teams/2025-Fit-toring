@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { formatTimeAgo } from '../../../../common/utils/formatTimeAgo';
 import ReactionCount from '../ReactionCount/ReactionCount';
 
-import type { CommunityPost } from '../CommunityFeed/CommunityFeed';
+import type { CommunityPost } from '../../types/posts';
 
 interface CommunityPostCardProps {
   post: CommunityPost;

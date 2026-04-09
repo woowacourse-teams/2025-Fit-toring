@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 
-import CommunityFeed, {
-  type CommunityPost,
-} from '../CommunityFeed/CommunityFeed';
+import CommunityFeed from '../CommunityFeed/CommunityFeed';
+
+import type { CommunityPost } from '../../types/posts';
 
 const communityPosts: CommunityPost[] = [
   {

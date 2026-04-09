@@ -2,17 +2,7 @@ import styled from '@emotion/styled';
 
 import CommunityPostCard from '../CommunityPostCard/CommunityPostCard';
 
-export interface CommunityPost {
-  id: number;
-  title: string;
-  nickname: string;
-  isAnonymous: boolean;
-  createdAt: string;
-  commentCount: number;
-  viewCount: number;
-  likeCount: number;
-  content: string;
-}
+import type { CommunityPost } from '../../types/posts';
 
 interface CommunityFeedProps {
   posts: CommunityPost[];
