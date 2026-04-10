@@ -14,4 +14,5 @@ export const PAGE_URL = {
   IDENTITY_VERIFICATION: '/identity-verification',
   CHAT_ROOM: '/chat/room',
   CHAT_ROOMS: '/chat/rooms',
+  COMMUNITY: '/community',
 } as const;

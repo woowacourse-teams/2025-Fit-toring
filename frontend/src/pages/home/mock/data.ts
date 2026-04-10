@@ -1,6 +1,6 @@
 import type { MentorInformation } from '../types/MentorInformation';
 
-export const MENTORINGS: MentorInformation[] = [
+export const MENTORINGS: ReadonlyArray<MentorInformation> = [
   {
     id: 1,
     mentorName: '김트레이너',
@@ -270,4 +270,4 @@ export const MENTORINGS: MentorInformation[] = [
     ratingAverage: '4.9',
     ratingCount: 280,
   },
-] as const;
+];
