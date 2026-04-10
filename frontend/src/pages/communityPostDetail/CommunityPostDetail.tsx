@@ -55,4 +55,6 @@ const S_Content = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
+
+  padding-bottom: 7rem;
 `;

@@ -94,14 +94,14 @@ const router = createBrowserRouter([
                 path: PAGE_URL.COMMUNITY,
                 element: <Community />,
               },
+              {
+                path: `${PAGE_URL.COMMUNITY}/:postId`,
+                element: <CommunityPostDetail />,
+              },
             ],
           },
           { path: PAGE_URL.LANDING, element: <Landing /> },
           { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
-          {
-            path: `${PAGE_URL.COMMUNITY}/:postId`,
-            element: <CommunityPostDetail />,
-          },
           { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
           { path: PAGE_URL.SIGNUP, element: <Signup /> },
           { path: PAGE_URL.MENTORING_CREATE, element: <MentoringCreate /> },
