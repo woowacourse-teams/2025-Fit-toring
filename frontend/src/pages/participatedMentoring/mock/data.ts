@@ -2,7 +2,8 @@ import { StatusTypeEnum } from '../../../common/types/statusType';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
 
-export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
+export const PARTICIPATED_MENTORING_LIST: ReadonlyArray<ParticipatedMentoringType> =
+  [
   {
     reservationId: 1,
     mentoringId: 1,
@@ -13,6 +14,7 @@ export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-09',
     isReviewed: true,
     status: StatusTypeEnum.COMPLETE,
+    chatRoomId: null,
   },
   {
     reservationId: 2,
@@ -25,6 +27,7 @@ export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-10',
     isReviewed: false,
     status: StatusTypeEnum.COMPLETE,
+    chatRoomId: null,
   },
   {
     reservationId: 3,
@@ -37,6 +40,7 @@ export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-12',
     isReviewed: false,
     status: StatusTypeEnum.APPROVED,
+    chatRoomId: null,
   },
   {
     reservationId: 4,
@@ -49,5 +53,6 @@ export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-15',
     isReviewed: false,
     status: StatusTypeEnum.PENDING,
+    chatRoomId: null,
   },
 ];

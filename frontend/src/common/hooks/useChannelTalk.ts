@@ -11,7 +11,7 @@ import {
   showChannelTalk,
 } from '../utils/channelTalk';
 
-const HIDDEN_PATHS = [`${PAGE_URL.CHAT_ROOM}/:chatRoomId`];
+const HIDDEN_PATHS = [`${PAGE_URL.CHAT_ROOM}/:chatRoomId`, PAGE_URL.COMMUNITY];
 
 const useChannelTalk = () => {
   const { authenticated } = useAuth();
