@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 import CommunityPostCard from '../CommunityPostCard/CommunityPostCard';
 
-import type { CommunityPost } from '../../types/posts';
+import type { CommunityPost } from '../../../../common/types/communityPost';
 
 interface CommunityFeedProps {
   posts: CommunityPost[];

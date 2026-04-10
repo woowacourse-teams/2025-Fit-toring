@@ -1,4 +1,4 @@
-import type { CommunityPostDetail } from '../types/communityPostDetail';
+import type { CommunityPostDetail } from '../../../common/types/communityPost';
 import type { PostComment } from '../types/postComment';
 
 export const COMMUNITY_POST_DETAIL: CommunityPostDetail = {

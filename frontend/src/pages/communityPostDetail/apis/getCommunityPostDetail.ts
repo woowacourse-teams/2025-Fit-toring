@@ -1,6 +1,6 @@
 import { apiClient } from '../../../common/apis/apiClient';
 
-import type { CommunityPostDetail } from '../types/communityPostDetail';
+import type { CommunityPostDetail } from '../../../common/types/communityPost';
 
 export const getCommunityPostDetail = async (postId: string) => {
   return await apiClient.get<CommunityPostDetail>({

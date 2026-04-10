@@ -5,7 +5,7 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import { formatTimeAgo } from '../../../../common/utils/formatTimeAgo';
 import ReactionCount from '../ReactionCount/ReactionCount';
 
-import type { CommunityPost } from '../../types/posts';
+import type { CommunityPost } from '../../../../common/types/communityPost';
 
 interface CommunityPostCardProps {
   post: CommunityPost;
