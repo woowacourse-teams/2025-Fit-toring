@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 
 import ChatActiveIcon from '../../../common/assets/images/chatActiveIcon.svg';
 import ChatIcon from '../../../common/assets/images/chatIcon.svg';
@@ -16,6 +16,7 @@ interface NavItem {
   path: string;
   icon: string;
   activeIcon: string;
+  matchNestedRoutes?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -36,6 +37,7 @@ const NAV_ITEMS: NavItem[] = [
     path: PAGE_URL.COMMUNITY,
     icon: CommunityIcon,
     activeIcon: CommunityActiveIcon,
+    matchNestedRoutes: true,
   },
   {
     label: '마이',
@@ -46,7 +48,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 function BottomNavigationBar() {
-  const location = useLocation();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const handleItemClick = (path: string) => {
@@ -56,7 +58,9 @@ function BottomNavigationBar() {
   return (
     <S_Container>
       {NAV_ITEMS.map((item) => {
-        const isActive = location.pathname === item.path;
+        const isActive = item.matchNestedRoutes
+          ? !!matchPath({ path: item.path, end: false }, pathname)
+          : pathname === item.path;
 
         return (
           <S_Item
