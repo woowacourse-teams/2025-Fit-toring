@@ -14,10 +14,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
 import { PAGE_URL } from '../../common/constants/url';
-import {
-  hideChannelTalk,
-  showChannelTalk,
-} from '../../common/utils/channelTalk';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
@@ -29,8 +25,12 @@ import MentoringActionPanel from './components/MentoringActionPanel/MentoringAct
 import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import usePersistPendingMessages, {
+  readPersistedMessages,
+} from './hooks/usePersistPendingMessages';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
+import { mergeMessages } from './utils/mergeMessages';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
 import type { Message } from './types/message';
@@ -40,7 +40,6 @@ function ChatRoom() {
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const messagesRef = useRef<Message[]>([]);
   const [message, setMessage] = useState('');
 
   const { chatRoomId } = useParams();
@@ -95,9 +94,10 @@ function ChatRoom() {
     isFetchingNextPage: false,
   });
 
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
+  const persistPendingMessages = usePersistPendingMessages(
+    chatRoomId,
+    messages,
+  );
 
   useEffect(() => {
     stateRef.current.hasNextPage = !!hasNextPage;
@@ -203,17 +203,21 @@ function ChatRoom() {
 
   useEffect(() => {
     if (chatRoomMessage) {
-      setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
+      const serverMessages = chatRoomMessage.pages.flatMap(
+        (page) => page.chatMessages,
+      );
+      if (!chatRoomId) {
+        setMessages(serverMessages);
+        return;
+      }
+
+      const persistedMessages = readPersistedMessages();
+      const roomMessages = persistedMessages[chatRoomId] ?? [];
+      console.log('서버에서 불러온 메시지:', serverMessages);
+      console.log('지속된 메시지:', roomMessages);
+      setMessages(mergeMessages(serverMessages, roomMessages));
     }
-  }, [chatRoomMessage]);
-
-  useEffect(() => {
-    hideChannelTalk();
-
-    return () => {
-      showChannelTalk();
-    };
-  }, []);
+  }, [chatRoomId, chatRoomMessage]);
 
   const {
     data: chatRoomInfoData,
@@ -249,6 +253,9 @@ function ChatRoom() {
       heartbeatOutgoing: 10000,
       reconnectDelay: 5000,
       onStompError: async (frame) => {
+        console.error('STOMP error:', frame);
+        persistPendingMessages();
+
         const parsedBody = JSON.parse(frame.body);
 
         if (parsedBody.code === 'TOKEN_EXPIRED') {
@@ -289,7 +296,11 @@ function ChatRoom() {
         }
       },
 
-      onWebSocketError: (e) => console.error('WebSocket error:', e),
+      onWebSocketError: (e) => {
+        persistPendingMessages();
+
+        console.error('WebSocket error:', e);
+      },
       onConnect: () => {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
@@ -345,12 +356,15 @@ function ChatRoom() {
               }
               return msg;
             });
-            messagesRef.current = nextMessages;
+            persistPendingMessages(nextMessages);
             return nextMessages;
           });
         });
 
-        const pendingToResend = messagesRef.current.filter(
+        const persistedMessages = chatRoomId
+          ? readPersistedMessages()[chatRoomId] ?? []
+          : [];
+        const pendingToResend = persistedMessages.filter(
           (msg) => msg.status === 'pending' && msg.phase !== 'normal',
         );
 

@@ -197,8 +197,12 @@ jobs:
     env:
       IMAGE: fittoring/fittoring
       PROFILE: dev
+      APP_DIR: /home/ubuntu/fittoring
+      PROXY_SERVER_NAME: 'devapi.fittoring.com'
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Compute deploy tag
         shell: bash
         run: |
@@ -211,15 +215,27 @@ jobs:
           echo "IMAGE=$IMAGE"
           echo "TAG=$TAG"
           echo "PROFILE=$PROFILE"
+          echo "APP_DIR=$APP_DIR"
+          echo "PROXY_SERVER_NAME=$PROXY_SERVER_NAME"
 
       - name: Docker login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Sync deploy assets
+        shell: bash
+        run: |
+          mkdir -p "${APP_DIR}"
+          cp backend/fittoring/docker-compose.yml "${APP_DIR}/docker-compose.prod.yml"
+          cp backend/fittoring/docker-compose.dev.yml "${APP_DIR}/docker-compose.dev.yml"
+          cp backend/fittoring/docker-compose.dev.yml "${APP_DIR}/docker-compose.yml"
+          rm -rf "${APP_DIR}/proxy"
+          cp -r backend/fittoring/proxy "${APP_DIR}/proxy"
 
       - name: Run deploy script
         shell: bash
         run: |
           cd /home/ubuntu
-          IMAGE="$IMAGE" TAG="$TAG" PROFILE="$PROFILE" ./deploy-be.sh
+          IMAGE="$IMAGE" TAG="$TAG" PROFILE="$PROFILE" PROXY_SERVER_NAME="$PROXY_SERVER_NAME" ./deploy-be.sh
 
   test-report:
     if: failure()
