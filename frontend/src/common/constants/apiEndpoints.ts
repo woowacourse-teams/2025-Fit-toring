@@ -28,4 +28,5 @@ export const API_ENDPOINTS = {
   IDENTITY_VERIFICATION: '/oauth-signup',
   FCM_TOKENS: '/notification/tokens',
   AUTH_CHECK: '/auth/check',
+  POSTS: '/posts',
 } as const;

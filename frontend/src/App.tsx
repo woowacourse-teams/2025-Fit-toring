@@ -39,6 +39,7 @@ const CommunityPostDetail = lazy(
 const IdentityVerification = lazy(
   () => import('./pages/identityVerification/IdentityVerification'),
 );
+const Community = lazy(() => import('./pages/community/Community'));
 
 const router = createBrowserRouter([
   {
@@ -88,6 +89,10 @@ const router = createBrowserRouter([
                     element: <EditProfile />,
                   },
                 ],
+              },
+              {
+                path: PAGE_URL.COMMUNITY,
+                element: <Community />,
               },
             ],
           },
