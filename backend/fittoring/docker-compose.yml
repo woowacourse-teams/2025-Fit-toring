@@ -59,8 +59,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "80:8080"
+    expose:
+      - "8080"
     env_file: .env
     logging:
       driver: "json-file"
@@ -76,6 +76,14 @@ services:
       timeout: 3s
       retries: 10
       start_period: 15s
+    networks:
+      - default
+      - shared-proxy
 
 volumes:
   db-data:
+
+networks:
+  default:
+  shared-proxy:
+    external: true
