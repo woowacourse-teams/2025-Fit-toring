@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
 
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
+import { getPostComments } from '../../apis/getPostComments';
 import CommentItem from '../CommentItem/CommentItem';
 
 interface PostCommentSectionProps {
@@ -8,33 +10,15 @@ interface PostCommentSectionProps {
 }
 
 function PostCommentSection({ postId }: PostCommentSectionProps) {
-  const commentData = [
-    {
-      id: 201,
-      content: '루트 댓글',
-      nickname: 'user1',
-      isAnonymous: false,
-      isGuestComment: false,
-      rootId: null,
-      parentId: null,
-      isDeleted: false,
-      createdAt: '2026-04-06T21:30:00',
-    },
-    {
-      id: 202,
-      content: '대댓글',
-      nickname: 'user2',
-      isAnonymous: false,
-      isGuestComment: true,
-      rootId: 201,
-      parentId: 201,
-      isDeleted: false,
-      createdAt: '2026-04-06T21:31:00',
-    },
-  ];
-
-  const isPending = false;
-  const isError = false;
+  const {
+    data: commentData = [],
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ['postComments', postId],
+    queryFn: () => getPostComments(postId),
+    enabled: Boolean(postId),
+  });
 
   return (
     <S_Container>
