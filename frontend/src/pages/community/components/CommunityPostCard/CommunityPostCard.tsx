@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { PAGE_URL } from '../../../../common/constants/url';
 import { formatTimeAgo } from '../../../../common/utils/formatTimeAgo';
@@ -12,31 +12,27 @@ interface CommunityPostCardProps {
 }
 
 function CommunityPostCard({ post }: CommunityPostCardProps) {
-  const navigate = useNavigate();
-
   const { id, title, createdAt, viewCount, likeCount, commentCount, content } =
     post;
   const createdAtLabel = formatTimeAgo(createdAt);
 
-  const handlePostItemClick = () => {
-    navigate(`${PAGE_URL.COMMUNITY}/${id}`);
-  };
-
   return (
-    <S_ListItem onClick={handlePostItemClick}>
-      <S_Card>
-        <S_TextBlock>
-          <S_Title>{title}</S_Title>
-          <S_Content>{content}</S_Content>
-        </S_TextBlock>
+    <S_ListItem>
+      <S_Link to={`${PAGE_URL.COMMUNITY}/${id}`}>
+        <S_Card>
+          <S_TextBlock>
+            <S_Title>{title}</S_Title>
+            <S_Content>{content}</S_Content>
+          </S_TextBlock>
 
-        <S_FooterRow>
-          <S_MetaText>
-            {createdAtLabel} · 조회 {viewCount.toLocaleString()}
-          </S_MetaText>
-          <ReactionCount likeCount={likeCount} commentCount={commentCount} />
-        </S_FooterRow>
-      </S_Card>
+          <S_FooterRow>
+            <S_MetaText>
+              {createdAtLabel} · 조회 {viewCount.toLocaleString()}
+            </S_MetaText>
+            <ReactionCount likeCount={likeCount} commentCount={commentCount} />
+          </S_FooterRow>
+        </S_Card>
+      </S_Link>
     </S_ListItem>
   );
 }
@@ -45,7 +41,13 @@ export default CommunityPostCard;
 
 const S_ListItem = styled.li`
   list-style: none;
-  cursor: pointer;
+`;
+
+const S_Link = styled(Link)`
+  display: block;
+
+  color: inherit;
+  text-decoration: none;
 `;
 
 const S_Card = styled.article`
