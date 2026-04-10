@@ -32,7 +32,11 @@ function CommunityPostDetail() {
           nickname={postData.isAnonymous ? '익명' : postData.nickname}
           viewCount={postData.viewCount}
         />
-        <PostContent title={postData.title} content={postData.content} />
+        <PostContent
+          title={postData.title}
+          content={postData.content}
+          likeCount={postData.likeCount}
+        />
         <PostCommentSection postId={postId ?? ''} />
       </S_Content>
       <InputSection />
