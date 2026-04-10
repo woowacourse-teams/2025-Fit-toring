@@ -6,29 +6,31 @@ import type { PostComment } from '../../types/postComment';
 
 interface CommentItemProps {
   comment: PostComment;
+  depth: number;
+  children?: React.ReactNode;
 }
 
-function CommentItem({ comment }: CommentItemProps) {
+function CommentItem({ comment, depth, children }: CommentItemProps) {
   return (
-    <S_Container>
+    <S_Container depth={depth}>
       <S_Header>
-        <S_Nickname>{comment.nickname}</S_Nickname>
+        <S_Nickname>{comment.isAnonymous ? '익명' : comment.nickname}</S_Nickname>
         <S_CreatedAt>{formatTimeAgo(comment.createdAt)}</S_CreatedAt>
       </S_Header>
-      <S_Content>{comment.content}</S_Content>
+      <S_Content>{comment.isDeleted ? '삭제된 댓글입니다.' : comment.content}</S_Content>
+      {children}
     </S_Container>
   );
 }
 
 export default CommentItem;
 
-const S_Container = styled.li`
+const S_Container = styled.li<{ depth: number }>`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.6rem;
 
-  padding: 1.6rem 0;
-  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.LIGHT};
+  padding: 1.2rem 0 1.2rem ${({ depth }) => `${depth * 1.6}rem`};
 `;
 
 const S_Header = styled.div`

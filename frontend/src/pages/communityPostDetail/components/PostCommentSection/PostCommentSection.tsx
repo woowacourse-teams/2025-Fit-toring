@@ -3,10 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
 import { getPostComments } from '../../apis/getPostComments';
+import { buildCommentTree } from '../../utils/buildCommentTree';
 import CommentItem from '../CommentItem/CommentItem';
+
+import type { PostComment } from '../../types/postComment';
 
 interface PostCommentSectionProps {
   postId: string;
+}
+
+interface PostCommentNode extends PostComment {
+  children: PostCommentNode[];
 }
 
 function PostCommentSection({ postId }: PostCommentSectionProps) {
@@ -19,6 +26,8 @@ function PostCommentSection({ postId }: PostCommentSectionProps) {
     queryFn: () => getPostComments(postId),
     enabled: Boolean(postId),
   });
+
+  const commentTree = buildCommentTree(commentData);
 
   return (
     <S_Container>
@@ -34,11 +43,9 @@ function PostCommentSection({ postId }: PostCommentSectionProps) {
       {!isPending && !isError && commentData.length === 0 ? (
         <S_StatusText>첫 댓글을 남겨 보세요.</S_StatusText>
       ) : null}
-      {!isPending && !isError && commentData.length > 0 ? (
+      {!isPending && !isError && commentTree.length > 0 ? (
         <S_CommentList>
-          {commentData.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} />
-          ))}
+          {commentTree.flatMap((comment) => renderCommentNode(comment))}
         </S_CommentList>
       ) : null}
     </S_Container>
@@ -46,6 +53,18 @@ function PostCommentSection({ postId }: PostCommentSectionProps) {
 }
 
 export default PostCommentSection;
+
+function renderCommentNode(
+  comment: PostCommentNode,
+  depth = 0,
+): React.ReactNode[] {
+  return [
+    <CommentItem key={comment.id} comment={comment} depth={depth} />,
+    ...comment.children.flatMap((childComment) =>
+      renderCommentNode(childComment, depth + 1),
+    ),
+  ];
+}
 
 const S_Container = styled.section`
   display: flex;
