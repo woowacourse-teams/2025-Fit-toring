@@ -10,10 +10,10 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - http://localhost/healthcheck || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:80/nginx-health >/dev/null 2>&1 || exit 1"]
       interval: 10s
       timeout: 3s
-      retries: 6
+      retries: 5
       start_period: 10s
     restart: always
     networks:
