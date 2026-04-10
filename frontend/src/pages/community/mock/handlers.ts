@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
 import { COMMUNITY_POSTS } from './data';
 
-const BASE_URL = process.env.API_BASE_URL;
+const BASE_URL = process.env.API_BASE_URL ?? '';
 const COMMUNITY_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}`;
 const PAGE_SIZE = 10;
 
@@ -35,7 +35,7 @@ const getCommunityPosts = http.get(COMMUNITY_URL, ({ request }) => {
 
   return HttpResponse.json({
     posts,
-    nextCursorCode: hasNext && lastPost ? lastPost.id.toString() : '',
+    nextCursorCode: hasNext && lastPost ? lastPost.id.toString() : null,
     hasNext,
   });
 });
