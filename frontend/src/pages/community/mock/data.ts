@@ -1,6 +1,6 @@
 import type { CommunityPost } from '../types/posts';
 
-export const COMMUNITY_POSTS: CommunityPost[] = [
+export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
   {
     id: 9,
     title: '동네에서 시간 될 때 만날 친구 구해요',
@@ -359,4 +359,4 @@ export const COMMUNITY_POSTS: CommunityPost[] = [
     content:
       '실력 상관 없이 땀만 좀 흘리는 느낌으로 주말 저녁에 농구하실 분 찾고 있습니다.',
   },
-] as const;
+];

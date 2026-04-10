@@ -1,6 +1,6 @@
 import type { UserProfileResponse } from '../../../pages/editProfile/types/userProfile';
 
-export const USER_PROFILE: UserProfileResponse = {
+export const USER_PROFILE: Readonly<UserProfileResponse> = {
   name: '홍길동',
   gender: '남',
   phoneNumber: '010-1234-5678',
