@@ -71,7 +71,7 @@ const S_Container = styled.section`
   flex: 1;
   flex-direction: column;
 
-  padding: 2.4rem 2rem 3.2rem;
+  padding: 2.4rem 2rem 0;
 `;
 
 const S_Title = styled.h3`
