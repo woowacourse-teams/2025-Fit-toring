@@ -33,6 +33,9 @@ const CreatedMentoring = lazy(
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
 const ChatRoom = lazy(() => import('./pages/chatRoom/ChatRoom'));
+const CommunityPostDetail = lazy(
+  () => import('./pages/communityPostDetail/CommunityPostDetail'),
+);
 const IdentityVerification = lazy(
   () => import('./pages/identityVerification/IdentityVerification'),
 );
@@ -90,6 +93,10 @@ const router = createBrowserRouter([
               {
                 path: PAGE_URL.COMMUNITY,
                 element: <Community />,
+              },
+              {
+                path: `${PAGE_URL.COMMUNITY}/:postId`,
+                element: <CommunityPostDetail />,
               },
             ],
           },

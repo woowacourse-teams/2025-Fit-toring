@@ -2,30 +2,32 @@ import React from 'react';
 
 import styled from '@emotion/styled';
 
-import sendIcon from '../../../../common/assets/images/sendIcon.svg';
+import sendIcon from '../../assets/images/sendIcon.svg';
 
-interface InputSectionProps {
+interface InputWithSubmitButtonProps {
   value: string;
+  placeholder: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-function InputSection({ value, onChange, onSubmit }: InputSectionProps) {
+function InputWithSubmitButton({
+  value,
+  placeholder,
+  onChange,
+  onSubmit,
+}: InputWithSubmitButtonProps) {
   return (
     <S_Container onSubmit={onSubmit}>
-      <S_Input
-        placeholder="메시지를 입력하세요"
-        value={value}
-        onChange={onChange}
-      />
-      <S_SendButton>
-        <S_SendIcon src={sendIcon} alt="보내기 아이콘" />
-      </S_SendButton>
+      <S_Input placeholder={placeholder} value={value} onChange={onChange} />
+      <S_SubmitButton type="submit">
+        <S_SendIcon src={sendIcon} alt="전송 아이콘" />
+      </S_SubmitButton>
     </S_Container>
   );
 }
 
-export default InputSection;
+export default InputWithSubmitButton;
 
 const S_Container = styled.form`
   display: flex;
@@ -45,9 +47,9 @@ const S_Input = styled.input`
   border-radius: 50px;
 
   background-color: ${({ theme }) => theme.SYSTEM.GRAY50};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 
   color: ${({ theme }) => theme.FONT.B01};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 
   :focus {
     outline: none;
@@ -56,11 +58,9 @@ const S_Input = styled.input`
   ::placeholder {
     color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
-
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
-const S_SendButton = styled.button`
+const S_SubmitButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;

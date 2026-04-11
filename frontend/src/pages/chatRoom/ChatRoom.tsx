@@ -13,6 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
+import InputWithSubmitButton from '../../common/components/InputWithSubmitButton/InputWithSubmitButton';
 import { PAGE_URL } from '../../common/constants/url';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
@@ -20,7 +21,6 @@ import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import ChatRoomInfoSkeleton from './components/ChatRoomInfoSkeleton/ChatRoomInfoSkeleton';
-import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
@@ -431,8 +431,9 @@ function ChatRoom() {
         pageFirstElRef={pageFirstElRef}
         listElRef={listElRef}
       />
-      <InputSection
+      <InputWithSubmitButton
         value={message}
+        placeholder="메시지를 입력하세요"
         onChange={handleChange}
         onSubmit={handleMessageSubmit}
       />
