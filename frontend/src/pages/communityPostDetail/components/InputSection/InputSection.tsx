@@ -12,11 +12,12 @@ function InputSection() {
   };
 
   const handleCommentSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (comment.trim().length === 0) {
       return;
     }
 
-    e.preventDefault();
     setComment('');
   };
 
