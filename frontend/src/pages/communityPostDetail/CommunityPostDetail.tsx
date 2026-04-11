@@ -13,14 +13,22 @@ import PostHeader from './components/PostHeader/PostHeader';
 
 function CommunityPostDetail() {
   const { postId } = useParams();
-  const { data: postData, isPending } = useQuery({
+  const {
+    data: postData,
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: ['communityPostDetail', postId],
     queryFn: () => getCommunityPostDetail(postId!),
     enabled: Boolean(postId),
   });
 
-  if (isPending || !postData) {
+  if (isPending) {
     return <LoadingSpinner />;
+  }
+
+  if (isError || !postData) {
+    return <div>게시글을 불러오지 못했습니다.</div>;
   }
 
   return (
