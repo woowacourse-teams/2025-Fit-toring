@@ -40,6 +40,9 @@ const IdentityVerification = lazy(
   () => import('./pages/identityVerification/IdentityVerification'),
 );
 const Community = lazy(() => import('./pages/community/Community'));
+const CommunityPostCreate = lazy(
+  () => import('./pages/communityPostCreate/CommunityPostCreate'),
+);
 
 const router = createBrowserRouter([
   {
@@ -117,6 +120,10 @@ const router = createBrowserRouter([
           {
             path: PAGE_URL.IDENTITY_VERIFICATION,
             element: <IdentityVerification />,
+          },
+          {
+            path: PAGE_URL.COMMUNITY_CREATE,
+            element: <CommunityPostCreate />,
           },
         ],
       },
