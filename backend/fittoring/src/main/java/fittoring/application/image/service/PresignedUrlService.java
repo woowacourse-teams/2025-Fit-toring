@@ -64,6 +64,7 @@ public class PresignedUrlService {
 
         return new PresignedIssueResponse(
                 presigned.url().toString(),
+                key,
                 LocalDateTime.ofInstant(
                         presigned.expiration(),
                         ZoneId.of("Asia/Seoul")

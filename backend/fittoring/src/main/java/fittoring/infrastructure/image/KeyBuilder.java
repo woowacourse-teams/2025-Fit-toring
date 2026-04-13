@@ -85,4 +85,20 @@ public class KeyBuilder {
             return null;
         }
     }
+
+    public String extractBaseNameFromKey(String key) {
+        if (key == null || key.isBlank()) {
+            return null;
+        }
+        int lastSlash = key.lastIndexOf('/');
+        String filename = (lastSlash != -1)
+                ? key.substring(lastSlash + 1)
+                : key;
+
+        int dotIndex = filename.lastIndexOf('.');
+        if (dotIndex != -1) {
+            return filename.substring(0, dotIndex);
+        }
+        return filename;
+    }
 }

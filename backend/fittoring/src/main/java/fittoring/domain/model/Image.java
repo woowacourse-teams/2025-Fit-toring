@@ -24,8 +24,11 @@ public class Image {
     @Id
     private Long id;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String url;
+
+    @Column(name = "`key`", columnDefinition = "TEXT")
+    private String key;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,15 +45,36 @@ public class Image {
     private String baseName;
 
     public Image(String url, ImageType imageType, ImageVariant imageVariant, Long relationId, String baseName) {
-        this(null, url, imageType, imageVariant, relationId, baseName);
+        this(null, url, null, imageType, imageVariant, relationId, baseName);
     }
 
     public Image(String url, ImageType imageType, Long relationId, String baseName) {
-        this(null, url, imageType, ImageVariant.DEFAULT, relationId, baseName);
+        this(null, url, null, imageType, ImageVariant.DEFAULT, relationId, baseName);
+    }
+
+    public static Image forKey(
+            String key,
+            ImageType imageType,
+            ImageVariant imageVariant,
+            Long relationId,
+            String baseName
+    ) {
+        return new Image(null, null, key, imageType, imageVariant, relationId, baseName);
+    }
+
+    public static Image forKey(String key, ImageType imageType, Long relationId, String baseName) {
+        return new Image(null, null, key, imageType, ImageVariant.DEFAULT, relationId, baseName);
     }
 
     public void updateUrlAndBaseName(String url, String baseName) {
         this.url = url;
+        this.key = null;
+        this.baseName = baseName;
+    }
+
+    public void updateKeyAndBaseName(String key, String baseName) {
+        this.url = null;
+        this.key = key;
         this.baseName = baseName;
     }
 }
