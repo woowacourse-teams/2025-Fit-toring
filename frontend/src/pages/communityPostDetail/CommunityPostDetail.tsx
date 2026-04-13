@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { PAGE_URL } from '../../common/constants/url';
+import CommunityPostDeleteModal from '../community/components/CommunityPostDeleteModal/CommunityPostDeleteModal';
 import CommunityPostPasswordModal from '../community/components/CommunityPostPasswordModal/CommunityPostPasswordModal';
 
 import { getCommunityPostDetail } from './apis/getCommunityPostDetail';
@@ -17,6 +18,8 @@ import PostCommentSection from './components/PostCommentSection/PostCommentSecti
 import PostContent from './components/PostContent/PostContent';
 import PostHeader from './components/PostHeader/PostHeader';
 
+type PendingAction = 'edit' | 'delete' | null;
+
 function CommunityPostDetail() {
   const { postId } = useParams();
   const navigate = useNavigate();
@@ -24,6 +27,8 @@ function CommunityPostDetail() {
   const { authenticated } = useAuth();
 
   const [passwordModalOpened, setPasswordModalOpened] = useState(false);
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
   const {
     data: postData,
@@ -50,8 +55,17 @@ function CommunityPostDetail() {
     setPasswordModalOpened(true);
   };
 
+  const openDeleteModal = () => {
+    setDeleteModalOpened(true);
+  };
+
   const handleCloseClickPasswordModal = () => {
     setPasswordModalOpened(false);
+    setPendingAction(null);
+  };
+
+  const handleCloseClickDeleteModal = () => {
+    setDeleteModalOpened(false);
   };
 
   const handleConfirmClickPasswordModal = async (password: string) => {
@@ -66,15 +80,23 @@ function CommunityPostDetail() {
         retry: false,
       });
       setPasswordModalOpened(false);
+
+      if (pendingAction === 'delete') {
+        openDeleteModal();
+        setPendingAction(null);
+        return;
+      }
+
+      setPendingAction(null);
       navigate(`${PAGE_URL.COMMUNITY}/${postId}${PAGE_URL.EDIT}`);
     } catch {
       alert('비밀번호가 일치하지 않습니다.');
-      setPasswordModalOpened(false);
     }
   };
 
-  const handleEditClick = async () => {
+  const handleEditClick = () => {
     if (postData.isGuestPost) {
+      setPendingAction('edit');
       openPasswordModal();
       return;
     }
@@ -82,12 +104,26 @@ function CommunityPostDetail() {
     navigate(`${PAGE_URL.COMMUNITY}/${postId}${PAGE_URL.EDIT}`);
   };
 
+  const handleDeleteClick = () => {
+    if (postData.isGuestPost) {
+      setPendingAction('delete');
+      openPasswordModal();
+      return;
+    }
+
+    openDeleteModal();
+  };
+
+  const handleConfirmClickDeleteModal = () => {
+    setDeleteModalOpened(false);
+  };
+
   return (
     <S_Container>
       <CommunityPostDetailHeader
         showActionButton={canManagePost}
         onEditClick={handleEditClick}
-        onDeleteClick={() => {}}
+        onDeleteClick={handleDeleteClick}
       />
       <S_Content>
         <PostHeader
@@ -107,9 +143,14 @@ function CommunityPostDetail() {
         opened={passwordModalOpened}
         onCloseClick={handleCloseClickPasswordModal}
         onConfirmClick={handleConfirmClickPasswordModal}
-        title="수정 비밀번호 확인"
-        description="비회원 게시글을 수정하려면 비밀번호를 입력해주세요."
-        confirmLabel="수정하기"
+        title="비밀번호 확인"
+        description={`비회원 게시글을 ${pendingAction === 'delete' ? '삭제' : '수정'}하려면 비밀번호를 입력해주세요.`}
+        confirmLabel={pendingAction === 'delete' ? '삭제하기' : '수정하기'}
+      />
+      <CommunityPostDeleteModal
+        opened={deleteModalOpened}
+        onCloseClick={handleCloseClickDeleteModal}
+        onConfirmClick={handleConfirmClickDeleteModal}
       />
     </S_Container>
   );
