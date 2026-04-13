@@ -65,16 +65,4 @@ public class Image {
     public static Image forKey(String key, ImageType imageType, Long relationId, String baseName) {
         return new Image(null, null, key, imageType, ImageVariant.DEFAULT, relationId, baseName);
     }
-
-    public void updateUrlAndBaseName(String url, String baseName) {
-        this.url = url;
-        this.key = null;
-        this.baseName = baseName;
-    }
-
-    public void updateKeyAndBaseName(String key, String baseName) {
-        this.url = null;
-        this.key = key;
-        this.baseName = baseName;
-    }
 }
