@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 
+import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 
 import { getCommunityPostDetail } from './apis/getCommunityPostDetail';
@@ -13,6 +14,7 @@ import PostHeader from './components/PostHeader/PostHeader';
 
 function CommunityPostDetail() {
   const { postId } = useParams();
+  const { authenticated } = useAuth();
   const {
     data: postData,
     isPending,
@@ -31,9 +33,16 @@ function CommunityPostDetail() {
     return <div>게시글을 불러오지 못했습니다.</div>;
   }
 
+  const canManagePost =
+    postData.isGuestPost || (authenticated && postData.isMine);
+
   return (
     <S_Container>
-      <CommunityPostDetailHeader />
+      <CommunityPostDetailHeader
+        showActionButton={canManagePost}
+        onEditClick={() => {}}
+        onDeleteClick={() => {}}
+      />
       <S_Content>
         <PostHeader
           createdAt={postData.createdAt}
