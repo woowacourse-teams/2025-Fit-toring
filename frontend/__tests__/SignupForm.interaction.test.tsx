@@ -145,7 +145,7 @@ describe('SignUpForm', () => {
 
       // then
       const button = screen.getByRole('button', { name: /인증하기/i });
-      expect(button).toHaveStyle(`background-color: ${THEME.SYSTEM.MAIN600}`);
+      expect(button).toHaveStyle(`background-color: ${THEME.SYSTEM.MAIN500}`);
     });
 
     it('인증번호 입력을 6자 미만으로 하면 인증하기 버튼이 비활성화된다.', async () => {
@@ -291,7 +291,7 @@ describe('SignUpForm', () => {
 
       // then
       expect(submitButton).toHaveStyle(
-        `background-color: ${THEME.SYSTEM.MAIN600}`,
+        `background-color: ${THEME.SYSTEM.MAIN500}`,
       );
       expect(alertMock).toHaveBeenCalledWith('가입에 성공했습니다.');
     });
