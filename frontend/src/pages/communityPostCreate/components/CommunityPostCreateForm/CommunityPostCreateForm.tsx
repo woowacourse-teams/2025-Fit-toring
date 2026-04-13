@@ -1,11 +1,15 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 import Button from '../../../../common/components/Button/Button';
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
+import { PAGE_URL } from '../../../../common/constants/url';
 import { authCheckQueryOptions } from '../../../../common/queries/auth';
+import { captureSentryError } from '../../../../common/utils/captureSentryError';
+import { postCommunityPostDetail } from '../../apis/postCommunityPostDetail';
 
 function CommunityPostCreateForm() {
   const [title, setTitle] = useState('');
@@ -14,9 +18,28 @@ function CommunityPostCreateForm() {
   const [password, setPassword] = useState('');
   const [anonymousChecked, setAnonymousChecked] = useState(false);
 
+  const navigate = useNavigate();
+
   const { isPending, isSuccess: isAuthenticatedSuccess } = useQuery(
     authCheckQueryOptions,
   );
+  const { mutate: postCommunityPostDetailMutate, isPending: isSubmitPending } =
+    useMutation({
+      mutationFn: postCommunityPostDetail,
+      onSuccess: () => {
+        alert('커뮤니티 글이 성공적으로 등록되었습니다.');
+        navigate(PAGE_URL.COMMUNITY);
+      },
+      onError: (error) => {
+        alert('커뮤니티 글 등록에 실패했습니다. 다시 시도해주세요.');
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'community-post-create',
+          step: 'post-community-post-create',
+        });
+      },
+    });
 
   const isFormFilled = isAuthenticatedSuccess
     ? Boolean(title.trim() && content.trim())
@@ -28,6 +51,24 @@ function CommunityPostCreateForm() {
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!isFormFilled) {
+      return;
+    }
+
+    const postData = {
+      title: title.trim(),
+      content: content.trim(),
+      isAnonymous: anonymousChecked,
+      ...(shouldShowGuestFields
+        ? {
+            nickname: nickname.trim(),
+            guestPassword: password.trim(),
+          }
+        : {}),
+    };
+
+    postCommunityPostDetailMutate(postData);
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,8 +148,8 @@ function CommunityPostCreateForm() {
         <S_SubmitButton
           type="submit"
           size="full"
-          variant={isFormFilled ? 'primary' : 'disabled'}
-          disabled={!isFormFilled}
+          variant={isFormFilled && !isSubmitPending ? 'primary' : 'disabled'}
+          disabled={!isFormFilled || isSubmitPending}
         >
           작성 완료
         </S_SubmitButton>
