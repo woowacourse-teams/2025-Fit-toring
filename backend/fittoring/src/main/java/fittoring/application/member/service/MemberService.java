@@ -4,25 +4,23 @@ import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.DuplicatePhoneException;
 import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.InvalidImageKeyException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.image.service.ImageService;
+import fittoring.application.image.service.PresignedUrlService;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.presentation.dto.response.MyInfoResponse;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.application.mentoring.repository.MentoringRepository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
-import fittoring.domain.model.MemberRole;
-import fittoring.domain.model.Mentoring;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -30,29 +28,15 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final ImageService imageService;
-    private final MentoringRepository mentoringRepository;
+    private final PresignedUrlService presignedUrlService;
 
     public MyInfoResponse getMemberInfo(Long memberId) {
         Member member = getMember(memberId);
-        if (MemberRole.isMentee(member.getRole())) {
-            return MyInfoResponse.from(member);
-        }
-        Mentoring mentoring = getMentoring(member);
-        if (mentoring == null) {
-            return MyInfoResponse.from(member);
-        }
-        Image image = findMentoringImage(mentoring);
-        return MyInfoResponse.of(member, image);
-    }
-
-    private Mentoring getMentoring(Member member) {
-        return mentoringRepository.findByMentorId(member.getId())
-                .orElse(null);
-    }
-
-    private Image findMentoringImage(Mentoring mentoring) {
-        return imageService.findThumbnail(ImageType.MENTORING_PROFILE, mentoring.getId())
-                .orElse(null);
+        return imageService.findDefault(ImageType.MEMBER_PROFILE, memberId)
+                .map(Image::getKey)
+                .map(presignedUrlService::issueGetPresignedUrl)
+                .map(imageUrl -> MyInfoResponse.of(member, imageUrl))
+                .orElseGet(() -> MyInfoResponse.from(member));
     }
 
     public MyInfoSummaryResponse getMemberInfoSummary(Long memberId) {
@@ -91,11 +75,30 @@ public class MemberService {
         if (request.password() != null) {
             member.updatePassword(request.password());
         }
+
+        updateMemberProfileImage(memberId, request.profileImageKey());
     }
 
     private boolean isEmptyRequest(MemberInfoUpdateRequest request) {
         return request.name() == null && request.gender() == null
-                && request.phoneNumber() == null && request.password() == null;
+                && request.phoneNumber() == null && request.password() == null
+                && request.profileImageKey() == null;
+    }
+
+    private void updateMemberProfileImage(Long memberId, String profileImageKey) {
+        if (profileImageKey == null) {
+            return;
+        }
+        if (profileImageKey.isBlank()) {
+            imageService.delete(ImageType.MEMBER_PROFILE, memberId);
+            return;
+        }
+        if (!presignedUrlService.isObjectExistsFromKey(profileImageKey)) {
+            throw new InvalidImageKeyException(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage());
+        }
+
+        imageService.delete(ImageType.MEMBER_PROFILE, memberId);
+        imageService.saveKey(ImageType.MEMBER_PROFILE, memberId, profileImageKey);
     }
 
     private Member getMember(Long memberId) {

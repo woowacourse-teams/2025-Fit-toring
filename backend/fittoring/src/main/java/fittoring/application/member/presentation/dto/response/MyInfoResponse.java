@@ -34,4 +34,14 @@ public record MyInfoResponse(
                 member.getPhoneNumber()
         );
     }
+
+    public static MyInfoResponse of(Member member, String imageUrl) {
+        return new MyInfoResponse(
+                imageUrl,
+                member.getLoginId(),
+                member.getName(),
+                member.getGender(),
+                member.getPhoneNumber()
+        );
+    }
 }
