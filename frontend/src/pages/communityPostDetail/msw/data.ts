@@ -1,13 +1,15 @@
 import type { CommunityPostDetail } from '../../../common/types/communityPost';
 import type { PostComment } from '../types/postComment';
 
+export const GUEST_POST_PASSWORD = '1234';
+
 export const COMMUNITY_POST_DETAIL: CommunityPostDetail = {
   id: 1,
   title: '게시글 제목',
   content: '게시글 본문',
   nickname: '작성자명',
   isAnonymous: false,
-  isGuestPost: false,
+  isGuestPost: true,
   isMine: true,
   createdAt: '2026-04-06T21:30:00',
   viewCount: 100,
