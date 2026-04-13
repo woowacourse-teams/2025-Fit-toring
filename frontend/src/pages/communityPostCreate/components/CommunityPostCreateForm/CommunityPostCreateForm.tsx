@@ -1,8 +1,11 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
 
 import Button from '../../../../common/components/Button/Button';
+import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
+import { authCheckQueryOptions } from '../../../../common/queries/auth';
 
 function CommunityPostCreateForm() {
   const [title, setTitle] = useState('');
@@ -10,9 +13,17 @@ function CommunityPostCreateForm() {
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
 
-  const isFormFilled = Boolean(
-    title.trim() && content.trim() && nickname.trim() && password.trim(),
+  const { isPending, isSuccess: isAuthenticatedSuccess } = useQuery(
+    authCheckQueryOptions,
   );
+
+  const isFormFilled = isAuthenticatedSuccess
+    ? Boolean(title.trim() && content.trim())
+    : Boolean(
+        title.trim() && content.trim() && nickname.trim() && password.trim(),
+      );
+
+  const shouldShowGuestFields = !isAuthenticatedSuccess;
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,6 +45,14 @@ function CommunityPostCreateForm() {
     setPassword(e.target.value);
   };
 
+  if (isPending) {
+    return (
+      <S_LoadingContainer>
+        <LoadingSpinner size="large" />
+      </S_LoadingContainer>
+    );
+  }
+
   return (
     <S_Container>
       <S_Form onSubmit={handleFormSubmit}>
@@ -51,19 +70,21 @@ function CommunityPostCreateForm() {
           />
         </S_EditorSection>
 
-        <S_BottomArea>
-          <S_ExtraInput
-            value={nickname}
-            placeholder="닉네임을 입력하세요."
-            onChange={handleNicknameChange}
-          />
-          <S_ExtraInput
-            type="password"
-            value={password}
-            placeholder="비밀번호를 입력하세요."
-            onChange={handlePasswordChange}
-          />
-        </S_BottomArea>
+        {shouldShowGuestFields && (
+          <S_BottomArea>
+            <S_ExtraInput
+              value={nickname}
+              placeholder="닉네임을 입력하세요."
+              onChange={handleNicknameChange}
+            />
+            <S_ExtraInput
+              type="password"
+              value={password}
+              placeholder="비밀번호를 입력하세요."
+              onChange={handlePasswordChange}
+            />
+          </S_BottomArea>
+        )}
 
         <S_ButtonArea>
           <S_SubmitButton
@@ -88,6 +109,16 @@ const S_Container = styled.main`
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
+const S_LoadingContainer = styled.main`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: calc(100dvh - 5.7rem);
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+`;
+
 const S_Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -96,7 +127,9 @@ const S_Form = styled.form`
 `;
 
 const S_EditorSection = styled.section`
+  display: flex;
   flex: 1;
+  flex-direction: column;
 
   min-height: 0;
 `;
@@ -126,8 +159,9 @@ const S_Divider = styled.div`
 `;
 
 const S_ContentInput = styled.textarea`
+  flex-grow: 1;
+
   width: 100%;
-  height: calc(100dvh - 32rem);
   min-height: 24rem;
   padding: 1.8rem 1.4rem;
   border: none;
