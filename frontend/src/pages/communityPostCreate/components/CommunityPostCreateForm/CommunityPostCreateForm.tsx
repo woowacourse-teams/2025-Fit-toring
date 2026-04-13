@@ -12,6 +12,7 @@ function CommunityPostCreateForm() {
   const [content, setContent] = useState('');
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
+  const [anonymousChecked, setAnonymousChecked] = useState(false);
 
   const { isPending, isSuccess: isAuthenticatedSuccess } = useQuery(
     authCheckQueryOptions,
@@ -43,6 +44,12 @@ function CommunityPostCreateForm() {
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+  };
+
+  const handleAnonymousCheckChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setAnonymousChecked(e.target.checked);
   };
 
   if (isPending) {
@@ -86,16 +93,25 @@ function CommunityPostCreateForm() {
           </S_BottomArea>
         )}
 
-        <S_ButtonArea>
-          <S_SubmitButton
-            type="submit"
-            size="full"
-            variant={isFormFilled ? 'primary' : 'disabled'}
-            disabled={!isFormFilled}
-          >
-            작성 완료
-          </S_SubmitButton>
-        </S_ButtonArea>
+        <S_OptionRow>
+          <S_CheckboxLabel>
+            <S_CheckboxInput
+              type="checkbox"
+              checked={anonymousChecked}
+              onChange={handleAnonymousCheckChange}
+            />
+            <S_CheckboxIndicator checked={anonymousChecked} />
+            <S_CheckboxText>익명</S_CheckboxText>
+          </S_CheckboxLabel>
+        </S_OptionRow>
+        <S_SubmitButton
+          type="submit"
+          size="full"
+          variant={isFormFilled ? 'primary' : 'disabled'}
+          disabled={!isFormFilled}
+        >
+          작성 완료
+        </S_SubmitButton>
       </S_Form>
     </S_Container>
   );
@@ -184,7 +200,6 @@ const S_ContentInput = styled.textarea`
 const S_BottomArea = styled.div`
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   justify-content: flex-end;
   gap: 0.8rem;
 
@@ -218,6 +233,57 @@ const S_ExtraInput = styled.input`
 
 const S_ButtonArea = styled.div`
   margin-top: auto;
+`;
+
+const S_OptionRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  padding: 0 1.4rem 1.2rem;
+`;
+
+const S_CheckboxLabel = styled.label`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  cursor: pointer;
+`;
+
+const S_CheckboxInput = styled.input`
+  display: none;
+`;
+
+const S_CheckboxIndicator = styled.span<{ checked: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid
+    ${({ theme, checked }) =>
+      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
+  border-radius: 0.4rem;
+
+  background-color: ${({ theme, checked }) =>
+    checked ? theme.SYSTEM.MAIN500 : theme.BG.WHITE};
+
+  &::after {
+    content: '';
+
+    width: 0.5rem;
+    height: 0.9rem;
+    border-right: 2px solid ${({ theme }) => theme.BG.WHITE};
+    border-bottom: 2px solid ${({ theme }) => theme.BG.WHITE};
+    opacity: ${({ checked }) => (checked ? 1 : 0)};
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+`;
+
+const S_CheckboxText = styled.span`
+  color: ${({ theme }) => theme.FONT.B02};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
 const S_SubmitButton = styled(Button)`
