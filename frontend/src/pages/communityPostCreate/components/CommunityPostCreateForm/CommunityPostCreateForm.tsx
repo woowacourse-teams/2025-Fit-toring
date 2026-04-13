@@ -231,10 +231,6 @@ const S_ExtraInput = styled.input`
   }
 `;
 
-const S_ButtonArea = styled.div`
-  margin-top: auto;
-`;
-
 const S_OptionRow = styled.div`
   display: flex;
   justify-content: flex-end;
