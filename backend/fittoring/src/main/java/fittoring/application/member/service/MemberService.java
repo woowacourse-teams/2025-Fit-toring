@@ -30,6 +30,7 @@ public class MemberService {
     private final ImageService imageService;
     private final PresignedUrlService presignedUrlService;
 
+    @Transactional(readOnly = true)
     public MyInfoResponse getMemberInfo(Long memberId) {
         Member member = getMember(memberId);
         return imageService.findDefault(ImageType.MEMBER_PROFILE, memberId)
@@ -39,11 +40,13 @@ public class MemberService {
                 .orElseGet(() -> MyInfoResponse.from(member));
     }
 
+    @Transactional(readOnly = true)
     public MyInfoSummaryResponse getMemberInfoSummary(Long memberId) {
         Member member = getMember(memberId);
         return MyInfoSummaryResponse.of(member);
     }
 
+    @Transactional(readOnly = true)
     public boolean getAdminMemberActiveStatus(Long memberId) {
         Member member = getMember(memberId);
         if (member.isNotAdmin()) {
