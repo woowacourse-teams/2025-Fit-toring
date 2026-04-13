@@ -21,7 +21,7 @@ const postCommunityPostCreate = http.post(POSTS_URL, async ({ request }) => {
     isAnonymous: requestBody.isAnonymous ?? false,
   };
 
-  return HttpResponse.json(responseBody, { status: 200 });
+  return HttpResponse.json(responseBody, { status: 201 });
 });
 
 export const communityPostCreateHandler = [postCommunityPostCreate];
