@@ -1,15 +1,17 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { PAGE_URL } from '../../common/constants/url';
+import { captureSentryError } from '../../common/utils/captureSentryError';
 import CommunityPostDeleteModal from '../community/components/CommunityPostDeleteModal/CommunityPostDeleteModal';
 import CommunityPostPasswordModal from '../community/components/CommunityPostPasswordModal/CommunityPostPasswordModal';
 
+import { deleteCommunityPost } from './apis/deleteCommunityPost';
 import { getCommunityPostDetail } from './apis/getCommunityPostDetail';
 import { postGuestPostPasswordCheck } from './apis/postGuestPostPasswordCheck';
 import CommunityPostDetailHeader from './components/CommunityPostDetailHeader/CommunityPostDetailHeader';
@@ -38,6 +40,24 @@ function CommunityPostDetail() {
     queryKey: ['communityPostDetail', postId],
     queryFn: () => getCommunityPostDetail(postId!),
     enabled: Boolean(postId),
+  });
+
+  const { mutate: deletePostMutate } = useMutation({
+    mutationFn: deleteCommunityPost,
+    onSuccess: () => {
+      setDeleteModalOpened(false);
+      alert('게시글 삭제에 성공했습니다.');
+      navigate(PAGE_URL.COMMUNITY);
+    },
+    onError: (error) => {
+      alert('게시글 삭제에 실패했습니다.');
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'community-post-detail',
+        step: 'community-post-delete',
+      });
+    },
   });
 
   if (isPending) {
@@ -115,7 +135,11 @@ function CommunityPostDetail() {
   };
 
   const handleConfirmClickDeleteModal = () => {
-    setDeleteModalOpened(false);
+    if (postData.isGuestPost) {
+      return;
+    }
+
+    deletePostMutate({ postId: postId! });
   };
 
   return (
