@@ -63,7 +63,7 @@ public class CommentService {
     private Comment createMemberComment(CommentCreateDto dto, Post post) {
         Member member = memberRepository.findById(dto.memberId())
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
-        String nickname = dto.isAnonymous() ? defaultIfBlank(dto.nickname(), "익명") : member.getName();
+        String nickname = dto.isAnonymous() ? resolveAnonymousNickname(dto.nickname()) : member.getName();
         return Comment.forMember(post, member, dto.content(), dto.isAnonymous(), nickname, dto.rootId(), dto.parentId());
     }
 
@@ -112,11 +112,11 @@ public class CommentService {
                 .orElseThrow(() -> new CommentNotFoundException(BusinessErrorMessage.COMMENT_NOT_FOUND.getMessage()));
     }
 
-    private String defaultIfBlank(String value, String defaultValue) {
-        if (value == null || value.isBlank()) {
-            return defaultValue;
+    private String resolveAnonymousNickname(String requestedNickname) {
+        if (requestedNickname == null || requestedNickname.isBlank()) {
+            return "익명";
         }
-        return value;
+        return requestedNickname;
     }
 
     private void validateGuestCommentCreateFields(CommentCreateDto dto) {
