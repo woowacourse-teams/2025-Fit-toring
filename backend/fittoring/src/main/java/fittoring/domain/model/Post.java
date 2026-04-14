@@ -62,6 +62,12 @@ public class Post {
     @Column(name = "is_anonymous", nullable = false)
     private boolean isAnonymous;
 
+    @Column(name = "view_count", nullable = false)
+    private int viewCount;
+
+    @Column(name = "like_count", nullable = false)
+    private int likeCount;
+
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -81,6 +87,8 @@ public class Post {
                 nickname,
                 null,
                 isAnonymous,
+                0,
+                0,
                 null,
                 false,
                 null
@@ -96,6 +104,8 @@ public class Post {
                 nickname,
                 Password.from(rawPassword),
                 false,
+                0,
+                0,
                 null,
                 false,
                 null
@@ -117,6 +127,10 @@ public class Post {
 
     public boolean isGuestPost() {
         return member == null;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 
     public void matchGuestPassword(String rawPassword) {

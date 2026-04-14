@@ -71,6 +71,19 @@ class PostTest {
         assertThat(post.isOwnedBy(2L)).isFalse();
     }
 
+    @DisplayName("조회수를 증가시킬 수 있다.")
+    @Test
+    void increaseViewCount() {
+        // given
+        Post post = FixtureUtil.testMemberPost(FixtureUtil.testMentee());
+
+        // when
+        post.increaseViewCount();
+
+        // then
+        assertThat(post.getViewCount()).isEqualTo(1);
+    }
+
     @DisplayName("비회원 게시글은 비밀번호가 일치하면 통과한다.")
     @Test
     void matchGuestPassword() {
