@@ -62,7 +62,7 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(
             @Login LoginInfo loginInfo,
             @PathVariable Long commentId,
-            @RequestBody(required = false) GuestPasswordRequest request
+            @Valid @RequestBody(required = false) GuestPasswordRequest request
     ) {
         commentService.deleteComment(CommentDeleteDto.of(loginInfo.memberId(), commentId, request));
         return ResponseEntity.noContent().build();
