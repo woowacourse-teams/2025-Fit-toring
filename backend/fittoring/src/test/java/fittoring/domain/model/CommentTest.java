@@ -48,7 +48,8 @@ class CommentTest {
         Comment actual = Comment.forGuest(post, "comment", "guest", "1234", null, null);
 
         assertThat(actual.getMember()).isNull();
-        assertThat(actual.getGuestPassword()).isNotBlank();
+        assertThat(actual.getGuestPassword()).isNotNull();
+        assertThat(actual.getGuestPassword().getValue()).isNotBlank();
         assertThat(actual.isGuestComment()).isTrue();
     }
 

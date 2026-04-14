@@ -38,7 +38,8 @@ class PostTest {
         //then
         assertThat(actual.getMember()).isNull();
         assertThat(actual.getNickname()).isEqualTo("비회원");
-        assertThat(actual.getGuestPassword()).isNotBlank();
+        assertThat(actual.getGuestPassword()).isNotNull();
+        assertThat(actual.getGuestPassword().getValue()).isNotBlank();
         assertThat(actual.isGuestPost()).isTrue();
     }
 

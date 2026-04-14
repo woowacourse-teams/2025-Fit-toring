@@ -3,7 +3,9 @@ package fittoring.domain.model;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.domain.model.password.Password;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -54,8 +56,9 @@ public class Comment {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    @Column(name = "guest_password")
-    private String guestPassword;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "guest_password"))
+    private Password guestPassword;
 
     @Column(name = "is_anonymous", nullable = false)
     private boolean isAnonymous;
@@ -115,7 +118,7 @@ public class Comment {
                 post,
                 null,
                 nickname,
-                encryptPassword(rawPassword),
+                Password.from(rawPassword),
                 false,
                 rootId,
                 parentId,
@@ -143,17 +146,14 @@ public class Comment {
         if (rawPassword == null || rawPassword.isBlank()) {
             throw new MisMatchPasswordException(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
         }
-        String encryptedPassword = encryptPassword(rawPassword);
-        if (!encryptedPassword.equals(this.guestPassword)) {
+        try {
+            guestPassword.validateMatches(rawPassword);
+        } catch (MisMatchPasswordException e) {
             throw new MisMatchPasswordException(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
         }
     }
 
     public boolean belongsTo(Long postId) {
         return post.getId().equals(postId);
-    }
-
-    private static String encryptPassword(String rawPassword) {
-        return Password.from(rawPassword).getValue();
     }
 }
