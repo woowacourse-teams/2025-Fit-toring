@@ -217,4 +217,20 @@ class AuthenticationInterceptorTest {
         });
         verify(jwtExtractor, times(0)).extractTokenFromCookie(anyString(), any());
     }
+
+    @DisplayName("OptionalAuth는 예상하지 못한 런타임 예외를 숨기지 않는다.")
+    @Test
+    void optionalAuthDoesNotIgnoreUnexpectedRuntimeException() {
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "valid-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
+        given(jwtProvider.extractTokenPayload("valid-token")).willThrow(new IllegalStateException("unexpected"));
+
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("unexpected");
+    }
 }

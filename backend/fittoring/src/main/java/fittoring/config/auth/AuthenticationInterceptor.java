@@ -3,6 +3,7 @@ package fittoring.config.auth;
 import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
+import fittoring.application.exception.AuthenticationException;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.UnauthorizedException;
@@ -64,7 +65,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         try {
             TokenPayload payload = authenticate(request);
             bindAuthenticationContext(request, payload);
-        } catch (RuntimeException ignored) {
+        } catch (AuthenticationException ignored) {
         }
     }
 
