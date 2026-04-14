@@ -8,6 +8,7 @@ import fittoring.application.community.service.dto.CommentDeleteDto;
 import fittoring.application.community.service.dto.CommentUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CommentNotFoundException;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.MemberNotFoundException;
@@ -67,8 +68,8 @@ public class CommentService {
     }
 
     private Comment createGuestComment(CommentCreateDto dto, Post post) {
-        String nickname = defaultIfBlank(dto.nickname(), "비회원");
-        return Comment.forGuest(post, dto.content(), nickname, dto.guestPassword(), dto.rootId(), dto.parentId());
+        validateGuestCommentCreateFields(dto);
+        return Comment.forGuest(post, dto.content(), dto.nickname(), dto.guestPassword(), dto.rootId(), dto.parentId());
     }
 
     private void validateReplyTarget(CommentCreateDto dto, Long postId) {
@@ -116,5 +117,14 @@ public class CommentService {
             return defaultValue;
         }
         return value;
+    }
+
+    private void validateGuestCommentCreateFields(CommentCreateDto dto) {
+        if (dto.nickname() == null || dto.nickname().isBlank()) {
+            throw new EmptyRequestException(BusinessErrorMessage.GUEST_NICKNAME_REQUIRED.getMessage());
+        }
+        if (dto.guestPassword() == null || dto.guestPassword().isBlank()) {
+            throw new EmptyRequestException(BusinessErrorMessage.GUEST_PASSWORD_REQUIRED.getMessage());
+        }
     }
 }

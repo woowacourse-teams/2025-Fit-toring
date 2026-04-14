@@ -62,6 +62,8 @@ public enum BusinessErrorMessage {
     GUEST_PASSWORD_MISMATCH("비밀번호가 일치하지 않습니다."),
     COMMENT_NOT_BELONG_TO_POST("해당 게시글에 속하지 않는 댓글입니다."),
     INVALID_COMMENT_REPLY("대댓글은 rootId와 parentId가 모두 필요합니다."),
+    GUEST_NICKNAME_REQUIRED("비회원은 닉네임을 입력해주세요"),
+    GUEST_PASSWORD_REQUIRED("비회원은 비밀번호를 입력해주세요"),
     ;
 
     private final String message;

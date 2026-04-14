@@ -8,6 +8,7 @@ import fittoring.application.community.service.dto.PostDeleteDto;
 import fittoring.application.community.service.dto.PostPaginationResult;
 import fittoring.application.community.service.dto.PostUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.PostNotFoundException;
@@ -71,8 +72,8 @@ public class PostService {
     }
 
     private Post createGuestPost(PostCreateDto dto) {
-        String nickname = defaultIfBlank(dto.nickname(), "비회원");
-        return Post.forGuest(dto.title(), dto.content(), nickname, dto.guestPassword());
+        validateGuestPostCreateFields(dto);
+        return Post.forGuest(dto.title(), dto.content(), dto.nickname(), dto.guestPassword());
     }
 
     private void validatePostAccess(Post post, Long memberId, String guestPassword) {
@@ -96,5 +97,14 @@ public class PostService {
             return defaultValue;
         }
         return value;
+    }
+
+    private void validateGuestPostCreateFields(PostCreateDto dto) {
+        if (dto.nickname() == null || dto.nickname().isBlank()) {
+            throw new EmptyRequestException(BusinessErrorMessage.GUEST_NICKNAME_REQUIRED.getMessage());
+        }
+        if (dto.guestPassword() == null || dto.guestPassword().isBlank()) {
+            throw new EmptyRequestException(BusinessErrorMessage.GUEST_PASSWORD_REQUIRED.getMessage());
+        }
     }
 }

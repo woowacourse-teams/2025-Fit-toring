@@ -14,6 +14,7 @@ import fittoring.application.community.service.dto.CommentDeleteDto;
 import fittoring.application.community.service.dto.CommentUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CommentNotFoundException;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.MisMatchPasswordException;
@@ -71,6 +72,22 @@ class CommentServiceTest extends IntegrationTestSupport {
             softly.assertThat(actual.rootId()).isEqualTo(root.getId());
             softly.assertThat(actual.parentId()).isEqualTo(parent.getId());
         });
+    }
+
+    @DisplayName("비회원 댓글 생성 시 닉네임과 비밀번호는 필수다.")
+    @Test
+    void createGuestCommentFailWhenGuestFieldsAreBlank() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+
+        assertThatThrownBy(() -> commentService.createComment(
+                new CommentCreateDto(null, post.getId(), "content", false, "", "1234", null, null)))
+                .isInstanceOf(EmptyRequestException.class)
+                .hasMessage(BusinessErrorMessage.GUEST_NICKNAME_REQUIRED.getMessage());
+
+        assertThatThrownBy(() -> commentService.createComment(
+                new CommentCreateDto(null, post.getId(), "content", false, "guest", "", null, null)))
+                .isInstanceOf(EmptyRequestException.class)
+                .hasMessage(BusinessErrorMessage.GUEST_PASSWORD_REQUIRED.getMessage());
     }
 
     @DisplayName("대댓글 생성 시 rootId와 parentId 중 하나만 있으면 예외가 발생한다.")

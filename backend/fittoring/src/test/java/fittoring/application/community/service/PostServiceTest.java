@@ -13,6 +13,7 @@ import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
 import fittoring.application.community.service.dto.PostUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.PostNotFoundException;
@@ -68,6 +69,20 @@ class PostServiceTest extends IntegrationTestSupport {
             softly.assertThat(actual.nickname()).isEqualTo("guest");
             softly.assertThat(actual.isGuestPost()).isTrue();
         });
+    }
+
+    @DisplayName("비회원 게시글 생성 시 닉네임과 비밀번호는 필수다.")
+    @Test
+    void createGuestPostFailWhenGuestFieldsAreBlank() {
+        assertThatThrownBy(() -> postService.createPost(
+                new PostCreateDto(null, "title", "content", false, "", "1234")))
+                .isInstanceOf(EmptyRequestException.class)
+                .hasMessage(BusinessErrorMessage.GUEST_NICKNAME_REQUIRED.getMessage());
+
+        assertThatThrownBy(() -> postService.createPost(
+                new PostCreateDto(null, "title", "content", false, "guest", "")))
+                .isInstanceOf(EmptyRequestException.class)
+                .hasMessage(BusinessErrorMessage.GUEST_PASSWORD_REQUIRED.getMessage());
     }
 
     @DisplayName("게시글 목록을 커서 기반으로 조회한다.")
