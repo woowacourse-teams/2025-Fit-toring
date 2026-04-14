@@ -15,6 +15,7 @@ import fittoring.application.community.service.dto.CommentUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CommentNotFoundException;
 import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Comment;
@@ -70,6 +71,18 @@ class CommentServiceTest extends IntegrationTestSupport {
             softly.assertThat(actual.rootId()).isEqualTo(root.getId());
             softly.assertThat(actual.parentId()).isEqualTo(parent.getId());
         });
+    }
+
+    @DisplayName("대댓글 생성 시 rootId와 parentId 중 하나만 있으면 예외가 발생한다.")
+    @Test
+    void createReplyCommentFailWhenReplyIdsAreIncomplete() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment root = commentRepository.save(Comment.forGuest(post, "root", "guest", "1234", null, null));
+
+        assertThatThrownBy(() -> commentService.createComment(
+                new CommentCreateDto(null, post.getId(), "reply", false, "guest", "1234", root.getId(), null)))
+                .isInstanceOf(InvalidCommentReplyException.class)
+                .hasMessage(BusinessErrorMessage.INVALID_COMMENT_REPLY.getMessage());
     }
 
     @DisplayName("게시글 댓글 목록을 조회한다.")

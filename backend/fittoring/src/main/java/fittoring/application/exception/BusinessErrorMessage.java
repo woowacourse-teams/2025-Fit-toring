@@ -61,6 +61,7 @@ public enum BusinessErrorMessage {
     COMMENT_NOT_FOUND("議댁옱?섏? ?딅뒗 ?볤??낅땲??"),
     GUEST_PASSWORD_MISMATCH("鍮꾨?踰덊샇媛 ?쇱튂?섏? ?딆뒿?덈떎."),
     COMMENT_NOT_BELONG_TO_POST("?대떦 寃뚯떆湲???랁븯吏 ?딅뒗 ?볤??낅땲??"),
+    INVALID_COMMENT_REPLY("대댓글은 rootId와 parentId가 모두 필요합니다."),
     ;
 
     private final String message;

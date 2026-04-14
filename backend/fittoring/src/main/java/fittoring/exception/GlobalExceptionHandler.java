@@ -17,6 +17,7 @@ import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.InvalidCertificateException;
+import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.InvalidCursorException;
 import fittoring.application.exception.InvalidMemberRoleException;
 import fittoring.application.exception.InvalidPhoneVerificationException;
@@ -230,6 +231,10 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(InvalidCommentReplyException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidCommentReplyException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
     @ExceptionHandler(CertificateNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(CertificateNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());

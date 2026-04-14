@@ -9,6 +9,7 @@ import fittoring.application.community.service.dto.CommentUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.CommentNotFoundException;
 import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
@@ -71,9 +72,17 @@ public class CommentService {
     }
 
     private void validateReplyTarget(CommentCreateDto dto, Long postId) {
-        if (dto.rootId() == null && dto.parentId() == null) {
+        boolean hasRootId = dto.rootId() != null;
+        boolean hasParentId = dto.parentId() != null;
+
+        if (!hasRootId && !hasParentId) {
             return;
         }
+
+        if (hasRootId != hasParentId) {
+            throw new InvalidCommentReplyException(BusinessErrorMessage.INVALID_COMMENT_REPLY.getMessage());
+        }
+
         Comment rootComment = getComment(dto.rootId());
         Comment parentComment = getComment(dto.parentId());
         if (!rootComment.belongsTo(postId) || !parentComment.belongsTo(postId)) {
