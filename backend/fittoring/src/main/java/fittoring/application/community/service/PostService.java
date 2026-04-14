@@ -29,7 +29,7 @@ public class PostService {
 
     @Transactional
     public PostDetailResponse createPost(PostCreateDto dto) {
-        Post post = dto.memberId() == null ? createGuestPost(dto) : createMemberPost(dto);
+        Post post = createPostByAuthorType(dto);
         return PostDetailResponse.from(postRepository.save(post));
     }
 
@@ -69,6 +69,13 @@ public class PostService {
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         String nickname = dto.isAnonymous() ? resolveAnonymousNickname(dto.nickname()) : member.getName();
         return Post.forMember(member, dto.title(), dto.content(), dto.isAnonymous(), nickname);
+    }
+
+    private Post createPostByAuthorType(PostCreateDto dto) {
+        if (dto.memberId() == null) {
+            return createGuestPost(dto);
+        }
+        return createMemberPost(dto);
     }
 
     private Post createGuestPost(PostCreateDto dto) {
