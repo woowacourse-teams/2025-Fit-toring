@@ -147,6 +147,48 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .patch("/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
+
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        assertThat(updatedPost.getTitle()).isEqualTo("new-title");
+        assertThat(updatedPost.getContent()).isEqualTo("new-content");
+    }
+
+    @DisplayName("비회원 게시글 수정 시 제목만 변경하면 본문은 유지된다.")
+    @Test
+    void modifyPostTitleOnly() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        PostUpdateRequest request = new PostUpdateRequest("new-title", null, "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .patch("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(200);
+
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        assertThat(updatedPost.getTitle()).isEqualTo("new-title");
+        assertThat(updatedPost.getContent()).isEqualTo("게시글 본문");
+    }
+
+    @DisplayName("비회원 게시글 수정 시 본문만 변경하면 제목은 유지된다.")
+    @Test
+    void modifyPostContentOnly() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        PostUpdateRequest request = new PostUpdateRequest(null, "new-content", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .patch("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(200);
+
+        Post updatedPost = postRepository.findById(post.getId()).orElseThrow();
+        assertThat(updatedPost.getTitle()).isEqualTo("게시글 제목");
+        assertThat(updatedPost.getContent()).isEqualTo("new-content");
     }
 
     @DisplayName("비회원 게시글 삭제는 204를 반환한다.")
