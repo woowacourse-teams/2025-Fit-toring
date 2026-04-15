@@ -113,9 +113,9 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .extract()
                 .as(PostListResponse.class);
 
+        assertThat(response.posts()).hasSize(1);
         PostListResponse.PostSummary summary = response.posts().get(0);
         assertSoftly(softly -> {
-            softly.assertThat(response.posts()).hasSize(1);
             softly.assertThat(summary.commentCount()).isEqualTo(1);
             softly.assertThat(summary.viewCount()).isZero();
             softly.assertThat(summary.likeCount()).isZero();
