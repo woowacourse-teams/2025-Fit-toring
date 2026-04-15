@@ -127,4 +127,27 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .then()
                 .statusCode(204);
     }
+
+    @DisplayName("비회원 댓글 비밀번호 확인은 200을 반환한다.")
+    @Test
+    void validateGuestPassword() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post));
+        GuestPasswordRequest request = new GuestPasswordRequest("1234");
+
+        RestAssured.given(spec)
+                .filter(documentWithTag("comment/pw-check-success",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("댓글")
+                                .summary("비회원 댓글 비밀번호 확인")
+                                .description("비회원 댓글의 비밀번호를 확인합니다.")
+                                .requestSchema(Schema.schema("GuestPasswordRequest"))
+                                .build())))
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/comments/{commentId}/pw-check", comment.getId())
+                .then()
+                .statusCode(200);
+    }
 }

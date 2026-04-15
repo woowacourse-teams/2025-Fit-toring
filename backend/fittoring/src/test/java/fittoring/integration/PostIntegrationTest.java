@@ -2,6 +2,7 @@ package fittoring.integration;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
@@ -13,6 +14,7 @@ import fittoring.application.community.presentation.dto.request.PostCreateReques
 import fittoring.application.community.presentation.dto.request.PostUpdateRequest;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
+import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
@@ -30,6 +32,9 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private JwtProvider jwtProvider;
@@ -60,7 +65,13 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .extract()
                 .as(PostDetailResponse.class);
 
-        assertThat(response.title()).isEqualTo("title");
+        assertSoftly(softly -> {
+            softly.assertThat(response.title()).isEqualTo("title");
+            softly.assertThat(response.commentCount()).isZero();
+            softly.assertThat(response.viewCount()).isZero();
+            softly.assertThat(response.likeCount()).isZero();
+            softly.assertThat(response.isMine()).isTrue();
+        });
     }
 
     @DisplayName("비회원 게시글 작성은 201을 반환한다.")
@@ -84,7 +95,8 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
     @DisplayName("게시글 목록 조회는 200을 반환한다.")
     @Test
     void findPosts() {
-        postRepository.save(FixtureUtil.testGuestPost());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        commentRepository.save(FixtureUtil.testGuestComment(post));
 
         PostListResponse response = RestAssured.given(spec)
                 .filter(documentWithTag("post/get-list",
@@ -101,13 +113,20 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .extract()
                 .as(PostListResponse.class);
 
-        assertThat(response.posts()).hasSize(1);
+        PostListResponse.PostSummary summary = response.posts().get(0);
+        assertSoftly(softly -> {
+            softly.assertThat(response.posts()).hasSize(1);
+            softly.assertThat(summary.commentCount()).isEqualTo(1);
+            softly.assertThat(summary.viewCount()).isZero();
+            softly.assertThat(summary.likeCount()).isZero();
+        });
     }
 
     @DisplayName("게시글 상세 조회는 200을 반환한다.")
     @Test
     void findPost() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
+        commentRepository.save(FixtureUtil.testGuestComment(post));
 
         PostDetailResponse response = RestAssured.given(spec)
                 .filter(documentWithTag("post/get-detail",
@@ -124,7 +143,13 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .extract()
                 .as(PostDetailResponse.class);
 
-        assertThat(response.id()).isEqualTo(post.getId());
+        assertSoftly(softly -> {
+            softly.assertThat(response.id()).isEqualTo(post.getId());
+            softly.assertThat(response.commentCount()).isEqualTo(1);
+            softly.assertThat(response.viewCount()).isEqualTo(1);
+            softly.assertThat(response.likeCount()).isZero();
+            softly.assertThat(response.isMine()).isFalse();
+        });
     }
 
     @DisplayName("비회원 게시글 수정은 200을 반환한다.")
