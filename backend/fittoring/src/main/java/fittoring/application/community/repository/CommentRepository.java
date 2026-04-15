@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CommentRepository extends ListCrudRepository<Comment, Long> {
 
+    long countByPostId(Long postId);
+
     @Query("""
             SELECT c
             FROM Comment c

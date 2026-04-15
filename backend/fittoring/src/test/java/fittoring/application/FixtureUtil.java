@@ -5,6 +5,7 @@ import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatMessageType;
 import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Comment;
 import fittoring.domain.model.Device;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
@@ -115,6 +116,10 @@ public class FixtureUtil {
 
     public static Post testGuestPost() {
         return Post.forGuest("게시글 제목", "게시글 본문", "비회원", "1234");
+    }
+
+    public static Comment testGuestComment(Post post) {
+        return Comment.forGuest(post, "댓글 내용", "비회원", "1234", null, null);
     }
 
     public static Image testImageForMentoringProfileDefault(Mentoring mentoring) {

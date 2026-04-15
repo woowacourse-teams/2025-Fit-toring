@@ -8,6 +8,7 @@ import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
+import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
@@ -34,6 +35,9 @@ class PostServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -111,6 +115,23 @@ class PostServiceTest extends IntegrationTestSupport {
         PostDetailResponse actual = postService.findPost(post.getId());
 
         assertThat(actual.id()).isEqualTo(post.getId());
+    }
+
+    @DisplayName("게시글별 댓글 수를 조회한다.")
+    @Test
+    void countCommentsByPostId() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Post otherPost = postRepository.save(FixtureUtil.testGuestPost());
+        commentRepository.save(FixtureUtil.testGuestComment(post));
+        commentRepository.save(FixtureUtil.testGuestComment(post));
+        commentRepository.save(FixtureUtil.testGuestComment(otherPost));
+
+        // when
+        long actual = commentRepository.countByPostId(post.getId());
+
+        // then
+        assertThat(actual).isEqualTo(2);
     }
 
     @DisplayName("회원 게시글을 수정한다.")
