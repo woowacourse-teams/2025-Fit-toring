@@ -1,4 +1,4 @@
-import type { CommunityPost } from '../types/posts';
+import type { CommunityPost } from '../../../common/types/communityPost';
 
 export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
   {
