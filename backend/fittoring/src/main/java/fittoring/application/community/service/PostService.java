@@ -2,6 +2,7 @@ package fittoring.application.community.service;
 
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
+import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
@@ -26,11 +27,14 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateDto dto) {
         Post post = createPostByAuthorType(dto);
-        return PostDetailResponse.from(postRepository.save(post));
+        Post saved = postRepository.save(post);
+        boolean isMine = !saved.isGuestPost();
+        return PostDetailResponse.from(saved, 0, isMine);
     }
 
     @Transactional(readOnly = true)
@@ -39,9 +43,13 @@ public class PostService {
         return PostListResponse.from(result);
     }
 
-    @Transactional(readOnly = true)
-    public PostDetailResponse findPost(Long postId) {
-        return PostDetailResponse.from(getPost(postId));
+    @Transactional
+    public PostDetailResponse findPost(Long postId, Long memberId) {
+        Post post = getPost(postId);
+        post.increaseViewCount();
+        int commentCount = (int) commentRepository.countByPostId(post.getId());
+        boolean isMine = !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
+        return PostDetailResponse.from(post, commentCount, isMine);
     }
 
     @Transactional

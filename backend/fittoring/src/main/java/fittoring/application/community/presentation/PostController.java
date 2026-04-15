@@ -46,9 +46,13 @@ public class PostController {
         return ResponseEntity.ok(postService.findPosts(cursorCode));
     }
 
+    @OptionalAuth
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostDetailResponse> findPost(@PathVariable Long postId) {
-        return ResponseEntity.ok(postService.findPost(postId));
+    public ResponseEntity<PostDetailResponse> findPost(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long postId
+    ) {
+        return ResponseEntity.ok(postService.findPost(postId, loginInfo.memberId()));
     }
 
     @OptionalAuth

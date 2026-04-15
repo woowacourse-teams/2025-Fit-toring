@@ -10,10 +10,14 @@ public record PostDetailResponse(
         String nickname,
         boolean isAnonymous,
         boolean isGuestPost,
+        int commentCount,
+        int viewCount,
+        int likeCount,
+        boolean isMine,
         LocalDateTime createdAt
 ) {
 
-    public static PostDetailResponse from(Post post) {
+    public static PostDetailResponse from(Post post, int commentCount, boolean isMine) {
         return new PostDetailResponse(
                 post.getId(),
                 post.getTitle(),
@@ -21,6 +25,10 @@ public record PostDetailResponse(
                 post.getNickname(),
                 post.isAnonymous(),
                 post.isGuestPost(),
+                commentCount,
+                post.getViewCount(),
+                post.getLikeCount(),
+                isMine,
                 post.getCreatedAt()
         );
     }
