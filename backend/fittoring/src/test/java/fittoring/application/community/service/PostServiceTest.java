@@ -107,6 +107,33 @@ class PostServiceTest extends IntegrationTestSupport {
         });
     }
 
+    @DisplayName("게시글 목록 조회 시 각 게시글의 댓글 수, 조회수, 좋아요 수가 포함된다.")
+    @Test
+    void findPostsWithCounts() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        post.increaseViewCount();
+        post.increaseViewCount();
+        postRepository.save(post);
+        commentRepository.save(FixtureUtil.testGuestComment(post));
+        commentRepository.save(FixtureUtil.testGuestComment(post));
+        commentRepository.save(FixtureUtil.testGuestComment(post));
+
+        // when
+        PostListResponse actual = postService.findPosts(null);
+
+        // then
+        PostListResponse.PostSummary summary = actual.posts().stream()
+                .filter(s -> s.id().equals(post.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertSoftly(softly -> {
+            softly.assertThat(summary.commentCount()).isEqualTo(3);
+            softly.assertThat(summary.viewCount()).isEqualTo(2);
+            softly.assertThat(summary.likeCount()).isZero();
+        });
+    }
+
     @DisplayName("게시글 상세를 조회한다.")
     @Test
     void findPost() {
@@ -196,6 +223,25 @@ class PostServiceTest extends IntegrationTestSupport {
 
         // then
         assertThat(actual).isEqualTo(2);
+    }
+
+    @DisplayName("여러 게시글의 댓글을 한 번에 조회한다.")
+    @Test
+    void findAllByPostIdIn() {
+        // given
+        Post post1 = postRepository.save(FixtureUtil.testGuestPost());
+        Post post2 = postRepository.save(FixtureUtil.testGuestPost());
+        Post post3 = postRepository.save(FixtureUtil.testGuestPost());
+        commentRepository.save(FixtureUtil.testGuestComment(post1));
+        commentRepository.save(FixtureUtil.testGuestComment(post1));
+        commentRepository.save(FixtureUtil.testGuestComment(post2));
+
+        // when
+        java.util.List<fittoring.domain.model.Comment> actual = commentRepository.findAllByPostIdIn(
+                java.util.List.of(post1.getId(), post2.getId(), post3.getId()));
+
+        // then
+        assertThat(actual).hasSize(3);
     }
 
     @DisplayName("회원 게시글을 수정한다.")

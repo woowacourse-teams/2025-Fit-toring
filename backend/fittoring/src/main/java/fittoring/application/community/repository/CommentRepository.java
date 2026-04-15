@@ -1,6 +1,7 @@
 package fittoring.application.community.repository;
 
 import fittoring.domain.model.Comment;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface CommentRepository extends ListCrudRepository<Comment, Long> {
 
     long countByPostId(Long postId);
+
+    List<Comment> findAllByPostIdIn(Collection<Long> postIds);
 
     @Query("""
             SELECT c

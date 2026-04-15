@@ -17,6 +17,9 @@ import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
 import fittoring.util.CursorCodec;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +43,37 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostListResponse findPosts(String cursorCode) {
         PostPaginationResult result = postRepository.findPostsWithPagination(CursorCodec.decode(cursorCode));
-        return PostListResponse.from(result);
+        Map<Long, Long> commentCountByPostId = countCommentsByPostId(result.posts());
+        List<PostListResponse.PostSummary> summaries = createPostSummaries(result.posts(), commentCountByPostId);
+        return new PostListResponse(summaries, result.nextCursorCode(), result.hasNext());
+    }
+
+    private Map<Long, Long> countCommentsByPostId(List<Post> posts) {
+        List<Long> postIds = extractPostIds(posts);
+        return commentRepository.findAllByPostIdIn(postIds).stream()
+                .collect(Collectors.groupingBy(
+                        comment -> comment.getPost().getId(),
+                        Collectors.counting()));
+    }
+
+    private List<Long> extractPostIds(List<Post> posts) {
+        return posts.stream()
+                .map(Post::getId)
+                .toList();
+    }
+
+    private List<PostListResponse.PostSummary> createPostSummaries(
+            List<Post> posts,
+            Map<Long, Long> commentCountByPostId
+    ) {
+        return posts.stream()
+                .map(post -> createPostSummary(post, commentCountByPostId))
+                .toList();
+    }
+
+    private PostListResponse.PostSummary createPostSummary(Post post, Map<Long, Long> commentCountByPostId) {
+        int commentCount = commentCountByPostId.getOrDefault(post.getId(), 0L).intValue();
+        return PostListResponse.PostSummary.from(post, commentCount);
     }
 
     @Transactional
