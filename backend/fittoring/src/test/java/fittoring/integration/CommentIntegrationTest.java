@@ -62,7 +62,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void findComments() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        commentRepository.save(Comment.forGuest(post, "content", "guest", "1234", null, null));
+        commentRepository.save(FixtureUtil.testGuestComment(post, "content"));
 
         List<CommentResponse> response = RestAssured.given(spec)
                 .filter(documentWithTag("comment/get-list",
@@ -86,7 +86,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void modifyComment() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment comment = commentRepository.save(Comment.forGuest(post, "old", "guest", "1234", null, null));
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post, "old"));
         CommentUpdateRequest request = new CommentUpdateRequest("new", "1234");
 
         RestAssured.given(spec)
@@ -109,7 +109,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void deleteComment() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment comment = commentRepository.save(Comment.forGuest(post, "old", "guest", "1234", null, null));
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post, "old"));
         GuestPasswordRequest request = new GuestPasswordRequest("1234");
 
         RestAssured.given(spec)

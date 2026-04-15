@@ -61,8 +61,8 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void createGuestReplyComment() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment root = commentRepository.save(Comment.forGuest(post, "root", "guest", "1234", null, null));
-        Comment parent = commentRepository.save(Comment.forGuest(post, "parent", "guest", "1234", root.getId(), root.getId()));
+        Comment root = commentRepository.save(FixtureUtil.testGuestComment(post, "root"));
+        Comment parent = commentRepository.save(FixtureUtil.testGuestReplyComment(post, root.getId(), root.getId()));
 
         CommentResponse actual = commentService.createComment(
                 new CommentCreateDto(null, post.getId(), "reply", false, "guest", "1234", root.getId(), parent.getId()));
@@ -94,7 +94,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void createReplyCommentFailWhenReplyIdsAreIncomplete() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment root = commentRepository.save(Comment.forGuest(post, "root", "guest", "1234", null, null));
+        Comment root = commentRepository.save(FixtureUtil.testGuestComment(post, "root"));
 
         assertThatThrownBy(() -> commentService.createComment(
                 new CommentCreateDto(null, post.getId(), "reply", false, "guest", "1234", root.getId(), null)))
@@ -106,8 +106,8 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void findComments() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        commentRepository.save(Comment.forGuest(post, "comment-1", "guest", "1234", null, null));
-        commentRepository.save(Comment.forGuest(post, "comment-2", "guest", "1234", null, null));
+        commentRepository.save(FixtureUtil.testGuestComment(post, "comment-1"));
+        commentRepository.save(FixtureUtil.testGuestComment(post, "comment-2"));
 
         List<CommentResponse> actual = commentService.findComments(post.getId());
 
@@ -119,7 +119,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     void modifyMemberComment() {
         Member member = memberRepository.save(FixtureUtil.testMentee());
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment comment = commentRepository.save(Comment.forMember(post, member, "old", false, member.getName(), null, null));
+        Comment comment = commentRepository.save(FixtureUtil.testMemberComment(post, member, "old"));
 
         commentService.modifyComment(new CommentUpdateDto(member.getId(), comment.getId(), "new", null));
 
@@ -130,7 +130,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void modifyGuestComment() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment comment = commentRepository.save(Comment.forGuest(post, "old", "guest", "1234", null, null));
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post, "old"));
 
         commentService.modifyComment(new CommentUpdateDto(null, comment.getId(), "new", "1234"));
 
@@ -143,7 +143,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         Member owner = memberRepository.save(FixtureUtil.testMentee());
         Member other = memberRepository.save(FixtureUtil.testMentee(2));
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment comment = commentRepository.save(Comment.forMember(post, owner, "old", false, owner.getName(), null, null));
+        Comment comment = commentRepository.save(FixtureUtil.testMemberComment(post, owner, "old"));
 
         assertThatThrownBy(() -> commentService.modifyComment(new CommentUpdateDto(other.getId(), comment.getId(), "new", null)))
                 .isInstanceOf(ForbiddenException.class)
@@ -154,7 +154,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void modifyGuestCommentFail() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment comment = commentRepository.save(Comment.forGuest(post, "old", "guest", "1234", null, null));
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post, "old"));
 
         assertThatThrownBy(() -> commentService.modifyComment(new CommentUpdateDto(null, comment.getId(), "new", "9999")))
                 .isInstanceOf(MisMatchPasswordException.class)
@@ -189,7 +189,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void deleteComment() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
-        Comment comment = commentRepository.save(Comment.forGuest(post, "old", "guest", "1234", null, null));
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post, "old"));
 
         commentService.deleteComment(new CommentDeleteDto(null, comment.getId(), "1234"));
 

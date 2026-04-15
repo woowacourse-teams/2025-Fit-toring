@@ -122,6 +122,18 @@ public class FixtureUtil {
         return Comment.forGuest(post, "댓글 내용", "비회원", "1234", null, null);
     }
 
+    public static Comment testGuestComment(Post post, String content) {
+        return Comment.forGuest(post, content, "비회원", "1234", null, null);
+    }
+
+    public static Comment testGuestReplyComment(Post post, Long rootId, Long parentId) {
+        return Comment.forGuest(post, "대댓글 내용", "비회원", "1234", rootId, parentId);
+    }
+
+    public static Comment testMemberComment(Post post, Member member, String content) {
+        return Comment.forMember(post, member, content, false, member.getName(), null, null);
+    }
+
     public static Image testImageForMentoringProfileDefault(Mentoring mentoring) {
         return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.DEFAULT, mentoring.getId(),
                 "baseName");
