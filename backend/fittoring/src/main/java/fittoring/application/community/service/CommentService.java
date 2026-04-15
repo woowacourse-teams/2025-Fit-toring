@@ -60,6 +60,12 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    @Transactional(readOnly = true)
+    public void validateGuestPassword(Long commentId, String guestPassword) {
+        Comment comment = getComment(commentId);
+        comment.matchGuestPassword(guestPassword);
+    }
+
     private Comment createMemberComment(CommentCreateDto dto, Post post) {
         Member member = memberRepository.findById(dto.memberId())
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));

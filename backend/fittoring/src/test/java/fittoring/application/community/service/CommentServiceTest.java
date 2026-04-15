@@ -161,6 +161,30 @@ class CommentServiceTest extends IntegrationTestSupport {
                 .hasMessage(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
     }
 
+    @DisplayName("비회원 댓글 비밀번호를 검증한다.")
+    @Test
+    void validateGuestPassword() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post));
+
+        // when & then
+        commentService.validateGuestPassword(comment.getId(), "1234");
+    }
+
+    @DisplayName("비회원 댓글 비밀번호가 틀리면 예외가 발생한다.")
+    @Test
+    void validateGuestPasswordFail() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post));
+
+        // when & then
+        assertThatThrownBy(() -> commentService.validateGuestPassword(comment.getId(), "9999"))
+                .isInstanceOf(MisMatchPasswordException.class)
+                .hasMessage(BusinessErrorMessage.GUEST_PASSWORD_MISMATCH.getMessage());
+    }
+
     @DisplayName("댓글을 삭제하면 soft delete 된다.")
     @Test
     void deleteComment() {

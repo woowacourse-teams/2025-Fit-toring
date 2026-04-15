@@ -67,4 +67,13 @@ public class CommentController {
         commentService.deleteComment(CommentDeleteDto.of(loginInfo.memberId(), commentId, request));
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/comments/{commentId}/pw-check")
+    public ResponseEntity<Void> validateGuestPassword(
+            @PathVariable Long commentId,
+            @Valid @RequestBody GuestPasswordRequest request
+    ) {
+        commentService.validateGuestPassword(commentId, request.guestPassword());
+        return ResponseEntity.ok().build();
+    }
 }
