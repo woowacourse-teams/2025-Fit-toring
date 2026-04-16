@@ -3,6 +3,8 @@ package fittoring.application.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
@@ -122,7 +124,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         Image image = imageRepository.save(Image.forKey(
-                "fittoring/local/member-profile-image/default/member-profile.jpg",
+                "fit-toring/local/member-profile-image/default/member-profile.jpg",
                 ImageType.MEMBER_PROFILE,
                 member.getId(),
                 "member-profile"
@@ -293,7 +295,7 @@ class MemberServiceTest extends IntegrationTestSupport {
     void updateMemberProfileImage() {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
-        String profileImageKey = "fittoring/local/member-profile-image/default/member-profile.jpg";
+        String profileImageKey = "fit-toring/local/member-profile-image/default/member-profile.jpg";
         given(presignedUrlService.isObjectExistsFromKey(profileImageKey)).willReturn(true);
 
         MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
@@ -328,13 +330,13 @@ class MemberServiceTest extends IntegrationTestSupport {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         imageRepository.save(Image.forKey(
-                "fittoring/local/member-profile-image/default/old-profile.jpg",
+                "fit-toring/local/member-profile-image/default/old-profile.jpg",
                 ImageType.MEMBER_PROFILE,
                 member.getId(),
                 "old-profile"
         ));
 
-        String newProfileImageKey = "fittoring/local/member-profile-image/default/new-profile.jpg";
+        String newProfileImageKey = "fit-toring/local/member-profile-image/default/new-profile.jpg";
         given(presignedUrlService.isObjectExistsFromKey(newProfileImageKey)).willReturn(true);
 
         MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
@@ -364,7 +366,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         imageRepository.save(Image.forKey(
-                "fittoring/local/member-profile-image/default/member-profile.jpg",
+                "fit-toring/local/member-profile-image/default/member-profile.jpg",
                 ImageType.MEMBER_PROFILE,
                 member.getId(),
                 "member-profile"
@@ -394,7 +396,7 @@ class MemberServiceTest extends IntegrationTestSupport {
     void updateMemberProfileImageWhenS3ObjectNotExists() {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
-        String profileImageKey = "fittoring/local/member-profile-image/default/member-profile.jpg";
+        String profileImageKey = "fit-toring/local/member-profile-image/default/member-profile.jpg";
         given(presignedUrlService.isObjectExistsFromKey(profileImageKey)).willReturn(false);
 
         MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
@@ -409,6 +411,62 @@ class MemberServiceTest extends IntegrationTestSupport {
         assertThatThrownBy(() -> memberService.updateMemberInfo(member.getId(), request))
                 .isInstanceOf(InvalidImageKeyException.class)
                 .hasMessage(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("회원은 다른 이미지 타입의 S3 key로 프로필 이미지를 저장할 수 없다.")
+    @Test
+    void updateMemberProfileImageWithOtherImageTypeKey() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String certificateImageKey = "fit-toring/local/certificate-image/default/certificate.jpg";
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null,
+                certificateImageKey
+        );
+
+        // when // then
+        assertThatThrownBy(() -> memberService.updateMemberInfo(member.getId(), request))
+                .isInstanceOf(InvalidImageKeyException.class)
+                .hasMessage(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage());
+
+        verify(presignedUrlService, never()).isObjectExistsFromKey(certificateImageKey);
+        assertThat(imageRepository.findByImageTypeAndRelationIdAndImageVariant(
+                ImageType.MEMBER_PROFILE,
+                member.getId(),
+                ImageVariant.DEFAULT
+        )).isEmpty();
+    }
+
+    @DisplayName("회원은 프로필 이미지 prefix 하위의 중첩 경로 key로 프로필 이미지를 저장할 수 없다.")
+    @Test
+    void updateMemberProfileImageWithNestedProfileImageKey() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String nestedProfileImageKey = "fit-toring/local/member-profile-image/default/nested/member-profile.jpg";
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null,
+                nestedProfileImageKey
+        );
+
+        // when // then
+        assertThatThrownBy(() -> memberService.updateMemberInfo(member.getId(), request))
+                .isInstanceOf(InvalidImageKeyException.class)
+                .hasMessage(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage());
+
+        verify(presignedUrlService, never()).isObjectExistsFromKey(nestedProfileImageKey);
+        assertThat(imageRepository.findByImageTypeAndRelationIdAndImageVariant(
+                ImageType.MEMBER_PROFILE,
+                member.getId(),
+                ImageVariant.DEFAULT
+        )).isEmpty();
     }
 
     @DisplayName("요청 정보에 수정하려는 정보가 없는 경우 예외가 발생한다.")

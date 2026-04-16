@@ -1,5 +1,6 @@
 package fittoring.infrastructure.image;
 
+import fittoring.domain.model.ImageType;
 import fittoring.domain.model.ImageVariant;
 import fittoring.infrastructure.exception.InfraErrorMessage;
 import fittoring.infrastructure.exception.S3UploadException;
@@ -31,6 +32,20 @@ public class KeyBuilder {
 
         String variantName = variant.getName();
         return projectKeyPrefix + envKeyPrefix + imageType + "/" + variantName + "/" + baseName + extensionWithDot;
+    }
+
+    public boolean isValidKeyFor(ImageType imageType, ImageVariant variant, String key) {
+        if (key == null || key.isBlank()) {
+            return false;
+        }
+
+        String prefix = projectKeyPrefix + envKeyPrefix + ImageType.getDir(imageType) + "/" + variant.getName() + "/";
+        if (!key.startsWith(prefix)) {
+            return false;
+        }
+
+        String fileName = key.substring(prefix.length());
+        return !fileName.isBlank() && !fileName.contains("/");
     }
 
     public String extractKeyFromUrl(String url) {

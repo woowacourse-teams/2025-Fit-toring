@@ -2,6 +2,8 @@ package fittoring.integration;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
@@ -319,7 +321,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-        String profileImageKey = "fittoring/local/member-profile-image/default/member-profile.jpg";
+        String profileImageKey = "fit-toring/local/member-profile-image/default/member-profile.jpg";
         given(presignedUrlService.isObjectExistsFromKey(profileImageKey)).willReturn(true);
 
         MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
@@ -361,7 +363,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         imageRepository.save(Image.forKey(
-                "fittoring/local/member-profile-image/default/member-profile.jpg",
+                "fit-toring/local/member-profile-image/default/member-profile.jpg",
                 ImageType.MEMBER_PROFILE,
                 member.getId(),
                 "member-profile"
@@ -403,7 +405,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-        String profileImageKey = "fittoring/local/member-profile-image/default/not-exists.jpg";
+        String profileImageKey = "fit-toring/local/member-profile-image/default/not-exists.jpg";
         given(presignedUrlService.isObjectExistsFromKey(profileImageKey)).willReturn(false);
 
         MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
@@ -427,12 +429,50 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .statusCode(400);
     }
 
+    @DisplayName("회원은 다른 이미지 타입의 key로 자신의 프로필 이미지를 저장할 수 없다.")
+    @Test
+    void updateProfileImageWithOtherImageTypeKey() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        String certificateImageKey = "fit-toring/local/certificate-image/default/certificate.jpg";
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null,
+                certificateImageKey
+        );
+
+        // when // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .patch("/members/me")
+                .then()
+                .statusCode(400);
+
+        verify(presignedUrlService, never()).isObjectExistsFromKey(certificateImageKey);
+        SoftAssertions.assertSoftly(softly -> softly.assertThat(
+                imageRepository.findByImageTypeAndRelationIdAndImageVariant(
+                        ImageType.MEMBER_PROFILE,
+                        member.getId(),
+                        ImageVariant.DEFAULT
+                )
+        ).isEmpty());
+    }
+
     @DisplayName("회원 프로필 이미지가 존재하면 내 정보 조회 시 표시용 URL을 반환한다.")
     @Test
     void loginGetMyInfoWithMemberProfileImage() {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
-        String profileImageKey = "fittoring/local/member-profile-image/default/member-profile.jpg";
+        String profileImageKey = "fit-toring/local/member-profile-image/default/member-profile.jpg";
         imageRepository.save(Image.forKey(
                 profileImageKey,
                 ImageType.MEMBER_PROFILE,

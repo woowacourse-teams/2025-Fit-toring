@@ -14,7 +14,9 @@ import fittoring.application.member.presentation.dto.response.MyInfoSummaryRespo
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.ImageType;
+import fittoring.domain.model.ImageVariant;
 import fittoring.domain.model.Member;
+import fittoring.infrastructure.image.KeyBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final ImageService imageService;
     private final PresignedUrlService presignedUrlService;
+    private final KeyBuilder keyBuilder;
 
     @Transactional(readOnly = true)
     public MyInfoResponse getMemberInfo(Long memberId) {
@@ -95,6 +98,9 @@ public class MemberService {
         if (profileImageKey.isBlank()) {
             imageService.delete(ImageType.MEMBER_PROFILE, memberId);
             return;
+        }
+        if (!keyBuilder.isValidKeyFor(ImageType.MEMBER_PROFILE, ImageVariant.DEFAULT, profileImageKey)) {
+            throw new InvalidImageKeyException(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage());
         }
         if (!presignedUrlService.isObjectExistsFromKey(profileImageKey)) {
             throw new InvalidImageKeyException(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage());

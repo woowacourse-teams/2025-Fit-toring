@@ -39,7 +39,7 @@ public class ImageIntegrationTest extends AbstractApiDocumentationTest {
 
         PresignedIssueResponse response = new PresignedIssueResponse(
                 "https://s3.ap-northeast-2.amazonaws.com/bucket/key?signature=...",
-                "fittoring/local/member-profile-image/default/test-image.jpg",
+                "fit-toring/local/member-profile-image/default/test-image.jpg",
                 LocalDateTime.now().plusMinutes(3)
         );
 
