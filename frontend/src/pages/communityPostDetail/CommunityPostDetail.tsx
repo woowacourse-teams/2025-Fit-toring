@@ -20,6 +20,8 @@ import PostCommentSection from './components/PostCommentSection/PostCommentSecti
 import PostContent from './components/PostContent/PostContent';
 import PostHeader from './components/PostHeader/PostHeader';
 
+import type { PostComment } from './types/postComment';
+
 type PendingAction = 'edit' | 'delete' | null;
 
 function CommunityPostDetail() {
@@ -32,6 +34,7 @@ function CommunityPostDetail() {
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [pendingDeletePassword, setPendingDeletePassword] = useState('');
+  const [replyTarget, setReplyTarget] = useState<PostComment | null>(null);
 
   const {
     data: postData,
@@ -171,9 +174,18 @@ function CommunityPostDetail() {
           content={postData.content}
           likeCount={postData.likeCount}
         />
-        <PostCommentSection postId={postId ?? ''} />
+        <PostCommentSection
+          postId={postId ?? ''}
+          onReplyClick={(comment) => setReplyTarget(comment)}
+        />
       </S_Content>
-      <InputSection />
+      <InputSection
+        postId={postId ?? ''}
+        authenticated={authenticated}
+        replyTarget={replyTarget}
+        onCancelReply={() => setReplyTarget(null)}
+        onSubmitSuccess={() => setReplyTarget(null)}
+      />
       <CommunityPostPasswordModal
         opened={passwordModalOpened}
         onCloseClick={handleCloseClickPasswordModal}
@@ -207,5 +219,5 @@ const S_Content = styled.div`
   flex: 1;
   flex-direction: column;
 
-  padding-bottom: 7rem;
+  padding-bottom: calc(12rem + env(safe-area-inset-bottom));
 `;
