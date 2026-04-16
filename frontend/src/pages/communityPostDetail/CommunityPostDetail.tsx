@@ -31,6 +31,7 @@ function CommunityPostDetail() {
   const [passwordModalOpened, setPasswordModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [pendingDeletePassword, setPendingDeletePassword] = useState('');
 
   const {
     data: postData,
@@ -46,6 +47,8 @@ function CommunityPostDetail() {
     mutationFn: deleteCommunityPost,
     onSuccess: () => {
       setDeleteModalOpened(false);
+      setPendingDeletePassword('');
+      setPendingAction(null);
       alert('게시글 삭제에 성공했습니다.');
       navigate(PAGE_URL.COMMUNITY);
     },
@@ -68,8 +71,10 @@ function CommunityPostDetail() {
     return <div>게시글을 불러오지 못했습니다.</div>;
   }
 
+  const shouldRequirePassword =
+    postData.isGuestPost || postData.isAnonymous;
   const canManagePost =
-    postData.isGuestPost || (authenticated && postData.isMine);
+    shouldRequirePassword || (authenticated && postData.isMine);
 
   const openPasswordModal = () => {
     setPasswordModalOpened(true);
@@ -82,10 +87,12 @@ function CommunityPostDetail() {
   const handleCloseClickPasswordModal = () => {
     setPasswordModalOpened(false);
     setPendingAction(null);
+    setPendingDeletePassword('');
   };
 
   const handleCloseClickDeleteModal = () => {
     setDeleteModalOpened(false);
+    setPendingDeletePassword('');
   };
 
   const handleConfirmClickPasswordModal = async (password: string) => {
@@ -102,6 +109,7 @@ function CommunityPostDetail() {
       setPasswordModalOpened(false);
 
       if (pendingAction === 'delete') {
+        setPendingDeletePassword(password);
         openDeleteModal();
         setPendingAction(null);
         return;
@@ -117,7 +125,7 @@ function CommunityPostDetail() {
   };
 
   const handleEditClick = () => {
-    if (postData.isGuestPost) {
+    if (shouldRequirePassword) {
       setPendingAction('edit');
       openPasswordModal();
       return;
@@ -127,7 +135,7 @@ function CommunityPostDetail() {
   };
 
   const handleDeleteClick = () => {
-    if (postData.isGuestPost) {
+    if (shouldRequirePassword) {
       setPendingAction('delete');
       openPasswordModal();
       return;
@@ -137,11 +145,12 @@ function CommunityPostDetail() {
   };
 
   const handleConfirmClickDeleteModal = () => {
-    if (postData.isGuestPost) {
-      return;
-    }
-
-    deletePostMutate({ postId: postId! });
+    deletePostMutate({
+      postId: postId!,
+      ...(shouldRequirePassword
+        ? { guestPassword: pendingDeletePassword }
+        : {}),
+    });
   };
 
   return (
