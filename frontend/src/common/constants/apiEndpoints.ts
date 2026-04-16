@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
   MENTORINGS_PAGE: '/mentorings-page',
   CHATROOMS: '/chatrooms',
   REQUEST_PRESIGNED_URL: '/images/presigned',
+  COMMENTS: '/comments',
   KAKAO_LOGIN: '/kakao/login',
   IDENTITY_VERIFICATION: '/oauth-signup',
   FCM_TOKENS: '/notification/tokens',
