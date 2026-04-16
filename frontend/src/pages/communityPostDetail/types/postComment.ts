@@ -9,3 +9,12 @@ export interface PostComment {
   isDeleted: boolean;
   createdAt: string;
 }
+
+export interface PostCommentRequest {
+  content: string;
+  isAnonymous?: boolean;
+  nickname?: string;
+  guestPassword?: string;
+  rootId: number | null;
+  parentId: number | null;
+}
