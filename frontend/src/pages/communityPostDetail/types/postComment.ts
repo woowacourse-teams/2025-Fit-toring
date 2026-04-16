@@ -18,3 +18,8 @@ export interface PostCommentRequest {
   rootId: number | null;
   parentId: number | null;
 }
+
+export interface PatchPostCommentRequest {
+  content: string;
+  guestPassword?: string;
+}

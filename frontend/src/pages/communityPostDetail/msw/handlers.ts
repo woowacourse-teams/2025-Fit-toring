@@ -8,7 +8,10 @@ import {
   POST_COMMENTS,
 } from './data';
 
-import type { PostCommentRequest } from '../types/postComment';
+import type {
+  PatchPostCommentRequest,
+  PostCommentRequest,
+} from '../types/postComment';
 
 const BASE_URL = process.env.API_BASE_URL;
 const COMMUNITY_POST_DETAIL_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId`;
@@ -57,6 +60,45 @@ const postPostComment = http.post(POST_COMMENTS_URL, async ({ request }) => {
   return HttpResponse.json(newComment, { status: 201 });
 });
 
+const patchPostComment = http.patch(
+  `${BASE_URL}${API_ENDPOINTS.COMMENTS}/:commentId`,
+  async ({ params, request }) => {
+    const { commentId } = params;
+    const requestBody = (await request.json()) as PatchPostCommentRequest;
+    const targetComment = POST_COMMENTS.find(
+      ({ id }) => id === Number(commentId),
+    );
+
+    if (!targetComment) {
+      return HttpResponse.json(
+        { message: '댓글을 찾을 수 없습니다.' },
+        { status: 404 },
+      );
+    }
+
+    if (requestBody.content.trim() === '') {
+      return HttpResponse.json(
+        { message: '수정할 내용을 입력해주세요.' },
+        { status: 400 },
+      );
+    }
+
+    if (
+      targetComment.isGuestComment &&
+      requestBody.guestPassword !== GUEST_POST_PASSWORD
+    ) {
+      return HttpResponse.json(
+        { message: '비밀번호가 일치하지 않습니다.' },
+        { status: 400 },
+      );
+    }
+
+    targetComment.content = requestBody.content;
+
+    return new HttpResponse(null, { status: 200 });
+  },
+);
+
 const postGuestPostCheck = http.post(
   GUEST_POST_CHECK_URL,
   async ({ request }) => {
@@ -98,6 +140,7 @@ export const communityPostDetailHandler = [
   getCommunityPostDetail,
   getPostComments,
   postPostComment,
+  patchPostComment,
   postGuestPostCheck,
   deleteCommunityPost,
 ];
