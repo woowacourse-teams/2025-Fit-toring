@@ -133,6 +133,37 @@ const deletePostComment = http.delete(
   },
 );
 
+const postCommunityPostCommentGuestCheck = http.post(
+  `${BASE_URL}${API_ENDPOINTS.COMMENTS}/:commentId/guest-check`,
+  async ({ params, request }) => {
+    const { commentId } = params;
+    const requestBody = (await request.json()) as { guestPassword: string };
+    const targetComment = POST_COMMENTS.find(
+      ({ id }) => id === Number(commentId),
+    );
+
+    if (!targetComment) {
+      return HttpResponse.json(
+        { message: '댓글을 찾을 수 없습니다.' },
+        { status: 404 },
+      );
+    }
+
+    if (!targetComment.isGuestComment) {
+      return new HttpResponse(null, { status: 200 });
+    }
+
+    if (requestBody.guestPassword !== GUEST_POST_PASSWORD) {
+      return HttpResponse.json(
+        { message: '비밀번호가 일치하지 않습니다.' },
+        { status: 400 },
+      );
+    }
+
+    return new HttpResponse(null, { status: 200 });
+  },
+);
+
 const postGuestPostCheck = http.post(
   GUEST_POST_CHECK_URL,
   async ({ request }) => {
@@ -176,6 +207,7 @@ export const communityPostDetailHandler = [
   postPostComment,
   patchPostComment,
   deletePostComment,
+  postCommunityPostCommentGuestCheck,
   postGuestPostCheck,
   deleteCommunityPost,
 ];
