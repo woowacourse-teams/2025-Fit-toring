@@ -54,36 +54,38 @@ function CommunityPostCreateForm() {
 
   const optionSection = (
     <S_Section>
-      <S_Divider />
-      {shouldShowGuestFields && (
-        <>
-          <S_Row>
-            <S_RowLabel>닉네임</S_RowLabel>
-            <S_Input
-              value={nickname}
-              placeholder="닉네임을 입력하세요."
-              onChange={(e) => setNickname(e.target.value)}
-            />
-          </S_Row>
-          <S_Row>
-            <S_RowLabel>비밀번호</S_RowLabel>
-            <S_Input
-              type="password"
-              value={guestPassword}
-              placeholder="비밀번호를 입력하세요."
-              onChange={(e) => setGuestPassword(e.target.value)}
-            />
-          </S_Row>
-        </>
-      )}
+      <S_Content>
+        {shouldShowGuestFields && (
+          <>
+            <S_Divider />
+            <S_Row>
+              <S_RowLabel>닉네임</S_RowLabel>
+              <S_Input
+                value={nickname}
+                placeholder="닉네임을 입력하세요."
+                onChange={(e) => setNickname(e.target.value)}
+              />
+            </S_Row>
+            <S_Row>
+              <S_RowLabel>비밀번호</S_RowLabel>
+              <S_Input
+                type="password"
+                value={guestPassword}
+                placeholder="비밀번호를 입력하세요."
+                onChange={(e) => setGuestPassword(e.target.value)}
+              />
+            </S_Row>
+          </>
+        )}
 
-      <S_CheckboxRow>
-        <Checkbox
-          label="익명"
-          checked={isAnonymous}
-          onChange={(e) => setIsAnonymous(e.target.checked)}
-        />
-      </S_CheckboxRow>
+        <S_CheckboxRow>
+          <Checkbox
+            label="익명"
+            checked={isAnonymous}
+            onChange={(e) => setIsAnonymous(e.target.checked)}
+          />
+        </S_CheckboxRow>
+      </S_Content>
     </S_Section>
   );
 
@@ -123,6 +125,11 @@ const S_LoadingContainer = styled.main`
 `;
 
 const S_Section = styled.section`
+  display: flex;
+  flex-direction: column;
+`;
+
+const S_Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
