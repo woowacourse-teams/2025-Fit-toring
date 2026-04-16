@@ -6,7 +6,10 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Checkbox from '../../../../common/components/Checkbox/Checkbox';
 import CommunityPostForm from '../../../../common/components/CommunityPostForm/CommunityPostForm';
+import FormField from '../../../../common/components/FormField/FormField';
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
+import { COMMUNITY_POST } from '../../../../common/constants/communityPost';
+import { COMMUNITY_POST_ERROR_MESSAGE } from '../../../../common/constants/communityPost';
 import { PAGE_URL } from '../../../../common/constants/url';
 import { authCheckQueryOptions } from '../../../../common/queries/auth';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
@@ -107,30 +110,39 @@ function CommunityPostUpdateForm() {
   }
 
   const isOptionValid = shouldRequirePassword
-    ? Boolean(inputGuestPassword.trim())
+    ? inputGuestPassword.trim().length === COMMUNITY_POST.GUEST_PASSWORD.LENGTH
     : true;
+  const guestPasswordErrorMessage =
+    shouldRequirePassword &&
+    inputGuestPassword.trim() !== '' &&
+    inputGuestPassword.trim().length !== COMMUNITY_POST.GUEST_PASSWORD.LENGTH
+      ? COMMUNITY_POST_ERROR_MESSAGE.GUEST_PASSWORD_LENGTH
+      : '';
 
   const optionSection = shouldRequirePassword ? (
     <S_Section>
       <S_Divider />
       <S_Content>
-        <S_Row>
-          <S_RowLabel>닉네임</S_RowLabel>
+        <FormField label="닉네임">
           <S_Input
             value={postData.nickname}
+            maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
             placeholder="닉네임을 입력하세요."
             disabled
           />
-        </S_Row>
-        <S_Row>
-          <S_RowLabel>비밀번호</S_RowLabel>
+        </FormField>
+        <FormField
+          label="비밀번호"
+          errorMessage={guestPasswordErrorMessage}
+        >
           <S_Input
             type="password"
             value={inputGuestPassword}
+            maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
             placeholder="비밀번호를 입력하세요."
             onChange={(e) => setInputGuestPassword(e.target.value)}
           />
-        </S_Row>
+        </FormField>
 
         <S_CheckboxRow>
           <Checkbox label="익명" checked={postData.isAnonymous} disabled />
@@ -186,29 +198,14 @@ const S_Divider = styled.div`
   background-color: ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
-const S_Row = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
-const S_RowLabel = styled.span`
-  flex: 0 0 6.4rem;
-
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
-`;
-
 const S_CheckboxRow = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
 
 const S_Input = styled.input`
-  flex: 1;
-
+  width: 100%;
   height: 4.4rem;
-  min-width: 0;
   padding: 0 1.3rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 1.2rem;

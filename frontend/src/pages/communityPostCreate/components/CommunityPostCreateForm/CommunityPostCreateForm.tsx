@@ -6,7 +6,10 @@ import { useNavigate } from 'react-router-dom';
 
 import Checkbox from '../../../../common/components/Checkbox/Checkbox';
 import CommunityPostForm from '../../../../common/components/CommunityPostForm/CommunityPostForm';
+import FormField from '../../../../common/components/FormField/FormField';
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
+import { COMMUNITY_POST } from '../../../../common/constants/communityPost';
+import { COMMUNITY_POST_ERROR_MESSAGE } from '../../../../common/constants/communityPost';
 import { PAGE_URL } from '../../../../common/constants/url';
 import { authCheckQueryOptions } from '../../../../common/queries/auth';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
@@ -48,34 +51,52 @@ function CommunityPostCreateForm() {
   }
 
   const shouldShowGuestFields = !isAuthenticated || isAnonymous;
+  const isNicknameValid =
+    nickname.trim().length >= COMMUNITY_POST.NICKNAME.MIN_LENGTH &&
+    nickname.trim().length <= COMMUNITY_POST.NICKNAME.MAX_LENGTH;
+  const isGuestPasswordValid =
+    guestPassword.trim().length === COMMUNITY_POST.GUEST_PASSWORD.LENGTH;
   const isOptionValid = shouldShowGuestFields
-    ? Boolean(nickname.trim() && guestPassword.trim())
+    ? isNicknameValid && isGuestPasswordValid
     : true;
+  const nicknameErrorMessage =
+    shouldShowGuestFields && nickname.trim() !== '' && !isNicknameValid
+      ? COMMUNITY_POST_ERROR_MESSAGE.NICKNAME_LENGTH
+      : '';
+  const guestPasswordErrorMessage =
+    shouldShowGuestFields &&
+    guestPassword.trim() !== '' &&
+    !isGuestPasswordValid
+      ? COMMUNITY_POST_ERROR_MESSAGE.GUEST_PASSWORD_LENGTH
+      : '';
 
   const optionSection = (
     <S_Section>
+      {shouldShowGuestFields && <S_Divider />}
       <S_Content>
         {shouldShowGuestFields && (
-          <>
-            <S_Divider />
-            <S_Row>
-              <S_RowLabel>닉네임</S_RowLabel>
+          <S_FieldGroup>
+            <FormField label="닉네임" errorMessage={nicknameErrorMessage}>
               <S_Input
                 value={nickname}
+                maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
                 placeholder="닉네임을 입력하세요."
                 onChange={(e) => setNickname(e.target.value)}
               />
-            </S_Row>
-            <S_Row>
-              <S_RowLabel>비밀번호</S_RowLabel>
+            </FormField>
+            <FormField
+              label="비밀번호"
+              errorMessage={guestPasswordErrorMessage}
+            >
               <S_Input
                 type="password"
                 value={guestPassword}
+                maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
                 placeholder="비밀번호를 입력하세요."
                 onChange={(e) => setGuestPassword(e.target.value)}
               />
-            </S_Row>
-          </>
+            </FormField>
+          </S_FieldGroup>
         )}
 
         <S_CheckboxRow>
@@ -144,17 +165,10 @@ const S_Divider = styled.div`
   background-color: ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
-const S_Row = styled.div`
+const S_FieldGroup = styled.div`
   display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
-const S_RowLabel = styled.span`
-  flex: 0 0 6.4rem;
-
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+  flex-direction: column;
+  gap: 1.2rem;
 `;
 
 const S_CheckboxRow = styled.div`
@@ -163,10 +177,8 @@ const S_CheckboxRow = styled.div`
 `;
 
 const S_Input = styled.input`
-  flex: 1;
-
+  width: 100%;
   height: 4.4rem;
-  min-width: 0;
   padding: 0 1.3rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 1.2rem;

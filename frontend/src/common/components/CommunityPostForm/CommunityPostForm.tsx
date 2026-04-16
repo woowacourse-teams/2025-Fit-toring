@@ -3,6 +3,7 @@ import type { FormEvent, ReactNode } from 'react';
 
 import styled from '@emotion/styled';
 
+import { COMMUNITY_POST } from '../../constants/communityPost';
 import Button from '../Button/Button';
 
 type CommunityPostFormInitialValues = {
@@ -56,12 +57,14 @@ function CommunityPostForm({
           <S_TitleInput
             value={title}
             placeholder="제목을 입력하세요."
+            maxLength={COMMUNITY_POST.TITLE.MAX_LENGTH}
             onChange={(e) => setTitle(e.target.value)}
           />
           <S_Divider />
           <S_ContentInput
             value={content}
             placeholder="내용을 입력해주세요."
+            maxLength={COMMUNITY_POST.CONTENT.MAX_LENGTH}
             onChange={(e) => setContent(e.target.value)}
           />
         </S_EditorSection>
