@@ -8,8 +8,8 @@ import { postLogout } from '../../../../common/apis/postLogout';
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../../../common/constants/url';
-import { AUTH_CHECK_QUERY_KEY } from '../../../../common/hooks/useAuthCheck';
 import useOutsideClickRef from '../../../../common/hooks/useOutsideClickRef';
+import { authCheckQueryOptions } from '../../../../common/queries/auth';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { shutdownChannelTalk } from '../../../../common/utils/channelTalk';
 
@@ -69,7 +69,7 @@ function MenuDropDown() {
     mutationFn: postLogout,
     onSuccess: () => {
       shutdownChannelTalk();
-      queryClient.removeQueries({ queryKey: AUTH_CHECK_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: authCheckQueryOptions.queryKey });
       logout();
       localStorage.removeItem('memberId');
       navigate(PAGE_URL.HOME);

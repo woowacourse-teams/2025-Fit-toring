@@ -1,14 +1,22 @@
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 import writeIcon from '../../../../common/assets/images/writeIcon.svg';
+import { PAGE_URL } from '../../../../common/constants/url';
 
 interface WriteFloatingButtonProps {
   label: string;
 }
 
 function WriteButton({ label }: WriteFloatingButtonProps) {
+  const navigate = useNavigate();
+
+  const handleWriteButtonClick = () => {
+    navigate(PAGE_URL.COMMUNITY_CREATE);
+  };
+
   return (
-    <S_Button type="button">
+    <S_Button type="button" onClick={handleWriteButtonClick}>
       <S_Icon aria-hidden="true" src={writeIcon} alt="" />
       <span>{label}</span>
     </S_Button>

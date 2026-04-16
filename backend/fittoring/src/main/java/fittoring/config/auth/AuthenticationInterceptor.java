@@ -3,6 +3,7 @@ package fittoring.config.auth;
 import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
+import fittoring.application.exception.AuthenticationException;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.UnauthorizedException;
@@ -27,10 +28,21 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             return true;
         }
+        if (isOptionalAuth(handler)) {
+            attemptOptionalAuthentication(request);
+            return true;
+        }
         if (isAuthenticationNotRequired(handler)) {
             return true;
         }
         return attemptAuthentication(request, handler);
+    }
+
+    private boolean isOptionalAuth(Object handler) {
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return false;
+        }
+        return handlerMethod.hasMethodAnnotation(OptionalAuth.class);
     }
 
     private boolean isAuthenticationNotRequired(final Object handler) {
@@ -47,6 +59,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         validateAdminAccess(handler, MemberRole.of(payload.role()));
         bindAuthenticationContext(request, payload);
         return true;
+    }
+
+    private void attemptOptionalAuthentication(HttpServletRequest request) {
+        try {
+            TokenPayload payload = authenticate(request);
+            bindAuthenticationContext(request, payload);
+        } catch (AuthenticationException ignored) {
+        }
     }
 
     private TokenPayload authenticate(HttpServletRequest request) {
