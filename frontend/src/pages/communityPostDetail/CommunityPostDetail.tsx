@@ -108,7 +108,9 @@ function CommunityPostDetail() {
       }
 
       setPendingAction(null);
-      navigate(`${PAGE_URL.COMMUNITY}/${postId}${PAGE_URL.EDIT}`);
+      navigate(`${PAGE_URL.COMMUNITY}/${postId}${PAGE_URL.EDIT}`, {
+        state: { guestPassword: password },
+      });
     } catch {
       alert('비밀번호가 일치하지 않습니다.');
     }
