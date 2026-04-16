@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
+import Checkbox from '../../../../common/components/Checkbox/Checkbox';
 import CommunityPostForm from '../../../../common/components/CommunityPostForm/CommunityPostForm';
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
 import { PAGE_URL } from '../../../../common/constants/url';
@@ -48,10 +49,7 @@ function CommunityPostCreateForm() {
 
   const shouldShowGuestFields = !isAuthenticated || isAnonymous;
   const isOptionValid = shouldShowGuestFields
-    ? Boolean(
-        nickname.trim() &&
-        guestPassword.trim(),
-      )
+    ? Boolean(nickname.trim() && guestPassword.trim())
     : true;
 
   const optionSection = (
@@ -80,15 +78,11 @@ function CommunityPostCreateForm() {
       )}
 
       <S_CheckboxRow>
-        <S_CheckboxLabel>
-          <S_CheckboxInput
-            type="checkbox"
-            checked={isAnonymous}
-            onChange={(e) => setIsAnonymous(e.target.checked)}
-          />
-          <S_CheckboxIndicator checked={isAnonymous} />
-          <S_CheckboxText>익명</S_CheckboxText>
-        </S_CheckboxLabel>
+        <Checkbox
+          label="익명"
+          checked={isAnonymous}
+          onChange={(e) => setIsAnonymous(e.target.checked)}
+        />
       </S_CheckboxRow>
     </S_Section>
   );
@@ -106,8 +100,8 @@ function CommunityPostCreateForm() {
           isAnonymous,
           ...(shouldShowGuestFields
             ? {
-              nickname: nickname.trim(),
-              guestPassword: guestPassword.trim(),
+                nickname: nickname.trim(),
+                guestPassword: guestPassword.trim(),
               }
             : {}),
         })
@@ -183,54 +177,4 @@ const S_Input = styled.input`
     outline: none;
     border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
-`;
-
-const S_CheckboxLabel = styled.label`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-
-  width: fit-content;
-  cursor: pointer;
-`;
-
-const S_CheckboxInput = styled.input`
-  position: absolute;
-
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-`;
-
-const S_CheckboxIndicator = styled.span<{ checked: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 1.8rem;
-  height: 1.8rem;
-  border: 1px solid
-    ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
-  border-radius: 0.4rem;
-
-  background-color: ${({ theme, checked }) =>
-    checked ? theme.SYSTEM.MAIN500 : theme.BG.WHITE};
-
-  &::after {
-    content: '';
-
-    width: 0.5rem;
-    height: 0.9rem;
-    border-right: 2px solid ${({ theme }) => theme.BG.WHITE};
-    border-bottom: 2px solid ${({ theme }) => theme.BG.WHITE};
-    opacity: ${({ checked }) => (checked ? 1 : 0)};
-    transform: rotate(45deg) translate(-1px, -1px);
-  }
-`;
-
-const S_CheckboxText = styled.span`
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
