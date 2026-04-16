@@ -2,6 +2,7 @@ package fittoring.domain.model;
 
 public enum ImageType {
 
+    MEMBER_PROFILE,
     MENTORING_PROFILE,
     CERTIFICATE,
     CHAT,
@@ -9,6 +10,9 @@ public enum ImageType {
     ;
 
     public static String getDir(ImageType imageType) {
+        if (imageType == MEMBER_PROFILE) {
+            return "member-profile-image";
+        }
         if (imageType == MENTORING_PROFILE) {
             return "profile-image";
         }
@@ -22,6 +26,9 @@ public enum ImageType {
     }
 
     public static ImageType fromDir(String dir) {
+        if ("member-profile-image".equals(dir)) {
+            return MEMBER_PROFILE;
+        }
         if ("profile-image".equals(dir)) {
             return MENTORING_PROFILE;
         }

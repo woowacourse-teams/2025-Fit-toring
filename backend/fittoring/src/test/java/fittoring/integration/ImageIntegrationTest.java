@@ -33,12 +33,13 @@ public class ImageIntegrationTest extends AbstractApiDocumentationTest {
     void issuePresignedUrl() {
         // given
         IssuedPresignedRequest request = new IssuedPresignedRequest(
-                ImageType.MENTORING_PROFILE,
+                ImageType.MEMBER_PROFILE,
                 ImageExtension.JPG
         );
 
         PresignedIssueResponse response = new PresignedIssueResponse(
                 "https://s3.ap-northeast-2.amazonaws.com/bucket/key?signature=...",
+                "fit-toring/local/member-profile-image/default/test-image.jpg",
                 LocalDateTime.now().plusMinutes(3)
         );
 
@@ -67,6 +68,8 @@ public class ImageIntegrationTest extends AbstractApiDocumentationTest {
                                 .responseFields(
                                         fieldWithPath("presignedUrl").type(JsonFieldType.STRING)
                                                 .description("발급된 Presigned URL"),
+                                        fieldWithPath("key").type(JsonFieldType.STRING)
+                                                .description("업로드 후 저장에 사용할 S3 object key"),
                                         fieldWithPath("expiresAt").type(JsonFieldType.STRING).description("URL 만료 시간")
                                 )
                                 .build())))
@@ -84,7 +87,7 @@ public class ImageIntegrationTest extends AbstractApiDocumentationTest {
     void issuePresignedUrl_S3Exception() {
         // given
         IssuedPresignedRequest request = new IssuedPresignedRequest(
-                ImageType.MENTORING_PROFILE,
+                ImageType.MEMBER_PROFILE,
                 ImageExtension.JPG
         );
 
