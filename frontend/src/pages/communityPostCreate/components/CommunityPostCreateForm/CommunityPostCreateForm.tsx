@@ -1,9 +1,15 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
+import Checkbox from '../../../../common/components/Checkbox/Checkbox';
 import CommunityPostForm from '../../../../common/components/CommunityPostForm/CommunityPostForm';
+import FormField from '../../../../common/components/FormField/FormField';
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
+import { COMMUNITY_POST } from '../../../../common/constants/communityPost';
+import { COMMUNITY_POST_ERROR_MESSAGE } from '../../../../common/constants/communityPost';
 import { PAGE_URL } from '../../../../common/constants/url';
 import { authCheckQueryOptions } from '../../../../common/queries/auth';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
@@ -11,6 +17,9 @@ import { postCommunityPostDetail } from '../../apis/postCommunityPostDetail';
 
 function CommunityPostCreateForm() {
   const navigate = useNavigate();
+  const [nickname, setNickname] = useState('');
+  const [guestPassword, setGuestPassword] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
 
   const { isPending, isSuccess: isAuthenticated } = useQuery(
     authCheckQueryOptions,
@@ -41,12 +50,85 @@ function CommunityPostCreateForm() {
     );
   }
 
+  const shouldShowGuestFields = !isAuthenticated || isAnonymous;
+  const isNicknameValid =
+    nickname.trim().length >= COMMUNITY_POST.NICKNAME.MIN_LENGTH &&
+    nickname.trim().length <= COMMUNITY_POST.NICKNAME.MAX_LENGTH;
+  const isGuestPasswordValid =
+    guestPassword.trim().length === COMMUNITY_POST.GUEST_PASSWORD.LENGTH;
+  const isOptionValid = shouldShowGuestFields
+    ? isNicknameValid && isGuestPasswordValid
+    : true;
+  const nicknameErrorMessage =
+    shouldShowGuestFields && nickname.trim() !== '' && !isNicknameValid
+      ? COMMUNITY_POST_ERROR_MESSAGE.NICKNAME_LENGTH
+      : '';
+  const guestPasswordErrorMessage =
+    shouldShowGuestFields &&
+    guestPassword.trim() !== '' &&
+    !isGuestPasswordValid
+      ? COMMUNITY_POST_ERROR_MESSAGE.GUEST_PASSWORD_LENGTH
+      : '';
+
+  const optionSection = (
+    <S_Section>
+      {shouldShowGuestFields && <S_Divider />}
+      <S_Content>
+        {shouldShowGuestFields && (
+          <S_FieldGroup>
+            <FormField label="닉네임" errorMessage={nicknameErrorMessage}>
+              <S_Input
+                value={nickname}
+                maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
+                placeholder="닉네임을 입력하세요."
+                onChange={(e) => setNickname(e.target.value)}
+              />
+            </FormField>
+            <FormField
+              label="비밀번호"
+              errorMessage={guestPasswordErrorMessage}
+            >
+              <S_Input
+                type="password"
+                value={guestPassword}
+                maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
+                placeholder="비밀번호를 입력하세요."
+                onChange={(e) => setGuestPassword(e.target.value)}
+              />
+            </FormField>
+          </S_FieldGroup>
+        )}
+
+        <S_CheckboxRow>
+          <Checkbox
+            label="익명"
+            checked={isAnonymous}
+            onChange={(e) => setIsAnonymous(e.target.checked)}
+          />
+        </S_CheckboxRow>
+      </S_Content>
+    </S_Section>
+  );
+
   return (
     <CommunityPostForm
-      isAuthenticated={isAuthenticated}
       isSubmitPending={isSubmitPending}
+      isOptionValid={isOptionValid}
+      optionSection={optionSection}
       submitLabel="작성 완료"
-      onSavePost={(values) => mutate(values)}
+      onSavePost={({ title, content }) =>
+        mutate({
+          title,
+          content,
+          isAnonymous,
+          ...(shouldShowGuestFields
+            ? {
+                nickname: nickname.trim(),
+                guestPassword: guestPassword.trim(),
+              }
+            : {}),
+        })
+      }
     />
   );
 }
@@ -61,4 +143,57 @@ const S_LoadingContainer = styled.main`
   min-height: calc(100dvh - 5.7rem);
 
   background-color: ${({ theme }) => theme.BG.WHITE};
+`;
+
+const S_Section = styled.section`
+  display: flex;
+  flex-direction: column;
+`;
+
+const S_Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+
+  padding: 1.2rem 1.4rem 1.6rem;
+`;
+
+const S_Divider = styled.div`
+  width: 100%;
+  height: 1px;
+
+  background-color: ${({ theme }) => theme.OUTLINE.REGULAR};
+`;
+
+const S_FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+`;
+
+const S_CheckboxRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const S_Input = styled.input`
+  width: 100%;
+  height: 4.4rem;
+  padding: 0 1.3rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 1.2rem;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+
+  color: ${({ theme }) => theme.FONT.B01};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+
+  &::placeholder {
+    color: ${({ theme }) => theme.SYSTEM.GRAY300};
+  }
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  }
 `;
