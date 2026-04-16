@@ -1,75 +1,52 @@
-import { useEffect, useState } from 'react';
-import type { FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 
 import styled from '@emotion/styled';
 
 import Button from '../Button/Button';
 
-import type { CommunityPostFormValues } from '../../types/communityPostForm';
+type CommunityPostFormInitialValues = {
+  title?: string;
+  content?: string;
+};
 
 interface CommunityPostFormProps {
-  initialValues?: CommunityPostFormValues;
-  onSavePost: (values: CommunityPostFormValues) => void;
+  initialValues?: CommunityPostFormInitialValues;
+  onSavePost: (values: {
+    title: string;
+    content: string;
+  }) => void;
+  isOptionValid: boolean;
   isSubmitPending?: boolean;
-  isAuthenticated: boolean;
+  optionSection?: ReactNode;
   submitLabel?: string;
 }
 
 function CommunityPostForm({
   initialValues,
   onSavePost,
+  isOptionValid,
   isSubmitPending = false,
-  isAuthenticated,
+  optionSection,
   submitLabel = '작성 완료',
 }: CommunityPostFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [content, setContent] = useState(initialValues?.content ?? '');
-  const [nickname, setNickname] = useState(initialValues?.nickname ?? '');
-  const [guestPassword, setGuestPassword] = useState(
-    initialValues?.guestPassword ?? '',
-  );
-  const [isAnonymous, setIsAnonymous] = useState(
-    initialValues?.isAnonymous ?? false,
-  );
 
-  useEffect(() => {
-    setTitle(initialValues?.title ?? '');
-    setContent(initialValues?.content ?? '');
-    setNickname(initialValues?.nickname ?? '');
-    setGuestPassword(initialValues?.guestPassword ?? '');
-    setIsAnonymous(initialValues?.isAnonymous ?? false);
-  }, [initialValues]);
-
-  const shouldShowGuestFields = !isAuthenticated;
-  const isFormFilled = shouldShowGuestFields
-    ? Boolean(
-        title.trim() &&
-        content.trim() &&
-        nickname.trim() &&
-        guestPassword.trim(),
-      )
-    : Boolean(title.trim() && content.trim());
+  const isEditorFilled = Boolean(title.trim() && content.trim());
+  const isSubmitEnabled = isEditorFilled && isOptionValid;
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!isFormFilled || isSubmitPending) {
+    if (!isSubmitEnabled || isSubmitPending) {
       return;
     }
 
-    const values: CommunityPostFormValues = {
+    onSavePost({
       title: title.trim(),
       content: content.trim(),
-      isAnonymous,
-      ...(shouldShowGuestFields
-        ? {
-            nickname: nickname.trim(),
-            guestPassword: guestPassword.trim(),
-          }
-        : {}),
-    };
-
-    onSavePost(values);
+    });
   };
 
   return (
@@ -89,38 +66,12 @@ function CommunityPostForm({
           />
         </S_EditorSection>
 
-        {shouldShowGuestFields && (
-          <S_BottomArea>
-            <S_ExtraInput
-              value={nickname}
-              placeholder="닉네임을 입력하세요."
-              onChange={(e) => setNickname(e.target.value)}
-            />
-            <S_ExtraInput
-              type="password"
-              value={guestPassword}
-              placeholder="비밀번호를 입력하세요."
-              onChange={(e) => setGuestPassword(e.target.value)}
-            />
-          </S_BottomArea>
-        )}
-
-        <S_OptionRow>
-          <S_CheckboxLabel>
-            <S_CheckboxInput
-              type="checkbox"
-              checked={isAnonymous}
-              onChange={(e) => setIsAnonymous(e.target.checked)}
-            />
-            <S_CheckboxIndicator checked={isAnonymous} />
-            <S_CheckboxText>익명</S_CheckboxText>
-          </S_CheckboxLabel>
-        </S_OptionRow>
+        {optionSection}
         <S_SubmitButton
           type="submit"
           size="full"
-          variant={isFormFilled && !isSubmitPending ? 'primary' : 'disabled'}
-          disabled={!isFormFilled || isSubmitPending}
+          variant={isSubmitEnabled && !isSubmitPending ? 'primary' : 'disabled'}
+          disabled={!isSubmitEnabled || isSubmitPending}
         >
           {submitLabel}
         </S_SubmitButton>
@@ -197,91 +148,6 @@ const S_ContentInput = styled.textarea`
   &:focus {
     outline: none;
   }
-`;
-
-const S_BottomArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.8rem;
-
-  padding: 1.2rem 1.4rem;
-  border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-
-  background-color: ${({ theme }) => theme.BG.WHITE};
-`;
-
-const S_ExtraInput = styled.input`
-  width: 100%;
-  height: 4.4rem;
-  padding: 0 1.3rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 1.2rem;
-
-  background-color: ${({ theme }) => theme.BG.WHITE};
-
-  color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
-
-  &::placeholder {
-    color: ${({ theme }) => theme.SYSTEM.GRAY300};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  }
-`;
-
-const S_OptionRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
-
-  padding: 0 1.4rem 1.2rem;
-`;
-
-const S_CheckboxLabel = styled.label`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-
-  cursor: pointer;
-`;
-
-const S_CheckboxInput = styled.input`
-  display: none;
-`;
-
-const S_CheckboxIndicator = styled.span<{ checked: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 1.8rem;
-  height: 1.8rem;
-  border: 1px solid
-    ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
-  border-radius: 0.4rem;
-
-  background-color: ${({ theme, checked }) =>
-    checked ? theme.SYSTEM.MAIN500 : theme.BG.WHITE};
-
-  &::after {
-    content: '';
-
-    width: 0.5rem;
-    height: 0.9rem;
-    border-right: 2px solid ${({ theme }) => theme.BG.WHITE};
-    border-bottom: 2px solid ${({ theme }) => theme.BG.WHITE};
-    opacity: ${({ checked }) => (checked ? 1 : 0)};
-    transform: rotate(45deg) translate(-1px, -1px);
-  }
-`;
-
-const S_CheckboxText = styled.span`
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
 const S_SubmitButton = styled(Button)`
