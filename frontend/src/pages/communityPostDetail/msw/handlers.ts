@@ -8,6 +8,8 @@ import {
   POST_COMMENTS,
 } from './data';
 
+import type { PostCommentRequest } from '../types/postComment';
+
 const BASE_URL = process.env.API_BASE_URL;
 const COMMUNITY_POST_DETAIL_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId`;
 const POST_COMMENTS_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/comments`;
@@ -28,6 +30,31 @@ const getCommunityPostDetail = http.get(
 
 const getPostComments = http.get(POST_COMMENTS_URL, async () => {
   return HttpResponse.json(POST_COMMENTS);
+});
+
+let nextCommentId = Math.max(...POST_COMMENTS.map(({ id }) => id)) + 1;
+
+const postPostComment = http.post(POST_COMMENTS_URL, async ({ request }) => {
+  const requestBody = (await request.json()) as PostCommentRequest;
+
+  const newComment = {
+    id: nextCommentId++,
+    content: requestBody.content,
+    nickname:
+      requestBody.nickname ??
+      (requestBody.isAnonymous ? '익명' : '작성자명'),
+    isAnonymous: requestBody.isAnonymous ?? false,
+    isGuestComment: Boolean(requestBody.guestPassword),
+    rootId: requestBody.rootId,
+    parentId: requestBody.parentId,
+    isDeleted: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  POST_COMMENTS.push(newComment);
+  COMMUNITY_POST_DETAIL.commentCount += 1;
+
+  return HttpResponse.json(newComment, { status: 201 });
 });
 
 const postGuestPostCheck = http.post(
@@ -70,6 +97,7 @@ const deleteCommunityPost = http.delete(
 export const communityPostDetailHandler = [
   getCommunityPostDetail,
   getPostComments,
+  postPostComment,
   postGuestPostCheck,
   deleteCommunityPost,
 ];
