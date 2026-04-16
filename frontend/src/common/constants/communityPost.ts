@@ -1,0 +1,20 @@
+export const COMMUNITY_POST = {
+  TITLE: {
+    MAX_LENGTH: 50,
+  },
+  CONTENT: {
+    MAX_LENGTH: 5000,
+  },
+  NICKNAME: {
+    MIN_LENGTH: 2,
+    MAX_LENGTH: 10,
+  },
+  GUEST_PASSWORD: {
+    LENGTH: 4,
+  },
+} as const;
+
+export const COMMUNITY_POST_ERROR_MESSAGE = {
+  NICKNAME_LENGTH: `닉네임은 ${COMMUNITY_POST.NICKNAME.MIN_LENGTH}자 이상 ${COMMUNITY_POST.NICKNAME.MAX_LENGTH}자 이하로 입력해주세요.`,
+  GUEST_PASSWORD_LENGTH: `비밀번호는 ${COMMUNITY_POST.GUEST_PASSWORD.LENGTH}자로 입력해주세요.`,
+} as const;
