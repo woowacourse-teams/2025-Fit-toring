@@ -155,7 +155,8 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
                                                 .optional(),
                                         fieldWithPath("profileImageKey").type(JsonFieldType.STRING)
-                                                .description("회원 프로필 이미지 key. 빈 문자열이면 삭제")
+                                                .description(
+                                                        "이미지 업로드 API에서 imageType=MEMBER_PROFILE로 발급받은 S3 object key. MEMBER_PROFILE/default 경로의 key만 허용하며, 빈 문자열이면 삭제")
                                                 .optional()
                                 )
                                 .build())))
@@ -451,6 +452,15 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .accept("application/json")
                 .contentType(ContentType.JSON)
                 .cookie("accessToken", accessToken)
+                .filter(documentWithTag("member/patch-memberInfo-fail-invalid-profile-image-key",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .summary("회원 정보 수정 - 잘못된 프로필 이미지 key")
+                                .description(
+                                        "profileImageKey가 MEMBER_PROFILE/default 경로의 key가 아니면 400 Bad Request를 반환합니다.")
+                                .requestSchema(Schema.schema("MemberInfoUpdateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
                 .body(request)
                 .when()
                 .patch("/members/me")
