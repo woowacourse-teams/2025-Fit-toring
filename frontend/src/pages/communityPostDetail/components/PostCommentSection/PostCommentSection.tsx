@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 
@@ -10,13 +12,21 @@ import type { PostComment } from '../../types/postComment';
 
 interface PostCommentSectionProps {
   postId: string;
+  onReplyClick: (comment: PostComment) => void;
+  onEditClick: (comment: PostComment) => void;
+  onDeleteClick: (comment: PostComment) => void;
 }
 
 interface PostCommentNode extends PostComment {
   children: PostCommentNode[];
 }
 
-function PostCommentSection({ postId }: PostCommentSectionProps) {
+function PostCommentSection({
+  postId,
+  onReplyClick,
+  onEditClick,
+  onDeleteClick,
+}: PostCommentSectionProps) {
   const {
     data: commentData = [],
     isPending,
@@ -45,7 +55,9 @@ function PostCommentSection({ postId }: PostCommentSectionProps) {
       ) : null}
       {!isPending && !isError && commentTree.length > 0 ? (
         <S_CommentList>
-          {commentTree.flatMap((comment) => renderCommentNode(comment))}
+          {commentTree.flatMap((comment) =>
+            renderCommentNode(comment, onReplyClick, onEditClick, onDeleteClick),
+          )}
         </S_CommentList>
       ) : null}
     </S_Container>
@@ -56,12 +68,28 @@ export default PostCommentSection;
 
 function renderCommentNode(
   comment: PostCommentNode,
+  onReplyClick: (comment: PostComment) => void,
+  onEditClick: (comment: PostComment) => void,
+  onDeleteClick: (comment: PostComment) => void,
   depth = 0,
-): React.ReactNode[] {
+): ReactNode[] {
   return [
-    <CommentItem key={comment.id} comment={comment} depth={depth} />,
+    <CommentItem
+      key={comment.id}
+      comment={comment}
+      depth={depth}
+      onReplyClick={onReplyClick}
+      onEditClick={onEditClick}
+      onDeleteClick={onDeleteClick}
+    />,
     ...comment.children.flatMap((childComment) =>
-      renderCommentNode(childComment, depth + 1),
+      renderCommentNode(
+        childComment,
+        onReplyClick,
+        onEditClick,
+        onDeleteClick,
+        depth + 1,
+      ),
     ),
   ];
 }

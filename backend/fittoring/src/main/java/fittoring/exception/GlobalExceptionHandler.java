@@ -19,6 +19,7 @@ import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.InvalidCertificateException;
 import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.InvalidCursorException;
+import fittoring.application.exception.InvalidImageKeyException;
 import fittoring.application.exception.InvalidMemberRoleException;
 import fittoring.application.exception.InvalidPhoneVerificationException;
 import fittoring.application.exception.InvalidStatusException;
@@ -228,6 +229,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCursorException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidCursorException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidImageKeyException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidImageKeyException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
