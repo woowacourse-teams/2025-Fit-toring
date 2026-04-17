@@ -1,3 +1,58 @@
+# [1.19.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.18.0...v1.19.0) (2026-04-17)
+
+
+### Bug Fixes
+
+* BusinessErrorMessage 한글 깨짐 현상 수정 ([8dc9321](https://github.com/woowacourse-teams/2025-Fit-toring/commit/8dc932113fbcb54aa949ebe7ed0a17a11f73b230))
+* Dockerfile APT 소스 수정 및 패키지 설치 로직 개선 ([ed30ae6](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ed30ae63850c5ddad4d4642700b69dc197d69b15))
+* SQS 메시지 직렬화 설정 연결 ([#1444](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1444)) ([ba3a960](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ba3a960aac020e0cc32a0b3449d68ebb7c537112))
+* 게시글 및 댓글 통합 테스트 문서화 개선 ([c24dafe](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c24dafed57d769526b7c3e40beda05d91438964a))
+* 비회원 게시글 및 댓글의 비밀번호 검증 로직 개선 ([e817a60](https://github.com/woowacourse-teams/2025-Fit-toring/commit/e817a60fcc2c01aed5ac7b3b9f45d48ad973f796))
+* 채팅 SQS publish 설정 명시화 ([#1441](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1441)) ([e48654b](https://github.com/woowacourse-teams/2025-Fit-toring/commit/e48654bb6ecc8d85c3e6c29750bb9b32fca17377))
+
+
+### Features
+
+* Grafana 대시보드 프로비저닝 자동화 ([#1420](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1420)) ([9ac1dcb](https://github.com/woowacourse-teams/2025-Fit-toring/commit/9ac1dcb136394d364547f003b1a77d962312ce32))
+* nginx 기반 reverse proxy 설정 추가 ([64bc1e3](https://github.com/woowacourse-teams/2025-Fit-toring/commit/64bc1e31fd4c1ea963e4c512fce719884280f7fb))
+* OptionalAuth 어노테이션 추가 및 인증 인터셉터 로직 개선 ([d6f7210](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d6f7210b9e819b7b58ad175d5b882602e3f5bd91))
+* PostRepository와 CommentRepository에 @Repository 어노테이션 추가 ([595ee47](https://github.com/woowacourse-teams/2025-Fit-toring/commit/595ee4749a5468aac6680176dac0d1a7f4ce40c2))
+* Redis 기반 휴대폰 인증 시도 횟수 증가 로직 개선 ([955c181](https://github.com/woowacourse-teams/2025-Fit-toring/commit/955c181223bcf3c4233b6b295a06ed4d1fa6fc74))
+* Refresh Token Redis 저장소 적용 ([353b007](https://github.com/woowacourse-teams/2025-Fit-toring/commit/353b0072e77243631c4c4b9a299b68e2c19f61d7))
+* STOMP 하트비트 추가 ([4235ae6](https://github.com/woowacourse-teams/2025-Fit-toring/commit/4235ae643cab468eaa1f1e111e14792a0ecd1b4f))
+* websocket 서버 내부 레이턴시 메트릭 추가 ([#1428](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1428)) ([38dba0f](https://github.com/woowacourse-teams/2025-Fit-toring/commit/38dba0f63eaa64b3c63f7649c320941addfa8193))
+* 게시글 Presentation 계층 및 통합 테스트 추가 ([d912e31](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d912e3186df58c1939d1176d73ed3a2ea78d7476))
+* 게시글 도메인 및 테스트 코드 추가 ([3e371ed](https://github.com/woowacourse-teams/2025-Fit-toring/commit/3e371ededa7fdf2ae7c29a26f362595dbb939c39))
+* 게시글 목록 조회 시 댓글 수 포함 기능 추가 및 관련 테스트 작성 ([b53e1da](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b53e1da1c37a81d1debb55e937c0d16ff1ca0826))
+* 게시글 및 댓글 생성/수정 시 비회원 요청 유효성 검증 메시지 추가 ([7f85dca](https://github.com/woowacourse-teams/2025-Fit-toring/commit/7f85dca19ddca5ea248e9611681c50c162b69418))
+* 게시글 및 댓글 예외 처리 로직 추가 ([87d3404](https://github.com/woowacourse-teams/2025-Fit-toring/commit/87d3404b19d4cdd723df6788db32ddb9e43d0612))
+* 게시글 및 댓글 테이블 생성 ([a4010e1](https://github.com/woowacourse-teams/2025-Fit-toring/commit/a4010e188788e5bd9dde857e2c4cc4b981bf892a))
+* 게시글 상세 조회 isMine 및 댓글 수 추가 ([d2a3fd6](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d2a3fd6462e5b37cd8f02cfa1f5ff6cd9a8afa82))
+* 게시글 서비스 및 테스트 코드 추가 ([7314ea5](https://github.com/woowacourse-teams/2025-Fit-toring/commit/7314ea554b78fb54e69addb31db98288ba1e0b01))
+* 게시글 조회수 및 좋아요 수 컬럼 추가 및 로직 구현 ([a86ae86](https://github.com/woowacourse-teams/2025-Fit-toring/commit/a86ae86e84590063829fe2a49905e1a6769fe3cd))
+* 게시글 커스텀 레포지토리 및 페이지네이션 로직 추가 ([36aceba](https://github.com/woowacourse-teams/2025-Fit-toring/commit/36aceba54b42d584e2076b6a0cff772a4d6fdaae))
+* 게시글별 댓글 수 조회 기능 추가 및 테스트 케이스 작성 ([1a67a2f](https://github.com/woowacourse-teams/2025-Fit-toring/commit/1a67a2fa5a73304fedbb283b1bc7fc90c0ebe09e))
+* 댓글 Presentation 계층 및 통합 테스트 추가 ([5d66853](https://github.com/woowacourse-teams/2025-Fit-toring/commit/5d6685371aaffea5755371f9fa473ce02ccf118c))
+* 댓글 대댓글 생성 시 필수 id 유효성 검증 로직 추가 ([4e3b29b](https://github.com/woowacourse-teams/2025-Fit-toring/commit/4e3b29b9520cfee6c7501a0bd4a3b819f7928f54))
+* 댓글 도메인 및 테스트 코드 추가 ([4e3ecdc](https://github.com/woowacourse-teams/2025-Fit-toring/commit/4e3ecdc9edc9c09052fcb1ac1a30c55712cddc43))
+* 댓글 레포지토리 추가 ([bd74cc4](https://github.com/woowacourse-teams/2025-Fit-toring/commit/bd74cc43fd84f02116d7ea8ce7af05a3e81086ce))
+* 댓글 삭제 시 @Valid 어노테이션 추가 ([fffb2d2](https://github.com/woowacourse-teams/2025-Fit-toring/commit/fffb2d2e821947ea42a19f86ef617ced2c614d85))
+* 댓글 생성 시 비회원 요청 유효성 검증 추가 ([c46d353](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c46d3533e8f61b5cf752265e5ecc57f60f722c28))
+* 댓글 서비스 및 테스트 코드 추가 ([b07f305](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b07f305d5547b706abefc1fce399a169107ace45))
+* 비회원 게시글 및 댓글 생성 시 필수 필드 유효성 검증 추가 ([cdb488d](https://github.com/woowacourse-teams/2025-Fit-toring/commit/cdb488da4fdfef4d47a387073f0b4c4f28ee0f83))
+* 비회원 게시글 수정 테스트 케이스 추가 ([e9b3923](https://github.com/woowacourse-teams/2025-Fit-toring/commit/e9b39238ba9e2a59bdcaafd6752f47d950416d37))
+* 비회원 댓글 비밀번호 검증 기능 추가 ([ea4f65e](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ea4f65ee42f650265655617f546ce4f8a859ff71))
+* 비회원 댓글 비밀번호 확인 RestDocs 문서화 적용 ([257bcd6](https://github.com/woowacourse-teams/2025-Fit-toring/commit/257bcd6a32bcfce9a294000e36feeae7f4695b55))
+* 성능 테스트 인스턴스용 arm 이미지를 함께 빌드하도록 스크립트 추가 ([0d29077](https://github.com/woowacourse-teams/2025-Fit-toring/commit/0d29077d2bfc160ed3c777cb61b64a1b71f9c18c))
+* 웹소켓 모니터링 대시보드 개선 및 성능 분석용 요약 지표 추가 ([#1424](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1424)) ([b8c0ef0](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b8c0ef061458103330e933404b0469cb24808313))
+* 웹소켓 세션 및 종료 상태 코드 모니터링 추가 ([#1414](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1414)) ([b0435f9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/b0435f9157195866a622ce6cb202d6b94018d21e))
+* 인증 예외 계층 구조 추가 및 OptionalAuth 관련 테스트 보강 ([2166474](https://github.com/woowacourse-teams/2025-Fit-toring/commit/2166474a5ee22345f5e97b9e5e2069ab9a4216e2))
+* 채팅 테이블 성능 최적화를 위한 인덱스 추가 ([1ffd722](https://github.com/woowacourse-teams/2025-Fit-toring/commit/1ffd722a4f16e581d981e7fd576294c188b657c7))
+* 채팅방 목록 조회 필터링 및 정렬 로직 개선 ([0691dc4](https://github.com/woowacourse-teams/2025-Fit-toring/commit/0691dc4b15817ff07bca130996b57776aea7e8cc))
+* 채팅방 정렬 로직 추가 및 생성일 필드 Getter 설정 ([3df5e45](https://github.com/woowacourse-teams/2025-Fit-toring/commit/3df5e45656735ef487add180b861cf91251d2a06))
+* 하트비트 설정 추가 [#1410](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1410) ([#1411](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1411)) ([2f84034](https://github.com/woowacourse-teams/2025-Fit-toring/commit/2f84034c1b644286c2024f4cad0411ba1cc14c3b))
+* 휴대폰 인증 Redis 저장소 적용 ([aea6a0e](https://github.com/woowacourse-teams/2025-Fit-toring/commit/aea6a0e2116cff04593a605defe3ee50b4762d2e))
+
 # [1.18.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.17.0...v1.18.0) (2026-03-07)
 
 
