@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 
 import styled from '@emotion/styled';
@@ -9,6 +9,7 @@ import upIcon from '../../../../common/assets/images/upIcon.svg';
 import Checkbox from '../../../../common/components/Checkbox/Checkbox';
 import { COMMUNITY_POST } from '../../../../common/constants/communityPost';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
+import { patchCommunityPostComment } from '../../apis/patchCommunityPostComment';
 import { postCommunityPostComment } from '../../apis/postCommunityPostComment';
 
 import type { PostComment, PostCommentRequest } from '../../types/postComment';
@@ -17,16 +18,24 @@ interface InputSectionProps {
   postId: string;
   authenticated: boolean;
   replyTarget: PostComment | null;
+  editingComment: PostComment | null;
+  editingCommentGuestPassword?: string;
   onCancelReply: () => void;
+  onCancelEdit: () => void;
   onSubmitSuccess: () => void;
+  onSubmitEditSuccess: () => void;
 }
 
 function InputSection({
   postId,
   authenticated,
   replyTarget,
+  editingComment,
+  editingCommentGuestPassword,
   onCancelReply,
+  onCancelEdit,
   onSubmitSuccess,
+  onSubmitEditSuccess,
 }: InputSectionProps) {
   const queryClient = useQueryClient();
   const [comment, setComment] = useState('');
@@ -35,6 +44,7 @@ function InputSection({
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isIdentityOpen, setIsIdentityOpen] = useState(() => !authenticated);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const isEditMode = editingComment !== null;
 
   const shouldRequireIdentity = !authenticated || isAnonymous;
   const isAnonymousComment = !authenticated || isAnonymous;
@@ -45,9 +55,10 @@ function InputSection({
   const isPasswordValid =
     guestPassword.trim().length === COMMUNITY_POST.GUEST_PASSWORD.LENGTH;
 
-  const isFormValid =
-    comment.trim().length > 0 &&
-    (!shouldRequireIdentity || (isNicknameValid && isPasswordValid));
+  const isFormValid = isEditMode
+    ? comment.trim().length > 0
+    : comment.trim().length > 0 &&
+      (!shouldRequireIdentity || (isNicknameValid && isPasswordValid));
 
   const { mutate: postCommentMutate, isPending: isSubmitPending } = useMutation(
     {
@@ -80,9 +91,47 @@ function InputSection({
     },
   );
 
+  const { mutate: patchCommentMutate, isPending: isEditSubmitPending } =
+    useMutation({
+      mutationFn: (commentData: { content: string; guestPassword?: string }) =>
+        patchCommunityPostComment(editingComment!.id, commentData),
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: ['postComments', postId],
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ['communityPostDetail', postId],
+        });
+
+        setComment('');
+        setSubmitAttempted(false);
+        onCancelEdit();
+        onSubmitEditSuccess();
+      },
+      onError: (error) => {
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'community-post-detail',
+          step: 'community-post-comment-update',
+        });
+        alert('댓글 수정에 실패했습니다. 다시 시도해주세요.');
+      },
+    });
+
   const replyLabel = replyTarget
     ? `@${replyTarget.nickname}에게 답글 작성 중`
     : '';
+  const editLabel = editingComment ? '댓글 수정 중' : '';
+  let commentPlaceholder = '댓글을 입력해주세요.';
+
+  if (replyTarget) {
+    commentPlaceholder = '답글을 입력해주세요.';
+  }
+
+  if (isEditMode) {
+    commentPlaceholder = '수정할 내용을 입력해주세요.';
+  }
 
   const handleIdentityToggle = () => {
     setIsIdentityOpen((current) => !current);
@@ -144,6 +193,20 @@ function InputSection({
     e.preventDefault();
     setSubmitAttempted(true);
 
+    if (isEditMode) {
+      if (!isFormValid || isEditSubmitPending) {
+        return;
+      }
+
+      patchCommentMutate({
+        content: comment.trim(),
+        ...(editingComment?.isGuestComment || editingComment?.isAnonymous
+          ? { guestPassword: editingCommentGuestPassword }
+          : {}),
+      });
+      return;
+    }
+
     if (shouldRequireIdentity && !isIdentityOpen) {
       setIsIdentityOpen(true);
       return;
@@ -164,13 +227,38 @@ function InputSection({
         : {}),
       parentId: replyTarget?.id ?? null,
       rootId: replyTarget ? (replyTarget.rootId ?? replyTarget.id) : null,
-    });
+      });
   };
+
+  useEffect(() => {
+    if (editingComment) {
+      setComment(editingComment.content);
+      setSubmitAttempted(false);
+      setIsAnonymous(false);
+      setIsIdentityOpen(false);
+      return;
+    }
+
+    setComment('');
+    setGuestPassword('');
+    setSubmitAttempted(false);
+    setIsAnonymous(false);
+    setIsIdentityOpen(!authenticated);
+  }, [authenticated, editingComment]);
 
   return (
     <S_Container>
       <S_Form onSubmit={handleCommentSubmit}>
-        {replyTarget ? (
+        {isEditMode ? (
+          <S_ReplyBanner>
+            <S_ReplyText>{editLabel}</S_ReplyText>
+            <S_ReplyCancelButton type="button" onClick={onCancelEdit}>
+              취소
+            </S_ReplyCancelButton>
+          </S_ReplyBanner>
+        ) : null}
+
+        {!isEditMode && replyTarget ? (
           <S_ReplyBanner>
             <S_ReplyText>{replyLabel}</S_ReplyText>
             <S_ReplyCancelButton type="button" onClick={onCancelReply}>
@@ -179,17 +267,19 @@ function InputSection({
           </S_ReplyBanner>
         ) : null}
 
-        <S_ActionRow>
-          {authenticated ? (
-            <Checkbox
-              label="익명"
-              checked={isAnonymous}
-              onChange={handleAnonymousChange}
-            />
-          ) : null}
-        </S_ActionRow>
+        {!isEditMode ? (
+          <S_ActionRow>
+            {authenticated ? (
+              <Checkbox
+                label="익명"
+                checked={isAnonymous}
+                onChange={handleAnonymousChange}
+              />
+            ) : null}
+          </S_ActionRow>
+        ) : null}
 
-        {shouldRequireIdentity ? (
+        {!isEditMode && shouldRequireIdentity ? (
           <>
             <S_IdentityHeader type="button" onClick={handleIdentityToggle}>
               <S_IdentityHeaderText>작성자 정보</S_IdentityHeaderText>
@@ -249,15 +339,15 @@ function InputSection({
         <S_CommentRow>
           <S_CommentInput
             value={comment}
-            placeholder={
-              replyTarget ? '답글을 입력해주세요.' : '댓글을 입력해주세요.'
-            }
+            placeholder={commentPlaceholder}
             onChange={handleCommentChange}
           />
           <S_SubmitButton
             type="submit"
-            disabled={!isFormValid || isSubmitPending}
-            aria-label="댓글 등록"
+            disabled={
+              !isFormValid || isSubmitPending || (isEditMode && isEditSubmitPending)
+            }
+            aria-label={isEditMode ? '댓글 수정' : '댓글 등록'}
           >
             <S_SendIcon src={sendIcon} alt="" />
           </S_SubmitButton>

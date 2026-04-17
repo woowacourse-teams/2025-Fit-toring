@@ -4,6 +4,7 @@ export interface PostComment {
   content: string;
   isAnonymous: boolean;
   isGuestComment: boolean;
+  isMine?: boolean;
   rootId: number | null;
   parentId: number | null;
   isDeleted: boolean;
@@ -21,5 +22,9 @@ export interface PostCommentRequest {
 
 export interface PatchPostCommentRequest {
   content: string;
+  guestPassword?: string;
+}
+
+export interface DeletePostCommentRequest {
   guestPassword?: string;
 }

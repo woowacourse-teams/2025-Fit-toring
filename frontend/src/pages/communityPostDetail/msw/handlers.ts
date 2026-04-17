@@ -40,19 +40,20 @@ let nextCommentId = Math.max(...POST_COMMENTS.map(({ id }) => id)) + 1;
 const postPostComment = http.post(POST_COMMENTS_URL, async ({ request }) => {
   const requestBody = (await request.json()) as PostCommentRequest;
 
-  const newComment = {
-    id: nextCommentId++,
-    content: requestBody.content,
-    nickname:
-      requestBody.nickname ??
-      (requestBody.isAnonymous ? '익명' : '작성자명'),
-    isAnonymous: requestBody.isAnonymous ?? false,
-    isGuestComment: Boolean(requestBody.guestPassword),
-    rootId: requestBody.rootId,
-    parentId: requestBody.parentId,
-    isDeleted: false,
-    createdAt: new Date().toISOString(),
-  };
+    const newComment = {
+      id: nextCommentId++,
+      content: requestBody.content,
+      nickname:
+        requestBody.nickname ??
+        (requestBody.isAnonymous ? '익명' : '작성자명'),
+      isAnonymous: requestBody.isAnonymous ?? false,
+      isGuestComment: Boolean(requestBody.guestPassword),
+      isMine: !requestBody.isAnonymous && !requestBody.guestPassword,
+      rootId: requestBody.rootId,
+      parentId: requestBody.parentId,
+      isDeleted: false,
+      createdAt: new Date().toISOString(),
+    };
 
   POST_COMMENTS.push(newComment);
   COMMUNITY_POST_DETAIL.commentCount += 1;
@@ -84,7 +85,7 @@ const patchPostComment = http.patch(
     }
 
     if (
-      targetComment.isGuestComment &&
+      (targetComment.isGuestComment || targetComment.isAnonymous) &&
       requestBody.guestPassword !== GUEST_POST_PASSWORD
     ) {
       return HttpResponse.json(
@@ -118,7 +119,7 @@ const deletePostComment = http.delete(
     }
 
     if (
-      targetComment.isGuestComment &&
+      (targetComment.isGuestComment || targetComment.isAnonymous) &&
       requestBody?.guestPassword !== GUEST_POST_PASSWORD
     ) {
       return HttpResponse.json(
@@ -149,7 +150,7 @@ const postCommunityPostCommentGuestCheck = http.post(
       );
     }
 
-    if (!targetComment.isGuestComment) {
+    if (!targetComment.isGuestComment && !targetComment.isAnonymous) {
       return new HttpResponse(null, { status: 200 });
     }
 

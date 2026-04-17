@@ -15,7 +15,7 @@ export const COMMUNITY_POST_DETAIL: CommunityPostDetail = {
   viewCount: 100,
   likeCount: 10,
   commentCount: 20,
-} as const;
+};
 
 export const POST_COMMENTS: PostComment[] = [
   {
@@ -24,6 +24,7 @@ export const POST_COMMENTS: PostComment[] = [
     nickname: 'user1',
     isAnonymous: false,
     isGuestComment: false,
+    isMine: false,
     rootId: null,
     parentId: null,
     isDeleted: false,
@@ -35,6 +36,7 @@ export const POST_COMMENTS: PostComment[] = [
     nickname: 'user2',
     isAnonymous: false,
     isGuestComment: true,
+    isMine: false,
     rootId: 201,
     parentId: 201,
     isDeleted: false,
@@ -46,6 +48,7 @@ export const POST_COMMENTS: PostComment[] = [
     nickname: 'user3',
     isAnonymous: false,
     isGuestComment: false,
+    isMine: false,
     rootId: null,
     parentId: null,
     isDeleted: false,
@@ -57,6 +60,7 @@ export const POST_COMMENTS: PostComment[] = [
     nickname: '러너A',
     isAnonymous: true,
     isGuestComment: false,
+    isMine: false,
     rootId: 203,
     parentId: 203,
     isDeleted: false,
@@ -68,6 +72,7 @@ export const POST_COMMENTS: PostComment[] = [
     nickname: '작성자명',
     isAnonymous: false,
     isGuestComment: false,
+    isMine: true,
     rootId: 203,
     parentId: 204,
     isDeleted: false,
@@ -79,6 +84,7 @@ export const POST_COMMENTS: PostComment[] = [
     nickname: 'guest12',
     isAnonymous: false,
     isGuestComment: true,
+    isMine: false,
     rootId: null,
     parentId: null,
     isDeleted: false,
@@ -90,6 +96,7 @@ export const POST_COMMENTS: PostComment[] = [
     nickname: '작성자명',
     isAnonymous: false,
     isGuestComment: false,
+    isMine: true,
     rootId: 206,
     parentId: 206,
     isDeleted: false,
@@ -101,9 +108,10 @@ export const POST_COMMENTS: PostComment[] = [
     nickname: 'deletedUser',
     isAnonymous: false,
     isGuestComment: false,
+    isMine: false,
     rootId: null,
     parentId: null,
     isDeleted: true,
     createdAt: '2026-04-06T21:45:00',
   },
-] as const;
+];
