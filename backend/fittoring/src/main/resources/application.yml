@@ -26,6 +26,10 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 20MB
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   cloud:
     aws:
       region: ap-northeast-2
@@ -38,7 +42,7 @@ server:
   tomcat:
     remoteip:
       # 모든 프록시 주소를 신뢰하도록 설정 (도커/Cloudflare 환경에서 필수)
-      internal-proxies: ".*" 
+      internal-proxies: ".*"
       protocol-header: x-forwarded-proto
     use-relative-redirects: true
     threads:

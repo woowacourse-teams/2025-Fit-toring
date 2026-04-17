@@ -49,6 +49,7 @@ public class ChatRoom {
     @Column(name = "mentor_id", nullable = false)
     private Long mentorId;
 
+    @Getter
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -57,6 +58,27 @@ public class ChatRoom {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ChatStatus status;
+
+    @Getter
+    @Column(name = "last_message_id")
+    private Long lastMessageId;
+
+    @Getter
+    @Column(name = "last_message_content", columnDefinition = "TEXT")
+    private String lastMessageContent;
+
+    @Getter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "last_message_type")
+    private ChatMessageType lastMessageType;
+
+    @Getter
+    @Column(name = "last_message_created_at")
+    private LocalDateTime lastMessageCreatedAt;
+
+    @Getter
+    @Column(name = "last_message_sender_id")
+    private Long lastMessageSenderId;
 
     @Getter
     @Column(name = "is_deleted", nullable = false)
@@ -74,6 +96,11 @@ public class ChatRoom {
                 mentorId,
                 null,
                 ChatStatus.ACTIVATE,
+                null,
+                null,
+                null,
+                null,
+                null,
                 false,
                 null
         );
@@ -88,5 +115,17 @@ public class ChatRoom {
             return mentorId;
         }
         return menteeId;
+    }
+
+    public void updateLastMessage(ChatMessage chatMessage) {
+        this.lastMessageId = chatMessage.getId();
+        this.lastMessageContent = chatMessage.getContent();
+        this.lastMessageType = chatMessage.getMessageType();
+        this.lastMessageCreatedAt = chatMessage.getCreatedAt();
+        this.lastMessageSenderId = chatMessage.getSenderId();
+    }
+
+    public boolean hasLastMessage() {
+        return lastMessageId != null;
     }
 }

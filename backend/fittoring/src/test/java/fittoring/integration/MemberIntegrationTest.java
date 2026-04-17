@@ -1,6 +1,9 @@
 package fittoring.integration;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
@@ -8,10 +11,14 @@ import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
+import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.presentation.dto.request.MemberInfoUpdateRequest;
 import fittoring.application.member.presentation.dto.response.MyInfoSummaryResponse;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Gender;
+import fittoring.domain.model.Image;
+import fittoring.domain.model.ImageType;
+import fittoring.domain.model.ImageVariant;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.password.Password;
@@ -31,6 +38,9 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     @DisplayName("로그인 중에 사용자는 자신의 정보를 조회할 수가 있다.")
     @Test
@@ -120,7 +130,8 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 newName,
                 newGender,
                 newPassword,
-                newPhoneNumber
+                newPhoneNumber,
+                null
         );
 
         // when
@@ -142,6 +153,10 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                                         fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
                                                 .optional(),
                                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
+                                                .optional(),
+                                        fieldWithPath("profileImageKey").type(JsonFieldType.STRING)
+                                                .description(
+                                                        "이미지 업로드 API에서 imageType=MEMBER_PROFILE로 발급받은 S3 object key. MEMBER_PROFILE/default 경로의 key만 허용하며, 빈 문자열이면 삭제")
                                                 .optional()
                                 )
                                 .build())))
@@ -180,7 +195,8 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 newName,
                 null,
                 null,
-                newPhoneNumber
+                newPhoneNumber,
+                null
         );
 
         // when
@@ -234,7 +250,8 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 newName,
                 null,
                 null,
-                newPhoneNumber
+                newPhoneNumber,
+                null
         );
 
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
@@ -272,6 +289,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 null,
                 null,
                 null,
+                null,
                 null
         );
 
@@ -296,6 +314,195 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                 .then()
                 .log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("회원은 자신의 프로필 이미지 key로 프로필 이미지를 저장할 수 있다.")
+    @Test
+    void updateProfileImage() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        String profileImageKey = "fit-toring/local/member-profile-image/default/member-profile.jpg";
+        given(presignedUrlService.isObjectExistsFromKey(profileImageKey)).willReturn(true);
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null,
+                profileImageKey
+        );
+
+        // when
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .patch("/members/me")
+                .then()
+                .statusCode(204);
+
+        // then
+        Image image = imageRepository.findByImageTypeAndRelationIdAndImageVariant(
+                        ImageType.MEMBER_PROFILE,
+                        member.getId(),
+                        ImageVariant.DEFAULT
+                )
+                .orElseThrow();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(image.getKey()).isEqualTo(profileImageKey);
+            softly.assertThat(image.getUrl()).isNull();
+        });
+    }
+
+    @DisplayName("회원은 빈 문자열로 자신의 프로필 이미지를 삭제할 수 있다.")
+    @Test
+    void deleteProfileImage() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        imageRepository.save(Image.forKey(
+                "fit-toring/local/member-profile-image/default/member-profile.jpg",
+                ImageType.MEMBER_PROFILE,
+                member.getId(),
+                "member-profile"
+        ));
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null,
+                ""
+        );
+
+        // when // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .patch("/members/me")
+                .then()
+                .statusCode(204);
+
+        SoftAssertions.assertSoftly(softly -> softly.assertThat(
+                imageRepository.findByImageTypeAndRelationIdAndImageVariant(
+                        ImageType.MEMBER_PROFILE,
+                        member.getId(),
+                        ImageVariant.DEFAULT
+                )
+        ).isEmpty());
+    }
+
+    @DisplayName("회원은 존재하지 않는 프로필 이미지 key로 프로필 이미지를 저장할 수 없다.")
+    @Test
+    void updateProfileImageWithNotExistsKey() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        String profileImageKey = "fit-toring/local/member-profile-image/default/not-exists.jpg";
+        given(presignedUrlService.isObjectExistsFromKey(profileImageKey)).willReturn(false);
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null,
+                profileImageKey
+        );
+
+        // when // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .patch("/members/me")
+                .then()
+                .statusCode(400);
+    }
+
+    @DisplayName("회원은 다른 이미지 타입의 key로 자신의 프로필 이미지를 저장할 수 없다.")
+    @Test
+    void updateProfileImageWithOtherImageTypeKey() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        String certificateImageKey = "fit-toring/local/certificate-image/default/certificate.jpg";
+
+        MemberInfoUpdateRequest request = new MemberInfoUpdateRequest(
+                null,
+                null,
+                null,
+                null,
+                certificateImageKey
+        );
+
+        // when // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .filter(documentWithTag("member/patch-memberInfo-fail-invalid-profile-image-key",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("회원")
+                                .summary("회원 정보 수정 - 잘못된 프로필 이미지 key")
+                                .description(
+                                        "profileImageKey가 MEMBER_PROFILE/default 경로의 key가 아니면 400 Bad Request를 반환합니다.")
+                                .requestSchema(Schema.schema("MemberInfoUpdateRequest"))
+                                .responseSchema(Schema.schema("ErrorResponse"))
+                                .build())))
+                .body(request)
+                .when()
+                .patch("/members/me")
+                .then()
+                .statusCode(400);
+
+        verify(presignedUrlService, never()).isObjectExistsFromKey(certificateImageKey);
+        SoftAssertions.assertSoftly(softly -> softly.assertThat(
+                imageRepository.findByImageTypeAndRelationIdAndImageVariant(
+                        ImageType.MEMBER_PROFILE,
+                        member.getId(),
+                        ImageVariant.DEFAULT
+                )
+        ).isEmpty());
+    }
+
+    @DisplayName("회원 프로필 이미지가 존재하면 내 정보 조회 시 표시용 URL을 반환한다.")
+    @Test
+    void loginGetMyInfoWithMemberProfileImage() {
+        // given
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String profileImageKey = "fit-toring/local/member-profile-image/default/member-profile.jpg";
+        imageRepository.save(Image.forKey(
+                profileImageKey,
+                ImageType.MEMBER_PROFILE,
+                member.getId(),
+                "member-profile"
+        ));
+        given(presignedUrlService.issueGetPresignedUrl(profileImageKey))
+                .willReturn("https://presigned-get-member-profile-url");
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+
+        // when // then
+        RestAssured
+                .given(spec)
+                .accept("application/json")
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/members/me")
+                .then()
+                .statusCode(200)
+                .body("image", Matchers.equalTo("https://presigned-get-member-profile-url"));
     }
 
     @DisplayName("회원은 자신의 요약 정보를 조회할 수 있다.")

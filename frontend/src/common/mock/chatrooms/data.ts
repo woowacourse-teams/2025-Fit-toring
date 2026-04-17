@@ -1,4 +1,9 @@
-export const CHAT_MESSAGES1 = {
+import { MESSAGE_TYPE } from '../../../pages/chatRoom/constants/message';
+
+import type { ChatRoomInfo } from '../../../pages/chatRoom/types/chatRoomInfo';
+import type { MessageResponse } from '../../../pages/chatRoom/types/message';
+
+export const CHAT_MESSAGES1: Readonly<MessageResponse> = {
   chatMessages: [
     {
       chatMessageId: 40,
@@ -7,6 +12,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 1,
       content: 'content40',
       createdAt: '2025-10-14T10:59:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 39,
@@ -15,6 +21,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 2,
       content: 'content39',
       createdAt: '2025-10-14T10:58:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 38,
@@ -23,6 +30,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 1,
       content: 'content38',
       createdAt: '2025-10-14T10:57:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 37,
@@ -31,6 +39,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 2,
       content: 'content37',
       createdAt: '2025-10-14T10:56:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 36,
@@ -39,6 +48,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 1,
       content: 'content36',
       createdAt: '2025-10-14T10:55:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 35,
@@ -47,6 +57,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 2,
       content: 'content35',
       createdAt: '2025-10-14T10:54:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 34,
@@ -55,6 +66,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 1,
       content: 'content34',
       createdAt: '2025-10-14T10:53:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 33,
@@ -63,6 +75,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 2,
       content: 'content33',
       createdAt: '2025-10-14T10:52:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 32,
@@ -71,6 +84,7 @@ export const CHAT_MESSAGES1 = {
       senderId: 1,
       content: 'content32',
       createdAt: '2025-10-14T10:51:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 31,
@@ -79,13 +93,14 @@ export const CHAT_MESSAGES1 = {
       senderId: 2,
       content: 'content31',
       createdAt: '2025-10-14T10:50:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
   ],
   nextCursorCode: '1758712152|30',
   hasNext: true,
 };
 
-export const CHAT_MESSAGES2 = {
+export const CHAT_MESSAGES2: Readonly<MessageResponse> = {
   chatMessages: [
     {
       chatMessageId: 30,
@@ -94,6 +109,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 1,
       content: 'content30',
       createdAt: '2025-10-14T10:49:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 29,
@@ -102,6 +118,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 2,
       content: 'content29',
       createdAt: '2025-10-14T10:48:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 28,
@@ -110,6 +127,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 1,
       content: 'content28',
       createdAt: '2025-10-14T10:47:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 27,
@@ -118,6 +136,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 2,
       content: 'content27',
       createdAt: '2025-10-14T10:46:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 26,
@@ -126,6 +145,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 1,
       content: 'content26',
       createdAt: '2025-10-14T10:45:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 25,
@@ -134,6 +154,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 2,
       content: 'content25',
       createdAt: '2025-10-14T10:44:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 24,
@@ -142,6 +163,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 1,
       content: 'content24',
       createdAt: '2025-10-14T10:43:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 23,
@@ -150,6 +172,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 2,
       content: 'content23',
       createdAt: '2025-10-14T10:42:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 22,
@@ -158,6 +181,7 @@ export const CHAT_MESSAGES2 = {
       senderId: 1,
       content: 'content22',
       createdAt: '2025-10-14T10:41:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 21,
@@ -166,13 +190,14 @@ export const CHAT_MESSAGES2 = {
       senderId: 2,
       content: 'content21',
       createdAt: '2025-10-14T10:40:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
   ],
   nextCursorCode: '1758712152|20',
   hasNext: true,
 };
 
-export const CHAT_MESSAGES3 = {
+export const CHAT_MESSAGES3: Readonly<MessageResponse> = {
   chatMessages: [
     {
       chatMessageId: 20,
@@ -181,6 +206,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 1,
       content: 'content20',
       createdAt: '2025-10-14T10:39:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 19,
@@ -189,6 +215,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 2,
       content: 'content19',
       createdAt: '2025-10-14T10:38:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 18,
@@ -197,6 +224,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 1,
       content: 'content18',
       createdAt: '2025-10-14T10:37:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 17,
@@ -205,6 +233,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 2,
       content: 'content17',
       createdAt: '2025-10-14T10:36:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 16,
@@ -213,6 +242,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 1,
       content: 'content16',
       createdAt: '2025-10-14T10:35:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 15,
@@ -221,6 +251,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 2,
       content: 'content15',
       createdAt: '2025-10-14T10:34:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 14,
@@ -229,6 +260,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 1,
       content: 'content14',
       createdAt: '2025-10-14T10:33:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 13,
@@ -237,6 +269,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 2,
       content: 'content13',
       createdAt: '2025-10-14T10:32:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 12,
@@ -245,6 +278,7 @@ export const CHAT_MESSAGES3 = {
       senderId: 1,
       content: 'content12',
       createdAt: '2025-10-14T10:31:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 11,
@@ -253,13 +287,14 @@ export const CHAT_MESSAGES3 = {
       senderId: 2,
       content: 'content11',
       createdAt: '2025-10-14T10:30:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
   ],
   nextCursorCode: '1758712152|10',
   hasNext: true,
 };
 
-export const CHAT_MESSAGES4 = {
+export const CHAT_MESSAGES4: Readonly<MessageResponse> = {
   chatMessages: [
     {
       chatMessageId: 10,
@@ -268,6 +303,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 1,
       content: 'content10',
       createdAt: '2025-10-14T10:29:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 9,
@@ -276,6 +312,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 2,
       content: 'content9',
       createdAt: '2025-10-14T10:28:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 8,
@@ -284,6 +321,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 1,
       content: 'content8',
       createdAt: '2025-10-14T10:27:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 7,
@@ -292,6 +330,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 2,
       content: 'content7',
       createdAt: '2025-10-14T10:26:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 6,
@@ -300,6 +339,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 1,
       content: 'content6',
       createdAt: '2025-10-14T10:25:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 5,
@@ -308,6 +348,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 2,
       content: 'content5',
       createdAt: '2025-10-14T10:24:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 4,
@@ -316,6 +357,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 1,
       content: 'content4',
       createdAt: '2025-10-14T10:23:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 3,
@@ -324,6 +366,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 2,
       content: 'content3',
       createdAt: '2025-10-14T10:22:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 2,
@@ -332,6 +375,7 @@ export const CHAT_MESSAGES4 = {
       senderId: 1,
       content: 'content2',
       createdAt: '2025-10-14T10:21:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: 1,
@@ -340,13 +384,14 @@ export const CHAT_MESSAGES4 = {
       senderId: 2,
       content: 'content1',
       createdAt: '2025-10-14T10:20:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
   ],
   nextCursorCode: '1758712152|0',
   hasNext: true,
 };
 
-export const CHAT_MESSAGES5 = {
+export const CHAT_MESSAGES5: Readonly<MessageResponse> = {
   chatMessages: [
     {
       chatMessageId: -10,
@@ -355,6 +400,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 1,
       content: 'content-10',
       createdAt: '2025-10-14T10:29:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -9,
@@ -363,6 +409,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 2,
       content: 'content-9',
       createdAt: '2025-10-14T10:28:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -8,
@@ -371,6 +418,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 1,
       content: 'content-8',
       createdAt: '2025-10-14T10:27:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -7,
@@ -379,6 +427,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 2,
       content: 'content-7',
       createdAt: '2025-10-14T10:26:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -6,
@@ -387,6 +436,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 1,
       content: 'content-6',
       createdAt: '2025-10-14T10:25:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -5,
@@ -395,6 +445,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 2,
       content: 'content-5',
       createdAt: '2025-10-14T10:24:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -4,
@@ -403,6 +454,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 1,
       content: 'content-4',
       createdAt: '2025-10-14T10:23:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -3,
@@ -411,6 +463,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 2,
       content: 'content-3',
       createdAt: '2025-10-14T10:22:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -2,
@@ -419,6 +472,7 @@ export const CHAT_MESSAGES5 = {
       senderId: 1,
       content: 'content-2',
       createdAt: '2025-10-14T10:21:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
     {
       chatMessageId: -1,
@@ -427,13 +481,14 @@ export const CHAT_MESSAGES5 = {
       senderId: 2,
       content: 'content-1',
       createdAt: '2025-10-14T10:20:32',
+      messageType: MESSAGE_TYPE.TEXT,
     },
   ],
   nextCursorCode: null,
   hasNext: false,
 };
 
-export const CHAT_ROOM_INFO = {
+export const CHAT_ROOM_INFO: Readonly<ChatRoomInfo> = {
   mentorName: '김트레이너',
   price: 1000,
   profileImageUrl: '멘토링이미지1url',

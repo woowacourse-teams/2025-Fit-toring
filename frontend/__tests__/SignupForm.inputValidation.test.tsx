@@ -178,7 +178,7 @@ describe('SignUpForm', () => {
 
       // then
       const button = screen.getByRole('button', { name: /인증요청/i });
-      expect(button).toHaveStyle(`background-color: ${THEME.SYSTEM.MAIN600}`);
+      expect(button).toHaveStyle(`background-color: ${THEME.SYSTEM.MAIN500}`);
     });
 
     it('11자 미만 입력 시 인증요청 버튼이 비활성화된다.', async () => {
@@ -210,7 +210,7 @@ describe('SignUpForm', () => {
 
       // then
       const button = screen.getByRole('button', { name: /인증하기/i });
-      expect(button).toHaveStyle(`background-color: ${THEME.SYSTEM.MAIN600}`);
+      expect(button).toHaveStyle(`background-color: ${THEME.SYSTEM.MAIN500}`);
     });
 
     it('6자 미만 입력 시 인증하기 버튼이 비활성화된다.', async () => {

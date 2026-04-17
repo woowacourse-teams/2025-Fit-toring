@@ -33,6 +33,9 @@ public class ChatMessage {
     @Id
     private Long id;
 
+    @Column(name = "message_id", length = 36, unique = true)
+    private String messageId;
+
     @Column(name = "chat_room_id", nullable = false)
     private Long chatRoomId;
 
@@ -57,10 +60,18 @@ public class ChatMessage {
     private LocalDateTime deletedAt;
 
     public ChatMessage(Long chatRoomId, Long senderId, String content) {
-        this(null, chatRoomId, senderId, content, ChatMessageType.TEXT, null, false, null);
+        this(null, null, chatRoomId, senderId, content, ChatMessageType.TEXT, null, false, null);
     }
 
     public ChatMessage(Long chatRoomId, Long senderId, String content, ChatMessageType messageType) {
-        this(null, chatRoomId, senderId, content, messageType, null, false, null);
+        this(null, null, chatRoomId, senderId, content, messageType, null, false, null);
+    }
+
+    public ChatMessage(String messageId, Long chatRoomId, Long senderId, String content) {
+        this(null, messageId, chatRoomId, senderId, content, ChatMessageType.TEXT, null, false, null);
+    }
+
+    public ChatMessage(String messageId, Long chatRoomId, Long senderId, String content, ChatMessageType messageType) {
+        this(null, messageId, chatRoomId, senderId, content, messageType, null, false, null);
     }
 }

@@ -66,7 +66,7 @@ const styleVariant: StyleVariant = {
 };
 
 const primaryStyles = (theme: myTheme) => css`
-  background-color: ${theme.SYSTEM.MAIN600};
+  background-color: ${theme.SYSTEM.MAIN500};
 
   color: ${theme.FONT.W01};
 `;

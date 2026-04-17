@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_DATABASE: fittoring
+      MYSQL_ROOT_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+      timeout: 2s
+
+  db-test:
+    image: mysql:8.0
+    container_name: mysql-test-container
+    environment:
+      MYSQL_DATABASE: fittoring-test
+      MYSQL_ROOT_PASSWORD: 1234
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+      timeout: 2s
+    ports:
+      - "3307:3306"
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: redis-test-container
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+  app:
+    image: ${IMAGE}:${TAG}
+    container_name: fittoring-app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "8080"
+    env_file: .env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+    volumes:
+      - /home/ubuntu/2025-Fit-toring/backend/fittoring/logs:/logs
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/healthcheck | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+    networks:
+      - default
+      - shared-proxy
+
+volumes:
+  db-data:
+
+networks:
+  default:
+  shared-proxy:
+    external: true

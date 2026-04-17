@@ -10,32 +10,33 @@ import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import SockJS from 'sockjs-client';
 
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
+import InputWithSubmitButton from '../../common/components/InputWithSubmitButton/InputWithSubmitButton';
 import { PAGE_URL } from '../../common/constants/url';
-import {
-  hideChannelTalk,
-  showChannelTalk,
-} from '../../common/utils/channelTalk';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import ChatRoomInfoSkeleton from './components/ChatRoomInfoSkeleton/ChatRoomInfoSkeleton';
-import InputSection from './components/InputSection/InputSection';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import usePersistPendingMessages, {
+  readPersistedMessages,
+} from './hooks/usePersistPendingMessages';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
+import { mergeMessages } from './utils/mergeMessages';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
 import type { Message } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
+
+const IN_FLIGHT_TIMEOUT_MS = 10000;
 
 function ChatRoom() {
   const navigate = useNavigate();
@@ -96,6 +97,87 @@ function ChatRoom() {
     isFetchingNextPage: false,
   });
 
+  const persistPendingMessages = usePersistPendingMessages(
+    chatRoomId,
+    messages,
+  );
+
+  const outgoingQueueRef = useRef<Message[]>([]);
+  const inFlightRef = useRef<Message | null>(null);
+  const inFlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearInFlightTimeout = useCallback(() => {
+    if (inFlightTimeoutRef.current) {
+      clearTimeout(inFlightTimeoutRef.current);
+      inFlightTimeoutRef.current = null;
+    }
+  }, []);
+
+  const flushOutgoingQueue = useCallback(() => {
+    const client = stompClientRef.current;
+    if (!client || !client.connected || !chatRoomId) {
+      return;
+    }
+
+    if (inFlightRef.current) {
+      return;
+    }
+
+    const nextMessage = outgoingQueueRef.current.shift();
+    if (!nextMessage) {
+      return;
+    }
+
+    inFlightRef.current = nextMessage;
+    clearInFlightTimeout();
+
+    inFlightTimeoutRef.current = setTimeout(() => {
+      const currentInFlight = inFlightRef.current;
+      if (!currentInFlight || currentInFlight.tempId !== nextMessage.tempId) {
+        return;
+      }
+
+      setMessages((prev) => {
+        const nextMessages = prev.map((msg) => {
+          if (msg.tempId === nextMessage.tempId) {
+            return {
+              ...msg,
+              status: 'fail' as const,
+              phase: 'normal' as const,
+            };
+          }
+          return msg;
+        });
+        persistPendingMessages(nextMessages);
+        return nextMessages;
+      });
+
+      inFlightRef.current = null;
+      flushOutgoingQueue();
+    }, IN_FLIGHT_TIMEOUT_MS);
+
+    client.publish({
+      destination: `/app/chatroom/${chatRoomId}`,
+      body: JSON.stringify({
+        content: nextMessage.content,
+        tempId: nextMessage.tempId,
+        messageType: nextMessage.messageType,
+      }),
+    });
+  }, [chatRoomId, clearInFlightTimeout, persistPendingMessages]);
+
+  const enqueueOutgoing = useCallback(
+    (nextMessages: Message[]) => {
+      if (nextMessages.length === 0) {
+        return;
+      }
+
+      outgoingQueueRef.current = [...outgoingQueueRef.current, ...nextMessages];
+      flushOutgoingQueue();
+    },
+    [flushOutgoingQueue],
+  );
+
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
@@ -151,10 +233,12 @@ function ChatRoom() {
     listElRef,
   });
 
+  const isReconnectPendingRef = useRef(false);
+
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (message === '') {
+    if (message === '' || memberId === null) {
       return;
     }
 
@@ -162,7 +246,7 @@ function ChatRoom() {
 
     const tempId = Date.now();
 
-    const optimisticMsg = {
+    const optimisticMsg: Message = {
       senderId: Number(memberId),
       content: message,
       createdAt: new Date().toString(),
@@ -171,35 +255,43 @@ function ChatRoom() {
       tempId,
       status: 'pending' as const,
       messageType: MESSAGE_TYPE.TEXT,
+      phase: 'normal',
     };
+
+    if (isReconnectPendingRef.current) {
+      const reconnectMsg = {
+        ...optimisticMsg,
+        phase: 'during-reconnect' as const,
+      };
+
+      setMessages((prev) => [...prev, reconnectMsg]);
+      setMessage('');
+      return;
+    }
 
     setMessages((prev) => [...prev, optimisticMsg]);
     setMessage('');
 
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
-
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({ content: message, tempId, messageType: 'TEXT' }),
-    });
+    enqueueOutgoing([optimisticMsg]);
   };
 
   useEffect(() => {
     if (chatRoomMessage) {
-      setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
+      const serverMessages = chatRoomMessage.pages.flatMap(
+        (page) => page.chatMessages,
+      );
+      if (!chatRoomId) {
+        setMessages(serverMessages);
+        return;
+      }
+
+      const persistedMessages = readPersistedMessages();
+      const roomMessages = persistedMessages[chatRoomId] ?? [];
+      console.log('서버에서 불러온 메시지:', serverMessages);
+      console.log('지속된 메시지:', roomMessages);
+      setMessages(mergeMessages(serverMessages, roomMessages));
     }
-  }, [chatRoomMessage]);
-
-  useEffect(() => {
-    hideChannelTalk();
-
-    return () => {
-      showChannelTalk();
-    };
-  }, []);
+  }, [chatRoomId, chatRoomMessage]);
 
   const {
     data: chatRoomInfoData,
@@ -222,15 +314,22 @@ function ChatRoom() {
   const isRefreshingRef = useRef(false);
 
   useEffect(() => {
+    const apiBaseUrl = process.env.API_BASE_URL ?? '';
+    const wsBaseUrl = apiBaseUrl.replace(/^http/, 'ws');
+    const wsChatUrl = `${wsBaseUrl}/ws-chat`;
+
     const client = new Client({
       webSocketFactory: () => {
-        console.log('[sockjs] webSocketFactory called');
-
-        return new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
-          withCredentials: true,
-        });
+        console.log('[WebSocket] webSocketFactory called');
+        return new WebSocket(wsChatUrl);
       },
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
+      reconnectDelay: 5000,
       onStompError: async (frame) => {
+        console.error('STOMP error:', frame);
+        persistPendingMessages();
+
         const parsedBody = JSON.parse(frame.body);
 
         if (parsedBody.code === 'TOKEN_EXPIRED') {
@@ -239,6 +338,22 @@ function ChatRoom() {
           }
 
           isRefreshingRef.current = true;
+          isReconnectPendingRef.current = true;
+          inFlightRef.current = null;
+          clearInFlightTimeout();
+
+          setMessages((prev) =>
+            prev.map((msg) => {
+              if (msg.status !== 'pending') {
+                return msg;
+              }
+              if (msg.phase === 'during-reconnect') {
+                return msg;
+              }
+
+              return { ...msg, phase: 'before-refresh' };
+            }),
+          );
 
           try {
             await postReissue();
@@ -246,9 +361,9 @@ function ChatRoom() {
             if (client.active) {
               await client.deactivate();
             }
-
             client.activate();
           } catch (e) {
+            isReconnectPendingRef.current = false;
             navigate(PAGE_URL.LOGIN);
             console.error('토큰 재발급 실패:', e);
           } finally {
@@ -257,8 +372,11 @@ function ChatRoom() {
         }
       },
 
-      onWebSocketError: (e) => console.error('WebSocket error:', e),
-      reconnectDelay: 5000,
+      onWebSocketError: (e) => {
+        persistPendingMessages();
+
+        console.error('WebSocket error:', e);
+      },
       onConnect: () => {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
@@ -266,6 +384,17 @@ function ChatRoom() {
             capturePrevScroll();
 
             const parsedMessage = JSON.parse(message.body);
+            if (parsedMessage.tempId) {
+              const currentInFlight = inFlightRef.current;
+              if (
+                currentInFlight &&
+                Number(currentInFlight.tempId) === Number(parsedMessage.tempId)
+              ) {
+                inFlightRef.current = null;
+                clearInFlightTimeout();
+                flushOutgoingQueue();
+              }
+            }
 
             setMessages((prev) => {
               if (parsedMessage.tempId) {
@@ -277,6 +406,7 @@ function ChatRoom() {
                   newArr[index] = {
                     ...parsedMessage,
                     status: 'success',
+                    phase: 'normal',
                   };
                   return newArr;
                 }
@@ -291,7 +421,10 @@ function ChatRoom() {
                 return prev;
               }
 
-              return [...prev, { ...parsedMessage, status: 'success' }];
+              return [
+                ...prev,
+                { ...parsedMessage, status: 'success', phase: 'normal' },
+              ];
             });
           },
         );
@@ -300,29 +433,57 @@ function ChatRoom() {
           const parsedErrorMessage = JSON.parse(message.body);
 
           setMessages((prev) => {
-            return prev.map((message) => {
-              if (message.tempId === parsedErrorMessage.tempId) {
-                return { ...message, status: 'fail' };
+            const nextMessages = prev.map((msg) => {
+              if (msg.tempId === parsedErrorMessage.tempId) {
+                return {
+                  ...msg,
+                  status: 'fail' as const,
+                  phase: 'normal' as const,
+                };
               }
-              return message;
+              return msg;
             });
+            persistPendingMessages(nextMessages);
+            return nextMessages;
           });
+
+          const currentInFlight = inFlightRef.current;
+          if (
+            currentInFlight &&
+            Number(currentInFlight.tempId) === Number(parsedErrorMessage.tempId)
+          ) {
+            inFlightRef.current = null;
+            clearInFlightTimeout();
+            flushOutgoingQueue();
+          }
         });
 
-        const pendingMessages = messagesRef.current.filter(
-          (m) => m.status === 'pending',
+        const pendingToResend = messagesRef.current.filter(
+          (msg) => msg.status === 'pending' && msg.phase !== 'normal',
+        );
+        const merged = [...outgoingQueueRef.current, ...pendingToResend];
+        const seen = new Set<number>();
+        const deduped: Message[] = [];
+
+        for (const msg of merged) {
+          if (seen.has(msg.tempId)) {
+            continue;
+          }
+          seen.add(msg.tempId);
+          deduped.push(msg);
+        }
+
+        deduped.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() -
+            new Date(b.createdAt).getTime(),
         );
 
-        pendingMessages.forEach((msg) => {
-          client.publish({
-            destination: `/app/chatroom/${chatRoomId}`,
-            body: JSON.stringify({
-              content: msg.content,
-              tempId: msg.tempId,
-              messageType: msg.messageType,
-            }),
-          });
-        });
+        outgoingQueueRef.current = deduped;
+
+        flushOutgoingQueue();
+
+        isReconnectPendingRef.current = false;
       },
     });
 
@@ -372,8 +533,9 @@ function ChatRoom() {
         pageFirstElRef={pageFirstElRef}
         listElRef={listElRef}
       />
-      <InputSection
+      <InputWithSubmitButton
         value={message}
+        placeholder="메시지를 입력하세요"
         onChange={handleChange}
         onSubmit={handleMessageSubmit}
       />

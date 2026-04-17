@@ -21,7 +21,7 @@ spring:
   cloud:
     aws:
       sqs:
-        enabled: false
+        enabled: true
 cookie:
   same-site: ${COOKIE_SAME_SITE_DEV}
 aws:
@@ -29,3 +29,4 @@ aws:
     env-prefix: local/
   sqs:
     image-queue: fittoring-image-queue
+    chat-message-persist-queue: ${CHAT_MESSAGE_PERSIST_QUEUE_NAME}

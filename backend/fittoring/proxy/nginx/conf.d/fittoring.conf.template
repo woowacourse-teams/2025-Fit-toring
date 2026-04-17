@@ -1,0 +1,25 @@
+upstream fittoring_app {
+  server fittoring-app:8080;
+  keepalive 32;
+}
+
+server {
+  listen 80;
+  server_name __SERVER_NAME__;
+
+  location = /nginx-health {
+    access_log off;
+    add_header Content-Type text/plain;
+    return 200 "ok\n";
+  }
+
+  location / {
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Connection "";
+    proxy_pass http://fittoring_app;
+  }
+}

@@ -1,15 +1,16 @@
 package fittoring.application.auth.repository;
 
-import fittoring.domain.model.Phone;
-import fittoring.domain.model.PhoneVerification;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface PhoneVerificationRepository extends JpaRepository<PhoneVerification, Long> {
+public interface PhoneVerificationRepository {
 
-    Optional<PhoneVerification> findFirstByPhoneAndCodeOrderByExpireAtDesc(Phone phone, String code);
+    void save(String phoneNumber, String code, long ttlSeconds);
 
-    Optional<PhoneVerification> findByPhone(Phone phone);
+    Optional<PhoneVerificationData> findByPhone(String phoneNumber);
+
+    void markVerified(String phoneNumber);
+
+    int incrementAttempts(String phoneNumber);
+
+    void delete(String phoneNumber);
 }

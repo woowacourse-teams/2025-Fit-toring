@@ -15,6 +15,8 @@ public record MemberInfoUpdateRequest(
         String password,
         @Nullable
         @Pattern(regexp = "^(?!\\s*$).+", message = "전화번호는 비어 있을 수 없습니다.")
-        String phoneNumber
+        String phoneNumber,
+        @Nullable
+        String profileImageKey
 ) {
 }
