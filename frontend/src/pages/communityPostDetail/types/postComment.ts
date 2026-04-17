@@ -4,7 +4,7 @@ export interface PostComment {
   content: string;
   isAnonymous: boolean;
   isGuestComment: boolean;
-  isMine?: boolean;
+  isMine: boolean;
   rootId: number | null;
   parentId: number | null;
   isDeleted: boolean;
