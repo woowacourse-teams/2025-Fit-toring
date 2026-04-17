@@ -241,6 +241,7 @@ function InputSection({
 
     setComment('');
     setGuestPassword('');
+    setNickname('');
     setSubmitAttempted(false);
     setIsAnonymous(false);
     setIsIdentityOpen(!authenticated);
