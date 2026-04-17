@@ -1,34 +1,42 @@
 import styled from '@emotion/styled';
 
-import Button from '../../../../common/components/Button/Button';
-import Modal from '../../../../common/components/Modal/Modal';
+import Button from '../Button/Button';
+import Modal from '../Modal/Modal';
 
-interface CommunityPostDeleteModalProps {
+interface DeleteConfirmModalProps {
   opened: boolean;
+  title: string;
+  description: string;
   onCloseClick: () => void;
   onConfirmClick: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
-function CommunityPostDeleteModal({
+function DeleteConfirmModal({
   opened,
+  title,
+  description,
   onCloseClick,
   onConfirmClick,
-}: CommunityPostDeleteModalProps) {
+  confirmLabel = '예',
+  cancelLabel = '아니오',
+}: DeleteConfirmModalProps) {
   return (
     <Modal opened={opened} onCloseClick={onCloseClick}>
       <S_Container>
-        <S_Title>게시글을 삭제하시겠습니까?</S_Title>
-        <S_Description>삭제한 게시글은 다시 복구할 수 없습니다.</S_Description>
+        <S_Title>{title}</S_Title>
+        <S_Description>{description}</S_Description>
         <S_ButtonWrapper>
           <S_ActionButton
             type="button"
             variant="secondary"
             onClick={onCloseClick}
           >
-            아니오
+            {cancelLabel}
           </S_ActionButton>
           <S_ActionButton type="button" onClick={onConfirmClick}>
-            예
+            {confirmLabel}
           </S_ActionButton>
         </S_ButtonWrapper>
       </S_Container>
@@ -36,7 +44,7 @@ function CommunityPostDeleteModal({
   );
 }
 
-export default CommunityPostDeleteModal;
+export default DeleteConfirmModal;
 
 const S_Container = styled.div`
   display: flex;
