@@ -64,12 +64,22 @@ services:
     ports:
       - "80:8080"
     env_file: .env
+    environment:
+      JAVA_TOOL_OPTIONS: "-javaagent:/app/otel-agent.jar"
+      OTEL_SERVICE_NAME: fittoring
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${SPRING_PROFILES_ACTIVE:-prod}"
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: none
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${TEMPO_GRPC_LISTENER_URL}
     logging:
       driver: "json-file"
       options:
         max-size: "100m"
         max-file: "3"
     volumes:
+      - /home/ssm-user/fittoring/opentelemetry-javaagent.jar:/app/otel-agent.jar:ro
       - /home/ubuntu/fittoring/logs:/logs
     restart: always
     healthcheck:
