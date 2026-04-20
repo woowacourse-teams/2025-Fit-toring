@@ -30,6 +30,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 class PostServiceTest extends IntegrationTestSupport {
 
+    private static final String ACTOR_1 = "a".repeat(64);
+    private static final String ACTOR_2 = "b".repeat(64);
+
     @Autowired
     private PostService postService;
 
@@ -44,6 +47,9 @@ class PostServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private PostLikeService postLikeService;
 
     @DisplayName("회원 게시글을 생성한다.")
     @Test
@@ -208,6 +214,26 @@ class PostServiceTest extends IntegrationTestSupport {
         assertThat(actual.isMine()).isFalse();
     }
 
+    @DisplayName("게시글 상세 조회 시 postLikeActorId가 좋아요한 게시글이면 liked가 true이다.")
+    @Test
+    void findPostWithLiked() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        postLikeService.like(post.getId(), ACTOR_1);
+
+        // when
+        PostDetailResponse liked = postService.findPost(post.getId(), null, ACTOR_1);
+        PostDetailResponse notLiked = postService.findPost(post.getId(), null, ACTOR_2);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(liked.liked()).isTrue();
+            softly.assertThat(liked.likeCount()).isEqualTo(1);
+            softly.assertThat(notLiked.liked()).isFalse();
+            softly.assertThat(notLiked.likeCount()).isEqualTo(1);
+        });
+    }
+
     @DisplayName("게시글별 댓글 수를 조회한다.")
     @Test
     void countCommentsByPostId() {
@@ -338,4 +364,5 @@ class PostServiceTest extends IntegrationTestSupport {
                 null
         );
     }
+
 }

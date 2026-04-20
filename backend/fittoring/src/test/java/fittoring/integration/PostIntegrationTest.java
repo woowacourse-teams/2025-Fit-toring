@@ -21,6 +21,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -258,5 +259,170 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .post("/posts/{postId}/guest-check", post.getId())
                 .then()
                 .statusCode(200);
+    }
+
+    @DisplayName("게시글 좋아요는 postLikeActorId 쿠키 기준으로 한 번만 증가한다.")
+    @Test
+    void likePost() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+
+        // when
+        Response first = RestAssured.given(spec)
+                .filter(documentWithTag("post/put-like",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("게시글")
+                                .summary("게시글 좋아요")
+                                .description("postLikeActorId 쿠키 기준으로 게시글 좋아요를 추가합니다.")
+                                .responseSchema(Schema.schema("PostLikeResponse"))
+                                .build())))
+                .when()
+                .put("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String postLikeActorId = first.cookie("postLikeActorId");
+        Response second = RestAssured.given(spec)
+                .cookie("postLikeActorId", postLikeActorId)
+                .when()
+                .put("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(postLikeActorId).isNotBlank();
+            softly.assertThat(first.jsonPath().getLong("postId")).isEqualTo(post.getId());
+            softly.assertThat(first.jsonPath().getBoolean("liked")).isTrue();
+            softly.assertThat(first.jsonPath().getInt("likeCount")).isEqualTo(1);
+            softly.assertThat(second.jsonPath().getBoolean("liked")).isTrue();
+            softly.assertThat(second.jsonPath().getInt("likeCount")).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("게시글 좋아요 취소는 postLikeActorId 쿠키 기준으로 한 번만 감소한다.")
+    @Test
+    void unlikePost() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Response likeResponse = RestAssured.given(spec)
+                .when()
+                .put("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+        String postLikeActorId = likeResponse.cookie("postLikeActorId");
+
+        // when
+        Response first = RestAssured.given(spec)
+                .filter(documentWithTag("post/delete-like",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("게시글")
+                                .summary("게시글 좋아요 취소")
+                                .description("postLikeActorId 쿠키 기준으로 게시글 좋아요를 취소합니다.")
+                                .responseSchema(Schema.schema("PostLikeResponse"))
+                                .build())))
+                .cookie("postLikeActorId", postLikeActorId)
+                .when()
+                .delete("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        Response second = RestAssured.given(spec)
+                .cookie("postLikeActorId", postLikeActorId)
+                .when()
+                .delete("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(postLikeActorId).isNotBlank();
+            softly.assertThat(first.jsonPath().getLong("postId")).isEqualTo(post.getId());
+            softly.assertThat(first.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(first.jsonPath().getInt("likeCount")).isZero();
+            softly.assertThat(second.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(second.jsonPath().getInt("likeCount")).isZero();
+        });
+    }
+
+    @DisplayName("쿠키 없는 게시글 좋아요 취소는 쿠키를 발급하지 않고 좋아요 수를 변경하지 않는다.")
+    @Test
+    void unlikePostWithoutCookie() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        RestAssured.given(spec)
+                .when()
+                .put("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200);
+
+        // when
+        Response response = RestAssured.given(spec)
+                .when()
+                .delete("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(response.cookie("postLikeActorId")).isNull();
+            softly.assertThat(response.jsonPath().getLong("postId")).isEqualTo(post.getId());
+            softly.assertThat(response.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(response.jsonPath().getInt("likeCount")).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("게시글 상세 조회는 postLikeActorId 쿠키 기준 liked를 반환한다.")
+    @Test
+    void findPostWithLiked() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Response likeResponse = RestAssured.given(spec)
+                .when()
+                .put("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+        String postLikeActorId = likeResponse.cookie("postLikeActorId");
+
+        // when
+        Response likedDetail = RestAssured.given(spec)
+                .cookie("postLikeActorId", postLikeActorId)
+                .when()
+                .get("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        Response notLikedDetail = RestAssured.given(spec)
+                .when()
+                .get("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(likedDetail.jsonPath().getLong("id")).isEqualTo(post.getId());
+            softly.assertThat(likedDetail.jsonPath().getBoolean("liked")).isTrue();
+            softly.assertThat(likedDetail.jsonPath().getInt("likeCount")).isEqualTo(1);
+            softly.assertThat(notLikedDetail.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(notLikedDetail.jsonPath().getInt("likeCount")).isEqualTo(1);
+        });
     }
 }
