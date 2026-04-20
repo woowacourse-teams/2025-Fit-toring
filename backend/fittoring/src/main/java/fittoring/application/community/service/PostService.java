@@ -3,6 +3,7 @@ package fittoring.application.community.service;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
 import fittoring.application.community.repository.CommentRepository;
+import fittoring.application.community.repository.PostLikeRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
@@ -31,13 +32,14 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
+    private final PostLikeRepository postLikeRepository;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateDto dto) {
         Post post = createPostByAuthorType(dto);
         Post saved = postRepository.save(post);
         boolean isMine = !saved.isGuestPost();
-        return PostDetailResponse.from(saved, 0, isMine);
+        return PostDetailResponse.from(saved, 0, isMine, false);
     }
 
     @Transactional(readOnly = true)
@@ -78,11 +80,17 @@ public class PostService {
 
     @Transactional
     public PostDetailResponse findPost(Long postId, Long memberId) {
+        return findPost(postId, memberId, null);
+    }
+
+    @Transactional
+    public PostDetailResponse findPost(Long postId, Long memberId, String actorKeyHash) {
         Post post = getPost(postId);
         post.increaseViewCount();
         int commentCount = (int) commentRepository.countByPostId(post.getId());
         boolean isMine = !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
-        return PostDetailResponse.from(post, commentCount, isMine);
+        boolean liked = actorKeyHash != null && postLikeRepository.existsByPostIdAndActorKeyHash(post.getId(), actorKeyHash);
+        return PostDetailResponse.from(post, commentCount, isMine, liked);
     }
 
     @Transactional
