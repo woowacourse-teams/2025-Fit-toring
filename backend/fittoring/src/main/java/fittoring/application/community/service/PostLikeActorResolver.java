@@ -5,7 +5,6 @@ import fittoring.infrastructure.HexEncoder;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,44 +32,35 @@ public class PostLikeActorResolver {
     }
 
     public String resolve(String actorId) {
-        if (!isValidUuid(actorId)) {
-            return null;
-        }
-        return hash(actorId);
+        return PostLikeActorId.from(actorId)
+                .map(this::hash)
+                .orElse(null);
     }
 
     public String resolveOrCreate(String actorId, HttpServletResponse response) {
-        if (isValidUuid(actorId)) {
-            return hash(actorId);
-        }
-        String newActorId = UUID.randomUUID().toString();
-        writeActorCookie(newActorId, response);
-        return hash(newActorId);
+        PostLikeActorId postLikeActorId = PostLikeActorId.from(actorId)
+                .orElseGet(() -> createAndWriteActorCookie(response));
+        return hash(postLikeActorId);
     }
 
-    private boolean isValidUuid(String actorId) {
-        if (actorId == null || actorId.isBlank()) {
-            return false;
-        }
-        try {
-            UUID.fromString(actorId);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+    private PostLikeActorId createAndWriteActorCookie(HttpServletResponse response) {
+        PostLikeActorId postLikeActorId = PostLikeActorId.create();
+        writeActorCookie(postLikeActorId, response);
+        return postLikeActorId;
     }
 
-    private void writeActorCookie(String actorId, HttpServletResponse response) {
-        ResponseCookie cookie = cookieProvider.createCookieWithMaxAge(COOKIE_NAME, actorId, COOKIE_MAX_AGE);
+    private void writeActorCookie(PostLikeActorId postLikeActorId, HttpServletResponse response) {
+        ResponseCookie cookie = cookieProvider.createCookieWithMaxAge(COOKIE_NAME, postLikeActorId.value(),
+                COOKIE_MAX_AGE);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
-    private String hash(String actorId) {
+    private String hash(PostLikeActorId postLikeActorId) {
         try {
             Mac mac = Mac.getInstance(HMAC_ALGORITHM);
             SecretKeySpec keySpec = new SecretKeySpec(actorSecret.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITHM);
             mac.init(keySpec);
-            return HexEncoder.convertHex(mac.doFinal(actorId.getBytes(StandardCharsets.UTF_8)));
+            return HexEncoder.convertHex(mac.doFinal(postLikeActorId.value().getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
             throw new IllegalStateException("해시 계산 중 예외가 발생했습니다.", e);
         }
