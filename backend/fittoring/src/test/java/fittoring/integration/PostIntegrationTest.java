@@ -92,6 +92,34 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(response.isGuestPost()).isTrue();
     }
 
+    @DisplayName("게시글 제목이 255자를 초과하면 400을 반환한다.")
+    @Test
+    void createPostFailWhenTitleIsTooLong() {
+        PostCreateRequest request = new PostCreateRequest("a".repeat(256), "content", false, "guest", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/posts")
+                .then()
+                .statusCode(400);
+    }
+
+    @DisplayName("비회원 게시글 닉네임이 50자를 초과하면 400을 반환한다.")
+    @Test
+    void createGuestPostFailWhenNicknameIsTooLong() {
+        PostCreateRequest request = new PostCreateRequest("title", "content", false, "a".repeat(51), "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/posts")
+                .then()
+                .statusCode(400);
+    }
+
     @DisplayName("게시글 목록 조회는 200을 반환한다.")
     @Test
     void findPosts() {

@@ -58,6 +58,21 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(response.content()).isEqualTo("content");
     }
 
+    @DisplayName("비회원 댓글 닉네임이 50자를 초과하면 400을 반환한다.")
+    @Test
+    void createGuestCommentFailWhenNicknameIsTooLong() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        CommentCreateRequest request = new CommentCreateRequest("content", false, "a".repeat(51), "1234", null, null);
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/posts/{postId}/comments", post.getId())
+                .then()
+                .statusCode(400);
+    }
+
     @DisplayName("댓글 목록 조회는 200을 반환한다.")
     @Test
     void findComments() {

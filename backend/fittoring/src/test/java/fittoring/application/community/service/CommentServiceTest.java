@@ -114,6 +114,32 @@ class CommentServiceTest extends IntegrationTestSupport {
         assertThat(actual).hasSize(2);
     }
 
+    @DisplayName("대댓글 생성 시 rootId가 루트 댓글이 아니면 예외가 발생한다.")
+    @Test
+    void createReplyCommentFailWhenRootIdIsNotRootComment() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment root = commentRepository.save(FixtureUtil.testGuestComment(post, "root"));
+        Comment reply = commentRepository.save(FixtureUtil.testGuestReplyComment(post, root.getId(), root.getId()));
+
+        assertThatThrownBy(() -> commentService.createComment(
+                new CommentCreateDto(null, post.getId(), "reply", false, "guest", "1234", reply.getId(), root.getId())))
+                .isInstanceOf(InvalidCommentReplyException.class)
+                .hasMessage(BusinessErrorMessage.INVALID_COMMENT_REPLY.getMessage());
+    }
+
+    @DisplayName("대댓글 생성 시 parentId가 rootId 하위 댓글이 아니면 예외가 발생한다.")
+    @Test
+    void createReplyCommentFailWhenParentDoesNotBelongToRoot() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment root = commentRepository.save(FixtureUtil.testGuestComment(post, "root"));
+        Comment otherRoot = commentRepository.save(FixtureUtil.testGuestComment(post, "other-root"));
+
+        assertThatThrownBy(() -> commentService.createComment(
+                new CommentCreateDto(null, post.getId(), "reply", false, "guest", "1234", root.getId(), otherRoot.getId())))
+                .isInstanceOf(InvalidCommentReplyException.class)
+                .hasMessage(BusinessErrorMessage.INVALID_COMMENT_REPLY.getMessage());
+    }
+
     @DisplayName("회원 댓글을 수정한다.")
     @Test
     void modifyMemberComment() {
