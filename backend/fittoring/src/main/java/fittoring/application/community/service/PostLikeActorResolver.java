@@ -1,5 +1,6 @@
 package fittoring.application.community.service;
 
+import fittoring.application.auth.CookieProvider;
 import fittoring.infrastructure.HexEncoder;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
@@ -20,15 +21,15 @@ public class PostLikeActorResolver {
     private static final String HMAC_ALGORITHM = "HmacSHA256";
     private static final Duration COOKIE_MAX_AGE = Duration.ofDays(365);
 
+    private final CookieProvider cookieProvider;
     private final String actorSecret;
-    private final String sameSite;
 
     public PostLikeActorResolver(
-            @Value("${post-like.actor-secret}") String actorSecret,
-            @Value("${cookie.same-site}") String sameSite
+            CookieProvider cookieProvider,
+            @Value("${post-like.actor-secret}") String actorSecret
     ) {
+        this.cookieProvider = cookieProvider;
         this.actorSecret = actorSecret;
-        this.sameSite = sameSite;
     }
 
     public String resolve(String actorId) {
@@ -60,13 +61,7 @@ public class PostLikeActorResolver {
     }
 
     private void writeActorCookie(String actorId, HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, actorId)
-                .path("/")
-                .maxAge(COOKIE_MAX_AGE)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite(sameSite)
-                .build();
+        ResponseCookie cookie = cookieProvider.createCookieWithMaxAge(COOKIE_NAME, actorId, COOKIE_MAX_AGE);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
