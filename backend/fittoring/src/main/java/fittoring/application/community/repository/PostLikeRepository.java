@@ -20,7 +20,7 @@ public interface PostLikeRepository extends ListCrudRepository<PostLike, Long> {
             @Param("actorKeyHash") String actorKeyHash
     );
 
-    long deleteByPostIdAndActorKeyHash(Long postId, String actorKeyHash);
+    long deleteByPostIdAndActorKeyHashValue(Long postId, String actorKeyHash);
 
-    boolean existsByPostIdAndActorKeyHash(Long postId, String actorKeyHash);
+    boolean existsByPostIdAndActorKeyHashValue(Long postId, String actorKeyHash);
 }

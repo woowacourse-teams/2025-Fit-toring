@@ -21,6 +21,7 @@ import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
+import fittoring.domain.model.PostLikeActorKeyHash;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -30,8 +31,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 class PostServiceTest extends IntegrationTestSupport {
 
-    private static final String ACTOR_1 = "a".repeat(64);
-    private static final String ACTOR_2 = "b".repeat(64);
+    private static final PostLikeActorKeyHash ACTOR_1 = new PostLikeActorKeyHash("a".repeat(64));
+    private static final PostLikeActorKeyHash ACTOR_2 = new PostLikeActorKeyHash("b".repeat(64));
 
     @Autowired
     private PostService postService;

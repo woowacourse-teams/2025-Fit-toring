@@ -13,6 +13,7 @@ import fittoring.application.community.service.dto.PostUpdateDto;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.config.auth.OptionalAuth;
+import fittoring.domain.model.PostLikeActorKeyHash;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,7 +57,7 @@ public class PostController {
             @PathVariable Long postId,
             @CookieValue(name = PostLikeActorResolver.COOKIE_NAME, required = false) String actorId
     ) {
-        String actorKeyHash = postLikeActorResolver.resolve(actorId);
+        PostLikeActorKeyHash actorKeyHash = postLikeActorResolver.resolve(actorId);
         PostDetailResponse response = postService.findPost(postId, loginInfo.memberId(), actorKeyHash);
         return ResponseEntity.ok(response);
     }

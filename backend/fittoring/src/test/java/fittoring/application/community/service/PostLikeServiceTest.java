@@ -7,14 +7,15 @@ import fittoring.application.FixtureUtil;
 import fittoring.application.community.presentation.dto.response.PostLikeResponse;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.domain.model.Post;
+import fittoring.domain.model.PostLikeActorKeyHash;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class PostLikeServiceTest extends IntegrationTestSupport {
 
-    private static final String ACTOR_1 = "a".repeat(64);
-    private static final String ACTOR_2 = "b".repeat(64);
+    private static final PostLikeActorKeyHash ACTOR_1 = new PostLikeActorKeyHash("a".repeat(64));
+    private static final PostLikeActorKeyHash ACTOR_2 = new PostLikeActorKeyHash("b".repeat(64));
 
     @Autowired
     private PostLikeService postLikeService;

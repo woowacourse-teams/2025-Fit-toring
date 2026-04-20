@@ -1,6 +1,7 @@
 package fittoring.domain.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -44,19 +45,19 @@ public class PostLike {
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
-    @Column(name = "actor_key_hash", nullable = false, length = 64)
-    private String actorKeyHash;
+    @Embedded
+    private PostLikeActorKeyHash actorKeyHash;
 
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    private PostLike(Post post, String actorKeyHash) {
+    private PostLike(Post post, PostLikeActorKeyHash actorKeyHash) {
         this.post = post;
         this.actorKeyHash = actorKeyHash;
     }
 
-    public static PostLike of(Post post, String actorKeyHash) {
+    public static PostLike of(Post post, PostLikeActorKeyHash actorKeyHash) {
         return new PostLike(post, actorKeyHash);
     }
 }

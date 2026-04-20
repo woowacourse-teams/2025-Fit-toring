@@ -3,6 +3,7 @@ package fittoring.application.community.presentation;
 import fittoring.application.community.presentation.dto.response.PostLikeResponse;
 import fittoring.application.community.service.PostLikeActorResolver;
 import fittoring.application.community.service.PostLikeService;
+import fittoring.domain.model.PostLikeActorKeyHash;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class PostLikeController {
             @CookieValue(name = PostLikeActorResolver.COOKIE_NAME, required = false) String actorId,
             HttpServletResponse httpResponse
     ) {
-        String actorKeyHash = postLikeActorResolver.resolveOrCreate(actorId, httpResponse);
+        PostLikeActorKeyHash actorKeyHash = postLikeActorResolver.resolveOrCreate(actorId, httpResponse);
         PostLikeResponse response = postLikeService.like(postId, actorKeyHash);
         return ResponseEntity.ok(response);
     }
@@ -35,7 +36,7 @@ public class PostLikeController {
             @PathVariable Long postId,
             @CookieValue(name = PostLikeActorResolver.COOKIE_NAME, required = false) String actorId
     ) {
-        String actorKeyHash = postLikeActorResolver.resolve(actorId);
+        PostLikeActorKeyHash actorKeyHash = postLikeActorResolver.resolve(actorId);
         PostLikeResponse response = postLikeService.unlike(postId, actorKeyHash);
         return ResponseEntity.ok(response);
     }

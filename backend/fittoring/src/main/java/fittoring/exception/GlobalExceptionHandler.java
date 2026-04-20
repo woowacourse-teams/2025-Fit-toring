@@ -22,6 +22,7 @@ import fittoring.application.exception.InvalidCursorException;
 import fittoring.application.exception.InvalidImageKeyException;
 import fittoring.application.exception.InvalidMemberRoleException;
 import fittoring.application.exception.InvalidPhoneVerificationException;
+import fittoring.application.exception.InvalidPostLikeActorKeyHashException;
 import fittoring.application.exception.InvalidPostLikeActorIdException;
 import fittoring.application.exception.InvalidStatusException;
 import fittoring.application.exception.InvalidTokenException;
@@ -245,6 +246,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidPostLikeActorIdException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidPostLikeActorIdException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPostLikeActorKeyHashException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidPostLikeActorKeyHashException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
