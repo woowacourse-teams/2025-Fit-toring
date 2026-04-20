@@ -95,6 +95,9 @@ public class CommentService {
         if (!rootComment.belongsTo(postId) || !parentComment.belongsTo(postId)) {
             throw new ForbiddenException(BusinessErrorMessage.COMMENT_NOT_BELONG_TO_POST.getMessage());
         }
+        if (!rootComment.isRootComment() || !parentComment.isInRoot(rootComment.getId())) {
+            throw new InvalidCommentReplyException(BusinessErrorMessage.INVALID_COMMENT_REPLY.getMessage());
+        }
     }
 
     private void validateCommentAccess(Comment comment, Long memberId, String guestPassword) {
