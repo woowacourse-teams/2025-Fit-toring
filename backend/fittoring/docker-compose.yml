@@ -70,9 +70,11 @@ services:
       OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${SPRING_PROFILES_ACTIVE:-prod}"
       OTEL_TRACES_EXPORTER: otlp
       OTEL_METRICS_EXPORTER: none
-      OTEL_LOGS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
       OTEL_EXPORTER_OTLP_ENDPOINT: ${TEMPO_GRPC_LISTENER_URL}
+      OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://monitoring.fittoring.store:8080/otlp/v1/logs
     logging:
       driver: "json-file"
       options:
