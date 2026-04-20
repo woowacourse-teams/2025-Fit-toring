@@ -156,4 +156,12 @@ public class Comment {
     public boolean belongsTo(Long postId) {
         return post.getId().equals(postId);
     }
+
+    public boolean isRootComment() {
+        return rootId == null && parentId == null;
+    }
+
+    public boolean isInRoot(Long rootCommentId) {
+        return rootCommentId != null && (rootCommentId.equals(id) || rootCommentId.equals(rootId));
+    }
 }
