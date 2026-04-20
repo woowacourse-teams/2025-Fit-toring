@@ -70,7 +70,7 @@ services:
         max-size: "100m"
         max-file: "3"
     volumes:
-      - /home/ubuntu/2025-Fit-toring/backend/fittoring/logs:/logs
+      - /home/ubuntu/fittoring/logs:/logs
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/healthcheck | grep -q '\"status\":\"UP\"'" ]
