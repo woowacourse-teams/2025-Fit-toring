@@ -294,11 +294,8 @@ function InputSection({
 
             <S_IdentitySection $expanded={isIdentityOpen}>
               <S_IdentitySectionInner>
-                <S_FieldGroup>
-                  <S_InlineField $hasError={nicknameErrorMessage !== ''}>
-                    <S_InlineLabel htmlFor="comment-nickname">
-                      닉네임
-                    </S_InlineLabel>
+                <S_IdentityFieldRow>
+                  <S_IdentityField>
                     <S_FieldInput
                       id="comment-nickname"
                       value={nickname}
@@ -309,11 +306,8 @@ function InputSection({
                     {nicknameErrorMessage ? (
                       <S_InlineError>{nicknameErrorMessage}</S_InlineError>
                     ) : null}
-                  </S_InlineField>
-                  <S_InlineField $hasError={passwordErrorMessage !== ''}>
-                    <S_InlineLabel htmlFor="comment-password">
-                      비밀번호
-                    </S_InlineLabel>
+                  </S_IdentityField>
+                  <S_IdentityField>
                     <S_FieldInput
                       id="comment-password"
                       type="password"
@@ -325,8 +319,8 @@ function InputSection({
                     {passwordErrorMessage ? (
                       <S_InlineError>{passwordErrorMessage}</S_InlineError>
                     ) : null}
-                  </S_InlineField>
-                </S_FieldGroup>
+                  </S_IdentityField>
+                </S_IdentityFieldRow>
                 {!authenticated ? (
                   <S_GuestNotice>
                     비회원은 닉네임과 비밀번호가 필요합니다.
@@ -436,86 +430,23 @@ const S_IdentitySectionInner = styled.div`
   min-height: 0;
 `;
 
-const S_FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
+const S_IdentityFieldRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.8rem;
 `;
 
-const S_InlineField = styled.div<{ $hasError: boolean }>`
-  display: grid;
-  grid-template-columns: 5.6rem minmax(0, 1fr);
-
-  align-items: center;
-  gap: 0.4rem 1rem;
-
-  width: 100%;
-  padding-bottom: ${({ $hasError }) => ($hasError ? '0.2rem' : '0')};
-`;
-
-const S_InlineLabel = styled.label`
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_SB};
+const S_IdentityField = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
 `;
 
 const S_InlineError = styled.p`
-  grid-column: 2 / 3;
-
   color: ${({ theme }) => theme.FONT.ERROR};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-`;
-
-const S_ActionRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const S_IdentityHeader = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  width: 100%;
-  padding: 0;
-  border: none;
-
-  background: transparent;
-  cursor: pointer;
-`;
-
-const S_IdentityHeaderText = styled.span`
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_SB}
-`;
-
-const S_IdentityHeaderAction = styled.span<{ $expanded: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  transition: transform 180ms ease;
-  transform: rotate(${({ $expanded }) => ($expanded ? '0deg' : '180deg')});
-`;
-
-const S_IdentityToggleIcon = styled.img`
-  width: 1.6rem;
-  height: 1.6rem;
-`;
-
-const S_GuestNotice = styled.span`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
-`;
-
-const S_CommentRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  padding: 0.8rem 1rem;
-  border-radius: 999px;
-
-  background-color: ${({ theme }) => theme.SYSTEM.GRAY50};
 `;
 
 const S_FieldInput = styled.input`
@@ -538,6 +469,17 @@ const S_FieldInput = styled.input`
   &::placeholder {
     color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
+`;
+
+const S_CommentRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY50};
 `;
 
 const S_CommentInput = styled.input`
@@ -585,4 +527,46 @@ const S_SubmitButton = styled.button`
 const S_SendIcon = styled.img`
   width: 1.4rem;
   height: 1.4rem;
+`;
+
+const S_ActionRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const S_IdentityHeader = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 0;
+  border: none;
+
+  background: transparent;
+  cursor: pointer;
+`;
+
+const S_IdentityHeaderText = styled.span`
+  color: ${({ theme }) => theme.FONT.B02};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_SB}
+`;
+
+const S_IdentityHeaderAction = styled.span<{ $expanded: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: transform 180ms ease;
+  transform: rotate(${({ $expanded }) => ($expanded ? '0deg' : '180deg')});
+`;
+
+const S_IdentityToggleIcon = styled.img`
+  width: 1.6rem;
+  height: 1.6rem;
+`;
+
+const S_GuestNotice = styled.span`
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;
