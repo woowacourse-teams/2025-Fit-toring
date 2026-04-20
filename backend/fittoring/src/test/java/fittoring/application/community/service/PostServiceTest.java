@@ -153,7 +153,7 @@ class PostServiceTest extends IntegrationTestSupport {
 
     @DisplayName("회원 게시글 상세 조회 시 작성자 본인이면 isMine이 true이고 조회수가 증가한다.")
     @Test
-    void findPostWithIsMineAndViewCount() {
+    void findPostWithIsPostOwnerAndViewCount() {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         Post post = postRepository.save(FixtureUtil.testMemberPost(member));
@@ -174,7 +174,7 @@ class PostServiceTest extends IntegrationTestSupport {
 
     @DisplayName("회원 게시글 상세 조회 시 다른 사용자면 isMine이 false이다.")
     @Test
-    void findPostWithIsMineFalseForOtherMember() {
+    void findPostWithIsPostOwnerFalseForOtherMember() {
         // given
         Member owner = memberRepository.save(FixtureUtil.testMentee());
         Member other = memberRepository.save(FixtureUtil.testMentor());
@@ -189,7 +189,7 @@ class PostServiceTest extends IntegrationTestSupport {
 
     @DisplayName("비로그인 상태로 게시글을 조회하면 isMine이 false이다.")
     @Test
-    void findPostWithIsMineFalseForGuest() {
+    void findPostWithIsPostOwnerFalseForGuest() {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         Post post = postRepository.save(FixtureUtil.testMemberPost(member));
@@ -203,7 +203,7 @@ class PostServiceTest extends IntegrationTestSupport {
 
     @DisplayName("비회원 게시글은 로그인 여부와 무관하게 isMine이 false이다.")
     @Test
-    void findPostWithIsMineFalseForGuestPost() {
+    void findPostWithIsPostOwnerFalseForGuestPost() {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         Post post = postRepository.save(FixtureUtil.testGuestPost());

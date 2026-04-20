@@ -89,10 +89,20 @@ public class PostService {
         Post post = getPost(postId);
         post.increaseViewCount();
         int commentCount = (int) commentRepository.countByPostId(post.getId());
-        boolean isMine = !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
-        boolean liked = actorKeyHash != null &&
-                postLikeRepository.existsByPostIdAndActorKeyHashValue(post.getId(), actorKeyHash.getValue());
+        boolean isMine = isPostOwner(memberId, post);
+        boolean liked = isLiked(actorKeyHash, post);
         return PostDetailResponse.from(post, commentCount, isMine, liked);
+    }
+
+    private boolean isPostOwner(Long memberId, Post post) {
+        return !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
+    }
+
+    private boolean isLiked(PostLikeActorKeyHash actorKeyHash, Post post) {
+        if (actorKeyHash == null) {
+            return false;
+        }
+        return postLikeRepository.existsByPostIdAndActorKeyHashValue(post.getId(), actorKeyHash.getValue());
     }
 
     @Transactional
