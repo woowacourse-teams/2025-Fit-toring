@@ -7,13 +7,16 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
+import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.community.presentation.dto.request.CommentCreateRequest;
 import fittoring.application.community.presentation.dto.request.CommentUpdateRequest;
 import fittoring.application.community.presentation.dto.request.GuestPasswordRequest;
 import fittoring.application.community.presentation.dto.response.CommentResponse;
 import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
+import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Comment;
+import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
@@ -30,6 +33,34 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    @DisplayName("회원 댓글 작성은 닉네임과 비밀번호 없이 201을 반환한다.")
+    @Test
+    void createMemberCommentWithoutNicknameAndPassword() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        CommentCreateRequest request = new CommentCreateRequest("content", false, null, null, null, null);
+
+        CommentResponse response = RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/posts/{postId}/comments", post.getId())
+                .then()
+                .statusCode(201)
+                .extract()
+                .as(CommentResponse.class);
+
+        assertThat(response.isGuestComment()).isFalse();
+    }
 
     @DisplayName("비회원 댓글 작성은 201을 반환한다.")
     @Test
