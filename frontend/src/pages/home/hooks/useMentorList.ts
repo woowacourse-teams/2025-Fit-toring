@@ -20,7 +20,7 @@ const useMentorList = () => {
   const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
   const [hasNext, setHasNext] = useState(true);
   const [cursorCode, setCursorCode] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getMentors = useCallback(
     async (

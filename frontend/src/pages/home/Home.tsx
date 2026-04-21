@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -73,6 +73,16 @@ function Home() {
     isLoading,
   } = useMentorList();
 
+  const initialSortKeyRef = useRef(sortKey);
+
+  useEffect(() => {
+    const fetchInitialMentorList = async () => {
+      await fetchInitialMentors([], initialSortKeyRef.current);
+    };
+
+    fetchInitialMentorList();
+  }, [fetchInitialMentors]);
+
   const handleSortButtonClick = async (option: SortKey) => {
     changeSortKey(option);
 
@@ -118,7 +128,7 @@ function Home() {
   }, [cursorCode, fetchMoreMentors, selectedSpecialties, sortKey]);
 
   const { targetRef } = useInfiniteScroll<HTMLLIElement>({
-    isReady: hasNext,
+    isReady: hasNext && !isLoading,
     onIntersect: fetchNextPage,
   });
 
