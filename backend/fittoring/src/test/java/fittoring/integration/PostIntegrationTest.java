@@ -44,7 +44,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
     void createMemberPost() {
         Member member = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-        PostCreateRequest request = new PostCreateRequest("title", "content", false, "member", "1234");
+        PostCreateRequest request = new PostCreateRequest("title", "content", false, null, null);
 
         PostDetailResponse response = RestAssured.given(spec)
                 .filter(documentWithTag("post/post-success",
