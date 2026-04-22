@@ -1,33 +1,26 @@
 import { useEffect, useRef } from 'react';
 
-import { matchPath, useLocation } from 'react-router-dom';
-
 import { getUserInfoSummary } from '../apis/getUserInfoSummary';
 import { useAuth } from '../components/AuthProvider/AuthProvider';
-import { PAGE_URL } from '../constants/url';
 import {
   bootChannelTalk,
-  hideChannelTalk,
+  shutdownChannelTalk,
   showChannelTalk,
 } from '../utils/channelTalk';
 
-const HIDDEN_PATHS = [`${PAGE_URL.CHAT_ROOM}/:chatRoomId`, PAGE_URL.COMMUNITY];
-
 const useChannelTalk = () => {
   const { authenticated } = useAuth();
-  const { pathname } = useLocation();
-
-  const isHidden = HIDDEN_PATHS.some(
-    (path) => !!matchPath({ path, end: true }, pathname),
-  );
 
   const bootedRef = useRef(false);
 
   useEffect(() => {
-    if (isHidden) {
-      return;
-    }
+    return () => {
+      shutdownChannelTalk();
+      bootedRef.current = false;
+    };
+  }, []);
 
+  useEffect(() => {
     if (bootedRef.current) {
       return;
     }
@@ -70,15 +63,7 @@ const useChannelTalk = () => {
     return () => {
       ignore = true;
     };
-  }, [isHidden, authenticated]);
-
-  useEffect(() => {
-    if (isHidden) {
-      hideChannelTalk();
-    } else {
-      showChannelTalk();
-    }
-  }, [isHidden]);
+  }, [authenticated]);
 };
 
 export default useChannelTalk;
