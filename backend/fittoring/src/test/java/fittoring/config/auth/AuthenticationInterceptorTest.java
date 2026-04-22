@@ -13,7 +13,9 @@ import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import org.assertj.core.api.SoftAssertions;
@@ -232,5 +234,65 @@ class AuthenticationInterceptorTest {
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("unexpected");
+    }
+
+    @DisplayName("OptionalAuth라도 accessToken 쿠키가 만료된 경우 ExpiredTokenException을 던진다.")
+    @Test
+    void optionalAuthRethrowsExpiredToken() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "expired-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("expired-token");
+        given(jwtProvider.extractTokenPayload("expired-token"))
+                .willThrow(new ExpiredTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage()));
+
+        // when // then
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+                .isInstanceOf(ExpiredTokenException.class)
+                .hasMessage(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
+    }
+
+    @DisplayName("OptionalAuth라도 accessToken 쿠키가 변조된 경우 InvalidTokenException을 던진다.")
+    @Test
+    void optionalAuthRethrowsInvalidToken() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "malformed-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("malformed-token");
+        given(jwtProvider.extractTokenPayload("malformed-token"))
+                .willThrow(new InvalidTokenException(BusinessErrorMessage.INVALID_TOKEN.getMessage()));
+
+        // when // then
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+                .isInstanceOf(InvalidTokenException.class)
+                .hasMessage(BusinessErrorMessage.INVALID_TOKEN.getMessage());
+    }
+
+    @DisplayName("OptionalAuth는 accessToken 쿠키가 없으면 비회원으로 통과한다.")
+    @Test
+    void optionalAuthFallbackWhenAccessTokenCookieMissing() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie otherCookie = new Cookie("refreshToken", "some-value");
+        request.setCookies(otherCookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any()))
+                .willThrow(new InvalidTokenException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage()));
+
+        // when
+        boolean actual = interceptor.preHandle(request, response, handlerMethod);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isNull();
+        });
     }
 }
