@@ -3,9 +3,9 @@ package fittoring.config.auth;
 import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
-import fittoring.application.exception.AuthenticationException;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
 import fittoring.domain.model.MemberRole;
 import jakarta.servlet.http.Cookie;
@@ -62,11 +62,18 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private void attemptOptionalAuthentication(HttpServletRequest request) {
-        try {
-            TokenPayload payload = authenticate(request);
-            bindAuthenticationContext(request, payload);
-        } catch (AuthenticationException ignored) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            return;
         }
+        String accessToken;
+        try {
+            accessToken = getAccessToken(cookies);
+        } catch (InvalidTokenException ignored) {
+            return;
+        }
+        TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
+        bindAuthenticationContext(request, payload);
     }
 
     private TokenPayload authenticate(HttpServletRequest request) {
