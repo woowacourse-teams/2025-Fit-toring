@@ -30,6 +30,9 @@ public class PostLikeActorResolver {
             CookieProvider cookieProvider,
             @Value("${post-like.actor-secret}") String actorSecret
     ) {
+        if (actorSecret == null || actorSecret.isBlank()) {
+            throw new IllegalStateException("post-like.actor-secret 설정은 비어 있을 수 없습니다.");
+        }
         this.cookieProvider = cookieProvider;
         this.actorSecret = actorSecret;
     }
