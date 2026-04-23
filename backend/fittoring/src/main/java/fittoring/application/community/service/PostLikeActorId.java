@@ -29,8 +29,7 @@ public record PostLikeActorId(String value) {
             return true;
         }
         try {
-            UUID.fromString(value);
-            return false;
+            return !UUID.fromString(value).toString().equals(value);
         } catch (IllegalArgumentException e) {
             return true;
         }

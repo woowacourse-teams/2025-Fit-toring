@@ -41,6 +41,19 @@ class PostLikeActorIdTest {
         assertThat(actual).isEmpty();
     }
 
+    @DisplayName("비정규 UUID 문자열이면 PostLikeActorId를 생성하지 않는다.")
+    @Test
+    void fromNonCanonicalUuid() {
+        // given
+        String value = "0-0-0-0-0";
+
+        // when
+        Optional<PostLikeActorId> actual = PostLikeActorId.from(value);
+
+        // then
+        assertThat(actual).isEmpty();
+    }
+
     @DisplayName("생성자로 유효하지 않은 UUID 문자열을 전달하면 예외가 발생한다.")
     @Test
     void constructWithInvalidUuid() {
