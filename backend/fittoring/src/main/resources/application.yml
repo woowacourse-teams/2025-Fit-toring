@@ -104,7 +104,7 @@ jwt:
   refresh-token-expiration-millis: ${REFRESH_TOKEN_EXPIRATION_MILLIS}
 
 post-like:
-  actor-secret: ${POST_LIKE_ACTOR_SECRET:${JWT_SECRET_KEY}}
+  actor-secret: ${POST_LIKE_ACTOR_SECRET}
 
 kakao:
   redirect-url: ${KAKAO_REDIRECT_URL}
