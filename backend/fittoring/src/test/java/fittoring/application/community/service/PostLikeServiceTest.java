@@ -45,6 +45,29 @@ class PostLikeServiceTest extends IntegrationTestSupport {
         });
     }
 
+    @DisplayName("다른 postLikeActorId로 게시글 좋아요를 누르면 각각 반영된다.")
+    @Test
+    void likePostWhenDifferentActorsLike() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+
+        // when
+        PostLikeResponse first = postLikeService.like(post.getId(), ACTOR_1);
+        PostLikeResponse second = postLikeService.like(post.getId(), ACTOR_2);
+
+        // then
+        Post actual = postRepository.findById(post.getId()).orElseThrow();
+        assertSoftly(softly -> {
+            softly.assertThat(first.postId()).isEqualTo(post.getId());
+            softly.assertThat(first.liked()).isTrue();
+            softly.assertThat(first.likeCount()).isEqualTo(1);
+            softly.assertThat(second.postId()).isEqualTo(post.getId());
+            softly.assertThat(second.liked()).isTrue();
+            softly.assertThat(second.likeCount()).isEqualTo(2);
+            softly.assertThat(actual.getLikeCount()).isEqualTo(2);
+        });
+    }
+
     @DisplayName("같은 postLikeActorId로 게시글 좋아요 취소를 반복하면 한 번만 반영된다.")
     @Test
     void unlikePostNoOpWhenSameActorUnlikesAgain() {
