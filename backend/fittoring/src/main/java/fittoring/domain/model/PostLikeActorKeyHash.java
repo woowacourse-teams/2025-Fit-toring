@@ -16,10 +16,9 @@ public class PostLikeActorKeyHash {
     private static final Pattern HEX_PATTERN = Pattern.compile("^[0-9a-f]{64}$");
 
     @Column(name = "actor_key_hash", nullable = false, length = 64)
-    private final String value;
+    private String value;
 
     protected PostLikeActorKeyHash() {
-        this.value = null;
     }
 
     public PostLikeActorKeyHash(String value) {
