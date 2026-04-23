@@ -37,7 +37,7 @@ public class PostLikeService {
         if (deleted > 0) {
             postRepository.decreaseLikeCount(postId);
         }
-        return PostLikeResponse.ofUnLike(postId, findLikeCount(postId));
+        return PostLikeResponse.ofUnlike(postId, findLikeCount(postId));
     }
 
     private void validatePostExists(Long postId) {

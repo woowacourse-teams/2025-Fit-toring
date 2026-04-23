@@ -6,7 +6,7 @@ public record PostLikeResponse(
         int likeCount
 ) {
 
-    public static PostLikeResponse ofUnLike(Long postId, int likeCount) {
+    public static PostLikeResponse ofUnlike(Long postId, int likeCount) {
         return new PostLikeResponse(postId, false, likeCount);
     }
 
