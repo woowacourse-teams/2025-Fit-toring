@@ -6,5 +6,3 @@ CREATE TABLE post_like (
     FOREIGN KEY (post_id) REFERENCES post(id),
     UNIQUE KEY uk_post_like_post_id_actor_key_hash (post_id, actor_key_hash)
 );
-
-CREATE INDEX idx_post_like_post_id ON post_like(post_id);
