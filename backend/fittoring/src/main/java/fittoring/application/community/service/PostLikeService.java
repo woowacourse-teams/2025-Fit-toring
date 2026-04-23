@@ -6,6 +6,7 @@ import fittoring.application.community.repository.PostRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.PostNotFoundException;
 import fittoring.domain.model.PostLikeActorKeyHash;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ public class PostLikeService {
 
     @Transactional
     public PostLikeResponse like(Long postId, PostLikeActorKeyHash actorKeyHash) {
+        Objects.requireNonNull(actorKeyHash, "actorKeyHash는 null일 수 없습니다.");
         validatePostExists(postId);
         int inserted = postLikeRepository.insertIgnore(postId, actorKeyHash.getValue());
         if (inserted > 0) {
