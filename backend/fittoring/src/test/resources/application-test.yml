@@ -53,6 +53,10 @@ jwt:
   secret-key: my/test/secret/key/my/test/secret/key
   access-token-expiration-millis: 10000
   refresh-token-expiration-millis: 20000000
+
+post-like:
+  actor-secret: my/test/post/like/actor/secret
+
 kakao:
   redirect-url: ${KAKAO_REDIRECT_URL}
   client-id: ${KAKAO_CLIENT_ID}

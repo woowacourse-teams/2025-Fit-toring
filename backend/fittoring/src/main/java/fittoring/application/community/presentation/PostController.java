@@ -5,6 +5,7 @@ import fittoring.application.community.presentation.dto.request.PostCreateReques
 import fittoring.application.community.presentation.dto.request.PostUpdateRequest;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
+import fittoring.application.community.service.PostLikeActorResolver;
 import fittoring.application.community.service.PostService;
 import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
@@ -12,10 +13,12 @@ import fittoring.application.community.service.dto.PostUpdateDto;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.config.auth.OptionalAuth;
+import fittoring.domain.model.PostLikeActorKeyHash;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     private final PostService postService;
+    private final PostLikeActorResolver postLikeActorResolver;
 
     @OptionalAuth
     @PostMapping("/posts")
@@ -50,9 +54,12 @@ public class PostController {
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDetailResponse> findPost(
             @Login LoginInfo loginInfo,
-            @PathVariable Long postId
+            @PathVariable Long postId,
+            @CookieValue(name = PostLikeActorResolver.COOKIE_NAME, required = false) String actorId
     ) {
-        return ResponseEntity.ok(postService.findPost(postId, loginInfo.memberId()));
+        PostLikeActorKeyHash actorKeyHash = postLikeActorResolver.resolve(actorId);
+        PostDetailResponse response = postService.findPost(postId, loginInfo.memberId(), actorKeyHash);
+        return ResponseEntity.ok(response);
     }
 
     @OptionalAuth

@@ -22,6 +22,8 @@ import fittoring.application.exception.InvalidCursorException;
 import fittoring.application.exception.InvalidImageKeyException;
 import fittoring.application.exception.InvalidMemberRoleException;
 import fittoring.application.exception.InvalidPhoneVerificationException;
+import fittoring.application.exception.InvalidPostLikeActorKeyHashException;
+import fittoring.application.exception.InvalidPostLikeActorIdException;
 import fittoring.application.exception.InvalidStatusException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.MemberNotFoundException;
@@ -241,6 +243,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handle(InvalidCommentReplyException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
+
+    @ExceptionHandler(InvalidPostLikeActorIdException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidPostLikeActorIdException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPostLikeActorKeyHashException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidPostLikeActorKeyHashException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(CertificateNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(CertificateNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
