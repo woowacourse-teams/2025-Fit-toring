@@ -3,6 +3,7 @@ package fittoring.application.community.service;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
 import fittoring.application.community.repository.CommentRepository;
+import fittoring.application.community.repository.PostLikeRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
@@ -16,6 +17,7 @@ import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
+import fittoring.domain.model.PostLikeActorKeyHash;
 import fittoring.util.CursorCodec;
 import java.util.List;
 import java.util.Map;
@@ -31,13 +33,14 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
+    private final PostLikeRepository postLikeRepository;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateDto dto) {
         Post post = createPostByAuthorType(dto);
         Post saved = postRepository.save(post);
         boolean isMine = !saved.isGuestPost();
-        return PostDetailResponse.from(saved, 0, isMine);
+        return PostDetailResponse.from(saved, 0, isMine, false);
     }
 
     @Transactional(readOnly = true)
@@ -78,11 +81,28 @@ public class PostService {
 
     @Transactional
     public PostDetailResponse findPost(Long postId, Long memberId) {
+        return findPost(postId, memberId, null);
+    }
+
+    @Transactional
+    public PostDetailResponse findPost(Long postId, Long memberId, PostLikeActorKeyHash actorKeyHash) {
         Post post = getPost(postId);
         post.increaseViewCount();
         int commentCount = (int) commentRepository.countByPostId(post.getId());
-        boolean isMine = !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
-        return PostDetailResponse.from(post, commentCount, isMine);
+        boolean isMine = isPostOwner(memberId, post);
+        boolean liked = isLiked(actorKeyHash, post);
+        return PostDetailResponse.from(post, commentCount, isMine, liked);
+    }
+
+    private boolean isPostOwner(Long memberId, Post post) {
+        return !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
+    }
+
+    private boolean isLiked(PostLikeActorKeyHash actorKeyHash, Post post) {
+        if (actorKeyHash == null) {
+            return false;
+        }
+        return postLikeRepository.existsByPostIdAndActorKeyHashValue(post.getId(), actorKeyHash.getValue());
     }
 
     @Transactional
