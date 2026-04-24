@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class PostLikeController {
     private final PostLikeService postLikeService;
     private final PostLikeActorResolver postLikeActorResolver;
 
-    @PutMapping("/posts/{postId}/like")
+    @PostMapping("/posts/{postId}/like")
     public ResponseEntity<PostLikeResponse> like(
             @PathVariable Long postId,
             @CookieValue(name = PostLikeActorResolver.COOKIE_NAME, required = false) String actorId,
@@ -40,4 +40,6 @@ public class PostLikeController {
         PostLikeResponse response = postLikeService.unlike(postId, actorKeyHash);
         return ResponseEntity.ok(response);
     }
+
+
 }
