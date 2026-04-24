@@ -277,7 +277,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                                 .responseSchema(Schema.schema("PostLikeResponse"))
                                 .build())))
                 .when()
-                .put("/posts/{postId}/like", post.getId())
+                .post("/posts/{postId}/like", post.getId())
                 .then()
                 .statusCode(200)
                 .extract()
@@ -287,7 +287,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
         Response second = RestAssured.given(spec)
                 .cookie("postLikeActorId", postLikeActorId)
                 .when()
-                .put("/posts/{postId}/like", post.getId())
+                .post("/posts/{postId}/like", post.getId())
                 .then()
                 .statusCode(200)
                 .extract()
@@ -311,7 +311,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
         Response likeResponse = RestAssured.given(spec)
                 .when()
-                .put("/posts/{postId}/like", post.getId())
+                .post("/posts/{postId}/like", post.getId())
                 .then()
                 .statusCode(200)
                 .extract()
@@ -362,7 +362,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
         RestAssured.given(spec)
                 .when()
-                .put("/posts/{postId}/like", post.getId())
+                .post("/posts/{postId}/like", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -391,7 +391,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
         Response likeResponse = RestAssured.given(spec)
                 .when()
-                .put("/posts/{postId}/like", post.getId())
+                .post("/posts/{postId}/like", post.getId())
                 .then()
                 .statusCode(200)
                 .extract()
