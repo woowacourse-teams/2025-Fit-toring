@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -7,12 +7,22 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
+import IOSInstallGuideModal from '../../common/components/IOSInstallGuideModal/IOSInstallGuideModal';
 import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
 import useInfiniteScroll from '../../common/hooks/useInfiniteScroll';
 import useNotification from '../../common/hooks/useNotification';
 import { THEME } from '../../common/styles/theme';
+import {
+  isMobileViewport,
+  isPWAStandalone,
+} from '../../common/utils/deviceDetection';
+import {
+  getInstallPromptShown,
+  markInstallPromptShown,
+  shouldAutoShowInstallPromptOnLoginHome,
+} from '../../common/utils/installExposurePolicy';
 
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardList from './components/MentorCardList/MentorCardList';
@@ -32,6 +42,7 @@ import type { Specialty } from '../../common/types/Specialty';
 
 function Home() {
   const { modalOpened, openModal, closeModal } = useModal();
+  const [iosInstallGuideOpened, setIosInstallGuideOpened] = useState(false);
 
   const { authenticated } = useAuth();
 
@@ -134,8 +145,35 @@ function Home() {
 
   useAuthCheck();
 
+  useEffect(() => {
+    // if (!isIOS()) {
+    //   return;
+    // }
+
+    if (!isMobileViewport()) {
+      return;
+    }
+
+    if (
+      !shouldAutoShowInstallPromptOnLoginHome({
+        isStandalone: isPWAStandalone(),
+        shown: getInstallPromptShown(),
+      })
+    ) {
+      return;
+    }
+
+    markInstallPromptShown();
+    setIosInstallGuideOpened(true);
+  }, []);
+
   return (
     <S_Container>
+      <IOSInstallGuideModal
+        opened={iosInstallGuideOpened}
+        onCloseClick={() => setIosInstallGuideOpened(false)}
+      />
+
       <NotificationPermissionModal
         isOpen={showNotificationModal}
         onAllow={handleAllowNotification}
