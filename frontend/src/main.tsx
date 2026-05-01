@@ -8,6 +8,7 @@ import ReactGA from 'react-ga4';
 
 import App from './App';
 import AuthProvider from './common/components/AuthProvider/AuthProvider';
+import SplashOverlay from './common/components/SplashOverlay/SplashOverlay';
 import { resetCss } from './common/styles/reset';
 import { THEME } from './common/styles/theme';
 import { registerServiceWorker } from './pwa/serviceWorker';
@@ -58,6 +59,7 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
           <AuthProvider>
             <Global styles={[resetCss]} />
             <App />
+            <SplashOverlay />
           </AuthProvider>
         </QueryClientProvider>
       </ThemeProvider>

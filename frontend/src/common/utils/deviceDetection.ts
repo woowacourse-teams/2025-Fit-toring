@@ -31,7 +31,14 @@ export function isIOSPushSupported(): boolean {
 }
 
 export function isPWAStandalone(): boolean {
-  return window.matchMedia('(display-mode: standalone)').matches;
+  const navigatorWithStandalone = window.navigator as Navigator & {
+    standalone?: boolean;
+  };
+
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    navigatorWithStandalone.standalone === true
+  );
 }
 
 export function isNotificationSupported(): boolean {

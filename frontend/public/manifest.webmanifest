@@ -1,6 +1,9 @@
 {
   "name": "핏토링",
   "short_name": "핏토링",
+  "id": "/",
+  "lang": "ko",
+  "description": "전문 트레이너와 운동 애호가를 연결하는 피트니스 멘토링 서비스",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
