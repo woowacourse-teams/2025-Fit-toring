@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-import closeIcon from '../../assets/images/close.svg';
+import closeIcon from '../../assets/images/closeBlack.svg';
 import fittoringIconWithBg from '../../assets/images/fittoringIconWithBg.png';
 import shareIcon from '../../assets/images/shareIcon.svg';
 import Modal from '../Modal/Modal';
@@ -70,8 +70,12 @@ function IOSInstallGuideModal({
           </S_StepCard>
         </S_StepList>
 
-        <S_LaterButton type="button" onClick={handleLaterClick}>
+        {/* <S_LaterButton type="button" onClick={handleLaterClick}>
           나중에 할게요
+        </S_LaterButton> */}
+
+        <S_LaterButton type="button" onClick={handleLaterClick}>
+          다음에 할래요
         </S_LaterButton>
       </S_Container>
     </Modal>
@@ -110,8 +114,8 @@ const S_CloseButton = styled.button`
 `;
 
 const S_CloseIcon = styled.img`
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 1.5rem;
+  height: 1.5rem;
 `;
 
 const S_Header = styled.div`
@@ -227,17 +231,13 @@ const S_StepDescription = styled.p`
 const S_LaterButton = styled.button`
   align-self: center;
 
-  margin-top: 0.8rem;
-  padding: 0.4rem 0.8rem;
   border: none;
 
   background: transparent;
 
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_SB}
+  color: ${({ theme }) => theme.FONT.G01};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
   cursor: pointer;
-
-  &:hover {
-    color: ${({ theme }) => theme.FONT.B02};
-  }
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
 `;
