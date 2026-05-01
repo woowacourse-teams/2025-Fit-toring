@@ -9,7 +9,7 @@ import Modal from '../Modal/Modal';
 interface InstallPromptModalProps {
   opened: boolean;
   onCloseClick: () => void;
-  onInstallClick: () => Promise<'accepted' | 'dismissed' | 'unavailable'>;
+  onInstallClick: () => Promise<void>;
   onLaterClick?: () => void;
 }
 

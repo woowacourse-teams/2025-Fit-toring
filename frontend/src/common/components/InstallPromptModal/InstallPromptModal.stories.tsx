@@ -11,7 +11,7 @@ const meta = {
     opened: true,
     onCloseClick: fn(),
     onLaterClick: fn(),
-    onInstallClick: fn().mockResolvedValue('accepted'),
+    onInstallClick: fn().mockResolvedValue(undefined),
   },
   parameters: {
     docs: {
