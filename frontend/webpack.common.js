@@ -58,11 +58,7 @@ module.exports = {
           from: 'public',
           to: '.',
           globOptions: {
-            ignore: [
-              '**/robots.*.txt',
-              '**/mockServiceWorker.js',
-              '**/splash/apple-splash-source.png',
-            ],
+            ignore: ['**/robots.*.txt', '**/mockServiceWorker.js'],
           },
         },
         { from: 'public/manifest.webmanifest', to: 'manifest.webmanifest' },
