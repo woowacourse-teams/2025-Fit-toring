@@ -7,14 +7,17 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
+import InstallPromptModal from '../../common/components/InstallPromptModal/InstallPromptModal';
 import IOSInstallGuideModal from '../../common/components/IOSInstallGuideModal/IOSInstallGuideModal';
 import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
 import useInfiniteScroll from '../../common/hooks/useInfiniteScroll';
 import useNotification from '../../common/hooks/useNotification';
+import usePWAInstall from '../../common/hooks/usePWAInstall';
 import { THEME } from '../../common/styles/theme';
 import {
+  isIOS,
   isMobileViewport,
   isPWAStandalone,
 } from '../../common/utils/deviceDetection';
@@ -40,9 +43,12 @@ import useSpecialtyFilter from './hooks/useSpecialtyFilter';
 import type { SortKey } from './hooks/useSortKey';
 import type { Specialty } from '../../common/types/Specialty';
 
+type InstallModalType = 'ios' | 'android' | null;
+
 function Home() {
   const { modalOpened, openModal, closeModal } = useModal();
-  const [iosInstallGuideOpened, setIosInstallGuideOpened] = useState(false);
+  const [installModalType, setInstallModalType] =
+    useState<InstallModalType>(null);
 
   const { authenticated } = useAuth();
 
@@ -55,6 +61,7 @@ function Home() {
     showModal: showNotificationModal,
     closeModal: closeNotificationModal,
   } = useNotification(authenticated);
+  const { canInstall, promptInstall } = usePWAInstall();
 
   const handleAllowNotification = async () => {
     await requestNotificationPermission();
@@ -146,32 +153,52 @@ function Home() {
   useAuthCheck();
 
   useEffect(() => {
-    // if (!isIOS()) {
-    //   return;
-    // }
-
     if (!isMobileViewport()) {
+      return;
+    }
+
+    const platform = isIOS() ? 'ios' : 'android';
+
+    if (getInstallPromptShown(platform)) {
       return;
     }
 
     if (
       !shouldAutoShowInstallPromptOnLoginHome({
         isStandalone: isPWAStandalone(),
-        shown: getInstallPromptShown(),
+        shown: false,
       })
     ) {
       return;
     }
 
-    markInstallPromptShown();
-    setIosInstallGuideOpened(true);
-  }, []);
+    if (platform === 'ios') {
+      markInstallPromptShown('ios');
+      setInstallModalType('ios');
+      return;
+    }
+
+    if (!canInstall) {
+      return;
+    }
+
+    markInstallPromptShown('android');
+    setInstallModalType('android');
+  }, [canInstall]);
 
   return (
     <S_Container>
+      <InstallPromptModal
+        opened={installModalType === 'android'}
+        onCloseClick={() => setInstallModalType(null)}
+        onLaterClick={() => setInstallModalType(null)}
+        onInstallClick={promptInstall}
+      />
+
       <IOSInstallGuideModal
-        opened={iosInstallGuideOpened}
-        onCloseClick={() => setIosInstallGuideOpened(false)}
+        opened={installModalType === 'ios'}
+        onCloseClick={() => setInstallModalType(null)}
+        onLaterClick={() => setInstallModalType(null)}
       />
 
       <NotificationPermissionModal
