@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 import { isPWAStandalone } from '../../utils/deviceDetection';
 
 const SPLASH_SESSION_KEY = 'fittoring:splash-overlay-shown';
-const SPLASH_DURATION_MS = 1400;
+const SPLASH_DURATION_MS = 3100;
 const SPLASH_FADE_MS = 220;
 
 function hasSplashOverlayShown() {

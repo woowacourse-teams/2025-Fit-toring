@@ -75,7 +75,7 @@ describe('SplashOverlay', () => {
     expect(container.querySelector(SPLASH_SELECTOR)).toBeInTheDocument();
 
     act(() => {
-      vi.advanceTimersByTime(1620);
+      vi.advanceTimersByTime(3320);
     });
 
     expect(container.querySelector(SPLASH_SELECTOR)).not.toBeInTheDocument();
