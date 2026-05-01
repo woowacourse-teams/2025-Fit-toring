@@ -1,4 +1,12 @@
-export const INSTALL_PROMPT_SHOW_STORAGE_KEY = 'pwa_install_prompt_shown';
+export type InstallPromptPlatform = 'ios' | 'android';
+
+const INSTALL_PROMPT_SHOW_STORAGE_KEY_BY_PLATFORM: Record<
+  InstallPromptPlatform,
+  string
+> = {
+  ios: 'pwa_install_prompt_shown_ios',
+  android: 'pwa_install_prompt_shown_android',
+};
 
 const canUseLocalStorage = (): boolean => {
   return (
@@ -23,11 +31,15 @@ const writeFlag = (key: string, value: boolean): void => {
   window.localStorage.setItem(key, String(value));
 };
 
-export const getInstallPromptShown = (): boolean =>
-  readFlag(INSTALL_PROMPT_SHOW_STORAGE_KEY);
+export const getInstallPromptShown = (
+  platform: InstallPromptPlatform,
+): boolean => readFlag(INSTALL_PROMPT_SHOW_STORAGE_KEY_BY_PLATFORM[platform]);
 
-export const markInstallPromptShown = (shown = true): void => {
-  writeFlag(INSTALL_PROMPT_SHOW_STORAGE_KEY, shown);
+export const markInstallPromptShown = (
+  platform: InstallPromptPlatform,
+  shown = true,
+): void => {
+  writeFlag(INSTALL_PROMPT_SHOW_STORAGE_KEY_BY_PLATFORM[platform], shown);
 };
 
 export const shouldAutoShowInstallPromptOnLoginHome = ({
