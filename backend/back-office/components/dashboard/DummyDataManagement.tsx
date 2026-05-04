@@ -10,6 +10,7 @@ import { Database, Loader2, Search, Upload } from "lucide-react";
 
 export function DummyDataManagement() {
   const [fileSeq, setFileSeq] = useState("1");
+  const [startAt, setStartAt] = useState("");
   const [status, setStatus] = useState<DummyStatus | null>(null);
   const [insertResult, setInsertResult] = useState<DummyInsertResponse | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -17,6 +18,12 @@ export function DummyDataManagement() {
 
   const parsedFileSeq = Number(fileSeq);
   const isValidFileSeq = Number.isInteger(parsedFileSeq) && parsedFileSeq > 0;
+  const isValidStartAt = startAt.trim().length > 0;
+
+  const toKstOffsetDateTime = (dateTimeLocal: string) => {
+    const normalized = dateTimeLocal.length === 16 ? `${dateTimeLocal}:00` : dateTimeLocal;
+    return `${normalized}+09:00`;
+  };
 
   const handleStatusCheck = async () => {
     if (!isValidFileSeq) {
@@ -44,10 +51,14 @@ export function DummyDataManagement() {
       toast.error("1 이상의 파일 번호를 입력해주세요.");
       return;
     }
+    if (!isValidStartAt) {
+      toast.error("시작 시각을 입력해주세요.");
+      return;
+    }
 
     try {
       setIsInserting(true);
-      const response = await insertDummyScenario(parsedFileSeq);
+      const response = await insertDummyScenario(parsedFileSeq, toKstOffsetDateTime(startAt));
       setInsertResult(response);
       setStatus({
         fileSeq: response.fileSeq,
@@ -83,21 +94,36 @@ export function DummyDataManagement() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
-          <div className="grid gap-2 max-w-sm">
-            <Label htmlFor="dummy-file-seq">파일 번호</Label>
-            <Input
-              id="dummy-file-seq"
-              type="number"
-              min={1}
-              step={1}
-              value={fileSeq}
-              onChange={(event) => {
-                setFileSeq(event.target.value);
-                setStatus(null);
-                setInsertResult(null);
-              }}
-              placeholder="예: 1"
-            />
+          <div className="grid gap-4 max-w-2xl sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor="dummy-file-seq">파일 번호</Label>
+              <Input
+                id="dummy-file-seq"
+                type="number"
+                min={1}
+                step={1}
+                value={fileSeq}
+                onChange={(event) => {
+                  setFileSeq(event.target.value);
+                  setStatus(null);
+                  setInsertResult(null);
+                }}
+                placeholder="예: 1"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="dummy-start-at">시작 시각(KST)</Label>
+              <Input
+                id="dummy-start-at"
+                type="datetime-local"
+                step={60}
+                value={startAt}
+                onChange={(event) => {
+                  setStartAt(event.target.value);
+                  setInsertResult(null);
+                }}
+              />
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -144,6 +170,9 @@ export function DummyDataManagement() {
 
           {insertResult && (
             <div className="rounded-lg border bg-card p-4">
+              <p className="mb-3 text-sm text-muted-foreground">
+                적용 시작 시각: {toKstOffsetDateTime(startAt)}
+              </p>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
                   <p className="text-sm text-muted-foreground">시나리오</p>

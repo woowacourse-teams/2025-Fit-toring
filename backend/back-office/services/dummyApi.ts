@@ -27,12 +27,13 @@ export const fetchDummyStatus = async (fileSeq: number): Promise<DummyStatus> =>
     return await res.json();
 };
 
-export const insertDummyScenario = async (fileSeq: number): Promise<DummyInsertResponse> => {
+export const insertDummyScenario = async (fileSeq: number, startAt: string): Promise<DummyInsertResponse> => {
     const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, fileSeq);
     const res = await fetchWithTokenRefresh(url, {
         method: "POST",
         ...getDefaultFetchOptions(),
         headers: getApiHeaders(),
+        body: JSON.stringify({ startAt }),
     });
     if (!res.ok) throw new Error("더미 데이터 적재 실패");
     return await res.json();

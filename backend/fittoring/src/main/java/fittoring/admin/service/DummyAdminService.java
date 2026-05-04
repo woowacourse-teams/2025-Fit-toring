@@ -15,7 +15,10 @@ import fittoring.application.community.dummy.scenario.ScenarioLoader;
 import fittoring.application.community.dummy.scenario.ScenarioPost;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -41,9 +44,13 @@ public class DummyAdminService {
     }
 
     public DummySqlInsertResponse insert(int fileSeq) {
+        return insert(fileSeq, null);
+    }
+
+    public DummySqlInsertResponse insert(int fileSeq, OffsetDateTime startAt) {
         validateFileSeq(fileSeq);
         String scenarioFile = SCENARIO_FILE_PREFIX + fileSeq + SCENARIO_FILE_SUFFIX;
-        ScenarioFile parsed = applyScheduleOffset(parse(scenarioFile));
+        ScenarioFile parsed = applyScheduleOffset(applyStartAt(parse(scenarioFile), startAt));
         if (dao.existsByScenarioFile(scenarioFile)) {
             throw new DummyAlreadyInsertedException(scenarioFile);
         }
@@ -78,6 +85,14 @@ public class DummyAdminService {
         }
     }
 
+    private ScenarioFile applyStartAt(ScenarioFile file, OffsetDateTime startAt) {
+        if (startAt == null) {
+            return file;
+        }
+        OffsetDateTime originalStartAt = findEarliestScheduledAt(file);
+        return shift(file, Duration.between(originalStartAt, startAt));
+    }
+
     private ScenarioFile applyScheduleOffset(ScenarioFile file) {
         int offsetDays = properties.getScheduleOffsetDays();
         if (offsetDays < 0) {
@@ -86,32 +101,58 @@ public class DummyAdminService {
         if (offsetDays == 0) {
             return file;
         }
+        return shift(file, Duration.ofDays(offsetDays));
+    }
+
+    private ScenarioFile shift(ScenarioFile file, Duration duration) {
         List<Scenario> scenarios = file.scenarios().stream()
                 .map(scenario -> new Scenario(
-                        offsetPost(scenario.post(), offsetDays),
-                        offsetComments(scenario.comments(), offsetDays)
+                        shiftPost(scenario.post(), duration),
+                        shiftComments(scenario.comments(), duration)
                 ))
                 .toList();
         return new ScenarioFile(scenarios);
     }
 
-    private ScenarioPost offsetPost(ScenarioPost post, int offsetDays) {
+    private ScenarioPost shiftPost(ScenarioPost post, Duration duration) {
         return new ScenarioPost(
                 post.nickname(),
-                post.scheduledAt().plusDays(offsetDays),
+                post.scheduledAt().plus(duration),
                 post.title(),
                 post.content()
         );
     }
 
-    private List<ScenarioComment> offsetComments(List<ScenarioComment> comments, int offsetDays) {
+    private List<ScenarioComment> shiftComments(List<ScenarioComment> comments, Duration duration) {
         return comments.stream()
                 .map(comment -> new ScenarioComment(
                         comment.nickname(),
-                        comment.scheduledAt().plusDays(offsetDays),
+                        comment.scheduledAt().plus(duration),
                         comment.content(),
-                        offsetComments(comment.replies(), offsetDays)
+                        shiftComments(comment.replies(), duration)
                 ))
                 .toList();
+    }
+
+    private OffsetDateTime findEarliestScheduledAt(ScenarioFile file) {
+        return file.scenarios().stream()
+                .flatMap(this::scheduledTimes)
+                .min(OffsetDateTime::compareTo)
+                .orElseThrow(() -> new InvalidDummyScenarioException("시나리오가 비어 있습니다"));
+    }
+
+    private Stream<OffsetDateTime> scheduledTimes(Scenario scenario) {
+        return Stream.concat(
+                Stream.of(scenario.post().scheduledAt()),
+                commentScheduledTimes(scenario.comments())
+        );
+    }
+
+    private Stream<OffsetDateTime> commentScheduledTimes(List<ScenarioComment> comments) {
+        return comments.stream()
+                .flatMap(comment -> Stream.concat(
+                        Stream.of(comment.scheduledAt()),
+                        commentScheduledTimes(comment.replies())
+                ));
     }
 }

@@ -130,6 +130,30 @@ class DummyAdminServiceTest {
                 .isEqualTo(OffsetDateTime.parse("2026-05-06T15:05:00+09:00"));
     }
 
+    @DisplayName("startAt이 있으면 파일의 첫 scheduled_at을 기준으로 전체 시나리오 시간을 평행 이동한다.")
+    @Test
+    void insertsWithStartAt() throws Exception {
+        // given
+        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resource.exists()).thenReturn(true);
+        when(resource.getInputStream()).thenReturn(yamlStream(VALID_YAML));
+        when(dao.existsByScenarioFile(FILE_1)).thenReturn(false);
+        when(dao.insertAll(eq(FILE_1), any(), eq(GUEST_HASH)))
+                .thenReturn(new WriteResult(1, 1));
+
+        // when
+        service.insert(1, OffsetDateTime.parse("2026-05-04T17:30:00+09:00"));
+
+        // then
+        ArgumentCaptor<ScenarioFile> captor = ArgumentCaptor.forClass(ScenarioFile.class);
+        verify(dao).insertAll(eq(FILE_1), captor.capture(), eq(GUEST_HASH));
+        ScenarioFile shifted = captor.getValue();
+        assertThat(shifted.scenarios().getFirst().post().scheduledAt())
+                .isEqualTo(OffsetDateTime.parse("2026-05-04T17:30:00+09:00"));
+        assertThat(shifted.scenarios().getFirst().comments().getFirst().scheduledAt())
+                .isEqualTo(OffsetDateTime.parse("2026-05-04T17:35:00+09:00"));
+    }
+
     @DisplayName("파일이 없으면 예외를 던진다.")
     @Test
     void throwsWhenFileNotFound() {
