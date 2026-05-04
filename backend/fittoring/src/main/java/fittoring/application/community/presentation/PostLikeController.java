@@ -6,6 +6,7 @@ import fittoring.application.community.service.PostLikeService;
 import fittoring.domain.model.LikeActorKeyHash;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +29,7 @@ public class PostLikeController {
     ) {
         LikeActorKeyHash actorKeyHash = likeActorResolver.resolveOrCreate(actorId, httpResponse);
         PostLikeResponse response = postLikeService.like(postId, actorKeyHash);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/posts/{postId}/like")
