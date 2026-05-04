@@ -35,7 +35,7 @@ public interface CommentRepository extends ListCrudRepository<Comment, Long> {
     Comment findDeletedById(@Param("id") Long id);
 
     @Transactional
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(
             value = "UPDATE comment SET like_count = like_count + 1 WHERE id = :id AND is_deleted = false",
             nativeQuery = true
