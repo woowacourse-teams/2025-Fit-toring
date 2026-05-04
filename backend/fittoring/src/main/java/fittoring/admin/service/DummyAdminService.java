@@ -17,11 +17,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,12 +33,28 @@ public class DummyAdminService {
 
     private static final String SCENARIO_FILE_PREFIX = "scenarios";
     private static final String SCENARIO_FILE_SUFFIX = ".yml";
+    private static final String CLASSPATH_PREFIX = "classpath:";
+    private static final String CLASSPATH_ALL_PREFIX = "classpath*:";
+    private static final Pattern SCENARIO_FILE_PATTERN = Pattern.compile("^scenarios(\\d+)\\.yml$");
     private static final String STATUS_INSERTED = "INSERTED";
 
     private final DummyPendingDao dao;
-    private final ResourceLoader resourceLoader;
+    private final ResourcePatternResolver resourceResolver;
     private final ScenarioLoader scenarioLoader;
     private final DummyAdminApiProperties properties;
+
+    public List<DummySqlInsertStatusResponse> list() {
+        try {
+            return Arrays.stream(resourceResolver.getResources(scenarioFilesPattern()))
+                    .map(Resource::getFilename)
+                    .filter(fileName -> fileName != null && SCENARIO_FILE_PATTERN.matcher(fileName).matches())
+                    .map(this::toStatusResponse)
+                    .sorted((left, right) -> Integer.compare(left.fileSeq(), right.fileSeq()))
+                    .toList();
+        } catch (IOException e) {
+            throw new IllegalStateException("시나리오 파일 목록을 읽지 못했습니다", e);
+        }
+    }
 
     public DummySqlInsertStatusResponse status(int fileSeq) {
         validateFileSeq(fileSeq);
@@ -72,7 +91,7 @@ public class DummyAdminService {
     }
 
     private ScenarioFile parse(String scenarioFile) {
-        Resource resource = resourceLoader.getResource(properties.getScenariosBasePath() + scenarioFile);
+        Resource resource = resourceResolver.getResource(properties.getScenariosBasePath() + scenarioFile);
         if (!resource.exists()) {
             throw new DummyScenarioFileNotFoundException(scenarioFile);
         }
@@ -83,6 +102,23 @@ public class DummyAdminService {
         } catch (RuntimeException e) {
             throw new InvalidDummyScenarioException("유효하지 않은 시나리오 파일입니다: " + scenarioFile, e);
         }
+    }
+
+    private String scenarioFilesPattern() {
+        String pattern = properties.getScenariosBasePath() + SCENARIO_FILE_PREFIX + "*" + SCENARIO_FILE_SUFFIX;
+        if (pattern.startsWith(CLASSPATH_PREFIX)) {
+            return CLASSPATH_ALL_PREFIX + pattern.substring(CLASSPATH_PREFIX.length());
+        }
+        return pattern;
+    }
+
+    private DummySqlInsertStatusResponse toStatusResponse(String scenarioFile) {
+        Matcher matcher = SCENARIO_FILE_PATTERN.matcher(scenarioFile);
+        if (!matcher.matches()) {
+            throw new InvalidDummyScenarioException("잘못된 시나리오 파일명입니다: " + scenarioFile);
+        }
+        int fileSeq = Integer.parseInt(matcher.group(1));
+        return new DummySqlInsertStatusResponse(fileSeq, scenarioFile, dao.existsByScenarioFile(scenarioFile));
     }
 
     private ScenarioFile applyStartAt(ScenarioFile file, OffsetDateTime startAt) {

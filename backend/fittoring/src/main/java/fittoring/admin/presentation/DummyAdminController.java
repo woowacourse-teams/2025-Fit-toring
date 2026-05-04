@@ -5,6 +5,7 @@ import fittoring.admin.presentation.dto.DummySqlInsertResponse;
 import fittoring.admin.presentation.dto.DummySqlInsertStatusResponse;
 import fittoring.admin.service.DummyAdminService;
 import fittoring.config.auth.Admin;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class DummyAdminController {
 
     private final DummyAdminService service;
+
+    @Admin
+    @GetMapping
+    public ResponseEntity<List<DummySqlInsertStatusResponse>> list() {
+        return ResponseEntity.ok(service.list());
+    }
 
     @Admin
     @PostMapping("/{fileSeq}")

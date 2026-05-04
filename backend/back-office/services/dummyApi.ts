@@ -16,6 +16,16 @@ export interface DummyInsertResponse {
     status: 'INSERTED';
 }
 
+export const fetchDummyScenarios = async (): Promise<DummyStatus[]> => {
+    const res = await fetchWithTokenRefresh(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, {
+        method: "GET",
+        ...getDefaultFetchOptions()
+    });
+
+    if (!res.ok) throw new Error("시나리오 목록 조회 실패");
+    return await res.json();
+};
+
 export const fetchDummyStatus = async (fileSeq: number): Promise<DummyStatus> => {
     const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, fileSeq);
     const res = await fetchWithTokenRefresh(url, { 

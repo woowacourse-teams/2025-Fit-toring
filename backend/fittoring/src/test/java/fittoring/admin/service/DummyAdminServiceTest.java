@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 @ExtendWith(MockitoExtension.class)
 class DummyAdminServiceTest {
@@ -60,10 +60,13 @@ class DummyAdminServiceTest {
     private DummyPendingDao dao;
 
     @Mock
-    private ResourceLoader resourceLoader;
+    private ResourcePatternResolver resourceResolver;
 
     @Mock
     private Resource resource;
+
+    @Mock
+    private Resource resourceTwo;
 
     private final ScenarioLoader scenarioLoader = new ScenarioLoader();
 
@@ -74,14 +77,38 @@ class DummyAdminServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new DummyAdminService(dao, resourceLoader, scenarioLoader, properties);
+        service = new DummyAdminService(dao, resourceResolver, scenarioLoader, properties);
+    }
+
+    @DisplayName("준비된 시나리오 파일 목록과 적재 상태를 반환한다.")
+    @Test
+    void listsScenarioFiles() throws Exception {
+        // given
+        when(resourceResolver.getResources("classpath*:dummy/scenarios*.yml"))
+                .thenReturn(new Resource[]{resourceTwo, resource});
+        when(resource.getFilename()).thenReturn(FILE_1);
+        when(resourceTwo.getFilename()).thenReturn(FILE_2);
+        when(dao.existsByScenarioFile(FILE_1)).thenReturn(true);
+        when(dao.existsByScenarioFile(FILE_2)).thenReturn(false);
+
+        // when
+        var responses = service.list();
+
+        // then
+        assertThat(responses).hasSize(2);
+        assertThat(responses.get(0).fileSeq()).isEqualTo(1);
+        assertThat(responses.get(0).scenarioFile()).isEqualTo(FILE_1);
+        assertThat(responses.get(0).inserted()).isTrue();
+        assertThat(responses.get(1).fileSeq()).isEqualTo(2);
+        assertThat(responses.get(1).scenarioFile()).isEqualTo(FILE_2);
+        assertThat(responses.get(1).inserted()).isFalse();
     }
 
     @DisplayName("정상 흐름: yml을 적재하고 응답 DTO를 반환한다.")
     @Test
     void inserts() throws Exception {
         // given
-        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resourceResolver.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
         when(resource.exists()).thenReturn(true);
         when(resource.getInputStream()).thenReturn(yamlStream(VALID_YAML));
         when(dao.existsByScenarioFile(FILE_1)).thenReturn(false);
@@ -106,11 +133,11 @@ class DummyAdminServiceTest {
         // given
         DummyAdminService offsetService = new DummyAdminService(
                 dao,
-                resourceLoader,
+                resourceResolver,
                 scenarioLoader,
                 new DummyAdminApiProperties(true, BASE_PATH, GUEST_HASH, PROD_OFFSET_DAYS)
         );
-        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resourceResolver.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
         when(resource.exists()).thenReturn(true);
         when(resource.getInputStream()).thenReturn(yamlStream(VALID_YAML));
         when(dao.existsByScenarioFile(FILE_1)).thenReturn(false);
@@ -134,7 +161,7 @@ class DummyAdminServiceTest {
     @Test
     void insertsWithStartAt() throws Exception {
         // given
-        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resourceResolver.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
         when(resource.exists()).thenReturn(true);
         when(resource.getInputStream()).thenReturn(yamlStream(VALID_YAML));
         when(dao.existsByScenarioFile(FILE_1)).thenReturn(false);
@@ -158,7 +185,7 @@ class DummyAdminServiceTest {
     @Test
     void throwsWhenFileNotFound() {
         // given
-        when(resourceLoader.getResource(BASE_PATH + FILE_99)).thenReturn(resource);
+        when(resourceResolver.getResource(BASE_PATH + FILE_99)).thenReturn(resource);
         when(resource.exists()).thenReturn(false);
 
         // when // then
@@ -180,7 +207,7 @@ class DummyAdminServiceTest {
                       content: "샘플"
                     comments: []
                 """;
-        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resourceResolver.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
         when(resource.exists()).thenReturn(true);
         when(resource.getInputStream()).thenReturn(yamlStream(invalidYaml));
 
@@ -197,7 +224,7 @@ class DummyAdminServiceTest {
         String invalidYaml = """
                 scenarios: wrong-shape
                 """;
-        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resourceResolver.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
         when(resource.exists()).thenReturn(true);
         when(resource.getInputStream()).thenReturn(yamlStream(invalidYaml));
 
@@ -211,7 +238,7 @@ class DummyAdminServiceTest {
     @Test
     void throwsWhenAlreadyInserted() throws Exception {
         // given
-        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resourceResolver.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
         when(resource.exists()).thenReturn(true);
         when(resource.getInputStream()).thenReturn(yamlStream(VALID_YAML));
         when(dao.existsByScenarioFile(FILE_1)).thenReturn(true);
