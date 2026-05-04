@@ -14,7 +14,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +22,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(
@@ -51,13 +49,4 @@ public class CommentLike {
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
-    private CommentLike(Comment comment, LikeActorKeyHash actorKeyHash) {
-        this.comment = comment;
-        this.actorKeyHash = actorKeyHash;
-    }
-
-    public static CommentLike of(Comment comment, LikeActorKeyHash actorKeyHash) {
-        return new CommentLike(comment, actorKeyHash);
-    }
 }

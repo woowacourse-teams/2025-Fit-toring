@@ -44,11 +44,6 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findComments(Long postId) {
-        return findComments(postId, null);
-    }
-
-    @Transactional(readOnly = true)
     public List<CommentResponse> findComments(Long postId, LikeActorKeyHash actorKeyHash) {
         getPost(postId);
         List<Comment> comments = commentRepository.findAllByPostId(postId);

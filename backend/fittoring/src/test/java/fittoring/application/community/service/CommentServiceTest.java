@@ -116,7 +116,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         commentRepository.save(FixtureUtil.testGuestComment(post, "comment-1"));
         commentRepository.save(FixtureUtil.testGuestComment(post, "comment-2"));
 
-        List<CommentResponse> actual = commentService.findComments(post.getId());
+        List<CommentResponse> actual = commentService.findComments(post.getId(), null);
 
         assertThat(actual).hasSize(2);
     }
