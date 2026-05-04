@@ -1,31 +1,65 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
-import { insertDummyScenario } from "@/services/dummyApi";
-import { Loader2, Database, Upload } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Badge } from "../ui/badge";
+import { fetchDummyStatus, insertDummyScenario, DummyInsertResponse, DummyStatus } from "@/services/dummyApi";
+import { Database, Loader2, Search, Upload } from "lucide-react";
 
 export function DummyDataManagement() {
-  const [fileSeqs] = useState([1, 2, 3, 4, 5]); // 기본적으로 5개 파일로 가정
-  const [isLoading, setIsLoading] = useState<Record<number, boolean>>({});
+  const [fileSeq, setFileSeq] = useState("1");
+  const [status, setStatus] = useState<DummyStatus | null>(null);
+  const [insertResult, setInsertResult] = useState<DummyInsertResponse | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [isInserting, setIsInserting] = useState(false);
 
-  const handleInsert = async (fileSeq: number) => {
+  const parsedFileSeq = Number(fileSeq);
+  const isValidFileSeq = Number.isInteger(parsedFileSeq) && parsedFileSeq > 0;
+
+  const handleStatusCheck = async () => {
+    if (!isValidFileSeq) {
+      toast.error("1 이상의 파일 번호를 입력해주세요.");
+      return;
+    }
+
     try {
-      setIsLoading((prev) => ({ ...prev, [fileSeq]: true }));
-      await insertDummyScenario(fileSeq);
-      toast.success(`${fileSeq}번 시나리오가 성공적으로 적재되었습니다.`);
+      setIsChecking(true);
+      setInsertResult(null);
+      const response = await fetchDummyStatus(parsedFileSeq);
+      setStatus(response);
+      toast.success(`${response.scenarioFile} 상태를 조회했습니다.`);
     } catch (err) {
       console.error(err);
-      toast.error(`${fileSeq}번 시나리오 적재에 실패했습니다.`);
+      setStatus(null);
+      toast.error(`${parsedFileSeq}번 시나리오 상태 조회에 실패했습니다.`);
     } finally {
-      setIsLoading((prev) => ({ ...prev, [fileSeq]: false }));
+      setIsChecking(false);
+    }
+  };
+
+  const handleInsert = async () => {
+    if (!isValidFileSeq) {
+      toast.error("1 이상의 파일 번호를 입력해주세요.");
+      return;
+    }
+
+    try {
+      setIsInserting(true);
+      const response = await insertDummyScenario(parsedFileSeq);
+      setInsertResult(response);
+      setStatus({
+        fileSeq: response.fileSeq,
+        scenarioFile: response.scenarioFile,
+        inserted: true,
+      });
+      toast.success(`${response.scenarioFile}이 성공적으로 적재되었습니다.`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`${parsedFileSeq}번 시나리오 적재에 실패했습니다.`);
+    } finally {
+      setIsInserting(false);
     }
   };
 
@@ -33,45 +67,101 @@ export function DummyDataManagement() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">더미 데이터 적재 관리</h2>
-        <p className="text-muted-foreground">시나리오 파일을 선택하여 데이터베이스에 적재합니다.</p>
+        <p className="text-muted-foreground">
+          시나리오 파일 번호를 입력해 pending 테이블 적재 상태를 확인하거나 적재를 실행합니다.
+        </p>
       </div>
 
-      <div className="border rounded-lg bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>파일 번호 (Seq)</TableHead>
-              <TableHead>파일명</TableHead>
-              <TableHead className="text-right">작업</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {fileSeqs.map((seq) => (
-              <TableRow key={seq}>
-                <TableCell className="font-medium">{seq}</TableCell>
-                <TableCell>scenarios{seq}.yml</TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleInsert(seq)}
-                    disabled={isLoading[seq]}
-                  >
-                    {isLoading[seq] ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>
-                        <Upload className="h-4 w-4 mr-2" />
-                        적재 실행
-                      </>
-                    )}
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            시나리오 파일
+          </CardTitle>
+          <CardDescription>
+            파일 번호 1은 scenarios1.yml, 2는 scenarios2.yml에 매핑됩니다.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="grid gap-2 max-w-sm">
+            <Label htmlFor="dummy-file-seq">파일 번호</Label>
+            <Input
+              id="dummy-file-seq"
+              type="number"
+              min={1}
+              step={1}
+              value={fileSeq}
+              onChange={(event) => {
+                setFileSeq(event.target.value);
+                setStatus(null);
+                setInsertResult(null);
+              }}
+              placeholder="예: 1"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleStatusCheck}
+              disabled={isChecking || isInserting}
+            >
+              {isChecking ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4" />
+              )}
+              상태 조회
+            </Button>
+            <Button
+              type="button"
+              onClick={handleInsert}
+              disabled={isChecking || isInserting}
+            >
+              {isInserting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              적재 실행
+            </Button>
+          </div>
+
+          {status && (
+            <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="font-medium">{status.scenarioFile}</p>
+                  <p className="text-sm text-muted-foreground">파일 번호 {status.fileSeq}</p>
+                </div>
+                <Badge variant={status.inserted ? "default" : "secondary"}>
+                  {status.inserted ? "적재됨" : "미적재"}
+                </Badge>
+              </div>
+            </div>
+          )}
+
+          {insertResult && (
+            <div className="rounded-lg border bg-card p-4">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">시나리오</p>
+                  <p className="font-semibold">{insertResult.insertedScenarioCount}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">게시글 pending</p>
+                  <p className="font-semibold">{insertResult.insertedPostPendingCount}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">댓글 pending</p>
+                  <p className="font-semibold">{insertResult.insertedCommentPendingCount}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

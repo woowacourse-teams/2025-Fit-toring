@@ -3,16 +3,21 @@ import { getApiHeaders, getDefaultFetchOptions, fetchWithTokenRefresh, joinUrl }
 
 export interface DummyStatus {
     fileSeq: number;
+    scenarioFile: string;
+    inserted: boolean;
+}
+
+export interface DummyInsertResponse {
+    fileSeq: number;
+    scenarioFile: string;
     insertedScenarioCount: number;
     insertedPostPendingCount: number;
     insertedCommentPendingCount: number;
-    status: 'INSERTED' | 'NOT_INSERTED';
+    status: 'INSERTED';
 }
 
-const DUMMY_BASE_PATH = "/admin/dummy/sql-insert";
-
 export const fetchDummyStatus = async (fileSeq: number): Promise<DummyStatus> => {
-    const url = joinUrl(API_ENDPOINTS.AUTH_ME.split('/members')[0], DUMMY_BASE_PATH, String(fileSeq));
+    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, fileSeq);
     const res = await fetchWithTokenRefresh(url, { 
         method: "GET",
         ...getDefaultFetchOptions() 
@@ -22,8 +27,8 @@ export const fetchDummyStatus = async (fileSeq: number): Promise<DummyStatus> =>
     return await res.json();
 };
 
-export const insertDummyScenario = async (fileSeq: number) => {
-    const url = joinUrl(API_ENDPOINTS.AUTH_ME.split('/members')[0], DUMMY_BASE_PATH, String(fileSeq));
+export const insertDummyScenario = async (fileSeq: number): Promise<DummyInsertResponse> => {
+    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, fileSeq);
     const res = await fetchWithTokenRefresh(url, {
         method: "POST",
         ...getDefaultFetchOptions(),
