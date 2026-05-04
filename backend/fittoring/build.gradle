@@ -23,6 +23,7 @@ ext {
 tasks.named('test') {
     useJUnitPlatform()
     outputs.dir snippetsDir
+    systemProperty 'user.timezone', 'Asia/Seoul'
 }
 
 tasks.withType(JavaCompile).configureEach {

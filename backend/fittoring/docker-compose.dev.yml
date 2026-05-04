@@ -65,6 +65,7 @@ services:
       - "8080"
     env_file: .env
     environment:
+      TZ: Asia/Seoul
       JAVA_TOOL_OPTIONS: "-javaagent:/app/otel-agent.jar"
       OTEL_SERVICE_NAME: fittoring
       OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${SPRING_PROFILES_ACTIVE:-dev}"
