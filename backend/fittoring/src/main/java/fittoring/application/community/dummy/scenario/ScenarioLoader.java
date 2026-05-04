@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ScenarioLoader {
 
     public ScenarioFile load(InputStream input) {
