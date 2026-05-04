@@ -46,18 +46,18 @@ public class PostLike {
     private Post post;
 
     @Embedded
-    private PostLikeActorKeyHash actorKeyHash;
+    private LikeActorKeyHash actorKeyHash;
 
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    private PostLike(Post post, PostLikeActorKeyHash actorKeyHash) {
+    private PostLike(Post post, LikeActorKeyHash actorKeyHash) {
         this.post = post;
         this.actorKeyHash = actorKeyHash;
     }
 
-    public static PostLike of(Post post, PostLikeActorKeyHash actorKeyHash) {
+    public static PostLike of(Post post, LikeActorKeyHash actorKeyHash) {
         return new PostLike(post, actorKeyHash);
     }
 }

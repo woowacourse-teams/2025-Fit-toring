@@ -1,7 +1,7 @@
 package fittoring.application.community.service;
 
 import fittoring.application.auth.CookieProvider;
-import fittoring.domain.model.PostLikeActorKeyHash;
+import fittoring.domain.model.LikeActorKeyHash;
 import fittoring.infrastructure.HexEncoder;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +16,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PostLikeActorResolver {
+public class LikeActorResolver {
 
     public static final String COOKIE_NAME = "postLikeActorId";
 
@@ -26,7 +26,7 @@ public class PostLikeActorResolver {
     private final CookieProvider cookieProvider;
     private final String actorSecret;
 
-    public PostLikeActorResolver(
+    public LikeActorResolver(
             CookieProvider cookieProvider,
             @Value("${post-like.actor-secret}") String actorSecret
     ) {
@@ -37,37 +37,37 @@ public class PostLikeActorResolver {
         this.actorSecret = actorSecret;
     }
 
-    public PostLikeActorKeyHash resolve(String actorId) {
-        return PostLikeActorId.from(actorId)
+    public LikeActorKeyHash resolve(String actorId) {
+        return LikeActorId.from(actorId)
                 .map(this::hash)
                 .orElse(null);
     }
 
-    public PostLikeActorKeyHash resolveOrCreate(String actorId, HttpServletResponse response) {
-        PostLikeActorId postLikeActorId = PostLikeActorId.from(actorId)
+    public LikeActorKeyHash resolveOrCreate(String actorId, HttpServletResponse response) {
+        LikeActorId likeActorId = LikeActorId.from(actorId)
                 .orElseGet(() -> createAndWriteActorCookie(response));
-        return hash(postLikeActorId);
+        return hash(likeActorId);
     }
 
-    private PostLikeActorId createAndWriteActorCookie(HttpServletResponse response) {
-        PostLikeActorId postLikeActorId = PostLikeActorId.create();
-        writeActorCookie(postLikeActorId, response);
-        return postLikeActorId;
+    private LikeActorId createAndWriteActorCookie(HttpServletResponse response) {
+        LikeActorId likeActorId = LikeActorId.create();
+        writeActorCookie(likeActorId, response);
+        return likeActorId;
     }
 
-    private void writeActorCookie(PostLikeActorId postLikeActorId, HttpServletResponse response) {
-        ResponseCookie cookie = cookieProvider.createCookieWithMaxAge(COOKIE_NAME, postLikeActorId.value(),
+    private void writeActorCookie(LikeActorId likeActorId, HttpServletResponse response) {
+        ResponseCookie cookie = cookieProvider.createCookieWithMaxAge(COOKIE_NAME, likeActorId.value(),
                 COOKIE_MAX_AGE);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
-    private PostLikeActorKeyHash hash(PostLikeActorId postLikeActorId) {
+    private LikeActorKeyHash hash(LikeActorId likeActorId) {
         try {
             Mac mac = Mac.getInstance(HMAC_ALGORITHM);
             SecretKeySpec keySpec = new SecretKeySpec(actorSecret.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITHM);
             mac.init(keySpec);
-            String hash = HexEncoder.convertHex(mac.doFinal(postLikeActorId.value().getBytes(StandardCharsets.UTF_8)));
-            return new PostLikeActorKeyHash(hash);
+            String hash = HexEncoder.convertHex(mac.doFinal(likeActorId.value().getBytes(StandardCharsets.UTF_8)));
+            return new LikeActorKeyHash(hash);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new IllegalStateException("해시 계산 중 예외가 발생했습니다.", e);
         }

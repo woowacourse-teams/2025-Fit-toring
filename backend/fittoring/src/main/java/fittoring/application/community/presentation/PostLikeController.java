@@ -1,9 +1,9 @@
 package fittoring.application.community.presentation;
 
 import fittoring.application.community.presentation.dto.response.PostLikeResponse;
-import fittoring.application.community.service.PostLikeActorResolver;
+import fittoring.application.community.service.LikeActorResolver;
 import fittoring.application.community.service.PostLikeService;
-import fittoring.domain.model.PostLikeActorKeyHash;
+import fittoring.domain.model.LikeActorKeyHash;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostLikeController {
 
     private final PostLikeService postLikeService;
-    private final PostLikeActorResolver postLikeActorResolver;
+    private final LikeActorResolver likeActorResolver;
 
     @PostMapping("/posts/{postId}/like")
     public ResponseEntity<PostLikeResponse> like(
             @PathVariable Long postId,
-            @CookieValue(name = PostLikeActorResolver.COOKIE_NAME, required = false) String actorId,
+            @CookieValue(name = LikeActorResolver.COOKIE_NAME, required = false) String actorId,
             HttpServletResponse httpResponse
     ) {
-        PostLikeActorKeyHash actorKeyHash = postLikeActorResolver.resolveOrCreate(actorId, httpResponse);
+        LikeActorKeyHash actorKeyHash = likeActorResolver.resolveOrCreate(actorId, httpResponse);
         PostLikeResponse response = postLikeService.like(postId, actorKeyHash);
         return ResponseEntity.ok(response);
     }
@@ -34,9 +34,9 @@ public class PostLikeController {
     @DeleteMapping("/posts/{postId}/like")
     public ResponseEntity<PostLikeResponse> unlike(
             @PathVariable Long postId,
-            @CookieValue(name = PostLikeActorResolver.COOKIE_NAME, required = false) String actorId
+            @CookieValue(name = LikeActorResolver.COOKIE_NAME, required = false) String actorId
     ) {
-        PostLikeActorKeyHash actorKeyHash = postLikeActorResolver.resolve(actorId);
+        LikeActorKeyHash actorKeyHash = likeActorResolver.resolve(actorId);
         PostLikeResponse response = postLikeService.unlike(postId, actorKeyHash);
         return ResponseEntity.ok(response);
     }

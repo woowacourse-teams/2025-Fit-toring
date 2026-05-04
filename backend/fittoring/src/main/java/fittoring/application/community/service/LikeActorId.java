@@ -1,27 +1,27 @@
 package fittoring.application.community.service;
 
 import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.InvalidPostLikeActorIdException;
+import fittoring.application.exception.InvalidLikeActorIdException;
 import java.util.Optional;
 import java.util.UUID;
 
-public record PostLikeActorId(String value) {
+public record LikeActorId(String value) {
 
-    public PostLikeActorId {
+    public LikeActorId {
         if (isInvalidUuid(value)) {
-            throw new InvalidPostLikeActorIdException(BusinessErrorMessage.POST_LIKE_ACTOR_ID_INVALID.getMessage());
+            throw new InvalidLikeActorIdException(BusinessErrorMessage.LIKE_ACTOR_ID_INVALID.getMessage());
         }
     }
 
-    public static Optional<PostLikeActorId> from(String value) {
+    public static Optional<LikeActorId> from(String value) {
         if (isInvalidUuid(value)) {
             return Optional.empty();
         }
-        return Optional.of(new PostLikeActorId(value));
+        return Optional.of(new LikeActorId(value));
     }
 
-    public static PostLikeActorId create() {
-        return new PostLikeActorId(UUID.randomUUID().toString());
+    public static LikeActorId create() {
+        return new LikeActorId(UUID.randomUUID().toString());
     }
 
     private static boolean isInvalidUuid(String value) {
