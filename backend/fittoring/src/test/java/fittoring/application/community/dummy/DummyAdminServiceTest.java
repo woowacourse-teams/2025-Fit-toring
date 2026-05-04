@@ -9,12 +9,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import fittoring.application.community.dummy.DummyPendingDao.WriteResult;
+import fittoring.application.community.dummy.scenario.ScenarioFile;
 import fittoring.application.community.dummy.scenario.ScenarioLoader;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,6 +33,8 @@ class DummyAdminServiceTest {
     private static final String FILE_2 = "scenarios2.yml";
     private static final String FILE_99 = "scenarios99.yml";
     private static final String STATUS_INSERTED = "INSERTED";
+    private static final int NO_OFFSET_DAYS = 0;
+    private static final int PROD_OFFSET_DAYS = 2;
 
     private static final String VALID_YAML = """
             scenarios:
@@ -56,7 +61,7 @@ class DummyAdminServiceTest {
     private final ScenarioLoader scenarioLoader = new ScenarioLoader();
 
     private final DummyAdminApiProperties properties = new DummyAdminApiProperties(
-            true, BASE_PATH, GUEST_HASH);
+            true, BASE_PATH, GUEST_HASH, NO_OFFSET_DAYS);
 
     private DummyAdminService service;
 
@@ -86,6 +91,36 @@ class DummyAdminServiceTest {
         assertThat(response.insertedPostPendingCount()).isEqualTo(1);
         assertThat(response.insertedCommentPendingCount()).isEqualTo(1);
         assertThat(response.status()).isEqualTo(STATUS_INSERTED);
+    }
+
+    @DisplayName("schedule-offset-days가 있으면 모든 scheduled_at을 해당 일수만큼 미뤄서 적재한다.")
+    @Test
+    void insertsWithScheduleOffset() throws Exception {
+        // given
+        DummyAdminService offsetService = new DummyAdminService(
+                dao,
+                resourceLoader,
+                scenarioLoader,
+                new DummyAdminApiProperties(true, BASE_PATH, GUEST_HASH, PROD_OFFSET_DAYS)
+        );
+        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resource.exists()).thenReturn(true);
+        when(resource.getInputStream()).thenReturn(yamlStream(VALID_YAML));
+        when(dao.existsByScenarioFile(FILE_1)).thenReturn(false);
+        when(dao.insertAll(eq(FILE_1), any(), eq(GUEST_HASH)))
+                .thenReturn(new WriteResult(1, 1));
+
+        // when
+        offsetService.insert(1);
+
+        // then
+        ArgumentCaptor<ScenarioFile> captor = ArgumentCaptor.forClass(ScenarioFile.class);
+        verify(dao).insertAll(eq(FILE_1), captor.capture(), eq(GUEST_HASH));
+        ScenarioFile shifted = captor.getValue();
+        assertThat(shifted.scenarios().getFirst().post().scheduledAt())
+                .isEqualTo(OffsetDateTime.parse("2026-05-06T15:00:00+09:00"));
+        assertThat(shifted.scenarios().getFirst().comments().getFirst().scheduledAt())
+                .isEqualTo(OffsetDateTime.parse("2026-05-06T15:05:00+09:00"));
     }
 
     @DisplayName("파일이 없으면 예외를 던진다.")

@@ -32,3 +32,5 @@ fcm:
 dummy:
   admin-api:
     enabled: true
+  scheduler:
+    enabled: true

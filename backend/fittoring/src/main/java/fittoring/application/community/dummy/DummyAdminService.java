@@ -1,10 +1,14 @@
 package fittoring.application.community.dummy;
 
 import fittoring.application.community.dummy.DummyPendingDao.WriteResult;
+import fittoring.application.community.dummy.scenario.Scenario;
+import fittoring.application.community.dummy.scenario.ScenarioComment;
 import fittoring.application.community.dummy.scenario.ScenarioFile;
 import fittoring.application.community.dummy.scenario.ScenarioLoader;
+import fittoring.application.community.dummy.scenario.ScenarioPost;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -32,7 +36,7 @@ public class DummyAdminService {
     public DummySqlInsertResponse insert(int fileSeq) {
         validateFileSeq(fileSeq);
         String scenarioFile = SCENARIO_FILE_PREFIX + fileSeq + SCENARIO_FILE_SUFFIX;
-        ScenarioFile parsed = parse(scenarioFile);
+        ScenarioFile parsed = applyScheduleOffset(parse(scenarioFile));
         if (dao.existsByScenarioFile(scenarioFile)) {
             throw new DummyAlreadyInsertedException(scenarioFile);
         }
@@ -65,5 +69,42 @@ public class DummyAdminService {
         } catch (IllegalArgumentException e) {
             throw new InvalidDummyScenarioException(e.getMessage(), e);
         }
+    }
+
+    private ScenarioFile applyScheduleOffset(ScenarioFile file) {
+        int offsetDays = properties.getScheduleOffsetDays();
+        if (offsetDays < 0) {
+            throw new InvalidDummyScenarioException("schedule-offset-days는 0 이상이어야 합니다: " + offsetDays);
+        }
+        if (offsetDays == 0) {
+            return file;
+        }
+        List<Scenario> scenarios = file.scenarios().stream()
+                .map(scenario -> new Scenario(
+                        offsetPost(scenario.post(), offsetDays),
+                        offsetComments(scenario.comments(), offsetDays)
+                ))
+                .toList();
+        return new ScenarioFile(scenarios);
+    }
+
+    private ScenarioPost offsetPost(ScenarioPost post, int offsetDays) {
+        return new ScenarioPost(
+                post.nickname(),
+                post.scheduledAt().plusDays(offsetDays),
+                post.title(),
+                post.content()
+        );
+    }
+
+    private List<ScenarioComment> offsetComments(List<ScenarioComment> comments, int offsetDays) {
+        return comments.stream()
+                .map(comment -> new ScenarioComment(
+                        comment.nickname(),
+                        comment.scheduledAt().plusDays(offsetDays),
+                        comment.content(),
+                        offsetComments(comment.replies(), offsetDays)
+                ))
+                .toList();
     }
 }
