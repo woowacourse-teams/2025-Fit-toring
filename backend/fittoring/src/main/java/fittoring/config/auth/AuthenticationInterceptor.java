@@ -4,6 +4,7 @@ import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
@@ -66,14 +67,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (cookies == null || cookies.length == 0) {
             return;
         }
-        String accessToken;
         try {
-            accessToken = getAccessToken(cookies);
-        } catch (InvalidTokenException ignored) {
-            return;
+            String accessToken = getAccessToken(cookies);
+            TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
+            bindAuthenticationContext(request, payload);
+        } catch (InvalidTokenException | ExpiredTokenException ignored) {
+            // 만료/변조된 토큰은 비회원으로 간주한다. 비회원도 접근 가능한 핸들러이므로 통과시킨다.
         }
-        TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
-        bindAuthenticationContext(request, payload);
     }
 
     private TokenPayload authenticate(HttpServletRequest request) {
