@@ -28,3 +28,7 @@ aws:
     chat-message-persist-queue: ${CHAT_MESSAGE_PERSIST_QUEUE_NAME}
 fcm:
   service-account-key: ${FCM_SERVICE_ACCOUNT_KEY}
+
+dummy:
+  admin-api:
+    enabled: true

@@ -31,3 +31,7 @@ aws:
     env-prefix: local/
   sqs:
     image-queue: fittoring-image-queue
+
+dummy:
+  admin-api:
+    enabled: true
