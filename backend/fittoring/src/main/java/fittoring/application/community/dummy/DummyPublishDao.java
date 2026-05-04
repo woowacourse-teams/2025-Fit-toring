@@ -21,7 +21,7 @@ public class DummyPublishDao {
     private static final String SELECT_NEXT_POST_BASE = """
             SELECT id, title, content, nickname, guest_password, scheduled_at, attempt_count
             FROM dummy_post_pending
-            WHERE status = 'PENDING' AND scheduled_at <= NOW(6)
+            WHERE status = 'PENDING' AND scheduled_at <= ?
             """;
 
     private static final String SELECT_NEXT_POST_ORDER = """
@@ -39,7 +39,7 @@ public class DummyPublishDao {
             JOIN dummy_post_pending p ON c.pending_post_id = p.id
             LEFT JOIN dummy_comment_pending r ON c.pending_root_id = r.id
             LEFT JOIN dummy_comment_pending pr ON c.pending_parent_id = pr.id
-            WHERE c.status = 'PENDING' AND c.scheduled_at <= NOW(6)
+            WHERE c.status = 'PENDING' AND c.scheduled_at <= ?
               AND p.status = 'PUBLISHED'
               AND p.published_post_id IS NOT NULL
               AND (c.pending_root_id IS NULL OR (r.status = 'PUBLISHED' AND r.published_comment_id IS NOT NULL))
@@ -94,8 +94,8 @@ public class DummyPublishDao {
 
     private final JdbcTemplate jdbc;
 
-    public Optional<PostPendingRow> findNextPostForPublish(Collection<Long> excludedIds) {
-        Query query = selectNextPostQuery(excludedIds);
+    public Optional<PostPendingRow> findNextPostForPublish(Collection<Long> excludedIds, LocalDateTime publishableAt) {
+        Query query = selectNextPostQuery(excludedIds, publishableAt);
         List<PostPendingRow> rows = jdbc.query(query.sql(), (rs, rowNum) -> new PostPendingRow(
                 rs.getLong("id"),
                 rs.getString("title"),
@@ -108,8 +108,8 @@ public class DummyPublishDao {
         return rows.stream().findFirst();
     }
 
-    public Optional<CommentPendingRow> findNextCommentForPublish(Collection<Long> excludedIds) {
-        Query query = selectNextCommentQuery(excludedIds);
+    public Optional<CommentPendingRow> findNextCommentForPublish(Collection<Long> excludedIds, LocalDateTime publishableAt) {
+        Query query = selectNextCommentQuery(excludedIds, publishableAt);
         List<CommentPendingRow> rows = jdbc.query(query.sql(), (rs, rowNum) -> new CommentPendingRow(
                 rs.getLong("id"),
                 rs.getString("content"),
@@ -184,24 +184,36 @@ public class DummyPublishDao {
         ps.setLong(index, value);
     }
 
-    private Query selectNextPostQuery(Collection<Long> excludedIds) {
+    private Query selectNextPostQuery(Collection<Long> excludedIds, LocalDateTime publishableAt) {
         if (excludedIds.isEmpty()) {
-            return new Query(SELECT_NEXT_POST_BASE + SELECT_NEXT_POST_ORDER, new Object[0]);
+            return new Query(SELECT_NEXT_POST_BASE + SELECT_NEXT_POST_ORDER, new Object[]{publishableAt});
         }
+        Object[] args = withPublishableAt(publishableAt, excludedIds);
         return new Query(
                 SELECT_NEXT_POST_BASE + excludeIds("id", excludedIds.size()) + SELECT_NEXT_POST_ORDER,
-                excludedIds.toArray()
+                args
         );
     }
 
-    private Query selectNextCommentQuery(Collection<Long> excludedIds) {
+    private Query selectNextCommentQuery(Collection<Long> excludedIds, LocalDateTime publishableAt) {
         if (excludedIds.isEmpty()) {
-            return new Query(SELECT_NEXT_COMMENT_BASE + SELECT_NEXT_COMMENT_ORDER, new Object[0]);
+            return new Query(SELECT_NEXT_COMMENT_BASE + SELECT_NEXT_COMMENT_ORDER, new Object[]{publishableAt});
         }
+        Object[] args = withPublishableAt(publishableAt, excludedIds);
         return new Query(
                 SELECT_NEXT_COMMENT_BASE + excludeIds("c.id", excludedIds.size()) + SELECT_NEXT_COMMENT_ORDER,
-                excludedIds.toArray()
+                args
         );
+    }
+
+    private Object[] withPublishableAt(LocalDateTime publishableAt, Collection<Long> excludedIds) {
+        Object[] args = new Object[excludedIds.size() + 1];
+        args[0] = publishableAt;
+        int index = 1;
+        for (Long excludedId : excludedIds) {
+            args[index++] = excludedId;
+        }
+        return args;
     }
 
     private String excludeIds(String columnName, int size) {
