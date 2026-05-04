@@ -4,9 +4,14 @@ services:
   db:
     image: mysql:8.0
     container_name: mysql-container
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
     environment:
       MYSQL_DATABASE: fittoring
       MYSQL_ROOT_PASSWORD: 1234
+      LANG: C.UTF-8
     ports:
       - "3306:3306"
     volumes:
@@ -21,9 +26,14 @@ services:
   db-test:
     image: mysql:8.0
     container_name: mysql-test-container
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
     environment:
       MYSQL_DATABASE: fittoring-test
       MYSQL_ROOT_PASSWORD: 1234
+      LANG: C.UTF-8
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 5s
