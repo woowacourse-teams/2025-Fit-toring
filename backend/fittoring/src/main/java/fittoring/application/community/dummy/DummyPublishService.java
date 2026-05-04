@@ -2,6 +2,8 @@ package fittoring.application.community.dummy;
 
 import fittoring.application.community.dummy.DummyPublishDao.CommentPendingRow;
 import fittoring.application.community.dummy.DummyPublishDao.PostPendingRow;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DummyPublishService {
 
+    private static final ZoneId SCHEDULE_ZONE = ZoneId.of("Asia/Seoul");
+
     private final DummyPublishDao dao;
     private final DummySchedulerProperties properties;
 
     @Transactional
     public PublishResult publishNextPost(Collection<Long> excludedIds) {
-        Optional<PostPendingRow> row = dao.findNextPostForPublish(excludedIds);
+        Optional<PostPendingRow> row = dao.findNextPostForPublish(excludedIds, now());
         if (row.isEmpty()) {
             return PublishResult.empty();
         }
@@ -38,7 +42,7 @@ public class DummyPublishService {
 
     @Transactional
     public PublishResult publishNextComment(Collection<Long> excludedIds) {
-        Optional<CommentPendingRow> row = dao.findNextCommentForPublish(excludedIds);
+        Optional<CommentPendingRow> row = dao.findNextCommentForPublish(excludedIds, now());
         if (row.isEmpty()) {
             return PublishResult.empty();
         }
@@ -74,6 +78,10 @@ public class DummyPublishService {
                 nextAttemptCount,
                 e
         );
+    }
+
+    private LocalDateTime now() {
+        return LocalDateTime.now(SCHEDULE_ZONE);
     }
 
     public record PublishResult(
