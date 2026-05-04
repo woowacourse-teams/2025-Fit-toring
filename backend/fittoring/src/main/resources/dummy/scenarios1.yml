@@ -1,6 +1,5 @@
 scenarios:
-  - category: 식단
-    post:
+  - post:
       nickname: "저녁운동러"
       scheduled_at: "2026-05-04T17:00:00+09:00"
       title: "퇴근 후 운동 전에 바나나 하나면 충분할까요?"
@@ -24,8 +23,7 @@ scenarios:
         scheduled_at: "2026-05-04T17:13:00+09:00"
         content: "저는 바나나에 아메리카노 반잔 정도 마시면 집중이 잘 되더라고요. 공복감 심하면 떡 하나 추가해도 좋아요."
 
-  - category: 루틴
-    post:
+  - post:
       nickname: "상체하체고민"
       scheduled_at: "2026-05-04T17:05:00+09:00"
       title: "주 3회면 무분할이 나을까요 2분할이 나을까요?"
@@ -41,8 +39,7 @@ scenarios:
         scheduled_at: "2026-05-04T17:16:00+09:00"
         content: "2분할도 가능은 한데 한 주에 어떤 부위는 한 번만 하게 될 수 있어서 초반엔 무분할 추천합니다."
 
-  - category: 인증
-    post:
+  - post:
       nickname: "첫오운완"
       scheduled_at: "2026-05-04T17:10:00+09:00"
       title: "헬스장 등록 첫날 오운완했습니다"
@@ -64,8 +61,7 @@ scenarios:
         scheduled_at: "2026-05-04T17:31:00+09:00"
         content: "처음 한 달은 꾸준히 출석하는 게 제일 중요합니다. 잘하셨어요."
 
-  - category: 질문
-    post:
+  - post:
       nickname: "허리불안"
       scheduled_at: "2026-05-04T17:15:00+09:00"
       title: "데드리프트 할 때 허리가 뻐근하면 바로 중단해야 하나요?"
@@ -99,8 +95,7 @@ scenarios:
         scheduled_at: "2026-05-04T17:42:00+09:00"
         content: "데드는 초반에 한 번만 봐줘도 시행착오가 많이 줄어서 가능하면 피티 1회라도 추천합니다."
 
-  - category: 식단
-    post:
+  - post:
       nickname: "도시락입문"
       scheduled_at: "2026-05-04T17:20:00+09:00"
       title: "회사 점심 도시락으로 닭가슴살만 먹으면 질릴까요?"
@@ -126,8 +121,7 @@ scenarios:
         scheduled_at: "2026-05-04T17:52:00+09:00"
         content: "닭가슴살만 힘들면 삶은 계란이나 두부로 단백질원을 돌려보세요."
 
-  - category: 루틴
-    post:
+  - post:
       nickname: "풀업언제쯤"
       scheduled_at: "2026-05-04T17:25:00+09:00"
       title: "풀업 0개인데 등 운동은 어떻게 시작하면 좋을까요?"
@@ -136,8 +130,7 @@ scenarios:
         랫풀다운만 계속하면 언젠가 풀업이 될까요?
     comments: []
 
-  - category: 인증
-    post:
+  - post:
       nickname: "스쿼트기록"
       scheduled_at: "2026-05-04T17:30:00+09:00"
       title: "스쿼트 60kg 처음 성공했습니다"
@@ -146,8 +139,7 @@ scenarios:
         깊이는 아직 자신 없지만 무게가 올라가니 재미가 생기네요.
     comments: []
 
-  - category: 질문
-    post:
+  - post:
       nickname: "단백질계산중"
       scheduled_at: "2026-05-04T17:35:00+09:00"
       title: "단백질은 체중 곱하기 몇으로 잡으면 될까요?"
@@ -162,8 +154,7 @@ scenarios:
         scheduled_at: "2026-05-04T17:46:00+09:00"
         content: "보충제보다 평소 식사에서 얼마나 먹는지 먼저 계산해보는 게 좋습니다."
 
-  - category: 후기
-    post:
+  - post:
       nickname: "아침헬스후기"
       scheduled_at: "2026-05-04T17:45:00+09:00"
       title: "한 달 동안 아침 운동으로 바꿔본 후기"
@@ -183,8 +174,7 @@ scenarios:
             scheduled_at: "2026-05-04T17:55:00+09:00"
             content: "처음엔 주 2회만 해보세요. 갑자기 매일 바꾸면 피곤해서 금방 포기하게 되더라고요."
 
-  - category: 식단
-    post:
+  - post:
       nickname: "야식참는중"
       scheduled_at: "2026-05-04T17:54:00+09:00"
       title: "운동 끝나고 밤에 배고플 때 뭐 드시나요?"
