@@ -59,7 +59,7 @@ public class DummyAdminService {
     public DummySqlInsertStatusResponse status(int fileSeq) {
         validateFileSeq(fileSeq);
         String scenarioFile = SCENARIO_FILE_PREFIX + fileSeq + SCENARIO_FILE_SUFFIX;
-        return new DummySqlInsertStatusResponse(fileSeq, scenarioFile, dao.existsByScenarioFile(scenarioFile));
+        return buildStatusResponse(fileSeq, scenarioFile);
     }
 
     public DummySqlInsertResponse insert(int fileSeq) {
@@ -80,7 +80,8 @@ public class DummyAdminService {
                 parsed.scenarios().size(),
                 result.postCount(),
                 result.commentCount(),
-                STATUS_INSERTED
+                STATUS_INSERTED,
+                findEarliestScheduledAt(parsed)
         );
     }
 
@@ -118,7 +119,15 @@ public class DummyAdminService {
             throw new InvalidDummyScenarioException("잘못된 시나리오 파일명입니다: " + scenarioFile);
         }
         int fileSeq = Integer.parseInt(matcher.group(1));
-        return new DummySqlInsertStatusResponse(fileSeq, scenarioFile, dao.existsByScenarioFile(scenarioFile));
+        return buildStatusResponse(fileSeq, scenarioFile);
+    }
+
+    private DummySqlInsertStatusResponse buildStatusResponse(int fileSeq, String scenarioFile) {
+        boolean inserted = dao.existsByScenarioFile(scenarioFile);
+        OffsetDateTime appliedStartAt = inserted
+                ? dao.findEarliestScheduledAt(scenarioFile).orElse(null)
+                : null;
+        return new DummySqlInsertStatusResponse(fileSeq, scenarioFile, inserted, appliedStartAt);
     }
 
     private ScenarioFile applyStartAt(ScenarioFile file, OffsetDateTime startAt) {

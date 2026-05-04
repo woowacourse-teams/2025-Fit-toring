@@ -5,6 +5,7 @@ export interface DummyStatus {
     fileSeq: number;
     scenarioFile: string;
     inserted: boolean;
+    appliedStartAt: string | null;
 }
 
 export interface DummyInsertResponse {
@@ -14,6 +15,7 @@ export interface DummyInsertResponse {
     insertedPostPendingCount: number;
     insertedCommentPendingCount: number;
     status: 'INSERTED';
+    appliedStartAt: string;
 }
 
 export const fetchDummyScenarios = async (): Promise<DummyStatus[]> => {
