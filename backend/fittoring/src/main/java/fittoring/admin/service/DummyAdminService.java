@@ -80,8 +80,8 @@ public class DummyAdminService {
             return scenarioLoader.load(input);
         } catch (IOException e) {
             throw new IllegalStateException("시나리오 파일을 읽지 못했습니다: " + scenarioFile, e);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidDummyScenarioException(e.getMessage(), e);
+        } catch (RuntimeException e) {
+            throw new InvalidDummyScenarioException("유효하지 않은 시나리오 파일입니다: " + scenarioFile, e);
         }
     }
 

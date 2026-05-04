@@ -167,6 +167,46 @@ class DummyAdminServiceTest {
         verify(dao, never()).insertAll(any(), any(), any());
     }
 
+    @DisplayName("scheduled_at 형식이 잘못된 yml이면 invalid scenario 예외를 던진다.")
+    @Test
+    void throwsInvalidScenarioWhenScheduledAtMalformed() throws Exception {
+        // given
+        String invalidYaml = """
+                scenarios:
+                  - post:
+                      nickname: "글쓴이"
+                      scheduled_at: "not-date-time"
+                      title: "샘플"
+                      content: "샘플"
+                    comments: []
+                """;
+        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resource.exists()).thenReturn(true);
+        when(resource.getInputStream()).thenReturn(yamlStream(invalidYaml));
+
+        // when // then
+        assertThatThrownBy(() -> service.insert(1))
+                .isInstanceOf(InvalidDummyScenarioException.class);
+        verify(dao, never()).insertAll(any(), any(), any());
+    }
+
+    @DisplayName("yml 구조가 잘못되면 invalid scenario 예외를 던진다.")
+    @Test
+    void throwsInvalidScenarioWhenYamlShapeInvalid() throws Exception {
+        // given
+        String invalidYaml = """
+                scenarios: wrong-shape
+                """;
+        when(resourceLoader.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
+        when(resource.exists()).thenReturn(true);
+        when(resource.getInputStream()).thenReturn(yamlStream(invalidYaml));
+
+        // when // then
+        assertThatThrownBy(() -> service.insert(1))
+                .isInstanceOf(InvalidDummyScenarioException.class);
+        verify(dao, never()).insertAll(any(), any(), any());
+    }
+
     @DisplayName("이미 적재된 파일이면 예외를 던진다.")
     @Test
     void throwsWhenAlreadyInserted() throws Exception {

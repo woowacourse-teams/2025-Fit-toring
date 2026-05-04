@@ -25,6 +25,17 @@ class ScenarioValidatorTest {
         assertThatCode(() -> ScenarioValidator.validate(file)).doesNotThrowAnyException();
     }
 
+    @DisplayName("시나리오가 비어 있으면 예외를 던진다.")
+    @Test
+    void rejectsEmptyScenarios() {
+        // given
+        ScenarioFile file = new ScenarioFile(List.of());
+
+        // when // then
+        assertThatThrownBy(() -> ScenarioValidator.validate(file))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("트리 깊이가 9를 초과하면 예외를 던진다.")
     @Test
     void rejectsDepthOverNine() {

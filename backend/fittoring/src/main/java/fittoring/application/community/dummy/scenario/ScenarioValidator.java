@@ -10,6 +10,9 @@ public final class ScenarioValidator {
     }
 
     public static void validate(ScenarioFile file) {
+        if (file.scenarios() == null || file.scenarios().isEmpty()) {
+            throw new IllegalArgumentException("시나리오는 1개 이상이어야 합니다");
+        }
         for (Scenario scenario : file.scenarios()) {
             validatePost(scenario.post());
             for (ScenarioComment root : scenario.comments()) {

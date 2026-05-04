@@ -1,6 +1,7 @@
 package fittoring.application.community.dummy.scenario;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -85,6 +86,32 @@ class ScenarioLoaderTest {
         // then
         assertThat(result.scenarios()).hasSize(1);
         assertThat(result.scenarios().get(0).comments()).isEmpty();
+    }
+
+    @DisplayName("scenarios가 비어 있으면 예외를 던진다.")
+    @Test
+    void rejectsEmptyScenarios() {
+        // given
+        String yaml = """
+                scenarios: []
+                """;
+
+        // when // then
+        assertThatThrownBy(() -> loader.load(toStream(yaml)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("scenarios 키가 없으면 예외를 던진다.")
+    @Test
+    void rejectsMissingScenarios() {
+        // given
+        String yaml = """
+                title: wrong-root
+                """;
+
+        // when // then
+        assertThatThrownBy(() -> loader.load(toStream(yaml)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("실제 scenarios1.yml을 파싱하고 검증을 통과한다.")
