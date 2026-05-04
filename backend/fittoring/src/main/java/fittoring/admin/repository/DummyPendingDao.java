@@ -126,7 +126,7 @@ public class DummyPendingDao {
     }
 
     private Timestamp toTimestamp(OffsetDateTime at) {
-        return Timestamp.from(at.toInstant());
+        return Timestamp.valueOf(at.toLocalDateTime());
     }
 
     public record WriteResult(int postCount, int commentCount) {

@@ -48,7 +48,7 @@ class DummyPublishServiceTest {
     @Test
     void returnsFalseWhenPostIsEmpty() {
         // given
-        when(dao.findNextPostForPublish(List.of())).thenReturn(Optional.empty());
+        when(dao.findNextPostForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.empty());
 
         // when
         PublishResult result = service.publishNextPost(List.of());
@@ -63,7 +63,7 @@ class DummyPublishServiceTest {
     void publishesPost() {
         // given
         PostPendingRow row = postRow(1L, 0);
-        when(dao.findNextPostForPublish(List.of())).thenReturn(Optional.of(row));
+        when(dao.findNextPostForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
         when(dao.insertPublishedPost(row)).thenReturn(10L);
 
         // when
@@ -81,7 +81,7 @@ class DummyPublishServiceTest {
     void marksPostFailedAttemptWhenPublishFails() {
         // given
         PostPendingRow row = postRow(1L, 4);
-        when(dao.findNextPostForPublish(List.of())).thenReturn(Optional.of(row));
+        when(dao.findNextPostForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
         doThrow(new RuntimeException("insert failed")).when(dao).insertPublishedPost(row);
 
         // when
@@ -99,7 +99,7 @@ class DummyPublishServiceTest {
     void propagatesWhenMarkingPostPublishedFails() {
         // given
         PostPendingRow row = postRow(1L, 0);
-        when(dao.findNextPostForPublish(List.of())).thenReturn(Optional.of(row));
+        when(dao.findNextPostForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
         when(dao.insertPublishedPost(row)).thenReturn(10L);
         doThrow(new RuntimeException("update failed")).when(dao).markPostPublished(1L, 10L);
 
@@ -113,7 +113,7 @@ class DummyPublishServiceTest {
     @Test
     void returnsFalseWhenCommentIsEmpty() {
         // given
-        when(dao.findNextCommentForPublish(List.of())).thenReturn(Optional.empty());
+        when(dao.findNextCommentForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.empty());
 
         // when
         PublishResult result = service.publishNextComment(List.of());
@@ -128,7 +128,7 @@ class DummyPublishServiceTest {
     void publishesComment() {
         // given
         CommentPendingRow row = commentRow(2L, 0);
-        when(dao.findNextCommentForPublish(List.of())).thenReturn(Optional.of(row));
+        when(dao.findNextCommentForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
         when(dao.insertPublishedComment(row)).thenReturn(20L);
 
         // when
@@ -146,7 +146,7 @@ class DummyPublishServiceTest {
     void marksCommentFailedAttemptWhenPublishFails() {
         // given
         CommentPendingRow row = commentRow(2L, 4);
-        when(dao.findNextCommentForPublish(List.of())).thenReturn(Optional.of(row));
+        when(dao.findNextCommentForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
         doThrow(new RuntimeException("insert failed")).when(dao).insertPublishedComment(row);
 
         // when
@@ -164,7 +164,7 @@ class DummyPublishServiceTest {
     void propagatesWhenMarkingCommentPublishedFails() {
         // given
         CommentPendingRow row = commentRow(2L, 0);
-        when(dao.findNextCommentForPublish(List.of())).thenReturn(Optional.of(row));
+        when(dao.findNextCommentForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
         when(dao.insertPublishedComment(row)).thenReturn(20L);
         doThrow(new RuntimeException("update failed")).when(dao).markCommentPublished(2L, 20L);
 
