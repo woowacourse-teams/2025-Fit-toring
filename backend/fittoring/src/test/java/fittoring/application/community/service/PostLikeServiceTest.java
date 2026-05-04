@@ -23,7 +23,7 @@ class PostLikeServiceTest extends IntegrationTestSupport {
     @Autowired
     private PostRepository postRepository;
 
-    @DisplayName("같은 postLikeActorId로 게시글 좋아요를 반복하면 한 번만 반영된다.")
+    @DisplayName("같은 likeActorId로 게시글 좋아요를 반복하면 한 번만 반영된다.")
     @Test
     void likePostNoOpWhenSameActorLikesAgain() {
         // given
@@ -45,7 +45,7 @@ class PostLikeServiceTest extends IntegrationTestSupport {
         });
     }
 
-    @DisplayName("다른 postLikeActorId로 게시글 좋아요를 누르면 각각 반영된다.")
+    @DisplayName("다른 likeActorId로 게시글 좋아요를 누르면 각각 반영된다.")
     @Test
     void likePostWhenDifferentActorsLike() {
         // given
@@ -68,7 +68,7 @@ class PostLikeServiceTest extends IntegrationTestSupport {
         });
     }
 
-    @DisplayName("같은 postLikeActorId로 게시글 좋아요 취소를 반복하면 한 번만 반영된다.")
+    @DisplayName("같은 likeActorId로 게시글 좋아요 취소를 반복하면 한 번만 반영된다.")
     @Test
     void unlikePostNoOpWhenSameActorUnlikesAgain() {
         // given

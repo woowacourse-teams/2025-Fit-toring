@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LikeActorResolver {
 
-    public static final String COOKIE_NAME = "postLikeActorId";
+    public static final String COOKIE_NAME = "likeActorId";
 
     private static final String HMAC_ALGORITHM = "HmacSHA256";
     private static final Duration COOKIE_MAX_AGE = Duration.ofDays(365);

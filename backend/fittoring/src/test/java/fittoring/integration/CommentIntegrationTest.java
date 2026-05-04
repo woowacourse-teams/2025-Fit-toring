@@ -130,7 +130,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(response).hasSize(1);
     }
 
-    @DisplayName("댓글 좋아요는 postLikeActorId 쿠키 기준으로 한 번만 증가한다.")
+    @DisplayName("댓글 좋아요는 likeActorId 쿠키 기준으로 한 번만 증가한다.")
     @Test
     void likeComment() {
         // given
@@ -143,29 +143,29 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("댓글")
                                 .summary("댓글 좋아요")
-                                .description("postLikeActorId 쿠키 기준으로 댓글 또는 대댓글 좋아요를 추가합니다.")
+                                .description("likeActorId 쿠키 기준으로 댓글 또는 대댓글 좋아요를 추가합니다.")
                                 .responseSchema(Schema.schema("CommentLikeResponse"))
                                 .build())))
                 .when()
                 .post("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
                 .then()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .response();
 
-        String postLikeActorId = first.cookie("postLikeActorId");
+        String likeActorId = first.cookie("likeActorId");
         Response second = RestAssured.given(spec)
-                .cookie("postLikeActorId", postLikeActorId)
+                .cookie("likeActorId", likeActorId)
                 .when()
                 .post("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
                 .then()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .response();
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(postLikeActorId).isNotBlank();
+            softly.assertThat(likeActorId).isNotBlank();
             softly.assertThat(first.jsonPath().getLong("commentId")).isEqualTo(comment.getId());
             softly.assertThat(first.jsonPath().getBoolean("liked")).isTrue();
             softly.assertThat(first.jsonPath().getInt("likeCount")).isEqualTo(1);
@@ -174,7 +174,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         });
     }
 
-    @DisplayName("댓글 좋아요 취소는 postLikeActorId 쿠키 기준으로 한 번만 감소한다.")
+    @DisplayName("댓글 좋아요 취소는 likeActorId 쿠키 기준으로 한 번만 감소한다.")
     @Test
     void unlikeComment() {
         // given
@@ -184,10 +184,10 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .when()
                 .post("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
                 .then()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .response();
-        String postLikeActorId = likeResponse.cookie("postLikeActorId");
+        String likeActorId = likeResponse.cookie("likeActorId");
 
         // when
         Response first = RestAssured.given(spec)
@@ -195,10 +195,10 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("댓글")
                                 .summary("댓글 좋아요 취소")
-                                .description("postLikeActorId 쿠키 기준으로 댓글 또는 대댓글 좋아요를 취소합니다.")
+                                .description("likeActorId 쿠키 기준으로 댓글 또는 대댓글 좋아요를 취소합니다.")
                                 .responseSchema(Schema.schema("CommentLikeResponse"))
                                 .build())))
-                .cookie("postLikeActorId", postLikeActorId)
+                .cookie("likeActorId", likeActorId)
                 .when()
                 .delete("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
                 .then()
@@ -207,7 +207,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .response();
 
         Response second = RestAssured.given(spec)
-                .cookie("postLikeActorId", postLikeActorId)
+                .cookie("likeActorId", likeActorId)
                 .when()
                 .delete("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
                 .then()
@@ -225,7 +225,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         });
     }
 
-    @DisplayName("댓글 목록 조회는 postLikeActorId 쿠키 기준 liked를 반환한다.")
+    @DisplayName("댓글 목록 조회는 likeActorId 쿠키 기준 liked를 반환한다.")
     @Test
     void findCommentsWithLiked() {
         // given
@@ -235,14 +235,14 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .when()
                 .post("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
                 .then()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .response();
-        String postLikeActorId = likeResponse.cookie("postLikeActorId");
+        String likeActorId = likeResponse.cookie("likeActorId");
 
         // when
         List<CommentResponse> responses = RestAssured.given(spec)
-                .cookie("postLikeActorId", postLikeActorId)
+                .cookie("likeActorId", likeActorId)
                 .when()
                 .get("/posts/{postId}/comments", post.getId())
                 .then()

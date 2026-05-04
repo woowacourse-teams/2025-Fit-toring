@@ -215,7 +215,7 @@ class PostServiceTest extends IntegrationTestSupport {
         assertThat(actual.isMine()).isFalse();
     }
 
-    @DisplayName("게시글 상세 조회 시 postLikeActorId가 좋아요한 게시글이면 liked가 true이다.")
+    @DisplayName("게시글 상세 조회 시 likeActorId가 좋아요한 게시글이면 liked가 true이다.")
     @Test
     void findPostWithLiked() {
         // given
