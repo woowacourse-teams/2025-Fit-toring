@@ -1,5 +1,8 @@
-package fittoring.application.community.dummy;
+package fittoring.admin.presentation;
 
+import fittoring.admin.presentation.dto.DummySqlInsertResponse;
+import fittoring.admin.presentation.dto.DummySqlInsertStatusResponse;
+import fittoring.admin.service.DummyAdminService;
 import fittoring.config.auth.Admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

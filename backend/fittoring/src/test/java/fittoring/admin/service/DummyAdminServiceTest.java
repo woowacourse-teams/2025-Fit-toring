@@ -1,4 +1,4 @@
-package fittoring.application.community.dummy;
+package fittoring.admin.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,7 +8,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import fittoring.application.community.dummy.DummyPendingDao.WriteResult;
+import fittoring.admin.config.DummyAdminApiProperties;
+import fittoring.admin.exception.DummyAlreadyInsertedException;
+import fittoring.admin.exception.DummyScenarioFileNotFoundException;
+import fittoring.admin.exception.InvalidDummyScenarioException;
+import fittoring.admin.presentation.dto.DummySqlInsertResponse;
+import fittoring.admin.presentation.dto.DummySqlInsertStatusResponse;
+import fittoring.admin.repository.DummyPendingDao;
+import fittoring.admin.repository.DummyPendingDao.WriteResult;
 import fittoring.application.community.dummy.scenario.ScenarioFile;
 import fittoring.application.community.dummy.scenario.ScenarioLoader;
 import java.io.ByteArrayInputStream;

@@ -1,6 +1,13 @@
-package fittoring.application.community.dummy;
+package fittoring.admin.service;
 
-import fittoring.application.community.dummy.DummyPendingDao.WriteResult;
+import fittoring.admin.config.DummyAdminApiProperties;
+import fittoring.admin.exception.DummyAlreadyInsertedException;
+import fittoring.admin.exception.DummyScenarioFileNotFoundException;
+import fittoring.admin.exception.InvalidDummyScenarioException;
+import fittoring.admin.presentation.dto.DummySqlInsertResponse;
+import fittoring.admin.presentation.dto.DummySqlInsertStatusResponse;
+import fittoring.admin.repository.DummyPendingDao;
+import fittoring.admin.repository.DummyPendingDao.WriteResult;
 import fittoring.application.community.dummy.scenario.Scenario;
 import fittoring.application.community.dummy.scenario.ScenarioComment;
 import fittoring.application.community.dummy.scenario.ScenarioFile;

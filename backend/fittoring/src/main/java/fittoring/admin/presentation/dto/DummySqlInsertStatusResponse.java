@@ -1,4 +1,4 @@
-package fittoring.application.community.dummy;
+package fittoring.admin.presentation.dto;
 
 public record DummySqlInsertStatusResponse(
         int fileSeq,

@@ -1,4 +1,4 @@
-package fittoring.application.community.dummy;
+package fittoring.admin.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

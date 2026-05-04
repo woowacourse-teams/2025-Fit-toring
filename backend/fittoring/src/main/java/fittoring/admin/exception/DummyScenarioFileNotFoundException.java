@@ -1,4 +1,4 @@
-package fittoring.application.community.dummy;
+package fittoring.admin.exception;
 
 public class DummyScenarioFileNotFoundException extends RuntimeException {
 

@@ -1,5 +1,6 @@
-package fittoring.application.community.dummy;
+package fittoring.admin.repository;
 
+import fittoring.admin.exception.DummyAlreadyInsertedException;
 import fittoring.application.community.dummy.scenario.Scenario;
 import fittoring.application.community.dummy.scenario.ScenarioComment;
 import fittoring.application.community.dummy.scenario.ScenarioFile;
