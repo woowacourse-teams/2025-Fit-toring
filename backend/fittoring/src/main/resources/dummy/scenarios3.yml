@@ -1,0 +1,173 @@
+scenarios:
+  - post:
+      nickname: "ㅇㅇ"
+      scheduled_at: "2026-05-04T22:30:00+09:00"
+      title: "아니 ㅅㅂ 헬스장 빌런 새끼들 왜케 많냐"
+      content: |
+        렉에서 바벨컬 하는 새끼랑 
+        덤벨 벤치 3세트 할 동안 폰만 보고있는 년 
+        진짜 죽여버리고 싶다 ㅋㅋㅋㅋ 
+        덕분에 오늘 하체 조지려다 머신만 깔짝대고 집옴
+    comments:
+      - nickname: "딱새"
+        scheduled_at: "2026-05-04T22:34:00+09:00"
+        content: "원래 월요일 밤이 전국 빌런 정모날임 걍 포기해라 ㅋㅋ"
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-04T22:38:00+09:00"
+        content: "가서 몇세트 남았냐고 물어보면 바로 비켜주는데 왜 여기서 징징댐?"
+        replies:
+          - nickname: "ㅇㅇ"
+            scheduled_at: "2026-05-04T22:42:00+09:00"
+            content: "물어봤는데 4세트 남았대 ㅆㅂ련이"
+            replies:
+              - nickname: "ㅇㅇ"
+                scheduled_at: "2026-05-04T22:45:00+09:00"
+                content: "그럼 같이 쓰자고 하든가 쫄보임?"
+
+  - post:
+      nickname: "제육볶음"
+      scheduled_at: "2026-05-04T22:42:00+09:00"
+      title: "골근 40 찍으면 ㅍㅌㅊ냐?"
+      content: |
+        키 181에 몸무게 85인데
+        오늘 인바디 찍어보니까 골근 40.2 나옴
+        체지방은 17퍼인데 이정도면 헬스장 가면 상위 몇퍼임?
+    comments:
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-04T22:47:00+09:00"
+        content: "체지방 17에 40이면 옷입으면 일반인 상위권임 ㅊㅋ"
+      - nickname: "멸치킬러"
+        scheduled_at: "2026-05-04T22:51:00+09:00"
+        content: "근육은 인바디가 아니라 눈바디다 사진 없으면 뭐다?"
+
+  - post:
+      nickname: "ㅇㅇ"
+      scheduled_at: "2026-05-04T22:53:00+09:00"
+      title: "마프 대란 언제하냐??"
+      content: |
+        프로틴 다떨어짐 ㅡㅡ
+        오늘 5월 4일인데 내일 어린이날 기념으로 55대란 할라나?
+        지금 사면 흑우임?
+    comments:
+      - nickname: "마프요정"
+        scheduled_at: "2026-05-04T22:58:00+09:00"
+        content: "내일 밤 8시나 자정에 무조건 한다 존버 ㄱㄱ"
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-04T23:04:00+09:00"
+        content: "대란 안해도 할인코드 박으면 거기서 거기임 걍 사"
+
+  - post:
+      nickname: "하체싫어"
+      scheduled_at: "2026-05-04T23:05:00+09:00"
+      title: "스쿼트 할 때 무릎 소리나는데 병원 가야됨?"
+      content: |
+        딱딱 소리 나는데 통증은 딱히 없음
+        근데 계속 하다가 나중에 연골 다 갈리는거 아니냐?
+        무릎 보호대 사면 좀 나음?
+    comments:
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-04T23:11:00+09:00"
+        content: "통증 없으면 정상임 소리만 나는거면 걍 해"
+      - nickname: "정형외과"
+        scheduled_at: "2026-05-04T23:16:00+09:00"
+        content: "통증 없어도 찝찝하면 대퇴사두 스트레칭 ㅈㄴ 하고 해라 폼롤러 필수"
+        replies:
+          - nickname: "하체싫어"
+            scheduled_at: "2026-05-04T23:20:00+09:00"
+            content: "ㅇㅋ 낼 폼롤러 30분 조진다"
+
+  - post:
+      nickname: "ㅇㅇ"
+      scheduled_at: "2026-05-04T23:18:00+09:00"
+      title: "헬스 3개월차 몸 변화 ㅍㅌㅊ??"
+      content: |
+        70kg에서 시작해서 76kg까지 찌움
+        아직 멀었냐? 태생이 프레임 좁아서 고민이다
+        등 조지면 좀 넓어짐?
+    comments:
+      - nickname: "로니"
+        scheduled_at: "2026-05-04T23:22:00+09:00"
+        content: "등 조져라 등 넓어지면 프레임 커보임 사레레도 ㅈㄴ 치고"
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-04T23:27:00+09:00"
+        content: "3개월 치고 ㅆㅅㅌㅊ구먼 꾸준히만 해라"
+
+  - post:
+      nickname: "단백질도둑"
+      scheduled_at: "2026-05-04T23:30:00+09:00"
+      title: "유당불내증 심한데 보충제 추천좀"
+      content: |
+        WPC 먹으면 진짜 설사 ㅈㄴ함 ㅋㅋㅋㅋ
+        WPI 비싸긴 한데 먹을만 하냐? 
+        국산꺼 싼거중에 괜찮은거 있음?
+    comments:
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-04T23:35:00+09:00"
+        content: "WPI가 답이다 싼거 찾다가 기저귀 찬다"
+      - nickname: "설사맨"
+        scheduled_at: "2026-05-04T23:40:00+09:00"
+        content: "마프 WPI나 성풍 무맛 먹어라 난 성풍먹고 광명찾음"
+
+  - post:
+      nickname: "3대500목표"
+      scheduled_at: "2026-05-04T23:43:00+09:00"
+      title: "벤치 80에서 정체기 왔는데 어떡함?"
+      content: |
+        두달째 80에서 안늘어난다
+        보조운동으로 삼두 조지면 늘어남? 
+        아님 걍 계속 밀다보면 뚫리냐?
+    comments:
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-04T23:48:00+09:00"
+        content: "데드랑 스쿼트 중량은 어떰? 하체가 받쳐줘야 벤치도 늠"
+      - nickname: "파워리프팅"
+        scheduled_at: "2026-05-04T23:54:00+09:00"
+        content: "정지 벤치 해보셈 가슴 찍고 1초 멈췄다 미는거 연습하면 뚫림"
+
+  - post:
+      nickname: "야식킬러"
+      scheduled_at: "2026-05-04T23:55:00+09:00"
+      title: "운동 끝나고 집 왔는데 치킨 냄새 미치겠네"
+      content: |
+        엘베 탔는데 치킨 냄새 나길래 
+        집 오자마자 배민 켰다 껐다 5번 반복중 
+        어린이날인데 먹어도 되는거 아님?
+    comments:
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-04T23:59:00+09:00"
+        content: "먹어라 ㅋㅋ 내일 하체로 다 태우면 됨"
+      - nickname: "근손실방지"
+        scheduled_at: "2026-05-05T00:05:00+09:00"
+        content: "지방 ㅈㄴ 껴서 근육 안보이고 싶으면 먹던가 ㅋㅋㅋ"
+
+  - post:
+      nickname: "ㅇㅇ"
+      scheduled_at: "2026-05-05T00:10:00+09:00"
+      title: "스트랩 베르사 vs 제로투히어로 차이 심함?"
+      content: |
+        등운동 할 때 전완 털려서 스트랩 사려는데
+        베르사 그립 ㅈㄴ 비싸네... 제로투 써도 충분하냐?
+    comments:
+      - nickname: "장비병"
+        scheduled_at: "2026-05-05T00:15:00+09:00"
+        content: "돈 있으면 베르사가 압승인데 가성비는 제로투임"
+        replies:
+          - nickname: "ㅇㅇ"
+            scheduled_at: "2026-05-05T00:20:00+09:00"
+            content: "베르사는 진짜 영혼의 단짝이다 한번 사면 평생 씀 사라 걍"
+
+  - post:
+      nickname: "새벽헬창"
+      scheduled_at: "2026-05-05T00:25:00+09:00"
+      title: "어린이날 무지성 쇠질하러 간다 ㅋㅋㅋㅋ"
+      content: |
+        백수라 쉬는날 의미없긴 한데
+        내일 사람 터지기 전에 지금 가서 하체 부수고 올란다
+        다들 득근해라 ㅂㅂ
+    comments:
+      - nickname: "ㅇㅇ"
+        scheduled_at: "2026-05-05T00:29:00+09:00"
+        content: "부럽노... 난 출근한다 ㅅㅂ"
+      - nickname: "헬게이"
+        scheduled_at: "2026-05-05T00:34:00+09:00"
+        content: "어린이날 선물로 근성장 받겠노 화이팅해라"
