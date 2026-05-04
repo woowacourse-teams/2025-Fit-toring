@@ -46,6 +46,7 @@ import { logout as apiLogout } from "../services/authApi";
 import { ROUTES } from "../constants/routes";
 import { MenteeManagement } from "./dashboard/MenteeManagement";
 import { DeviceManagement } from "./dashboard/DeviceManagement";
+import { DummyDataManagement } from "./dashboard/DummyDataManagement";
 
 export function Dashboard() {
   const [activeMenu, setActiveMenu] = useState("certifications");
@@ -115,6 +116,8 @@ export function Dashboard() {
         return <MentoringDetail />;
       case "category":
         return <ComingSoon />;
+      case "dummy-data":
+        return <DummyDataManagement />;
       default:
         return <CertificationManagement />;
     }
@@ -134,6 +137,8 @@ export function Dashboard() {
         return "멘토링 상세";
       case "category":
         return "카테고리 관리";
+      case "dummy-data":
+        return "더미 데이터 관리";
       default:
         return "자격증명 관리";
     }
@@ -265,6 +270,18 @@ export function Dashboard() {
                         </CollapsibleContent>
                       </SidebarMenuItem>
                     </Collapsible>
+                    
+                    {/* 더미 데이터 관리 */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                          tooltip="더미 데이터 관리"
+                          isActive={activeMenu === "dummy-data"}
+                          onClick={() => handleMenuClick("dummy-data")}
+                      >
+                        <Database className="h-4 w-4" />
+                        <span>더미 데이터 관리</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
