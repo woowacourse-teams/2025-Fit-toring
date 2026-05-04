@@ -1,5 +1,5 @@
 import { API_ENDPOINTS } from "@/constants/config";
-import { getApiHeaders, getDefaultFetchOptions, fetchWithTokenRefresh } from "@/services/apiUtils";
+import { getApiHeaders, getDefaultFetchOptions, fetchWithTokenRefresh, joinUrl } from "@/services/apiUtils";
 
 export interface DummyStatus {
     fileSeq: number;
@@ -9,8 +9,10 @@ export interface DummyStatus {
     status: 'INSERTED' | 'NOT_INSERTED';
 }
 
+const DUMMY_BASE_PATH = "/admin/dummy/sql-insert";
+
 export const fetchDummyStatus = async (fileSeq: number): Promise<DummyStatus> => {
-    const url = `${API_ENDPOINTS.BASE_URL || ''}/admin/dummy/sql-insert/${fileSeq}`;
+    const url = joinUrl(API_ENDPOINTS.AUTH_ME.split('/members')[0], DUMMY_BASE_PATH, String(fileSeq));
     const res = await fetchWithTokenRefresh(url, { 
         method: "GET",
         ...getDefaultFetchOptions() 
@@ -21,7 +23,7 @@ export const fetchDummyStatus = async (fileSeq: number): Promise<DummyStatus> =>
 };
 
 export const insertDummyScenario = async (fileSeq: number) => {
-    const url = `${API_ENDPOINTS.BASE_URL || ''}/admin/dummy/sql-insert/${fileSeq}`;
+    const url = joinUrl(API_ENDPOINTS.AUTH_ME.split('/members')[0], DUMMY_BASE_PATH, String(fileSeq));
     const res = await fetchWithTokenRefresh(url, {
         method: "POST",
         ...getDefaultFetchOptions(),
