@@ -21,6 +21,7 @@ import fittoring.application.community.dummy.scenario.ScenarioLoader;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,12 +85,14 @@ class DummyAdminServiceTest {
     @Test
     void listsScenarioFiles() throws Exception {
         // given
+        OffsetDateTime appliedStartAt = OffsetDateTime.parse("2026-05-04T15:00:00+09:00");
         when(resourceResolver.getResources("classpath*:dummy/scenarios*.yml"))
                 .thenReturn(new Resource[]{resourceTwo, resource});
         when(resource.getFilename()).thenReturn(FILE_1);
         when(resourceTwo.getFilename()).thenReturn(FILE_2);
         when(dao.existsByScenarioFile(FILE_1)).thenReturn(true);
         when(dao.existsByScenarioFile(FILE_2)).thenReturn(false);
+        when(dao.findEarliestScheduledAt(FILE_1)).thenReturn(Optional.of(appliedStartAt));
 
         // when
         var responses = service.list();
@@ -99,9 +102,11 @@ class DummyAdminServiceTest {
         assertThat(responses.get(0).fileSeq()).isEqualTo(1);
         assertThat(responses.get(0).scenarioFile()).isEqualTo(FILE_1);
         assertThat(responses.get(0).inserted()).isTrue();
+        assertThat(responses.get(0).appliedStartAt()).isEqualTo(appliedStartAt);
         assertThat(responses.get(1).fileSeq()).isEqualTo(2);
         assertThat(responses.get(1).scenarioFile()).isEqualTo(FILE_2);
         assertThat(responses.get(1).inserted()).isFalse();
+        assertThat(responses.get(1).appliedStartAt()).isNull();
     }
 
     @DisplayName("정상 흐름: yml을 적재하고 응답 DTO를 반환한다.")
@@ -125,6 +130,8 @@ class DummyAdminServiceTest {
         assertThat(response.insertedPostPendingCount()).isEqualTo(1);
         assertThat(response.insertedCommentPendingCount()).isEqualTo(1);
         assertThat(response.status()).isEqualTo(STATUS_INSERTED);
+        assertThat(response.appliedStartAt())
+                .isEqualTo(OffsetDateTime.parse("2026-05-04T15:00:00+09:00"));
     }
 
     @DisplayName("schedule-offset-days가 있으면 모든 scheduled_at을 해당 일수만큼 미뤄서 적재한다.")
@@ -258,11 +265,13 @@ class DummyAdminServiceTest {
                 .isInstanceOf(InvalidDummyScenarioException.class);
     }
 
-    @DisplayName("status: 적재 여부를 그대로 반환한다.")
+    @DisplayName("status: 적재 여부를 그대로 반환하고 적재 시작 시각을 포함한다.")
     @Test
     void returnsStatus() {
         // given
+        OffsetDateTime appliedStartAt = OffsetDateTime.parse("2026-05-04T15:00:00+09:00");
         when(dao.existsByScenarioFile(FILE_1)).thenReturn(true);
+        when(dao.findEarliestScheduledAt(FILE_1)).thenReturn(Optional.of(appliedStartAt));
 
         // when
         DummySqlInsertStatusResponse response = service.status(1);
@@ -271,9 +280,10 @@ class DummyAdminServiceTest {
         assertThat(response.fileSeq()).isEqualTo(1);
         assertThat(response.scenarioFile()).isEqualTo(FILE_1);
         assertThat(response.inserted()).isTrue();
+        assertThat(response.appliedStartAt()).isEqualTo(appliedStartAt);
     }
 
-    @DisplayName("status: 적재되지 않은 파일이면 inserted=false.")
+    @DisplayName("status: 적재되지 않은 파일이면 inserted=false이고 appliedStartAt은 null이다.")
     @Test
     void returnsStatusForNotInserted() {
         // given
@@ -284,6 +294,8 @@ class DummyAdminServiceTest {
 
         // then
         assertThat(response.inserted()).isFalse();
+        assertThat(response.appliedStartAt()).isNull();
+        verify(dao, never()).findEarliestScheduledAt(any());
     }
 
     @DisplayName("status: fileSeq가 0 이하이면 예외를 던진다.")

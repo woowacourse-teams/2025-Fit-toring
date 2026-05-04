@@ -3,7 +3,6 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
 import {
   Table,
@@ -17,20 +16,17 @@ import {
   fetchDummyScenarios,
   fetchDummyStatus,
   insertDummyScenario,
-  DummyInsertResponse,
   DummyStatus,
 } from "@/services/dummyApi";
 import { Database, Loader2, RefreshCw, Search, Upload } from "lucide-react";
 
 export function DummyDataManagement() {
   const [scenarios, setScenarios] = useState<DummyStatus[]>([]);
-  const [startAt, setStartAt] = useState("");
-  const [insertResult, setInsertResult] = useState<DummyInsertResponse | null>(null);
+  const [startAtMap, setStartAtMap] = useState<Record<number, string>>({});
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [checkingFileSeq, setCheckingFileSeq] = useState<number | null>(null);
   const [insertingFileSeq, setInsertingFileSeq] = useState<number | null>(null);
 
-  const isValidStartAt = startAt.trim().length > 0;
   const isBusy = isLoadingList || checkingFileSeq !== null || insertingFileSeq !== null;
 
   const toKstOffsetDateTime = (dateTimeLocal: string) => {
@@ -38,11 +34,14 @@ export function DummyDataManagement() {
     return `${normalized}+09:00`;
   };
 
+  const formatAppliedStartAt = (iso: string) => {
+    const m = iso.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+    return m ? `${m[1]} ${m[2]}` : iso;
+  };
+
   const updateScenario = (updated: DummyStatus) => {
     setScenarios((prev) =>
-      prev.map((scenario) =>
-        scenario.fileSeq === updated.fileSeq ? updated : scenario
-      )
+      prev.map((s) => (s.fileSeq === updated.fileSeq ? updated : s))
     );
   };
 
@@ -69,7 +68,6 @@ export function DummyDataManagement() {
   const handleStatusCheck = async (fileSeq: number) => {
     try {
       setCheckingFileSeq(fileSeq);
-      setInsertResult(null);
       const response = await fetchDummyStatus(fileSeq);
       updateScenario(response);
       toast.success(`${response.scenarioFile} 상태를 조회했습니다.`);
@@ -82,7 +80,8 @@ export function DummyDataManagement() {
   };
 
   const handleInsert = async (scenario: DummyStatus) => {
-    if (!isValidStartAt) {
+    const startAt = startAtMap[scenario.fileSeq] ?? "";
+    if (!startAt.trim()) {
       toast.error("시작 시각을 입력해주세요.");
       return;
     }
@@ -90,13 +89,17 @@ export function DummyDataManagement() {
     try {
       setInsertingFileSeq(scenario.fileSeq);
       const response = await insertDummyScenario(scenario.fileSeq, toKstOffsetDateTime(startAt));
-      setInsertResult(response);
       updateScenario({
         fileSeq: response.fileSeq,
         scenarioFile: response.scenarioFile,
         inserted: true,
+        appliedStartAt: response.appliedStartAt,
       });
-      toast.success(`${response.scenarioFile}이 성공적으로 적재되었습니다.`);
+      toast.success(
+        `${response.scenarioFile} 적재 완료 — 시나리오 ${response.insertedScenarioCount}건, ` +
+        `게시글 pending ${response.insertedPostPendingCount}건, ` +
+        `댓글 pending ${response.insertedCommentPendingCount}건`
+      );
     } catch (err) {
       console.error(err);
       toast.error(`${scenario.fileSeq}번 시나리오 적재에 실패했습니다.`);
@@ -123,7 +126,7 @@ export function DummyDataManagement() {
                 시나리오 파일 목록
               </CardTitle>
               <CardDescription>
-                서버의 dummy 리소스에 포함된 scenarios*.yml 파일 기준입니다.
+                파일별로 시작 시각을 지정해 적재할 수 있습니다. 적재된 파일은 실제 적재 시작 시각을 확인할 수 있습니다.
               </CardDescription>
             </div>
             <Button
@@ -141,24 +144,7 @@ export function DummyDataManagement() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="grid max-w-sm gap-2">
-            <Label htmlFor="dummy-start-at">시작 시각(KST)</Label>
-            <Input
-              id="dummy-start-at"
-              type="datetime-local"
-              step={60}
-              value={startAt}
-              onChange={(event) => {
-                setStartAt(event.target.value);
-                setInsertResult(null);
-              }}
-            />
-            <p className="text-xs text-muted-foreground">
-              적재 시 파일 내 가장 이른 scheduled_at이 이 시각으로 이동됩니다.
-            </p>
-          </div>
-
+        <CardContent>
           <div className="rounded-md border">
             {isLoadingList ? (
               <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
@@ -172,10 +158,11 @@ export function DummyDataManagement() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-24">번호</TableHead>
+                    <TableHead className="w-20">번호</TableHead>
                     <TableHead>파일명</TableHead>
-                    <TableHead className="w-28">상태</TableHead>
-                    <TableHead className="w-48 text-right">관리</TableHead>
+                    <TableHead className="w-24">상태</TableHead>
+                    <TableHead className="w-52">시작 시각(KST)</TableHead>
+                    <TableHead className="w-40 text-right">관리</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -187,6 +174,29 @@ export function DummyDataManagement() {
                         <Badge variant={scenario.inserted ? "default" : "secondary"}>
                           {scenario.inserted ? "적재됨" : "미적재"}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {scenario.inserted ? (
+                          <span className="text-sm">
+                            {scenario.appliedStartAt
+                              ? formatAppliedStartAt(scenario.appliedStartAt)
+                              : "-"}
+                          </span>
+                        ) : (
+                          <Input
+                            type="datetime-local"
+                            step={60}
+                            value={startAtMap[scenario.fileSeq] ?? ""}
+                            onChange={(e) =>
+                              setStartAtMap((prev) => ({
+                                ...prev,
+                                [scenario.fileSeq]: e.target.value,
+                              }))
+                            }
+                            disabled={isBusy}
+                            className="h-8 text-sm"
+                          />
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-end gap-2">
@@ -208,7 +218,7 @@ export function DummyDataManagement() {
                             type="button"
                             size="sm"
                             onClick={() => handleInsert(scenario)}
-                            disabled={isBusy || scenario.inserted}
+                            disabled={isBusy || scenario.inserted || !startAtMap[scenario.fileSeq]?.trim()}
                           >
                             {insertingFileSeq === scenario.fileSeq ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -225,28 +235,6 @@ export function DummyDataManagement() {
               </Table>
             )}
           </div>
-
-          {insertResult && (
-            <div className="rounded-lg border bg-card p-4">
-              <p className="mb-3 text-sm text-muted-foreground">
-                {insertResult.scenarioFile} 적용 시작 시각: {toKstOffsetDateTime(startAt)}
-              </p>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div>
-                  <p className="text-sm text-muted-foreground">시나리오</p>
-                  <p className="font-semibold">{insertResult.insertedScenarioCount}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">게시글 pending</p>
-                  <p className="font-semibold">{insertResult.insertedPostPendingCount}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">댓글 pending</p>
-                  <p className="font-semibold">{insertResult.insertedCommentPendingCount}</p>
-                </div>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

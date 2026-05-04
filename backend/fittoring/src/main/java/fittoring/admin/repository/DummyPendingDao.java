@@ -9,7 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +29,12 @@ public class DummyPendingDao {
                 SELECT 1 FROM dummy_post_pending WHERE scenario_file = ?
             )
             """;
+
+    private static final String FIND_EARLIEST_SCHEDULED_AT = """
+            SELECT MIN(scheduled_at) FROM dummy_post_pending WHERE scenario_file = ?
+            """;
+
+    private static final ZoneOffset KST = ZoneOffset.ofHours(9);
 
     private static final String INSERT_POST = """
             INSERT INTO dummy_post_pending
@@ -47,6 +55,14 @@ public class DummyPendingDao {
     public boolean existsByScenarioFile(String scenarioFile) {
         Boolean exists = jdbc.queryForObject(EXISTS_BY_SCENARIO_FILE, Boolean.class, scenarioFile);
         return Boolean.TRUE.equals(exists);
+    }
+
+    public Optional<OffsetDateTime> findEarliestScheduledAt(String scenarioFile) {
+        Timestamp earliest = jdbc.queryForObject(FIND_EARLIEST_SCHEDULED_AT, Timestamp.class, scenarioFile);
+        if (earliest == null) {
+            return Optional.empty();
+        }
+        return Optional.of(earliest.toLocalDateTime().atOffset(KST));
     }
 
     @Transactional
