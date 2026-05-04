@@ -2,6 +2,7 @@ package fittoring.integration;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
@@ -21,6 +22,7 @@ import fittoring.domain.model.Post;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -126,6 +128,135 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .as(new TypeRef<>() {});
 
         assertThat(response).hasSize(1);
+    }
+
+    @DisplayName("댓글 좋아요는 postLikeActorId 쿠키 기준으로 한 번만 증가한다.")
+    @Test
+    void likeComment() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post));
+
+        // when
+        Response first = RestAssured.given(spec)
+                .filter(documentWithTag("comment/put-like",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("댓글")
+                                .summary("댓글 좋아요")
+                                .description("postLikeActorId 쿠키 기준으로 댓글 또는 대댓글 좋아요를 추가합니다.")
+                                .responseSchema(Schema.schema("CommentLikeResponse"))
+                                .build())))
+                .when()
+                .post("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        String postLikeActorId = first.cookie("postLikeActorId");
+        Response second = RestAssured.given(spec)
+                .cookie("postLikeActorId", postLikeActorId)
+                .when()
+                .post("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(postLikeActorId).isNotBlank();
+            softly.assertThat(first.jsonPath().getLong("commentId")).isEqualTo(comment.getId());
+            softly.assertThat(first.jsonPath().getBoolean("liked")).isTrue();
+            softly.assertThat(first.jsonPath().getInt("likeCount")).isEqualTo(1);
+            softly.assertThat(second.jsonPath().getBoolean("liked")).isTrue();
+            softly.assertThat(second.jsonPath().getInt("likeCount")).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("댓글 좋아요 취소는 postLikeActorId 쿠키 기준으로 한 번만 감소한다.")
+    @Test
+    void unlikeComment() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post));
+        Response likeResponse = RestAssured.given(spec)
+                .when()
+                .post("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+        String postLikeActorId = likeResponse.cookie("postLikeActorId");
+
+        // when
+        Response first = RestAssured.given(spec)
+                .filter(documentWithTag("comment/delete-like",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("댓글")
+                                .summary("댓글 좋아요 취소")
+                                .description("postLikeActorId 쿠키 기준으로 댓글 또는 대댓글 좋아요를 취소합니다.")
+                                .responseSchema(Schema.schema("CommentLikeResponse"))
+                                .build())))
+                .cookie("postLikeActorId", postLikeActorId)
+                .when()
+                .delete("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        Response second = RestAssured.given(spec)
+                .cookie("postLikeActorId", postLikeActorId)
+                .when()
+                .delete("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(first.jsonPath().getLong("commentId")).isEqualTo(comment.getId());
+            softly.assertThat(first.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(first.jsonPath().getInt("likeCount")).isZero();
+            softly.assertThat(second.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(second.jsonPath().getInt("likeCount")).isZero();
+        });
+    }
+
+    @DisplayName("댓글 목록 조회는 postLikeActorId 쿠키 기준 liked를 반환한다.")
+    @Test
+    void findCommentsWithLiked() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post));
+        Response likeResponse = RestAssured.given(spec)
+                .when()
+                .post("/posts/{postId}/comments/{commentId}/like", post.getId(), comment.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+        String postLikeActorId = likeResponse.cookie("postLikeActorId");
+
+        // when
+        List<CommentResponse> responses = RestAssured.given(spec)
+                .cookie("postLikeActorId", postLikeActorId)
+                .when()
+                .get("/posts/{postId}/comments", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(new TypeRef<>() {});
+
+        // then
+        CommentResponse actual = responses.get(0);
+        assertSoftly(softly -> {
+            softly.assertThat(actual.id()).isEqualTo(comment.getId());
+            softly.assertThat(actual.likeCount()).isEqualTo(1);
+            softly.assertThat(actual.liked()).isTrue();
+        });
     }
 
     @DisplayName("댓글 수정은 200을 반환한다.")
