@@ -44,6 +44,9 @@ export const API_ENDPOINTS = {
   MENTORING_REVIEW_PREFIX: `${BASE_URL}/admin/mentorings/`,
   MENTORING_REVIEW_POSTFIX: `reviews`,
   MENTORING_REVIEW_DELETE: `${BASE_URL}/admin/reviews/`,
+
+  // 더미 데이터
+  ADMIN_DUMMY_SQL_INSERT: `${BASE_URL}/admin/dummy/sql-insert`,
 } as const;
 
 /**
