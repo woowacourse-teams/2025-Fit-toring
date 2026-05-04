@@ -35,12 +35,8 @@ export function DummyDataManagement() {
   };
 
   const formatAppliedStartAt = (iso: string) => {
-    const dt = new Date(iso);
-    const pad = (n: number) => String(n).padStart(2, "0");
-    return (
-      `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ` +
-      `${pad(dt.getHours())}:${pad(dt.getMinutes())}`
-    );
+    const m = iso.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+    return m ? `${m[1]} ${m[2]}` : iso;
   };
 
   const updateScenario = (updated: DummyStatus) => {
