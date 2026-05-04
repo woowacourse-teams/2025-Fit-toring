@@ -69,6 +69,9 @@ public class Comment {
     @Column(name = "parent_id")
     private Long parentId;
 
+    @Column(name = "like_count", nullable = false)
+    private int likeCount;
+
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -98,6 +101,7 @@ public class Comment {
                 isAnonymous,
                 rootId,
                 parentId,
+                0,
                 null,
                 false,
                 null
@@ -122,6 +126,7 @@ public class Comment {
                 false,
                 rootId,
                 parentId,
+                0,
                 null,
                 false,
                 null
