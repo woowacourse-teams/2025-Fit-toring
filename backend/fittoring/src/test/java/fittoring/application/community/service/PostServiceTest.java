@@ -20,8 +20,8 @@ import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.LikeActorKeyHash;
 import fittoring.domain.model.Post;
-import fittoring.domain.model.PostLikeActorKeyHash;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +31,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 class PostServiceTest extends IntegrationTestSupport {
 
-    private static final PostLikeActorKeyHash ACTOR_1 = new PostLikeActorKeyHash("a".repeat(64));
-    private static final PostLikeActorKeyHash ACTOR_2 = new PostLikeActorKeyHash("b".repeat(64));
+    private static final LikeActorKeyHash ACTOR_1 = new LikeActorKeyHash("a".repeat(64));
+    private static final LikeActorKeyHash ACTOR_2 = new LikeActorKeyHash("b".repeat(64));
 
     @Autowired
     private PostService postService;
@@ -215,7 +215,7 @@ class PostServiceTest extends IntegrationTestSupport {
         assertThat(actual.isMine()).isFalse();
     }
 
-    @DisplayName("게시글 상세 조회 시 postLikeActorId가 좋아요한 게시글이면 liked가 true이다.")
+    @DisplayName("게시글 상세 조회 시 likeActorId가 좋아요한 게시글이면 liked가 true이다.")
     @Test
     void findPostWithLiked() {
         // given

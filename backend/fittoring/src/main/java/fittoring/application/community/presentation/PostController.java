@@ -5,7 +5,7 @@ import fittoring.application.community.presentation.dto.request.PostCreateReques
 import fittoring.application.community.presentation.dto.request.PostUpdateRequest;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
-import fittoring.application.community.service.PostLikeActorResolver;
+import fittoring.application.community.service.LikeActorResolver;
 import fittoring.application.community.service.PostService;
 import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
@@ -13,7 +13,7 @@ import fittoring.application.community.service.dto.PostUpdateDto;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.config.auth.OptionalAuth;
-import fittoring.domain.model.PostLikeActorKeyHash;
+import fittoring.domain.model.LikeActorKeyHash;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     private final PostService postService;
-    private final PostLikeActorResolver postLikeActorResolver;
+    private final LikeActorResolver likeActorResolver;
 
     @OptionalAuth
     @PostMapping("/posts")
@@ -55,9 +55,9 @@ public class PostController {
     public ResponseEntity<PostDetailResponse> findPost(
             @Login LoginInfo loginInfo,
             @PathVariable Long postId,
-            @CookieValue(name = PostLikeActorResolver.COOKIE_NAME, required = false) String actorId
+            @CookieValue(name = LikeActorResolver.COOKIE_NAME, required = false) String actorId
     ) {
-        PostLikeActorKeyHash actorKeyHash = postLikeActorResolver.resolve(actorId);
+        LikeActorKeyHash actorKeyHash = likeActorResolver.resolve(actorId);
         PostDetailResponse response = postService.findPost(postId, loginInfo.memberId(), actorKeyHash);
         return ResponseEntity.ok(response);
     }

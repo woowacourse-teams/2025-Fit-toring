@@ -16,8 +16,8 @@ import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.LikeActorKeyHash;
 import fittoring.domain.model.Post;
-import fittoring.domain.model.PostLikeActorKeyHash;
 import fittoring.util.CursorCodec;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +85,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostDetailResponse findPost(Long postId, Long memberId, PostLikeActorKeyHash actorKeyHash) {
+    public PostDetailResponse findPost(Long postId, Long memberId, LikeActorKeyHash actorKeyHash) {
         Post post = getPost(postId);
         post.increaseViewCount();
         int commentCount = (int) commentRepository.countByPostId(post.getId());
@@ -98,7 +98,7 @@ public class PostService {
         return !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
     }
 
-    private boolean isLiked(PostLikeActorKeyHash actorKeyHash, Post post) {
+    private boolean isLiked(LikeActorKeyHash actorKeyHash, Post post) {
         if (actorKeyHash == null) {
             return false;
         }

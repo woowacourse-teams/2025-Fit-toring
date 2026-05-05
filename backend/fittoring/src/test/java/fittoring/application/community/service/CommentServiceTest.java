@@ -20,6 +20,7 @@ import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.MisMatchPasswordException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Comment;
+import fittoring.domain.model.LikeActorKeyHash;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
 import java.util.List;
@@ -28,6 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class CommentServiceTest extends IntegrationTestSupport {
+
+    private static final LikeActorKeyHash ACTOR_1 = new LikeActorKeyHash("a".repeat(64));
+    private static final LikeActorKeyHash ACTOR_2 = new LikeActorKeyHash("b".repeat(64));
 
     @Autowired
     private CommentService commentService;
@@ -40,6 +44,9 @@ class CommentServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private CommentLikeService commentLikeService;
 
     @DisplayName("회원 루트 댓글을 생성한다.")
     @Test
@@ -109,9 +116,45 @@ class CommentServiceTest extends IntegrationTestSupport {
         commentRepository.save(FixtureUtil.testGuestComment(post, "comment-1"));
         commentRepository.save(FixtureUtil.testGuestComment(post, "comment-2"));
 
-        List<CommentResponse> actual = commentService.findComments(post.getId());
+        List<CommentResponse> actual = commentService.findComments(post.getId(), null);
 
         assertThat(actual).hasSize(2);
+    }
+
+    @DisplayName("댓글 목록 조회 시 각 댓글의 좋아요 수와 liked 여부가 포함된다.")
+    @Test
+    void findCommentsWithLikeInfo() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment likedComment = commentRepository.save(FixtureUtil.testGuestComment(post, "comment-1"));
+        Comment notLikedComment = commentRepository.save(FixtureUtil.testGuestComment(post, "comment-2"));
+        commentLikeService.like(post.getId(), likedComment.getId(), ACTOR_1);
+
+        // when
+        List<CommentResponse> likedResponses = commentService.findComments(post.getId(), ACTOR_1);
+        List<CommentResponse> notLikedResponses = commentService.findComments(post.getId(), ACTOR_2);
+
+        // then
+        CommentResponse liked = likedResponses.stream()
+                .filter(response -> response.id().equals(likedComment.getId()))
+                .findFirst()
+                .orElseThrow();
+        CommentResponse notLiked = likedResponses.stream()
+                .filter(response -> response.id().equals(notLikedComment.getId()))
+                .findFirst()
+                .orElseThrow();
+        CommentResponse otherActor = notLikedResponses.stream()
+                .filter(response -> response.id().equals(likedComment.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertSoftly(softly -> {
+            softly.assertThat(liked.likeCount()).isEqualTo(1);
+            softly.assertThat(liked.liked()).isTrue();
+            softly.assertThat(notLiked.likeCount()).isZero();
+            softly.assertThat(notLiked.liked()).isFalse();
+            softly.assertThat(otherActor.likeCount()).isEqualTo(1);
+            softly.assertThat(otherActor.liked()).isFalse();
+        });
     }
 
     @DisplayName("대댓글 생성 시 rootId가 루트 댓글이 아니면 예외가 발생한다.")

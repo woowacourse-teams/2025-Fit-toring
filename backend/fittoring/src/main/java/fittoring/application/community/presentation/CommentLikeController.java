@@ -1,8 +1,8 @@
 package fittoring.application.community.presentation;
 
-import fittoring.application.community.presentation.dto.response.PostLikeResponse;
+import fittoring.application.community.presentation.dto.response.CommentLikeResponse;
+import fittoring.application.community.service.CommentLikeService;
 import fittoring.application.community.service.LikeActorResolver;
-import fittoring.application.community.service.PostLikeService;
 import fittoring.domain.model.LikeActorKeyHash;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,31 +16,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-public class PostLikeController {
+public class CommentLikeController {
 
-    private final PostLikeService postLikeService;
+    private final CommentLikeService commentLikeService;
     private final LikeActorResolver likeActorResolver;
 
-    @PostMapping("/posts/{postId}/like")
-    public ResponseEntity<PostLikeResponse> like(
+    @PostMapping("/posts/{postId}/comments/{commentId}/like")
+    public ResponseEntity<CommentLikeResponse> like(
             @PathVariable Long postId,
+            @PathVariable Long commentId,
             @CookieValue(name = LikeActorResolver.COOKIE_NAME, required = false) String actorId,
             HttpServletResponse httpResponse
     ) {
         LikeActorKeyHash actorKeyHash = likeActorResolver.resolveOrCreate(actorId, httpResponse);
-        PostLikeResponse response = postLikeService.like(postId, actorKeyHash);
+        CommentLikeResponse response = commentLikeService.like(postId, commentId, actorKeyHash);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/posts/{postId}/like")
-    public ResponseEntity<PostLikeResponse> unlike(
+    @DeleteMapping("/posts/{postId}/comments/{commentId}/like")
+    public ResponseEntity<CommentLikeResponse> unlike(
             @PathVariable Long postId,
+            @PathVariable Long commentId,
             @CookieValue(name = LikeActorResolver.COOKIE_NAME, required = false) String actorId
     ) {
         LikeActorKeyHash actorKeyHash = likeActorResolver.resolve(actorId);
-        PostLikeResponse response = postLikeService.unlike(postId, actorKeyHash);
+        CommentLikeResponse response = commentLikeService.unlike(postId, commentId, actorKeyHash);
         return ResponseEntity.ok(response);
     }
-
-
 }

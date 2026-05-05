@@ -7,15 +7,15 @@ import fittoring.application.FixtureUtil;
 import fittoring.application.community.presentation.dto.response.PostLikeResponse;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.domain.model.Post;
-import fittoring.domain.model.PostLikeActorKeyHash;
+import fittoring.domain.model.LikeActorKeyHash;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class PostLikeServiceTest extends IntegrationTestSupport {
 
-    private static final PostLikeActorKeyHash ACTOR_1 = new PostLikeActorKeyHash("a".repeat(64));
-    private static final PostLikeActorKeyHash ACTOR_2 = new PostLikeActorKeyHash("b".repeat(64));
+    private static final LikeActorKeyHash ACTOR_1 = new LikeActorKeyHash("a".repeat(64));
+    private static final LikeActorKeyHash ACTOR_2 = new LikeActorKeyHash("b".repeat(64));
 
     @Autowired
     private PostLikeService postLikeService;
@@ -23,7 +23,7 @@ class PostLikeServiceTest extends IntegrationTestSupport {
     @Autowired
     private PostRepository postRepository;
 
-    @DisplayName("같은 postLikeActorId로 게시글 좋아요를 반복하면 한 번만 반영된다.")
+    @DisplayName("같은 likeActorId로 게시글 좋아요를 반복하면 한 번만 반영된다.")
     @Test
     void likePostNoOpWhenSameActorLikesAgain() {
         // given
@@ -45,7 +45,7 @@ class PostLikeServiceTest extends IntegrationTestSupport {
         });
     }
 
-    @DisplayName("다른 postLikeActorId로 게시글 좋아요를 누르면 각각 반영된다.")
+    @DisplayName("다른 likeActorId로 게시글 좋아요를 누르면 각각 반영된다.")
     @Test
     void likePostWhenDifferentActorsLike() {
         // given
@@ -68,7 +68,7 @@ class PostLikeServiceTest extends IntegrationTestSupport {
         });
     }
 
-    @DisplayName("같은 postLikeActorId로 게시글 좋아요 취소를 반복하면 한 번만 반영된다.")
+    @DisplayName("같은 likeActorId로 게시글 좋아요 취소를 반복하면 한 번만 반영된다.")
     @Test
     void unlikePostNoOpWhenSameActorUnlikesAgain() {
         // given

@@ -7,15 +7,15 @@ import fittoring.application.auth.CookieProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class PostLikeActorResolverTest {
+class LikeActorResolverTest {
 
     private static final CookieProvider COOKIE_PROVIDER = new CookieProvider("None");
 
-    @DisplayName("actor secret이 유효하면 PostLikeActorResolver를 생성한다.")
+    @DisplayName("actor secret이 유효하면 LikeActorResolver를 생성한다.")
     @Test
     void constructWithValidActorSecret() {
         // when // then
-        assertThatCode(() -> new PostLikeActorResolver(COOKIE_PROVIDER, "post-like-actor-secret"))
+        assertThatCode(() -> new LikeActorResolver(COOKIE_PROVIDER, "like-actor-secret"))
                 .doesNotThrowAnyException();
     }
 
@@ -23,7 +23,7 @@ class PostLikeActorResolverTest {
     @Test
     void constructWithNullActorSecret() {
         // when // then
-        assertThatThrownBy(() -> new PostLikeActorResolver(COOKIE_PROVIDER, null))
+        assertThatThrownBy(() -> new LikeActorResolver(COOKIE_PROVIDER, null))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("post-like.actor-secret 설정은 비어 있을 수 없습니다.");
     }
@@ -32,7 +32,7 @@ class PostLikeActorResolverTest {
     @Test
     void constructWithBlankActorSecret() {
         // when // then
-        assertThatThrownBy(() -> new PostLikeActorResolver(COOKIE_PROVIDER, " "))
+        assertThatThrownBy(() -> new LikeActorResolver(COOKIE_PROVIDER, " "))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("post-like.actor-secret 설정은 비어 있을 수 없습니다.");
     }

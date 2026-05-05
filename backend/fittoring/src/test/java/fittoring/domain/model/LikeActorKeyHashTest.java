@@ -3,20 +3,20 @@ package fittoring.domain.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.application.exception.InvalidPostLikeActorKeyHashException;
+import fittoring.application.exception.InvalidLikeActorKeyHashException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class PostLikeActorKeyHashTest {
+class LikeActorKeyHashTest {
 
-    @DisplayName("64자리 소문자 hex 문자열이면 PostLikeActorKeyHash를 생성한다.")
+    @DisplayName("64자리 소문자 hex 문자열이면 LikeActorKeyHash를 생성한다.")
     @Test
     void constructWithValidHash() {
         // given
         String value = "a".repeat(64);
 
         // when
-        PostLikeActorKeyHash actual = new PostLikeActorKeyHash(value);
+        LikeActorKeyHash actual = new LikeActorKeyHash(value);
 
         // then
         assertThat(actual.getValue()).isEqualTo(value);
@@ -29,8 +29,8 @@ class PostLikeActorKeyHashTest {
         String value = "invalid-hash";
 
         // when // then
-        assertThatThrownBy(() -> new PostLikeActorKeyHash(value))
-                .isInstanceOf(InvalidPostLikeActorKeyHashException.class)
-                .hasMessage("올바르지 않은 게시글 좋아요 식별자 해시입니다.");
+        assertThatThrownBy(() -> new LikeActorKeyHash(value))
+                .isInstanceOf(InvalidLikeActorKeyHashException.class)
+                .hasMessage("올바르지 않은 좋아요 식별자 해시입니다.");
     }
 }
