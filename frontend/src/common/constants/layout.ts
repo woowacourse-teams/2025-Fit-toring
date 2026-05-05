@@ -1,1 +1,1 @@
-export const BOTTOM_NAV_HEIGHT = 72;
+export const BOTTOM_NAV_HEIGHT = 7.2;

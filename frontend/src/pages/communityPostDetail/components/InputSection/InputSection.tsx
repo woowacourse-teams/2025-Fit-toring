@@ -358,7 +358,7 @@ export default InputSection;
 
 const S_Container = styled.div`
   position: fixed;
-  bottom: ${BOTTOM_NAV_HEIGHT}px;
+  bottom: ${BOTTOM_NAV_HEIGHT}rem;
   left: 50%;
   z-index: 1;
 
