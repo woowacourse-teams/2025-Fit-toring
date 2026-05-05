@@ -23,14 +23,15 @@ public class DummyPublishService {
 
     @Transactional
     public PublishResult publishNextPost(Collection<Long> excludedIds) {
-        Optional<PostPendingRow> row = dao.findNextPostForPublish(excludedIds, now());
+        LocalDateTime now = now();
+        Optional<PostPendingRow> row = dao.findNextPostForPublish(excludedIds, now);
         if (row.isEmpty()) {
             return PublishResult.empty();
         }
         PostPendingRow pending = row.get();
         long publishedPostId;
         try {
-            publishedPostId = dao.insertPublishedPost(pending);
+            publishedPostId = dao.insertPublishedPost(pending, now);
         } catch (RuntimeException e) {
             dao.markPostFailedAttempt(pending.id(), properties.maxAttempt());
             logFailure("post", pending.id(), pending.attemptCount(), e);
@@ -42,14 +43,15 @@ public class DummyPublishService {
 
     @Transactional
     public PublishResult publishNextComment(Collection<Long> excludedIds) {
-        Optional<CommentPendingRow> row = dao.findNextCommentForPublish(excludedIds, now());
+        LocalDateTime now = now();
+        Optional<CommentPendingRow> row = dao.findNextCommentForPublish(excludedIds, now);
         if (row.isEmpty()) {
             return PublishResult.empty();
         }
         CommentPendingRow pending = row.get();
         long publishedCommentId;
         try {
-            publishedCommentId = dao.insertPublishedComment(pending);
+            publishedCommentId = dao.insertPublishedComment(pending, now);
         } catch (RuntimeException e) {
             dao.markCommentFailedAttempt(pending.id(), properties.maxAttempt());
             logFailure("comment", pending.id(), pending.attemptCount(), e);
