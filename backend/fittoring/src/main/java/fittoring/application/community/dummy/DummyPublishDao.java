@@ -56,14 +56,14 @@ public class DummyPublishDao {
             INSERT INTO post
                 (title, content, member_id, nickname, guest_password, is_anonymous,
                  view_count, like_count, created_at, is_deleted)
-            VALUES (?, ?, NULL, ?, ?, FALSE, 0, 0, NOW(6), FALSE)
+            VALUES (?, ?, NULL, ?, ?, FALSE, 0, 0, ?, FALSE)
             """;
 
     private static final String INSERT_PUBLISHED_COMMENT = """
             INSERT INTO comment
                 (content, post_id, member_id, nickname, guest_password, is_anonymous,
                  root_id, parent_id, created_at, is_deleted)
-            VALUES (?, ?, NULL, ?, ?, FALSE, ?, ?, NOW(6), FALSE)
+            VALUES (?, ?, NULL, ?, ?, FALSE, ?, ?, ?, FALSE)
             """;
 
     private static final String MARK_POST_PUBLISHED = """
@@ -124,7 +124,7 @@ public class DummyPublishDao {
         return rows.stream().findFirst();
     }
 
-    public long insertPublishedPost(PostPendingRow row) {
+    public long insertPublishedPost(PostPendingRow row, LocalDateTime publishedAt) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(con -> {
             PreparedStatement ps = con.prepareStatement(INSERT_PUBLISHED_POST, new String[]{"id"});
@@ -132,12 +132,13 @@ public class DummyPublishDao {
             ps.setString(2, row.content());
             ps.setString(3, row.nickname());
             ps.setString(4, row.guestPassword());
+            ps.setObject(5, publishedAt);
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public long insertPublishedComment(CommentPendingRow row) {
+    public long insertPublishedComment(CommentPendingRow row, LocalDateTime publishedAt) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(con -> {
             PreparedStatement ps = con.prepareStatement(INSERT_PUBLISHED_COMMENT, new String[]{"id"});
@@ -147,6 +148,7 @@ public class DummyPublishDao {
             ps.setString(4, row.guestPassword());
             setNullableLong(ps, 5, row.publishedRootId());
             setNullableLong(ps, 6, row.publishedParentId());
+            ps.setObject(7, publishedAt);
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
