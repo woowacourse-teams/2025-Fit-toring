@@ -3,23 +3,23 @@ package fittoring.application.community.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import fittoring.application.exception.InvalidPostLikeActorIdException;
+import fittoring.application.exception.InvalidLikeActorIdException;
 import java.util.Optional;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class PostLikeActorIdTest {
+class LikeActorIdTest {
 
-    @DisplayName("유효한 UUID 문자열이면 PostLikeActorId를 생성한다.")
+    @DisplayName("유효한 UUID 문자열이면 LikeActorId를 생성한다.")
     @Test
     void fromValidUuid() {
         // given
         String value = UUID.randomUUID().toString();
 
         // when
-        Optional<PostLikeActorId> actual = PostLikeActorId.from(value);
+        Optional<LikeActorId> actual = LikeActorId.from(value);
 
         // then
         SoftAssertions.assertSoftly(softly -> {
@@ -28,27 +28,27 @@ class PostLikeActorIdTest {
         });
     }
 
-    @DisplayName("유효하지 않은 UUID 문자열이면 PostLikeActorId를 생성하지 않는다.")
+    @DisplayName("유효하지 않은 UUID 문자열이면 LikeActorId를 생성하지 않는다.")
     @Test
     void fromInvalidUuid() {
         // given
         String value = "invalid-uuid";
 
         // when
-        Optional<PostLikeActorId> actual = PostLikeActorId.from(value);
+        Optional<LikeActorId> actual = LikeActorId.from(value);
 
         // then
         assertThat(actual).isEmpty();
     }
 
-    @DisplayName("비정규 UUID 문자열이면 PostLikeActorId를 생성하지 않는다.")
+    @DisplayName("비정규 UUID 문자열이면 LikeActorId를 생성하지 않는다.")
     @Test
     void fromNonCanonicalUuid() {
         // given
         String value = "0-0-0-0-0";
 
         // when
-        Optional<PostLikeActorId> actual = PostLikeActorId.from(value);
+        Optional<LikeActorId> actual = LikeActorId.from(value);
 
         // then
         assertThat(actual).isEmpty();
@@ -61,16 +61,16 @@ class PostLikeActorIdTest {
         String value = "invalid-uuid";
 
         // when // then
-        assertThatThrownBy(() -> new PostLikeActorId(value))
-                .isInstanceOf(InvalidPostLikeActorIdException.class)
-                .hasMessage("올바르지 않은 게시글 좋아요 식별자입니다.");
+        assertThatThrownBy(() -> new LikeActorId(value))
+                .isInstanceOf(InvalidLikeActorIdException.class)
+                .hasMessage("올바르지 않은 좋아요 식별자입니다.");
     }
 
-    @DisplayName("새 PostLikeActorId를 생성한다.")
+    @DisplayName("새 LikeActorId를 생성한다.")
     @Test
     void create() {
         // given // when
-        PostLikeActorId actual = PostLikeActorId.create();
+        LikeActorId actual = LikeActorId.create();
 
         // then
         assertThat(UUID.fromString(actual.value())).isNotNull();

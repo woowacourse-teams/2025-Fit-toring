@@ -20,10 +20,10 @@ import fittoring.application.exception.InvalidCertificateException;
 import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.InvalidCursorException;
 import fittoring.application.exception.InvalidImageKeyException;
+import fittoring.application.exception.InvalidLikeActorKeyHashException;
+import fittoring.application.exception.InvalidLikeActorIdException;
 import fittoring.application.exception.InvalidMemberRoleException;
 import fittoring.application.exception.InvalidPhoneVerificationException;
-import fittoring.application.exception.InvalidPostLikeActorKeyHashException;
-import fittoring.application.exception.InvalidPostLikeActorIdException;
 import fittoring.application.exception.InvalidStatusException;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.MemberNotFoundException;
@@ -247,13 +247,13 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    @ExceptionHandler(InvalidPostLikeActorIdException.class)
-    public ResponseEntity<ErrorResponse> handle(InvalidPostLikeActorIdException e) {
+    @ExceptionHandler(InvalidLikeActorIdException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidLikeActorIdException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    @ExceptionHandler(InvalidPostLikeActorKeyHashException.class)
-    public ResponseEntity<ErrorResponse> handle(InvalidPostLikeActorKeyHashException e) {
+    @ExceptionHandler(InvalidLikeActorKeyHashException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidLikeActorKeyHashException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 

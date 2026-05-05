@@ -14,7 +14,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,27 +22,26 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(
-        name = "post_like",
+        name = "comment_like",
         uniqueConstraints = @UniqueConstraint(
-                name = "uk_post_like_post_id_actor_key_hash",
-                columnNames = {"post_id", "actor_key_hash"}
+                name = "uk_comment_like_comment_id_actor_key_hash",
+                columnNames = {"comment_id", "actor_key_hash"}
         )
 )
 @Entity
-public class PostLike {
+public class CommentLike {
 
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "comment_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Post post;
+    private Comment comment;
 
     @Embedded
     private LikeActorKeyHash actorKeyHash;
@@ -51,13 +49,4 @@ public class PostLike {
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
-    private PostLike(Post post, LikeActorKeyHash actorKeyHash) {
-        this.post = post;
-        this.actorKeyHash = actorKeyHash;
-    }
-
-    public static PostLike of(Post post, LikeActorKeyHash actorKeyHash) {
-        return new PostLike(post, actorKeyHash);
-    }
 }

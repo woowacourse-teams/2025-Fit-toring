@@ -289,7 +289,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .statusCode(200);
     }
 
-    @DisplayName("게시글 좋아요는 postLikeActorId 쿠키 기준으로 한 번만 증가한다.")
+    @DisplayName("게시글 좋아요는 likeActorId 쿠키 기준으로 한 번만 증가한다.")
     @Test
     void likePost() {
         // given
@@ -301,29 +301,29 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("게시글")
                                 .summary("게시글 좋아요")
-                                .description("postLikeActorId 쿠키 기준으로 게시글 좋아요를 추가합니다.")
+                                .description("likeActorId 쿠키 기준으로 게시글 좋아요를 추가합니다.")
                                 .responseSchema(Schema.schema("PostLikeResponse"))
                                 .build())))
                 .when()
                 .post("/posts/{postId}/like", post.getId())
                 .then()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .response();
 
-        String postLikeActorId = first.cookie("postLikeActorId");
+        String likeActorId = first.cookie("likeActorId");
         Response second = RestAssured.given(spec)
-                .cookie("postLikeActorId", postLikeActorId)
+                .cookie("likeActorId", likeActorId)
                 .when()
                 .post("/posts/{postId}/like", post.getId())
                 .then()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .response();
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(postLikeActorId).isNotBlank();
+            softly.assertThat(likeActorId).isNotBlank();
             softly.assertThat(first.jsonPath().getLong("postId")).isEqualTo(post.getId());
             softly.assertThat(first.jsonPath().getBoolean("liked")).isTrue();
             softly.assertThat(first.jsonPath().getInt("likeCount")).isEqualTo(1);
@@ -332,7 +332,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
         });
     }
 
-    @DisplayName("게시글 좋아요 취소는 postLikeActorId 쿠키 기준으로 한 번만 감소한다.")
+    @DisplayName("게시글 좋아요 취소는 likeActorId 쿠키 기준으로 한 번만 감소한다.")
     @Test
     void unlikePost() {
         // given
@@ -341,10 +341,10 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .when()
                 .post("/posts/{postId}/like", post.getId())
                 .then()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .response();
-        String postLikeActorId = likeResponse.cookie("postLikeActorId");
+        String likeActorId = likeResponse.cookie("likeActorId");
 
         // when
         Response first = RestAssured.given(spec)
@@ -352,10 +352,10 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("게시글")
                                 .summary("게시글 좋아요 취소")
-                                .description("postLikeActorId 쿠키 기준으로 게시글 좋아요를 취소합니다.")
+                                .description("likeActorId 쿠키 기준으로 게시글 좋아요를 취소합니다.")
                                 .responseSchema(Schema.schema("PostLikeResponse"))
                                 .build())))
-                .cookie("postLikeActorId", postLikeActorId)
+                .cookie("likeActorId", likeActorId)
                 .when()
                 .delete("/posts/{postId}/like", post.getId())
                 .then()
@@ -364,7 +364,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .response();
 
         Response second = RestAssured.given(spec)
-                .cookie("postLikeActorId", postLikeActorId)
+                .cookie("likeActorId", likeActorId)
                 .when()
                 .delete("/posts/{postId}/like", post.getId())
                 .then()
@@ -374,7 +374,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(postLikeActorId).isNotBlank();
+            softly.assertThat(likeActorId).isNotBlank();
             softly.assertThat(first.jsonPath().getLong("postId")).isEqualTo(post.getId());
             softly.assertThat(first.jsonPath().getBoolean("liked")).isFalse();
             softly.assertThat(first.jsonPath().getInt("likeCount")).isZero();
@@ -392,7 +392,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .when()
                 .post("/posts/{postId}/like", post.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(201);
 
         // when
         Response response = RestAssured.given(spec)
@@ -405,14 +405,14 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(response.cookie("postLikeActorId")).isNull();
+            softly.assertThat(response.cookie("likeActorId")).isNull();
             softly.assertThat(response.jsonPath().getLong("postId")).isEqualTo(post.getId());
             softly.assertThat(response.jsonPath().getBoolean("liked")).isFalse();
             softly.assertThat(response.jsonPath().getInt("likeCount")).isEqualTo(1);
         });
     }
 
-    @DisplayName("게시글 상세 조회는 postLikeActorId 쿠키 기준 liked를 반환한다.")
+    @DisplayName("게시글 상세 조회는 likeActorId 쿠키 기준 liked를 반환한다.")
     @Test
     void findPostWithLiked() {
         // given
@@ -421,14 +421,14 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .when()
                 .post("/posts/{postId}/like", post.getId())
                 .then()
-                .statusCode(200)
+                .statusCode(201)
                 .extract()
                 .response();
-        String postLikeActorId = likeResponse.cookie("postLikeActorId");
+        String likeActorId = likeResponse.cookie("likeActorId");
 
         // when
         Response likedDetail = RestAssured.given(spec)
-                .cookie("postLikeActorId", postLikeActorId)
+                .cookie("likeActorId", likeActorId)
                 .when()
                 .get("/posts/{postId}", post.getId())
                 .then()

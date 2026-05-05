@@ -11,11 +11,17 @@ public record CommentResponse(
         boolean isGuestComment,
         Long rootId,
         Long parentId,
+        int likeCount,
+        boolean liked,
         boolean isDeleted,
         LocalDateTime createdAt
 ) {
 
     public static CommentResponse from(Comment comment) {
+        return from(comment, false);
+    }
+
+    public static CommentResponse from(Comment comment, boolean liked) {
         return new CommentResponse(
                 comment.getId(),
                 comment.getContent(),
@@ -24,6 +30,8 @@ public record CommentResponse(
                 comment.isGuestComment(),
                 comment.getRootId(),
                 comment.getParentId(),
+                comment.getLikeCount(),
+                liked,
                 comment.isDeleted(),
                 comment.getCreatedAt()
         );

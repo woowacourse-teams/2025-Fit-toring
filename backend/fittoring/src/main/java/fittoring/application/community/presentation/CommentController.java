@@ -5,17 +5,20 @@ import fittoring.application.community.presentation.dto.request.CommentUpdateReq
 import fittoring.application.community.presentation.dto.request.GuestPasswordRequest;
 import fittoring.application.community.presentation.dto.response.CommentResponse;
 import fittoring.application.community.service.CommentService;
+import fittoring.application.community.service.LikeActorResolver;
 import fittoring.application.community.service.dto.CommentCreateDto;
 import fittoring.application.community.service.dto.CommentDeleteDto;
 import fittoring.application.community.service.dto.CommentUpdateDto;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.config.auth.OptionalAuth;
+import fittoring.domain.model.LikeActorKeyHash;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
 
     private final CommentService commentService;
+    private final LikeActorResolver likeActorResolver;
 
     @OptionalAuth
     @PostMapping("/posts/{postId}/comments")
@@ -42,8 +46,12 @@ public class CommentController {
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<List<CommentResponse>> findComments(@PathVariable Long postId) {
-        return ResponseEntity.ok(commentService.findComments(postId));
+    public ResponseEntity<List<CommentResponse>> findComments(
+            @PathVariable Long postId,
+            @CookieValue(name = LikeActorResolver.COOKIE_NAME, required = false) String actorId
+    ) {
+        LikeActorKeyHash actorKeyHash = likeActorResolver.resolve(actorId);
+        return ResponseEntity.ok(commentService.findComments(postId, actorKeyHash));
     }
 
     @OptionalAuth

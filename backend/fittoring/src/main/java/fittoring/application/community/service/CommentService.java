@@ -1,6 +1,7 @@
 package fittoring.application.community.service;
 
 import fittoring.application.community.presentation.dto.response.CommentResponse;
+import fittoring.application.community.repository.CommentLikeRepository;
 import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.community.service.dto.CommentCreateDto;
@@ -15,9 +16,12 @@ import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Comment;
+import fittoring.domain.model.LikeActorKeyHash;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public CommentResponse createComment(CommentCreateDto dto) {
@@ -39,11 +44,23 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findComments(Long postId) {
+    public List<CommentResponse> findComments(Long postId, LikeActorKeyHash actorKeyHash) {
         getPost(postId);
-        return commentRepository.findAllByPostId(postId).stream()
-                .map(CommentResponse::from)
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        Set<Long> likedCommentIds = findLikedCommentIds(comments, actorKeyHash);
+        return comments.stream()
+                .map(comment -> CommentResponse.from(comment, likedCommentIds.contains(comment.getId())))
                 .toList();
+    }
+
+    private Set<Long> findLikedCommentIds(List<Comment> comments, LikeActorKeyHash actorKeyHash) {
+        if (actorKeyHash == null || comments.isEmpty()) {
+            return Set.of();
+        }
+        List<Long> commentIds = comments.stream()
+                .map(Comment::getId)
+                .toList();
+        return new HashSet<>(commentLikeRepository.findLikedCommentIds(commentIds, actorKeyHash.getValue()));
     }
 
     @Transactional
