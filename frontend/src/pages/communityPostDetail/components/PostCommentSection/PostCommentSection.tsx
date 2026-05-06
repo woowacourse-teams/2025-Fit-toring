@@ -1,10 +1,14 @@
 import type { ReactNode } from 'react';
 
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
 import { getPostComments } from '../../apis/getPostComments';
+import {
+  deleteCommunityPostCommentLike,
+  postCommunityPostCommentLike,
+} from '../../apis/postCommunityPostCommentLike';
 import { buildCommentTree } from '../../utils/buildCommentTree';
 import CommentItem from '../CommentItem/CommentItem';
 
@@ -27,6 +31,7 @@ function PostCommentSection({
   onEditClick,
   onDeleteClick,
 }: PostCommentSectionProps) {
+  const queryClient = useQueryClient();
   const {
     data: commentData = [],
     isPending,
@@ -37,7 +42,46 @@ function PostCommentSection({
     enabled: Boolean(postId),
   });
 
+  const { mutate: mutateCommentLike, isPending: isCommentLikePending } =
+    useMutation({
+      mutationFn: async (comment: PostComment) => {
+        if (comment.liked) {
+          return await deleteCommunityPostCommentLike({
+            postId,
+            commentId: comment.id,
+          });
+        }
+
+        return await postCommunityPostCommentLike({
+          postId,
+          commentId: comment.id,
+        });
+      },
+      onSuccess: (updatedComment) => {
+        queryClient.setQueryData<PostComment[]>(
+          ['postComments', postId],
+          (currentComments) =>
+            currentComments?.map((comment) =>
+              comment.id === updatedComment.commentId
+                ? {
+                    ...comment,
+                    liked: updatedComment.liked,
+                    likeCount: updatedComment.likeCount,
+                  }
+                : comment,
+            ) ?? currentComments,
+        );
+      },
+      onError: () => {
+        alert('댓글 좋아요에 실패했습니다.');
+      },
+    });
+
   const commentTree = buildCommentTree(commentData);
+
+  const handleLikeClick = (comment: PostComment) => {
+    mutateCommentLike(comment);
+  };
 
   return (
     <S_Container>
@@ -56,7 +100,14 @@ function PostCommentSection({
       {!isPending && !isError && commentTree.length > 0 ? (
         <S_CommentList>
           {commentTree.flatMap((comment) =>
-            renderCommentNode(comment, onReplyClick, onEditClick, onDeleteClick),
+            renderCommentNode(
+              comment,
+              onReplyClick,
+              onEditClick,
+              onDeleteClick,
+              handleLikeClick,
+              isCommentLikePending,
+            ),
           )}
         </S_CommentList>
       ) : null}
@@ -71,6 +122,8 @@ function renderCommentNode(
   onReplyClick: (comment: PostComment) => void,
   onEditClick: (comment: PostComment) => void,
   onDeleteClick: (comment: PostComment) => void,
+  onLikeClick: (comment: PostComment) => void,
+  isLikePending: boolean,
   depth = 0,
 ): ReactNode[] {
   return [
@@ -81,6 +134,8 @@ function renderCommentNode(
       onReplyClick={onReplyClick}
       onEditClick={onEditClick}
       onDeleteClick={onDeleteClick}
+      onLikeClick={onLikeClick}
+      isLikePending={isLikePending}
     />,
     ...comment.children.flatMap((childComment) =>
       renderCommentNode(
@@ -88,6 +143,8 @@ function renderCommentNode(
         onReplyClick,
         onEditClick,
         onDeleteClick,
+        onLikeClick,
+        isLikePending,
         depth + 1,
       ),
     ),
