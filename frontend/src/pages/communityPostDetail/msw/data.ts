@@ -14,6 +14,7 @@ export const COMMUNITY_POST_DETAIL: CommunityPostDetail = {
   createdAt: '2026-04-06T21:30:00',
   viewCount: 100,
   likeCount: 10,
+  liked: false,
   commentCount: 20,
 };
 
@@ -29,6 +30,8 @@ export const POST_COMMENTS: PostComment[] = [
     parentId: null,
     isDeleted: false,
     createdAt: '2026-04-06T21:30:00',
+    likeCount: 1,
+    liked: false,
   },
   {
     id: 202,
@@ -41,6 +44,8 @@ export const POST_COMMENTS: PostComment[] = [
     parentId: 201,
     isDeleted: false,
     createdAt: '2026-04-06T21:31:00',
+    likeCount: 2,
+    liked: false,
   },
   {
     id: 203,
@@ -53,6 +58,8 @@ export const POST_COMMENTS: PostComment[] = [
     parentId: null,
     isDeleted: false,
     createdAt: '2026-04-06T21:34:00',
+    likeCount: 0,
+    liked: false,
   },
   {
     id: 204,
@@ -65,6 +72,8 @@ export const POST_COMMENTS: PostComment[] = [
     parentId: 203,
     isDeleted: false,
     createdAt: '2026-04-06T21:35:00',
+    likeCount: 4,
+    liked: false,
   },
   {
     id: 205,
@@ -77,6 +86,8 @@ export const POST_COMMENTS: PostComment[] = [
     parentId: 204,
     isDeleted: false,
     createdAt: '2026-04-06T21:36:00',
+    likeCount: 1,
+    liked: false,
   },
   {
     id: 206,
@@ -89,6 +100,8 @@ export const POST_COMMENTS: PostComment[] = [
     parentId: null,
     isDeleted: false,
     createdAt: '2026-04-06T21:40:00',
+    likeCount: 3,
+    liked: false,
   },
   {
     id: 207,
@@ -101,6 +114,8 @@ export const POST_COMMENTS: PostComment[] = [
     parentId: 206,
     isDeleted: false,
     createdAt: '2026-04-06T21:42:00',
+    likeCount: 2,
+    liked: false,
   },
   {
     id: 208,
@@ -113,5 +128,7 @@ export const POST_COMMENTS: PostComment[] = [
     parentId: null,
     isDeleted: true,
     createdAt: '2026-04-06T21:45:00',
+    likeCount: 0,
+    liked: false,
   },
 ];

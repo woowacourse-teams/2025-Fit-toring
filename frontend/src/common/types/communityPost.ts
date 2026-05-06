@@ -1,4 +1,6 @@
-export interface CommunityPost {
+import type { LikeState } from './like';
+
+export interface CommunityPost extends LikeState {
   id: number;
   title: string;
   nickname: string;
@@ -6,7 +8,6 @@ export interface CommunityPost {
   createdAt: string;
   commentCount: number;
   viewCount: number;
-  likeCount: number;
   content: string;
 }
 

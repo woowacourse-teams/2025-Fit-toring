@@ -10,6 +10,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 0,
     viewCount: 140,
     likeCount: 0,
+    liked: false,
     content:
       '동네에서 시간되고 여유될 때 운동도 같이하고 수다도 떨고 맛있는 것도 먹으면서 편하게 지낼 친구 구해요',
   },
@@ -22,6 +23,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 3,
     viewCount: 20,
     likeCount: 4,
+    liked: false,
     content: '9시에 구매한다고 했는데 글이 사라졌어요..',
   },
   {
@@ -33,6 +35,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 2696,
     likeCount: 4,
+    liked: false,
     content: '행사 일정 올라온 것 같은데 관심 있는 분들 같이 가요.',
   },
   {
@@ -44,6 +47,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 0,
     viewCount: 98,
     likeCount: 0,
+    liked: false,
     content:
       '22살 이고 INFJ입니다! 고민도 들어주고 취미도 공유하면서 가볍게 연락할 분 구해요',
   },
@@ -56,6 +60,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 87,
     likeCount: 5,
+    liked: false,
     content:
       '토요일 아침에 가볍게 5km 정도 뛰고 브런치 먹을 분 구합니다. 초보도 괜찮아요.',
   },
@@ -68,6 +73,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 4,
     viewCount: 156,
     likeCount: 8,
+    liked: false,
     content:
       '막 헬스 시작했는데 상체 하체 분할을 어떻게 해야 할지 모르겠어요. 추천 부탁드려요.',
   },
@@ -80,6 +86,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 1,
     viewCount: 63,
     likeCount: 2,
+    liked: false,
     content:
       '평일 저녁 8시쯤 체육관에서 배드민턴 같이 치실 분 찾아요. 장비는 제가 여분 있어요.',
   },
@@ -92,6 +99,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 6,
     viewCount: 211,
     likeCount: 10,
+    liked: false,
     content:
       '혼자 식단하면 자꾸 무너져서요. 하루 한 번씩 인증하면서 같이 관리하실 분 있으면 좋겠습니다.',
   },
@@ -104,6 +112,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 8,
     viewCount: 304,
     likeCount: 14,
+    liked: false,
     content:
       '기구 쓰는 법도 모르고 혼자 가려니 좀 무섭네요. 처음 시작할 때 팁 있으면 알려주세요.',
   },
@@ -116,6 +125,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 5,
     viewCount: 189,
     likeCount: 7,
+    liked: false,
     content:
       '4주 동안 매일 20분씩 홈트 인증하는 소규모 챌린지 해보려고 합니다. 같이 하실 분 댓글 주세요.',
   },

@@ -16,6 +16,8 @@ import type {
 const BASE_URL = process.env.API_BASE_URL;
 const COMMUNITY_POST_DETAIL_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId`;
 const POST_COMMENTS_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/comments`;
+const POST_LIKE_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/like`;
+const POST_COMMENT_LIKE_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/comments/:commentId/like`;
 const GUEST_POST_CHECK_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/guest-check`;
 const DELETE_COMMUNITY_POST_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId`;
 
@@ -35,6 +37,91 @@ const getPostComments = http.get(POST_COMMENTS_URL, async () => {
   return HttpResponse.json(POST_COMMENTS);
 });
 
+const postCommunityPostLike = http.post(POST_LIKE_URL, async ({ params }) => {
+  const postId = Number(params.postId);
+
+  if (!COMMUNITY_POST_DETAIL.liked) {
+    COMMUNITY_POST_DETAIL.liked = true;
+    COMMUNITY_POST_DETAIL.likeCount += 1;
+  }
+
+  return HttpResponse.json({
+    postId,
+    liked: COMMUNITY_POST_DETAIL.liked,
+    likeCount: COMMUNITY_POST_DETAIL.likeCount,
+  });
+});
+
+const deleteCommunityPostLike = http.delete(POST_LIKE_URL, async ({ params }) => {
+  const postId = Number(params.postId);
+
+  if (COMMUNITY_POST_DETAIL.liked) {
+    COMMUNITY_POST_DETAIL.liked = false;
+    COMMUNITY_POST_DETAIL.likeCount = Math.max(
+      0,
+      COMMUNITY_POST_DETAIL.likeCount - 1,
+    );
+  }
+
+  return HttpResponse.json({
+    postId,
+    liked: COMMUNITY_POST_DETAIL.liked,
+    likeCount: COMMUNITY_POST_DETAIL.likeCount,
+  });
+});
+
+const postCommunityPostCommentLike = http.post(
+  POST_COMMENT_LIKE_URL,
+  async ({ params }) => {
+    const commentId = Number(params.commentId);
+    const targetComment = POST_COMMENTS.find(({ id }) => id === commentId);
+
+    if (!targetComment || targetComment.isDeleted) {
+      return HttpResponse.json(
+        { message: '댓글을 찾을 수 없습니다.' },
+        { status: 404 },
+      );
+    }
+
+    if (!targetComment.liked) {
+      targetComment.liked = true;
+      targetComment.likeCount += 1;
+    }
+
+    return HttpResponse.json({
+      commentId,
+      liked: targetComment.liked,
+      likeCount: targetComment.likeCount,
+    });
+  },
+);
+
+const deleteCommunityPostCommentLike = http.delete(
+  POST_COMMENT_LIKE_URL,
+  async ({ params }) => {
+    const commentId = Number(params.commentId);
+    const targetComment = POST_COMMENTS.find(({ id }) => id === commentId);
+
+    if (!targetComment || targetComment.isDeleted) {
+      return HttpResponse.json(
+        { message: '댓글을 찾을 수 없습니다.' },
+        { status: 404 },
+      );
+    }
+
+    if (targetComment.liked) {
+      targetComment.liked = false;
+      targetComment.likeCount = Math.max(0, targetComment.likeCount - 1);
+    }
+
+    return HttpResponse.json({
+      commentId,
+      liked: targetComment.liked,
+      likeCount: targetComment.likeCount,
+    });
+  },
+);
+
 let nextCommentId = Math.max(...POST_COMMENTS.map(({ id }) => id)) + 1;
 
 const postPostComment = http.post(POST_COMMENTS_URL, async ({ request }) => {
@@ -53,6 +140,8 @@ const postPostComment = http.post(POST_COMMENTS_URL, async ({ request }) => {
       parentId: requestBody.parentId,
       isDeleted: false,
       createdAt: new Date().toISOString(),
+      likeCount: 0,
+      liked: false,
     };
 
   POST_COMMENTS.push(newComment);
@@ -205,6 +294,10 @@ const deleteCommunityPost = http.delete(
 export const communityPostDetailHandler = [
   getCommunityPostDetail,
   getPostComments,
+  postCommunityPostLike,
+  deleteCommunityPostLike,
+  postCommunityPostCommentLike,
+  deleteCommunityPostCommentLike,
   postPostComment,
   patchPostComment,
   deletePostComment,

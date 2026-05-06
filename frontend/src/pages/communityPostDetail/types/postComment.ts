@@ -1,4 +1,6 @@
-export interface PostComment {
+import type { LikeState } from '../../../common/types/like';
+
+export interface PostComment extends LikeState {
   id: number;
   nickname: string;
   content: string;
