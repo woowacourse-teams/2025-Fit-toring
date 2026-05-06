@@ -183,6 +183,8 @@ class ApiClient {
         const data = await response.json();
         throw new ApiError(data.message, response.status);
       }
+
+      return response;
     };
 
     return this.requestWithRefresh(sendRequest);
