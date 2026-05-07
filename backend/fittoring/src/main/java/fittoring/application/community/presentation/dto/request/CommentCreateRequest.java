@@ -1,5 +1,6 @@
 package fittoring.application.community.presentation.dto.request;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -12,4 +13,13 @@ public record CommentCreateRequest(
         Long rootId,
         Long parentId
 ) {
+
+    @AssertTrue(message = "익명 댓글은 닉네임과 비밀번호가 필수입니다.")
+    public boolean isAnonymousFieldsValid() {
+        if (!isAnonymous) {
+            return true;
+        }
+        return nickname != null && !nickname.isBlank()
+                && guestPassword != null && !guestPassword.isBlank();
+    }
 }

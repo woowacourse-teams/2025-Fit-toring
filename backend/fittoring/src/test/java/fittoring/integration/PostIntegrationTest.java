@@ -75,6 +75,40 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
         });
     }
 
+    @DisplayName("회원이 익명으로 게시글 작성 시 닉네임이 없으면 400을 반환한다.")
+    @Test
+    void createMemberAnonymousPostFailWhenNicknameMissing() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        PostCreateRequest request = new PostCreateRequest("title", "content", true, null, "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/posts")
+                .then()
+                .statusCode(400);
+    }
+
+    @DisplayName("회원이 익명으로 게시글 작성 시 비밀번호가 없으면 400을 반환한다.")
+    @Test
+    void createMemberAnonymousPostFailWhenPasswordMissing() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        PostCreateRequest request = new PostCreateRequest("title", "content", true, "익명닉", null);
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/posts")
+                .then()
+                .statusCode(400);
+    }
+
     @DisplayName("비회원 게시글 작성은 201을 반환한다.")
     @Test
     void createGuestPost() {

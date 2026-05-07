@@ -65,6 +65,42 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
         assertThat(response.isGuestComment()).isFalse();
     }
 
+    @DisplayName("회원이 익명으로 댓글 작성 시 닉네임이 없으면 400을 반환한다.")
+    @Test
+    void createMemberAnonymousCommentFailWhenNicknameMissing() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        CommentCreateRequest request = new CommentCreateRequest("content", true, null, "1234", null, null);
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/posts/{postId}/comments", post.getId())
+                .then()
+                .statusCode(400);
+    }
+
+    @DisplayName("회원이 익명으로 댓글 작성 시 비밀번호가 없으면 400을 반환한다.")
+    @Test
+    void createMemberAnonymousCommentFailWhenPasswordMissing() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        CommentCreateRequest request = new CommentCreateRequest("content", true, "익명닉", null, null, null);
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .post("/posts/{postId}/comments", post.getId())
+                .then()
+                .statusCode(400);
+    }
+
     @DisplayName("비회원 댓글 작성은 201을 반환한다.")
     @Test
     void createComment() {
