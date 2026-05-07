@@ -3,6 +3,7 @@ package fittoring.application.community.presentation;
 import fittoring.application.community.presentation.dto.request.CommentCreateRequest;
 import fittoring.application.community.presentation.dto.request.CommentUpdateRequest;
 import fittoring.application.community.presentation.dto.request.GuestPasswordRequest;
+import fittoring.application.community.presentation.dto.response.CommentOwnershipResponse;
 import fittoring.application.community.presentation.dto.response.CommentResponse;
 import fittoring.application.community.service.CommentService;
 import fittoring.application.community.service.LikeActorResolver;
@@ -52,6 +53,16 @@ public class CommentController {
     ) {
         LikeActorKeyHash actorKeyHash = likeActorResolver.resolve(actorId);
         return ResponseEntity.ok(commentService.findComments(postId, actorKeyHash));
+    }
+
+    @AuthRequired
+    @GetMapping("/posts/{postId}/comments/mine")
+    public ResponseEntity<CommentOwnershipResponse> findOwnedCommentIds(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long postId
+    ) {
+        List<Long> mineCommentIds = commentService.findOwnedCommentIds(postId, loginInfo.memberId());
+        return ResponseEntity.ok(new CommentOwnershipResponse(mineCommentIds));
     }
 
     @AuthRequired

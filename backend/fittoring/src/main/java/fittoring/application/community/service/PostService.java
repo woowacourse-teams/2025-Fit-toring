@@ -119,6 +119,12 @@ public class PostService {
         post.matchGuestPassword(guestPassword);
     }
 
+    @Transactional(readOnly = true)
+    public boolean checkOwnership(Long postId, Long memberId) {
+        Post post = getPost(postId);
+        return post.isOwnedBy(memberId);
+    }
+
     private Post createMemberPost(PostCreateDto dto) {
         Member member = memberRepository.findById(dto.memberId())
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));

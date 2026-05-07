@@ -83,6 +83,11 @@ public class CommentService {
         comment.matchGuestPassword(guestPassword);
     }
 
+    @Transactional(readOnly = true)
+    public List<Long> findOwnedCommentIds(Long postId, Long memberId) {
+        return commentRepository.findIdsByPostIdAndMemberId(postId, memberId);
+    }
+
     private Comment createMemberComment(CommentCreateDto dto, Post post) {
         Member member = memberRepository.findById(dto.memberId())
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));

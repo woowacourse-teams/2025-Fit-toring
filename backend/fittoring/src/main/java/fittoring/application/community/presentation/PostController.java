@@ -5,6 +5,7 @@ import fittoring.application.community.presentation.dto.request.PostCreateReques
 import fittoring.application.community.presentation.dto.request.PostUpdateRequest;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
+import fittoring.application.community.presentation.dto.response.PostOwnershipResponse;
 import fittoring.application.community.service.LikeActorResolver;
 import fittoring.application.community.service.PostService;
 import fittoring.application.community.service.dto.PostCreateDto;
@@ -58,6 +59,16 @@ public class PostController {
         LikeActorKeyHash actorKeyHash = likeActorResolver.resolve(actorId);
         PostDetailResponse response = postService.findPost(postId, actorKeyHash);
         return ResponseEntity.ok(response);
+    }
+
+    @AuthRequired
+    @GetMapping("/posts/{postId}/mine")
+    public ResponseEntity<PostOwnershipResponse> checkPostOwnership(
+            @Login LoginInfo loginInfo,
+            @PathVariable Long postId
+    ) {
+        boolean isMine = postService.checkOwnership(postId, loginInfo.memberId());
+        return ResponseEntity.ok(new PostOwnershipResponse(isMine));
     }
 
     @AuthRequired

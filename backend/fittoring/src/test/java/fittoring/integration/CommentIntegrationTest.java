@@ -12,6 +12,7 @@ import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.community.presentation.dto.request.CommentCreateRequest;
 import fittoring.application.community.presentation.dto.request.CommentUpdateRequest;
 import fittoring.application.community.presentation.dto.request.GuestPasswordRequest;
+import fittoring.application.community.presentation.dto.response.CommentOwnershipResponse;
 import fittoring.application.community.presentation.dto.response.CommentResponse;
 import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
@@ -303,6 +304,50 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .delete("/guest/comments/{commentId}", comment.getId())
                 .then()
                 .statusCode(204);
+    }
+
+    @DisplayName("내 댓글 ID 목록만 반환한다.")
+    @Test
+    void findOwnedCommentIds() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Member other = memberRepository.save(FixtureUtil.testMentor());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment myComment1 = commentRepository.save(FixtureUtil.testMemberComment(post, member, "mine-1"));
+        Comment myComment2 = commentRepository.save(FixtureUtil.testMemberComment(post, member, "mine-2"));
+        commentRepository.save(FixtureUtil.testMemberComment(post, other, "others"));
+        commentRepository.save(FixtureUtil.testGuestComment(post));
+
+        CommentOwnershipResponse response = RestAssured.given(spec)
+                .filter(documentWithTag("comment/get-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("댓글")
+                                .summary("내 댓글 ID 목록 조회")
+                                .description("게시글 내에서 로그인한 회원이 작성한 댓글 ID 목록을 조회합니다.")
+                                .responseSchema(Schema.schema("CommentOwnershipResponse"))
+                                .build())))
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/posts/{postId}/comments/mine", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(CommentOwnershipResponse.class);
+
+        assertThat(response.mineCommentIds())
+                .containsExactlyInAnyOrder(myComment1.getId(), myComment2.getId());
+    }
+
+    @DisplayName("내 댓글 ID 목록 조회는 비로그인 시 401을 반환한다.")
+    @Test
+    void findOwnedCommentIdsUnauthorized() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+
+        RestAssured.given(spec)
+                .when()
+                .get("/posts/{postId}/comments/mine", post.getId())
+                .then()
+                .statusCode(401);
     }
 
     @DisplayName("비회원 댓글 비밀번호 확인은 200을 반환한다.")
