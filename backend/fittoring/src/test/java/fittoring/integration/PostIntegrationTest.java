@@ -83,7 +83,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts")
+                .post("/guest/posts")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -101,7 +101,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts")
+                .post("/guest/posts")
                 .then()
                 .statusCode(400);
     }
@@ -115,7 +115,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts")
+                .post("/guest/posts")
                 .then()
                 .statusCode(400);
     }
@@ -196,7 +196,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -215,7 +215,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -234,7 +234,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -260,7 +260,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .delete("/posts/{postId}", post.getId())
+                .delete("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(204);
     }
