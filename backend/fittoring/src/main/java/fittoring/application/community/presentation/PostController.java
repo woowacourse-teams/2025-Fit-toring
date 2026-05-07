@@ -50,15 +50,13 @@ public class PostController {
         return ResponseEntity.ok(postService.findPosts(cursorCode));
     }
 
-    @AuthRequired
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDetailResponse> findPost(
-            @Login LoginInfo loginInfo,
             @PathVariable Long postId,
             @CookieValue(name = LikeActorResolver.COOKIE_NAME, required = false) String actorId
     ) {
         LikeActorKeyHash actorKeyHash = likeActorResolver.resolve(actorId);
-        PostDetailResponse response = postService.findPost(postId, loginInfo.memberId(), actorKeyHash);
+        PostDetailResponse response = postService.findPost(postId, actorKeyHash);
         return ResponseEntity.ok(response);
     }
 

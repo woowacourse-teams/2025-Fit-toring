@@ -39,8 +39,7 @@ public class PostService {
     public PostDetailResponse createPost(PostCreateDto dto) {
         Post post = createPostByAuthorType(dto);
         Post saved = postRepository.save(post);
-        boolean isMine = !saved.isGuestPost();
-        return PostDetailResponse.from(saved, 0, isMine, false);
+        return PostDetailResponse.from(saved, 0, false);
     }
 
     @Transactional(readOnly = true)
@@ -80,22 +79,17 @@ public class PostService {
     }
 
     @Transactional
-    public PostDetailResponse findPost(Long postId, Long memberId) {
-        return findPost(postId, memberId, null);
+    public PostDetailResponse findPost(Long postId) {
+        return findPost(postId, null);
     }
 
     @Transactional
-    public PostDetailResponse findPost(Long postId, Long memberId, LikeActorKeyHash actorKeyHash) {
+    public PostDetailResponse findPost(Long postId, LikeActorKeyHash actorKeyHash) {
         Post post = getPost(postId);
         post.increaseViewCount();
         int commentCount = (int) commentRepository.countByPostId(post.getId());
-        boolean isMine = isPostOwner(memberId, post);
         boolean liked = isLiked(actorKeyHash, post);
-        return PostDetailResponse.from(post, commentCount, isMine, liked);
-    }
-
-    private boolean isPostOwner(Long memberId, Post post) {
-        return !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
+        return PostDetailResponse.from(post, commentCount, liked);
     }
 
     private boolean isLiked(LikeActorKeyHash actorKeyHash, Post post) {

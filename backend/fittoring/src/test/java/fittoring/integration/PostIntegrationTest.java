@@ -71,7 +71,6 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.commentCount()).isZero();
             softly.assertThat(response.viewCount()).isZero();
             softly.assertThat(response.likeCount()).isZero();
-            softly.assertThat(response.isMine()).isTrue();
         });
     }
 
@@ -177,7 +176,6 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.commentCount()).isEqualTo(1);
             softly.assertThat(response.viewCount()).isEqualTo(1);
             softly.assertThat(response.likeCount()).isZero();
-            softly.assertThat(response.isMine()).isFalse();
         });
     }
 
