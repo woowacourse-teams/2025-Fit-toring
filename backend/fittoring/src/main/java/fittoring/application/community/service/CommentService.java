@@ -66,14 +66,14 @@ public class CommentService {
     @Transactional
     public void modifyComment(CommentUpdateDto dto) {
         Comment comment = getComment(dto.commentId());
-        validateCommentAccess(comment, dto.memberId(), dto.guestPassword());
+        validateCommentAccessByCaller(comment, dto.memberId(), dto.guestPassword());
         comment.modify(dto.content());
     }
 
     @Transactional
     public void deleteComment(CommentDeleteDto dto) {
         Comment comment = getComment(dto.commentId());
-        validateCommentAccess(comment, dto.memberId(), dto.guestPassword());
+        validateCommentAccessByCaller(comment, dto.memberId(), dto.guestPassword());
         commentRepository.delete(comment);
     }
 
@@ -122,15 +122,28 @@ public class CommentService {
         }
     }
 
-    private void validateCommentAccess(Comment comment, Long memberId, String guestPassword) {
+    private void validateCommentAccessByCaller(Comment comment, Long memberId, String guestPassword) {
+        if (memberId != null) {
+            validateMemberCommentAccess(comment, memberId);
+        } else {
+            validateGuestCommentAccess(comment, guestPassword);
+        }
+    }
+
+    private void validateMemberCommentAccess(Comment comment, Long memberId) {
         if (comment.isGuestComment()) {
-            comment.matchGuestPassword(guestPassword);
-            return;
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        if (memberId != null && comment.isOwnedBy(memberId)) {
-            return;
+        if (!comment.isOwnedBy(memberId)) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+    }
+
+    private void validateGuestCommentAccess(Comment comment, String guestPassword) {
+        if (!comment.isGuestComment()) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+        }
+        comment.matchGuestPassword(guestPassword);
     }
 
     private Post getPost(Long postId) {

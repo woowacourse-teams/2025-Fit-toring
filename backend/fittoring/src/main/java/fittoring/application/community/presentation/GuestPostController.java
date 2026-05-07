@@ -36,7 +36,7 @@ public class GuestPostController {
     @PatchMapping("/guest/posts/{postId}")
     public ResponseEntity<Void> modifyGuestPost(
             @PathVariable Long postId,
-            @RequestBody PostUpdateRequest request
+            @Valid @RequestBody PostUpdateRequest request
     ) {
         postService.modifyPost(PostUpdateDto.of(null, postId, request));
         return ResponseEntity.ok().build();

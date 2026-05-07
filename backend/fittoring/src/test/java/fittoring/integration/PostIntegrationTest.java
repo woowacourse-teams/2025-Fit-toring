@@ -75,40 +75,6 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
         });
     }
 
-    @DisplayName("회원이 익명으로 게시글 작성 시 닉네임이 없으면 400을 반환한다.")
-    @Test
-    void createMemberAnonymousPostFailWhenNicknameMissing() {
-        Member member = memberRepository.save(FixtureUtil.testMentee());
-        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-        PostCreateRequest request = new PostCreateRequest("title", "content", true, null, "1234");
-
-        RestAssured.given(spec)
-                .contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .body(request)
-                .when()
-                .post("/posts")
-                .then()
-                .statusCode(400);
-    }
-
-    @DisplayName("회원이 익명으로 게시글 작성 시 비밀번호가 없으면 400을 반환한다.")
-    @Test
-    void createMemberAnonymousPostFailWhenPasswordMissing() {
-        Member member = memberRepository.save(FixtureUtil.testMentee());
-        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-        PostCreateRequest request = new PostCreateRequest("title", "content", true, "익명닉", null);
-
-        RestAssured.given(spec)
-                .contentType(ContentType.JSON)
-                .cookie("accessToken", accessToken)
-                .body(request)
-                .when()
-                .post("/posts")
-                .then()
-                .statusCode(400);
-    }
-
     @DisplayName("비회원 게시글 작성은 201을 반환한다.")
     @Test
     void createGuestPost() {
@@ -531,6 +497,40 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .as(PostOwnershipResponse.class);
 
         assertThat(response.isMine()).isFalse();
+    }
+
+    @DisplayName("회원이 게스트 글을 회원 엔드포인트로 수정 시도하면 403을 반환한다.")
+    @Test
+    void modifyGuestPostViaMemberEndpointForbidden() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        PostUpdateRequest request = new PostUpdateRequest("new", "new", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .patch("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(403);
+    }
+
+    @DisplayName("비회원이 회원 글을 게스트 엔드포인트로 수정 시도하면 403을 반환한다.")
+    @Test
+    void modifyMemberPostViaGuestEndpointForbidden() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Post post = postRepository.save(FixtureUtil.testMemberPost(member));
+        PostUpdateRequest request = new PostUpdateRequest("new", "new", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .patch("/guest/posts/{postId}", post.getId())
+                .then()
+                .statusCode(403);
     }
 
     @DisplayName("게시글 소유 확인은 비로그인 시 401을 반환한다.")

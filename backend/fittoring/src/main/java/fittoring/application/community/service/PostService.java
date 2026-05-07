@@ -102,14 +102,14 @@ public class PostService {
     @Transactional
     public void modifyPost(PostUpdateDto dto) {
         Post post = getPost(dto.postId());
-        validatePostAccess(post, dto.memberId(), dto.guestPassword());
+        validatePostAccessByCaller(post, dto.memberId(), dto.guestPassword());
         post.modify(dto.title(), dto.content());
     }
 
     @Transactional
     public void deletePost(PostDeleteDto dto) {
         Post post = getPost(dto.postId());
-        validatePostAccess(post, dto.memberId(), dto.guestPassword());
+        validatePostAccessByCaller(post, dto.memberId(), dto.guestPassword());
         postRepository.delete(post);
     }
 
@@ -144,15 +144,28 @@ public class PostService {
         return Post.forGuest(dto.title(), dto.content(), dto.nickname(), dto.guestPassword());
     }
 
-    private void validatePostAccess(Post post, Long memberId, String guestPassword) {
+    private void validatePostAccessByCaller(Post post, Long memberId, String guestPassword) {
+        if (memberId != null) {
+            validateMemberPostAccess(post, memberId);
+        } else {
+            validateGuestPostAccess(post, guestPassword);
+        }
+    }
+
+    private void validateMemberPostAccess(Post post, Long memberId) {
         if (post.isGuestPost()) {
-            post.matchGuestPassword(guestPassword);
-            return;
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        if (memberId != null && post.isOwnedBy(memberId)) {
-            return;
+        if (!post.isOwnedBy(memberId)) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+    }
+
+    private void validateGuestPostAccess(Post post, String guestPassword) {
+        if (!post.isGuestPost()) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+        }
+        post.matchGuestPassword(guestPassword);
     }
 
     private Post getPost(Long postId) {
