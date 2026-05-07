@@ -10,9 +10,9 @@ import fittoring.application.community.service.PostService;
 import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
 import fittoring.application.community.service.dto.PostUpdateDto;
+import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.config.auth.OptionalAuth;
 import fittoring.domain.model.LikeActorKeyHash;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class PostController {
     private final PostService postService;
     private final LikeActorResolver likeActorResolver;
 
-    @OptionalAuth
+    @AuthRequired
     @PostMapping("/posts")
     public ResponseEntity<PostDetailResponse> createPost(
             @Login LoginInfo loginInfo,
@@ -50,7 +50,7 @@ public class PostController {
         return ResponseEntity.ok(postService.findPosts(cursorCode));
     }
 
-    @OptionalAuth
+    @AuthRequired
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDetailResponse> findPost(
             @Login LoginInfo loginInfo,
@@ -62,7 +62,7 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-    @OptionalAuth
+    @AuthRequired
     @PatchMapping("/posts/{postId}")
     public ResponseEntity<Void> modifyPost(
             @Login LoginInfo loginInfo,
@@ -73,7 +73,7 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @OptionalAuth
+    @AuthRequired
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(
             @Login LoginInfo loginInfo,

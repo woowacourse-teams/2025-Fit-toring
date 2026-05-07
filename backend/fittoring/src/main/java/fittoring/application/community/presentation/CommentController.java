@@ -9,9 +9,9 @@ import fittoring.application.community.service.LikeActorResolver;
 import fittoring.application.community.service.dto.CommentCreateDto;
 import fittoring.application.community.service.dto.CommentDeleteDto;
 import fittoring.application.community.service.dto.CommentUpdateDto;
+import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.config.auth.OptionalAuth;
 import fittoring.domain.model.LikeActorKeyHash;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -34,7 +34,7 @@ public class CommentController {
     private final CommentService commentService;
     private final LikeActorResolver likeActorResolver;
 
-    @OptionalAuth
+    @AuthRequired
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<CommentResponse> createComment(
             @Login LoginInfo loginInfo,
@@ -54,7 +54,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.findComments(postId, actorKeyHash));
     }
 
-    @OptionalAuth
+    @AuthRequired
     @PatchMapping("/comments/{commentId}")
     public ResponseEntity<Void> modifyComment(
             @Login LoginInfo loginInfo,
@@ -65,7 +65,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
-    @OptionalAuth
+    @AuthRequired
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @Login LoginInfo loginInfo,

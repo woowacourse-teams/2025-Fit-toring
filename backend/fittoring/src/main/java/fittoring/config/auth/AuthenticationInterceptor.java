@@ -29,21 +29,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             return true;
         }
-        if (isOptionalAuth(handler)) {
-            attemptOptionalAuthentication(request);
-            return true;
-        }
         if (isAuthenticationNotRequired(handler)) {
             return true;
         }
         return attemptAuthentication(request, handler);
-    }
-
-    private boolean isOptionalAuth(Object handler) {
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return false;
-        }
-        return handlerMethod.hasMethodAnnotation(OptionalAuth.class);
     }
 
     private boolean isAuthenticationNotRequired(final Object handler) {
@@ -60,20 +49,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         validateAdminAccess(handler, MemberRole.of(payload.role()));
         bindAuthenticationContext(request, payload);
         return true;
-    }
-
-    private void attemptOptionalAuthentication(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
-            return;
-        }
-        try {
-            String accessToken = getAccessToken(cookies);
-            TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
-            bindAuthenticationContext(request, payload);
-        } catch (InvalidTokenException | ExpiredTokenException ignored) {
-            // 만료/변조된 토큰은 비회원으로 간주한다. 비회원도 접근 가능한 핸들러이므로 통과시킨다.
-        }
     }
 
     private TokenPayload authenticate(HttpServletRequest request) {
