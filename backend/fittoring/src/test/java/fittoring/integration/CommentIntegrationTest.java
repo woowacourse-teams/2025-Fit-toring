@@ -82,7 +82,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts/{postId}/comments", post.getId())
+                .post("/guest/posts/{postId}/comments", post.getId())
                 .then()
                 .statusCode(201)
                 .extract()
@@ -101,7 +101,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts/{postId}/comments", post.getId())
+                .post("/guest/posts/{postId}/comments", post.getId())
                 .then()
                 .statusCode(400);
     }
@@ -277,7 +277,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/comments/{commentId}", comment.getId())
+                .patch("/guest/comments/{commentId}", comment.getId())
                 .then()
                 .statusCode(200);
     }
@@ -300,7 +300,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .delete("/comments/{commentId}", comment.getId())
+                .delete("/guest/comments/{commentId}", comment.getId())
                 .then()
                 .statusCode(204);
     }
