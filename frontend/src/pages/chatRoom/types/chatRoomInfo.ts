@@ -1,7 +1,7 @@
 export interface ChatRoomInfo {
   mentorName: string;
   price: number;
-  profileImageUrl: string;
+  profileImageUrl: string | null;
   mentoringId: number;
   opponentName: string;
   myRole: 'MENTEE' | 'MENTOR';

@@ -7,6 +7,7 @@ import fittoring.application.exception.ChatMessageNotFoundException;
 import fittoring.application.exception.ChatMessageNotImageException;
 import fittoring.application.exception.ChatRoomAlreadyExistsException;
 import fittoring.application.exception.ChatRoomNotFoundException;
+import fittoring.application.exception.CommentNotFoundException;
 import fittoring.application.exception.DuplicateDeviceException;
 import fittoring.application.exception.DuplicateLoginIdException;
 import fittoring.application.exception.DuplicatePhoneException;
@@ -16,7 +17,11 @@ import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.exception.InvalidCertificateException;
+import fittoring.application.exception.InvalidCommentReplyException;
 import fittoring.application.exception.InvalidCursorException;
+import fittoring.application.exception.InvalidImageKeyException;
+import fittoring.application.exception.InvalidLikeActorKeyHashException;
+import fittoring.application.exception.InvalidLikeActorIdException;
 import fittoring.application.exception.InvalidMemberRoleException;
 import fittoring.application.exception.InvalidPhoneVerificationException;
 import fittoring.application.exception.InvalidStatusException;
@@ -30,6 +35,7 @@ import fittoring.application.exception.NotFoundMemberException;
 import fittoring.application.exception.NotFoundStatusException;
 import fittoring.application.exception.OauthLoginException;
 import fittoring.application.exception.PasswordEncryptionException;
+import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.exception.ReservationNotCompletedException;
 import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.exception.ReviewAlreadyExistsException;
@@ -37,6 +43,9 @@ import fittoring.application.exception.ReviewNotFoundException;
 import fittoring.application.exception.UnauthorizedChatMessageAccessException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.exception.UnauthorizedException;
+import fittoring.admin.exception.DummyAlreadyInsertedException;
+import fittoring.admin.exception.DummyScenarioFileNotFoundException;
+import fittoring.admin.exception.InvalidDummyScenarioException;
 import fittoring.application.exception.UnsupportedImageExtensionException;
 import fittoring.infrastructure.exception.S3UploadException;
 import fittoring.infrastructure.exception.SmsException;
@@ -78,6 +87,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(CategoryNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(PostNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(CommentNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
@@ -218,6 +237,26 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(InvalidImageKeyException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidImageKeyException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidCommentReplyException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidCommentReplyException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidLikeActorIdException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidLikeActorIdException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidLikeActorKeyHashException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidLikeActorKeyHashException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     @ExceptionHandler(CertificateNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(CertificateNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
@@ -286,6 +325,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateReservationException.class)
     public ResponseEntity<ErrorResponse> handle(DuplicateReservationException e) {
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(DummyScenarioFileNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(DummyScenarioFileNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(DummyAlreadyInsertedException.class)
+    public ResponseEntity<ErrorResponse> handle(DummyAlreadyInsertedException e) {
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDummyScenarioException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidDummyScenarioException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {

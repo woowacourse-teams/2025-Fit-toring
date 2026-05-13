@@ -11,12 +11,14 @@ import com.epages.restdocs.apispec.Schema;
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.FixtureUtil;
 import fittoring.application.auth.service.JwtProvider;
-import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatRoomInfoResponse;
 import fittoring.application.chat.presentation.dto.response.ChatRoomPreviewResponse;
 import fittoring.application.chat.repository.ChatMessageRepository;
 import fittoring.application.chat.repository.ChatRoomRepository;
+import fittoring.application.chat.service.ChatMessagePersistenceService;
+import fittoring.application.chat.service.dto.ChatMessagePersistEventDto;
+import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.application.mentoring.repository.CategoryRepository;
@@ -72,6 +74,9 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
 
     @Autowired
     private JwtProvider jwtProvider;
+
+    @Autowired
+    private ChatMessagePersistenceService chatMessagePersistenceService;
 
     @DisplayName("채팅방 정보를 조회할 수 있다.")
     @Test
@@ -320,11 +325,30 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         // 시나리오: '멘티' 사용자가 로그인하여 자신이 속한 채팅방 목록을 조회합니다.
         Member mentor = memberRepository.save(FixtureUtil.testMentor());
         Member mentee = memberRepository.save(FixtureUtil.testMentee());
+
+        Member mentee2 = memberRepository.save(FixtureUtil.testMentee(2));
+
         Mentoring mentoring = mentoringRepository.save(FixtureUtil.testMentoring(mentor));
         Image image = imageRepository.save(FixtureUtil.testImageForMentoringProfileThumbnail(mentoring));
+
         Reservation reservation = reservationRepository.save(FixtureUtil.testApprovedReservation(mentoring, mentee));
+        Reservation reservation2 = reservationRepository.save(FixtureUtil.testApprovedReservation(mentoring, mentee2));
+
         ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(reservation, mentor, mentee));
-        ChatMessage chatMessage = chatMessageRepository.save(FixtureUtil.testChatMessage(chatRoom, mentee));
+        ChatMessagePersistEventDto event = new ChatMessagePersistEventDto(
+                "message-id-1",
+                chatRoom.getId(),
+                mentee.getId(),
+                1L,
+                "테스트 메시지입니다.",
+                fittoring.domain.model.ChatMessageType.TEXT,
+                java.time.LocalDateTime.now()
+        );
+        chatMessagePersistenceService.persist(event);
+        ChatMessage chatMessage = chatMessageRepository.findAll().getFirst();
+
+        // 멘티2와의 채팅방은 대화 기록이 없어 채팅방 미리보기 목록에 노출되지 않습니다.
+        chatRoomRepository.save(FixtureUtil.testChatRoom(reservation2, mentor, mentee2));
 
         String accessToken = jwtProvider.createAccessToken(mentee.getId(), mentee.getRole());
 
@@ -347,10 +371,9 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
                                         fieldWithPath("[].reservationStatus").type(JsonFieldType.STRING)
                                                 .description("예약 상태 (APPROVED, PENDING 등)"),
                                         fieldWithPath("[].lastChatContent").type(JsonFieldType.STRING)
-                                                .description("마지막 메시지 내용 (메시지가 없으면 null)").optional(),
+                                                .description("마지막 메시지 내용"),
                                         fieldWithPath("[].lastChatCreatedAt").type(JsonFieldType.STRING)
-                                                .description("마지막 메시지 생성 시각 (메시지가 없으면 null, yyyy-MM-dd'T'HH:mm:ss 형식)")
-                                                .optional()
+                                                .description("마지막 메시지 생성 시각 (yyyy-MM-dd'T'HH:mm:ss 형식)")
                                 )
                                 .build())))
                 .cookie("accessToken", accessToken)
@@ -390,7 +413,8 @@ class ChatRoomIntegrationTest extends AbstractApiDocumentationTest {
         imageRepository.save(FixtureUtil.testChatImageThumbnail(imageMessage));
 
         when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(true)))
-                .thenReturn(new ImageUrlResponse("https://presigned-get-url-thumbnail", "https://presigned-get-url-default"));
+                .thenReturn(new ImageUrlResponse("https://presigned-get-url-thumbnail",
+                        "https://presigned-get-url-default"));
         when(presignedUrlService.issueGetUrlWithThumbnail(anyString(), eq(false)))
                 .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 

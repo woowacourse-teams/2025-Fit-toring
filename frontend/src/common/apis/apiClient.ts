@@ -17,6 +17,7 @@ interface ApiClientPostType<T> {
 
 interface ApiClientDeleteType {
   endpoint: string;
+  body?: Record<string, string | number> | undefined;
   withCredentials?: boolean;
 }
 
@@ -161,14 +162,16 @@ class ApiClient {
     return this.requestWithRefresh(sendRequest, endpoint);
   }
 
-  async delete({ endpoint, withCredentials }: ApiClientDeleteType) {
+  async delete({ endpoint, body, withCredentials }: ApiClientDeleteType) {
     const url = new URL(`${this.#baseUrl}${endpoint}`);
 
     const options = {
       method: 'DELETE',
       headers: {
         accept: 'application/json',
+        'Content-Type': 'application/json',
       },
+      body: body ? JSON.stringify(body) : undefined,
       credentials: withCredentials
         ? 'include'
         : ('same-origin' as RequestCredentials),

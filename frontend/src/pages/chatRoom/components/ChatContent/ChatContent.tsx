@@ -11,6 +11,15 @@ interface ChatContentProps {
   listElRef: React.RefObject<HTMLDivElement | null>;
 }
 
+const getMessageKey = (message: Message) => {
+  return (
+    message.chatMessageId ??
+    message.messageId ??
+    message.tempId ??
+    `${message.senderId}-${message.createdAt}-${message.content ?? message.originalImageUrl}`
+  );
+};
+
 function ChatContent({
   messages,
   pageFirstElRef,
@@ -27,54 +36,40 @@ function ChatContent({
       <div ref={pageFirstElRef} style={{ height: 1, flex: '0 0 1px' }} />
 
       <S_BubbleList>
-        {messages.map(
-          (
-            {
-              content,
-              createdAt,
-              senderId,
-              status,
-              chatMessageId,
-              messageType,
-              originalImageUrl,
-            },
-            index,
-          ) => {
-            const prevSenderId =
-              index > 0 ? messages[index - 1].senderId : null;
-            const senderChanged = prevSenderId !== senderId;
+        {messages.map((message, index) => {
+          const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
+          const senderChanged = prevSenderId !== message.senderId;
 
-            if (messageType === 'IMAGE') {
-              return (
-                <S_ChatBubbleWrapper
-                  key={chatMessageId}
-                  senderChanged={senderChanged}
-                >
-                  <ChatImageBubble
-                    content={originalImageUrl}
-                    createdAt={createdAt}
-                    authored={senderId === Number(memberId)}
-                    status={status}
-                  />
-                </S_ChatBubbleWrapper>
-              );
-            }
-
+          if (message.messageType === 'IMAGE') {
             return (
               <S_ChatBubbleWrapper
-                key={chatMessageId}
+                key={getMessageKey(message)}
                 senderChanged={senderChanged}
               >
-                <ChatBubble
-                  content={content}
-                  createdAt={createdAt}
-                  authored={senderId === Number(memberId)}
-                  status={status}
+                <ChatImageBubble
+                  content={message.thumbnailUrl ?? message.originalImageUrl}
+                  createdAt={message.createdAt}
+                  authored={message.senderId === Number(memberId)}
+                  status={message.status}
                 />
               </S_ChatBubbleWrapper>
             );
-          },
-        )}
+          }
+
+          return (
+            <S_ChatBubbleWrapper
+              key={getMessageKey(message)}
+              senderChanged={senderChanged}
+            >
+              <ChatBubble
+                content={message.content}
+                createdAt={message.createdAt}
+                authored={message.senderId === Number(memberId)}
+                status={message.status}
+              />
+            </S_ChatBubbleWrapper>
+          );
+        })}
       </S_BubbleList>
     </S_Container>
   );

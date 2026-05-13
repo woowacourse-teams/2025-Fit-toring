@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -12,7 +13,9 @@ import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
+import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.ForbiddenException;
+import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import org.assertj.core.api.SoftAssertions;
@@ -49,6 +52,7 @@ class AuthenticationInterceptorTest {
     void setUp() {
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
+        lenient().when(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).thenReturn(false);
     }
 
     @DisplayName("인증 어노테이션이 존재하고 토큰이 유효하면 인증에 성공한다.")
@@ -175,5 +179,128 @@ class AuthenticationInterceptorTest {
         // then
         assertThat(actual).isTrue();
         verify(jwtExtractor, times(0)).extractTokenFromCookie(anyString(), any());
+    }
+
+    @DisplayName("OptionalAuth가 있으면 유효한 토큰이 있을 때 memberId를 바인딩한다.")
+    @Test
+    void optionalAuthSuccess() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "valid-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
+        given(jwtProvider.extractTokenPayload("valid-token")).willReturn(new TokenPayload(1L, "MENTEE"));
+
+        // when
+        boolean actual = interceptor.preHandle(request, response, handlerMethod);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isEqualTo(1L);
+        });
+    }
+
+    @DisplayName("OptionalAuth가 있으면 토큰이 없어도 예외 없이 통과한다.")
+    @Test
+    void optionalAuthFallbackToGuest() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        // when
+        boolean actual = interceptor.preHandle(request, response, handlerMethod);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isNull();
+        });
+        verify(jwtExtractor, times(0)).extractTokenFromCookie(anyString(), any());
+    }
+
+    @DisplayName("OptionalAuth는 예상하지 못한 런타임 예외를 숨기지 않는다.")
+    @Test
+    void optionalAuthDoesNotIgnoreUnexpectedRuntimeException() {
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "valid-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("valid-token");
+        given(jwtProvider.extractTokenPayload("valid-token")).willThrow(new IllegalStateException("unexpected"));
+
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("unexpected");
+    }
+
+    @DisplayName("OptionalAuth는 accessToken이 만료된 경우 비회원으로 간주하여 통과시킨다.")
+    @Test
+    void optionalAuthFallbackWhenAccessTokenExpired() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "expired-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("expired-token");
+        given(jwtProvider.extractTokenPayload("expired-token"))
+                .willThrow(new ExpiredTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage()));
+
+        // when
+        boolean actual = interceptor.preHandle(request, response, handlerMethod);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isNull();
+        });
+    }
+
+    @DisplayName("OptionalAuth는 accessToken이 변조된 경우 비회원으로 간주하여 통과시킨다.")
+    @Test
+    void optionalAuthFallbackWhenAccessTokenInvalid() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie cookie = new Cookie("accessToken", "malformed-token");
+        request.setCookies(cookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any())).willReturn("malformed-token");
+        given(jwtProvider.extractTokenPayload("malformed-token"))
+                .willThrow(new InvalidTokenException(BusinessErrorMessage.INVALID_TOKEN.getMessage()));
+
+        // when
+        boolean actual = interceptor.preHandle(request, response, handlerMethod);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isNull();
+        });
+    }
+
+    @DisplayName("OptionalAuth는 accessToken 쿠키가 없으면 비회원으로 통과한다.")
+    @Test
+    void optionalAuthFallbackWhenAccessTokenCookieMissing() {
+        // given
+        given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
+
+        Cookie otherCookie = new Cookie("refreshToken", "some-value");
+        request.setCookies(otherCookie);
+
+        given(jwtExtractor.extractTokenFromCookie(anyString(), any()))
+                .willThrow(new InvalidTokenException(BusinessErrorMessage.TOKEN_NOT_FOUND.getMessage()));
+
+        // when
+        boolean actual = interceptor.preHandle(request, response, handlerMethod);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(actual).isTrue();
+            softly.assertThat(request.getAttribute("memberId")).isNull();
+        });
     }
 }

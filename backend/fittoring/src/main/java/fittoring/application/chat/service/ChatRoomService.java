@@ -18,6 +18,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Reservation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -67,8 +68,7 @@ public class ChatRoomService {
 
     @Transactional(readOnly = true)
     public ChatRoomInfoDto findChatRoom(Long chatroomId, Long memberId) {
-        ChatRoom chatRoom = getChatRoom(chatroomId);
-        validateParticipant(memberId, chatRoom);
+        ChatRoom chatRoom = getAccessibleChatRoom(chatroomId, memberId);
 
         Reservation reservation = getReservation(chatRoom);
         validateReservationStatus(reservation);
@@ -83,6 +83,13 @@ public class ChatRoomService {
                 opponentName,
                 chatRoom.getStatus()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public ChatRoom getAccessibleChatRoom(Long chatroomId, Long memberId) {
+        ChatRoom chatRoom = getChatRoom(chatroomId);
+        validateParticipant(memberId, chatRoom);
+        return chatRoom;
     }
 
     private ChatRoom getChatRoom(Long chatroomId) {
@@ -146,7 +153,9 @@ public class ChatRoomService {
 
     @Transactional(readOnly = true)
     public List<ChatRoom> findAllByMemberId(Long memberId) {
-        return chatRoomRepository.findAllByMenteeIdOrMentorId(memberId, memberId);
+        List<ChatRoom> chatRooms = new ArrayList<>(chatRoomRepository.findAllByMenteeId(memberId));
+        chatRooms.addAll(chatRoomRepository.findAllByMentorIdAndMenteeIdNot(memberId, memberId));
+        return chatRooms;
     }
 
     public List<Long> getOpponentIds(Long memberId, List<ChatRoom> chatRooms) {

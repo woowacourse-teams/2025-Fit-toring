@@ -13,10 +13,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -46,30 +42,6 @@ public class CustomChatMessageRepositoryImpl implements CustomChatMessageReposit
             nextCursorCode = getNextCursorCode(nextChatMessage);
         }
         return new ChatMessagePaginationResultDto(rows, nextCursorCode, hasNext);
-    }
-
-    @Override
-    public Map<Long, ChatMessage> findAllLastMessagesByRoomIds(List<Long> chatRoomIds) {
-        if (chatRoomIds == null || chatRoomIds.isEmpty()){
-            return Map.of();
-        }
-
-        List<Long> lastMessageIds = jpaQueryFactory
-                .select(chatMessage.id.max())
-                .from(chatMessage)
-                .where(chatMessage.chatRoomId.in(chatRoomIds))
-                .groupBy(chatMessage.chatRoomId)
-                .fetch();
-
-        List<ChatMessage> lastMessages = jpaQueryFactory
-                .selectFrom(chatMessage)
-                .where(chatMessage.id.in(lastMessageIds))
-                .fetch();
-
-        return lastMessages.stream()
-                .collect(Collectors.toMap(
-                        ChatMessage::getChatRoomId, Function.identity()
-                ));
     }
 
     private BooleanBuilder buildWhereCondition(Long chatRoomId, Cursor cursor) {

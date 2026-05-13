@@ -1,6 +1,6 @@
 import type { MentoringDetail } from '../../types/MentoringDetail';
 
-export const MENTORING_DETAIL: MentoringDetail = {
+export const MENTORING_DETAIL: Readonly<MentoringDetail> = {
   id: 1,
   mentorName: '김트레이너',
   ratingAverage: ' 3.7',

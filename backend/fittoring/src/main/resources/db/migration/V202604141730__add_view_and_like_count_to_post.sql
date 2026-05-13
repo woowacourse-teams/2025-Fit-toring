@@ -1,0 +1,3 @@
+ALTER TABLE post
+    ADD COLUMN view_count INT NOT NULL DEFAULT 0,
+    ADD COLUMN like_count INT NOT NULL DEFAULT 0;

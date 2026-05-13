@@ -34,8 +34,8 @@ jobs:
             sudo apt-get install -y netcat-openbsd
           fi
 
-      - name: Start MySQL containers with Docker Compose
-        run: docker compose -f ./docker-compose.yml up -d db-test
+      - name: Start test containers with Docker Compose
+        run: docker compose -f ./docker-compose.yml up -d db-test redis-test
 
       - name: Wait for Test MySQL
         run: |
@@ -46,6 +46,17 @@ jobs:
             sleep 2
           done
           echo "MySQL did not become ready in time" >&2
+          exit 1
+
+      - name: Wait for Test Redis
+        run: |
+          echo "Waiting for Test Redis..."
+          for i in {30..0}; do
+            nc -z localhost 6380 && echo "Test Redis is up!" && exit 0
+            echo "Still waiting for Redis..."
+            sleep 2
+          done
+          echo "Redis did not become ready in time" >&2
           exit 1
 
       - name: Set up JDK 21

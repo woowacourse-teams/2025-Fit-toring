@@ -10,7 +10,7 @@ interface MenuToggleButtonProps {
 function MenuToggleButton({ opened, onClick }: MenuToggleButtonProps) {
   return (
     <S_Container>
-      <S_Button onClick={onClick} opened={opened}>
+      <S_Button type="button" onClick={onClick} opened={opened}>
         <S_PlusIcon src={plusIcon} alt="메뉴 아이콘" />
       </S_Button>
     </S_Container>
@@ -43,7 +43,7 @@ const S_Button = styled.button<{ opened: boolean }>`
   cursor: pointer;
 
   background-color: ${({ theme }) => theme.SYSTEM.GRAY400};
-  transform: rotate(${(props) => (props.opened ? '45deg' : '0')});
+  transform: rotate(${({ opened }) => (opened ? '45deg' : '0')});
 
   transition: transform 0.3s ease-in-out;
   aspect-ratio: 1 / 1;

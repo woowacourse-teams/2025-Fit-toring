@@ -18,9 +18,7 @@ jobs:
     defaults:
       run:
         working-directory: backend/fittoring
-    outputs:
-      image_tag: ${{ steps.tags.outputs.dev_tag }}
-      sha_tag: ${{ steps.tags.outputs.sha_tag }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -34,8 +32,8 @@ jobs:
             sudo apt-get install -y netcat-openbsd
           fi
 
-      - name: Start MySQL containers with Docker Compose
-        run: docker compose -f ./docker-compose.yml up -d db-test
+      - name: Start test containers with Docker Compose
+        run: docker compose -f ./docker-compose.yml up -d db-test redis-test
 
       - name: Wait for Test MySQL
         run: |
@@ -43,6 +41,15 @@ jobs:
           for i in {30..0}; do
             nc -z localhost 3307 && echo "Test MySQL is up!" && break
             echo "Still waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Wait for Test Redis
+        run: |
+          echo "Waiting for Test Redis..."
+          for i in {30..0}; do
+            nc -z localhost 6380 && echo "Test Redis is up!" && break
+            echo "Still waiting for Redis..."
             sleep 2
           done
 
@@ -103,16 +110,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: clean
+      - name: Clean
         run: ./gradlew clean
 
       - name: Build Admin Page (back-office)
         run: |
           cd ../back-office
-          npm install
+          npm ci
           npm run build
 
-      - name: generate API docs
+      - name: Generate API docs
         run: ./gradlew generateApiDocs
 
       - name: Build jar
@@ -128,14 +135,31 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Setup Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set tags
+      - name: Compute tags
         id: tags
+        shell: bash
         run: |
-          echo "dev_tag=dev" >> $GITHUB_OUTPUT
-          echo "sha_tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          SHORT_SHA="$(echo "$GITHUB_SHA" | cut -c1-7)"
+          DEV_TAG="dev"
+          DEV_SHA_TAG="dev-sha-$SHORT_SHA"
+          STG_TAG="stg"
+          STG_SHA_TAG="stg-sha-$SHORT_SHA"
+
+          echo "dev_tag=$DEV_TAG" >> "$GITHUB_OUTPUT"
+          echo "dev_sha_tag=$DEV_SHA_TAG" >> "$GITHUB_OUTPUT"
+          echo "stg_tag=$STG_TAG" >> "$GITHUB_OUTPUT"
+          echo "stg_sha_tag=$STG_SHA_TAG" >> "$GITHUB_OUTPUT"
+
+          echo "[INFO] dev_tag=$DEV_TAG"
+          echo "[INFO] dev_sha_tag=$DEV_SHA_TAG"
+          echo "[INFO] stg_tag=$STG_TAG"
+          echo "[INFO] stg_sha_tag=$STG_SHA_TAG"
 
       - name: Build & Push
         uses: docker/build-push-action@v6
@@ -146,9 +170,22 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_tag }}
-            ${{ env.IMAGE }}:${{ steps.tags.outputs.sha_tag }}
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.dev_sha_tag }}
           cache-from: type=registry,ref=${{ env.IMAGE }}:cache
           cache-to: type=registry,ref=${{ env.IMAGE }}:cache,mode=max
+
+      - name: Build & Push ARM only (stg)
+        uses: docker/build-push-action@v6
+        with:
+          context: backend/fittoring
+          file: backend/fittoring/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.stg_tag }}
+            ${{ env.IMAGE }}:${{ steps.tags.outputs.stg_sha_tag }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:cache-arm64
+          cache-to: type=registry,ref=${{ env.IMAGE }}:cache-arm64,mode=max
 
   deploy-dev:
     if: github.event_name == 'push'
@@ -158,17 +195,47 @@ jobs:
       - dev
       - X64 # AMD64 아키텍처를 사용하는 런너에서만 실행
     env:
-      IMAGE: fittoring/fittoring   
-      TAG: ${{ needs.build-and-push.outputs.image_tag }}
+      IMAGE: fittoring/fittoring
       PROFILE: dev
+      APP_DIR: /home/ubuntu/fittoring
+      PROXY_SERVER_NAME: 'devapi.fittoring.com'
+
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute deploy tag
+        shell: bash
+        run: |
+          SHORT_SHA="$(echo "$GITHUB_SHA" | cut -c1-7)"
+          echo "TAG=dev-sha-$SHORT_SHA" >> "$GITHUB_ENV"
+          echo "[INFO] Computed TAG=dev-sha-$SHORT_SHA"
+
+      - name: Debug deploy env
+        run: |
+          echo "IMAGE=$IMAGE"
+          echo "TAG=$TAG"
+          echo "PROFILE=$PROFILE"
+          echo "APP_DIR=$APP_DIR"
+          echo "PROXY_SERVER_NAME=$PROXY_SERVER_NAME"
+
       - name: Docker login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        
-      - name: Run deploy script   
+
+      - name: Sync deploy assets
+        shell: bash
+        run: |
+          mkdir -p "${APP_DIR}"
+          cp backend/fittoring/docker-compose.yml "${APP_DIR}/docker-compose.prod.yml"
+          cp backend/fittoring/docker-compose.dev.yml "${APP_DIR}/docker-compose.dev.yml"
+          cp backend/fittoring/docker-compose.dev.yml "${APP_DIR}/docker-compose.yml"
+          mkdir -p "${APP_DIR}/proxy/nginx/conf.d"
+          cp backend/fittoring/proxy/nginx/conf.d/fittoring.conf.template "${APP_DIR}/proxy/nginx/conf.d/fittoring.conf.template"
+
+      - name: Run deploy script
+        shell: bash
         run: |
           cd /home/ubuntu
-          IMAGE="${IMAGE}" TAG="${TAG}" PROFILE="${PROFILE}" ./deploy-be.sh
+          IMAGE="$IMAGE" TAG="$TAG" PROFILE="$PROFILE" PROXY_SERVER_NAME="$PROXY_SERVER_NAME" ./deploy-be.sh
 
   test-report:
     if: failure()

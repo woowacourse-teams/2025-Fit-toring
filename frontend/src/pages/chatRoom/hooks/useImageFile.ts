@@ -10,9 +10,7 @@ const useImageFile = () => {
       return;
     }
 
-    const file = e.target.files[0];
-
-    setSelectedImage(file);
+    setSelectedImage(e.target.files[0]);
     e.target.value = '';
   }, []);
 

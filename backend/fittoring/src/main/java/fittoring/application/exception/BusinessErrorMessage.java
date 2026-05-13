@@ -57,6 +57,15 @@ public enum BusinessErrorMessage {
     ALREADY_REGISTERED_DEVICE("이미 등록된 기기입니다."),
     CHAT_ROOM_RESERVATION_INTEGRITY_EXCEPTION("채팅방에 연결된 예약 정보가 존재하지 않습니다."),
     CHAT_ROOM_OPPONENT_NAME_INTEGRITY_EXCEPTION("채팅방에 연결된 상대 이름 정보가 존재하지 않습니다."),
+    POST_NOT_FOUND("존재하지 않는 게시글입니다."),
+    COMMENT_NOT_FOUND("존재하지 않는 댓글입니다."),
+    GUEST_PASSWORD_MISMATCH("비밀번호가 일치하지 않습니다."),
+    COMMENT_NOT_BELONG_TO_POST("해당 게시글에 속하지 않는 댓글입니다."),
+    INVALID_COMMENT_REPLY("대댓글은 rootId와 parentId가 모두 필요합니다."),
+    GUEST_NICKNAME_REQUIRED("비회원은 닉네임을 입력해주세요"),
+    GUEST_PASSWORD_REQUIRED("비회원은 비밀번호를 입력해주세요"),
+    LIKE_ACTOR_ID_INVALID("올바르지 않은 좋아요 식별자입니다."),
+    LIKE_ACTOR_KEY_HASH_INVALID("올바르지 않은 좋아요 식별자 해시입니다."),
     ;
 
     private final String message;

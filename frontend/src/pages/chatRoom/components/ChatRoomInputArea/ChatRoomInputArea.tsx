@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 
 import albumIcon from '../../../../common/assets/images/albumIcon.svg';
-import InputSection from '../InputSection/InputSection';
+import InputWithSubmitButton from '../../../../common/components/InputWithSubmitButton/InputWithSubmitButton';
 import MenuToggleButton from '../MenuToggleButton/MenuToggleButton';
 
 interface ChatRoomInputAreaProps {
   value: string;
+  placeholder: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -15,6 +16,7 @@ interface ChatRoomInputAreaProps {
 
 function ChatRoomInputArea({
   value,
+  placeholder,
   onChange,
   onSubmit,
   onImageChange,
@@ -25,11 +27,21 @@ function ChatRoomInputArea({
     setMenuOpened((prev) => !prev);
   };
 
+  const handleImageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onImageChange(e);
+    setMenuOpened(false);
+  };
+
   return (
     <>
       <S_InputWrapper>
         <MenuToggleButton opened={menuOpened} onClick={handleToggleMenuClick} />
-        <InputSection value={value} onChange={onChange} onSubmit={onSubmit} />
+        <InputWithSubmitButton
+          value={value}
+          placeholder={placeholder}
+          onChange={onChange}
+          onSubmit={onSubmit}
+        />
       </S_InputWrapper>
       {menuOpened && (
         <S_MenuPanel>
@@ -38,7 +50,7 @@ function ChatRoomInputArea({
               <S_HiddenInput
                 type="file"
                 accept="image/*"
-                onChange={onImageChange}
+                onChange={handleImageInputChange}
               />
               <S_AlbumIcon src={albumIcon} alt="앨범" />
             </S_MenuItemLabel>
@@ -54,6 +66,10 @@ export default ChatRoomInputArea;
 
 const S_InputWrapper = styled.div`
   display: flex;
+
+  > form {
+    flex: 1;
+  }
 `;
 
 const S_MenuPanel = styled.div`

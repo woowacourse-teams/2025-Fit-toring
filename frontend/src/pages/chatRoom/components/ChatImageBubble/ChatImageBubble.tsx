@@ -20,12 +20,12 @@ function ChatImageBubble({
     <S_Container authored={authored}>
       <S_BubbleWrapper authored={authored}>
         <S_Bubble authored={authored}>
-          <S_Image authored={authored} src={content} />
+          <S_Image src={content} alt="채팅 이미지" />
         </S_Bubble>
         <S_Temp authored={authored}>
           {status === 'fail' ? (
             <S_RetryInfoWrapper>
-              <S_RetryIcon src={warningIcon} />
+              <S_RetryIcon src={warningIcon} alt="" />
               <S_RetryText>전송실패</S_RetryText>
             </S_RetryInfoWrapper>
           ) : null}
@@ -86,7 +86,7 @@ const S_Temp = styled.div<Pick<ChatImageBubbleProps, 'authored'>>`
   align-items: ${({ authored }) => (authored ? 'flex-end' : 'flex-start')};
 `;
 
-const S_Image = styled.img<Pick<ChatImageBubbleProps, 'authored'>>`
+const S_Image = styled.img`
   height: 15rem;
   max-width: 15rem;
 

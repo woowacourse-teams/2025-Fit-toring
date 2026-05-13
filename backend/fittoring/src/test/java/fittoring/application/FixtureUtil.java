@@ -5,6 +5,7 @@ import fittoring.domain.model.CertificateType;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatMessageType;
 import fittoring.domain.model.ChatRoom;
+import fittoring.domain.model.Comment;
 import fittoring.domain.model.Device;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
@@ -14,13 +15,11 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.MemberRole;
 import fittoring.domain.model.Mentoring;
 import fittoring.domain.model.Phone;
-import fittoring.domain.model.PhoneVerification;
+import fittoring.domain.model.Post;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Review;
 import fittoring.domain.model.Status;
 import fittoring.domain.model.password.Password;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public class FixtureUtil {
 
@@ -111,6 +110,30 @@ public class FixtureUtil {
         return new Review(5, "좋았습니다.", reservation, reviewer);
     }
 
+    public static Post testMemberPost(Member member) {
+        return Post.forMember(member, "게시글 제목", "게시글 본문", false, member.getName());
+    }
+
+    public static Post testGuestPost() {
+        return Post.forGuest("게시글 제목", "게시글 본문", "비회원", "1234");
+    }
+
+    public static Comment testGuestComment(Post post) {
+        return Comment.forGuest(post, "댓글 내용", "비회원", "1234", null, null);
+    }
+
+    public static Comment testGuestComment(Post post, String content) {
+        return Comment.forGuest(post, content, "비회원", "1234", null, null);
+    }
+
+    public static Comment testGuestReplyComment(Post post, Long rootId, Long parentId) {
+        return Comment.forGuest(post, "대댓글 내용", "비회원", "1234", rootId, parentId);
+    }
+
+    public static Comment testMemberComment(Post post, Member member, String content) {
+        return Comment.forMember(post, member, content, false, member.getName(), null, null);
+    }
+
     public static Image testImageForMentoringProfileDefault(Mentoring mentoring) {
         return new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, ImageVariant.DEFAULT, mentoring.getId(),
                 "baseName");
@@ -129,15 +152,12 @@ public class FixtureUtil {
         );
     }
 
-    public static PhoneVerification testVerifiedPhoneVerification(Phone phone) {
-        PhoneVerification phoneVerification = new PhoneVerification(
-                phone,
-                "123456",
-                LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-                        .plusMinutes(15)
-        );
-        phoneVerification.verify();
-        return phoneVerification;
+    public static void saveVerifiedPhoneVerification(
+            fittoring.application.auth.repository.PhoneVerificationRepository repository,
+            Phone phone
+    ) {
+        repository.save(phone.getNumber(), "123456", 900);
+        repository.markVerified(phone.getNumber());
     }
 
     public static Device testDevices(Member member) {

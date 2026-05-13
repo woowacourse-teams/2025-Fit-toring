@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 
 import BottomTabLayout from './common/components/BottomTabLayout/BottomTabLayout';
+import ChannelTalkProvider from './common/components/ChannelTalkProvider/ChannelTalkProvider';
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
 import { PAGE_URL } from './common/constants/url';
 import ChatRooms from './pages/chatRooms/ChatRooms';
@@ -32,20 +33,38 @@ const CreatedMentoring = lazy(
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
 const ChatRoom = lazy(() => import('./pages/chatRoom/ChatRoom'));
+const CommunityPostDetail = lazy(
+  () => import('./pages/communityPostDetail/CommunityPostDetail'),
+);
 const IdentityVerification = lazy(
   () => import('./pages/identityVerification/IdentityVerification'),
+);
+const Community = lazy(() => import('./pages/community/Community'));
+const CommunityPostCreate = lazy(
+  () => import('./pages/communityPostCreate/CommunityPostCreate'),
+);
+const CommunityPostUpdate = lazy(
+  () => import('./pages/communityPostUpdate/CommunityPostUpdate'),
 );
 
 const router = createBrowserRouter([
   {
-    element: <MobileLayout />,
+    element: (
+      <>
+        <MobileLayout />
+      </>
+    ),
     children: [
       {
         element: <BottomTabLayout />,
         children: [
           {
             path: PAGE_URL.HOME,
-            element: <Home />,
+            element: (
+              <ChannelTalkProvider>
+                <Home />
+              </ChannelTalkProvider>
+            ),
             loader: () => {
               const firstVisited = !sessionStorage.getItem('hasVisited');
 
@@ -78,6 +97,14 @@ const router = createBrowserRouter([
               },
             ],
           },
+          {
+            path: PAGE_URL.COMMUNITY,
+            element: <Community />,
+          },
+          {
+            path: `${PAGE_URL.COMMUNITY}/:postId`,
+            element: <CommunityPostDetail />,
+          },
         ],
       },
       { path: PAGE_URL.LANDING, element: <Landing /> },
@@ -97,6 +124,14 @@ const router = createBrowserRouter([
       {
         path: PAGE_URL.IDENTITY_VERIFICATION,
         element: <IdentityVerification />,
+      },
+      {
+        path: PAGE_URL.COMMUNITY_CREATE,
+        element: <CommunityPostCreate />,
+      },
+      {
+        path: `${PAGE_URL.COMMUNITY}/:postId${PAGE_URL.EDIT}`,
+        element: <CommunityPostUpdate />,
       },
     ],
   },

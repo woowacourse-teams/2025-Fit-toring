@@ -10,16 +10,11 @@ import styled from '@emotion/styled';
 import { Client } from '@stomp/stompjs';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import SockJS from 'sockjs-client';
 
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
 import { PAGE_URL } from '../../common/constants/url';
 import useS3Upload from '../../common/hooks/useS3Upload';
-import {
-  hideChannelTalk,
-  showChannelTalk,
-} from '../../common/utils/channelTalk';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
@@ -33,12 +28,18 @@ import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
 import useImageFile from './hooks/useImageFile';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
+import usePersistPendingMessages, {
+  readPersistedMessages,
+} from './hooks/usePersistPendingMessages';
 import useScrollToBottomOnMessageSend from './hooks/useScrollToBottomOnMessageSend';
 import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
+import { mergeMessages } from './utils/mergeMessages';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
 import type { ImageMessage, Message, TextMessage } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
+
+const IN_FLIGHT_TIMEOUT_MS = 10000;
 
 function ChatRoom() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ function ChatRoom() {
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesRef = useRef<Message[]>([]);
   const [message, setMessage] = useState('');
+  const [imageSending, setImageSending] = useState(false);
 
   const { chatRoomId } = useParams();
 
@@ -99,6 +101,94 @@ function ChatRoom() {
     isFetchingNextPage: false,
   });
 
+  const persistPendingMessages = usePersistPendingMessages(
+    chatRoomId,
+    messages,
+  );
+
+  const outgoingQueueRef = useRef<Message[]>([]);
+  const inFlightRef = useRef<Message | null>(null);
+  const inFlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearInFlightTimeout = useCallback(() => {
+    if (inFlightTimeoutRef.current) {
+      clearTimeout(inFlightTimeoutRef.current);
+      inFlightTimeoutRef.current = null;
+    }
+  }, []);
+
+  const flushOutgoingQueue = useCallback(() => {
+    const client = stompClientRef.current;
+    if (!client || !client.connected || !chatRoomId) {
+      return;
+    }
+
+    if (inFlightRef.current) {
+      return;
+    }
+
+    const nextMessage = outgoingQueueRef.current.shift();
+    if (!nextMessage) {
+      return;
+    }
+    if (nextMessage.tempId === null) {
+      flushOutgoingQueue();
+      return;
+    }
+
+    inFlightRef.current = nextMessage;
+    clearInFlightTimeout();
+
+    inFlightTimeoutRef.current = setTimeout(() => {
+      const currentInFlight = inFlightRef.current;
+      if (!currentInFlight || currentInFlight.tempId !== nextMessage.tempId) {
+        return;
+      }
+
+      setMessages((prev) => {
+        const nextMessages = prev.map((msg) => {
+          if (msg.tempId === nextMessage.tempId) {
+            return {
+              ...msg,
+              status: 'fail' as const,
+              phase: 'normal' as const,
+            };
+          }
+          return msg;
+        });
+        persistPendingMessages(nextMessages);
+        return nextMessages;
+      });
+
+      inFlightRef.current = null;
+      flushOutgoingQueue();
+    }, IN_FLIGHT_TIMEOUT_MS);
+
+    client.publish({
+      destination: `/app/chatroom/${chatRoomId}`,
+      body: JSON.stringify({
+        content:
+          nextMessage.messageType === MESSAGE_TYPE.IMAGE
+            ? nextMessage.originalImageUrl
+            : nextMessage.content,
+        tempId: nextMessage.tempId,
+        messageType: nextMessage.messageType,
+      }),
+    });
+  }, [chatRoomId, clearInFlightTimeout, persistPendingMessages]);
+
+  const enqueueOutgoing = useCallback(
+    (nextMessages: Message[]) => {
+      if (nextMessages.length === 0) {
+        return;
+      }
+
+      outgoingQueueRef.current = [...outgoingQueueRef.current, ...nextMessages];
+      flushOutgoingQueue();
+    },
+    [flushOutgoingQueue],
+  );
+
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
@@ -145,8 +235,18 @@ function ChatRoom() {
     }
   }, [listElRef, messages]);
 
-  const firstId = messages[0]?.chatMessageId ?? null;
-  const lastId = messages[messages.length - 1]?.chatMessageId ?? null;
+  const firstMessage = messages[0];
+  const lastMessage = messages[messages.length - 1];
+  const firstId =
+    firstMessage?.chatMessageId ??
+    firstMessage?.messageId ??
+    firstMessage?.tempId ??
+    null;
+  const lastId =
+    lastMessage?.chatMessageId ??
+    lastMessage?.messageId ??
+    lastMessage?.tempId ??
+    null;
 
   const { capturePrevScroll } = useScrollToBottomOnMessageSend({
     firstId,
@@ -154,10 +254,12 @@ function ChatRoom() {
     listElRef,
   });
 
+  const isReconnectPendingRef = useRef(false);
+
   const handleMessageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (message === '') {
+    if (message === '' || memberId === null) {
       return;
     }
 
@@ -170,41 +272,48 @@ function ChatRoom() {
       content: message,
       createdAt: new Date().toString(),
       chatRoomId: Number(chatRoomId),
-      chatMessageId: tempId,
       tempId,
       status: 'pending' as const,
       messageType: MESSAGE_TYPE.TEXT,
-      originalImageUrl: null,
       thumbnailUrl: null,
+      originalImageUrl: null,
+      phase: 'normal',
     };
+
+    if (isReconnectPendingRef.current) {
+      const reconnectMsg = {
+        ...optimisticMsg,
+        phase: 'during-reconnect' as const,
+      };
+
+      setMessages((prev) => [...prev, reconnectMsg]);
+      setMessage('');
+      return;
+    }
 
     setMessages((prev) => [...prev, optimisticMsg]);
     setMessage('');
 
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
-
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({ content: message, tempId, messageType: 'TEXT' }),
-    });
+    enqueueOutgoing([optimisticMsg]);
   };
 
   useEffect(() => {
     if (chatRoomMessage) {
-      setMessages(chatRoomMessage.pages.flatMap((page) => page.chatMessages));
+      const serverMessages = chatRoomMessage.pages.flatMap(
+        (page) => page.chatMessages,
+      );
+      if (!chatRoomId) {
+        setMessages(serverMessages);
+        return;
+      }
+
+      const persistedMessages = readPersistedMessages();
+      const roomMessages = persistedMessages[chatRoomId] ?? [];
+      console.log('서버에서 불러온 메시지:', serverMessages);
+      console.log('지속된 메시지:', roomMessages);
+      setMessages(mergeMessages(serverMessages, roomMessages));
     }
-  }, [chatRoomMessage]);
-
-  useEffect(() => {
-    hideChannelTalk();
-
-    return () => {
-      showChannelTalk();
-    };
-  }, []);
+  }, [chatRoomId, chatRoomMessage]);
 
   const {
     data: chatRoomInfoData,
@@ -226,16 +335,76 @@ function ChatRoom() {
 
   const isRefreshingRef = useRef(false);
 
+  const { selectedImage, handleImageChange, cancelImageSelection } =
+    useImageFile();
+
+  const { uploadFile } = useS3Upload();
+
+  const handleImageSend = async () => {
+    if (!selectedImage || memberId === null || imageSending) {
+      return;
+    }
+
+    const file = selectedImage;
+
+    setImageSending(true);
+    const { uploadedUrl } = await uploadFile(file, 'CHAT');
+    setImageSending(false);
+
+    if (!uploadedUrl) {
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      return;
+    }
+
+    cancelImageSelection();
+    capturePrevScroll();
+
+    const tempId = Date.now();
+
+    const optimisticMsg: ImageMessage = {
+      senderId: Number(memberId),
+      content: null,
+      createdAt: new Date().toString(),
+      chatRoomId: Number(chatRoomId),
+      tempId,
+      status: 'pending' as const,
+      messageType: MESSAGE_TYPE.IMAGE,
+      thumbnailUrl: uploadedUrl,
+      originalImageUrl: uploadedUrl,
+      phase: 'normal',
+    };
+
+    if (isReconnectPendingRef.current) {
+      const reconnectMsg = {
+        ...optimisticMsg,
+        phase: 'during-reconnect' as const,
+      };
+
+      setMessages((prev) => [...prev, reconnectMsg]);
+      return;
+    }
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    enqueueOutgoing([optimisticMsg]);
+  };
+
   useEffect(() => {
+    const apiBaseUrl = process.env.API_BASE_URL ?? '';
+    const wsBaseUrl = apiBaseUrl.replace(/^http/, 'ws');
+    const wsChatUrl = `${wsBaseUrl}/ws-chat`;
+
     const client = new Client({
       webSocketFactory: () => {
-        console.log('[sockjs] webSocketFactory called');
-
-        return new SockJS(`${process.env.API_BASE_URL}/ws-chat`, null, {
-          withCredentials: true,
-        });
+        console.log('[WebSocket] webSocketFactory called');
+        return new WebSocket(wsChatUrl);
       },
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
+      reconnectDelay: 5000,
       onStompError: async (frame) => {
+        console.error('STOMP error:', frame);
+        persistPendingMessages();
+
         const parsedBody = JSON.parse(frame.body);
 
         if (parsedBody.code === 'TOKEN_EXPIRED') {
@@ -244,6 +413,22 @@ function ChatRoom() {
           }
 
           isRefreshingRef.current = true;
+          isReconnectPendingRef.current = true;
+          inFlightRef.current = null;
+          clearInFlightTimeout();
+
+          setMessages((prev) =>
+            prev.map((msg) => {
+              if (msg.status !== 'pending') {
+                return msg;
+              }
+              if (msg.phase === 'during-reconnect') {
+                return msg;
+              }
+
+              return { ...msg, phase: 'before-refresh' };
+            }),
+          );
 
           try {
             await postReissue();
@@ -251,9 +436,9 @@ function ChatRoom() {
             if (client.active) {
               await client.deactivate();
             }
-
             client.activate();
           } catch (e) {
+            isReconnectPendingRef.current = false;
             navigate(PAGE_URL.LOGIN);
             console.error('토큰 재발급 실패:', e);
           } finally {
@@ -262,18 +447,32 @@ function ChatRoom() {
         }
       },
 
-      onWebSocketError: (e) => console.error('WebSocket error:', e),
-      reconnectDelay: 5000,
+      onWebSocketError: (e) => {
+        persistPendingMessages();
+
+        console.error('WebSocket error:', e);
+      },
       onConnect: () => {
         client.subscribe(
           `/topic/chatroom/${chatRoomId}`,
           (message: IMessage) => {
             capturePrevScroll();
 
-            const parsedMessage = JSON.parse(message.body);
+            const parsedMessage = JSON.parse(message.body) as Message;
+            if (parsedMessage.tempId !== null) {
+              const currentInFlight = inFlightRef.current;
+              if (
+                currentInFlight &&
+                Number(currentInFlight.tempId) === Number(parsedMessage.tempId)
+              ) {
+                inFlightRef.current = null;
+                clearInFlightTimeout();
+                flushOutgoingQueue();
+              }
+            }
 
             setMessages((prev) => {
-              if (parsedMessage.tempId) {
+              if (parsedMessage.tempId !== null) {
                 const index = prev.findIndex(
                   (m) => Number(m.tempId) === Number(parsedMessage.tempId),
                 );
@@ -281,22 +480,41 @@ function ChatRoom() {
                   const newArr = [...prev];
                   newArr[index] = {
                     ...parsedMessage,
-                    status: 'success',
+                    status: 'success' as const,
+                    phase: 'normal' as const,
                   };
+                  persistPendingMessages(newArr);
                   return newArr;
                 }
               }
 
-              const exists = prev.some(
-                (m) =>
-                  m.chatMessageId &&
-                  m.chatMessageId === parsedMessage.chatMessageId,
-              );
+              const exists = prev.some((m) => {
+                if (
+                  parsedMessage.chatMessageId &&
+                  m.chatMessageId === parsedMessage.chatMessageId
+                ) {
+                  return true;
+                }
+
+                return !!(
+                  parsedMessage.messageId &&
+                  m.messageId === parsedMessage.messageId
+                );
+              });
               if (exists) {
                 return prev;
               }
 
-              return [...prev, { ...parsedMessage, status: 'success' }];
+              const nextMessages = [
+                ...prev,
+                {
+                  ...parsedMessage,
+                  status: 'success' as const,
+                  phase: 'normal' as const,
+                },
+              ];
+              persistPendingMessages(nextMessages);
+              return nextMessages;
             });
           },
         );
@@ -305,32 +523,59 @@ function ChatRoom() {
           const parsedErrorMessage = JSON.parse(message.body);
 
           setMessages((prev) => {
-            return prev.map((message) => {
-              if (message.tempId === parsedErrorMessage.tempId) {
-                return { ...message, status: 'fail' };
+            const nextMessages = prev.map((msg) => {
+              if (msg.tempId === parsedErrorMessage.tempId) {
+                return {
+                  ...msg,
+                  status: 'fail' as const,
+                  phase: 'normal' as const,
+                };
               }
-              return message;
+              return msg;
             });
+            persistPendingMessages(nextMessages);
+            return nextMessages;
           });
+
+          const currentInFlight = inFlightRef.current;
+          if (
+            currentInFlight &&
+            Number(currentInFlight.tempId) === Number(parsedErrorMessage.tempId)
+          ) {
+            inFlightRef.current = null;
+            clearInFlightTimeout();
+            flushOutgoingQueue();
+          }
         });
 
-        const pendingMessages = messagesRef.current.filter(
-          (m) => m.status === 'pending',
+        const pendingToResend = messagesRef.current.filter(
+          (msg) => msg.status === 'pending' && msg.phase !== 'normal',
+        );
+        const merged = [...outgoingQueueRef.current, ...pendingToResend];
+        const seen = new Set<number>();
+        const deduped: Message[] = [];
+
+        for (const msg of merged) {
+          if (msg.tempId === null) {
+            continue;
+          }
+          if (seen.has(msg.tempId)) {
+            continue;
+          }
+          seen.add(msg.tempId);
+          deduped.push(msg);
+        }
+
+        deduped.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         );
 
-        pendingMessages.forEach((msg) => {
-          client.publish({
-            destination: `/app/chatroom/${chatRoomId}`,
-            body: JSON.stringify({
-              content:
-                msg.messageType === MESSAGE_TYPE.IMAGE
-                  ? msg.originalImageUrl
-                  : msg.content,
-              tempId: msg.tempId,
-              messageType: msg.messageType,
-            }),
-          });
-        });
+        outgoingQueueRef.current = deduped;
+
+        flushOutgoingQueue();
+
+        isReconnectPendingRef.current = false;
       },
     });
 
@@ -341,60 +586,6 @@ function ChatRoom() {
       client.deactivate();
     };
   }, [capturePrevScroll, chatRoomId, navigate]);
-
-  const { selectedImage, handleImageChange, cancelImageSelection } =
-    useImageFile();
-
-  const { uploadFile } = useS3Upload();
-
-  const handleImageSend = async () => {
-    if (!selectedImage) {
-      return;
-    }
-
-    const file = selectedImage;
-    cancelImageSelection();
-
-    const { uploadedUrl } = await uploadFile(file, 'CHAT');
-
-    if (!uploadedUrl) {
-      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
-      return;
-    }
-
-    capturePrevScroll();
-
-    const tempId = Date.now();
-
-    const optimisticMsg: ImageMessage = {
-      senderId: Number(memberId),
-      content: null,
-      createdAt: new Date().toString(),
-      chatRoomId: Number(chatRoomId),
-      chatMessageId: tempId,
-      tempId,
-      status: 'pending' as const,
-      messageType: MESSAGE_TYPE.IMAGE,
-      originalImageUrl: uploadedUrl,
-      thumbnailUrl: uploadedUrl,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-
-    const client = stompClientRef.current;
-    if (!client || !client.connected || memberId === null) {
-      return;
-    }
-
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({
-        content: uploadedUrl,
-        tempId,
-        messageType: MESSAGE_TYPE.IMAGE,
-      }),
-    });
-  };
 
   if (error?.status === 403) {
     return <ChatRoomForbidden />;
@@ -436,6 +627,7 @@ function ChatRoom() {
       />
       <ChatRoomInputArea
         value={message}
+        placeholder="메시지를 입력하세요"
         onChange={handleChange}
         onSubmit={handleMessageSubmit}
         onImageChange={handleImageChange}
@@ -446,6 +638,7 @@ function ChatRoom() {
           selectedImage={selectedImage}
           onSend={handleImageSend}
           onCancel={cancelImageSelection}
+          sending={imageSending}
         />
       )}
     </S_Container>

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -10,6 +10,7 @@ import Button from '../../common/components/Button/Button';
 import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
+import useInfiniteScroll from '../../common/hooks/useInfiniteScroll';
 import useNotification from '../../common/hooks/useNotification';
 import { THEME } from '../../common/styles/theme';
 
@@ -20,7 +21,6 @@ import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
-import useInfiniteScroll from './hooks/useInfiniteScroll';
 import useMentorList from './hooks/useMentorList';
 import useModal from './hooks/useModal';
 import useMyMentoringId from './hooks/useMyMentoringId';
@@ -73,6 +73,16 @@ function Home() {
     isLoading,
   } = useMentorList();
 
+  const initialSortKeyRef = useRef(sortKey);
+
+  useEffect(() => {
+    const fetchInitialMentorList = async () => {
+      await fetchInitialMentors([], initialSortKeyRef.current);
+    };
+
+    fetchInitialMentorList();
+  }, [fetchInitialMentors]);
+
   const handleSortButtonClick = async (option: SortKey) => {
     changeSortKey(option);
 
@@ -117,10 +127,10 @@ function Home() {
     await fetchMoreMentors(selectedSpecialties, sortKey, cursorCode);
   }, [cursorCode, fetchMoreMentors, selectedSpecialties, sortKey]);
 
-  const { elementRef } = useInfiniteScroll<HTMLLIElement>(
-    fetchNextPage,
-    hasNext,
-  );
+  const { targetRef } = useInfiniteScroll<HTMLLIElement>({
+    isReady: hasNext && !isLoading,
+    onIntersect: fetchNextPage,
+  });
 
   useAuthCheck();
 
@@ -169,7 +179,7 @@ function Home() {
             mentorList={mentorList}
             hasFilter={selectedSpecialties.length > 0}
           />
-          <S_Trigger ref={elementRef} />
+          <S_Trigger ref={targetRef} />
         </MentorCardList>
       </S_Contents>
       {/* <Footer>

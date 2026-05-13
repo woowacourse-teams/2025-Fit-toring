@@ -1,6 +1,6 @@
 import type { Specialty } from '../../types/Specialty';
 
-export const SPECIALTIES: Specialty[] = [
+export const SPECIALTIES: ReadonlyArray<Specialty> = [
   {
     id: 5,
     title: '근력 강화',
@@ -41,4 +41,4 @@ export const SPECIALTIES: Specialty[] = [
     id: 6,
     title: '홈 트레이닝',
   },
-] as const;
+];

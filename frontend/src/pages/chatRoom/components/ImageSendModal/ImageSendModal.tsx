@@ -7,14 +7,16 @@ import Modal from '../../../../common/components/Modal/Modal';
 
 interface ImageSendModalProps {
   selectedImage: File;
-  onSend: () => void;
+  onSend: () => void | Promise<void>;
   onCancel: () => void;
+  sending?: boolean;
 }
 
 function ImageSendModal({
   selectedImage,
   onSend,
   onCancel,
+  sending = false,
 }: ImageSendModalProps) {
   const [previewUrl, setPreviewUrl] = useState('');
 
@@ -28,16 +30,16 @@ function ImageSendModal({
   }, [selectedImage]);
 
   return (
-    <Modal opened={true} onCloseClick={onCancel}>
+    <Modal opened={true} onCloseClick={sending ? () => {} : onCancel}>
       <S_Container>
         <S_Title>파일 전송</S_Title>
         {previewUrl && <S_Preview src={previewUrl} alt="미리보기" />}
         <S_ButtonWrapper>
-          <S_CancelButton onClick={onCancel} size="full">
+          <S_CancelButton onClick={onCancel} size="full" disabled={sending}>
             취소
           </S_CancelButton>
-          <S_SendButton onClick={onSend} size="full">
-            전송
+          <S_SendButton onClick={onSend} size="full" disabled={sending}>
+            {sending ? '전송 중' : '전송'}
           </S_SendButton>
         </S_ButtonWrapper>
       </S_Container>

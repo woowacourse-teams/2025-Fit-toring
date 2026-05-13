@@ -1,0 +1,5 @@
+ALTER TABLE image
+    ADD COLUMN `key` TEXT NULL;
+
+ALTER TABLE image
+    MODIFY COLUMN url TEXT NULL;

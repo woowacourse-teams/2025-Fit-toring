@@ -55,7 +55,7 @@ class AdminCertificateServiceTest extends IntegrationTestSupport {
                 .willReturn(true);
     }
 
-    @DisplayName("상태가 없는 자격증명을 페이지네이션하여 반환한다.")
+    @DisplayName("상태가 없는 자격증명을 페이지네이션하여 반환한다")
     @Test
     void getAllCertificatesPaged() {
         // given

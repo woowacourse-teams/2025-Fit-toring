@@ -6,15 +6,18 @@ interface MessageDTO {
   createdAt: string;
   senderId: number;
   chatRoomId: number;
-  tempId: number;
+  tempId: number | null;
   messageType: MessageType;
-  thumbnailUrl: string | null;
-  originalImageUrl: string | null;
+  thumbnailUrl?: string | null;
+  originalImageUrl?: string | null;
+  // WebSocket 응답에서 받는 멱등키
+  messageId?: string;
   // 서버에서 받는 id
   chatMessageId?: number;
 
   // 클라이언트의 상태 관리를 위한 속성
   status?: 'success' | 'fail' | 'pending';
+  phase?: 'normal' | 'before-refresh' | 'during-reconnect';
 }
 
 export type Message = ImageMessage | TextMessage;
@@ -22,15 +25,15 @@ export type Message = ImageMessage | TextMessage;
 export interface ImageMessage extends MessageDTO {
   content: null;
   messageType: 'IMAGE';
-  thumbnailUrl: string;
+  thumbnailUrl: string | null;
   originalImageUrl: string;
 }
 
 export interface TextMessage extends MessageDTO {
   content: string;
   messageType: 'TEXT';
-  thumbnailUrl: null;
-  originalImageUrl: null;
+  thumbnailUrl?: null;
+  originalImageUrl?: null;
 }
 
 export interface MessageResponse {

@@ -25,5 +25,13 @@ aws:
     env-prefix: prod/
   sqs:
     image-queue: fittoring-prod-image-queue
+    chat-message-persist-queue: ${CHAT_MESSAGE_PERSIST_QUEUE_NAME}
 fcm:
   service-account-key: ${FCM_SERVICE_ACCOUNT_KEY}
+
+dummy:
+  admin-api:
+    enabled: true
+    schedule-offset-days: 2
+  scheduler:
+    enabled: true
