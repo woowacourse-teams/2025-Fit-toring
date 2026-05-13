@@ -6,7 +6,7 @@ interface PrevScroll {
   clientHeight: number;
 }
 
-type MessageId = number | null | undefined;
+type MessageId = number | string | null | undefined;
 
 interface useScrollToBottomOnMessageSendParams {
   firstId: MessageId;
