@@ -22,7 +22,9 @@ const dedupeMessages = (messages: Message[]) => {
   const result: Message[] = [];
 
   messages.forEach((msg) => {
-    const key = String(msg.tempId);
+    const key = String(
+      msg.tempId ?? msg.messageId ?? msg.chatMessageId ?? msg.createdAt,
+    );
 
     if (seen.has(key)) {
       return;
@@ -73,12 +75,13 @@ const usePersistPendingMessages = (
       const pendingOrFail = sourceMessages.filter(
         (msg) => msg.status === 'pending' || msg.status === 'fail',
       );
-      if (pendingOrFail.length === 0) {
-        return;
-      }
       const persisted = readPersistedMessages();
 
-      persisted[chatRoomId] = pendingOrFail;
+      if (pendingOrFail.length === 0) {
+        delete persisted[chatRoomId];
+      } else {
+        persisted[chatRoomId] = pendingOrFail;
+      }
 
       writePersistedMessages(persisted);
     },
