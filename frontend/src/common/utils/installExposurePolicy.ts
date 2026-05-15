@@ -9,9 +9,18 @@ const INSTALL_PROMPT_SHOW_STORAGE_KEY_BY_PLATFORM: Record<
 };
 
 const canUseLocalStorage = (): boolean => {
-  return (
-    typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
-  );
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  try {
+    const testKey = '__pwa_install_prompt_storage_test__';
+    window.localStorage.setItem(testKey, '1');
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const readFlag = (key: string): boolean => {
