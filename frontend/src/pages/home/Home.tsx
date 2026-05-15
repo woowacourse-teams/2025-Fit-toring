@@ -151,6 +151,16 @@ function Home() {
 
   useAuthCheck();
 
+  const handleCloseAndroidInstallPrompt = useCallback(() => {
+    markInstallPromptShown('android');
+    setInstallModalType(null);
+  }, []);
+
+  const handleCloseIOSInstallGuide = useCallback(() => {
+    markInstallPromptShown('ios');
+    setInstallModalType(null);
+  }, []);
+
   useEffect(() => {
     if (!isMobileViewport()) {
       return;
@@ -168,7 +178,6 @@ function Home() {
     }
 
     if (platform === 'ios') {
-      markInstallPromptShown('ios');
       setInstallModalType('ios');
       return;
     }
@@ -177,7 +186,6 @@ function Home() {
       return;
     }
 
-    markInstallPromptShown('android');
     setInstallModalType('android');
   }, [canInstall]);
 
@@ -185,15 +193,15 @@ function Home() {
     <S_Container>
       <InstallPromptModal
         opened={installModalType === 'android'}
-        onCloseClick={() => setInstallModalType(null)}
-        onLaterClick={() => setInstallModalType(null)}
+        onCloseClick={handleCloseAndroidInstallPrompt}
+        onLaterClick={handleCloseAndroidInstallPrompt}
         onInstallClick={promptInstall}
       />
 
       <IOSInstallGuideModal
         opened={installModalType === 'ios'}
-        onCloseClick={() => setInstallModalType(null)}
-        onLaterClick={() => setInstallModalType(null)}
+        onCloseClick={handleCloseIOSInstallGuide}
+        onLaterClick={handleCloseIOSInstallGuide}
       />
 
       <NotificationPermissionModal
