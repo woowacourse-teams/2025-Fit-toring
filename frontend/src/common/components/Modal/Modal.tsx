@@ -67,6 +67,9 @@ const S_Content = styled.div`
   max-width: 33rem;
   padding: 2.2rem;
   border-radius: 0.5rem;
+
+  box-sizing: border-box;
+
   box-shadow: rgb(0 0 0 / 10%) 0 0.4rem 1.2rem;
 
   background-color: white;
