@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
-import { isPWAStandalone } from '../../utils/deviceDetection';
+import { isIOS, isPWAStandalone } from '../../utils/deviceDetection';
 
 const SPLASH_SESSION_KEY = 'fittoring:splash-overlay-shown';
-const SPLASH_DURATION_MS = 3100;
-const SPLASH_FADE_MS = 220;
+const SPLASH_DURATION_MS = 1000;
+const SPLASH_FADE_MS = 180;
 
 function hasSplashOverlayShown() {
   try {
@@ -25,22 +25,30 @@ function markSplashOverlayShown() {
 }
 
 function shouldShowSplashOverlay() {
+  return isPWAStandalone() && !isIOS() && !hasSplashOverlayShown();
+}
+
+function getSplashFadeMs() {
   const prefersReducedMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)',
   ).matches;
 
-  return isPWAStandalone() && !prefersReducedMotion && !hasSplashOverlayShown();
+  return prefersReducedMotion ? 0 : SPLASH_FADE_MS;
 }
 
 function SplashOverlay() {
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [fadeMs, setFadeMs] = useState(SPLASH_FADE_MS);
 
   useEffect(() => {
     if (!shouldShowSplashOverlay()) {
       return;
     }
 
+    const nextFadeMs = getSplashFadeMs();
+
+    setFadeMs(nextFadeMs);
     setVisible(true);
 
     const fadeTimer = window.setTimeout(() => {
@@ -50,7 +58,7 @@ function SplashOverlay() {
     const hideTimer = window.setTimeout(() => {
       markSplashOverlayShown();
       setVisible(false);
-    }, SPLASH_DURATION_MS + SPLASH_FADE_MS);
+    }, SPLASH_DURATION_MS + nextFadeMs);
 
     return () => {
       window.clearTimeout(fadeTimer);
@@ -63,15 +71,15 @@ function SplashOverlay() {
   }
 
   return (
-    <S_Overlay $closing={closing} aria-hidden="true">
-      <S_SplashImage src="/splash/fittoring-splash.gif" alt="" />
+    <S_Overlay $closing={closing} $fadeMs={fadeMs} aria-hidden="true">
+      <S_SplashImage src="/splash/fittoring-splash.png" alt="" />
     </S_Overlay>
   );
 }
 
 export default SplashOverlay;
 
-const S_Overlay = styled.div<{ $closing: boolean }>`
+const S_Overlay = styled.div<{ $closing: boolean; $fadeMs: number }>`
   position: fixed;
   inset: 0;
   z-index: 9999;
@@ -80,12 +88,18 @@ const S_Overlay = styled.div<{ $closing: boolean }>`
   justify-content: center;
   background: #ffffff;
   opacity: ${({ $closing }) => ($closing ? 0 : 1)};
-  transition: opacity ${SPLASH_FADE_MS}ms ease-out;
+  transition: opacity ${({ $fadeMs }) => $fadeMs}ms ease-out;
   pointer-events: ${({ $closing }) => ($closing ? 'none' : 'auto')};
 `;
 
 const S_SplashImage = styled.img`
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center center;
+
+  @media (orientation: landscape) {
+    object-fit: contain;
+  }
 `;

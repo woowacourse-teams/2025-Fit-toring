@@ -52,7 +52,7 @@ module.exports = merge(common, {
     new InjectManifest({
       swSrc: './src/pwa/firebase-messaging-sw.ts',
       swDest: 'firebase-messaging-sw.js',
-      exclude: [/\.map$/, /^manifest.*\.js(?:on)?$/, /^splash\//],
+      exclude: [/\.map$/, /^manifest.*\.js(?:on)?$/],
     }),
     sentryWebpackPlugin({
       org: 'fittoring',
