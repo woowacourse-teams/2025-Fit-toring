@@ -88,9 +88,9 @@ const S_Container = styled.div`
   box-sizing: border-box;
 
   max-height: min(82vh, 72rem);
-  padding: 0.8rem 0.2rem 0;
+  overflow-y: auto;
 
-  -webkit-overflow-scrolling: touch;
+  padding: 0.8rem 0.2rem 0;
 `;
 
 const S_CloseButton = styled.button`
