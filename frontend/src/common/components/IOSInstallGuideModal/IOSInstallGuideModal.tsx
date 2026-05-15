@@ -69,11 +69,6 @@ function IOSInstallGuideModal({
             </S_StepBody>
           </S_StepCard>
         </S_StepList>
-
-        {/* <S_LaterButton type="button" onClick={handleLaterClick}>
-          나중에 할게요
-        </S_LaterButton> */}
-
         <S_LaterButton type="button" onClick={handleLaterClick}>
           다음에 할래요
         </S_LaterButton>
