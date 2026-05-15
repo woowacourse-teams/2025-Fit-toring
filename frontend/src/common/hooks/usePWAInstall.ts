@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { captureSentryError } from '../utils/captureSentryError';
+
 export interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{
@@ -33,14 +35,19 @@ const usePWAInstall = (): UsePWAInstallResult => {
       resetInstallPrompt();
     } catch (error) {
       console.error('[PWA] 설치 프롬프트 실행 실패:', error);
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'pwa',
+        step: 'install-prompt-execute',
+      });
       resetInstallPrompt();
     }
   }, [installPromptEvent, resetInstallPrompt]);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
-      const beforeInstallPromptEvent =
-        event as BeforeInstallPromptEvent;
+      const beforeInstallPromptEvent = event as BeforeInstallPromptEvent;
 
       event.preventDefault();
       setInstallPromptEvent(beforeInstallPromptEvent);
@@ -50,10 +57,7 @@ const usePWAInstall = (): UsePWAInstallResult => {
       resetInstallPrompt();
     };
 
-    window.addEventListener(
-      'beforeinstallprompt',
-      handleBeforeInstallPrompt,
-    );
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
