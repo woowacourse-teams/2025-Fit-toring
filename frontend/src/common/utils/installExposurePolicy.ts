@@ -51,20 +51,16 @@ export const markInstallPromptShown = (
   writeFlag(INSTALL_PROMPT_SHOW_STORAGE_KEY_BY_PLATFORM[platform], shown);
 };
 
-export const shouldAutoShowInstallPromptOnLoginHome = ({
+export const shouldAutoShowInstallPromptOnHome = ({
   isStandalone,
-  shown,
+  platform,
 }: {
   isStandalone: boolean;
-  shown?: boolean;
+  platform: InstallPromptPlatform;
 }): boolean => {
   if (isStandalone) {
     return false;
   }
 
-  if (shown) {
-    return false;
-  }
-
-  return true;
+  return !getInstallPromptShown(platform);
 };

@@ -22,9 +22,8 @@ import {
   isPWAStandalone,
 } from '../../common/utils/deviceDetection';
 import {
-  getInstallPromptShown,
   markInstallPromptShown,
-  shouldAutoShowInstallPromptOnLoginHome,
+  shouldAutoShowInstallPromptOnHome,
 } from '../../common/utils/installExposurePolicy';
 
 import HomeHeader from './components/HomeHeader/HomeHeader';
@@ -159,14 +158,10 @@ function Home() {
 
     const platform = isIOS() ? 'ios' : 'android';
 
-    if (getInstallPromptShown(platform)) {
-      return;
-    }
-
     if (
-      !shouldAutoShowInstallPromptOnLoginHome({
+      !shouldAutoShowInstallPromptOnHome({
         isStandalone: isPWAStandalone(),
-        shown: false,
+        platform,
       })
     ) {
       return;
