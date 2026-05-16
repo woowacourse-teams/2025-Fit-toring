@@ -13,17 +13,20 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
-import InputWithSubmitButton from '../../common/components/InputWithSubmitButton/InputWithSubmitButton';
 import { PAGE_URL } from '../../common/constants/url';
+import useS3Upload from '../../common/hooks/useS3Upload';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
 import ChatRoomForbidden from './components/ChatRoomForbidden/ChatRoomForbidden';
 import ChatRoomHeader from './components/ChatRoomHeader/ChatRoomHeader';
 import ChatRoomInfoSkeleton from './components/ChatRoomInfoSkeleton/ChatRoomInfoSkeleton';
+import ChatRoomInputArea from './components/ChatRoomInputArea/ChatRoomInputArea';
+import ImageSendModal from './components/ImageSendModal/ImageSendModal';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import { MESSAGE_TYPE } from './constants/message';
 import useDelayedVisibility from './hooks/useDelayedVisibility';
+import useImageFile from './hooks/useImageFile';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import usePersistPendingMessages, {
   readPersistedMessages,
@@ -33,7 +36,7 @@ import useUpwardInfiniteScroll from './hooks/useUpwardInfiniteScroll';
 import { mergeMessages } from './utils/mergeMessages';
 
 import type { ChatRoomInfo } from './types/chatRoomInfo';
-import type { Message } from './types/message';
+import type { ImageMessage, Message, TextMessage } from './types/message';
 import type { IMessage } from '@stomp/stompjs';
 
 const IN_FLIGHT_TIMEOUT_MS = 10000;
@@ -44,6 +47,7 @@ function ChatRoom() {
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesRef = useRef<Message[]>([]);
   const [message, setMessage] = useState('');
+  const [imageSending, setImageSending] = useState(false);
 
   const { chatRoomId } = useParams();
 
@@ -127,6 +131,10 @@ function ChatRoom() {
     if (!nextMessage) {
       return;
     }
+    if (nextMessage.tempId === null) {
+      flushOutgoingQueue();
+      return;
+    }
 
     inFlightRef.current = nextMessage;
     clearInFlightTimeout();
@@ -159,7 +167,10 @@ function ChatRoom() {
     client.publish({
       destination: `/app/chatroom/${chatRoomId}`,
       body: JSON.stringify({
-        content: nextMessage.content,
+        content:
+          nextMessage.messageType === MESSAGE_TYPE.IMAGE
+            ? nextMessage.originalImageUrl
+            : nextMessage.content,
         tempId: nextMessage.tempId,
         messageType: nextMessage.messageType,
       }),
@@ -224,8 +235,18 @@ function ChatRoom() {
     }
   }, [listElRef, messages]);
 
-  const firstId = messages[0]?.chatMessageId ?? null;
-  const lastId = messages[messages.length - 1]?.chatMessageId ?? null;
+  const firstMessage = messages[0];
+  const lastMessage = messages[messages.length - 1];
+  const firstId =
+    firstMessage?.chatMessageId ??
+    firstMessage?.messageId ??
+    firstMessage?.tempId ??
+    null;
+  const lastId =
+    lastMessage?.chatMessageId ??
+    lastMessage?.messageId ??
+    lastMessage?.tempId ??
+    null;
 
   const { capturePrevScroll } = useScrollToBottomOnMessageSend({
     firstId,
@@ -246,15 +267,16 @@ function ChatRoom() {
 
     const tempId = Date.now();
 
-    const optimisticMsg: Message = {
+    const optimisticMsg: TextMessage = {
       senderId: Number(memberId),
       content: message,
       createdAt: new Date().toString(),
       chatRoomId: Number(chatRoomId),
-      chatMessageId: tempId,
       tempId,
       status: 'pending' as const,
       messageType: MESSAGE_TYPE.TEXT,
+      thumbnailUrl: null,
+      originalImageUrl: null,
       phase: 'normal',
     };
 
@@ -312,6 +334,59 @@ function ChatRoom() {
   const stompClientRef = useRef<Client | null>(null);
 
   const isRefreshingRef = useRef(false);
+
+  const { selectedImage, handleImageChange, cancelImageSelection } =
+    useImageFile();
+
+  const { uploadFile } = useS3Upload();
+
+  const handleImageSend = async () => {
+    if (!selectedImage || memberId === null || imageSending) {
+      return;
+    }
+
+    const file = selectedImage;
+
+    setImageSending(true);
+    const { uploadedUrl } = await uploadFile(file, 'CHAT');
+    setImageSending(false);
+
+    if (!uploadedUrl) {
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      return;
+    }
+
+    cancelImageSelection();
+    capturePrevScroll();
+
+    const tempId = Date.now();
+
+    const optimisticMsg: ImageMessage = {
+      senderId: Number(memberId),
+      content: null,
+      createdAt: new Date().toString(),
+      chatRoomId: Number(chatRoomId),
+      tempId,
+      status: 'pending' as const,
+      messageType: MESSAGE_TYPE.IMAGE,
+      thumbnailUrl: uploadedUrl,
+      originalImageUrl: uploadedUrl,
+      phase: 'normal',
+    };
+
+    if (isReconnectPendingRef.current) {
+      const reconnectMsg = {
+        ...optimisticMsg,
+        phase: 'during-reconnect' as const,
+      };
+
+      setMessages((prev) => [...prev, reconnectMsg]);
+      return;
+    }
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    enqueueOutgoing([optimisticMsg]);
+  };
 
   useEffect(() => {
     const apiBaseUrl = process.env.API_BASE_URL ?? '';
@@ -383,8 +458,8 @@ function ChatRoom() {
           (message: IMessage) => {
             capturePrevScroll();
 
-            const parsedMessage = JSON.parse(message.body);
-            if (parsedMessage.tempId) {
+            const parsedMessage = JSON.parse(message.body) as Message;
+            if (parsedMessage.tempId !== null) {
               const currentInFlight = inFlightRef.current;
               if (
                 currentInFlight &&
@@ -397,7 +472,7 @@ function ChatRoom() {
             }
 
             setMessages((prev) => {
-              if (parsedMessage.tempId) {
+              if (parsedMessage.tempId !== null) {
                 const index = prev.findIndex(
                   (m) => Number(m.tempId) === Number(parsedMessage.tempId),
                 );
@@ -405,26 +480,41 @@ function ChatRoom() {
                   const newArr = [...prev];
                   newArr[index] = {
                     ...parsedMessage,
-                    status: 'success',
-                    phase: 'normal',
+                    status: 'success' as const,
+                    phase: 'normal' as const,
                   };
+                  persistPendingMessages(newArr);
                   return newArr;
                 }
               }
 
-              const exists = prev.some(
-                (m) =>
-                  m.chatMessageId &&
-                  m.chatMessageId === parsedMessage.chatMessageId,
-              );
+              const exists = prev.some((m) => {
+                if (
+                  parsedMessage.chatMessageId &&
+                  m.chatMessageId === parsedMessage.chatMessageId
+                ) {
+                  return true;
+                }
+
+                return !!(
+                  parsedMessage.messageId &&
+                  m.messageId === parsedMessage.messageId
+                );
+              });
               if (exists) {
                 return prev;
               }
 
-              return [
+              const nextMessages = [
                 ...prev,
-                { ...parsedMessage, status: 'success', phase: 'normal' },
+                {
+                  ...parsedMessage,
+                  status: 'success' as const,
+                  phase: 'normal' as const,
+                },
               ];
+              persistPendingMessages(nextMessages);
+              return nextMessages;
             });
           },
         );
@@ -466,6 +556,9 @@ function ChatRoom() {
         const deduped: Message[] = [];
 
         for (const msg of merged) {
+          if (msg.tempId === null) {
+            continue;
+          }
           if (seen.has(msg.tempId)) {
             continue;
           }
@@ -475,8 +568,7 @@ function ChatRoom() {
 
         deduped.sort(
           (a, b) =>
-            new Date(a.createdAt).getTime() -
-            new Date(b.createdAt).getTime(),
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         );
 
         outgoingQueueRef.current = deduped;
@@ -533,12 +625,22 @@ function ChatRoom() {
         pageFirstElRef={pageFirstElRef}
         listElRef={listElRef}
       />
-      <InputWithSubmitButton
+      <ChatRoomInputArea
         value={message}
         placeholder="메시지를 입력하세요"
         onChange={handleChange}
         onSubmit={handleMessageSubmit}
+        onImageChange={handleImageChange}
       />
+
+      {selectedImage && (
+        <ImageSendModal
+          selectedImage={selectedImage}
+          onSend={handleImageSend}
+          onCancel={cancelImageSelection}
+          sending={imageSending}
+        />
+      )}
     </S_Container>
   );
 }

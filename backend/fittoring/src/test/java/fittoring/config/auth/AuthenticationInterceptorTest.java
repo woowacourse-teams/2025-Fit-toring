@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -13,9 +12,7 @@ import fittoring.application.auth.service.JwtExtractor;
 import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.ExpiredTokenException;
 import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
 import jakarta.servlet.http.Cookie;
 import org.assertj.core.api.SoftAssertions;
