@@ -79,11 +79,6 @@ public class PostService {
     }
 
     @Transactional
-    public PostDetailResponse findPost(Long postId) {
-        return findPost(postId, null);
-    }
-
-    @Transactional
     public PostDetailResponse findPost(Long postId, LikeActorKeyHash actorKeyHash) {
         Post post = getPost(postId);
         post.increaseViewCount();

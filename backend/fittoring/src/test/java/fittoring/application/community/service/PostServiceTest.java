@@ -146,7 +146,7 @@ class PostServiceTest extends IntegrationTestSupport {
     void findPost() {
         Post post = postRepository.save(FixtureUtil.testGuestPost());
 
-        PostDetailResponse actual = postService.findPost(post.getId());
+        PostDetailResponse actual = postService.findPost(post.getId(), null);
 
         assertThat(actual.id()).isEqualTo(post.getId());
     }
@@ -161,7 +161,7 @@ class PostServiceTest extends IntegrationTestSupport {
         commentRepository.save(FixtureUtil.testGuestComment(post));
 
         // when
-        PostDetailResponse actual = postService.findPost(post.getId());
+        PostDetailResponse actual = postService.findPost(post.getId(), null);
 
         // then
         assertSoftly(softly -> {
@@ -302,7 +302,7 @@ class PostServiceTest extends IntegrationTestSupport {
     @DisplayName("없는 게시글을 조회하면 예외가 발생한다.")
     @Test
     void findPostFail() {
-        assertThatThrownBy(() -> postService.findPost(999L))
+        assertThatThrownBy(() -> postService.findPost(999L, null))
                 .isInstanceOf(PostNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.POST_NOT_FOUND.getMessage());
     }
