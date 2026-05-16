@@ -1,5 +1,6 @@
 package fittoring.application.auth;
 
+import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,16 @@ public class CookieProvider {
         final long maxAgeSeconds = 604800L;
         return baseBuilder(name, value)
                 .maxAge(maxAgeSeconds)
+                .build();
+    }
+
+    public ResponseCookie createCookieWithMaxAge(
+            final String name,
+            final String value,
+            final Duration maxAge
+    ) {
+        return baseBuilder(name, value)
+                .maxAge(maxAge)
                 .build();
     }
 

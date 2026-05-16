@@ -228,8 +228,8 @@ jobs:
           cp backend/fittoring/docker-compose.yml "${APP_DIR}/docker-compose.prod.yml"
           cp backend/fittoring/docker-compose.dev.yml "${APP_DIR}/docker-compose.dev.yml"
           cp backend/fittoring/docker-compose.dev.yml "${APP_DIR}/docker-compose.yml"
-          rm -rf "${APP_DIR}/proxy"
-          cp -r backend/fittoring/proxy "${APP_DIR}/proxy"
+          mkdir -p "${APP_DIR}/proxy/nginx/conf.d"
+          cp backend/fittoring/proxy/nginx/conf.d/fittoring.conf.template "${APP_DIR}/proxy/nginx/conf.d/fittoring.conf.template"
 
       - name: Run deploy script
         shell: bash

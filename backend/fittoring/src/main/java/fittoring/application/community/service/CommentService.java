@@ -1,6 +1,7 @@
 package fittoring.application.community.service;
 
 import fittoring.application.community.presentation.dto.response.CommentResponse;
+import fittoring.application.community.repository.CommentLikeRepository;
 import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.community.service.dto.CommentCreateDto;
@@ -15,9 +16,12 @@ import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
 import fittoring.domain.model.Comment;
+import fittoring.domain.model.LikeActorKeyHash;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public CommentResponse createComment(CommentCreateDto dto) {
@@ -39,24 +44,36 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findComments(Long postId) {
+    public List<CommentResponse> findComments(Long postId, LikeActorKeyHash actorKeyHash) {
         getPost(postId);
-        return commentRepository.findAllByPostId(postId).stream()
-                .map(CommentResponse::from)
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        Set<Long> likedCommentIds = findLikedCommentIds(comments, actorKeyHash);
+        return comments.stream()
+                .map(comment -> CommentResponse.from(comment, likedCommentIds.contains(comment.getId())))
                 .toList();
+    }
+
+    private Set<Long> findLikedCommentIds(List<Comment> comments, LikeActorKeyHash actorKeyHash) {
+        if (actorKeyHash == null || comments.isEmpty()) {
+            return Set.of();
+        }
+        List<Long> commentIds = comments.stream()
+                .map(Comment::getId)
+                .toList();
+        return new HashSet<>(commentLikeRepository.findLikedCommentIds(commentIds, actorKeyHash.getValue()));
     }
 
     @Transactional
     public void modifyComment(CommentUpdateDto dto) {
         Comment comment = getComment(dto.commentId());
-        validateCommentAccess(comment, dto.memberId(), dto.guestPassword());
+        validateCommentAccessByCaller(comment, dto.memberId(), dto.guestPassword());
         comment.modify(dto.content());
     }
 
     @Transactional
     public void deleteComment(CommentDeleteDto dto) {
         Comment comment = getComment(dto.commentId());
-        validateCommentAccess(comment, dto.memberId(), dto.guestPassword());
+        validateCommentAccessByCaller(comment, dto.memberId(), dto.guestPassword());
         commentRepository.delete(comment);
     }
 
@@ -64,6 +81,11 @@ public class CommentService {
     public void validateGuestPassword(Long commentId, String guestPassword) {
         Comment comment = getComment(commentId);
         comment.matchGuestPassword(guestPassword);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> findOwnedCommentIds(Long postId, Long memberId) {
+        return commentRepository.findIdsByPostIdAndMemberId(postId, memberId);
     }
 
     private Comment createMemberComment(CommentCreateDto dto, Post post) {
@@ -100,15 +122,28 @@ public class CommentService {
         }
     }
 
-    private void validateCommentAccess(Comment comment, Long memberId, String guestPassword) {
+    private void validateCommentAccessByCaller(Comment comment, Long memberId, String guestPassword) {
+        if (memberId != null) {
+            validateMemberCommentAccess(comment, memberId);
+        } else {
+            validateGuestCommentAccess(comment, guestPassword);
+        }
+    }
+
+    private void validateMemberCommentAccess(Comment comment, Long memberId) {
         if (comment.isGuestComment()) {
-            comment.matchGuestPassword(guestPassword);
-            return;
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        if (memberId != null && comment.isOwnedBy(memberId)) {
-            return;
+        if (!comment.isOwnedBy(memberId)) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+    }
+
+    private void validateGuestCommentAccess(Comment comment, String guestPassword) {
+        if (!comment.isGuestComment()) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+        }
+        comment.matchGuestPassword(guestPassword);
     }
 
     private Post getPost(Long postId) {

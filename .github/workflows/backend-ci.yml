@@ -10,6 +10,8 @@ on:
 jobs:
   backend-ci:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
     defaults:
       run:
         working-directory: backend/fittoring

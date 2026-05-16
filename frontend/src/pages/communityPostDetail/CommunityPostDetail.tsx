@@ -15,6 +15,7 @@ import CommunityPostPasswordModal from '../community/components/CommunityPostPas
 import { deleteCommunityPost } from './apis/deleteCommunityPost';
 import { deleteCommunityPostComment } from './apis/deleteCommunityPostComment';
 import { getCommunityPostDetail } from './apis/getCommunityPostDetail';
+import { getCommunityPostOwnership } from './apis/getCommunityPostOwnership';
 import { postCommunityPostCommentGuestCheck } from './apis/postCommunityPostCommentGuestCheck';
 import { postGuestPostPasswordCheck } from './apis/postGuestPostPasswordCheck';
 import CommunityPostDetailHeader from './components/CommunityPostDetailHeader/CommunityPostDetailHeader';
@@ -32,6 +33,7 @@ function CommunityPostDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { authenticated } = useAuth();
+  const memberId = localStorage.getItem('memberId');
 
   const [passwordModalOpened, setPasswordModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
@@ -65,6 +67,17 @@ function CommunityPostDetail() {
     enabled: Boolean(postId),
   });
 
+  const shouldFetchPostOwnership = Boolean(
+    postId && authenticated && postData && !postData.isGuestPost,
+  );
+
+  const { data: postOwnershipData } = useQuery({
+    queryKey: ['communityPostOwnership', postId, memberId],
+    queryFn: () => getCommunityPostOwnership(postId!),
+    enabled: shouldFetchPostOwnership,
+    retry: false,
+  });
+
   const { mutate: deletePostMutate } = useMutation({
     mutationFn: deleteCommunityPost,
     onSuccess: () => {
@@ -88,17 +101,27 @@ function CommunityPostDetail() {
   const { mutate: deleteCommentMutate } = useMutation({
     mutationFn: ({
       commentId,
+      isGuestComment,
       guestPassword,
     }: {
       commentId: number;
+      isGuestComment: boolean;
       guestPassword?: string;
-    }) => deleteCommunityPostComment(commentId, guestPassword),
+    }) =>
+      deleteCommunityPostComment({
+        commentId,
+        isGuestComment,
+        guestPassword,
+      }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['postComments', postId],
       });
       await queryClient.invalidateQueries({
         queryKey: ['communityPostDetail', postId],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['communityPostCommentOwnership', postId],
       });
 
       setCommentDeleteModalOpened(false);
@@ -129,9 +152,9 @@ function CommunityPostDetail() {
 
   const shouldRequirePassword = postData.isGuestPost || postData.isAnonymous;
   const canManagePost =
-    shouldRequirePassword || (authenticated && postData.isMine);
-  const isGuestLikeComment = (comment: PostComment) =>
-    comment.isGuestComment || comment.isAnonymous;
+    shouldRequirePassword ||
+    (authenticated && postOwnershipData?.isMine === true);
+  const isGuestComment = (comment: PostComment) => comment.isGuestComment;
 
   const openPasswordModal = () => {
     setPasswordModalOpened(true);
@@ -227,7 +250,7 @@ function CommunityPostDetail() {
     setCommentDeleteTarget(null);
     setCommentDeletePassword('');
 
-    if (isGuestLikeComment(comment)) {
+    if (isGuestComment(comment)) {
       setPendingCommentAction('edit');
       setPendingCommentTarget(comment);
       setCommentPasswordModalOpened(true);
@@ -245,7 +268,7 @@ function CommunityPostDetail() {
     setEditingComment(null);
     setEditingCommentGuestPassword('');
 
-    if (isGuestLikeComment(comment)) {
+    if (isGuestComment(comment)) {
       setPendingCommentAction('delete');
       setPendingCommentTarget(comment);
       setCommentPasswordModalOpened(true);
@@ -296,7 +319,8 @@ function CommunityPostDetail() {
 
     deleteCommentMutate({
       commentId: commentDeleteTarget.id,
-      ...(commentDeleteTarget.isGuestComment || commentDeleteTarget.isAnonymous
+      isGuestComment: commentDeleteTarget.isGuestComment,
+      ...(commentDeleteTarget.isGuestComment
         ? { guestPassword: commentDeletePassword }
         : {}),
     });
@@ -305,6 +329,7 @@ function CommunityPostDetail() {
   const handleConfirmClickDeleteModal = () => {
     deletePostMutate({
       postId: postId!,
+      isGuestPost: postData.isGuestPost,
       ...(shouldRequirePassword
         ? { guestPassword: pendingDeletePassword }
         : {}),
@@ -321,7 +346,7 @@ function CommunityPostDetail() {
       <S_Content>
         <PostHeader
           createdAt={postData.createdAt}
-          nickname={postData.isAnonymous ? '익명' : postData.nickname}
+          nickname={postData.nickname}
           viewCount={postData.viewCount}
         />
         <PostContent
@@ -331,6 +356,7 @@ function CommunityPostDetail() {
         />
         <PostCommentSection
           postId={postId ?? ''}
+          authenticated={authenticated}
           onReplyClick={handleReplyClick}
           onEditClick={handleEditCommentClick}
           onDeleteClick={handleDeleteCommentClick}

@@ -13,11 +13,11 @@ public record PostDetailResponse(
         int commentCount,
         int viewCount,
         int likeCount,
-        boolean isMine,
+        boolean liked,
         LocalDateTime createdAt
 ) {
 
-    public static PostDetailResponse from(Post post, int commentCount, boolean isMine) {
+    public static PostDetailResponse from(Post post, int commentCount, boolean liked) {
         return new PostDetailResponse(
                 post.getId(),
                 post.getTitle(),
@@ -28,7 +28,7 @@ public record PostDetailResponse(
                 commentCount,
                 post.getViewCount(),
                 post.getLikeCount(),
-                isMine,
+                liked,
                 post.getCreatedAt()
         );
     }

@@ -53,6 +53,10 @@ jwt:
   secret-key: my/test/secret/key/my/test/secret/key
   access-token-expiration-millis: 10000
   refresh-token-expiration-millis: 20000000
+
+post-like:
+  actor-secret: my/test/post/like/actor/secret
+
 kakao:
   redirect-url: ${KAKAO_REDIRECT_URL}
   client-id: ${KAKAO_CLIENT_ID}
@@ -77,3 +81,17 @@ client:
 
 cookie:
   same-site: None
+
+dummy:
+  admin-api:
+    enabled: false
+    scenarios-base-path: classpath:dummy/
+    guest-password-hash: 342a59f63384c1fbd5b0f244484959edf694930c8bd84ccc9ee8f68c945e04dc
+    schedule-offset-days: 0
+  scheduler:
+    enabled: false
+    poll-interval-ms: 30000
+    batch-size:
+      post: 100
+      comment: 200
+    max-attempt: 5
