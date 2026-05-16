@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
+import { getCommunityPostCommentOwnership } from '../../apis/getCommunityPostCommentOwnership';
 import { getPostComments } from '../../apis/getPostComments';
 import { buildCommentTree } from '../../utils/buildCommentTree';
 import CommentItem from '../CommentItem/CommentItem';
@@ -12,6 +13,7 @@ import type { PostComment } from '../../types/postComment';
 
 interface PostCommentSectionProps {
   postId: string;
+  authenticated: boolean;
   onReplyClick: (comment: PostComment) => void;
   onEditClick: (comment: PostComment) => void;
   onDeleteClick: (comment: PostComment) => void;
@@ -23,10 +25,12 @@ interface PostCommentNode extends PostComment {
 
 function PostCommentSection({
   postId,
+  authenticated,
   onReplyClick,
   onEditClick,
   onDeleteClick,
 }: PostCommentSectionProps) {
+  const memberId = localStorage.getItem('memberId');
   const {
     data: commentData = [],
     isPending,
@@ -37,11 +41,23 @@ function PostCommentSection({
     enabled: Boolean(postId),
   });
 
-  const commentTree = buildCommentTree(commentData);
+  const { data: commentOwnershipData } = useQuery({
+    queryKey: ['communityPostCommentOwnership', postId, memberId],
+    queryFn: () => getCommunityPostCommentOwnership(postId),
+    enabled: Boolean(postId && authenticated),
+    retry: false,
+  });
+
+  const mineCommentIds = new Set(commentOwnershipData?.mineCommentIds ?? []);
+  const comments: PostComment[] = commentData.map((comment) => ({
+    ...comment,
+    isMine: mineCommentIds.has(comment.id),
+  }));
+  const commentTree = buildCommentTree(comments);
 
   return (
     <S_Container>
-      <S_Title>댓글 {commentData.length}</S_Title>
+      <S_Title>댓글 {comments.length}</S_Title>
       {isPending ? (
         <S_StatusWrapper>
           <LoadingSpinner />
@@ -50,7 +66,7 @@ function PostCommentSection({
       {isError ? (
         <S_StatusText>댓글을 불러오지 못했습니다.</S_StatusText>
       ) : null}
-      {!isPending && !isError && commentData.length === 0 ? (
+      {!isPending && !isError && comments.length === 0 ? (
         <S_StatusText>첫 댓글을 남겨 보세요.</S_StatusText>
       ) : null}
       {!isPending && !isError && commentTree.length > 0 ? (

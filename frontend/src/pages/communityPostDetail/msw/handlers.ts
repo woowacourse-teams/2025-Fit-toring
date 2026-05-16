@@ -10,14 +10,29 @@ import {
 
 import type {
   PatchPostCommentRequest,
+  PostComment,
   PostCommentRequest,
+  PostCommentResponse,
 } from '../types/postComment';
 
 const BASE_URL = process.env.API_BASE_URL;
 const COMMUNITY_POST_DETAIL_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId`;
+const POST_OWNERSHIP_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/mine`;
 const POST_COMMENTS_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/comments`;
+const POST_COMMENT_OWNERSHIP_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/comments/mine`;
+const GUEST_POST_COMMENTS_URL = `${BASE_URL}${API_ENDPOINTS.GUEST}${API_ENDPOINTS.POSTS}/:postId/comments`;
 const GUEST_POST_CHECK_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/guest-check`;
 const DELETE_COMMUNITY_POST_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId`;
+const DELETE_GUEST_COMMUNITY_POST_URL = `${BASE_URL}${API_ENDPOINTS.GUEST}${API_ENDPOINTS.POSTS}/:postId`;
+const COMMENT_URL = `${BASE_URL}${API_ENDPOINTS.COMMENTS}/:commentId`;
+const GUEST_COMMENT_URL = `${BASE_URL}${API_ENDPOINTS.GUEST}${API_ENDPOINTS.COMMENTS}/:commentId`;
+
+const toPostCommentResponse = (comment: PostComment): PostCommentResponse => {
+  const { isMine, ...response } = comment;
+  void isMine;
+
+  return response;
+};
 
 const getCommunityPostDetail = http.get(
   COMMUNITY_POST_DETAIL_URL,
@@ -32,37 +47,99 @@ const getCommunityPostDetail = http.get(
 );
 
 const getPostComments = http.get(POST_COMMENTS_URL, async () => {
-  return HttpResponse.json(POST_COMMENTS);
+  return HttpResponse.json(POST_COMMENTS.map(toPostCommentResponse));
 });
+
+const getCommunityPostOwnership = http.get(POST_OWNERSHIP_URL, async () => {
+  return HttpResponse.json({ isMine: true });
+});
+
+const getCommunityPostCommentOwnership = http.get(
+  POST_COMMENT_OWNERSHIP_URL,
+  async () => {
+    return HttpResponse.json({
+      mineCommentIds: POST_COMMENTS.filter(
+        ({ isDeleted, isMine }) => isMine && !isDeleted,
+      ).map(({ id }) => id),
+    });
+  },
+);
 
 let nextCommentId = Math.max(...POST_COMMENTS.map(({ id }) => id)) + 1;
 
-const postPostComment = http.post(POST_COMMENTS_URL, async ({ request }) => {
+const createPostCommentResponse = async (
+  request: Request,
+  isGuestComment: boolean,
+) => {
   const requestBody = (await request.json()) as PostCommentRequest;
 
-    const newComment = {
-      id: nextCommentId++,
-      content: requestBody.content,
-      nickname:
-        requestBody.nickname ??
-        (requestBody.isAnonymous ? '익명' : '작성자명'),
-      isAnonymous: requestBody.isAnonymous ?? false,
-      isGuestComment: Boolean(requestBody.guestPassword),
-      isMine: !requestBody.isAnonymous && !requestBody.guestPassword,
-      rootId: requestBody.rootId,
-      parentId: requestBody.parentId,
-      isDeleted: false,
-      createdAt: new Date().toISOString(),
-    };
+  const newComment: PostComment = {
+    id: nextCommentId++,
+    content: requestBody.content,
+    nickname:
+      requestBody.nickname ?? (requestBody.isAnonymous ? '익명' : '작성자명'),
+    isAnonymous: isGuestComment ? false : (requestBody.isAnonymous ?? false),
+    isGuestComment,
+    isMine: !isGuestComment,
+    rootId: requestBody.rootId,
+    parentId: requestBody.parentId,
+    isDeleted: false,
+    createdAt: new Date().toISOString(),
+  };
 
   POST_COMMENTS.push(newComment);
   COMMUNITY_POST_DETAIL.commentCount += 1;
 
-  return HttpResponse.json(newComment, { status: 201 });
-});
+  return HttpResponse.json(toPostCommentResponse(newComment), { status: 201 });
+};
+
+const postPostComment = http.post(POST_COMMENTS_URL, async ({ request }) =>
+  createPostCommentResponse(request, false),
+);
+
+const postGuestPostComment = http.post(
+  GUEST_POST_COMMENTS_URL,
+  async ({ request }) => createPostCommentResponse(request, true),
+);
 
 const patchPostComment = http.patch(
-  `${BASE_URL}${API_ENDPOINTS.COMMENTS}/:commentId`,
+  COMMENT_URL,
+  async ({ params, request }) => {
+    const { commentId } = params;
+    const requestBody = (await request.json()) as PatchPostCommentRequest;
+    const targetComment = POST_COMMENTS.find(
+      ({ id }) => id === Number(commentId),
+    );
+
+    if (!targetComment) {
+      return HttpResponse.json(
+        { message: '댓글을 찾을 수 없습니다.' },
+        { status: 404 },
+      );
+    }
+
+    if (requestBody.content.trim() === '') {
+      return HttpResponse.json(
+        { message: '수정할 내용을 입력해주세요.' },
+        { status: 400 },
+      );
+    }
+
+    if (targetComment.isGuestComment || !targetComment.isMine) {
+      return HttpResponse.json(
+        { message: '댓글 수정 권한이 없습니다.' },
+        { status: 403 },
+      );
+    }
+
+    targetComment.content = requestBody.content;
+
+    return new HttpResponse(null, { status: 200 });
+  },
+);
+
+const patchGuestPostComment = http.patch(
+  GUEST_COMMENT_URL,
   async ({ params, request }) => {
     const { commentId } = params;
     const requestBody = (await request.json()) as PatchPostCommentRequest;
@@ -85,7 +162,7 @@ const patchPostComment = http.patch(
     }
 
     if (
-      (targetComment.isGuestComment || targetComment.isAnonymous) &&
+      !targetComment.isGuestComment ||
       requestBody.guestPassword !== GUEST_POST_PASSWORD
     ) {
       return HttpResponse.json(
@@ -101,7 +178,35 @@ const patchPostComment = http.patch(
 );
 
 const deletePostComment = http.delete(
-  `${BASE_URL}${API_ENDPOINTS.COMMENTS}/:commentId`,
+  COMMENT_URL,
+  async ({ params }) => {
+    const { commentId } = params;
+    const targetComment = POST_COMMENTS.find(
+      ({ id }) => id === Number(commentId),
+    );
+
+    if (!targetComment) {
+      return HttpResponse.json(
+        { message: '댓글을 찾을 수 없습니다.' },
+        { status: 404 },
+      );
+    }
+
+    if (targetComment.isGuestComment || !targetComment.isMine) {
+      return HttpResponse.json(
+        { message: '댓글 삭제 권한이 없습니다.' },
+        { status: 403 },
+      );
+    }
+
+    targetComment.isDeleted = true;
+
+    return new HttpResponse(null, { status: 204 });
+  },
+);
+
+const deleteGuestPostComment = http.delete(
+  GUEST_COMMENT_URL,
   async ({ params, request }) => {
     const { commentId } = params;
     const requestBody = (await request.json().catch(() => null)) as
@@ -119,7 +224,7 @@ const deletePostComment = http.delete(
     }
 
     if (
-      (targetComment.isGuestComment || targetComment.isAnonymous) &&
+      !targetComment.isGuestComment ||
       requestBody?.guestPassword !== GUEST_POST_PASSWORD
     ) {
       return HttpResponse.json(
@@ -135,7 +240,7 @@ const deletePostComment = http.delete(
 );
 
 const postCommunityPostCommentGuestCheck = http.post(
-  `${BASE_URL}${API_ENDPOINTS.COMMENTS}/:commentId/guest-check`,
+  `${BASE_URL}${API_ENDPOINTS.COMMENTS}/:commentId/pw-check`,
   async ({ params, request }) => {
     const { commentId } = params;
     const requestBody = (await request.json()) as { guestPassword: string };
@@ -150,7 +255,7 @@ const postCommunityPostCommentGuestCheck = http.post(
       );
     }
 
-    if (!targetComment.isGuestComment && !targetComment.isAnonymous) {
+    if (!targetComment.isGuestComment) {
       return new HttpResponse(null, { status: 200 });
     }
 
@@ -183,15 +288,19 @@ const postGuestPostCheck = http.post(
 
 const deleteCommunityPost = http.delete(
   DELETE_COMMUNITY_POST_URL,
+  async () => {
+    return new HttpResponse(null, { status: 204 });
+  },
+);
+
+const deleteGuestCommunityPost = http.delete(
+  DELETE_GUEST_COMMUNITY_POST_URL,
   async ({ request }) => {
     const requestBody = (await request.json().catch(() => null)) as
       | { guestPassword?: string }
       | null;
 
-    if (
-      COMMUNITY_POST_DETAIL.isGuestPost &&
-      requestBody?.guestPassword !== GUEST_POST_PASSWORD
-    ) {
+    if (requestBody?.guestPassword !== GUEST_POST_PASSWORD) {
       return HttpResponse.json(
         { message: '비밀번호가 일치하지 않습니다.' },
         { status: 400 },
@@ -204,11 +313,17 @@ const deleteCommunityPost = http.delete(
 
 export const communityPostDetailHandler = [
   getCommunityPostDetail,
+  getCommunityPostOwnership,
+  getCommunityPostCommentOwnership,
   getPostComments,
   postPostComment,
+  postGuestPostComment,
   patchPostComment,
+  patchGuestPostComment,
   deletePostComment,
+  deleteGuestPostComment,
   postCommunityPostCommentGuestCheck,
   postGuestPostCheck,
   deleteCommunityPost,
+  deleteGuestCommunityPost,
 ];

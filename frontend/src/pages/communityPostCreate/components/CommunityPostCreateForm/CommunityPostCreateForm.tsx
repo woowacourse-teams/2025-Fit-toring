@@ -50,21 +50,26 @@ function CommunityPostCreateForm() {
     );
   }
 
-  const shouldShowGuestFields = !isAuthenticated || isAnonymous;
+  const isGuestPost = !isAuthenticated;
+  const isAnonymousPost = isAuthenticated && isAnonymous;
+  const shouldRequireNickname = isGuestPost || isAnonymousPost;
+  const shouldRequireGuestPassword = isGuestPost;
+  const shouldShowIdentityFields =
+    shouldRequireNickname || shouldRequireGuestPassword;
   const isNicknameValid =
     nickname.trim().length >= COMMUNITY_POST.NICKNAME.MIN_LENGTH &&
     nickname.trim().length <= COMMUNITY_POST.NICKNAME.MAX_LENGTH;
   const isGuestPasswordValid =
     guestPassword.trim().length === COMMUNITY_POST.GUEST_PASSWORD.LENGTH;
-  const isOptionValid = shouldShowGuestFields
-    ? isNicknameValid && isGuestPasswordValid
-    : true;
+  const isOptionValid =
+    (!shouldRequireNickname || isNicknameValid) &&
+    (!shouldRequireGuestPassword || isGuestPasswordValid);
   const nicknameErrorMessage =
-    shouldShowGuestFields && nickname.trim() !== '' && !isNicknameValid
+    shouldRequireNickname && nickname.trim() !== '' && !isNicknameValid
       ? COMMUNITY_POST_ERROR_MESSAGE.NICKNAME_LENGTH
       : '';
   const guestPasswordErrorMessage =
-    shouldShowGuestFields &&
+    shouldRequireGuestPassword &&
     guestPassword.trim() !== '' &&
     !isGuestPasswordValid
       ? COMMUNITY_POST_ERROR_MESSAGE.GUEST_PASSWORD_LENGTH
@@ -72,40 +77,46 @@ function CommunityPostCreateForm() {
 
   const optionSection = (
     <S_Section>
-      {shouldShowGuestFields && <S_Divider />}
+      {shouldShowIdentityFields && <S_Divider />}
       <S_Content>
-        {shouldShowGuestFields && (
+        {shouldShowIdentityFields && (
           <S_FieldGroup>
-            <FormField label="닉네임" errorMessage={nicknameErrorMessage}>
-              <S_Input
-                value={nickname}
-                maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
-                placeholder="닉네임을 입력하세요."
-                onChange={(e) => setNickname(e.target.value)}
-              />
-            </FormField>
-            <FormField
-              label="비밀번호"
-              errorMessage={guestPasswordErrorMessage}
-            >
-              <S_Input
-                type="password"
-                value={guestPassword}
-                maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
-                placeholder="비밀번호를 입력하세요."
-                onChange={(e) => setGuestPassword(e.target.value)}
-              />
-            </FormField>
+            {shouldRequireNickname && (
+              <FormField label="닉네임" errorMessage={nicknameErrorMessage}>
+                <S_Input
+                  value={nickname}
+                  maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
+                  placeholder="닉네임을 입력하세요."
+                  onChange={(e) => setNickname(e.target.value)}
+                />
+              </FormField>
+            )}
+            {shouldRequireGuestPassword && (
+              <FormField
+                label="비밀번호"
+                errorMessage={guestPasswordErrorMessage}
+              >
+                <S_Input
+                  type="password"
+                  value={guestPassword}
+                  maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
+                  placeholder="비밀번호를 입력하세요."
+                  onChange={(e) => setGuestPassword(e.target.value)}
+                />
+              </FormField>
+            )}
           </S_FieldGroup>
         )}
 
-        <S_CheckboxRow>
-          <Checkbox
-            label="익명"
-            checked={isAnonymous}
-            onChange={(e) => setIsAnonymous(e.target.checked)}
-          />
-        </S_CheckboxRow>
+        {isAuthenticated && (
+          <S_CheckboxRow>
+            <Checkbox
+              label="익명"
+              checked={isAnonymous}
+              onChange={(e) => setIsAnonymous(e.target.checked)}
+            />
+          </S_CheckboxRow>
+        )}
       </S_Content>
     </S_Section>
   );
@@ -116,19 +127,20 @@ function CommunityPostCreateForm() {
       isOptionValid={isOptionValid}
       optionSection={optionSection}
       submitLabel="작성 완료"
-      onSavePost={({ title, content }) =>
+      onSavePost={({ title, content }) => {
         mutate({
-          title,
-          content,
-          isAnonymous,
-          ...(shouldShowGuestFields
-            ? {
-                nickname: nickname.trim(),
-                guestPassword: guestPassword.trim(),
-              }
-            : {}),
-        })
-      }
+          isGuestPost,
+          postData: {
+            title,
+            content,
+            isAnonymous: isAnonymousPost,
+            ...(shouldRequireNickname ? { nickname: nickname.trim() } : {}),
+            ...(shouldRequireGuestPassword
+              ? { guestPassword: guestPassword.trim() }
+              : {}),
+          },
+        });
+      }}
     />
   );
 }

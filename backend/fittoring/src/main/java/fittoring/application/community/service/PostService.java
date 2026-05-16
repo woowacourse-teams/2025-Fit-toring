@@ -39,8 +39,7 @@ public class PostService {
     public PostDetailResponse createPost(PostCreateDto dto) {
         Post post = createPostByAuthorType(dto);
         Post saved = postRepository.save(post);
-        boolean isMine = !saved.isGuestPost();
-        return PostDetailResponse.from(saved, 0, isMine, false);
+        return PostDetailResponse.from(saved, 0, false);
     }
 
     @Transactional(readOnly = true)
@@ -80,22 +79,12 @@ public class PostService {
     }
 
     @Transactional
-    public PostDetailResponse findPost(Long postId, Long memberId) {
-        return findPost(postId, memberId, null);
-    }
-
-    @Transactional
-    public PostDetailResponse findPost(Long postId, Long memberId, LikeActorKeyHash actorKeyHash) {
+    public PostDetailResponse findPost(Long postId, LikeActorKeyHash actorKeyHash) {
         Post post = getPost(postId);
         post.increaseViewCount();
         int commentCount = (int) commentRepository.countByPostId(post.getId());
-        boolean isMine = isPostOwner(memberId, post);
         boolean liked = isLiked(actorKeyHash, post);
-        return PostDetailResponse.from(post, commentCount, isMine, liked);
-    }
-
-    private boolean isPostOwner(Long memberId, Post post) {
-        return !post.isGuestPost() && memberId != null && post.isOwnedBy(memberId);
+        return PostDetailResponse.from(post, commentCount, liked);
     }
 
     private boolean isLiked(LikeActorKeyHash actorKeyHash, Post post) {
@@ -108,14 +97,14 @@ public class PostService {
     @Transactional
     public void modifyPost(PostUpdateDto dto) {
         Post post = getPost(dto.postId());
-        validatePostAccess(post, dto.memberId(), dto.guestPassword());
+        validatePostAccessByCaller(post, dto.memberId(), dto.guestPassword());
         post.modify(dto.title(), dto.content());
     }
 
     @Transactional
     public void deletePost(PostDeleteDto dto) {
         Post post = getPost(dto.postId());
-        validatePostAccess(post, dto.memberId(), dto.guestPassword());
+        validatePostAccessByCaller(post, dto.memberId(), dto.guestPassword());
         postRepository.delete(post);
     }
 
@@ -123,6 +112,12 @@ public class PostService {
     public void validateGuestPassword(Long postId, String guestPassword) {
         Post post = getPost(postId);
         post.matchGuestPassword(guestPassword);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean checkOwnership(Long postId, Long memberId) {
+        Post post = getPost(postId);
+        return post.isOwnedBy(memberId);
     }
 
     private Post createMemberPost(PostCreateDto dto) {
@@ -144,15 +139,28 @@ public class PostService {
         return Post.forGuest(dto.title(), dto.content(), dto.nickname(), dto.guestPassword());
     }
 
-    private void validatePostAccess(Post post, Long memberId, String guestPassword) {
+    private void validatePostAccessByCaller(Post post, Long memberId, String guestPassword) {
+        if (memberId != null) {
+            validateMemberPostAccess(post, memberId);
+        } else {
+            validateGuestPostAccess(post, guestPassword);
+        }
+    }
+
+    private void validateMemberPostAccess(Post post, Long memberId) {
         if (post.isGuestPost()) {
-            post.matchGuestPassword(guestPassword);
-            return;
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        if (memberId != null && post.isOwnedBy(memberId)) {
-            return;
+        if (!post.isOwnedBy(memberId)) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
-        throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+    }
+
+    private void validateGuestPostAccess(Post post, String guestPassword) {
+        if (!post.isGuestPost()) {
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+        }
+        post.matchGuestPassword(guestPassword);
     }
 
     private Post getPost(Long postId) {

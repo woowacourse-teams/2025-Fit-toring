@@ -52,4 +52,7 @@ public interface CommentRepository extends ListCrudRepository<Comment, Long> {
 
     @Query(value = "SELECT like_count FROM comment WHERE id = :id AND is_deleted = false", nativeQuery = true)
     Optional<Integer> findLikeCountById(@Param("id") Long id);
+
+    @Query("SELECT c.id FROM Comment c WHERE c.post.id = :postId AND c.member.id = :memberId")
+    List<Long> findIdsByPostIdAndMemberId(@Param("postId") Long postId, @Param("memberId") Long memberId);
 }

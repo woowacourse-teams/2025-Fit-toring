@@ -14,6 +14,7 @@ import fittoring.application.community.presentation.dto.request.PostCreateReques
 import fittoring.application.community.presentation.dto.request.PostUpdateRequest;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
+import fittoring.application.community.presentation.dto.response.PostOwnershipResponse;
 import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.member.repository.MemberRepository;
@@ -71,7 +72,6 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.commentCount()).isZero();
             softly.assertThat(response.viewCount()).isZero();
             softly.assertThat(response.likeCount()).isZero();
-            softly.assertThat(response.isMine()).isTrue();
         });
     }
 
@@ -84,7 +84,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts")
+                .post("/guest/posts")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -102,7 +102,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts")
+                .post("/guest/posts")
                 .then()
                 .statusCode(400);
     }
@@ -116,7 +116,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts")
+                .post("/guest/posts")
                 .then()
                 .statusCode(400);
     }
@@ -177,7 +177,6 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.commentCount()).isEqualTo(1);
             softly.assertThat(response.viewCount()).isEqualTo(1);
             softly.assertThat(response.likeCount()).isZero();
-            softly.assertThat(response.isMine()).isFalse();
         });
     }
 
@@ -198,7 +197,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -217,7 +216,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -236,7 +235,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -262,7 +261,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .delete("/posts/{postId}", post.getId())
+                .delete("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(204);
     }
@@ -452,5 +451,97 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(notLikedDetail.jsonPath().getBoolean("liked")).isFalse();
             softly.assertThat(notLikedDetail.jsonPath().getInt("likeCount")).isEqualTo(1);
         });
+    }
+
+    @DisplayName("회원 본인 게시글 소유 확인은 isMine=true를 반환한다.")
+    @Test
+    void checkPostOwnershipMine() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testMemberPost(member));
+
+        PostOwnershipResponse response = RestAssured.given(spec)
+                .filter(documentWithTag("post/get-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("게시글")
+                                .summary("게시글 소유 확인")
+                                .description("로그인한 회원이 해당 게시글의 작성자인지 확인합니다.")
+                                .responseSchema(Schema.schema("PostOwnershipResponse"))
+                                .build())))
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/posts/{postId}/mine", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(PostOwnershipResponse.class);
+
+        assertThat(response.isMine()).isTrue();
+    }
+
+    @DisplayName("타 회원 게시글 소유 확인은 isMine=false를 반환한다.")
+    @Test
+    void checkPostOwnershipNotMine() {
+        Member owner = memberRepository.save(FixtureUtil.testMentee());
+        Member other = memberRepository.save(FixtureUtil.testMentor());
+        String accessToken = jwtProvider.createAccessToken(other.getId(), other.getRole());
+        Post post = postRepository.save(FixtureUtil.testMemberPost(owner));
+
+        PostOwnershipResponse response = RestAssured.given(spec)
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/posts/{postId}/mine", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(PostOwnershipResponse.class);
+
+        assertThat(response.isMine()).isFalse();
+    }
+
+    @DisplayName("회원이 게스트 글을 회원 엔드포인트로 수정 시도하면 403을 반환한다.")
+    @Test
+    void modifyGuestPostViaMemberEndpointForbidden() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        PostUpdateRequest request = new PostUpdateRequest("new", "new", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .patch("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(403);
+    }
+
+    @DisplayName("비회원이 회원 글을 게스트 엔드포인트로 수정 시도하면 403을 반환한다.")
+    @Test
+    void modifyMemberPostViaGuestEndpointForbidden() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Post post = postRepository.save(FixtureUtil.testMemberPost(member));
+        PostUpdateRequest request = new PostUpdateRequest("new", "new", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .patch("/guest/posts/{postId}", post.getId())
+                .then()
+                .statusCode(403);
+    }
+
+    @DisplayName("게시글 소유 확인은 비로그인 시 401을 반환한다.")
+    @Test
+    void checkPostOwnershipUnauthorized() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+
+        RestAssured.given(spec)
+                .when()
+                .get("/posts/{postId}/mine", post.getId())
+                .then()
+                .statusCode(401);
     }
 }

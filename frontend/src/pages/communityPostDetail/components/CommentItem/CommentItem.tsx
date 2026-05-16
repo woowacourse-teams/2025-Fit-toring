@@ -27,8 +27,7 @@ function CommentItem({
   children,
 }: CommentItemProps) {
   const [menuOpened, setMenuOpened] = useState(false);
-  const canManageComment =
-    comment.isGuestComment || comment.isAnonymous || comment.isMine;
+  const canManageComment = comment.isGuestComment || comment.isMine;
   const { ref: menuRef } = useOutsideClickRef<HTMLDivElement>(() =>
     setMenuOpened(false),
   );
@@ -50,7 +49,7 @@ function CommentItem({
   return (
     <S_Container depth={depth}>
       <S_Header>
-        <S_Nickname>{comment.isAnonymous ? '익명' : comment.nickname}</S_Nickname>
+        <S_Nickname>{comment.nickname}</S_Nickname>
         <S_HeaderRight>
           <S_CreatedAt>{formatTimeAgo(comment.createdAt)}</S_CreatedAt>
           {canManageComment && !comment.isDeleted ? (
