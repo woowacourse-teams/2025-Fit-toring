@@ -15,6 +15,7 @@ import type {
 
 const BASE_URL = process.env.API_BASE_URL;
 const COMMUNITY_POST_DETAIL_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId`;
+const POST_OWNERSHIP_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/mine`;
 const POST_COMMENTS_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/comments`;
 const GUEST_POST_CHECK_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId/guest-check`;
 const DELETE_COMMUNITY_POST_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}/:postId`;
@@ -33,6 +34,10 @@ const getCommunityPostDetail = http.get(
 
 const getPostComments = http.get(POST_COMMENTS_URL, async () => {
   return HttpResponse.json(POST_COMMENTS);
+});
+
+const getCommunityPostOwnership = http.get(POST_OWNERSHIP_URL, async () => {
+  return HttpResponse.json({ isMine: true });
 });
 
 let nextCommentId = Math.max(...POST_COMMENTS.map(({ id }) => id)) + 1;
@@ -204,6 +209,7 @@ const deleteCommunityPost = http.delete(
 
 export const communityPostDetailHandler = [
   getCommunityPostDetail,
+  getCommunityPostOwnership,
   getPostComments,
   postPostComment,
   patchPostComment,

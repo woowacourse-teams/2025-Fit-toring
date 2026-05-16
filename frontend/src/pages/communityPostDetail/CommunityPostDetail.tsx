@@ -14,6 +14,7 @@ import CommunityPostPasswordModal from '../community/components/CommunityPostPas
 import { deleteCommunityPost } from './apis/deleteCommunityPost';
 import { deleteCommunityPostComment } from './apis/deleteCommunityPostComment';
 import { getCommunityPostDetail } from './apis/getCommunityPostDetail';
+import { getCommunityPostOwnership } from './apis/getCommunityPostOwnership';
 import { postCommunityPostCommentGuestCheck } from './apis/postCommunityPostCommentGuestCheck';
 import { postGuestPostPasswordCheck } from './apis/postGuestPostPasswordCheck';
 import CommunityPostDetailHeader from './components/CommunityPostDetailHeader/CommunityPostDetailHeader';
@@ -31,6 +32,7 @@ function CommunityPostDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { authenticated } = useAuth();
+  const memberId = localStorage.getItem('memberId');
 
   const [passwordModalOpened, setPasswordModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
@@ -60,6 +62,21 @@ function CommunityPostDetail() {
     queryKey: ['communityPostDetail', postId],
     queryFn: () => getCommunityPostDetail(postId!),
     enabled: Boolean(postId),
+  });
+
+  const shouldFetchPostOwnership = Boolean(
+    postId &&
+      authenticated &&
+      postData &&
+      !postData.isGuestPost &&
+      !postData.isAnonymous,
+  );
+
+  const { data: postOwnershipData } = useQuery({
+    queryKey: ['communityPostOwnership', postId, memberId],
+    queryFn: () => getCommunityPostOwnership(postId!),
+    enabled: shouldFetchPostOwnership,
+    retry: false,
   });
 
   const { mutate: deletePostMutate } = useMutation({
@@ -127,7 +144,8 @@ function CommunityPostDetail() {
   const shouldRequirePassword =
     postData.isGuestPost || postData.isAnonymous;
   const canManagePost =
-    shouldRequirePassword || (authenticated && postData.isMine);
+    shouldRequirePassword ||
+    (authenticated && postOwnershipData?.isMine === true);
   const isGuestLikeComment = (comment: PostComment) =>
     comment.isGuestComment || comment.isAnonymous;
 

@@ -21,7 +21,6 @@ const postCommunityPostCreate = http.post(POSTS_URL, async ({ request }) => {
     nickname: requestBody.nickname ?? CREATED_COMMUNITY_POST.nickname,
     isAnonymous: requestBody.isAnonymous ?? false,
     isGuestPost,
-    isMine: !isGuestPost,
   };
 
   return HttpResponse.json(responseBody, { status: 201 });
