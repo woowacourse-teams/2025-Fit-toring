@@ -236,9 +236,9 @@ class AuthenticationInterceptorTest {
                 .hasMessage("unexpected");
     }
 
-    @DisplayName("OptionalAuth는 accessToken이 만료된 경우 비회원으로 간주하여 통과시킨다.")
+    @DisplayName("OptionalAuth라도 accessToken 쿠키가 만료된 경우 ExpiredTokenException을 던진다.")
     @Test
-    void optionalAuthFallbackWhenAccessTokenExpired() {
+    void optionalAuthRethrowsExpiredToken() {
         // given
         given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
 
@@ -249,19 +249,15 @@ class AuthenticationInterceptorTest {
         given(jwtProvider.extractTokenPayload("expired-token"))
                 .willThrow(new ExpiredTokenException(BusinessErrorMessage.EXPIRED_TOKEN.getMessage()));
 
-        // when
-        boolean actual = interceptor.preHandle(request, response, handlerMethod);
-
-        // then
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(actual).isTrue();
-            softly.assertThat(request.getAttribute("memberId")).isNull();
-        });
+        // when // then
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+                .isInstanceOf(ExpiredTokenException.class)
+                .hasMessage(BusinessErrorMessage.EXPIRED_TOKEN.getMessage());
     }
 
-    @DisplayName("OptionalAuth는 accessToken이 변조된 경우 비회원으로 간주하여 통과시킨다.")
+    @DisplayName("OptionalAuth라도 accessToken 쿠키가 변조된 경우 InvalidTokenException을 던진다.")
     @Test
-    void optionalAuthFallbackWhenAccessTokenInvalid() {
+    void optionalAuthRethrowsInvalidToken() {
         // given
         given(handlerMethod.hasMethodAnnotation(OptionalAuth.class)).willReturn(true);
 
@@ -272,14 +268,10 @@ class AuthenticationInterceptorTest {
         given(jwtProvider.extractTokenPayload("malformed-token"))
                 .willThrow(new InvalidTokenException(BusinessErrorMessage.INVALID_TOKEN.getMessage()));
 
-        // when
-        boolean actual = interceptor.preHandle(request, response, handlerMethod);
-
-        // then
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(actual).isTrue();
-            softly.assertThat(request.getAttribute("memberId")).isNull();
-        });
+        // when // then
+        assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
+                .isInstanceOf(InvalidTokenException.class)
+                .hasMessage(BusinessErrorMessage.INVALID_TOKEN.getMessage());
     }
 
     @DisplayName("OptionalAuth는 accessToken 쿠키가 없으면 비회원으로 통과한다.")
