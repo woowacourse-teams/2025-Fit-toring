@@ -5,7 +5,6 @@ import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.auth.service.TokenPayload;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ForbiddenException;
-import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.UnauthorizedException;
 import fittoring.domain.model.MemberRole;
 import jakarta.servlet.http.Cookie;
@@ -28,21 +27,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             return true;
         }
-        if (isOptionalAuth(handler)) {
-            attemptOptionalAuthentication(request);
-            return true;
-        }
         if (isAuthenticationNotRequired(handler)) {
             return true;
         }
         return attemptAuthentication(request, handler);
-    }
-
-    private boolean isOptionalAuth(Object handler) {
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return false;
-        }
-        return handlerMethod.hasMethodAnnotation(OptionalAuth.class);
     }
 
     private boolean isAuthenticationNotRequired(final Object handler) {
@@ -59,21 +47,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         validateAdminAccess(handler, MemberRole.of(payload.role()));
         bindAuthenticationContext(request, payload);
         return true;
-    }
-
-    private void attemptOptionalAuthentication(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
-            return;
-        }
-        String accessToken;
-        try {
-            accessToken = getAccessToken(cookies);
-        } catch (InvalidTokenException ignored) {
-            return;
-        }
-        TokenPayload payload = jwtProvider.extractTokenPayload(accessToken);
-        bindAuthenticationContext(request, payload);
     }
 
     private TokenPayload authenticate(HttpServletRequest request) {

@@ -46,8 +46,11 @@ function InputSection({
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const isEditMode = editingComment !== null;
 
-  const shouldRequireIdentity = !authenticated || isAnonymous;
-  const isAnonymousComment = !authenticated || isAnonymous;
+  const shouldRequireNickname = !authenticated || isAnonymous;
+  const shouldRequireGuestPassword = !authenticated;
+  const shouldRequireIdentity =
+    shouldRequireNickname || shouldRequireGuestPassword;
+  const isAnonymousComment = authenticated && isAnonymous;
 
   const isNicknameValid =
     nickname.trim().length >= COMMUNITY_POST.NICKNAME.MIN_LENGTH &&
@@ -58,18 +61,26 @@ function InputSection({
   const isFormValid = isEditMode
     ? comment.trim().length > 0
     : comment.trim().length > 0 &&
-      (!shouldRequireIdentity || (isNicknameValid && isPasswordValid));
+      (!shouldRequireNickname || isNicknameValid) &&
+      (!shouldRequireGuestPassword || isPasswordValid);
 
   const { mutate: postCommentMutate, isPending: isSubmitPending } = useMutation(
     {
       mutationFn: (commentData: PostCommentRequest) =>
-        postCommunityPostComment(postId, commentData),
+        postCommunityPostComment({
+          postId,
+          commentData,
+          isGuestComment: !authenticated,
+        }),
       onSuccess: async () => {
         await queryClient.invalidateQueries({
           queryKey: ['postComments', postId],
         });
         await queryClient.invalidateQueries({
           queryKey: ['communityPostDetail', postId],
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ['communityPostCommentOwnership', postId],
         });
 
         setComment('');
@@ -94,13 +105,20 @@ function InputSection({
   const { mutate: patchCommentMutate, isPending: isEditSubmitPending } =
     useMutation({
       mutationFn: (commentData: { content: string; guestPassword?: string }) =>
-        patchCommunityPostComment(editingComment!.id, commentData),
+        patchCommunityPostComment({
+          commentId: editingComment!.id,
+          commentData,
+          isGuestComment: editingComment!.isGuestComment,
+        }),
       onSuccess: async () => {
         await queryClient.invalidateQueries({
           queryKey: ['postComments', postId],
         });
         await queryClient.invalidateQueries({
           queryKey: ['communityPostDetail', postId],
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ['communityPostCommentOwnership', postId],
         });
 
         setComment('');
@@ -138,7 +156,7 @@ function InputSection({
   };
 
   const nicknameErrorMessage = (() => {
-    if (!shouldRequireIdentity) {
+    if (!shouldRequireNickname) {
       return '';
     }
 
@@ -154,7 +172,7 @@ function InputSection({
   })();
 
   const passwordErrorMessage = (() => {
-    if (!shouldRequireIdentity) {
+    if (!shouldRequireGuestPassword) {
       return '';
     }
 
@@ -200,7 +218,7 @@ function InputSection({
 
       patchCommentMutate({
         content: comment.trim(),
-        ...(editingComment?.isGuestComment || editingComment?.isAnonymous
+        ...(editingComment?.isGuestComment
           ? { guestPassword: editingCommentGuestPassword }
           : {}),
       });
@@ -219,15 +237,13 @@ function InputSection({
     postCommentMutate({
       content: comment.trim(),
       isAnonymous: isAnonymousComment,
-      ...(shouldRequireIdentity
-        ? {
-            nickname: nickname.trim(),
-            guestPassword: guestPassword.trim(),
-          }
+      ...(shouldRequireNickname ? { nickname: nickname.trim() } : {}),
+      ...(shouldRequireGuestPassword
+        ? { guestPassword: guestPassword.trim() }
         : {}),
       parentId: replyTarget?.id ?? null,
       rootId: replyTarget ? (replyTarget.rootId ?? replyTarget.id) : null,
-      });
+    });
   };
 
   useEffect(() => {
@@ -295,37 +311,41 @@ function InputSection({
             <S_IdentitySection $expanded={isIdentityOpen}>
               <S_IdentitySectionInner>
                 <S_FieldGroup>
-                  <S_InlineField $hasError={nicknameErrorMessage !== ''}>
-                    <S_InlineLabel htmlFor="comment-nickname">
-                      닉네임
-                    </S_InlineLabel>
-                    <S_FieldInput
-                      id="comment-nickname"
-                      value={nickname}
-                      maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
-                      placeholder="닉네임을 입력하세요."
-                      onChange={(e) => setNickname(e.target.value)}
-                    />
-                    {nicknameErrorMessage ? (
-                      <S_InlineError>{nicknameErrorMessage}</S_InlineError>
-                    ) : null}
-                  </S_InlineField>
-                  <S_InlineField $hasError={passwordErrorMessage !== ''}>
-                    <S_InlineLabel htmlFor="comment-password">
-                      비밀번호
-                    </S_InlineLabel>
-                    <S_FieldInput
-                      id="comment-password"
-                      type="password"
-                      value={guestPassword}
-                      maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
-                      placeholder="비밀번호를 입력하세요."
-                      onChange={(e) => setGuestPassword(e.target.value)}
-                    />
-                    {passwordErrorMessage ? (
-                      <S_InlineError>{passwordErrorMessage}</S_InlineError>
-                    ) : null}
-                  </S_InlineField>
+                  {shouldRequireNickname ? (
+                    <S_InlineField $hasError={nicknameErrorMessage !== ''}>
+                      <S_InlineLabel htmlFor="comment-nickname">
+                        닉네임
+                      </S_InlineLabel>
+                      <S_FieldInput
+                        id="comment-nickname"
+                        value={nickname}
+                        maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
+                        placeholder="닉네임을 입력하세요."
+                        onChange={(e) => setNickname(e.target.value)}
+                      />
+                      {nicknameErrorMessage ? (
+                        <S_InlineError>{nicknameErrorMessage}</S_InlineError>
+                      ) : null}
+                    </S_InlineField>
+                  ) : null}
+                  {shouldRequireGuestPassword ? (
+                    <S_InlineField $hasError={passwordErrorMessage !== ''}>
+                      <S_InlineLabel htmlFor="comment-password">
+                        비밀번호
+                      </S_InlineLabel>
+                      <S_FieldInput
+                        id="comment-password"
+                        type="password"
+                        value={guestPassword}
+                        maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
+                        placeholder="비밀번호를 입력하세요."
+                        onChange={(e) => setGuestPassword(e.target.value)}
+                      />
+                      {passwordErrorMessage ? (
+                        <S_InlineError>{passwordErrorMessage}</S_InlineError>
+                      ) : null}
+                    </S_InlineField>
+                  ) : null}
                 </S_FieldGroup>
                 {!authenticated ? (
                   <S_GuestNotice>

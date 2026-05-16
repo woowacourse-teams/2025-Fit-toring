@@ -12,6 +12,7 @@ import fittoring.application.auth.service.JwtProvider;
 import fittoring.application.community.presentation.dto.request.CommentCreateRequest;
 import fittoring.application.community.presentation.dto.request.CommentUpdateRequest;
 import fittoring.application.community.presentation.dto.request.GuestPasswordRequest;
+import fittoring.application.community.presentation.dto.response.CommentOwnershipResponse;
 import fittoring.application.community.presentation.dto.response.CommentResponse;
 import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
@@ -82,7 +83,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts/{postId}/comments", post.getId())
+                .post("/guest/posts/{postId}/comments", post.getId())
                 .then()
                 .statusCode(201)
                 .extract()
@@ -101,7 +102,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts/{postId}/comments", post.getId())
+                .post("/guest/posts/{postId}/comments", post.getId())
                 .then()
                 .statusCode(400);
     }
@@ -277,7 +278,7 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/comments/{commentId}", comment.getId())
+                .patch("/guest/comments/{commentId}", comment.getId())
                 .then()
                 .statusCode(200);
     }
@@ -300,9 +301,89 @@ class CommentIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .delete("/comments/{commentId}", comment.getId())
+                .delete("/guest/comments/{commentId}", comment.getId())
                 .then()
                 .statusCode(204);
+    }
+
+    @DisplayName("내 댓글 ID 목록만 반환한다.")
+    @Test
+    void findOwnedCommentIds() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Member other = memberRepository.save(FixtureUtil.testMentor());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment myComment1 = commentRepository.save(FixtureUtil.testMemberComment(post, member, "mine-1"));
+        Comment myComment2 = commentRepository.save(FixtureUtil.testMemberComment(post, member, "mine-2"));
+        commentRepository.save(FixtureUtil.testMemberComment(post, other, "others"));
+        commentRepository.save(FixtureUtil.testGuestComment(post));
+
+        CommentOwnershipResponse response = RestAssured.given(spec)
+                .filter(documentWithTag("comment/get-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("댓글")
+                                .summary("내 댓글 ID 목록 조회")
+                                .description("게시글 내에서 로그인한 회원이 작성한 댓글 ID 목록을 조회합니다.")
+                                .responseSchema(Schema.schema("CommentOwnershipResponse"))
+                                .build())))
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/posts/{postId}/comments/mine", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(CommentOwnershipResponse.class);
+
+        assertThat(response.mineCommentIds())
+                .containsExactlyInAnyOrder(myComment1.getId(), myComment2.getId());
+    }
+
+    @DisplayName("회원이 게스트 댓글을 회원 엔드포인트로 수정 시도하면 403을 반환한다.")
+    @Test
+    void modifyGuestCommentViaMemberEndpointForbidden() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment comment = commentRepository.save(FixtureUtil.testGuestComment(post));
+        CommentUpdateRequest request = new CommentUpdateRequest("new", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .patch("/comments/{commentId}", comment.getId())
+                .then()
+                .statusCode(403);
+    }
+
+    @DisplayName("비회원이 회원 댓글을 게스트 엔드포인트로 수정 시도하면 403을 반환한다.")
+    @Test
+    void modifyMemberCommentViaGuestEndpointForbidden() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Comment comment = commentRepository.save(FixtureUtil.testMemberComment(post, member, "old"));
+        CommentUpdateRequest request = new CommentUpdateRequest("new", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .patch("/guest/comments/{commentId}", comment.getId())
+                .then()
+                .statusCode(403);
+    }
+
+    @DisplayName("내 댓글 ID 목록 조회는 비로그인 시 401을 반환한다.")
+    @Test
+    void findOwnedCommentIdsUnauthorized() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+
+        RestAssured.given(spec)
+                .when()
+                .get("/posts/{postId}/comments/mine", post.getId())
+                .then()
+                .statusCode(401);
     }
 
     @DisplayName("비회원 댓글 비밀번호 확인은 200을 반환한다.")

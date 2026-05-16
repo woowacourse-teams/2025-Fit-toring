@@ -4,11 +4,21 @@ import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 import type { CommunityPostDetail } from '../../../common/types/communityPost';
 import type { CommunityPostFormValues } from '../../../common/types/communityPostForm';
 
-export const postCommunityPostDetail = async (
-  postData: CommunityPostFormValues,
-) => {
+interface PostCommunityPostDetailParams {
+  postData: CommunityPostFormValues;
+  isGuestPost: boolean;
+}
+
+export const postCommunityPostDetail = async ({
+  postData,
+  isGuestPost,
+}: PostCommunityPostDetailParams) => {
+  const endpoint = isGuestPost
+    ? `${API_ENDPOINTS.GUEST}${API_ENDPOINTS.POSTS}`
+    : API_ENDPOINTS.POSTS;
+
   const response = await apiClient.post<CommunityPostFormValues>({
-    endpoint: API_ENDPOINTS.POSTS,
+    endpoint,
     body: postData,
     withCredentials: true,
   });

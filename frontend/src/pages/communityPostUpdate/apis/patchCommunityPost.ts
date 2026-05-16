@@ -7,12 +7,23 @@ export interface PatchCommunityPostRequest {
   guestPassword?: string;
 }
 
-export const patchCommunityPost = async (
-  postId: string,
-  postData: PatchCommunityPostRequest,
-) => {
+interface PatchCommunityPostParams {
+  postId: string;
+  postData: PatchCommunityPostRequest;
+  isGuestPost: boolean;
+}
+
+export const patchCommunityPost = async ({
+  postId,
+  postData,
+  isGuestPost,
+}: PatchCommunityPostParams) => {
+  const endpoint = isGuestPost
+    ? `${API_ENDPOINTS.GUEST}${API_ENDPOINTS.POSTS}/${postId}`
+    : `${API_ENDPOINTS.POSTS}/${postId}`;
+
   await apiClient.patch<PatchCommunityPostRequest>({
-    endpoint: `${API_ENDPOINTS.POSTS}/${postId}`,
+    endpoint,
     body: postData,
     withCredentials: true,
   });

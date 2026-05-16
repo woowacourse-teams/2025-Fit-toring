@@ -12,5 +12,4 @@ export interface CommunityPost {
 
 export interface CommunityPostDetail extends CommunityPost {
   isGuestPost: boolean;
-  isMine: boolean;
 }

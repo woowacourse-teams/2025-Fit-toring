@@ -16,6 +16,8 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 import { getCommunityPostDetail } from '../../../communityPostDetail/apis/getCommunityPostDetail';
 import { patchCommunityPost } from '../../apis/patchCommunityPost';
 
+import type { PatchCommunityPostRequest } from '../../apis/patchCommunityPost';
+
 interface CommunityPostUpdateLocationState {
   guestPassword?: string;
 }
@@ -42,9 +44,7 @@ function CommunityPostUpdateForm() {
     enabled: Boolean(postId),
   });
 
-  const shouldRequirePassword = Boolean(
-    postData && (postData.isGuestPost || postData.isAnonymous),
-  );
+  const shouldRequirePassword = Boolean(postData?.isGuestPost);
   const shouldCheckAuth = Boolean(postData && !shouldRequirePassword);
 
   const { isPending: isAuthPending, isError: isAuthError } = useQuery({
@@ -54,8 +54,12 @@ function CommunityPostUpdateForm() {
 
   const { mutate: patchCommunityPostMutate, isPending: isSubmitPending } =
     useMutation({
-      mutationFn: (values: Parameters<typeof patchCommunityPost>[1]) =>
-        patchCommunityPost(postId!, values),
+      mutationFn: (values: PatchCommunityPostRequest) =>
+        patchCommunityPost({
+          postId: postId!,
+          postData: values,
+          isGuestPost: postData?.isGuestPost ?? false,
+        }),
       onSuccess: () => {
         alert('커뮤니티 글이 성공적으로 수정되었습니다.');
         navigate(`${PAGE_URL.COMMUNITY}/${postId}`, {

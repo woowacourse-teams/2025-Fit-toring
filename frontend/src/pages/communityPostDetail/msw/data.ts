@@ -10,7 +10,6 @@ export const COMMUNITY_POST_DETAIL: CommunityPostDetail = {
   nickname: '작성자명',
   isAnonymous: false,
   isGuestPost: true,
-  isMine: true,
   createdAt: '2026-04-06T21:30:00',
   viewCount: 100,
   likeCount: 10,
