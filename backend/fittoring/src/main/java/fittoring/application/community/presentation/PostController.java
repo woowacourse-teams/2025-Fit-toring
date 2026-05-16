@@ -26,18 +26,20 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/posts")
 public class PostController {
 
     private final PostService postService;
     private final LikeActorResolver likeActorResolver;
 
     @AuthRequired
-    @PostMapping("/posts")
+    @PostMapping
     public ResponseEntity<PostDetailResponse> createPost(
             @Login LoginInfo loginInfo,
             @Valid @RequestBody PostCreateRequest request
@@ -46,12 +48,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/posts")
+    @GetMapping
     public ResponseEntity<PostListResponse> findPosts(@RequestParam(required = false) String cursorCode) {
         return ResponseEntity.ok(postService.findPosts(cursorCode));
     }
 
-    @GetMapping("/posts/{postId}")
+    @GetMapping("/{postId}")
     public ResponseEntity<PostDetailResponse> findPost(
             @PathVariable Long postId,
             @CookieValue(name = LikeActorResolver.COOKIE_NAME, required = false) String actorId
@@ -62,7 +64,7 @@ public class PostController {
     }
 
     @AuthRequired
-    @GetMapping("/posts/{postId}/mine")
+    @GetMapping("/{postId}/mine")
     public ResponseEntity<PostOwnershipResponse> checkPostOwnership(
             @Login LoginInfo loginInfo,
             @PathVariable Long postId
@@ -72,7 +74,7 @@ public class PostController {
     }
 
     @AuthRequired
-    @PatchMapping("/posts/{postId}")
+    @PatchMapping("/{postId}")
     public ResponseEntity<Void> modifyPost(
             @Login LoginInfo loginInfo,
             @PathVariable Long postId,
@@ -83,7 +85,7 @@ public class PostController {
     }
 
     @AuthRequired
-    @DeleteMapping("/posts/{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
             @Login LoginInfo loginInfo,
             @PathVariable Long postId,
@@ -93,7 +95,7 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/posts/{postId}/guest-check")
+    @PostMapping("/{postId}/guest-check")
     public ResponseEntity<Void> validateGuestPassword(
             @PathVariable Long postId,
             @Valid @RequestBody GuestPasswordRequest request

@@ -17,15 +17,17 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/guest")
 public class GuestCommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/guest/posts/{postId}/comments")
+    @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<CommentResponse> createGuestComment(
             @PathVariable Long postId,
             @Valid @RequestBody CommentCreateRequest request
@@ -34,7 +36,7 @@ public class GuestCommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PatchMapping("/guest/comments/{commentId}")
+    @PatchMapping("/comments/{commentId}")
     public ResponseEntity<Void> modifyGuestComment(
             @PathVariable Long commentId,
             @Valid @RequestBody CommentUpdateRequest request
@@ -43,7 +45,7 @@ public class GuestCommentController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/guest/comments/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteGuestComment(
             @PathVariable Long commentId,
             @Valid @RequestBody GuestPasswordRequest request
