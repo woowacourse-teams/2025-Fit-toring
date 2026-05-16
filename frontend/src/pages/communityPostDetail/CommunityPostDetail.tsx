@@ -68,8 +68,7 @@ function CommunityPostDetail() {
     postId &&
       authenticated &&
       postData &&
-      !postData.isGuestPost &&
-      !postData.isAnonymous,
+      !postData.isGuestPost,
   );
 
   const { data: postOwnershipData } = useQuery({
@@ -102,17 +101,27 @@ function CommunityPostDetail() {
   const { mutate: deleteCommentMutate } = useMutation({
     mutationFn: ({
       commentId,
+      isGuestComment,
       guestPassword,
     }: {
       commentId: number;
+      isGuestComment: boolean;
       guestPassword?: string;
-    }) => deleteCommunityPostComment(commentId, guestPassword),
+    }) =>
+      deleteCommunityPostComment({
+        commentId,
+        isGuestComment,
+        guestPassword,
+      }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['postComments', postId],
       });
       await queryClient.invalidateQueries({
         queryKey: ['communityPostDetail', postId],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['communityPostCommentOwnership', postId],
       });
 
       setCommentDeleteModalOpened(false);
@@ -141,13 +150,11 @@ function CommunityPostDetail() {
     return <div>게시글을 불러오지 못했습니다.</div>;
   }
 
-  const shouldRequirePassword =
-    postData.isGuestPost || postData.isAnonymous;
+  const shouldRequirePassword = postData.isGuestPost;
   const canManagePost =
     shouldRequirePassword ||
     (authenticated && postOwnershipData?.isMine === true);
-  const isGuestLikeComment = (comment: PostComment) =>
-    comment.isGuestComment || comment.isAnonymous;
+  const isGuestComment = (comment: PostComment) => comment.isGuestComment;
 
   const openPasswordModal = () => {
     setPasswordModalOpened(true);
@@ -243,7 +250,7 @@ function CommunityPostDetail() {
     setCommentDeleteTarget(null);
     setCommentDeletePassword('');
 
-    if (isGuestLikeComment(comment)) {
+    if (isGuestComment(comment)) {
       setPendingCommentAction('edit');
       setPendingCommentTarget(comment);
       setCommentPasswordModalOpened(true);
@@ -261,7 +268,7 @@ function CommunityPostDetail() {
     setEditingComment(null);
     setEditingCommentGuestPassword('');
 
-    if (isGuestLikeComment(comment)) {
+    if (isGuestComment(comment)) {
       setPendingCommentAction('delete');
       setPendingCommentTarget(comment);
       setCommentPasswordModalOpened(true);
@@ -312,7 +319,8 @@ function CommunityPostDetail() {
 
     deleteCommentMutate({
       commentId: commentDeleteTarget.id,
-      ...(commentDeleteTarget.isGuestComment || commentDeleteTarget.isAnonymous
+      isGuestComment: commentDeleteTarget.isGuestComment,
+      ...(commentDeleteTarget.isGuestComment
         ? { guestPassword: commentDeletePassword }
         : {}),
     });
@@ -321,6 +329,7 @@ function CommunityPostDetail() {
   const handleConfirmClickDeleteModal = () => {
     deletePostMutate({
       postId: postId!,
+      isGuestPost: postData.isGuestPost,
       ...(shouldRequirePassword
         ? { guestPassword: pendingDeletePassword }
         : {}),
@@ -337,7 +346,7 @@ function CommunityPostDetail() {
       <S_Content>
         <PostHeader
           createdAt={postData.createdAt}
-          nickname={postData.isAnonymous ? '익명' : postData.nickname}
+          nickname={postData.nickname}
           viewCount={postData.viewCount}
         />
         <PostContent
@@ -347,6 +356,7 @@ function CommunityPostDetail() {
         />
         <PostCommentSection
           postId={postId ?? ''}
+          authenticated={authenticated}
           onReplyClick={handleReplyClick}
           onEditClick={handleEditCommentClick}
           onDeleteClick={handleDeleteCommentClick}
