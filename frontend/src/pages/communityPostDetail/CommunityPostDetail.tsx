@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import DeleteConfirmModal from '../../common/components/DeleteConfirmModal/DeleteConfirmModal';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
+import { BOTTOM_NAV_HEIGHT } from '../../common/constants/layout';
 import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 import CommunityPostPasswordModal from '../community/components/CommunityPostPasswordModal/CommunityPostPasswordModal';
@@ -39,7 +40,9 @@ function CommunityPostDetail() {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [pendingDeletePassword, setPendingDeletePassword] = useState('');
   const [replyTarget, setReplyTarget] = useState<PostComment | null>(null);
-  const [editingComment, setEditingComment] = useState<PostComment | null>(null);
+  const [editingComment, setEditingComment] = useState<PostComment | null>(
+    null,
+  );
   const [editingCommentGuestPassword, setEditingCommentGuestPassword] =
     useState('');
   const [commentPasswordModalOpened, setCommentPasswordModalOpened] =
@@ -65,10 +68,7 @@ function CommunityPostDetail() {
   });
 
   const shouldFetchPostOwnership = Boolean(
-    postId &&
-      authenticated &&
-      postData &&
-      !postData.isGuestPost,
+    postId && authenticated && postData && !postData.isGuestPost,
   );
 
   const { data: postOwnershipData } = useQuery({
@@ -150,7 +150,7 @@ function CommunityPostDetail() {
     return <div>게시글을 불러오지 못했습니다.</div>;
   }
 
-  const shouldRequirePassword = postData.isGuestPost;
+  const shouldRequirePassword = postData.isGuestPost || postData.isAnonymous;
   const canManagePost =
     shouldRequirePassword ||
     (authenticated && postOwnershipData?.isMine === true);
@@ -400,7 +400,9 @@ function CommunityPostDetail() {
         onConfirmClick={handleConfirmClickCommentPasswordModal}
         title="댓글 비밀번호 확인"
         description="댓글을 수정하거나 삭제하려면 비밀번호를 입력해주세요."
-        confirmLabel={pendingCommentAction === 'delete' ? '삭제하기' : '수정하기'}
+        confirmLabel={
+          pendingCommentAction === 'delete' ? '삭제하기' : '수정하기'
+        }
       />
       <DeleteConfirmModal
         opened={commentDeleteModalOpened}
@@ -429,5 +431,5 @@ const S_Content = styled.div`
   flex: 1;
   flex-direction: column;
 
-  padding-bottom: calc(12rem + env(safe-area-inset-bottom));
+  padding-bottom: ${BOTTOM_NAV_HEIGHT}rem;
 `;
