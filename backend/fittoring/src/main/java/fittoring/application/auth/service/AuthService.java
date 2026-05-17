@@ -104,8 +104,11 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(Long memberId) {
-        refreshTokenRepository.deleteAllByMemberId(memberId);
+    public void logout(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
+        refreshTokenRepository.deleteByTokenValue(refreshToken);
     }
 
     @Transactional
