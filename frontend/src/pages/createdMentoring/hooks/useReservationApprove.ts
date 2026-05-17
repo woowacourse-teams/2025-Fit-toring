@@ -11,6 +11,11 @@ const useReservationApprove = (onSuccess: () => Promise<void>) => {
     onSuccess,
     onError: (error) => {
       console.error(`Error handling approve button click:`, error);
+      console.error('예약 승인 처리 중 오류가 발생했습니다.', error);
+      alert(
+        error.message ||
+          '예약 승인 처리 중 오류가 발생했습니다. 다시 시도해주세요.',
+      );
       captureSentryError({
         error,
         level: 'warning',
