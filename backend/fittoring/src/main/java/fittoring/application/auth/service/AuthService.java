@@ -103,7 +103,6 @@ public class AuthService {
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
-    @Transactional
     public void logout(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
             return;
