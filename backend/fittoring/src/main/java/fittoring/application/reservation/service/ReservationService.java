@@ -22,11 +22,15 @@ import fittoring.application.reservation.presentation.dto.response.PhoneNumberRe
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
+import fittoring.application.reservation.service.event.ReservationApprovedEvent;
+import fittoring.application.reservation.service.event.ReservationCreatedEvent;
+import fittoring.application.reservation.service.event.ReservationRejectedEvent;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
 import java.util.ArrayList;
@@ -38,6 +42,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +60,7 @@ public class ReservationService {
     private final ReviewRepository reviewRepository;
     private final MentoringStatisticsRepository mentoringStatisticsRepository;
     private final ImageService imageService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Reservation createReservation(ReservationCreateDto dto) {
@@ -68,6 +74,12 @@ public class ReservationService {
             throw exception;
         }
         mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
+        eventPublisher.publishEvent(new ReservationCreatedEvent(
+                reservation.getId(),
+                reservation.getMenteeName(),
+                reservation.getContent(),
+                new Phone(reservation.getMentorPhone())
+        ));
         return reservation;
     }
 
@@ -207,7 +219,15 @@ public class ReservationService {
         ChatRoomCreatedInfoDto chatRoomCreatedInfoDto = chatRoomService.registerChatRoom(reservation);
         String url = chatRoomCreatedInfoDto.url();
 
-        return ReservationInfo.from(reservation, url);
+        ReservationInfo info = ReservationInfo.from(reservation, url);
+        eventPublisher.publishEvent(new ReservationApprovedEvent(
+                info.reservationId(),
+                info.mentorName(),
+                info.content(),
+                info.menteePhone(),
+                info.chatRoomUrl()
+        ));
+        return info;
     }
 
     @Transactional
@@ -216,7 +236,13 @@ public class ReservationService {
         validateMentorAuthority(reservation.getMentor().getId(), mentorId);
 
         reservation.reject();
-        return ReservationInfo.from(reservation, null);
+        ReservationInfo info = ReservationInfo.from(reservation, null);
+        eventPublisher.publishEvent(new ReservationRejectedEvent(
+                info.reservationId(),
+                info.mentorName(),
+                info.menteePhone()
+        ));
+        return info;
     }
 
     @Transactional

@@ -5,12 +5,12 @@ import fittoring.application.reservation.presentation.dto.request.ReservationCre
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
-import fittoring.application.reservation.service.MentoringReservationFacadeService;
 import fittoring.application.reservation.service.ReservationService;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
+import fittoring.domain.model.Reservation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ReservationController {
 
-    private final MentoringReservationFacadeService mentoringReservationFacadeService;
     private final ReservationService reservationService;
 
     @AuthRequired
@@ -42,10 +41,9 @@ public class ReservationController {
                 mentoringId,
                 requestBody
         );
-        ReservationCreateResponse responseBody = mentoringReservationFacadeService.reserveMentoring(
-                reservationCreateDto);
+        Reservation reservation = reservationService.createReservation(reservationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseBody);
+                .body(ReservationCreateResponse.from(reservation));
     }
 
     @AuthRequired
@@ -77,7 +75,7 @@ public class ReservationController {
             @Login LoginInfo loginInfo,
             @PathVariable Long reservationId
     ) {
-        mentoringReservationFacadeService.approveAndSendSms(loginInfo.memberId(), reservationId);
+        reservationService.approve(loginInfo.memberId(), reservationId);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
@@ -88,7 +86,7 @@ public class ReservationController {
             @Login LoginInfo loginInfo,
             @PathVariable Long reservationId
     ) {
-        mentoringReservationFacadeService.rejectAndSendSms(loginInfo.memberId(), reservationId);
+        reservationService.reject(loginInfo.memberId(), reservationId);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }

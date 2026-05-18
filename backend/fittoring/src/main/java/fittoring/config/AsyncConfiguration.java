@@ -8,7 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 @EnableAsync
-public class SmsAsyncConfiguration {
+public class AsyncConfiguration {
 
     public static final String SMS_EXECUTOR_BEAN = "smsExecutor";
 

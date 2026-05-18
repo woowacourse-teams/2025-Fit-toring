@@ -3,7 +3,7 @@ package fittoring.application.reservation.service;
 import fittoring.application.reservation.service.event.ReservationApprovedEvent;
 import fittoring.application.reservation.service.event.ReservationCreatedEvent;
 import fittoring.application.reservation.service.event.ReservationRejectedEvent;
-import fittoring.config.SmsAsyncConfiguration;
+import fittoring.config.AsyncConfiguration;
 import fittoring.domain.model.Phone;
 import fittoring.infrastructure.SmsMessageFormatter;
 import fittoring.infrastructure.SmsRestClientService;
@@ -18,7 +18,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ReservationSmsEventListener {
+public class ReservationEventListener {
 
     private static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
     private static final String DESCRIPTION_CREATED = "예약 생성";
@@ -28,14 +28,14 @@ public class ReservationSmsEventListener {
     private final SmsRestClientService smsRestClientService;
     private final SmsMessageFormatter smsMessageFormatter;
 
-    @Async(SmsAsyncConfiguration.SMS_EXECUTOR_BEAN)
+    @Async(AsyncConfiguration.SMS_EXECUTOR_BEAN)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onReservationCreated(ReservationCreatedEvent event) {
         String message = smsMessageFormatter.reservationMessage(event.menteeName(), event.content());
         sendSafely(event.mentorPhone(), message, DESCRIPTION_CREATED, event.reservationId());
     }
 
-    @Async(SmsAsyncConfiguration.SMS_EXECUTOR_BEAN)
+    @Async(AsyncConfiguration.SMS_EXECUTOR_BEAN)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onReservationApproved(ReservationApprovedEvent event) {
         String message = smsMessageFormatter.approvedReservationMessage(
@@ -46,7 +46,7 @@ public class ReservationSmsEventListener {
         sendSafely(event.menteePhone(), message, DESCRIPTION_APPROVED, event.reservationId());
     }
 
-    @Async(SmsAsyncConfiguration.SMS_EXECUTOR_BEAN)
+    @Async(AsyncConfiguration.SMS_EXECUTOR_BEAN)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onReservationRejected(ReservationRejectedEvent event) {
         String message = smsMessageFormatter.rejectedReservationMessage(event.mentorName());
