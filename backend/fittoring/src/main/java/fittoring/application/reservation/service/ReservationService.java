@@ -41,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -74,12 +75,7 @@ public class ReservationService {
             throw exception;
         }
         mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
-        eventPublisher.publishEvent(new ReservationCreatedEvent(
-                reservation.getId(),
-                reservation.getMenteeName(),
-                reservation.getContent(),
-                new Phone(reservation.getMentorPhone())
-        ));
+        eventPublisher.publishEvent(ReservationCreatedEvent.of(reservation));
         return reservation;
     }
 
@@ -220,13 +216,7 @@ public class ReservationService {
         String url = chatRoomCreatedInfoDto.url();
 
         ReservationInfo info = ReservationInfo.from(reservation, url);
-        eventPublisher.publishEvent(new ReservationApprovedEvent(
-                info.reservationId(),
-                info.mentorName(),
-                info.content(),
-                info.menteePhone(),
-                info.chatRoomUrl()
-        ));
+        eventPublisher.publishEvent(ReservationApprovedEvent.of(info));
         return info;
     }
 
@@ -237,11 +227,7 @@ public class ReservationService {
 
         reservation.reject();
         ReservationInfo info = ReservationInfo.from(reservation, null);
-        eventPublisher.publishEvent(new ReservationRejectedEvent(
-                info.reservationId(),
-                info.mentorName(),
-                info.menteePhone()
-        ));
+        eventPublisher.publishEvent(ReservationRejectedEvent.of(info));
         return info;
     }
 
