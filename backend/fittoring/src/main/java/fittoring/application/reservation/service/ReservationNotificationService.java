@@ -1,38 +1,27 @@
 package fittoring.application.reservation.service;
 
+import fittoring.application.reservation.service.event.ReservationApprovedEvent;
+import fittoring.application.reservation.service.event.ReservationCreatedEvent;
+import fittoring.application.reservation.service.event.ReservationRejectedEvent;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
-import fittoring.infrastructure.SmsMessageFormatter;
-import fittoring.infrastructure.SmsRestClientService;
-import fittoring.infrastructure.exception.SmsException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ReservationNotificationService {
 
-    private static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
-
-    private final SmsRestClientService smsRestClientService;
-    private final SmsMessageFormatter smsMessageFormatter;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void sendReservationSmsMessage(Reservation reservation) {
-        String smsMessage = smsMessageFormatter.reservationMessage(
+        eventPublisher.publishEvent(new ReservationCreatedEvent(
+                reservation.getId(),
                 reservation.getMenteeName(),
-                reservation.getContent()
-        );
-        sendSafely(
-                () -> smsRestClientService.sendSms(
-                        new Phone(reservation.getMentorPhone()),
-                        smsMessage,
-                        RESERVATION_SUBJECT
-                ),
-                "예약 생성",
-                reservation.getId()
-        );
+                reservation.getContent(),
+                new Phone(reservation.getMentorPhone())
+        ));
     }
 
     public void sendReservationApproveSmsMessage(
@@ -42,28 +31,20 @@ public class ReservationNotificationService {
             Phone menteePhoneNumber,
             String chatRoomUrl
     ) {
-        String message = smsMessageFormatter.approvedReservationMessage(mentorName, content, chatRoomUrl);
-        sendSafely(
-                () -> smsRestClientService.sendSms(menteePhoneNumber, message, RESERVATION_SUBJECT),
-                "예약 승인",
-                reservationId
-        );
+        eventPublisher.publishEvent(new ReservationApprovedEvent(
+                reservationId,
+                mentorName,
+                content,
+                menteePhoneNumber,
+                chatRoomUrl
+        ));
     }
 
     public void sendReservationRejectSmsMessage(Long reservationId, String mentorName, Phone menteePhoneNumber) {
-        String message = smsMessageFormatter.rejectedReservationMessage(mentorName);
-        sendSafely(
-                () -> smsRestClientService.sendSms(menteePhoneNumber, message, RESERVATION_SUBJECT),
-                "예약 거절",
-                reservationId
-        );
-    }
-
-    private void sendSafely(Runnable smsCall, String operation, Long reservationId) {
-        try {
-            smsCall.run();
-        } catch (SmsException e) {
-            log.warn("{} SMS 발송 실패: reservationId={}", operation, reservationId, e);
-        }
+        eventPublisher.publishEvent(new ReservationRejectedEvent(
+                reservationId,
+                mentorName,
+                menteePhoneNumber
+        ));
     }
 }
