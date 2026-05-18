@@ -309,8 +309,7 @@ function ChatRoom() {
 
       const persistedMessages = readPersistedMessages();
       const roomMessages = persistedMessages[chatRoomId] ?? [];
-      console.log('서버에서 불러온 메시지:', serverMessages);
-      console.log('지속된 메시지:', roomMessages);
+
       setMessages(mergeMessages(serverMessages, roomMessages));
     }
   }, [chatRoomId, chatRoomMessage]);
