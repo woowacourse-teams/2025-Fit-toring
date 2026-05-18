@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../common/apis/ApiError';
@@ -20,7 +21,10 @@ import PasswordFields from '../../signup/components/PasswordFields/PasswordField
 import usePasswordWithConfirmInput from '../../signup/hooks/usePasswordWithConfirmInput';
 import { patchMyProfile } from '../apis/patchMyProfile';
 import useGender from '../hooks/useGender';
+import { MY_PROFILE_QUERY_KEY } from '../hooks/useMyProfile';
 import useVerificationStep from '../hooks/useVerificationStep';
+
+import EditProfileImageField from './EditProfileImageField';
 
 import type {
   PartialUserProfileRequest,
@@ -36,10 +40,16 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     name: initialName,
     gender: initialGender,
     phoneNumber: initialPhoneNumber,
+    image: initialImage,
   } = myProfile;
   const initialPassword = '';
   const initialPasswordConfirm = '';
   const initialVerificationCode = '';
+  const [profileImageKey, setProfileImageKey] = useState<string | undefined>(
+    undefined,
+  );
+  const [profileImageUploading, setProfileImageUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const {
     name,
@@ -170,7 +180,13 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   ] as const;
 
   const validateForm = () => {
-    const myProfileChanged = profileFields.some((item) => item.changed);
+    if (profileImageUploading || submitting) {
+      return false;
+    }
+
+    const myProfileChanged =
+      profileFields.some((item) => item.changed) ||
+      profileImageKey !== undefined;
     if (!myProfileChanged) {
       return false;
     }
@@ -183,9 +199,14 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   };
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (profileImageUploading || submitting) {
+      return;
+    }
 
     if (shouldBlockSubmitByVerificationCode()) {
       return;
@@ -209,9 +230,20 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
         return { ...acc, [cur.target]: cur.value };
       }, {} as PartialUserProfileRequest);
 
+    if (profileImageKey !== undefined) {
+      updatedUserProfile.profileImageKey = profileImageKey;
+    }
+
     try {
+      setSubmitting(true);
+
       const response = await patchMyProfile(updatedUserProfile);
       if (response.status === 204) {
+        const memberId = localStorage.getItem('memberId');
+        await queryClient.invalidateQueries({
+          queryKey: MY_PROFILE_QUERY_KEY.myProfile(memberId),
+        });
+
         alert('회원정보 수정에 성공했습니다.');
         navigate(PAGE_URL.HOME);
       }
@@ -227,11 +259,18 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
         feature: 'updatedUserProfile',
         step: 'updatedUserProfile',
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <S_Container onSubmit={handleSubmit}>
+      <EditProfileImageField
+        initialImageUrl={initialImage}
+        onProfileImageKeyChange={setProfileImageKey}
+        onUploadingChange={setProfileImageUploading}
+      />
       <S_FormFields>
         <UserInfoFields
           name={name}
