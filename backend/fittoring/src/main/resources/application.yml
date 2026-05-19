@@ -125,6 +125,11 @@ image-session:
     fixed-delay-ms: 300000
     batch-size: 200
 
+sms-outbox:
+  publisher:
+    enabled: true
+    fixed-delay-ms: 5000
+
 domain:
   sub-domain: ${SUB_DOMAIN}
 

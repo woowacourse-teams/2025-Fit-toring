@@ -85,4 +85,16 @@ public class SmsOutbox {
                 null
         );
     }
+
+    public void markSent() {
+        this.status = SmsOutboxStatus.SENT;
+    }
+
+    public void recordFailure(String error, int maxAttempts) {
+        this.attempts++;
+        this.lastError = error;
+        if (this.attempts >= maxAttempts) {
+            this.status = SmsOutboxStatus.FAILED;
+        }
+    }
 }
