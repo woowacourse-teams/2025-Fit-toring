@@ -22,6 +22,9 @@ const MentoringUpdate = lazy(
   () => import('./pages/mentoringUpdate/MentoringUpdate'),
 );
 const MyPage = lazy(() => import('./pages/myPage/MyPage'));
+const MyPageLayout = lazy(
+  () => import('./pages/myPage/components/layout/MyPageLayout'),
+);
 const ParticipatedMentoring = lazy(
   () => import('./pages/participatedMentoring/ParticipatedMentoring'),
 );
@@ -77,11 +80,11 @@ const router = createBrowserRouter([
           { path: `${PAGE_URL.CHAT_ROOMS}`, element: <ChatRooms /> },
           {
             path: `${PAGE_URL.MY_PAGE}`,
-            element: <MyPage />,
+            element: <MyPageLayout />,
             children: [
               {
                 index: true,
-                element: <CreatedMentoring />,
+                element: <MyPage />,
               },
               {
                 path: PAGE_URL.CREATED_MENTORING,
