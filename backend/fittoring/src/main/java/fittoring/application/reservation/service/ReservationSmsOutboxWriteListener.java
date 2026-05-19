@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ReservationSmsOutboxWriter {
+public class ReservationSmsOutboxWriteListener {
 
     private static final String RESERVATION_SUBJECT = "핏토링 예약 알림";
 
