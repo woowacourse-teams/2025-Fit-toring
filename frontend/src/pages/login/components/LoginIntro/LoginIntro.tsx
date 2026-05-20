@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-import logo from '../../../../common/assets/images/logo.svg';
+import logo from '../../../../common/assets/images/fittoringLogo.png';
 
 function LoginIntro() {
   return (

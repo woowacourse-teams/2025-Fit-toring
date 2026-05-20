@@ -2,7 +2,7 @@ import React from 'react';
 
 import styled from '@emotion/styled';
 
-import logo from '../../../../common/assets/images/logo.svg';
+import logo from '../../../../common/assets/images/fittoringLogo.png';
 
 function SignupIntro() {
   return (
