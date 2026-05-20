@@ -37,7 +37,9 @@ const S_Container = styled.label<{
   position: relative;
 
   padding: 0.6rem 1.2rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.DARK};
+  border: 1px solid
+    ${({ theme, checked }) =>
+      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
   border-radius: 16px;
 
   color: ${({ theme, checked }) =>
@@ -51,7 +53,8 @@ const S_Container = styled.label<{
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 
   &:hover {
-    border-color: ${({ theme }) => theme.OUTLINE.DARK};
+    border-color: ${({ theme, checked }) =>
+      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
   }
 
   &:active {
@@ -59,7 +62,8 @@ const S_Container = styled.label<{
   }
 
   &:focus-within {
-    border-color: ${({ theme }) => theme.OUTLINE.DARK};
+    border-color: ${({ theme, checked }) =>
+      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
   }
 `;
 
