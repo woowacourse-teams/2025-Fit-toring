@@ -1,10 +1,9 @@
 package fittoring.infrastructure;
 
-import fittoring.application.reservation.repository.SmsOutboxRepository;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.SmsOutbox;
-import fittoring.domain.model.SmsOutboxStatus;
 import fittoring.infrastructure.exception.SmsException;
+import jakarta.annotation.PreDestroy;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,23 +16,33 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SmsOutboxPublisher {
 
-    private final SmsOutboxRepository smsOutboxRepository;
+    private final SmsOutboxClaimer claimService;
     private final SmsRestClientService smsRestClientService;
     private final SmsOutboxResultApplier resultApplier;
 
     @Value("${sms-outbox.publisher.enabled:true}")
     private boolean enabled;
 
+    private volatile boolean shuttingDown;
+
+    @PreDestroy
+    public void onShutdown() {
+        this.shuttingDown = true;
+    }
+
     @Scheduled(fixedDelayString = "${sms-outbox.publisher.fixed-delay-ms:5000}")
     public void runScheduled() {
-        if (!enabled) {
+        if (!enabled || shuttingDown) {
             return;
         }
         publishPending();
     }
 
     public void publishPending() {
-        List<SmsOutbox> batch = smsOutboxRepository.findTop10ByStatusOrderByCreatedAtAsc(SmsOutboxStatus.PENDING);
+        if (shuttingDown) {
+            return;
+        }
+        List<SmsOutbox> batch = claimService.claimPending();
         for (SmsOutbox row : batch) {
             dispatchAndApply(row);
         }

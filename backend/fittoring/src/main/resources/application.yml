@@ -3,6 +3,8 @@ spring:
     name: fittoring
   profiles:
     active: ${SPRING_PROFILES_ACTIVE}
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
   config:
     import: optional:file:.env[.properties]
   mvc:
@@ -38,6 +40,7 @@ spring:
         secret-key: ${AWS_IAM_SECRET_KEY}
 
 server:
+  shutdown: graceful
   forward-headers-strategy: framework
   tomcat:
     remoteip:
@@ -129,6 +132,8 @@ sms-outbox:
   publisher:
     enabled: true
     fixed-delay-ms: 5000
+    batch-size: 10
+    lease-timeout-seconds: 300
 
 domain:
   sub-domain: ${SUB_DOMAIN}

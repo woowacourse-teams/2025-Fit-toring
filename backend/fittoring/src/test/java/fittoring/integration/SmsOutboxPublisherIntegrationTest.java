@@ -52,6 +52,9 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(refreshed.getStatus()).isEqualTo(SmsOutboxStatus.SENT);
             softly.assertThat(refreshed.getAttempts()).isZero();
             softly.assertThat(refreshed.getLastError()).isNull();
+            softly.assertThat(refreshed.getProcessingStartedAt())
+                    .as("SENT row는 lease 정보를 보유하지 않는다")
+                    .isNull();
         });
     }
 
@@ -80,6 +83,9 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(refreshed.getAttempts()).isEqualTo(1);
             softly.assertThat(refreshed.getLastError())
                     .isEqualTo(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
+            softly.assertThat(refreshed.getProcessingStartedAt())
+                    .as("실패한 row는 lease를 반납하고 다음 폴링에 다시 잡힌다")
+                    .isNull();
         });
     }
 
@@ -110,6 +116,9 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(refreshed.getAttempts()).isEqualTo(SmsOutboxResultApplier.MAX_ATTEMPTS);
             softly.assertThat(refreshed.getLastError())
                     .isEqualTo(InfraErrorMessage.SMS_SERVER_ERROR.getMessage());
+            softly.assertThat(refreshed.getProcessingStartedAt())
+                    .as("FAILED row는 lease 정보를 보유하지 않는다")
+                    .isNull();
         });
     }
 

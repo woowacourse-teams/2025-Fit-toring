@@ -56,6 +56,9 @@ public class SmsOutbox {
     @Column(name = "last_error", columnDefinition = "TEXT")
     private String lastError;
 
+    @Column(name = "processing_started_at")
+    private LocalDateTime processingStartedAt;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -82,19 +85,29 @@ public class SmsOutbox {
                 0,
                 null,
                 null,
+                null,
                 null
         );
     }
 
+    public void markProcessing(LocalDateTime now) {
+        this.status = SmsOutboxStatus.PROCESSING;
+        this.processingStartedAt = now;
+    }
+
     public void markSent() {
         this.status = SmsOutboxStatus.SENT;
+        this.processingStartedAt = null;
     }
 
     public void recordFailure(String error, int maxAttempts) {
         this.attempts++;
         this.lastError = error;
+        this.processingStartedAt = null;
         if (this.attempts >= maxAttempts) {
             this.status = SmsOutboxStatus.FAILED;
+            return;
         }
+        this.status = SmsOutboxStatus.PENDING;
     }
 }
