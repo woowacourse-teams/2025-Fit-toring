@@ -74,7 +74,7 @@ function ApplySection({ id, price, mentoringId }: ApplySectionProps) {
         customStyle={css`
           padding: 1.6rem 0;
 
-          background-color: ${THEME.BG.BLACK};
+          background-color: ${THEME.SYSTEM.MAIN500};
 
           font-size: 1.2rem;
 
