@@ -45,7 +45,7 @@ const S_Link = styled.a`
   text-decoration: none;
 
   &:hover {
-    background: ${({ theme }) => theme.SYSTEM.MAIN600};
+    background: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.BTN2_R}

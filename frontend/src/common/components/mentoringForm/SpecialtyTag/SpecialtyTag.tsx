@@ -51,11 +51,10 @@ const S_Container = styled.label<LabelType>`
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 
   &:hover {
-    border-color: ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN600 : theme.SYSTEM.MAIN500};
+    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 
     background-color: ${({ theme, checked }) =>
-      checked ? theme.SYSTEM.MAIN600 : theme.BG.LIGHT};
+      checked ? theme.SYSTEM.MAIN500 : theme.BG.LIGHT};
   }
 
   &:active {
