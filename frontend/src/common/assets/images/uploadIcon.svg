@@ -12,13 +12,13 @@
 <feOffset dy="4"/>
 <feGaussianBlur stdDeviation="6"/>
 <feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0.470588 0 0 0 0 0.435294 0 0 0 0.3 0"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.168627 0 0 0 0 0.654902 0 0 0 0 0.623529 0 0 0 0.3 0"/>
 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_581_2575"/>
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_581_2575" result="shape"/>
 </filter>
 <linearGradient id="paint0_linear_581_2575" x1="12" y1="8" x2="76" y2="72" gradientUnits="userSpaceOnUse">
-<stop stop-color="#26BDB1"/>
-<stop offset="1" stop-color="#00786F"/>
+<stop stop-color="#46ECD5"/>
+<stop offset="1" stop-color="#2BA79F"/>
 </linearGradient>
 </defs>
 </svg>

@@ -120,7 +120,7 @@ const S_SortItem = styled.li<{ selected: boolean }>`
     selected ? theme.SYSTEM.MAIN50 : 'transparent'};
 
   color: ${({ selected, theme }) =>
-    selected ? theme.SYSTEM.MAIN700 : theme.FONT.B03};
+    selected ? theme.SYSTEM.MAIN500 : theme.FONT.B03};
 
   transition: all 0.2s ease;
   cursor: pointer;
@@ -136,7 +136,7 @@ const S_SortItem = styled.li<{ selected: boolean }>`
   &:hover {
     background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
 
-    color: ${({ theme }) => theme.SYSTEM.MAIN700};
+    color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.C4_R};

@@ -65,7 +65,7 @@ const S_Link = styled(Link)`
 
   margin-left: 0.4rem;
 
-  color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  color: ${({ theme }) => theme.SYSTEM.MAIN500};
   cursor: pointer;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_B};
