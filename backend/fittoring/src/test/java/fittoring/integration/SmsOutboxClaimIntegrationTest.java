@@ -124,7 +124,7 @@ class SmsOutboxClaimIntegrationTest extends AbstractApiDocumentationTest {
 
         // when: 두 스레드가 동시에 claim 호출
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        CyclicBarrier barrier = new CyclicBarrier(2);
+        CyclicBarrier barrier = new CyclicBarrier(2);   // 스레드 두 개가 출발선에 모일 때 까지 기다림
         Callable<List<Long>> claimTask = () -> {
             barrier.await(5, TimeUnit.SECONDS);
             return smsOutboxClaimer.claimPending().stream()
