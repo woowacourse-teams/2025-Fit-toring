@@ -101,6 +101,10 @@ class ApiClient {
         throw new ApiError(data.message, response.status);
       }
 
+      if (response.status === 204) {
+        return {} as T;
+      }
+
       return response.json();
     };
 
