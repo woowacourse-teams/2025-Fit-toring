@@ -14,7 +14,7 @@ public interface SmsOutboxRepository extends JpaRepository<SmsOutbox, Long> {
             FROM sms_outbox
             WHERE status = 'PENDING'
                OR (status = 'PROCESSING' AND processing_started_at < :leaseCutoff)
-            ORDER BY created_at ASC
+            ORDER BY created_at ASC, id ASC
             LIMIT :batchSize
             FOR UPDATE SKIP LOCKED
             """, nativeQuery = true)

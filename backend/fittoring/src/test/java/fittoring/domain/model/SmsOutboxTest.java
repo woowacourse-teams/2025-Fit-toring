@@ -1,11 +1,14 @@
 package fittoring.domain.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SmsOutboxTest {
 
@@ -83,6 +86,19 @@ class SmsOutboxTest {
             softly.assertThat(row.getAttempts()).isEqualTo(MAX_ATTEMPTS);
             softly.assertThat(row.getProcessingStartedAt()).isNull();
         });
+    }
+
+    @DisplayName("recordFailure는 maxAttempts가 0 이하면 IllegalArgumentException을 던진다.")
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, -10})
+    void recordFailureRejectsNonPositiveMaxAttempts(int invalid) {
+        // given
+        SmsOutbox row = pendingRow();
+
+        // when //then
+        assertThatThrownBy(() -> row.recordFailure("error", invalid))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("maxAttempts");
     }
 
     @DisplayName("새로 만든 PENDING row는 processingStartedAt이 null이다.")

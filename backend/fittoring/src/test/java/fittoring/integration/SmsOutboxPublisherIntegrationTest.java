@@ -122,6 +122,38 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
         });
     }
 
+    @DisplayName("SmsException이 아닌 예외(네트워크/runtime)도 attempts=1 + PENDING으로 회수되어 lease가 좀비 상태로 남지 않는다.")
+    @Test
+    void unexpectedRuntimeFailureKeepsRowPendingAndIncrementsAttempts() {
+        // given
+        doThrow(new RuntimeException("connection reset"))
+                .when(smsRestClientService)
+                .sendSms(any(Phone.class), anyString(), anyString());
+        SmsOutbox row = smsOutboxRepository.save(SmsOutbox.pending(
+                1L,
+                SmsOutboxEventType.RESERVATION_CREATED,
+                new Phone("010-0000-0001"),
+                "메시지 본문",
+                SUBJECT
+        ));
+
+        // when
+        smsOutboxPublisher.publishPending();
+
+        // then
+        SmsOutbox refreshed = smsOutboxRepository.findById(row.getId()).orElseThrow();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(refreshed.getStatus())
+                    .as("비-SmsException도 catch되어 PROCESSING 좀비가 되지 않음")
+                    .isEqualTo(SmsOutboxStatus.PENDING);
+            softly.assertThat(refreshed.getAttempts()).isEqualTo(1);
+            softly.assertThat(refreshed.getLastError())
+                    .as("예외 메시지가 lastError에 기록된다")
+                    .contains("connection reset");
+            softly.assertThat(refreshed.getProcessingStartedAt()).isNull();
+        });
+    }
+
     @DisplayName("FAILED row는 더 이상 폴링 대상이 아니다.")
     @Test
     void failedRowsAreNotPicked() {

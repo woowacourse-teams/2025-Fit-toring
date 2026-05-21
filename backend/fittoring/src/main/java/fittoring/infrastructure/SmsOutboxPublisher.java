@@ -59,6 +59,10 @@ public class SmsOutboxPublisher {
         } catch (SmsException e) {
             log.warn("SMS 발송 실패: outboxId={}, eventType={}", row.getId(), row.getEventType(), e);
             resultApplier.applyFailure(row.getId(), e.getMessage());
+        } catch (Exception e) {
+            log.error("SMS 발송 중 예상치 못한 오류: outboxId={}, eventType={}", row.getId(), row.getEventType(), e);
+            String reason = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+            resultApplier.applyFailure(row.getId(), reason);
         }
     }
 }

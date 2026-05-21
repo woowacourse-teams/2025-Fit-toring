@@ -101,6 +101,9 @@ public class SmsOutbox {
     }
 
     public void recordFailure(String error, int maxAttempts) {
+        if (maxAttempts <= 0) {
+            throw new IllegalArgumentException("maxAttempts must be greater than 0");
+        }
         this.attempts++;
         this.lastError = error;
         this.processingStartedAt = null;
