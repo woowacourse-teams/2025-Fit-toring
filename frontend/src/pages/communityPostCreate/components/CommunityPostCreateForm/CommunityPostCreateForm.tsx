@@ -20,9 +20,8 @@ function CommunityPostCreateForm() {
   const [guestPassword, setGuestPassword] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
 
-  const { isPending, isSuccess: isAuthenticated } = useQuery(
-    authCheckQueryOptions,
-  );
+  const { data: authData, isPending } = useQuery(authCheckQueryOptions);
+  const isAuthenticated = Boolean(authData?.memberId);
 
   const { mutate, isPending: isSubmitPending } = useMutation({
     mutationFn: postCommunityPostDetail,
