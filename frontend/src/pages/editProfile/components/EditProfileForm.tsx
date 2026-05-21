@@ -51,6 +51,16 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   const [profileImageUploading, setProfileImageUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const handleProfileImageKeyChange = (
+    nextProfileImageKey: string | undefined,
+  ) => {
+    setProfileImageKey(nextProfileImageKey);
+  };
+
+  const handleProfileImageUploadingChange = (uploading: boolean) => {
+    setProfileImageUploading(uploading);
+  };
+
   const {
     name,
     handleNameChange,
@@ -268,8 +278,8 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     <S_Container onSubmit={handleSubmit}>
       <EditProfileImageField
         initialImageUrl={initialImage}
-        onProfileImageKeyChange={setProfileImageKey}
-        onUploadingChange={setProfileImageUploading}
+        onProfileImageKeyChange={handleProfileImageKeyChange}
+        onUploadingChange={handleProfileImageUploadingChange}
       />
       <S_FormFields>
         <UserInfoFields
