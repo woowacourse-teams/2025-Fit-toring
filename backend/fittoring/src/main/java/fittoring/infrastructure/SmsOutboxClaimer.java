@@ -4,22 +4,26 @@ import fittoring.application.reservation.repository.SmsOutboxRepository;
 import fittoring.domain.model.SmsOutbox;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@RequiredArgsConstructor
 public class SmsOutboxClaimer {
 
     private final SmsOutboxRepository smsOutboxRepository;
+    private final int batchSize;
+    private final int leaseTimeoutSeconds;
 
-    @Value("${sms-outbox.publisher.batch-size}")
-    private int batchSize;
-
-    @Value("${sms-outbox.publisher.lease-timeout-seconds}")
-    private int leaseTimeoutSeconds;
+    public SmsOutboxClaimer(
+            SmsOutboxRepository smsOutboxRepository,
+            @Value("${sms-outbox.publisher.batch-size}") int batchSize,
+            @Value("${sms-outbox.publisher.lease-timeout-seconds}") int leaseTimeoutSeconds
+    ) {
+        this.smsOutboxRepository = smsOutboxRepository;
+        this.batchSize = batchSize;
+        this.leaseTimeoutSeconds = leaseTimeoutSeconds;
+    }
 
     @Transactional
     public List<SmsOutbox> claimPending() {

@@ -98,6 +98,7 @@ public class SmsOutbox {
     public void markSent() {
         this.status = SmsOutboxStatus.SENT;
         this.processingStartedAt = null;
+        this.lastError = null;
     }
 
     public void recordFailure(String error, int maxAttempts) {

@@ -16,13 +16,19 @@ public class SmsOutboxResultApplier {
 
     @Transactional
     public void applySuccess(Long id) {
-        SmsOutbox row = smsOutboxRepository.findById(id).orElseThrow();
+        SmsOutbox row = smsOutboxRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException(
+                        "SMS outbox row를 찾지 못했습니다. outboxId=" + id
+                ));
         row.markSent();
     }
 
     @Transactional
     public void applyFailure(Long id, String error) {
-        SmsOutbox row = smsOutboxRepository.findById(id).orElseThrow();
+        SmsOutbox row = smsOutboxRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException(
+                        "SMS outbox row를 찾지 못했습니다. outboxId=" + id
+                ));
         row.recordFailure(error, MAX_ATTEMPTS);
     }
 }

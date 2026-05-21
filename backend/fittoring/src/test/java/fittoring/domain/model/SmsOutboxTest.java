@@ -49,6 +49,27 @@ class SmsOutboxTest {
         });
     }
 
+    @DisplayName("이전에 실패 이력이 있어도 markSent가 호출되면 lastError가 null로 정리된다.")
+    @Test
+    void markSentClearsLastError() {
+        // given: 한 번 실패해 lastError가 남은 row가 재시도에서 성공하는 시나리오
+        SmsOutbox row = pendingRow();
+        row.markProcessing(LocalDateTime.of(2026, 5, 20, 12, 0));
+        row.recordFailure("일시적 실패", MAX_ATTEMPTS);
+        row.markProcessing(LocalDateTime.of(2026, 5, 20, 12, 5));
+
+        // when
+        row.markSent();
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(row.getStatus()).isEqualTo(SmsOutboxStatus.SENT);
+            softly.assertThat(row.getLastError())
+                    .as("SENT 전이 후에는 이전 실패 사유가 잔류하면 안 된다")
+                    .isNull();
+        });
+    }
+
     @DisplayName("PROCESSING row가 실패하면 attempts 미만일 때 PENDING으로 되돌아가고 processingStartedAt이 null로 정리된다.")
     @Test
     void recordFailureBeforeMaxAttemptsReturnsToPending() {
