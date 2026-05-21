@@ -9,13 +9,12 @@ public record ReservationCreatedEvent(
         String content,
         Phone mentorPhone
 ) {
-    public static ReservationCreatedEvent of(Reservation reservation){
+    public static ReservationCreatedEvent of(Reservation reservation) {
         return new ReservationCreatedEvent(
                 reservation.getId(),
                 reservation.getMenteeName(),
                 reservation.getContent(),
-                new Phone(reservation.getMentorPhone()
-                )
+                new Phone(reservation.getMentorPhone())
         );
     }
 }
