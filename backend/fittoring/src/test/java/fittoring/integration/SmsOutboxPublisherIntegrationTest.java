@@ -1,20 +1,22 @@
 package fittoring.integration;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import fittoring.AbstractApiDocumentationTest;
 import fittoring.application.reservation.repository.SmsOutboxRepository;
-import fittoring.infrastructure.SmsOutboxPublisher;
-import fittoring.infrastructure.SmsOutboxResultApplier;
 import fittoring.domain.model.Phone;
 import fittoring.domain.model.SmsOutbox;
 import fittoring.domain.model.SmsOutboxEventType;
 import fittoring.domain.model.SmsOutboxStatus;
+import fittoring.infrastructure.SmsOutboxPublisher;
+import fittoring.infrastructure.SmsOutboxResultApplier;
+import fittoring.infrastructure.dto.BatchSendResult;
 import fittoring.infrastructure.exception.InfraErrorMessage;
 import fittoring.infrastructure.exception.SmsException;
+import java.util.Set;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,14 +36,8 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
     @Test
     void pendingRowMarkedAsSentOnSuccess() {
         // given
-        doNothing().when(smsRestClientService).sendSms(any(Phone.class), anyString(), anyString());
-        SmsOutbox row = smsOutboxRepository.save(SmsOutbox.pending(
-                1L,
-                SmsOutboxEventType.RESERVATION_CREATED,
-                new Phone("010-0000-0001"),
-                "메시지 본문",
-                SUBJECT
-        ));
+        doReturn(BatchSendResult.of(Set.of())).when(smsRestClientService).sendBatch(anyList());
+        SmsOutbox row = smsOutboxRepository.save(pendingRow("010-0000-0001"));
 
         // when
         smsOutboxPublisher.publishPending();
@@ -58,20 +54,63 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
         });
     }
 
+    @DisplayName("배치에서 일부 row만 실패하면 성공 row는 SENT, 실패 row는 PENDING + attempts=1로 분기된다.")
+    @Test
+    void batchPartialFailureSplitsPerRowOutcome() {
+        // given: 두 row를 저장하고, failure row의 outboxId만 실패로 stub
+        SmsOutbox successRow = smsOutboxRepository.save(pendingRow("010-0000-0001"));
+        SmsOutbox failureRow = smsOutboxRepository.save(pendingRow("010-0000-0002"));
+        doReturn(BatchSendResult.of(Set.of(failureRow.getId())))
+                .when(smsRestClientService).sendBatch(anyList());
+
+        // when
+        smsOutboxPublisher.publishPending();
+
+        // then
+        SmsOutbox refreshedSuccess = smsOutboxRepository.findById(successRow.getId()).orElseThrow();
+        SmsOutbox refreshedFailure = smsOutboxRepository.findById(failureRow.getId()).orElseThrow();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(refreshedSuccess.getStatus()).isEqualTo(SmsOutboxStatus.SENT);
+            softly.assertThat(refreshedSuccess.getAttempts()).isZero();
+            softly.assertThat(refreshedFailure.getStatus()).isEqualTo(SmsOutboxStatus.PENDING);
+            softly.assertThat(refreshedFailure.getAttempts()).isEqualTo(1);
+            softly.assertThat(refreshedFailure.getProcessingStartedAt()).isNull();
+        });
+    }
+
+    @DisplayName("같은 수신번호를 가진 두 row 중 하나만 실패해도 outboxId 기반 매핑으로 정확히 분기된다.")
+    @Test
+    void sameRecipientResolvedByOutboxId() {
+        // given: 같은 toPhone을 가진 두 row. failure row의 outboxId만 실패로 stub.
+        SmsOutbox successRow = smsOutboxRepository.save(pendingRow("010-9999-9999"));
+        SmsOutbox failureRow = smsOutboxRepository.save(pendingRow("010-9999-9999"));
+        doReturn(BatchSendResult.of(Set.of(failureRow.getId())))
+                .when(smsRestClientService).sendBatch(anyList());
+
+        // when
+        smsOutboxPublisher.publishPending();
+
+        // then: toPhone이 동일해도 outboxId로 식별되어 정확히 분기
+        SmsOutbox refreshedSuccess = smsOutboxRepository.findById(successRow.getId()).orElseThrow();
+        SmsOutbox refreshedFailure = smsOutboxRepository.findById(failureRow.getId()).orElseThrow();
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(refreshedSuccess.getStatus())
+                    .as("동일 toPhone이라도 outboxId가 다르면 성공 row는 SENT")
+                    .isEqualTo(SmsOutboxStatus.SENT);
+            softly.assertThat(refreshedFailure.getStatus())
+                    .as("같은 toPhone이라도 outboxId 매핑으로 실패 row만 PENDING으로 회수")
+                    .isEqualTo(SmsOutboxStatus.PENDING);
+            softly.assertThat(refreshedFailure.getAttempts()).isEqualTo(1);
+        });
+    }
+
     @DisplayName("PENDING row가 SMS 발송 실패 시 attempts=1 + 마지막 에러를 기록하고 status는 PENDING으로 남는다.")
     @Test
     void singleFailureKeepsRowPendingAndIncrementsAttempts() {
-        // given
+        // given: HTTP 자체가 실패한 시나리오 — 배치 전체 attempts++
         doThrow(new SmsException(InfraErrorMessage.SMS_SERVER_ERROR.getMessage()))
-                .when(smsRestClientService)
-                .sendSms(any(Phone.class), anyString(), anyString());
-        SmsOutbox row = smsOutboxRepository.save(SmsOutbox.pending(
-                1L,
-                SmsOutboxEventType.RESERVATION_CREATED,
-                new Phone("010-0000-0001"),
-                "메시지 본문",
-                SUBJECT
-        ));
+                .when(smsRestClientService).sendBatch(anyList());
+        SmsOutbox row = smsOutboxRepository.save(pendingRow("010-0000-0001"));
 
         // when
         smsOutboxPublisher.publishPending();
@@ -94,15 +133,8 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
     void maxedFailuresMarkRowAsFailed() {
         // given
         doThrow(new SmsException(InfraErrorMessage.SMS_SERVER_ERROR.getMessage()))
-                .when(smsRestClientService)
-                .sendSms(any(Phone.class), anyString(), anyString());
-        SmsOutbox row = smsOutboxRepository.save(SmsOutbox.pending(
-                1L,
-                SmsOutboxEventType.RESERVATION_CREATED,
-                new Phone("010-0000-0001"),
-                "메시지 본문",
-                SUBJECT
-        ));
+                .when(smsRestClientService).sendBatch(anyList());
+        SmsOutbox row = smsOutboxRepository.save(pendingRow("010-0000-0001"));
 
         // when: 3회 폴링 (실패 누적)
         for (int i = 0; i < SmsOutboxResultApplier.MAX_ATTEMPTS; i++) {
@@ -127,15 +159,8 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
     void unexpectedRuntimeFailureKeepsRowPendingAndIncrementsAttempts() {
         // given
         doThrow(new RuntimeException("connection reset"))
-                .when(smsRestClientService)
-                .sendSms(any(Phone.class), anyString(), anyString());
-        SmsOutbox row = smsOutboxRepository.save(SmsOutbox.pending(
-                1L,
-                SmsOutboxEventType.RESERVATION_CREATED,
-                new Phone("010-0000-0001"),
-                "메시지 본문",
-                SUBJECT
-        ));
+                .when(smsRestClientService).sendBatch(anyList());
+        SmsOutbox row = smsOutboxRepository.save(pendingRow("010-0000-0001"));
 
         // when
         smsOutboxPublisher.publishPending();
@@ -157,18 +182,10 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
     @DisplayName("FAILED row는 더 이상 폴링 대상이 아니다.")
     @Test
     void failedRowsAreNotPicked() {
-        // given: 처음부터 PENDING이지만 attempts가 이미 maxed 직전인 row를 직접 만들지 않고,
-        //        FAILED로 진입한 후 추가 폴링 호출 시 retry가 없어야 함을 검증
+        // given: FAILED로 진입한 후 추가 폴링 호출 시 retry가 없어야 함을 검증
         doThrow(new SmsException(InfraErrorMessage.SMS_SERVER_ERROR.getMessage()))
-                .when(smsRestClientService)
-                .sendSms(any(Phone.class), anyString(), anyString());
-        SmsOutbox row = smsOutboxRepository.save(SmsOutbox.pending(
-                1L,
-                SmsOutboxEventType.RESERVATION_CREATED,
-                new Phone("010-0000-0001"),
-                "메시지 본문",
-                SUBJECT
-        ));
+                .when(smsRestClientService).sendBatch(anyList());
+        SmsOutbox row = smsOutboxRepository.save(pendingRow("010-0000-0001"));
         for (int i = 0; i < SmsOutboxResultApplier.MAX_ATTEMPTS; i++) {
             smsOutboxPublisher.publishPending();
         }
@@ -185,5 +202,15 @@ class SmsOutboxPublisherIntegrationTest extends AbstractApiDocumentationTest {
                     .as("FAILED row는 폴링 대상에서 제외되므로 attempts 변화 없음")
                     .isEqualTo(SmsOutboxResultApplier.MAX_ATTEMPTS);
         });
+    }
+
+    private SmsOutbox pendingRow(String toPhone) {
+        return SmsOutbox.pending(
+                1L,
+                SmsOutboxEventType.RESERVATION_CREATED,
+                new Phone(toPhone),
+                "메시지 본문",
+                SUBJECT
+        );
     }
 }
