@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../common/apis/ApiError';
@@ -49,7 +49,6 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     undefined,
   );
   const [profileImageUploading, setProfileImageUploading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
   const handleProfileImageKeyChange = (
     nextProfileImageKey: string | undefined,
@@ -190,7 +189,7 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   ] as const;
 
   const validateForm = () => {
-    if (profileImageUploading || submitting) {
+    if (profileImageUploading || patchMyProfileMutation.isPending) {
       return false;
     }
 
@@ -211,10 +210,40 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const patchMyProfileMutation = useMutation({
+    mutationFn: patchMyProfile,
+    onSuccess: async (response) => {
+      if (response.status !== 204) {
+        return;
+      }
+
+      const memberId = localStorage.getItem('memberId');
+      await queryClient.invalidateQueries({
+        queryKey: MY_PROFILE_QUERY_KEY.myProfile(memberId),
+      });
+
+      alert('회원정보 수정에 성공했습니다.');
+      navigate(PAGE_URL.HOME);
+    },
+    onError: (error) => {
+      console.error('회원정보 수정 실패', error);
+      if (error instanceof ApiError) {
+        alert(error.message);
+      }
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'updatedUserProfile',
+        step: 'updatedUserProfile',
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (profileImageUploading || submitting) {
+    if (profileImageUploading || patchMyProfileMutation.isPending) {
       return;
     }
 
@@ -244,34 +273,7 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
       updatedUserProfile.profileImageKey = profileImageKey;
     }
 
-    try {
-      setSubmitting(true);
-
-      const response = await patchMyProfile(updatedUserProfile);
-      if (response.status === 204) {
-        const memberId = localStorage.getItem('memberId');
-        await queryClient.invalidateQueries({
-          queryKey: MY_PROFILE_QUERY_KEY.myProfile(memberId),
-        });
-
-        alert('회원정보 수정에 성공했습니다.');
-        navigate(PAGE_URL.HOME);
-      }
-    } catch (error) {
-      console.error('회원정보 수정 실패', error);
-      if (error instanceof ApiError) {
-        alert(error.message);
-      }
-
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'updatedUserProfile',
-        step: 'updatedUserProfile',
-      });
-    } finally {
-      setSubmitting(false);
-    }
+    patchMyProfileMutation.mutate(updatedUserProfile);
   };
 
   return (
