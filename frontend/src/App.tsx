@@ -111,6 +111,7 @@ const router = createBrowserRouter([
             path: `${PAGE_URL.COMMUNITY}/:postId`,
             element: <CommunityPostDetail />,
           },
+          { path: PAGE_URL.LOGIN, element: <Login /> },
         ],
       },
       { path: PAGE_URL.LANDING, element: <Landing /> },
@@ -122,7 +123,6 @@ const router = createBrowserRouter([
         path: `${PAGE_URL.MENTORING_UPDATE}/:mentoringId`,
         element: <MentoringUpdate />,
       },
-      { path: PAGE_URL.LOGIN, element: <Login /> },
       {
         element: <ProtectedRoute />,
         children: [
