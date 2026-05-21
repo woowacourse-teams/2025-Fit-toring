@@ -1,3 +1,4 @@
+import styled from '@emotion/styled';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import useDelayedVisibility from '../../../pages/chatRoom/hooks/useDelayedVisibility';
@@ -16,7 +17,11 @@ function ProtectedRoute() {
   const checkingAuth = isPending || (isFetching && !isFetchedAfterMount);
 
   if (checkingAuth) {
-    return showLoadingSpinner ? <LoadingSpinner /> : null;
+    return showLoadingSpinner ? (
+      <S_LoadingContainer>
+        <LoadingSpinner />
+      </S_LoadingContainer>
+    ) : null;
   }
 
   if (isError || !data?.memberId) {
@@ -27,3 +32,11 @@ function ProtectedRoute() {
 }
 
 export default ProtectedRoute;
+
+const S_LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 100dvh;
+`;
