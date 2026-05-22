@@ -69,7 +69,7 @@ export const resetCss = css`
   * {
     font-family: Pretendard, sans-serif;
     font-size: 62.5%;
-    touch-action: pan-x pan-y;
+    touch-action: pan-y;
   }
 
   body {
@@ -80,6 +80,7 @@ export const resetCss = css`
   body,
   #root {
     height: 100%;
+    overflow-x: hidden;
     overscroll-behavior: none;
   }
 
