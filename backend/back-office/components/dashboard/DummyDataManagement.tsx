@@ -5,6 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -13,12 +20,17 @@ import {
   TableRow,
 } from "../ui/table";
 import {
+  DummyCommentPreview,
+  DummyPostPreview,
+  DummyScenarioPreview,
   fetchDummyScenarios,
+  fetchDummyPreview,
   fetchDummyStatus,
   insertDummyScenario,
   DummyStatus,
 } from "@/services/dummyApi";
-import { Database, Loader2, RefreshCw, Search, Upload } from "lucide-react";
+import { isoDurationToHHMM, isoDurationToMilliseconds } from "@/services/dummyDuration";
+import { Clock, Database, Eye, Loader2, MessageSquare, RefreshCw, Search, Upload } from "lucide-react";
 
 export function DummyDataManagement() {
   const [scenarios, setScenarios] = useState<DummyStatus[]>([]);
@@ -26,8 +38,12 @@ export function DummyDataManagement() {
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [checkingFileSeq, setCheckingFileSeq] = useState<number | null>(null);
   const [insertingFileSeq, setInsertingFileSeq] = useState<number | null>(null);
+  const [previewingFileSeq, setPreviewingFileSeq] = useState<number | null>(null);
+  const [previewScenario, setPreviewScenario] = useState<DummyStatus | null>(null);
+  const [preview, setPreview] = useState<DummyScenarioPreview | null>(null);
 
-  const isBusy = isLoadingList || checkingFileSeq !== null || insertingFileSeq !== null;
+  const isBusy =
+    isLoadingList || checkingFileSeq !== null || insertingFileSeq !== null || previewingFileSeq !== null;
 
   const toKstOffsetDateTime = (dateTimeLocal: string) => {
     const normalized = dateTimeLocal.length === 16 ? `${dateTimeLocal}:00` : dateTimeLocal;
@@ -35,8 +51,7 @@ export function DummyDataManagement() {
   };
 
   const formatAppliedStartAt = (iso: string) => {
-    const m = iso.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
-    return m ? `${m[1]} ${m[2]}` : iso;
+    return formatKstDateTime(Date.parse(iso));
   };
 
   const updateScenario = (updated: DummyStatus) => {
@@ -79,6 +94,31 @@ export function DummyDataManagement() {
     }
   };
 
+  const handlePreview = async (scenario: DummyStatus) => {
+    try {
+      setPreviewingFileSeq(scenario.fileSeq);
+      setPreviewScenario(scenario);
+      setPreview(null);
+      const response = await fetchDummyPreview(scenario.fileSeq);
+      setPreview(response);
+    } catch (err) {
+      console.error(err);
+      toast.error(`${scenario.fileSeq}번 시나리오 미리보기 조회에 실패했습니다.`);
+      setPreviewScenario(null);
+      setPreview(null);
+    } finally {
+      setPreviewingFileSeq(null);
+    }
+  };
+
+  const closePreview = (open: boolean) => {
+    if (open) {
+      return;
+    }
+    setPreviewScenario(null);
+    setPreview(null);
+  };
+
   const handleInsert = async (scenario: DummyStatus) => {
     const startAt = startAtMap[scenario.fileSeq] ?? "";
     if (!startAt.trim()) {
@@ -107,6 +147,52 @@ export function DummyDataManagement() {
     } finally {
       setInsertingFileSeq(null);
     }
+  };
+
+  const getPreviewStartAt = () => {
+    if (!previewScenario) {
+      return null;
+    }
+    const input = startAtMap[previewScenario.fileSeq]?.trim();
+    return input ? toKstOffsetDateTime(input) : null;
+  };
+
+  const getPreviewOriginalStartAt = () => {
+    if (!preview) {
+      return null;
+    }
+    const times = preview.posts.flatMap((post) => [
+      post.scheduledAt,
+      ...flattenCommentTimes(post.comments),
+    ]);
+    return times.reduce<string | null>((earliest, current) => {
+      if (earliest === null) {
+        return current;
+      }
+      return Date.parse(current) < Date.parse(earliest) ? current : earliest;
+    }, null);
+  };
+
+  const getDisplayedScheduledAt = (scheduledAt: string) => {
+    if (!preview) {
+      return formatAppliedStartAt(scheduledAt);
+    }
+
+    const originalStartAt = getPreviewOriginalStartAt();
+    const previewStartAt = getPreviewStartAt();
+    if (!originalStartAt || !previewStartAt) {
+      return formatAppliedStartAt(scheduledAt);
+    }
+
+    const originalDurationMs = isoDurationToMilliseconds(preview.originalDuration);
+    if (originalDurationMs === 0) {
+      return formatAppliedStartAt(previewStartAt);
+    }
+
+    const originalOffsetMs = Date.parse(scheduledAt) - Date.parse(originalStartAt);
+    const appliedDurationMs = isoDurationToMilliseconds(preview.originalDuration);
+    const scaledOffsetMs = Math.floor((originalOffsetMs * appliedDurationMs) / originalDurationMs);
+    return formatKstDateTime(Date.parse(previewStartAt) + scaledOffsetMs);
   };
 
   return (
@@ -163,7 +249,7 @@ export function DummyDataManagement() {
                     <TableHead>파일명</TableHead>
                     <TableHead className="w-24">상태</TableHead>
                     <TableHead className="w-52">시작 시각(KST)</TableHead>
-                    <TableHead className="w-40 text-right">관리</TableHead>
+                    <TableHead className="w-64 text-right">관리</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -205,6 +291,20 @@ export function DummyDataManagement() {
                             type="button"
                             variant="outline"
                             size="sm"
+                            onClick={() => handlePreview(scenario)}
+                            disabled={isBusy}
+                          >
+                            {previewingFileSeq === scenario.fileSeq ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                            미리보기
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleStatusCheck(scenario.fileSeq)}
                             disabled={isBusy}
                           >
@@ -238,6 +338,138 @@ export function DummyDataManagement() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={previewScenario !== null} onOpenChange={closePreview}>
+        <DialogContent className="max-h-[90vh] sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{previewScenario?.scenarioFile ?? "시나리오"} 미리보기</DialogTitle>
+            <DialogDescription>
+              원본 기간 {preview ? isoDurationToHHMM(preview.originalDuration) : "-"} 기준으로 게시글과 댓글을 확인합니다.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
+            {previewingFileSeq !== null && preview === null ? (
+              <div className="flex h-40 items-center justify-center text-sm text-muted-foreground">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                시나리오 내용을 불러오는 중입니다.
+              </div>
+            ) : preview && preview.posts.length > 0 ? (
+              preview.posts.map((post, index) => (
+                <PreviewPostCard
+                  key={`${post.scheduledAt}-${index}`}
+                  post={post}
+                  index={index}
+                  getDisplayedScheduledAt={getDisplayedScheduledAt}
+                />
+              ))
+            ) : (
+              <div className="flex h-40 items-center justify-center text-sm text-muted-foreground">
+                표시할 시나리오 내용이 없습니다.
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
+}
+
+function PreviewPostCard({
+  post,
+  index,
+  getDisplayedScheduledAt,
+}: {
+  post: DummyPostPreview;
+  index: number;
+  getDisplayedScheduledAt: (scheduledAt: string) => string;
+}) {
+  return (
+    <div className="rounded-md border p-4">
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="mb-1 flex items-center gap-2 text-sm text-muted-foreground">
+            <Database className="h-4 w-4" />
+            게시글 {index + 1} · {post.nickname}
+          </div>
+          <h3 className="break-words text-base font-semibold">{post.title}</h3>
+        </div>
+        <PreviewTime scheduledAt={getDisplayedScheduledAt(post.scheduledAt)} />
+      </div>
+      <p className="whitespace-pre-wrap break-words text-sm leading-6">{post.content}</p>
+      {post.comments.length > 0 && (
+        <div className="mt-4 space-y-3 border-t pt-4">
+          {post.comments.map((comment, commentIndex) => (
+            <PreviewCommentRow
+              key={`${comment.scheduledAt}-${commentIndex}`}
+              comment={comment}
+              depth={0}
+              getDisplayedScheduledAt={getDisplayedScheduledAt}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PreviewCommentRow({
+  comment,
+  depth,
+  getDisplayedScheduledAt,
+}: {
+  comment: DummyCommentPreview;
+  depth: number;
+  getDisplayedScheduledAt: (scheduledAt: string) => string;
+}) {
+  return (
+    <div className="space-y-3" style={{ marginLeft: depth * 18 }}>
+      <div className="rounded-md border bg-muted/20 p-3">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            {comment.nickname}
+          </div>
+          <PreviewTime scheduledAt={getDisplayedScheduledAt(comment.scheduledAt)} />
+        </div>
+        <p className="whitespace-pre-wrap break-words text-sm leading-6">{comment.content}</p>
+      </div>
+      {comment.replies.map((reply, replyIndex) => (
+        <PreviewCommentRow
+          key={`${reply.scheduledAt}-${replyIndex}`}
+          comment={reply}
+          depth={depth + 1}
+          getDisplayedScheduledAt={getDisplayedScheduledAt}
+        />
+      ))}
+    </div>
+  );
+}
+
+function PreviewTime({ scheduledAt }: { scheduledAt: string }) {
+  return (
+    <span className="inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-xs text-muted-foreground">
+      <Clock className="h-3.5 w-3.5" />
+      {scheduledAt}
+    </span>
+  );
+}
+
+function flattenCommentTimes(comments: DummyCommentPreview[]): string[] {
+  return comments.flatMap((comment) => [
+    comment.scheduledAt,
+    ...flattenCommentTimes(comment.replies),
+  ]);
+}
+
+function formatKstDateTime(timestampMs: number) {
+  if (Number.isNaN(timestampMs)) {
+    return "-";
+  }
+  const kst = new Date(timestampMs + 9 * 60 * 60 * 1000);
+  const year = kst.getUTCFullYear();
+  const month = String(kst.getUTCMonth() + 1).padStart(2, "0");
+  const date = String(kst.getUTCDate()).padStart(2, "0");
+  const hours = String(kst.getUTCHours()).padStart(2, "0");
+  const minutes = String(kst.getUTCMinutes()).padStart(2, "0");
+  return `${year}-${month}-${date} ${hours}:${minutes}`;
 }
