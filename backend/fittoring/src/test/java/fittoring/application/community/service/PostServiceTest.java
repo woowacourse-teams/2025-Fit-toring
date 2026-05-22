@@ -151,9 +151,9 @@ class PostServiceTest extends IntegrationTestSupport {
         assertThat(actual.id()).isEqualTo(post.getId());
     }
 
-    @DisplayName("회원 게시글 상세 조회 시 작성자 본인이면 isMine이 true이고 조회수가 증가한다.")
+    @DisplayName("게시글 상세 조회 시 댓글 수와 조회수가 정상 반영된다.")
     @Test
-    void findPostWithIsPostOwnerAndViewCount() {
+    void findPostWithCommentCountAndViewCount() {
         // given
         Member member = memberRepository.save(FixtureUtil.testMentee());
         Post post = postRepository.save(FixtureUtil.testMemberPost(member));
@@ -161,58 +161,14 @@ class PostServiceTest extends IntegrationTestSupport {
         commentRepository.save(FixtureUtil.testGuestComment(post));
 
         // when
-        PostDetailResponse actual = postService.findPost(post.getId(), member.getId());
+        PostDetailResponse actual = postService.findPost(post.getId(), null);
 
         // then
         assertSoftly(softly -> {
             softly.assertThat(actual.commentCount()).isEqualTo(2);
             softly.assertThat(actual.viewCount()).isEqualTo(1);
             softly.assertThat(actual.likeCount()).isZero();
-            softly.assertThat(actual.isMine()).isTrue();
         });
-    }
-
-    @DisplayName("회원 게시글 상세 조회 시 다른 사용자면 isMine이 false이다.")
-    @Test
-    void findPostWithIsPostOwnerFalseForOtherMember() {
-        // given
-        Member owner = memberRepository.save(FixtureUtil.testMentee());
-        Member other = memberRepository.save(FixtureUtil.testMentor());
-        Post post = postRepository.save(FixtureUtil.testMemberPost(owner));
-
-        // when
-        PostDetailResponse actual = postService.findPost(post.getId(), other.getId());
-
-        // then
-        assertThat(actual.isMine()).isFalse();
-    }
-
-    @DisplayName("비로그인 상태로 게시글을 조회하면 isMine이 false이다.")
-    @Test
-    void findPostWithIsPostOwnerFalseForGuest() {
-        // given
-        Member member = memberRepository.save(FixtureUtil.testMentee());
-        Post post = postRepository.save(FixtureUtil.testMemberPost(member));
-
-        // when
-        PostDetailResponse actual = postService.findPost(post.getId(), null);
-
-        // then
-        assertThat(actual.isMine()).isFalse();
-    }
-
-    @DisplayName("비회원 게시글은 로그인 여부와 무관하게 isMine이 false이다.")
-    @Test
-    void findPostWithIsPostOwnerFalseForGuestPost() {
-        // given
-        Member member = memberRepository.save(FixtureUtil.testMentee());
-        Post post = postRepository.save(FixtureUtil.testGuestPost());
-
-        // when
-        PostDetailResponse actual = postService.findPost(post.getId(), member.getId());
-
-        // then
-        assertThat(actual.isMine()).isFalse();
     }
 
     @DisplayName("게시글 상세 조회 시 likeActorId가 좋아요한 게시글이면 liked가 true이다.")
@@ -223,8 +179,8 @@ class PostServiceTest extends IntegrationTestSupport {
         postLikeService.like(post.getId(), ACTOR_1);
 
         // when
-        PostDetailResponse liked = postService.findPost(post.getId(), null, ACTOR_1);
-        PostDetailResponse notLiked = postService.findPost(post.getId(), null, ACTOR_2);
+        PostDetailResponse liked = postService.findPost(post.getId(), ACTOR_1);
+        PostDetailResponse notLiked = postService.findPost(post.getId(), ACTOR_2);
 
         // then
         assertSoftly(softly -> {

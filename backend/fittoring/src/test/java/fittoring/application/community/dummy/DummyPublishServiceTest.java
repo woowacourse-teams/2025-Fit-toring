@@ -3,6 +3,7 @@ package fittoring.application.community.dummy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -55,7 +56,7 @@ class DummyPublishServiceTest {
 
         // then
         assertThat(result.processed()).isFalse();
-        verify(dao, never()).insertPublishedPost(any());
+        verify(dao, never()).insertPublishedPost(any(), any(LocalDateTime.class));
     }
 
     @DisplayName("게시글 pending row를 운영 post로 발행하고 PUBLISHED로 표시한다.")
@@ -64,7 +65,7 @@ class DummyPublishServiceTest {
         // given
         PostPendingRow row = postRow(1L, 0);
         when(dao.findNextPostForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
-        when(dao.insertPublishedPost(row)).thenReturn(10L);
+        when(dao.insertPublishedPost(eq(row), any(LocalDateTime.class))).thenReturn(10L);
 
         // when
         PublishResult result = service.publishNextPost(List.of());
@@ -82,7 +83,7 @@ class DummyPublishServiceTest {
         // given
         PostPendingRow row = postRow(1L, 4);
         when(dao.findNextPostForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
-        doThrow(new RuntimeException("insert failed")).when(dao).insertPublishedPost(row);
+        doThrow(new RuntimeException("insert failed")).when(dao).insertPublishedPost(eq(row), any(LocalDateTime.class));
 
         // when
         PublishResult result = service.publishNextPost(List.of());
@@ -100,7 +101,7 @@ class DummyPublishServiceTest {
         // given
         PostPendingRow row = postRow(1L, 0);
         when(dao.findNextPostForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
-        when(dao.insertPublishedPost(row)).thenReturn(10L);
+        when(dao.insertPublishedPost(eq(row), any(LocalDateTime.class))).thenReturn(10L);
         doThrow(new RuntimeException("update failed")).when(dao).markPostPublished(1L, 10L);
 
         // when // then
@@ -120,7 +121,7 @@ class DummyPublishServiceTest {
 
         // then
         assertThat(result.processed()).isFalse();
-        verify(dao, never()).insertPublishedComment(any());
+        verify(dao, never()).insertPublishedComment(any(), any(LocalDateTime.class));
     }
 
     @DisplayName("댓글 pending row를 운영 comment로 발행하고 PUBLISHED로 표시한다.")
@@ -129,7 +130,7 @@ class DummyPublishServiceTest {
         // given
         CommentPendingRow row = commentRow(2L, 0);
         when(dao.findNextCommentForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
-        when(dao.insertPublishedComment(row)).thenReturn(20L);
+        when(dao.insertPublishedComment(eq(row), any(LocalDateTime.class))).thenReturn(20L);
 
         // when
         PublishResult result = service.publishNextComment(List.of());
@@ -147,7 +148,7 @@ class DummyPublishServiceTest {
         // given
         CommentPendingRow row = commentRow(2L, 4);
         when(dao.findNextCommentForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
-        doThrow(new RuntimeException("insert failed")).when(dao).insertPublishedComment(row);
+        doThrow(new RuntimeException("insert failed")).when(dao).insertPublishedComment(eq(row), any(LocalDateTime.class));
 
         // when
         PublishResult result = service.publishNextComment(List.of());
@@ -165,7 +166,7 @@ class DummyPublishServiceTest {
         // given
         CommentPendingRow row = commentRow(2L, 0);
         when(dao.findNextCommentForPublish(any(), any(LocalDateTime.class))).thenReturn(Optional.of(row));
-        when(dao.insertPublishedComment(row)).thenReturn(20L);
+        when(dao.insertPublishedComment(eq(row), any(LocalDateTime.class))).thenReturn(20L);
         doThrow(new RuntimeException("update failed")).when(dao).markCommentPublished(2L, 20L);
 
         // when // then

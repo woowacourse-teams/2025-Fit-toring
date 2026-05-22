@@ -34,6 +34,10 @@ export function isPWAStandalone(): boolean {
   return window.matchMedia('(display-mode: standalone)').matches;
 }
 
+export function isMobileViewport(): boolean {
+  return window.matchMedia('(max-width: 480px)').matches;
+}
+
 export function isNotificationSupported(): boolean {
   return (
     'Notification' in window &&

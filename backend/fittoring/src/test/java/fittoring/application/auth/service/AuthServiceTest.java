@@ -198,7 +198,7 @@ class AuthServiceTest extends IntegrationTestSupport {
                 .isInstanceOf(InvalidTokenException.class);
     }
 
-    @DisplayName("로그아웃이 성공하면 해당 사용자의 refreshToken이 삭제된다.")
+    @DisplayName("로그아웃이 성공하면 요청한 refreshToken이 삭제된다.")
     @Test
     void logout() {
         //given
@@ -207,21 +207,30 @@ class AuthServiceTest extends IntegrationTestSupport {
         refreshTokenRepository.save(refreshToken, savedMember.getId(), jwtProvider.getRefreshExpirationMillis());
 
         //when
-        authService.logout(savedMember.getId());
+        authService.logout(refreshToken);
 
         //then
         assertThat(refreshTokenRepository.findMemberIdByTokenValue(refreshToken)).isEmpty();
     }
 
-    @DisplayName("refreshToken이 존재하지 않아도 로그아웃은 멱등하게 처리된다(예외 없음).")
+    @DisplayName("refreshToken이 저장소에 존재하지 않아도 로그아웃은 멱등하게 처리된다(예외 없음).")
     @Test
     void logout2() {
         // given
-        Long memberId = 123L;
+        String refreshToken = jwtProvider.createRefreshToken();
 
         // when
         // then
-        assertThatCode(() -> authService.logout(memberId))
+        assertThatCode(() -> authService.logout(refreshToken))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("refreshToken이 없어도 로그아웃은 멱등하게 처리된다(예외 없음).")
+    @Test
+    void logoutWithoutRefreshToken() {
+        // when
+        // then
+        assertThatCode(() -> authService.logout((String) null))
                 .doesNotThrowAnyException();
     }
 

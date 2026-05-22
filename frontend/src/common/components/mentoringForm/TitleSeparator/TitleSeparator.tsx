@@ -33,7 +33,7 @@ const S_LeftBar = styled.div`
   width: 6rem;
   height: 0.2rem;
 
-  background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 `;
 
 const S_RightBar = styled.div`

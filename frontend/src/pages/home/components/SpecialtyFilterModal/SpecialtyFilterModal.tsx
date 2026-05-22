@@ -96,11 +96,13 @@ function SpecialtyFilterModal({
   return (
     <Modal opened={opened} onCloseClick={handleRollbackTemporarySpecialties}>
       <S_Container>
-        <S_Title>전문 분야 (최대 {MAX_SPECIALTIES}개)</S_Title>
+        <S_TitleWrapper>
+          <S_Title>전문 분야 선택</S_Title>
+          <S_Description>최대 {MAX_SPECIALTIES}개 선택 가능</S_Description>
+        </S_TitleWrapper>
         <S_VisuallyHidden>
           총 {specialties.length}개의 선택지가 있습니다.
         </S_VisuallyHidden>
-        <S_Line />
 
         <S_SpecialtyWrapper>
           <S_VisuallyHidden role="status">
@@ -157,11 +159,26 @@ const S_Container = styled.article`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.1rem;
+`;
+
+const S_TitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+
+  width: 100%;
 `;
 
 const S_Title = styled.h3`
-  ${({ theme }) => theme.TYPOGRAPHY.H3_R};
+  color: ${({ theme }) => theme.SYSTEM.GRAY900};
+  ${({ theme }) => theme.TYPOGRAPHY.H3_B};
+`;
+
+const S_Description = styled.p`
+  color: ${({ theme }) => theme.SYSTEM.GRAY500};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
 
 const S_Line = styled.hr`
@@ -176,19 +193,19 @@ const S_SpecialtyWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.8rem;
+  gap: 0.7rem;
 
-  max-height: 15rem;
-  padding: 0.4rem;
+  max-height: min(18rem, 44dvh);
+  padding: 0.2rem;
   overflow-y: auto;
 `;
 
 const S_ButtonWrapper = styled.div`
   display: flex;
-  gap: 1.2rem;
+  gap: 1rem;
 
   width: 100%;
-  padding: 0.4rem;
+  padding: 0.2rem;
 `;
 
 const S_Button = styled.button`
@@ -197,7 +214,7 @@ const S_Button = styled.button`
   justify-content: center;
 
   width: 100%;
-  padding: 1.2rem 1.6rem;
+  padding: 1rem 1.6rem;
   border-radius: 6px;
 
   ${({ theme }) => theme.TYPOGRAPHY.BTN2_R};
@@ -211,10 +228,10 @@ const S_Button = styled.button`
 `;
 
 const S_PrimaryButton = styled(S_Button)`
-  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY900};
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN500};
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%);
 
-  background-color: ${({ theme }) => theme.SYSTEM.GRAY900};
+  background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 
   color: ${({ theme }) => theme.BG.WHITE};
 `;

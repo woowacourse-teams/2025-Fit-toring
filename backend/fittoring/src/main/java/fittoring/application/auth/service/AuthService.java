@@ -103,9 +103,11 @@ public class AuthService {
                 .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
     }
 
-    @Transactional
-    public void logout(Long memberId) {
-        refreshTokenRepository.deleteAllByMemberId(memberId);
+    public void logout(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
+        refreshTokenRepository.deleteByTokenValue(refreshToken);
     }
 
     @Transactional

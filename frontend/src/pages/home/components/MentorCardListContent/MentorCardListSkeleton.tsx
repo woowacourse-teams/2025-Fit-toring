@@ -47,8 +47,9 @@ const S_Container = styled.li`
 
   width: 100%;
   height: 21.5rem;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
-  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 8px;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
@@ -70,7 +71,6 @@ const S_ImageBox = styled.div`
 
   width: 43%;
   height: 100%;
-  border-radius: 5px 0 0 5px;
 `;
 
 const S_InfoWrapper = styled.div`

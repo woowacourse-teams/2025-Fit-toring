@@ -95,7 +95,7 @@ const S_InfoWrapper = styled.div`
 `;
 
 const S_PriceText = styled.span`
-  color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  color: ${({ theme }) => theme.SYSTEM.MAIN500};
   font-weight: bold;
   font-size: 1.6rem;
 `;

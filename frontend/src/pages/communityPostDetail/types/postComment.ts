@@ -1,16 +1,19 @@
 import type { LikeState } from '../../../common/types/like';
 
-export interface PostComment extends LikeState {
+export interface PostCommentResponse extends LikeState {
   id: number;
   nickname: string;
   content: string;
   isAnonymous: boolean;
   isGuestComment: boolean;
-  isMine: boolean;
   rootId: number | null;
   parentId: number | null;
   isDeleted: boolean;
   createdAt: string;
+}
+
+export interface PostComment extends PostCommentResponse {
+  isMine: boolean;
 }
 
 export interface PostCommentRequest {

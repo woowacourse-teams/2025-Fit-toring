@@ -13,5 +13,4 @@ export interface CommunityPost extends LikeState {
 
 export interface CommunityPostDetail extends CommunityPost {
   isGuestPost: boolean;
-  isMine: boolean;
 }

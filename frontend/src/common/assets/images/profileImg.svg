@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 768 768" role="img" aria-label="Profile placeholder">
   <rect width="100%" height="100%" fill="#F0FDFA"/>
-  <circle cx="384" cy="270" r="138" fill="#00786F"/>
-  <rect x="131" y="460" width="506" height="307" rx="92" fill="#00786F"/>
+  <circle cx="384" cy="270" r="138" fill="#2BA79F"/>
+  <rect x="131" y="460" width="506" height="307" rx="92" fill="#2BA79F"/>
 </svg>
