@@ -2,8 +2,8 @@ import styled from '@emotion/styled';
 
 // TODO: API 연동 후 실제 데이터로 교체 필요
 const MY_PAGE_STATS = [
-  { label: '내가 운영하는 멘토링', value: 3 },
-  { label: '내가 듣는 멘토링', value: 5 },
+  { label: '운영하는 멘토링', value: 3 },
+  { label: '수강하는 멘토링', value: 5 },
   { label: '작성한 글', value: 12 },
 ] as const;
 

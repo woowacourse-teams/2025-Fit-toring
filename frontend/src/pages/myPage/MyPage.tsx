@@ -38,12 +38,12 @@ function MyPage() {
   const mentoringItems: MyPageSectionItem[] = [
     {
       iconSrc: calendarIcon,
-      label: '개설한 멘토링',
+      label: '운영하는 멘토링',
       onClick: () => navigate(PAGE_URL.CREATED_MENTORING),
     },
     {
       iconSrc: usersIcon,
-      label: '참여한 멘토링',
+      label: '수강하는 멘토링',
       onClick: () => navigate(PAGE_URL.PARTICIPATED_MENTORING),
     },
   ];
