@@ -92,14 +92,7 @@ function EditProfileImageField({
   const handleProfileImageInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const files = e.target.files;
-    const file = files?.[0];
-
-    if (files && files.length > 1) {
-      alert('이미지는 최대 1장까지 첨부할 수 있어요');
-      e.target.value = '';
-      return;
-    }
+    const file = e.target.files?.[0];
 
     if (!file) {
       return;
@@ -175,7 +168,6 @@ function EditProfileImageField({
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        multiple
         onChange={handleProfileImageInputChange}
       />
       <ProfileImageActionSheet
