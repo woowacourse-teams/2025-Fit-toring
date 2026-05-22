@@ -9,13 +9,16 @@ import fittoring.config.auth.Admin;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/admin/dummy/sql-insert")
@@ -48,6 +51,12 @@ public class DummyAdminController {
     @GetMapping("/{fileSeq}/preview")
     public ResponseEntity<DummyScenarioPreviewResponse> preview(@PathVariable int fileSeq) {
         return ResponseEntity.ok(service.preview(fileSeq));
+    }
+
+    @Admin
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DummySqlInsertStatusResponse> upload(@RequestPart("file") MultipartFile file) {
+        return ResponseEntity.ok(service.upload(file));
     }
 
     @Admin

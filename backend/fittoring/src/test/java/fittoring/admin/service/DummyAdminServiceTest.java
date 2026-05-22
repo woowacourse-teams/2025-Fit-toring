@@ -3,7 +3,10 @@ package fittoring.admin.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,18 +24,22 @@ import fittoring.application.community.dummy.scenario.ScenarioFile;
 import fittoring.application.community.dummy.scenario.ScenarioLoader;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.mock.web.MockMultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class DummyAdminServiceTest {
@@ -93,14 +100,24 @@ class DummyAdminServiceTest {
 
     private final ScenarioLoader scenarioLoader = new ScenarioLoader();
 
-    private final DummyAdminApiProperties properties = new DummyAdminApiProperties(
-            true, BASE_PATH, GUEST_HASH, NO_OFFSET_DAYS);
+    @TempDir
+    Path tempUploadDir;
 
+    private String uploadPath;
+    private DummyAdminApiProperties properties;
     private DummyAdminService service;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        uploadPath = tempUploadDir.toString().replace('\\', '/') + "/";
+        properties = new DummyAdminApiProperties(true, BASE_PATH, uploadPath, GUEST_HASH, NO_OFFSET_DAYS);
         service = new DummyAdminService(dao, resourceResolver, scenarioLoader, properties);
+
+        // 기본: 어떤 패턴이든 빈 결과, 어떤 경로의 Resource든 not-exists. 개별 테스트에서 specific stub으로 override.
+        lenient().when(resourceResolver.getResources(anyString())).thenReturn(new Resource[0]);
+        Resource notExistsResource = mock(Resource.class);
+        lenient().when(notExistsResource.exists()).thenReturn(false);
+        lenient().when(resourceResolver.getResource(anyString())).thenReturn(notExistsResource);
     }
 
     @DisplayName("준비된 시나리오 파일 목록과 적재 상태를 반환한다.")
@@ -298,7 +315,7 @@ class DummyAdminServiceTest {
                 dao,
                 resourceResolver,
                 scenarioLoader,
-                new DummyAdminApiProperties(true, BASE_PATH, GUEST_HASH, PROD_OFFSET_DAYS)
+                new DummyAdminApiProperties(true, BASE_PATH, uploadPath, GUEST_HASH, PROD_OFFSET_DAYS)
         );
         when(resourceResolver.getResource(BASE_PATH + FILE_1)).thenReturn(resource);
         when(resource.exists()).thenReturn(true);
@@ -465,6 +482,128 @@ class DummyAdminServiceTest {
                 .isInstanceOf(InvalidDummyScenarioException.class);
     }
 
+    @DisplayName("list: 빌트인 시나리오와 업로드된 시나리오를 모두 반환한다.")
+    @Test
+    void listsBuiltInAndUploadedScenarios() throws Exception {
+        // given
+        when(resourceResolver.getResources("classpath*:dummy/scenarios*.yml"))
+                .thenReturn(new Resource[]{resource});
+        when(resourceResolver.getResources(uploadPatternUrl()))
+                .thenReturn(new Resource[]{resourceTwo});
+        when(resource.getFilename()).thenReturn(FILE_1);
+        when(resourceTwo.getFilename()).thenReturn("scenarios5.yml");
+        stubScenarioFile(FILE_1, resource, VALID_YAML);
+        stubUploadedScenarioFile("scenarios5.yml", resourceTwo, VALID_YAML);
+
+        // when
+        var responses = service.list();
+
+        // then
+        assertThat(responses).hasSize(2);
+        assertThat(responses.get(0).fileSeq()).isEqualTo(1);
+        assertThat(responses.get(1).fileSeq()).isEqualTo(5);
+        assertThat(responses.get(1).scenarioFile()).isEqualTo("scenarios5.yml");
+    }
+
+    @DisplayName("preview: 업로드된 시나리오 파일도 미리보기할 수 있다.")
+    @Test
+    void previewsUploadedScenario() throws Exception {
+        // given
+        when(resourceResolver.getResource(BASE_PATH + "scenarios5.yml")).thenReturn(resource);
+        when(resource.exists()).thenReturn(false);
+        stubUploadedScenarioFile("scenarios5.yml", resourceTwo, VALID_YAML);
+
+        // when
+        var response = service.preview(5);
+
+        // then
+        assertThat(response.fileSeq()).isEqualTo(5);
+        assertThat(response.scenarioFile()).isEqualTo("scenarios5.yml");
+        assertThat(response.posts()).hasSize(1);
+    }
+
+    @DisplayName("upload: YAML 파일을 업로드하면 다음 fileSeq로 저장하고 상태를 반환한다.")
+    @Test
+    void uploadsScenarioFile() throws Exception {
+        // given: 빌트인에 1, 2번이 있다고 가정
+        when(resourceResolver.getResources("classpath*:dummy/scenarios*.yml"))
+                .thenReturn(new Resource[]{resource, resourceTwo});
+        when(resource.getFilename()).thenReturn(FILE_1);
+        when(resourceTwo.getFilename()).thenReturn(FILE_2);
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "my-scenario.yml", "text/yaml", VALID_YAML.getBytes(StandardCharsets.UTF_8));
+
+        // when
+        DummySqlInsertStatusResponse response = service.upload(file);
+
+        // then
+        assertThat(response.fileSeq()).isEqualTo(3);
+        assertThat(response.scenarioFile()).isEqualTo("scenarios3.yml");
+        assertThat(response.inserted()).isFalse();
+        assertThat(response.appliedStartAt()).isNull();
+        assertThat(response.originalDuration()).isEqualTo(Duration.ofMinutes(5));
+        assertThat(Files.exists(tempUploadDir.resolve("scenarios3.yml"))).isTrue();
+    }
+
+    @DisplayName("upload: 빌트인이 없으면 fileSeq 1부터 시작한다.")
+    @Test
+    void uploadStartsFromOneWhenNoExistingScenarios() throws Exception {
+        // given: 빌트인 / upload 모두 비어있음 (setUp default)
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "first.yml", "text/yaml", VALID_YAML.getBytes(StandardCharsets.UTF_8));
+
+        // when
+        DummySqlInsertStatusResponse response = service.upload(file);
+
+        // then
+        assertThat(response.fileSeq()).isEqualTo(1);
+        assertThat(response.scenarioFile()).isEqualTo("scenarios1.yml");
+        assertThat(Files.exists(tempUploadDir.resolve("scenarios1.yml"))).isTrue();
+    }
+
+    @DisplayName("upload: 확장자가 .yml/.yaml이 아니면 거부한다.")
+    @Test
+    void uploadRejectsNonYamlExtension() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "scenario.txt", "text/plain", VALID_YAML.getBytes(StandardCharsets.UTF_8));
+
+        assertThatThrownBy(() -> service.upload(file))
+                .isInstanceOf(InvalidDummyScenarioException.class);
+        assertThat(Files.list(tempUploadDir).count()).isZero();
+    }
+
+    @DisplayName("upload: 잘못된 YAML이면 거부하고 파일을 저장하지 않는다.")
+    @Test
+    void uploadRejectsInvalidYaml() throws Exception {
+        String invalidYaml = "scenarios: wrong-shape";
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "bad.yml", "text/yaml", invalidYaml.getBytes(StandardCharsets.UTF_8));
+
+        assertThatThrownBy(() -> service.upload(file))
+                .isInstanceOf(InvalidDummyScenarioException.class);
+        assertThat(Files.list(tempUploadDir).count()).isZero();
+    }
+
+    @DisplayName("insert: 업로드된 시나리오 파일도 적재할 수 있다.")
+    @Test
+    void insertsUploadedScenario() throws Exception {
+        // given
+        when(resourceResolver.getResource(BASE_PATH + "scenarios5.yml")).thenReturn(resource);
+        when(resource.exists()).thenReturn(false);
+        stubUploadedScenarioFile("scenarios5.yml", resourceTwo, VALID_YAML);
+        when(dao.existsByScenarioFile("scenarios5.yml")).thenReturn(false);
+        when(dao.insertAll(eq("scenarios5.yml"), any(), eq(GUEST_HASH)))
+                .thenReturn(new WriteResult(1, 1));
+
+        // when
+        var response = service.insert(5);
+
+        // then
+        assertThat(response.fileSeq()).isEqualTo(5);
+        assertThat(response.scenarioFile()).isEqualTo("scenarios5.yml");
+        assertThat(response.insertedScenarioCount()).isEqualTo(1);
+    }
+
     private ByteArrayInputStream yamlStream(String yaml) {
         return new ByteArrayInputStream(yaml.getBytes(StandardCharsets.UTF_8));
     }
@@ -473,5 +612,15 @@ class DummyAdminServiceTest {
         when(resourceResolver.getResource(BASE_PATH + scenarioFile)).thenReturn(scenarioResource);
         when(scenarioResource.exists()).thenReturn(true);
         when(scenarioResource.getInputStream()).thenAnswer(invocation -> yamlStream(yaml));
+    }
+
+    private void stubUploadedScenarioFile(String scenarioFile, Resource scenarioResource, String yaml) throws Exception {
+        when(resourceResolver.getResource("file:" + uploadPath + scenarioFile)).thenReturn(scenarioResource);
+        when(scenarioResource.exists()).thenReturn(true);
+        when(scenarioResource.getInputStream()).thenAnswer(invocation -> yamlStream(yaml));
+    }
+
+    private String uploadPatternUrl() {
+        return "file:" + uploadPath + "scenarios*.yml";
     }
 }

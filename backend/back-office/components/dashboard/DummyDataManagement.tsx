@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
@@ -27,6 +27,7 @@ import {
   fetchDummyPreview,
   fetchDummyStatus,
   insertDummyScenario,
+  uploadDummyScenario,
   DummyStatus,
 } from "@/services/dummyApi";
 import {
@@ -35,7 +36,17 @@ import {
   isoDurationToMilliseconds,
   minutesToHHMM,
 } from "@/services/dummyDuration";
-import { Clock, Database, Eye, Loader2, MessageSquare, RefreshCw, Search, Upload } from "lucide-react";
+import {
+  Clock,
+  Database,
+  Eye,
+  FileUp,
+  Loader2,
+  MessageSquare,
+  RefreshCw,
+  Search,
+  Upload,
+} from "lucide-react";
 
 export function DummyDataManagement() {
   const [scenarios, setScenarios] = useState<DummyStatus[]>([]);
@@ -47,9 +58,11 @@ export function DummyDataManagement() {
   const [previewingFileSeq, setPreviewingFileSeq] = useState<number | null>(null);
   const [previewScenario, setPreviewScenario] = useState<DummyStatus | null>(null);
   const [preview, setPreview] = useState<DummyScenarioPreview | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const isBusy =
-    isLoadingList || checkingFileSeq !== null || insertingFileSeq !== null;
+    isLoadingList || checkingFileSeq !== null || insertingFileSeq !== null || isUploading;
 
   const toKstOffsetDateTime = (dateTimeLocal: string) => {
     const normalized = dateTimeLocal.length === 16 ? `${dateTimeLocal}:00` : dateTimeLocal;
@@ -140,6 +153,32 @@ export function DummyDataManagement() {
       toast.error(`${fileSeq}번 시나리오 상태 조회에 실패했습니다.`);
     } finally {
       setCheckingFileSeq(null);
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // 같은 파일을 다시 선택할 수 있도록 input 값 리셋
+    e.target.value = "";
+    if (!file) {
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const response = await uploadDummyScenario(file);
+      toast.success(`${response.scenarioFile} 업로드 완료 (fileSeq=${response.fileSeq})`);
+      await loadScenarios(false);
+    } catch (err) {
+      console.error(err);
+      const message = err instanceof Error && err.message ? err.message : "YAML 업로드에 실패했습니다.";
+      toast.error(message);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -336,19 +375,41 @@ export function DummyDataManagement() {
                 파일별로 시작 시각을 지정해 적재할 수 있습니다. 적재된 파일은 실제 적재 시작 시각을 확인할 수 있습니다.
               </CardDescription>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => loadScenarios(true)}
-              disabled={isBusy}
-            >
-              {isLoadingList ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-              새로고침
-            </Button>
+            <div className="flex items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".yml,.yaml,application/x-yaml,text/yaml"
+                className="hidden"
+                onChange={handleFileSelected}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleUploadClick}
+                disabled={isBusy}
+              >
+                {isUploading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <FileUp className="h-4 w-4" />
+                )}
+                YAML 업로드
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => loadScenarios(true)}
+                disabled={isBusy}
+              >
+                {isLoadingList ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                새로고침
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

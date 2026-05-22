@@ -89,3 +89,22 @@ export const insertDummyScenario = async (
     if (!res.ok) throw new Error("더미 데이터 적재 실패");
     return await res.json();
 };
+
+export const uploadDummyScenario = async (file: File): Promise<DummyStatus> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // multipart는 fetch가 boundary 포함 Content-Type을 직접 설정해야 하므로
+    // getDefaultFetchOptions()의 application/json 헤더를 적용하지 않음.
+    const res = await fetchWithTokenRefresh(API_ENDPOINTS.ADMIN_DUMMY_SQL_UPLOAD, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+    });
+
+    if (!res.ok) {
+        const message = await res.text().catch(() => "");
+        throw new Error(message || "YAML 업로드 실패");
+    }
+    return await res.json();
+};

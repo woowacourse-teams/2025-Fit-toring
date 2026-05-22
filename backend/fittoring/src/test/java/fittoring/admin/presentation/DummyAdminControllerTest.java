@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import fittoring.admin.presentation.dto.CommentPreview;
 import fittoring.admin.presentation.dto.DummyScenarioPreviewResponse;
 import fittoring.admin.presentation.dto.DummySqlInsertResponse;
+import fittoring.admin.presentation.dto.DummySqlInsertStatusResponse;
 import fittoring.admin.presentation.dto.PostPreview;
 import fittoring.admin.service.DummyAdminService;
 import fittoring.application.auth.service.JwtExtractor;
@@ -20,6 +22,7 @@ import fittoring.application.auth.service.TokenPayload;
 import fittoring.domain.model.MemberRole;
 import fittoring.logging.ErrorJsonLogger;
 import jakarta.servlet.http.Cookie;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -28,8 +31,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(value = DummyAdminController.class, properties = "dummy.admin-api.enabled=true")
 class DummyAdminControllerTest {
@@ -122,6 +127,37 @@ class DummyAdminControllerTest {
                 .andExpect(jsonPath("$.appliedStartAt").value("2026-05-04T17:30:00+09:00"))
                 .andExpect(jsonPath("$.appliedDuration").value("PT1H30M"));
         verify(service).insert(1, startAt, duration);
+    }
+
+    @DisplayName("POST /admin/dummy/sql-insert/upload: multipart YAML 업로드를 service.upload에 위임하고 상태를 반환한다.")
+    @Test
+    void uploadsScenarioFile() throws Exception {
+        // given
+        givenAdminAuthentication();
+        given(service.upload(any(MultipartFile.class))).willReturn(new DummySqlInsertStatusResponse(
+                5,
+                "scenarios5.yml",
+                false,
+                null,
+                Duration.ofMinutes(40)
+        ));
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "my-scenario.yml",
+                "text/yaml",
+                "scenarios: []".getBytes(StandardCharsets.UTF_8)
+        );
+
+        // when // then
+        mockMvc.perform(multipart("/admin/dummy/sql-insert/upload")
+                        .file(file)
+                        .cookie(new Cookie("accessToken", ACCESS_TOKEN)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fileSeq").value(5))
+                .andExpect(jsonPath("$.scenarioFile").value("scenarios5.yml"))
+                .andExpect(jsonPath("$.inserted").value(false))
+                .andExpect(jsonPath("$.originalDuration").value("PT40M"));
+        verify(service).upload(any(MultipartFile.class));
     }
 
     private void givenAdminAuthentication() {

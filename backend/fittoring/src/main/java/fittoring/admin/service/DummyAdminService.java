@@ -19,10 +19,15 @@ import fittoring.application.community.dummy.scenario.ScenarioPost;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -30,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +45,7 @@ public class DummyAdminService {
     private static final String SCENARIO_FILE_SUFFIX = ".yml";
     private static final String CLASSPATH_PREFIX = "classpath:";
     private static final String CLASSPATH_ALL_PREFIX = "classpath*:";
+    private static final String FILE_PREFIX = "file:";
     private static final Pattern SCENARIO_FILE_PATTERN = Pattern.compile("^scenarios(\\d+)\\.yml$");
     private static final String STATUS_INSERTED = "INSERTED";
 
@@ -48,12 +55,16 @@ public class DummyAdminService {
     private final DummyAdminApiProperties properties;
 
     public List<DummySqlInsertStatusResponse> list() {
+        ensureUploadDirectory();
         try {
-            return Arrays.stream(resourceResolver.getResources(scenarioFilesPattern()))
+            Stream<Resource> builtIns = Arrays.stream(resourceResolver.getResources(builtInPattern()));
+            Stream<Resource> uploads = Arrays.stream(resourceResolver.getResources(uploadPattern()));
+            return Stream.concat(builtIns, uploads)
                     .map(Resource::getFilename)
                     .filter(fileName -> fileName != null && SCENARIO_FILE_PATTERN.matcher(fileName).matches())
+                    .distinct()
                     .map(this::toStatusResponse)
-                    .sorted((left, right) -> Integer.compare(left.fileSeq(), right.fileSeq()))
+                    .sorted(Comparator.comparingInt(DummySqlInsertStatusResponse::fileSeq))
                     .toList();
         } catch (IOException e) {
             throw new IllegalStateException("시나리오 파일 목록을 읽지 못했습니다", e);
@@ -71,6 +82,70 @@ public class DummyAdminService {
         String scenarioFile = SCENARIO_FILE_PREFIX + fileSeq + SCENARIO_FILE_SUFFIX;
         ScenarioFile parsed = parse(scenarioFile);
         return toPreviewResponse(fileSeq, scenarioFile, parsed);
+    }
+
+    public DummySqlInsertStatusResponse upload(MultipartFile file) {
+        validateUploadExtension(file);
+        ScenarioFile parsed = parseUploadedContent(file);
+        int fileSeq = nextFileSeq();
+        String scenarioFile = SCENARIO_FILE_PREFIX + fileSeq + SCENARIO_FILE_SUFFIX;
+        saveUploadedFile(scenarioFile, file);
+        return new DummySqlInsertStatusResponse(
+                fileSeq,
+                scenarioFile,
+                false,
+                null,
+                calculateOriginalDuration(parsed)
+        );
+    }
+
+    private void validateUploadExtension(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) {
+            throw new InvalidDummyScenarioException("업로드된 파일명이 비어 있습니다");
+        }
+        String lower = originalFilename.toLowerCase();
+        if (!lower.endsWith(".yml") && !lower.endsWith(".yaml")) {
+            throw new InvalidDummyScenarioException("YAML 파일(.yml/.yaml)만 업로드할 수 있습니다: " + originalFilename);
+        }
+    }
+
+    private ScenarioFile parseUploadedContent(MultipartFile file) {
+        try (InputStream input = file.getInputStream()) {
+            return scenarioLoader.load(input);
+        } catch (IOException e) {
+            throw new IllegalStateException("업로드된 파일을 읽지 못했습니다", e);
+        } catch (RuntimeException e) {
+            throw new InvalidDummyScenarioException("유효하지 않은 시나리오 파일입니다", e);
+        }
+    }
+
+    private int nextFileSeq() {
+        try {
+            return Stream.concat(
+                            Arrays.stream(resourceResolver.getResources(builtInPattern())),
+                            Arrays.stream(resourceResolver.getResources(uploadPattern()))
+                    )
+                    .map(Resource::getFilename)
+                    .filter(Objects::nonNull)
+                    .map(SCENARIO_FILE_PATTERN::matcher)
+                    .filter(Matcher::matches)
+                    .mapToInt(matcher -> Integer.parseInt(matcher.group(1)))
+                    .max()
+                    .orElse(0) + 1;
+        } catch (IOException e) {
+            throw new IllegalStateException("다음 fileSeq 계산에 실패했습니다", e);
+        }
+    }
+
+    private void saveUploadedFile(String scenarioFile, MultipartFile file) {
+        ensureUploadDirectory();
+        Path target = uploadFilesystemPath().resolve(scenarioFile);
+        try {
+            file.transferTo(target);
+        } catch (IOException e) {
+            throw new IllegalStateException("파일 저장에 실패했습니다: " + target, e);
+        }
     }
 
     public DummySqlInsertResponse insert(int fileSeq) {
@@ -112,7 +187,7 @@ public class DummyAdminService {
     }
 
     private ScenarioFile parse(String scenarioFile) {
-        Resource resource = resourceResolver.getResource(properties.getScenariosBasePath() + scenarioFile);
+        Resource resource = resolveScenarioResource(scenarioFile);
         if (!resource.exists()) {
             throw new DummyScenarioFileNotFoundException(scenarioFile);
         }
@@ -125,12 +200,56 @@ public class DummyAdminService {
         }
     }
 
-    private String scenarioFilesPattern() {
+    private Resource resolveScenarioResource(String scenarioFile) {
+        Resource builtIn = resourceResolver.getResource(properties.getScenariosBasePath() + scenarioFile);
+        if (builtIn.exists()) {
+            return builtIn;
+        }
+        return resourceResolver.getResource(uploadResourcePrefix() + scenarioFile);
+    }
+
+    private String builtInPattern() {
         String pattern = properties.getScenariosBasePath() + SCENARIO_FILE_PREFIX + "*" + SCENARIO_FILE_SUFFIX;
         if (pattern.startsWith(CLASSPATH_PREFIX)) {
             return CLASSPATH_ALL_PREFIX + pattern.substring(CLASSPATH_PREFIX.length());
         }
         return pattern;
+    }
+
+    private String uploadPattern() {
+        return uploadResourcePrefix() + SCENARIO_FILE_PREFIX + "*" + SCENARIO_FILE_SUFFIX;
+    }
+
+    private String uploadResourcePrefix() {
+        String path = normalizeTrailingSlash(properties.getUploadPath());
+        if (path.startsWith(FILE_PREFIX) || path.startsWith(CLASSPATH_PREFIX)) {
+            return path;
+        }
+        return FILE_PREFIX + path;
+    }
+
+    private Path uploadFilesystemPath() {
+        String path = properties.getUploadPath();
+        if (path.startsWith(FILE_PREFIX)) {
+            path = path.substring(FILE_PREFIX.length());
+        }
+        return Paths.get(path);
+    }
+
+    private String normalizeTrailingSlash(String path) {
+        return path.endsWith("/") ? path : path + "/";
+    }
+
+    private void ensureUploadDirectory() {
+        Path dir = uploadFilesystemPath();
+        if (Files.exists(dir)) {
+            return;
+        }
+        try {
+            Files.createDirectories(dir);
+        } catch (IOException e) {
+            throw new IllegalStateException("upload-path 디렉토리를 생성하지 못했습니다: " + dir, e);
+        }
     }
 
     private DummySqlInsertStatusResponse toStatusResponse(String scenarioFile) {

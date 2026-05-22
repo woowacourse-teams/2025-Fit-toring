@@ -11,6 +11,7 @@ public class DummyAdminApiProperties {
 
     private final boolean enabled;
     private final String scenariosBasePath;
+    private final String uploadPath;
     private final String guestPasswordHash;
     private final int scheduleOffsetDays;
 }
