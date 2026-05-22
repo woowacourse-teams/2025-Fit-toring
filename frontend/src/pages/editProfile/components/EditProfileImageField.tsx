@@ -11,18 +11,18 @@ import ProfileImageActionSheet from './ProfileImageActionSheet';
 interface EditProfileImageFieldProps {
   initialImageUrl: string | null;
   onProfileImageKeyChange: (profileImageKey: string | undefined) => void;
-  onUploadingChange: (uploading: boolean) => void;
+  onImageProcessingChange: (isImageProcessing: boolean) => void;
 }
 
 function EditProfileImageField({
   initialImageUrl,
   onProfileImageKeyChange,
-  onUploadingChange,
+  onImageProcessingChange,
 }: EditProfileImageFieldProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl);
   const [imageErrored, setImageErrored] = useState(false);
   const [actionSheetOpened, setActionSheetOpened] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [isImageProcessing, setIsImageProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const objectUrlRef = useRef<string | null>(null);
   const locallyChangedRef = useRef(false);
@@ -48,9 +48,9 @@ function EditProfileImageField({
 
   const hasProfileImage = previewUrl !== null;
 
-  const updateUploading = (nextUploading: boolean) => {
-    setUploading(nextUploading);
-    onUploadingChange(nextUploading);
+  const updateImageProcessing = (nextIsImageProcessing: boolean) => {
+    setIsImageProcessing(nextIsImageProcessing);
+    onImageProcessingChange(nextIsImageProcessing);
   };
 
   const closeActionSheet = () => {
@@ -110,7 +110,7 @@ function EditProfileImageField({
     const previousObjectUrl = objectUrlRef.current;
 
     try {
-      updateUploading(true);
+      updateImageProcessing(true);
 
       const convertedFile = await convertHeicToJpegIfNeeded(file);
       const objectUrl = URL.createObjectURL(convertedFile);
@@ -149,7 +149,7 @@ function EditProfileImageField({
           : '프로필 이미지 업로드에 실패했습니다. 다시 시도해주세요.',
       );
     } finally {
-      updateUploading(false);
+      updateImageProcessing(false);
       e.target.value = '';
     }
   };
@@ -160,7 +160,7 @@ function EditProfileImageField({
         type="button"
         onClick={handlePlusButtonClick}
         aria-label="프로필 이미지 변경 메뉴 열기"
-        disabled={uploading}
+        disabled={isImageProcessing}
       >
         <S_ProfileImage
           src={previewUrl && !imageErrored ? previewUrl : defaultProfileImg}

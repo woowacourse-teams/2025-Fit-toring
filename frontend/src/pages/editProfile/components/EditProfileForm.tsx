@@ -48,7 +48,7 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   const [profileImageKey, setProfileImageKey] = useState<string | undefined>(
     undefined,
   );
-  const [profileImageUploading, setProfileImageUploading] = useState(false);
+  const [profileImageProcessing, setProfileImageProcessing] = useState(false);
 
   const handleProfileImageKeyChange = (
     nextProfileImageKey: string | undefined,
@@ -56,8 +56,10 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     setProfileImageKey(nextProfileImageKey);
   };
 
-  const handleProfileImageUploadingChange = (uploading: boolean) => {
-    setProfileImageUploading(uploading);
+  const handleProfileImageProcessingChange = (
+    isImageProcessing: boolean,
+  ) => {
+    setProfileImageProcessing(isImageProcessing);
   };
 
   const {
@@ -189,7 +191,7 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   ] as const;
 
   const validateForm = () => {
-    if (profileImageUploading || patchMyProfileMutation.isPending) {
+    if (profileImageProcessing || patchMyProfileMutation.isPending) {
       return false;
     }
 
@@ -243,7 +245,7 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (profileImageUploading || patchMyProfileMutation.isPending) {
+    if (profileImageProcessing || patchMyProfileMutation.isPending) {
       return;
     }
 
@@ -281,7 +283,7 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
       <EditProfileImageField
         initialImageUrl={initialImage}
         onProfileImageKeyChange={handleProfileImageKeyChange}
-        onUploadingChange={handleProfileImageUploadingChange}
+        onImageProcessingChange={handleProfileImageProcessingChange}
       />
       <S_FormFields>
         <UserInfoFields
