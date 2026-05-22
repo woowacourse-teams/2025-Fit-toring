@@ -2,7 +2,11 @@ const HH_MM_PATTERN = /^(\d{2,}):([0-5]\d)$/;
 const ISO_TIME_DURATION_PATTERN = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?$/;
 
 export const isoDurationToHHMM = (isoDuration: string): string => {
-  return minutesToHHMM(Math.floor(isoDurationToMilliseconds(isoDuration) / 60000));
+  const ms = isoDurationToMilliseconds(isoDuration);
+  if (ms % 60000 !== 0) {
+    throw new Error(`분 단위로 표현할 수 없는 duration입니다: ${isoDuration}`);
+  }
+  return minutesToHHMM(ms / 60000);
 };
 
 export const hhmmToIsoDuration = (hhmm: string): string => {
