@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 
 import styled from '@emotion/styled';
@@ -32,6 +33,9 @@ function PostCommentSection({
   onDeleteClick,
 }: PostCommentSectionProps) {
   const queryClient = useQueryClient();
+  const [pendingCommentIds, setPendingCommentIds] = useState<Set<number>>(
+    new Set(),
+  );
   const {
     data: commentData = [],
     isPending,
@@ -42,40 +46,53 @@ function PostCommentSection({
     enabled: Boolean(postId),
   });
 
-  const { mutate: mutateCommentLike, isPending: isCommentLikePending } =
-    useMutation({
-      mutationFn: async (comment: PostComment) => {
-        if (comment.liked) {
-          return await deleteCommunityPostCommentLike({
-            postId,
-            commentId: comment.id,
-          });
-        }
-
-        return await postCommunityPostCommentLike({
+  const { mutate: mutateCommentLike } = useMutation({
+    mutationFn: async (comment: PostComment) => {
+      if (comment.liked) {
+        return await deleteCommunityPostCommentLike({
           postId,
           commentId: comment.id,
         });
-      },
-      onSuccess: (updatedComment) => {
-        queryClient.setQueryData<PostComment[]>(
-          ['postComments', postId],
-          (currentComments) =>
-            currentComments?.map((comment) =>
-              comment.id === updatedComment.commentId
-                ? {
-                    ...comment,
-                    liked: updatedComment.liked,
-                    likeCount: updatedComment.likeCount,
-                  }
-                : comment,
-            ) ?? currentComments,
-        );
-      },
-      onError: () => {
-        alert('댓글 좋아요에 실패했습니다.');
-      },
-    });
+      }
+
+      return await postCommunityPostCommentLike({
+        postId,
+        commentId: comment.id,
+      });
+    },
+    onMutate: (comment) => {
+      setPendingCommentIds((prev) => {
+        const next = new Set(prev);
+        next.add(comment.id);
+        return next;
+      });
+    },
+    onSettled: (_, __, comment) => {
+      setPendingCommentIds((prev) => {
+        const next = new Set(prev);
+        next.delete(comment.id);
+        return next;
+      });
+    },
+    onSuccess: (updatedComment) => {
+      queryClient.setQueryData<PostComment[]>(
+        ['postComments', postId],
+        (currentComments) =>
+          currentComments?.map((comment) =>
+            comment.id === updatedComment.commentId
+              ? {
+                  ...comment,
+                  liked: updatedComment.liked,
+                  likeCount: updatedComment.likeCount,
+                }
+              : comment,
+          ) ?? currentComments,
+      );
+    },
+    onError: () => {
+      alert('댓글 좋아요에 실패했습니다.');
+    },
+  });
 
   const commentTree = buildCommentTree(commentData);
 
@@ -106,7 +123,7 @@ function PostCommentSection({
               onEditClick,
               onDeleteClick,
               handleLikeClick,
-              isCommentLikePending,
+              pendingCommentIds,
             ),
           )}
         </S_CommentList>
@@ -123,9 +140,11 @@ function renderCommentNode(
   onEditClick: (comment: PostComment) => void,
   onDeleteClick: (comment: PostComment) => void,
   onLikeClick: (comment: PostComment) => void,
-  isLikePending: boolean,
+  pendingCommentIds: Set<number>,
   depth = 0,
 ): ReactNode[] {
+  const isLikePending = pendingCommentIds.has(comment.id);
+
   return [
     <CommentItem
       key={comment.id}
@@ -144,7 +163,7 @@ function renderCommentNode(
         onEditClick,
         onDeleteClick,
         onLikeClick,
-        isLikePending,
+        pendingCommentIds,
         depth + 1,
       ),
     ),
