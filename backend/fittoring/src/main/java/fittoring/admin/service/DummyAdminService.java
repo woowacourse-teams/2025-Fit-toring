@@ -89,6 +89,7 @@ public class DummyAdminService {
     public DummySqlInsertStatusResponse upload(MultipartFile file) {
         validateUploadExtension(file);
         ScenarioFile parsed = parseUploadedContent(file);
+        Duration originalDuration = calculateOriginalDuration(parsed);
         int fileSeq = nextFileSeq();
         String scenarioFile = SCENARIO_FILE_PREFIX + fileSeq + SCENARIO_FILE_SUFFIX;
         saveUploadedFile(scenarioFile, file);
@@ -97,7 +98,7 @@ public class DummyAdminService {
                 scenarioFile,
                 false,
                 null,
-                calculateOriginalDuration(parsed)
+                originalDuration
         );
     }
 

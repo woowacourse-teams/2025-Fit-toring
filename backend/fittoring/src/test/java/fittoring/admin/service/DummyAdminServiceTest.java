@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.stream.Stream;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -591,6 +592,20 @@ class DummyAdminServiceTest {
         assertThatThrownBy(() -> service.upload(file))
                 .isInstanceOf(DummyScenarioFileAlreadyExistsException.class);
         assertThat(Files.readString(existing)).isEqualTo("preexisting content");
+    }
+
+    @DisplayName("upload: 시나리오가 비어 있으면 거부하고 파일을 저장하지 않는다.")
+    @Test
+    void uploadRejectsEmptyScenarios() throws Exception {
+        String emptyYaml = "scenarios: []";
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "empty.yml", "text/yaml", emptyYaml.getBytes(StandardCharsets.UTF_8));
+
+        assertThatThrownBy(() -> service.upload(file))
+                .isInstanceOf(InvalidDummyScenarioException.class);
+        try (Stream<Path> entries = Files.list(tempUploadDir)) {
+            assertThat(entries.count()).isZero();
+        }
     }
 
     @DisplayName("upload: 잘못된 YAML이면 거부하고 파일을 저장하지 않는다.")
