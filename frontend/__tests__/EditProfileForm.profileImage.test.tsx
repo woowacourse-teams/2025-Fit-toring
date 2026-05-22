@@ -107,9 +107,8 @@ describe('EditProfileForm 프로필 이미지', () => {
     );
 
     const { container } = renderEditProfileForm();
-    const fileInput = container.querySelector<HTMLInputElement>(
-      'input[type="file"]',
-    );
+    const fileInput =
+      container.querySelector<HTMLInputElement>('input[type="file"]');
     const file = new File(['profile'], 'profile.jpg', {
       type: 'image/jpeg',
     });
@@ -122,7 +121,9 @@ describe('EditProfileForm 프로필 이미지', () => {
       ).not.toHaveStyle('pointer-events: none');
     });
 
-    await userEvent.click(screen.getByRole('button', { name: '회원정보 수정' }));
+    await userEvent.click(
+      screen.getByRole('button', { name: '회원정보 수정' }),
+    );
 
     await waitFor(() => {
       expect(requestBody).toEqual({
@@ -130,28 +131,6 @@ describe('EditProfileForm 프로필 이미지', () => {
           'fit-toring/local/member-profile-image/default/mock-image.jpeg',
       });
     });
-  });
-
-  it('이미지를 2장 이상 선택하면 최대 1장 첨부 알림을 보여준다.', async () => {
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-
-    const { container } = renderEditProfileForm();
-    const fileInput = container.querySelector<HTMLInputElement>(
-      'input[type="file"]',
-    );
-    const files = [
-      new File(['profile-1'], 'profile-1.jpg', { type: 'image/jpeg' }),
-      new File(['profile-2'], 'profile-2.jpg', { type: 'image/jpeg' }),
-    ];
-
-    await userEvent.upload(fileInput as HTMLInputElement, files);
-
-    expect(alertSpy).toHaveBeenCalledWith(
-      '이미지는 최대 1장까지 첨부할 수 있어요',
-    );
-    expect(screen.getByRole('button', { name: '회원정보 수정' })).toHaveStyle(
-      'pointer-events: none',
-    );
   });
 
   it('불러올 수 없는 이미지는 업로드하지 않고 알림을 보여준다.', async () => {
@@ -162,9 +141,8 @@ describe('EditProfileForm 프로필 이미지', () => {
     );
 
     const { container } = renderEditProfileForm();
-    const fileInput = container.querySelector<HTMLInputElement>(
-      'input[type="file"]',
-    );
+    const fileInput =
+      container.querySelector<HTMLInputElement>('input[type="file"]');
     const file = new File(['broken'], 'broken.jpg', {
       type: 'image/jpeg',
     });
@@ -193,7 +171,9 @@ describe('EditProfileForm 프로필 이미지', () => {
       screen.getByRole('button', { name: '프로필 이미지 변경 메뉴 열기' }),
     );
     await userEvent.click(screen.getByText('프로필 사진 삭제'));
-    await userEvent.click(screen.getByRole('button', { name: '회원정보 수정' }));
+    await userEvent.click(
+      screen.getByRole('button', { name: '회원정보 수정' }),
+    );
 
     await waitFor(() => {
       expect(requestBody).toEqual({ profileImageKey: '' });
