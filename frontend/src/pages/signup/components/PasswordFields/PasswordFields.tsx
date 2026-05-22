@@ -87,7 +87,7 @@ const S_Input = styled.input<{ errored?: boolean }>`
 
   :focus {
     outline: none;
-    border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN600};
+    border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 
   ::placeholder {

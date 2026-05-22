@@ -76,12 +76,21 @@ const S_Container = styled.li`
 
   width: 100%;
   height: 21.5rem;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
-  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 8px;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
 
   cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.SYSTEM.GRAY300};
+    transform: translateY(-0.1rem);
+  }
 `;
 
 const S_Wrapper = styled.div`
@@ -100,7 +109,6 @@ const S_ImageBox = styled.div`
 
   width: 43%;
   height: 100%;
-  border-radius: 5px 0 0 5px;
 `;
 
 const S_ProfileImg = styled.img`
