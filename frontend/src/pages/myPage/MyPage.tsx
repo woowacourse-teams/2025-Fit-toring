@@ -1,22 +1,34 @@
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import calendarIcon from '../../common/assets/images/mypage-calendar.svg';
+import documentIcon from '../../common/assets/images/mypage-document.svg';
+import settingsIcon from '../../common/assets/images/mypage-settings.svg';
+import usersIcon from '../../common/assets/images/mypage-users.svg';
 import { PAGE_URL } from '../../common/constants/url';
 import useMyProfile from '../editProfile/hooks/useMyProfile';
 
+import ActivityStatistics from './components/ActivityStatistics/ActivityStatistics';
 import MyPageProfileSummary from './components/MyPageProfileSummary/MyPageProfileSummary';
 import MyPageSection from './components/MyPageSection/MyPageSection';
 
 import type { MyPageSectionItem } from './components/MyPageSection/MyPageSection';
+import type { MemberRole } from '../../common/types/userInfo';
+
+const ROLE_LABEL: Record<MemberRole, string> = {
+  MENTEE: '멘티',
+  MENTOR: '멘토',
+};
 
 function MyPage() {
   const navigate = useNavigate();
   const { myProfile } = useMyProfile();
 
   const displayName = myProfile?.name?.trim() || '회원';
+  const myRole = myProfile?.myRole ?? 'MENTOR';
 
   const handleEditProfileClick = () => {
-    window.alert('준비중입니다.');
+    navigate(PAGE_URL.EDIT_PROFILE);
   };
 
   const handlePreparingClick = () => {
@@ -25,24 +37,28 @@ function MyPage() {
 
   const mentoringItems: MyPageSectionItem[] = [
     {
-      label: '내가 개설한 멘토링',
+      iconSrc: calendarIcon,
+      label: '개설한 멘토링',
       onClick: () => navigate(PAGE_URL.CREATED_MENTORING),
     },
     {
-      label: '내가 참여한 멘토링',
+      iconSrc: usersIcon,
+      label: '참여한 멘토링',
       onClick: () => navigate(PAGE_URL.PARTICIPATED_MENTORING),
     },
   ];
 
   const activityItems: MyPageSectionItem[] = [
     {
-      label: '내가 작성한 글',
+      iconSrc: documentIcon,
+      label: '작성한 글',
       onClick: handlePreparingClick,
     },
   ];
 
-  const settingItems: MyPageSectionItem[] = [
+  const accountItems: MyPageSectionItem[] = [
     {
+      iconSrc: settingsIcon,
       label: '설정',
       onClick: handleEditProfileClick,
     },
@@ -53,11 +69,13 @@ function MyPage() {
       <MyPageProfileSummary
         profileImg={myProfile?.image}
         name={displayName}
+        roleLabel={ROLE_LABEL[myRole]}
         onClick={handleEditProfileClick}
       />
+      <ActivityStatistics />
       <MyPageSection items={mentoringItems} title="멘토링" />
       <MyPageSection items={activityItems} title="커뮤니티" />
-      <MyPageSection items={settingItems} title="설정" />
+      <MyPageSection divided={false} items={accountItems} title="설정" />
     </S_Container>
   );
 }
@@ -69,5 +87,6 @@ const S_Container = styled.main`
   flex-direction: column;
 
   width: 100%;
-  padding: 2rem 1.8rem 2.4rem;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
 `;
