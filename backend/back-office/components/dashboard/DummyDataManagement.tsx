@@ -29,12 +29,18 @@ import {
   insertDummyScenario,
   DummyStatus,
 } from "@/services/dummyApi";
-import { isoDurationToHHMM, isoDurationToMilliseconds } from "@/services/dummyDuration";
+import {
+  hhmmToIsoDuration,
+  isoDurationToHHMM,
+  isoDurationToMilliseconds,
+  minutesToHHMM,
+} from "@/services/dummyDuration";
 import { Clock, Database, Eye, Loader2, MessageSquare, RefreshCw, Search, Upload } from "lucide-react";
 
 export function DummyDataManagement() {
   const [scenarios, setScenarios] = useState<DummyStatus[]>([]);
   const [startAtMap, setStartAtMap] = useState<Record<number, string>>({});
+  const [durationMap, setDurationMap] = useState<Record<number, string>>({});
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [checkingFileSeq, setCheckingFileSeq] = useState<number | null>(null);
   const [insertingFileSeq, setInsertingFileSeq] = useState<number | null>(null);
@@ -43,7 +49,7 @@ export function DummyDataManagement() {
   const [preview, setPreview] = useState<DummyScenarioPreview | null>(null);
 
   const isBusy =
-    isLoadingList || checkingFileSeq !== null || insertingFileSeq !== null || previewingFileSeq !== null;
+    isLoadingList || checkingFileSeq !== null || insertingFileSeq !== null;
 
   const toKstOffsetDateTime = (dateTimeLocal: string) => {
     const normalized = dateTimeLocal.length === 16 ? `${dateTimeLocal}:00` : dateTimeLocal;
@@ -52,6 +58,39 @@ export function DummyDataManagement() {
 
   const formatAppliedStartAt = (iso: string) => {
     return formatKstDateTime(Date.parse(iso));
+  };
+
+  const safeIsoToHHMM = (iso: string) => {
+    try {
+      return isoDurationToHHMM(iso);
+    } catch {
+      return "00:00";
+    }
+  };
+
+  const safeIsoToMs = (iso: string) => {
+    try {
+      return isoDurationToMilliseconds(iso);
+    } catch {
+      return 0;
+    }
+  };
+
+  const isOriginalDurationZero = (iso: string) => safeIsoToMs(iso) === 0;
+
+  const isInsertDisabled = (scenario: DummyStatus) => {
+    if (isBusy || scenario.inserted) {
+      return true;
+    }
+    if (!(startAtMap[scenario.fileSeq] ?? "").trim()) {
+      return true;
+    }
+    if (!isOriginalDurationZero(scenario.originalDuration)) {
+      if (!(durationMap[scenario.fileSeq] ?? "").trim()) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const updateScenario = (updated: DummyStatus) => {
@@ -65,6 +104,16 @@ export function DummyDataManagement() {
       setIsLoadingList(true);
       const response = await fetchDummyScenarios();
       setScenarios(response);
+      // 사용자가 아직 손대지 않은 행에만 디폴트 duration 주입
+      setDurationMap((prev) => {
+        const next: Record<number, string> = { ...prev };
+        for (const scenario of response) {
+          if (next[scenario.fileSeq] === undefined) {
+            next[scenario.fileSeq] = safeIsoToHHMM(scenario.originalDuration);
+          }
+        }
+        return next;
+      });
       if (showToast) {
         toast.success("시나리오 파일 목록을 새로고침했습니다.");
       }
@@ -126,9 +175,32 @@ export function DummyDataManagement() {
       return;
     }
 
+    let durationIso: string | undefined;
+    if (!isOriginalDurationZero(scenario.originalDuration)) {
+      const durationInput = (durationMap[scenario.fileSeq] ?? "").trim();
+      if (!durationInput) {
+        toast.error("기간을 입력해주세요.");
+        return;
+      }
+      try {
+        durationIso = hhmmToIsoDuration(durationInput);
+      } catch {
+        toast.error("기간은 HH:MM 형식이어야 합니다.");
+        return;
+      }
+      if (durationIso === "PT0S") {
+        toast.error("기간은 0보다 커야 합니다.");
+        return;
+      }
+    }
+
     try {
       setInsertingFileSeq(scenario.fileSeq);
-      const response = await insertDummyScenario(scenario.fileSeq, toKstOffsetDateTime(startAt));
+      const response = await insertDummyScenario(
+        scenario.fileSeq,
+        toKstOffsetDateTime(startAt),
+        durationIso,
+      );
       updateScenario({
         fileSeq: response.fileSeq,
         scenarioFile: response.scenarioFile,
@@ -136,10 +208,13 @@ export function DummyDataManagement() {
         appliedStartAt: response.appliedStartAt,
         originalDuration: scenario.originalDuration,
       });
+      const appliedDurationLabel = response.appliedDuration
+        ? ` · 적용 기간 ${safeIsoToHHMM(response.appliedDuration)}`
+        : "";
       toast.success(
         `${response.scenarioFile} 적재 완료 — 시나리오 ${response.insertedScenarioCount}건, ` +
-        `게시글 pending ${response.insertedPostPendingCount}건, ` +
-        `댓글 pending ${response.insertedCommentPendingCount}건`
+          `게시글 pending ${response.insertedPostPendingCount}건, ` +
+          `댓글 pending ${response.insertedCommentPendingCount}건${appliedDurationLabel}`,
       );
     } catch (err) {
       console.error(err);
@@ -173,6 +248,25 @@ export function DummyDataManagement() {
     }, null);
   };
 
+  const getAppliedDurationMs = () => {
+    if (!preview || !previewScenario) {
+      return null;
+    }
+    const originalDurationMs = safeIsoToMs(preview.originalDuration);
+    if (originalDurationMs === 0) {
+      return 0;
+    }
+    const input = (durationMap[previewScenario.fileSeq] ?? "").trim();
+    if (!input) {
+      return originalDurationMs;
+    }
+    try {
+      return isoDurationToMilliseconds(hhmmToIsoDuration(input));
+    } catch {
+      return originalDurationMs;
+    }
+  };
+
   const getDisplayedScheduledAt = (scheduledAt: string) => {
     if (!preview) {
       return formatAppliedStartAt(scheduledAt);
@@ -184,15 +278,41 @@ export function DummyDataManagement() {
       return formatAppliedStartAt(scheduledAt);
     }
 
-    const originalDurationMs = isoDurationToMilliseconds(preview.originalDuration);
+    const originalDurationMs = safeIsoToMs(preview.originalDuration);
     if (originalDurationMs === 0) {
       return formatAppliedStartAt(previewStartAt);
     }
 
+    const appliedDurationMs = getAppliedDurationMs() ?? originalDurationMs;
     const originalOffsetMs = Date.parse(scheduledAt) - Date.parse(originalStartAt);
-    const appliedDurationMs = isoDurationToMilliseconds(preview.originalDuration);
     const scaledOffsetMs = Math.floor((originalOffsetMs * appliedDurationMs) / originalDurationMs);
     return formatKstDateTime(Date.parse(previewStartAt) + scaledOffsetMs);
+  };
+
+  const getPreviewDialogDescription = () => {
+    if (!preview) {
+      return "시나리오 내용을 불러오는 중입니다.";
+    }
+
+    const originalHHMM = safeIsoToHHMM(preview.originalDuration);
+    const originalDurationMs = safeIsoToMs(preview.originalDuration);
+    const previewStartAt = getPreviewStartAt();
+
+    if (originalDurationMs === 0) {
+      const endLabel = previewStartAt
+        ? ` · 종료 예상 ${formatAppliedStartAt(previewStartAt)}`
+        : "";
+      return `원본 기간 ${originalHHMM} (기간 변경 불가)${endLabel}`;
+    }
+
+    const appliedDurationMs = getAppliedDurationMs() ?? originalDurationMs;
+    const appliedHHMM = minutesToHHMM(Math.floor(appliedDurationMs / 60000));
+    const ratio = appliedDurationMs / originalDurationMs;
+    const ratioLabel = ratio.toFixed(2);
+    const endLabel = previewStartAt
+      ? ` · 종료 예상 ${formatKstDateTime(Date.parse(previewStartAt) + appliedDurationMs)}`
+      : "";
+    return `원본 기간 ${originalHHMM} → 적용 ${appliedHHMM} (${ratioLabel}배)${endLabel}`;
   };
 
   return (
@@ -249,6 +369,7 @@ export function DummyDataManagement() {
                     <TableHead>파일명</TableHead>
                     <TableHead className="w-24">상태</TableHead>
                     <TableHead className="w-52">시작 시각(KST)</TableHead>
+                    <TableHead className="w-36">기간(HH:MM)</TableHead>
                     <TableHead className="w-64 text-right">관리</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -280,6 +401,35 @@ export function DummyDataManagement() {
                                 [scenario.fileSeq]: e.target.value,
                               }))
                             }
+                            disabled={isBusy}
+                            className="h-8 text-sm"
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {scenario.inserted ? (
+                          <span className="text-sm">
+                            {safeIsoToHHMM(scenario.originalDuration)}
+                          </span>
+                        ) : isOriginalDurationZero(scenario.originalDuration) ? (
+                          <Input
+                            type="text"
+                            value="00:00"
+                            disabled
+                            placeholder="변경 불가"
+                            className="h-8 text-sm"
+                          />
+                        ) : (
+                          <Input
+                            type="text"
+                            value={durationMap[scenario.fileSeq] ?? ""}
+                            onChange={(e) =>
+                              setDurationMap((prev) => ({
+                                ...prev,
+                                [scenario.fileSeq]: e.target.value,
+                              }))
+                            }
+                            placeholder="HH:MM"
                             disabled={isBusy}
                             className="h-8 text-sm"
                           />
@@ -319,7 +469,7 @@ export function DummyDataManagement() {
                             type="button"
                             size="sm"
                             onClick={() => handleInsert(scenario)}
-                            disabled={isBusy || scenario.inserted || !startAtMap[scenario.fileSeq]?.trim()}
+                            disabled={isInsertDisabled(scenario)}
                           >
                             {insertingFileSeq === scenario.fileSeq ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -343,9 +493,7 @@ export function DummyDataManagement() {
         <DialogContent className="max-h-[90vh] sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>{previewScenario?.scenarioFile ?? "시나리오"} 미리보기</DialogTitle>
-            <DialogDescription>
-              원본 기간 {preview ? isoDurationToHHMM(preview.originalDuration) : "-"} 기준으로 게시글과 댓글을 확인합니다.
-            </DialogDescription>
+            <DialogDescription>{getPreviewDialogDescription()}</DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
             {previewingFileSeq !== null && preview === null ? (
