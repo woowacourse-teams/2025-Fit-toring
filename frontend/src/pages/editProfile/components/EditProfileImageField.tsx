@@ -8,6 +8,16 @@ import { convertHeicToJpegIfNeeded } from '../../../common/utils/heicFile/conver
 
 import ProfileImageActionSheet from './ProfileImageActionSheet';
 
+const validatePreviewImage = (imageUrl: string) => {
+  return new Promise<void>((resolve, reject) => {
+    const image = new Image();
+
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error('이미지를 불러올 수 없습니다.'));
+    image.src = imageUrl;
+  });
+};
+
 interface EditProfileImageFieldProps {
   initialImageUrl: string | null;
   onProfileImageKeyChange: (profileImageKey: string | undefined) => void;
@@ -77,16 +87,6 @@ function EditProfileImageField({
     locallyChangedRef.current = true;
     onProfileImageKeyChange(initialImageUrl ? '' : undefined);
     closeActionSheet();
-  };
-
-  const validatePreviewImage = (imageUrl: string) => {
-    return new Promise<void>((resolve, reject) => {
-      const image = new Image();
-
-      image.onload = () => resolve();
-      image.onerror = () => reject(new Error('이미지를 불러올 수 없습니다.'));
-      image.src = imageUrl;
-    });
   };
 
   const handleProfileImageInputChange = async (
