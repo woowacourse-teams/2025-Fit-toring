@@ -288,6 +288,19 @@ class DummyAdminServiceTest {
         verify(dao, never()).insertAll(any(), any(), any());
     }
 
+    @DisplayName("duration이 너무 커서 산술 오버플로우가 발생하면 invalid scenario 예외를 던진다.")
+    @Test
+    void rejectsDurationCausingArithmeticOverflow() throws Exception {
+        // given
+        stubScenarioFile(FILE_1, resource, VALID_YAML);
+        Duration tooLargeDuration = Duration.ofMillis(Long.MAX_VALUE);
+
+        // when // then
+        assertThatThrownBy(() -> service.insert(1, null, tooLargeDuration))
+                .isInstanceOf(InvalidDummyScenarioException.class);
+        verify(dao, never()).insertAll(any(), any(), any());
+    }
+
     @DisplayName("원본 duration이 0인데 duration 입력이 있으면 invalid scenario 예외를 던진다.")
     @Test
     void rejectsDurationWhenOriginalDurationIsZero() throws Exception {

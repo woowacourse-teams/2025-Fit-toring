@@ -376,11 +376,15 @@ public class DummyAdminService {
         if (originalOffset.isZero()) {
             return Duration.ZERO;
         }
-        BigInteger offsetNanos = BigInteger.valueOf(originalOffset.toNanos());
-        BigInteger newDurationNanos = BigInteger.valueOf(newDuration.toNanos());
-        BigInteger originalDurationNanos = BigInteger.valueOf(originalDuration.toNanos());
-        BigInteger scaledNanos = offsetNanos.multiply(newDurationNanos).divide(originalDurationNanos);
-        return Duration.ofNanos(scaledNanos.longValueExact());
+        try {
+            BigInteger offsetNanos = BigInteger.valueOf(originalOffset.toNanos());
+            BigInteger newDurationNanos = BigInteger.valueOf(newDuration.toNanos());
+            BigInteger originalDurationNanos = BigInteger.valueOf(originalDuration.toNanos());
+            BigInteger scaledNanos = offsetNanos.multiply(newDurationNanos).divide(originalDurationNanos);
+            return Duration.ofNanos(scaledNanos.longValueExact());
+        } catch (ArithmeticException e) {
+            throw new InvalidDummyScenarioException("duration 범위를 초과했습니다: " + newDuration, e);
+        }
     }
 
     private ScenarioFile applyStartAt(ScenarioFile file, OffsetDateTime startAt) {
