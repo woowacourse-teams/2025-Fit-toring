@@ -4,6 +4,7 @@ export type UserProfileResponse = Omit<UserInfoClient, 'loginId'>;
 
 type UserProfileRequest = Omit<UserInfoClient, 'loginId' | 'image'> & {
   password: string;
+  profileImageKey: string;
 };
 
 export type PartialUserProfileRequest = Partial<UserProfileRequest>;

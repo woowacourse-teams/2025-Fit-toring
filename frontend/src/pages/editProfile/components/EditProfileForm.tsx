@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import ApiError from '../../../common/apis/ApiError';
@@ -20,7 +21,10 @@ import PasswordFields from '../../signup/components/PasswordFields/PasswordField
 import usePasswordWithConfirmInput from '../../signup/hooks/usePasswordWithConfirmInput';
 import { patchMyProfile } from '../apis/patchMyProfile';
 import useGender from '../hooks/useGender';
+import { MY_PROFILE_QUERY_KEY } from '../hooks/useMyProfile';
 import useVerificationStep from '../hooks/useVerificationStep';
+
+import EditProfileImageField from './EditProfileImageField';
 
 import type {
   PartialUserProfileRequest,
@@ -36,10 +40,27 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
     name: initialName,
     gender: initialGender,
     phoneNumber: initialPhoneNumber,
+    image: initialImage,
   } = myProfile;
   const initialPassword = '';
   const initialPasswordConfirm = '';
   const initialVerificationCode = '';
+  const [profileImageKey, setProfileImageKey] = useState<string | undefined>(
+    undefined,
+  );
+  const [profileImageProcessing, setProfileImageProcessing] = useState(false);
+
+  const handleProfileImageKeyChange = (
+    nextProfileImageKey: string | undefined,
+  ) => {
+    setProfileImageKey(nextProfileImageKey);
+  };
+
+  const handleProfileImageProcessingChange = (
+    isImageProcessing: boolean,
+  ) => {
+    setProfileImageProcessing(isImageProcessing);
+  };
 
   const {
     name,
@@ -170,7 +191,13 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   ] as const;
 
   const validateForm = () => {
-    const myProfileChanged = profileFields.some((item) => item.changed);
+    if (profileImageProcessing || patchMyProfileMutation.isPending) {
+      return false;
+    }
+
+    const myProfileChanged =
+      profileFields.some((item) => item.changed) ||
+      profileImageKey !== undefined;
     if (!myProfileChanged) {
       return false;
     }
@@ -183,9 +210,44 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
   };
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const patchMyProfileMutation = useMutation({
+    mutationFn: patchMyProfile,
+    onSuccess: async (response) => {
+      if (response.status !== 204) {
+        return;
+      }
+
+      const memberId = localStorage.getItem('memberId');
+      await queryClient.invalidateQueries({
+        queryKey: MY_PROFILE_QUERY_KEY.myProfile(memberId),
+      });
+
+      alert('회원정보 수정에 성공했습니다.');
+      navigate(PAGE_URL.HOME);
+    },
+    onError: (error) => {
+      console.error('회원정보 수정 실패', error);
+      if (error instanceof ApiError) {
+        alert(error.message);
+      }
+
+      captureSentryError({
+        error,
+        level: 'warning',
+        feature: 'updatedUserProfile',
+        step: 'updatedUserProfile',
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (profileImageProcessing || patchMyProfileMutation.isPending) {
+      return;
+    }
 
     if (shouldBlockSubmitByVerificationCode()) {
       return;
@@ -209,29 +271,20 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
         return { ...acc, [cur.target]: cur.value };
       }, {} as PartialUserProfileRequest);
 
-    try {
-      const response = await patchMyProfile(updatedUserProfile);
-      if (response.status === 204) {
-        alert('회원정보 수정에 성공했습니다.');
-        navigate(PAGE_URL.HOME);
-      }
-    } catch (error) {
-      console.error('회원정보 수정 실패', error);
-      if (error instanceof ApiError) {
-        alert(error.message);
-      }
-
-      captureSentryError({
-        error,
-        level: 'warning',
-        feature: 'updatedUserProfile',
-        step: 'updatedUserProfile',
-      });
+    if (profileImageKey !== undefined) {
+      updatedUserProfile.profileImageKey = profileImageKey;
     }
+
+    patchMyProfileMutation.mutate(updatedUserProfile);
   };
 
   return (
     <S_Container onSubmit={handleSubmit}>
+      <EditProfileImageField
+        initialImageUrl={initialImage}
+        onProfileImageKeyChange={handleProfileImageKeyChange}
+        onImageProcessingChange={handleProfileImageProcessingChange}
+      />
       <S_FormFields>
         <UserInfoFields
           name={name}
