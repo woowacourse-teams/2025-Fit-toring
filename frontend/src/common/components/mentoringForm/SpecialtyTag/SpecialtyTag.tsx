@@ -39,7 +39,7 @@ const S_Container = styled.label<LabelType>`
   border-radius: 16px;
 
   background-color: ${({ theme, checked }) =>
-    checked ? theme.SYSTEM.MAIN600 : theme.BG.WHITE};
+    checked ? theme.SYSTEM.MAIN500 : theme.BG.WHITE};
 
   color: ${({ theme, checked }) => (checked ? theme.BG.WHITE : theme.FONT.B02)};
 

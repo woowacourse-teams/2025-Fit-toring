@@ -7,6 +7,7 @@ type UserProfileRequest = Pick<
   'name' | 'gender' | 'phoneNumber'
 > & {
   password: string;
+  profileImageKey: string;
 };
 
 export type PartialUserProfileRequest = Partial<UserProfileRequest>;

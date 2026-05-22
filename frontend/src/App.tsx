@@ -9,6 +9,7 @@ import {
 import BottomTabLayout from './common/components/BottomTabLayout/BottomTabLayout';
 import ChannelTalkProvider from './common/components/ChannelTalkProvider/ChannelTalkProvider';
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
+import ProtectedRoute from './common/components/ProtectedRoute/ProtectedRoute';
 import { PAGE_URL } from './common/constants/url';
 import ChatRooms from './pages/chatRooms/ChatRooms';
 import Home from './pages/home/Home';
@@ -77,26 +78,31 @@ const router = createBrowserRouter([
               return null;
             },
           },
-          { path: `${PAGE_URL.CHAT_ROOMS}`, element: <ChatRooms /> },
           {
-            path: `${PAGE_URL.MY_PAGE}`,
-            element: <MyPageLayout />,
+            element: <ProtectedRoute />,
             children: [
+              { path: `${PAGE_URL.CHAT_ROOMS}`, element: <ChatRooms /> },
               {
-                index: true,
-                element: <MyPage />,
-              },
-              {
-                path: PAGE_URL.CREATED_MENTORING,
-                element: <CreatedMentoring />,
-              },
-              {
-                path: PAGE_URL.PARTICIPATED_MENTORING,
-                element: <ParticipatedMentoring />,
-              },
-              {
-                path: PAGE_URL.EDIT_PROFILE,
-                element: <EditProfile />,
+                path: `${PAGE_URL.MY_PAGE}`,
+                element: <MyPageLayout />,
+                children: [
+                  {
+                    index: true,
+                    element: <MyPage />,
+                  },
+                  {
+                    path: PAGE_URL.CREATED_MENTORING,
+                    element: <CreatedMentoring />,
+                  },
+                  {
+                    path: PAGE_URL.PARTICIPATED_MENTORING,
+                    element: <ParticipatedMentoring />,
+                  },
+                  {
+                    path: PAGE_URL.EDIT_PROFILE,
+                    element: <EditProfile />,
+                  },
+                ],
               },
             ],
           },
@@ -108,6 +114,7 @@ const router = createBrowserRouter([
             path: `${PAGE_URL.COMMUNITY}/:postId`,
             element: <CommunityPostDetail />,
           },
+          { path: PAGE_URL.LOGIN, element: <Login /> },
         ],
       },
       { path: PAGE_URL.LANDING, element: <Landing /> },
@@ -119,10 +126,14 @@ const router = createBrowserRouter([
         path: `${PAGE_URL.MENTORING_UPDATE}/:mentoringId`,
         element: <MentoringUpdate />,
       },
-      { path: PAGE_URL.LOGIN, element: <Login /> },
       {
-        path: `${PAGE_URL.CHAT_ROOM}/:chatRoomId`,
-        element: <ChatRoom />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: `${PAGE_URL.CHAT_ROOM}/:chatRoomId`,
+            element: <ChatRoom />,
+          },
+        ],
       },
       {
         path: PAGE_URL.IDENTITY_VERIFICATION,

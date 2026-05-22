@@ -15,7 +15,6 @@ export const THEME = {
     MAIN900: '#00403A',
     MAIN800: '#005F5A',
     MAIN700: '#006760',
-    MAIN600: '#00786F',
     MAIN500: '#2BA79F',
     MAIN400: '#46ECD5',
     MAIN300: '#74E7D4',

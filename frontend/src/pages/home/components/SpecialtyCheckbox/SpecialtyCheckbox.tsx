@@ -53,8 +53,8 @@ const S_Container = styled.label<{
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 
   &:hover {
-    border-color: ${({ theme, disabled }) =>
-      disabled ? theme.OUTLINE.DARK : theme.SYSTEM.MAIN500};
+    border-color: ${({ theme, checked }) =>
+      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
   }
 
   &:active {
@@ -62,7 +62,8 @@ const S_Container = styled.label<{
   }
 
   &:focus-within {
-    border-color: ${({ theme }) => theme.OUTLINE.BLACK};
+    border-color: ${({ theme, checked }) =>
+      checked ? theme.SYSTEM.MAIN500 : theme.OUTLINE.DARK};
   }
 `;
 

@@ -38,7 +38,7 @@ const S_Link = styled.a`
   border: none;
   border-radius: 8px;
 
-  background: ${({ theme }) => theme.SYSTEM.MAIN600};
+  background: ${({ theme }) => theme.SYSTEM.MAIN500};
 
   color: ${({ theme }) => theme.FONT.W01};
   transition: all 0.2s ease-in-out;
