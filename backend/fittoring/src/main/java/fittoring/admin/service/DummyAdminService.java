@@ -4,8 +4,11 @@ import fittoring.admin.config.DummyAdminApiProperties;
 import fittoring.admin.exception.DummyAlreadyInsertedException;
 import fittoring.admin.exception.DummyScenarioFileNotFoundException;
 import fittoring.admin.exception.InvalidDummyScenarioException;
+import fittoring.admin.presentation.dto.CommentPreview;
+import fittoring.admin.presentation.dto.DummyScenarioPreviewResponse;
 import fittoring.admin.presentation.dto.DummySqlInsertResponse;
 import fittoring.admin.presentation.dto.DummySqlInsertStatusResponse;
+import fittoring.admin.presentation.dto.PostPreview;
 import fittoring.admin.repository.DummyPendingDao;
 import fittoring.admin.repository.DummyPendingDao.WriteResult;
 import fittoring.application.community.dummy.scenario.Scenario;
@@ -15,6 +18,7 @@ import fittoring.application.community.dummy.scenario.ScenarioLoader;
 import fittoring.application.community.dummy.scenario.ScenarioPost;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -62,17 +66,32 @@ public class DummyAdminService {
         return buildStatusResponse(fileSeq, scenarioFile);
     }
 
+    public DummyScenarioPreviewResponse preview(int fileSeq) {
+        validateFileSeq(fileSeq);
+        String scenarioFile = SCENARIO_FILE_PREFIX + fileSeq + SCENARIO_FILE_SUFFIX;
+        ScenarioFile parsed = parse(scenarioFile);
+        return toPreviewResponse(fileSeq, scenarioFile, parsed);
+    }
+
     public DummySqlInsertResponse insert(int fileSeq) {
-        return insert(fileSeq, null);
+        return insert(fileSeq, null, null);
     }
 
     public DummySqlInsertResponse insert(int fileSeq, OffsetDateTime startAt) {
+        return insert(fileSeq, startAt, null);
+    }
+
+    public DummySqlInsertResponse insert(int fileSeq, OffsetDateTime startAt, Duration duration) {
         validateFileSeq(fileSeq);
         String scenarioFile = SCENARIO_FILE_PREFIX + fileSeq + SCENARIO_FILE_SUFFIX;
-        ScenarioFile parsed = applyScheduleOffset(applyStartAt(parse(scenarioFile), startAt));
+        ScenarioFile parsed = parse(scenarioFile);
+        parsed = applyDuration(parsed, duration);
+        parsed = applyStartAt(parsed, startAt);
+        parsed = applyScheduleOffset(parsed);
         if (dao.existsByScenarioFile(scenarioFile)) {
             throw new DummyAlreadyInsertedException(scenarioFile);
         }
+        Duration appliedDuration = calculateOriginalDuration(parsed);
         WriteResult result = dao.insertAll(scenarioFile, parsed, properties.getGuestPasswordHash());
         return new DummySqlInsertResponse(
                 fileSeq,
@@ -81,7 +100,8 @@ public class DummyAdminService {
                 result.postCount(),
                 result.commentCount(),
                 STATUS_INSERTED,
-                findEarliestScheduledAt(parsed)
+                findEarliestScheduledAt(parsed),
+                appliedDuration
         );
     }
 
@@ -123,11 +143,119 @@ public class DummyAdminService {
     }
 
     private DummySqlInsertStatusResponse buildStatusResponse(int fileSeq, String scenarioFile) {
+        ScenarioFile parsed = parse(scenarioFile);
+        Duration originalDuration = calculateOriginalDuration(parsed);
         boolean inserted = dao.existsByScenarioFile(scenarioFile);
         OffsetDateTime appliedStartAt = inserted
                 ? dao.findEarliestScheduledAt(scenarioFile).orElse(null)
                 : null;
-        return new DummySqlInsertStatusResponse(fileSeq, scenarioFile, inserted, appliedStartAt);
+        return new DummySqlInsertStatusResponse(fileSeq, scenarioFile, inserted, appliedStartAt, originalDuration);
+    }
+
+    private DummyScenarioPreviewResponse toPreviewResponse(int fileSeq, String scenarioFile, ScenarioFile file) {
+        List<PostPreview> posts = file.scenarios().stream()
+                .map(this::toPostPreview)
+                .toList();
+        return new DummyScenarioPreviewResponse(fileSeq, scenarioFile, calculateOriginalDuration(file), posts);
+    }
+
+    private PostPreview toPostPreview(Scenario scenario) {
+        ScenarioPost post = scenario.post();
+        return new PostPreview(
+                post.nickname(),
+                post.scheduledAt(),
+                post.title(),
+                post.content(),
+                toCommentPreviews(scenario.comments())
+        );
+    }
+
+    private List<CommentPreview> toCommentPreviews(List<ScenarioComment> comments) {
+        return comments.stream()
+                .map(this::toCommentPreview)
+                .toList();
+    }
+
+    private CommentPreview toCommentPreview(ScenarioComment comment) {
+        return new CommentPreview(
+                comment.nickname(),
+                comment.scheduledAt(),
+                comment.content(),
+                toCommentPreviews(comment.replies())
+        );
+    }
+
+    ScenarioFile applyDuration(ScenarioFile file, Duration newDuration) {
+        if (newDuration == null) {
+            return file;
+        }
+        if (newDuration.isZero() || newDuration.isNegative()) {
+            throw new InvalidDummyScenarioException("duration은 0보다 커야 합니다: " + newDuration);
+        }
+        Duration originalDuration = calculateOriginalDuration(file);
+        if (originalDuration.isZero()) {
+            throw new InvalidDummyScenarioException("원본 duration이 0인 시나리오는 duration을 변경할 수 없습니다");
+        }
+        OffsetDateTime originalStartAt = findEarliestScheduledAt(file);
+        List<Scenario> scenarios = file.scenarios().stream()
+                .map(scenario -> new Scenario(
+                        scalePost(scenario.post(), originalStartAt, originalDuration, newDuration),
+                        scaleComments(scenario.comments(), originalStartAt, originalDuration, newDuration)
+                ))
+                .toList();
+        return new ScenarioFile(scenarios);
+    }
+
+    private ScenarioPost scalePost(
+            ScenarioPost post,
+            OffsetDateTime originalStartAt,
+            Duration originalDuration,
+            Duration newDuration
+    ) {
+        return new ScenarioPost(
+                post.nickname(),
+                scaleScheduledAt(post.scheduledAt(), originalStartAt, originalDuration, newDuration),
+                post.title(),
+                post.content()
+        );
+    }
+
+    private List<ScenarioComment> scaleComments(
+            List<ScenarioComment> comments,
+            OffsetDateTime originalStartAt,
+            Duration originalDuration,
+            Duration newDuration
+    ) {
+        return comments.stream()
+                .map(comment -> new ScenarioComment(
+                        comment.nickname(),
+                        scaleScheduledAt(comment.scheduledAt(), originalStartAt, originalDuration, newDuration),
+                        comment.content(),
+                        scaleComments(comment.replies(), originalStartAt, originalDuration, newDuration)
+                ))
+                .toList();
+    }
+
+    private OffsetDateTime scaleScheduledAt(
+            OffsetDateTime scheduledAt,
+            OffsetDateTime originalStartAt,
+            Duration originalDuration,
+            Duration newDuration
+    ) {
+        Duration originalOffset = Duration.between(originalStartAt, scheduledAt);
+        Duration scaledOffset = scaleOffset(originalOffset, originalDuration, newDuration);
+        return originalStartAt.plus(scaledOffset);
+    }
+
+    private Duration scaleOffset(Duration originalOffset, Duration originalDuration, Duration newDuration) {
+        if (originalOffset.isZero()) {
+            return Duration.ZERO;
+        }
+        BigInteger offsetNanos = BigInteger.valueOf(originalOffset.toNanos());
+        BigInteger newDurationNanos = BigInteger.valueOf(newDuration.toNanos());
+        BigInteger originalDurationNanos = BigInteger.valueOf(originalDuration.toNanos());
+        BigInteger scaledNanos = offsetNanos.multiply(newDurationNanos).divide(originalDurationNanos);
+        return Duration.ofNanos(scaledNanos.longValueExact());
     }
 
     private ScenarioFile applyStartAt(ScenarioFile file, OffsetDateTime startAt) {
@@ -184,6 +312,15 @@ public class DummyAdminService {
                 .flatMap(this::scheduledTimes)
                 .min(OffsetDateTime::compareTo)
                 .orElseThrow(() -> new InvalidDummyScenarioException("시나리오가 비어 있습니다"));
+    }
+
+    private Duration calculateOriginalDuration(ScenarioFile file) {
+        OffsetDateTime earliest = findEarliestScheduledAt(file);
+        OffsetDateTime latest = file.scenarios().stream()
+                .flatMap(this::scheduledTimes)
+                .max(OffsetDateTime::compareTo)
+                .orElseThrow(() -> new InvalidDummyScenarioException("시나리오가 비어 있습니다"));
+        return Duration.between(earliest, latest);
     }
 
     private Stream<OffsetDateTime> scheduledTimes(Scenario scenario) {

@@ -1,5 +1,6 @@
 package fittoring.admin.presentation;
 
+import fittoring.admin.presentation.dto.DummyScenarioPreviewResponse;
 import fittoring.admin.presentation.dto.DummySqlInsertRequest;
 import fittoring.admin.presentation.dto.DummySqlInsertResponse;
 import fittoring.admin.presentation.dto.DummySqlInsertStatusResponse;
@@ -36,7 +37,17 @@ public class DummyAdminController {
             @PathVariable int fileSeq,
             @RequestBody(required = false) DummySqlInsertRequest request
     ) {
-        return ResponseEntity.ok(service.insert(fileSeq, request == null ? null : request.startAt()));
+        return ResponseEntity.ok(service.insert(
+                fileSeq,
+                request == null ? null : request.startAt(),
+                request == null ? null : request.duration()
+        ));
+    }
+
+    @Admin
+    @GetMapping("/{fileSeq}/preview")
+    public ResponseEntity<DummyScenarioPreviewResponse> preview(@PathVariable int fileSeq) {
+        return ResponseEntity.ok(service.preview(fileSeq));
     }
 
     @Admin

@@ -8,6 +8,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  jackson:
+    deserialization:
+      adjust-dates-to-context-time-zone: false
   sql:
     init:
       mode: never
