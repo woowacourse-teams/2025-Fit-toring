@@ -1,7 +1,12 @@
 import { useState } from 'react';
 
 import styled from '@emotion/styled';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  type InfiniteData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
@@ -17,6 +22,10 @@ import { deleteCommunityPostComment } from './apis/deleteCommunityPostComment';
 import { getCommunityPostDetail } from './apis/getCommunityPostDetail';
 import { getCommunityPostOwnership } from './apis/getCommunityPostOwnership';
 import { postCommunityPostCommentGuestCheck } from './apis/postCommunityPostCommentGuestCheck';
+import {
+  deleteCommunityPostLike,
+  postCommunityPostLike,
+} from './apis/postCommunityPostLike';
 import { postGuestPostPasswordCheck } from './apis/postGuestPostPasswordCheck';
 import CommunityPostDetailHeader from './components/CommunityPostDetailHeader/CommunityPostDetailHeader';
 import InputSection from './components/InputSection/InputSection';
@@ -25,8 +34,31 @@ import PostContent from './components/PostContent/PostContent';
 import PostHeader from './components/PostHeader/PostHeader';
 
 import type { PostComment } from './types/postComment';
+import type { CommunityPostDetail } from '../../common/types/communityPost';
+import type { CommunityPostResponse } from '../community/types/posts';
 
 type PendingAction = 'edit' | 'delete' | null;
+
+const updateCommunityPostsLikeCache = (
+  currentData: InfiniteData<CommunityPostResponse> | undefined,
+  postId: number,
+  liked: boolean,
+  likeCount: number,
+) => {
+  if (!currentData) {
+    return currentData;
+  }
+
+  return {
+    ...currentData,
+    pages: currentData.pages.map((page) => ({
+      ...page,
+      posts: page.posts.map((post) =>
+        post.id === postId ? { ...post, liked, likeCount } : post,
+      ),
+    })),
+  };
+};
 
 function CommunityPostDetail() {
   const { postId } = useParams();
@@ -141,6 +173,50 @@ function CommunityPostDetail() {
       });
     },
   });
+
+  const { mutate: togglePostLikeMutate, isPending: isPostLikePending } =
+    useMutation({
+      mutationFn: async () => {
+        if (postData.liked) {
+          return await deleteCommunityPostLike(postId!);
+        }
+
+        return await postCommunityPostLike(postId!);
+      },
+      onSuccess: (updatedPost) => {
+        queryClient.setQueryData<CommunityPostDetail>(
+          ['communityPostDetail', postId],
+          (currentPost) =>
+            currentPost
+              ? {
+                  ...currentPost,
+                  liked: updatedPost.liked,
+                  likeCount: updatedPost.likeCount,
+                }
+              : currentPost,
+        );
+
+        queryClient.setQueryData<InfiniteData<CommunityPostResponse>>(
+          ['communityPosts'],
+          (currentData) =>
+            updateCommunityPostsLikeCache(
+              currentData,
+              updatedPost.postId,
+              updatedPost.liked,
+              updatedPost.likeCount,
+            ),
+        );
+      },
+      onError: (error) => {
+        alert('게시글 좋아요에 실패했습니다.');
+        captureSentryError({
+          error,
+          level: 'warning',
+          feature: 'community-post-detail',
+          step: 'community-post-like',
+        });
+      },
+    });
 
   if (isPending) {
     return <LoadingSpinner />;
@@ -353,6 +429,9 @@ function CommunityPostDetail() {
           title={postData.title}
           content={postData.content}
           likeCount={postData.likeCount}
+          liked={postData.liked}
+          isLikePending={isPostLikePending}
+          onLikeClick={() => togglePostLikeMutate()}
         />
         <PostCommentSection
           postId={postId ?? ''}

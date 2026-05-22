@@ -11,4 +11,5 @@ export const CREATED_COMMUNITY_POST: CommunityPostDetail = {
   viewCount: 0,
   likeCount: 0,
   commentCount: 0,
+  liked: false,
 } as const;
