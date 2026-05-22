@@ -1,8 +1,10 @@
 package fittoring.admin.presentation.dto;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 
 public record DummySqlInsertRequest(
-        OffsetDateTime startAt
+        OffsetDateTime startAt,
+        Duration duration
 ) {
 }
