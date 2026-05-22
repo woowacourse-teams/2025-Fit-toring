@@ -1,17 +1,19 @@
 import styled from '@emotion/styled';
 
-import chevronRightGray from '../../../../common/assets/images/chevron-right-gray.svg';
+import chevronRightIcon from '../../../../common/assets/images/mypage-chevron-right.svg';
 import defaultProfileImg from '../../../../common/assets/images/profileImg.svg';
 
 interface MyPageProfileSummaryProps {
   profileImg?: string | null;
   name: string;
+  roleLabel: string;
   onClick: () => void;
 }
 
 function MyPageProfileSummary({
   profileImg,
   name,
+  roleLabel,
   onClick,
 }: MyPageProfileSummaryProps) {
   return (
@@ -28,9 +30,12 @@ function MyPageProfileSummary({
         }}
       />
       <S_TextGroup>
-        <S_Title>{name}</S_Title>
+        <S_TitleRow>
+          <S_Title>{name}</S_Title>
+          <S_RoleBadge>{roleLabel}</S_RoleBadge>
+        </S_TitleRow>
       </S_TextGroup>
-      <S_Icon src={chevronRightGray} alt="" aria-hidden="true" />
+      <S_Icon src={chevronRightIcon} alt="" aria-hidden="true" />
     </S_Button>
   );
 }
@@ -41,10 +46,10 @@ const S_Button = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.2rem;
+  gap: 1.8rem;
 
   width: 100%;
-  padding: 0 0 1.8rem;
+  padding: 3rem;
   border: none;
   border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 
@@ -56,8 +61,10 @@ const S_Button = styled.button`
 `;
 
 const S_ProfileImage = styled.img`
-  width: 7rem;
-  height: 7rem;
+  flex-shrink: 0;
+
+  width: 8.6rem;
+  height: 8.6rem;
   object-fit: cover;
 
   border-radius: 50%;
@@ -67,17 +74,43 @@ const S_TextGroup = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.8rem;
+
+  min-width: 0;
+`;
+
+const S_TitleRow = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  min-width: 0;
 `;
 
 const S_Title = styled.span`
+  overflow: hidden;
+
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.H4_B}
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+  ${({ theme }) => theme.TYPOGRAPHY.H3_B}
+`;
+
+const S_RoleBadge = styled.span`
+  flex-shrink: 0;
+
+  padding: 0.4rem 1rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN500};
+  border-radius: 999px;
+
+  color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  ${({ theme }) => theme.TYPOGRAPHY.C2_SB}
 `;
 
 const S_Icon = styled.img`
   flex-shrink: 0;
 
-  width: 0.8rem;
-  height: auto;
+  width: 2.4rem;
+  height: 2.4rem;
 `;

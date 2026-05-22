@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 
-import chevronRightGray from '../../../../common/assets/images/chevron-right-gray.svg';
 import MyPageMenuRow from '../MyPageMenuRow/MyPageMenuRow';
 
 export interface MyPageSectionItem {
+  iconSrc: string;
   label: string;
   onClick: () => void;
 }
@@ -11,17 +11,18 @@ export interface MyPageSectionItem {
 interface MyPageSectionProps {
   title: string;
   items: MyPageSectionItem[];
+  divided?: boolean;
 }
 
-function MyPageSection({ title, items }: MyPageSectionProps) {
+function MyPageSection({ title, items, divided = true }: MyPageSectionProps) {
   return (
-    <S_Container>
+    <S_Container divided={divided}>
       <S_Title>{title}</S_Title>
       <S_List>
         {items.map((item) => (
           <li key={item.label}>
             <MyPageMenuRow
-              iconSrc={chevronRightGray}
+              iconSrc={item.iconSrc}
               label={item.label}
               onClick={item.onClick}
             />
@@ -34,24 +35,25 @@ function MyPageSection({ title, items }: MyPageSectionProps) {
 
 export default MyPageSection;
 
-const S_Container = styled.section`
+const S_Container = styled.section<{ divided: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 2.2rem;
+  gap: 2.8rem;
 
-  padding: 2.8rem 0 1.8rem;
-  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  padding: 3.8rem 2rem 3.2rem;
+  border-bottom: ${({ divided, theme }) =>
+    divided ? `1px solid ${theme.OUTLINE.REGULAR}` : 'none'};
 `;
 
 const S_Title = styled.h3`
-  color: ${({ theme }) => theme.SYSTEM.GRAY400};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
 `;
 
 const S_List = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 3.2rem;
 
   margin: 0;
   padding: 0;
