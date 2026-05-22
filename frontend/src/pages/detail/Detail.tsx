@@ -30,11 +30,18 @@ function Detail() {
 
   const { scrollY, changeScrollY } = useScrollY();
 
+  const contentWrapperRef = useRef<HTMLDivElement | null>(null);
   const certificateSectionRef = useRef<HTMLHeadingElement | null>(null);
 
   const handleTapClick = (tab: TapType) => {
     selectTab(tab);
     changeScrollY(window.scrollY);
+    requestAnimationFrame(() => {
+      contentWrapperRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    });
   };
 
   const handleCertificateShowButton = () => {
@@ -75,7 +82,7 @@ function Detail() {
             onCertificateShowButton={handleCertificateShowButton}
           />
         </S_MentorInfoWrapper>
-        <S_TapWrapper>
+        <S_TapWrapper selectedTab={selectedTab}>
           <S_Tap
             onClick={() => handleTapClick('detail')}
             selected={selectedTab === 'detail'}
@@ -89,7 +96,7 @@ function Detail() {
             리뷰
           </S_Tap>
         </S_TapWrapper>
-        <S_ContentWrapper>
+        <S_ContentWrapper ref={contentWrapperRef}>
           {selectedTab === 'detail' ? (
             <S_DetailWrapper>
               <Introduction content={data.content} />
@@ -135,10 +142,28 @@ const S_MentorInfoWrapper = styled.div`
   gap: 2.4rem;
 `;
 
-const S_TapWrapper = styled.div`
+const S_TapWrapper = styled.div<{ selectedTab: TapType }>`
   display: flex;
+  position: relative;
 
   width: 100%;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 50%;
+    height: 2px;
+
+    background-color: ${({ theme }) => theme.FONT.B01};
+
+    transform: translateX(
+      ${({ selectedTab }) => (selectedTab === 'detail' ? '0' : '100%')}
+    );
+    transition: transform 0.28s ease;
+  }
 `;
 
 const S_Tap = styled.div<{ selected: boolean }>`
@@ -150,22 +175,18 @@ const S_Tap = styled.div<{ selected: boolean }>`
   cursor: pointer;
 
   padding: 1.6rem 0;
-  border-top: 1px solid
-    ${({ selected, theme }) => (selected ? 'none' : theme.SYSTEM.GRAY50)};
-  border-bottom: 1px solid
-    ${({ selected, theme }) => (selected ? 'none' : theme.SYSTEM.GRAY50)};
+  border-bottom: 2px solid ${({ theme }) => theme.SYSTEM.GRAY50};
 
-  background-color: ${({ selected, theme }) =>
-    selected ? theme.SYSTEM.GRAY800 : theme.BG.WHITE};
+  background-color: ${({ theme }) => theme.BG.WHITE};
 
   color: ${({ selected, theme }) =>
-    selected ? theme.BG.WHITE : theme.FONT.B01};
+    selected ? theme.FONT.B01 : theme.SYSTEM.GRAY500};
 
   transition:
-    background-color 0.25s ease,
     color 0.25s ease;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ selected, theme }) =>
+    selected ? theme.TYPOGRAPHY.B2_B : theme.TYPOGRAPHY.B2_R};
 `;
 
 const S_ContentWrapper = styled.div`

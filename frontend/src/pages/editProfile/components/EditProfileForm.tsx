@@ -273,7 +273,7 @@ function EditProfileForm({ myProfile }: EditProfileFormProps) {
         customStyle={css`
           height: 4.3rem;
           box-shadow: 0 4px 12px 0
-            ${validateForm() ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
+            ${validateForm() ? 'rgb(43 167 159 / 30%)' : 'rgb(0 0 0 / 8%)'};
 
           font-size: 1.6rem;
         `}

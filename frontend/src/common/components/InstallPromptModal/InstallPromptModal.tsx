@@ -158,7 +158,7 @@ const S_Button = styled.button`
   padding: 1.4rem 1.6rem;
   border: none;
   border-radius: 999px;
-  box-shadow: 0 0.8rem 1.8rem rgb(0 120 111 / 14%);
+  box-shadow: 0 0.8rem 1.8rem rgb(43 167 159 / 14%);
 
   background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 

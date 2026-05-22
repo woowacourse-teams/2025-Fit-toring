@@ -44,11 +44,11 @@ const CustomCheckbox = styled.div<{ errored?: boolean }>`
   height: 1.8rem;
   border: 2px solid
     ${({ theme, errored }) =>
-      errored ? theme.FONT.ERROR : theme.SYSTEM.MAIN600};
+      errored ? theme.FONT.ERROR : theme.SYSTEM.MAIN500};
   border-radius: 3px;
 
   background-color: ${({ children, theme }) =>
-    children ? theme.SYSTEM.MAIN600 : 'transparent'};
+    children ? theme.SYSTEM.MAIN500 : 'transparent'};
 
   color: white;
   ${({ theme }) => theme.TYPOGRAPHY.B2_R};
