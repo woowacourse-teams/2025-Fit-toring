@@ -63,6 +63,7 @@ export const resetCss = css`
   html {
     scrollbar-gutter: stable;
     scroll-behavior: smooth;
+    touch-action: pan-x pan-y;
   }
 
   html,
@@ -73,12 +74,14 @@ export const resetCss = css`
 
   body {
     line-height: 1;
+    touch-action: pan-x pan-y;
   }
 
   html,
   body,
   #root {
     height: 100%;
+    overscroll-behavior: none;
   }
 
   p {

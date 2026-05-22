@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ThemeProvider, Global } from '@emotion/react';
+import { Global, ThemeProvider } from '@emotion/react';
 import * as Sentry from '@sentry/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRoot } from 'react-dom/client';
@@ -32,6 +32,31 @@ Sentry.init({
 
 const queryClient = new QueryClient();
 
+function preventPwaZoom() {
+  const preventDefault = (event: Event) => {
+    event.preventDefault();
+  };
+
+  const preventMultiTouchZoom = (event: TouchEvent) => {
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  };
+
+  document.addEventListener('gesturestart', preventDefault, {
+    passive: false,
+  });
+  document.addEventListener('gesturechange', preventDefault, {
+    passive: false,
+  });
+  document.addEventListener('gestureend', preventDefault, {
+    passive: false,
+  });
+  document.addEventListener('touchmove', preventMultiTouchZoom, {
+    passive: false,
+  });
+}
+
 async function enableMocking() {
   // 사용시 주석 제거
   // const { worker } = await import('./common/mock/browser');
@@ -50,6 +75,8 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
   if (!isProd) {
     await enableMocking();
   }
+
+  preventPwaZoom();
 
   createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
