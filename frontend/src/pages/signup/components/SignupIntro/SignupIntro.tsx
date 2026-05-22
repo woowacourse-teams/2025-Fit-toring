@@ -42,6 +42,7 @@ const S_ImgWrapper = styled.div`
   width: 6.4rem;
   height: 6.4rem;
   border-radius: 1.6rem;
+  background-color: ${({ theme }) => theme.BG.WHITE};
   box-shadow: 0 4px 12px rgb(0 120 111 / 20%);
 `;
 
