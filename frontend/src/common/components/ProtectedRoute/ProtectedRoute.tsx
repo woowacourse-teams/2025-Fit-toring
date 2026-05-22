@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-import useDelayedVisibility from '../../../pages/chatRoom/hooks/useDelayedVisibility';
 import { PAGE_URL } from '../../constants/url';
 import useAuthCheck from '../../hooks/useAuthCheck';
+import useDelayedVisibility from '../../hooks/useDelayedVisibility';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const LOADING_SPINNER_DELAY_MS = 1000;
