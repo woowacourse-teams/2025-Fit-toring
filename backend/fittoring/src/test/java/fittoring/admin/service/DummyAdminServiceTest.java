@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import fittoring.admin.config.DummyAdminApiProperties;
 import fittoring.admin.exception.DummyAlreadyInsertedException;
+import fittoring.admin.exception.DummyScenarioFileAlreadyExistsException;
 import fittoring.admin.exception.DummyScenarioFileNotFoundException;
 import fittoring.admin.exception.InvalidDummyScenarioException;
 import fittoring.admin.presentation.dto.DummyScenarioPreviewResponse;
@@ -570,6 +571,26 @@ class DummyAdminServiceTest {
         assertThatThrownBy(() -> service.upload(file))
                 .isInstanceOf(InvalidDummyScenarioException.class);
         assertThat(Files.list(tempUploadDir).count()).isZero();
+    }
+
+    @DisplayName("upload: 같은 이름의 시나리오 파일이 이미 있으면 거부하고 기존 파일을 덮어쓰지 않는다.")
+    @Test
+    void uploadRejectsWhenSameFileNameExists() throws Exception {
+        // given: 빌트인 1, 2 → nextFileSeq = 3. 그런데 upload-path에 이미 scenarios3.yml이 있음.
+        when(resourceResolver.getResources("classpath*:dummy/scenarios*.yml"))
+                .thenReturn(new Resource[]{resource, resourceTwo});
+        when(resource.getFilename()).thenReturn(FILE_1);
+        when(resourceTwo.getFilename()).thenReturn(FILE_2);
+        Path existing = tempUploadDir.resolve("scenarios3.yml");
+        Files.writeString(existing, "preexisting content");
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "incoming.yml", "text/yaml", VALID_YAML.getBytes(StandardCharsets.UTF_8));
+
+        // when // then
+        assertThatThrownBy(() -> service.upload(file))
+                .isInstanceOf(DummyScenarioFileAlreadyExistsException.class);
+        assertThat(Files.readString(existing)).isEqualTo("preexisting content");
     }
 
     @DisplayName("upload: 잘못된 YAML이면 거부하고 파일을 저장하지 않는다.")

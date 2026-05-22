@@ -2,6 +2,7 @@ package fittoring.admin.service;
 
 import fittoring.admin.config.DummyAdminApiProperties;
 import fittoring.admin.exception.DummyAlreadyInsertedException;
+import fittoring.admin.exception.DummyScenarioFileAlreadyExistsException;
 import fittoring.admin.exception.DummyScenarioFileNotFoundException;
 import fittoring.admin.exception.InvalidDummyScenarioException;
 import fittoring.admin.presentation.dto.CommentPreview;
@@ -19,6 +20,7 @@ import fittoring.application.community.dummy.scenario.ScenarioPost;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -141,8 +143,11 @@ public class DummyAdminService {
     private void saveUploadedFile(String scenarioFile, MultipartFile file) {
         ensureUploadDirectory();
         Path target = uploadFilesystemPath().resolve(scenarioFile);
-        try {
-            file.transferTo(target);
+        try (InputStream input = file.getInputStream()) {
+            // 옵션 없이 호출하면 target이 이미 존재할 때 FileAlreadyExistsException 발생 (atomic).
+            Files.copy(input, target);
+        } catch (FileAlreadyExistsException e) {
+            throw new DummyScenarioFileAlreadyExistsException(scenarioFile, e);
         } catch (IOException e) {
             throw new IllegalStateException("파일 저장에 실패했습니다: " + target, e);
         }

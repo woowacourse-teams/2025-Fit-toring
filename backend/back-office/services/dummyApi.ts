@@ -103,8 +103,16 @@ export const uploadDummyScenario = async (file: File): Promise<DummyStatus> => {
     });
 
     if (!res.ok) {
-        const message = await res.text().catch(() => "");
-        throw new Error(message || "YAML 업로드 실패");
+        let errorMessage = "YAML 업로드 실패";
+        try {
+            const body = await res.json();
+            if (body && typeof body.message === "string" && body.message.trim()) {
+                errorMessage = body.message;
+            }
+        } catch {
+            // 본문이 JSON이 아니면 기본 메시지 사용
+        }
+        throw new Error(errorMessage);
     }
     return await res.json();
 };
