@@ -63,18 +63,17 @@ export const resetCss = css`
   html {
     scrollbar-gutter: stable;
     scroll-behavior: smooth;
-    touch-action: pan-x pan-y;
   }
 
   html,
   * {
     font-family: Pretendard, sans-serif;
     font-size: 62.5%;
+    touch-action: pan-x pan-y;
   }
 
   body {
     line-height: 1;
-    touch-action: pan-x pan-y;
   }
 
   html,

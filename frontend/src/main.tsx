@@ -43,6 +43,7 @@ function preventPwaZoom() {
     }
   };
 
+  // Safari 계열 비표준 gesture 이벤트로 iOS PWA 핀치 줌을 차단합니다.
   document.addEventListener('gesturestart', preventDefault, {
     passive: false,
   });
