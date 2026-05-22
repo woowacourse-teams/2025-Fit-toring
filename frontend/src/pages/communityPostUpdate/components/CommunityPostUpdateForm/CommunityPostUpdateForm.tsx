@@ -47,10 +47,18 @@ function CommunityPostUpdateForm() {
   const shouldRequirePassword = Boolean(postData?.isGuestPost);
   const shouldCheckAuth = Boolean(postData && !shouldRequirePassword);
 
-  const { isPending: isAuthPending, isError: isAuthError } = useQuery({
+  const {
+    data: authData,
+    isPending: isAuthPending,
+    isError: isAuthError,
+  } = useQuery({
     ...authCheckQueryOptions,
     enabled: shouldCheckAuth,
   });
+  const isUnauthenticated =
+    shouldCheckAuth &&
+    !isAuthPending &&
+    (isAuthError || !authData?.memberId);
 
   const { mutate: patchCommunityPostMutate, isPending: isSubmitPending } =
     useMutation({
@@ -79,10 +87,10 @@ function CommunityPostUpdateForm() {
     });
 
   useEffect(() => {
-    if (isAuthError) {
+    if (isUnauthenticated) {
       navigate(PAGE_URL.LOGIN);
     }
-  }, [isAuthError, navigate]);
+  }, [isUnauthenticated, navigate]);
 
   useEffect(() => {
     setInputGuestPassword(guestPassword ?? '');
@@ -114,6 +122,10 @@ function CommunityPostUpdateForm() {
 
   if (isPostError || !postData) {
     return <div>게시글을 불러오지 못했습니다.</div>;
+  }
+
+  if (isUnauthenticated) {
+    return null;
   }
 
   const isOptionValid = shouldRequirePassword

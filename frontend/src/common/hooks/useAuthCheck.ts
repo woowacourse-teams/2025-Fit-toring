@@ -8,7 +8,8 @@ import { authCheckQueryOptions } from '../queries/auth';
 const useAuthCheck = () => {
   const { login, logout } = useAuth();
 
-  const { data, isSuccess, isError } = useQuery(authCheckQueryOptions);
+  const authCheckQuery = useQuery(authCheckQueryOptions);
+  const { data, isSuccess, isError } = authCheckQuery;
 
   useEffect(() => {
     if (isError) {
@@ -31,6 +32,8 @@ const useAuthCheck = () => {
     login();
     localStorage.setItem('memberId', memberId.toString());
   }, [data?.memberId, isError, isSuccess, login, logout]);
+
+  return authCheckQuery;
 };
 
 export default useAuthCheck;
