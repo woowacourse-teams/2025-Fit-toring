@@ -94,6 +94,7 @@ export function DummyDataManagement() {
         scenarioFile: response.scenarioFile,
         inserted: true,
         appliedStartAt: response.appliedStartAt,
+        originalDuration: scenario.originalDuration,
       });
       toast.success(
         `${response.scenarioFile} 적재 완료 — 시나리오 ${response.insertedScenarioCount}건, ` +
