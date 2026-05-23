@@ -15,14 +15,12 @@ import fittoring.domain.model.SmsOutboxEventType;
 import fittoring.domain.model.SmsOutboxStatus;
 import fittoring.infrastructure.SmsOutboxPublisher;
 import fittoring.infrastructure.SmsOutboxResultApplier;
-import fittoring.infrastructure.discord.DiscordWebhookClient;
 import fittoring.infrastructure.exception.InfraErrorMessage;
 import fittoring.infrastructure.exception.SmsException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class SmsOutboxDiscordNotificationIntegrationTest extends AbstractApiDocumentationTest {
 
@@ -33,9 +31,6 @@ class SmsOutboxDiscordNotificationIntegrationTest extends AbstractApiDocumentati
 
     @Autowired
     private SmsOutboxPublisher smsOutboxPublisher;
-
-    @MockitoBean
-    private DiscordWebhookClient discordWebhookClient;
 
     @DisplayName("MAX_ATTEMPTS회 실패로 FAILED로 전환되면 Discord 알림이 정확히 1회 발송되고 failedNotifiedAt이 기록된다.")
     @Test

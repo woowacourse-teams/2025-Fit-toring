@@ -11,6 +11,7 @@ import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import fittoring.application.image.service.PresignedUrlService;
 import fittoring.infrastructure.OauthClientService;
 import fittoring.infrastructure.SmsRestClientService;
+import fittoring.infrastructure.discord.DiscordWebhookClient;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -46,6 +47,9 @@ public abstract class AbstractApiDocumentationTest {
 
     @MockitoBean
     protected OauthClientService oauthClientService;
+
+    @MockitoBean
+    protected DiscordWebhookClient discordWebhookClient;
 
     protected RequestSpecification spec;
 
