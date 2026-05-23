@@ -135,6 +135,10 @@ sms-outbox:
     batch-size: 10
     lease-timeout-seconds: 300
 
+discord:
+  sms-outbox:
+    webhook-url: ${DISCORD_SMS_OUTBOX_WEBHOOK_URL:}
+
 domain:
   sub-domain: ${SUB_DOMAIN}
 
