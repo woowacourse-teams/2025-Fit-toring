@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 768 768" role="img" aria-label="Profile placeholder">
-  <rect width="100%" height="100%" fill="#F0FDFA"/>
-  <circle cx="384" cy="270" r="138" fill="#2BA79F"/>
-  <rect x="131" y="460" width="506" height="307" rx="92" fill="#2BA79F"/>
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="80" cy="80" r="80" fill="#E2E5EA"/>
+  <circle cx="80" cy="56" r="24" fill="white"/>
+  <path d="M38 121C42.7 98.6 59.2 86 80 86C100.8 86 117.3 98.6 122 121C111.1 130.4 96.4 136 80 136C63.6 136 48.9 130.4 38 121Z" fill="white"/>
 </svg>
