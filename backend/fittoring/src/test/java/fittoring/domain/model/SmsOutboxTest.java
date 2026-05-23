@@ -132,6 +132,99 @@ class SmsOutboxTest {
         assertThat(row.getProcessingStartedAt()).isNull();
     }
 
+    @DisplayName("새로 만든 PENDING row는 failedNotifiedAt이 null이다.")
+    @Test
+    void freshPendingRowHasNullFailedNotifiedAt() {
+        // given //when
+        SmsOutbox row = pendingRow();
+
+        // then
+        assertThat(row.getFailedNotifiedAt()).isNull();
+    }
+
+    @DisplayName("recordFailure는 FAILED 전환이 처음 발생하고 아직 알림 전이라면 true를 반환한다.")
+    @Test
+    void recordFailureReturnsTrueOnFirstFailedTransition() {
+        // given: maxAttempts 직전까지 실패한 row
+        SmsOutbox row = pendingRow();
+        for (int i = 0; i < MAX_ATTEMPTS - 1; i++) {
+            row.markProcessing(LocalDateTime.of(2026, 5, 20, 12, i));
+            boolean transitioned = row.recordFailure("일시적 실패", MAX_ATTEMPTS);
+            assertThat(transitioned)
+                    .as("PENDING 유지 단계에서는 FAILED 전환이 아니므로 false를 반환해야 한다")
+                    .isFalse();
+        }
+        row.markProcessing(LocalDateTime.of(2026, 5, 20, 12, MAX_ATTEMPTS));
+
+        // when: 마지막 한 번 더 실패해 FAILED로 전환
+        boolean transitioned = row.recordFailure("최종 실패", MAX_ATTEMPTS);
+
+        // then
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(transitioned)
+                    .as("FAILED 전환 직후이며 아직 Slack 알림 전이므로 true를 반환해야 한다")
+                    .isTrue();
+            softly.assertThat(row.getStatus()).isEqualTo(SmsOutboxStatus.FAILED);
+            softly.assertThat(row.getFailedNotifiedAt()).isNull();
+        });
+    }
+
+    @DisplayName("markFailedNotified가 호출되면 failedNotifiedAt이 채워진다.")
+    @Test
+    void markFailedNotifiedStampsNotifiedAt() {
+        // given: FAILED 상태의 row
+        SmsOutbox row = pendingRow();
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            row.markProcessing(LocalDateTime.of(2026, 5, 20, 12, i));
+            row.recordFailure("계속 실패", MAX_ATTEMPTS);
+        }
+        LocalDateTime notifiedAt = LocalDateTime.of(2026, 5, 20, 12, 30);
+
+        // when
+        row.markFailedNotified(notifiedAt);
+
+        // then
+        assertThat(row.getFailedNotifiedAt()).isEqualTo(notifiedAt);
+    }
+
+    @DisplayName("retryManually는 FAILED row를 PENDING으로 되돌리고 누적 상태를 초기화한다.")
+    @Test
+    void retryManuallyResetsFailedRow() {
+        // given: 3회 실패 후 Slack 알림까지 끝난 FAILED row
+        SmsOutbox row = pendingRow();
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            row.markProcessing(LocalDateTime.of(2026, 5, 20, 12, i));
+            row.recordFailure("계속 실패", MAX_ATTEMPTS);
+        }
+        row.markFailedNotified(LocalDateTime.of(2026, 5, 20, 12, 30));
+
+        // when
+        row.retryManually();
+
+        // then: publisher가 다시 집어 갈 수 있도록 PENDING + attempts/lastError/lease/notified 초기화
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(row.getStatus()).isEqualTo(SmsOutboxStatus.PENDING);
+            softly.assertThat(row.getAttempts()).isZero();
+            softly.assertThat(row.getLastError()).isNull();
+            softly.assertThat(row.getProcessingStartedAt()).isNull();
+            softly.assertThat(row.getFailedNotifiedAt())
+                    .as("다시 3회 실패하면 Slack이 재발송될 수 있도록 알림 시각도 초기화돼야 한다")
+                    .isNull();
+        });
+    }
+
+    @DisplayName("retryManually는 FAILED가 아닌 status에서는 IllegalStateException을 던진다.")
+    @Test
+    void retryManuallyRejectsNonFailedRow() {
+        // given: PENDING row (아직 FAILED 아님)
+        SmsOutbox row = pendingRow();
+
+        // when //then
+        assertThatThrownBy(row::retryManually)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("FAILED");
+    }
+
     private SmsOutbox pendingRow() {
         return SmsOutbox.pending(
                 1L,

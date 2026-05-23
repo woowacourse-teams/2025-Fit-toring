@@ -59,6 +59,9 @@ public class SmsOutbox {
     @Column(name = "processing_started_at")
     private LocalDateTime processingStartedAt;
 
+    @Column(name = "failed_notified_at")
+    private LocalDateTime failedNotifiedAt;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -86,6 +89,7 @@ public class SmsOutbox {
                 null,
                 null,
                 null,
+                null,
                 null
         );
     }
@@ -101,7 +105,7 @@ public class SmsOutbox {
         this.lastError = null;
     }
 
-    public void recordFailure(String error, int maxAttempts) {
+    public boolean recordFailure(String error, int maxAttempts) {
         if (maxAttempts <= 0) {
             throw new IllegalArgumentException("maxAttempts must be greater than 0");
         }
@@ -110,8 +114,24 @@ public class SmsOutbox {
         this.processingStartedAt = null;
         if (this.attempts >= maxAttempts) {
             this.status = SmsOutboxStatus.FAILED;
-            return;
+            return this.failedNotifiedAt == null;
         }
         this.status = SmsOutboxStatus.PENDING;
+        return false;
+    }
+
+    public void markFailedNotified(LocalDateTime now) {
+        this.failedNotifiedAt = now;
+    }
+
+    public void retryManually() {
+        if (this.status != SmsOutboxStatus.FAILED) {
+            throw new IllegalStateException("FAILED 상태만 수동 재시도할 수 있다.");
+        }
+        this.status = SmsOutboxStatus.PENDING;
+        this.attempts = 0;
+        this.lastError = null;
+        this.processingStartedAt = null;
+        this.failedNotifiedAt = null;
     }
 }
