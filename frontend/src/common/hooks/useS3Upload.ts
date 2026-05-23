@@ -32,14 +32,14 @@ const useS3Upload = () => {
       file: File;
       imageType: ImageType;
     }) => {
-      const { presignedUrl } = await postPresignedURL({
+      const { presignedUrl, key } = await postPresignedURL({
         imageType,
         extension: getExtension(file.type),
       });
 
       await putImageToS3(presignedUrl, file);
 
-      return { uploadedUrl: presignedUrl.split('?')[0] };
+      return { uploadedUrl: presignedUrl.split('?')[0], uploadedKey: key };
     },
     onError: (error) => {
       if (error instanceof Error) {
@@ -53,7 +53,7 @@ const useS3Upload = () => {
       try {
         return await uploadMutationMutateAsync({ file, imageType });
       } catch {
-        return { uploadedUrl: '' };
+        return { uploadedUrl: '', uploadedKey: '' };
       }
     },
     [uploadMutationMutateAsync],

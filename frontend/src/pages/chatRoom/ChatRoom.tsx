@@ -25,7 +25,7 @@ import ChatRoomInputArea from './components/ChatRoomInputArea/ChatRoomInputArea'
 import ImageSendModal from './components/ImageSendModal/ImageSendModal';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import { MESSAGE_TYPE } from './constants/message';
-import useDelayedVisibility from './hooks/useDelayedVisibility';
+import useDelayedVisibility from '../../common/hooks/useDelayedVisibility';
 import useImageFile from './hooks/useImageFile';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import usePersistPendingMessages, {
@@ -309,8 +309,7 @@ function ChatRoom() {
 
       const persistedMessages = readPersistedMessages();
       const roomMessages = persistedMessages[chatRoomId] ?? [];
-      console.log('서버에서 불러온 메시지:', serverMessages);
-      console.log('지속된 메시지:', roomMessages);
+
       setMessages(mergeMessages(serverMessages, roomMessages));
     }
   }, [chatRoomId, chatRoomMessage]);

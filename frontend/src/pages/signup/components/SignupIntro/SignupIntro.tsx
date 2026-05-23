@@ -2,7 +2,7 @@ import React from 'react';
 
 import styled from '@emotion/styled';
 
-import logo from '../../../../common/assets/images/logo.svg';
+import logo from '../../../../common/assets/images/fittoringLogo.png';
 
 function SignupIntro() {
   return (
@@ -42,7 +42,7 @@ const S_ImgWrapper = styled.div`
   width: 6.4rem;
   height: 6.4rem;
   border-radius: 1.6rem;
-  box-shadow: 0 4px 12px rgb(0 120 111 / 20%);
+  box-shadow: 0 4px 12px rgb(43 167 159 / 20%);
 `;
 
 const S_Img = styled.img`

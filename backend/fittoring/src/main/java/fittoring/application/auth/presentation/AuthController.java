@@ -23,9 +23,6 @@ import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.InvalidTokenException;
 import fittoring.application.exception.OauthLoginException;
 import fittoring.application.member.service.dto.RegisterOAuthDto;
-import fittoring.config.auth.AuthRequired;
-import fittoring.config.auth.Login;
-import fittoring.config.auth.LoginInfo;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -83,10 +80,12 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(loginInfo.memberId()));
     }
 
-    @AuthRequired
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Login LoginInfo loginInfo, HttpServletResponse httpResponse) {
-        authService.logout(loginInfo.memberId());
+    public ResponseEntity<Void> logout(
+            @CookieValue(value = REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken,
+            HttpServletResponse httpResponse
+    ) {
+        authService.logout(refreshToken);
         cookieWriter.clearCookies(httpResponse);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();

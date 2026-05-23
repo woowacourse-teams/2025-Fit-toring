@@ -72,7 +72,7 @@ function CreatedMentoring() {
         </>
       ) : (
         <S_ContentsWrapper>
-          <S_EmptyText>개설한 멘토링이 없습니다.</S_EmptyText>
+          <S_EmptyText>내가 운영하는 멘토링이 없습니다.</S_EmptyText>
         </S_ContentsWrapper>
       )}
     </S_Container>

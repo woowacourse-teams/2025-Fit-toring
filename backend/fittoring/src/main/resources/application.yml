@@ -10,6 +10,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  jackson:
+    deserialization:
+      adjust-dates-to-context-time-zone: false
   sql:
     init:
       mode: never
@@ -149,6 +152,7 @@ dummy:
   admin-api:
     enabled: false
     scenarios-base-path: classpath:dummy/
+    upload-path: ./dummy-uploads/
     guest-password-hash: 342a59f63384c1fbd5b0f244484959edf694930c8bd84ccc9ee8f68c945e04dc
     schedule-offset-days: 0
   scheduler:

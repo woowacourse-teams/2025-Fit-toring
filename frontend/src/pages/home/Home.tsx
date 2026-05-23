@@ -267,7 +267,7 @@ const customStyle = css`
 
   background-color: ${THEME.BG.WHITE};
 
-  color: ${THEME.SYSTEM.MAIN600};
+  color: ${THEME.SYSTEM.MAIN500};
   ${THEME.TYPOGRAPHY.B4_B};
 `;
 

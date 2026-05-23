@@ -83,7 +83,7 @@ const S_AddButton = styled.button`
   width: 100%;
   height: 6.8rem;
   margin-top: 1.5rem;
-  border: 1px dashed ${({ theme }) => theme.SYSTEM.MAIN600};
+  border: 1px dashed ${({ theme }) => theme.SYSTEM.MAIN500};
   ${({ theme }) => theme.TYPOGRAPHY.BTN1_R}
   border-radius: 12px;
 

@@ -1,5 +1,6 @@
 package fittoring.admin.presentation.dto;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 
 public record DummySqlInsertResponse(
@@ -9,6 +10,7 @@ public record DummySqlInsertResponse(
         int insertedPostPendingCount,
         int insertedCommentPendingCount,
         String status,
-        OffsetDateTime appliedStartAt
+        OffsetDateTime appliedStartAt,
+        Duration appliedDuration
 ) {
 }

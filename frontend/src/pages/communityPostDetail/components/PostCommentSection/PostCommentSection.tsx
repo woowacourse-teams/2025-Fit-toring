@@ -1,11 +1,16 @@
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 
 import styled from '@emotion/styled';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
 import { getCommunityPostCommentOwnership } from '../../apis/getCommunityPostCommentOwnership';
 import { getPostComments } from '../../apis/getPostComments';
+import {
+  deleteCommunityPostCommentLike,
+  postCommunityPostCommentLike,
+} from '../../apis/postCommunityPostCommentLike';
 import { buildCommentTree } from '../../utils/buildCommentTree';
 import CommentItem from '../CommentItem/CommentItem';
 
@@ -30,6 +35,10 @@ function PostCommentSection({
   onEditClick,
   onDeleteClick,
 }: PostCommentSectionProps) {
+  const queryClient = useQueryClient();
+  const [pendingCommentIds, setPendingCommentIds] = useState<Set<number>>(
+    new Set(),
+  );
   const memberId = localStorage.getItem('memberId');
   const {
     data: commentData = [],
@@ -39,6 +48,54 @@ function PostCommentSection({
     queryKey: ['postComments', postId],
     queryFn: () => getPostComments(postId),
     enabled: Boolean(postId),
+  });
+
+  const { mutate: mutateCommentLike } = useMutation({
+    mutationFn: async (comment: PostComment) => {
+      if (comment.liked) {
+        return await deleteCommunityPostCommentLike({
+          postId,
+          commentId: comment.id,
+        });
+      }
+
+      return await postCommunityPostCommentLike({
+        postId,
+        commentId: comment.id,
+      });
+    },
+    onMutate: (comment) => {
+      setPendingCommentIds((prev) => {
+        const next = new Set(prev);
+        next.add(comment.id);
+        return next;
+      });
+    },
+    onSettled: (_, __, comment) => {
+      setPendingCommentIds((prev) => {
+        const next = new Set(prev);
+        next.delete(comment.id);
+        return next;
+      });
+    },
+    onSuccess: (updatedComment) => {
+      queryClient.setQueryData<PostComment[]>(
+        ['postComments', postId],
+        (currentComments) =>
+          currentComments?.map((comment) =>
+            comment.id === updatedComment.commentId
+              ? {
+                  ...comment,
+                  liked: updatedComment.liked,
+                  likeCount: updatedComment.likeCount,
+                }
+              : comment,
+          ) ?? currentComments,
+      );
+    },
+    onError: () => {
+      alert('댓글 좋아요에 실패했습니다.');
+    },
   });
 
   const { data: commentOwnershipData } = useQuery({
@@ -54,6 +111,10 @@ function PostCommentSection({
     isMine: mineCommentIds.has(comment.id),
   }));
   const commentTree = buildCommentTree(comments);
+
+  const handleLikeClick = (comment: PostComment) => {
+    mutateCommentLike(comment);
+  };
 
   return (
     <S_Container>
@@ -72,7 +133,14 @@ function PostCommentSection({
       {!isPending && !isError && commentTree.length > 0 ? (
         <S_CommentList>
           {commentTree.flatMap((comment) =>
-            renderCommentNode(comment, onReplyClick, onEditClick, onDeleteClick),
+            renderCommentNode(
+              comment,
+              onReplyClick,
+              onEditClick,
+              onDeleteClick,
+              handleLikeClick,
+              pendingCommentIds,
+            ),
           )}
         </S_CommentList>
       ) : null}
@@ -87,8 +155,12 @@ function renderCommentNode(
   onReplyClick: (comment: PostComment) => void,
   onEditClick: (comment: PostComment) => void,
   onDeleteClick: (comment: PostComment) => void,
+  onLikeClick: (comment: PostComment) => void,
+  pendingCommentIds: Set<number>,
   depth = 0,
 ): ReactNode[] {
+  const isLikePending = pendingCommentIds.has(comment.id);
+
   return [
     <CommentItem
       key={comment.id}
@@ -97,6 +169,8 @@ function renderCommentNode(
       onReplyClick={onReplyClick}
       onEditClick={onEditClick}
       onDeleteClick={onDeleteClick}
+      onLikeClick={onLikeClick}
+      isLikePending={isLikePending}
     />,
     ...comment.children.flatMap((childComment) =>
       renderCommentNode(
@@ -104,6 +178,8 @@ function renderCommentNode(
         onReplyClick,
         onEditClick,
         onDeleteClick,
+        onLikeClick,
+        pendingCommentIds,
         depth + 1,
       ),
     ),

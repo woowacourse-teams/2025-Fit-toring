@@ -4,6 +4,8 @@ import { API_ENDPOINTS } from '../../constants/apiEndpoints';
 
 import { USER_PROFILE } from './data';
 
+import type { UserInfoServer } from '../../types/userInfo';
+
 const BASE_URL = process.env.API_BASE_URL;
 
 export const testStateStore = {
@@ -17,7 +19,14 @@ export const testStateStore = {
 
 const USER_INFO_URL = `${BASE_URL}${API_ENDPOINTS.MEMBERS_ME}`;
 export const getUserInfo = http.get(`${USER_INFO_URL}`, () => {
-  const response = { ...USER_PROFILE };
+  const response: UserInfoServer = {
+    loginId: 'fittoring',
+    name: USER_PROFILE.name,
+    gender: 'MALE',
+    phoneNumber: USER_PROFILE.phoneNumber,
+    image: USER_PROFILE.image,
+    myRole: USER_PROFILE.myRole,
+  };
 
   if (testStateStore.shouldFail) {
     return new HttpResponse({ message: '내 정보 조회 실패' }, { status: 500 });

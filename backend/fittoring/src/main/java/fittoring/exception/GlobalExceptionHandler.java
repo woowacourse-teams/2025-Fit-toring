@@ -46,6 +46,7 @@ import fittoring.application.exception.UnauthorizedChatMessageAccessException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.exception.UnauthorizedException;
 import fittoring.admin.exception.DummyAlreadyInsertedException;
+import fittoring.admin.exception.DummyScenarioFileAlreadyExistsException;
 import fittoring.admin.exception.DummyScenarioFileNotFoundException;
 import fittoring.admin.exception.InvalidDummyScenarioException;
 import fittoring.application.exception.UnsupportedImageExtensionException;
@@ -336,6 +337,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DummyAlreadyInsertedException.class)
     public ResponseEntity<ErrorResponse> handle(DummyAlreadyInsertedException e) {
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(DummyScenarioFileAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handle(DummyScenarioFileAlreadyExistsException e) {
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 
