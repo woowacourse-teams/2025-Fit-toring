@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 
 import chevronRightIcon from '../../../../common/assets/images/mypage-chevron-right.svg';
 import defaultProfileImg from '../../../../common/assets/images/profileImg.svg';
+import MyPageBadge from '../MyPageBadge/MyPageBadge';
 
 interface MyPageProfileSummaryProps {
   profileImg?: string | null;
@@ -32,7 +33,11 @@ function MyPageProfileSummary({
       <S_TextGroup>
         <S_TitleRow>
           <S_Title>{name}</S_Title>
-          <S_RoleBadge>{roleLabel}</S_RoleBadge>
+          <MyPageBadge
+            label={roleLabel}
+            color="#3a43d9"
+            borderColor="#3a43d9"
+          />
         </S_TitleRow>
       </S_TextGroup>
       <S_Icon src={chevronRightIcon} alt="" aria-hidden="true" />
@@ -95,17 +100,6 @@ const S_Title = styled.span`
 
   white-space: nowrap;
   ${({ theme }) => theme.TYPOGRAPHY.H3_B}
-`;
-
-const S_RoleBadge = styled.span`
-  flex-shrink: 0;
-
-  padding: 0.4rem 1rem;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN500};
-  border-radius: 999px;
-
-  color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  ${({ theme }) => theme.TYPOGRAPHY.C2_SB}
 `;
 
 const S_Icon = styled.img`

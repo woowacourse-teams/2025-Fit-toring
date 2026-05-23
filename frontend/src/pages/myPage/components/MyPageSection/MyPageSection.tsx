@@ -5,6 +5,7 @@ import MyPageMenuRow from '../MyPageMenuRow/MyPageMenuRow';
 export interface MyPageSectionItem {
   iconSrc: string;
   label: string;
+  badgeLabel?: string;
   onClick: () => void;
 }
 
@@ -22,6 +23,7 @@ function MyPageSection({ title, items, divided = true }: MyPageSectionProps) {
         {items.map((item) => (
           <li key={item.label}>
             <MyPageMenuRow
+              badgeLabel={item.badgeLabel}
               iconSrc={item.iconSrc}
               label={item.label}
               onClick={item.onClick}

@@ -39,6 +39,7 @@ function MyPage() {
     {
       iconSrc: calendarIcon,
       label: '운영하는 멘토링',
+      badgeLabel: '멘토전용',
       onClick: () => navigate(PAGE_URL.CREATED_MENTORING),
     },
     {

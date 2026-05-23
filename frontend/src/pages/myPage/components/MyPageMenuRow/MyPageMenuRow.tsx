@@ -1,19 +1,33 @@
 import styled from '@emotion/styled';
 
 import chevronRightIcon from '../../../../common/assets/images/mypage-chevron-right.svg';
+import MyPageBadge from '../MyPageBadge/MyPageBadge';
 
 interface MyPageMenuRowProps {
   iconSrc: string;
   label: string;
+  badgeLabel?: string;
   onClick: () => void;
 }
 
-function MyPageMenuRow({ iconSrc, label, onClick }: MyPageMenuRowProps) {
+function MyPageMenuRow({
+  iconSrc,
+  label,
+  badgeLabel,
+  onClick,
+}: MyPageMenuRowProps) {
   return (
     <S_Button onClick={onClick} type="button">
       <S_Content>
         <S_LeadingIcon src={iconSrc} alt="" aria-hidden="true" />
         <S_Label>{label}</S_Label>
+        {badgeLabel && (
+          <MyPageBadge
+            label={badgeLabel}
+            color="white"
+            backgroundColor="#3a43d9"
+          />
+        )}
       </S_Content>
       <S_ChevronIcon src={chevronRightIcon} alt="" aria-hidden="true" />
     </S_Button>
