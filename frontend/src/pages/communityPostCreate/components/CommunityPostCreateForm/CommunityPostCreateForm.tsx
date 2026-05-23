@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 import Checkbox from '../../../../common/components/Checkbox/Checkbox';
 import CommunityPostForm from '../../../../common/components/CommunityPostForm/CommunityPostForm';
-import FormField from '../../../../common/components/FormField/FormField';
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
 import { COMMUNITY_POST } from '../../../../common/constants/communityPost';
 import { COMMUNITY_POST_ERROR_MESSAGE } from '../../../../common/constants/communityPost';
@@ -21,9 +20,8 @@ function CommunityPostCreateForm() {
   const [guestPassword, setGuestPassword] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
 
-  const { isPending, isSuccess: isAuthenticated } = useQuery(
-    authCheckQueryOptions,
-  );
+  const { data: authData, isPending } = useQuery(authCheckQueryOptions);
+  const isAuthenticated = Boolean(authData?.memberId);
 
   const { mutate, isPending: isSubmitPending } = useMutation({
     mutationFn: postCommunityPostDetail,
@@ -52,18 +50,17 @@ function CommunityPostCreateForm() {
 
   const isGuestPost = !isAuthenticated;
   const isAnonymousPost = isAuthenticated && isAnonymous;
-  const shouldRequireNickname = isGuestPost || isAnonymousPost;
-  const shouldRequireGuestPassword = isGuestPost;
-  const shouldShowIdentityFields =
-    shouldRequireNickname || shouldRequireGuestPassword;
+  const shouldRequireIdentity = isGuestPost || isAnonymousPost;
+  const shouldRequireNickname = shouldRequireIdentity;
+  const shouldRequireGuestPassword = shouldRequireIdentity;
+  const shouldShowIdentityFields = shouldRequireIdentity;
   const isNicknameValid =
     nickname.trim().length >= COMMUNITY_POST.NICKNAME.MIN_LENGTH &&
     nickname.trim().length <= COMMUNITY_POST.NICKNAME.MAX_LENGTH;
   const isGuestPasswordValid =
     guestPassword.trim().length === COMMUNITY_POST.GUEST_PASSWORD.LENGTH;
   const isOptionValid =
-    (!shouldRequireNickname || isNicknameValid) &&
-    (!shouldRequireGuestPassword || isGuestPasswordValid);
+    !shouldRequireIdentity || (isNicknameValid && isGuestPasswordValid);
   const nicknameErrorMessage =
     shouldRequireNickname && nickname.trim() !== '' && !isNicknameValid
       ? COMMUNITY_POST_ERROR_MESSAGE.NICKNAME_LENGTH
@@ -75,47 +72,97 @@ function CommunityPostCreateForm() {
       ? COMMUNITY_POST_ERROR_MESSAGE.GUEST_PASSWORD_LENGTH
       : '';
 
+  const handleAnonymousChange = (checked: boolean) => {
+    setIsAnonymous(checked);
+
+    if (!checked) {
+      setNickname('');
+      setGuestPassword('');
+    }
+  };
+
   const optionSection = (
     <S_Section>
       {shouldShowIdentityFields && <S_Divider />}
       <S_Content>
-        {shouldShowIdentityFields && (
-          <S_FieldGroup>
-            {shouldRequireNickname && (
-              <FormField label="닉네임" errorMessage={nicknameErrorMessage}>
-                <S_Input
+        {isAuthenticated ? (
+          <S_IdentityRow $variant="authenticated">
+            <S_CheckboxWrapper>
+              <Checkbox
+                label="익명"
+                checked={isAnonymous}
+                onChange={(e) => handleAnonymousChange(e.target.checked)}
+              />
+            </S_CheckboxWrapper>
+
+            {isAnonymous ? (
+              <>
+                {shouldRequireNickname ? (
+                  <S_IdentityField>
+                    <S_FieldInput
+                      aria-label="닉네임"
+                      value={nickname}
+                      maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
+                      placeholder="닉네임을 입력하세요."
+                      onChange={(e) => setNickname(e.target.value)}
+                    />
+                    {nicknameErrorMessage ? (
+                      <S_InlineError>{nicknameErrorMessage}</S_InlineError>
+                    ) : null}
+                  </S_IdentityField>
+                ) : null}
+
+                {shouldRequireGuestPassword ? (
+                  <S_IdentityField>
+                    <S_FieldInput
+                      aria-label="비밀번호"
+                      type="password"
+                      value={guestPassword}
+                      maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
+                      placeholder="비밀번호를 입력하세요."
+                      onChange={(e) => setGuestPassword(e.target.value)}
+                    />
+                    {guestPasswordErrorMessage ? (
+                      <S_InlineError>{guestPasswordErrorMessage}</S_InlineError>
+                    ) : null}
+                  </S_IdentityField>
+                ) : null}
+              </>
+            ) : null}
+          </S_IdentityRow>
+        ) : (
+          <S_IdentityRow $variant="guest">
+            {shouldRequireNickname ? (
+              <S_IdentityField>
+                <S_FieldInput
+                  aria-label="닉네임"
                   value={nickname}
                   maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
                   placeholder="닉네임을 입력하세요."
                   onChange={(e) => setNickname(e.target.value)}
                 />
-              </FormField>
-            )}
-            {shouldRequireGuestPassword && (
-              <FormField
-                label="비밀번호"
-                errorMessage={guestPasswordErrorMessage}
-              >
-                <S_Input
+                {nicknameErrorMessage ? (
+                  <S_InlineError>{nicknameErrorMessage}</S_InlineError>
+                ) : null}
+              </S_IdentityField>
+            ) : null}
+
+            {shouldRequireGuestPassword ? (
+              <S_IdentityField>
+                <S_FieldInput
+                  aria-label="비밀번호"
                   type="password"
                   value={guestPassword}
                   maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
                   placeholder="비밀번호를 입력하세요."
                   onChange={(e) => setGuestPassword(e.target.value)}
                 />
-              </FormField>
-            )}
-          </S_FieldGroup>
-        )}
-
-        {isAuthenticated && (
-          <S_CheckboxRow>
-            <Checkbox
-              label="익명"
-              checked={isAnonymous}
-              onChange={(e) => setIsAnonymous(e.target.checked)}
-            />
-          </S_CheckboxRow>
+                {guestPasswordErrorMessage ? (
+                  <S_InlineError>{guestPasswordErrorMessage}</S_InlineError>
+                ) : null}
+              </S_IdentityField>
+            ) : null}
+          </S_IdentityRow>
         )}
       </S_Content>
     </S_Section>
@@ -177,18 +224,38 @@ const S_Divider = styled.div`
   background-color: ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
-const S_FieldGroup = styled.div`
+const S_IdentityRow = styled.div<{ $variant: 'authenticated' | 'guest' }>`
+  display: grid;
+  align-items: start;
+  gap: 0.8rem;
+  grid-template-columns: ${({ $variant }) =>
+    $variant === 'authenticated'
+      ? 'auto minmax(0, 1fr) minmax(0, 1fr)'
+      : 'repeat(2, minmax(0, 1fr))'};
+`;
+
+const S_CheckboxWrapper = styled.div`
   display: flex;
+  align-items: center;
+
+  min-height: 4.4rem;
+`;
+
+const S_IdentityField = styled.div`
+  display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 0.4rem;
+
+  min-width: 0;
 `;
 
-const S_CheckboxRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
+const S_InlineError = styled.p`
+  color: ${({ theme }) => theme.FONT.ERROR};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
 
-const S_Input = styled.input`
+const S_FieldInput = styled.input`
   width: 100%;
   height: 4.4rem;
   padding: 0 1.3rem;
@@ -200,12 +267,12 @@ const S_Input = styled.input`
   color: ${({ theme }) => theme.FONT.B01};
   ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 
-  &::placeholder {
-    color: ${({ theme }) => theme.SYSTEM.GRAY300};
-  }
-
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
 `;

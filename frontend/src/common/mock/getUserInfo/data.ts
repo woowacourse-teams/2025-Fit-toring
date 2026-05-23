@@ -5,4 +5,5 @@ export const USER_PROFILE: Readonly<UserProfileResponse> = {
   gender: '남',
   phoneNumber: '010-1234-5678',
   image: null,
+  myRole: 'MENTOR',
 };

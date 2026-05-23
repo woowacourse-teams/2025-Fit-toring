@@ -77,17 +77,17 @@ class RefreshTokenBenchmarkTest extends IntegrationTestSupport {
             refreshTokens[i] = result.refreshToken(); // 갱신된 토큰으로 교체
         }
 
-        // ========== 3. LOGOUT (회원별 전체 토큰 삭제) 성능 측정 ==========
-        long[] logoutTimes = new long[MEMBER_COUNT];
+        // ========== 3. LOGOUT (요청 refreshToken 삭제) 성능 측정 ==========
+        long[] logoutTimes = new long[MEASURE_COUNT];
 
-        for (int i = 0; i < MEMBER_COUNT; i++) {
+        for (int i = 0; i < MEASURE_COUNT; i++) {
             long start = System.nanoTime();
-            authService.logout(members.get(i).getId());
+            authService.logout(refreshTokens[i]);
             logoutTimes[i] = System.nanoTime() - start;
         }
 
         // ========== 4. CONCURRENT 성능 측정 ==========
-        // 로그아웃으로 토큰이 지워졌으므로 새로 로그인하여 토큰 생성
+        // 로그아웃 성능 측정으로 사용한 토큰이 지워졌으므로 새로 로그인하여 토큰 생성
         List<Member> concurrentMembers = createMembers(CONCURRENT_THREADS * OPS_PER_THREAD,
                 MEMBER_COUNT);
         long concurrentResult = benchmarkConcurrent(concurrentMembers);

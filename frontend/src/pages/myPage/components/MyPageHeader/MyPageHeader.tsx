@@ -10,8 +10,8 @@ function MyPageHeader() {
   return (
     <Header>
       <S_Wrapper>
-        <S_LogoLink to={PAGE_URL.HOME}>
-          <S_Img src={backIcon} alt="홈으로 돌아가기" />
+        <S_LogoLink to={PAGE_URL.MY_PAGE}>
+          <S_Img src={backIcon} alt="마이페이지 홈으로 돌아가기" />
         </S_LogoLink>
         <S_Title>마이 페이지</S_Title>
 

@@ -10,12 +10,13 @@ export const MY_PROFILE_QUERY_KEY = {
 } as const;
 
 const convertResponse = (response: UserInfoClient): UserProfileResponse => {
-  const { name, gender, phoneNumber, image } = response;
+  const { name, gender, phoneNumber, image, myRole } = response;
   return {
     name,
     gender,
     phoneNumber,
     image,
+    myRole,
   };
 };
 

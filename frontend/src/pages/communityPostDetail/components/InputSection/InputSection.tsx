@@ -5,9 +5,9 @@ import styled from '@emotion/styled';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import sendIcon from '../../../../common/assets/images/sendIcon.svg';
-import upIcon from '../../../../common/assets/images/upIcon.svg';
 import Checkbox from '../../../../common/components/Checkbox/Checkbox';
 import { COMMUNITY_POST } from '../../../../common/constants/communityPost';
+import { BOTTOM_NAV_HEIGHT } from '../../../../common/constants/layout';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { patchCommunityPostComment } from '../../apis/patchCommunityPostComment';
 import { postCommunityPostComment } from '../../apis/postCommunityPostComment';
@@ -42,14 +42,11 @@ function InputSection({
   const [nickname, setNickname] = useState('');
   const [guestPassword, setGuestPassword] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [isIdentityOpen, setIsIdentityOpen] = useState(() => !authenticated);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const isEditMode = editingComment !== null;
 
   const shouldRequireNickname = !authenticated || isAnonymous;
   const shouldRequireGuestPassword = !authenticated;
-  const shouldRequireIdentity =
-    shouldRequireNickname || shouldRequireGuestPassword;
   const isAnonymousComment = authenticated && isAnonymous;
 
   const isNicknameValid =
@@ -151,10 +148,6 @@ function InputSection({
     commentPlaceholder = '수정할 내용을 입력해주세요.';
   }
 
-  const handleIdentityToggle = () => {
-    setIsIdentityOpen((current) => !current);
-  };
-
   const nicknameErrorMessage = (() => {
     if (!shouldRequireNickname) {
       return '';
@@ -200,11 +193,8 @@ function InputSection({
       setNickname('');
       setGuestPassword('');
       setSubmitAttempted(false);
-      setIsIdentityOpen(false);
       return;
     }
-
-    setIsIdentityOpen(true);
   };
 
   const handleCommentSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -222,11 +212,6 @@ function InputSection({
           ? { guestPassword: editingCommentGuestPassword }
           : {}),
       });
-      return;
-    }
-
-    if (shouldRequireIdentity && !isIdentityOpen) {
-      setIsIdentityOpen(true);
       return;
     }
 
@@ -251,7 +236,6 @@ function InputSection({
       setComment(editingComment.content);
       setSubmitAttempted(false);
       setIsAnonymous(false);
-      setIsIdentityOpen(false);
       return;
     }
 
@@ -260,8 +244,7 @@ function InputSection({
     setNickname('');
     setSubmitAttempted(false);
     setIsAnonymous(false);
-    setIsIdentityOpen(!authenticated);
-  }, [authenticated, editingComment]);
+  }, [editingComment]);
 
   return (
     <S_Container>
@@ -284,77 +267,82 @@ function InputSection({
           </S_ReplyBanner>
         ) : null}
 
-        {!isEditMode ? (
-          <S_ActionRow>
-            {authenticated ? (
-              <Checkbox
-                label="익명"
-                checked={isAnonymous}
-                onChange={handleAnonymousChange}
-              />
-            ) : null}
-          </S_ActionRow>
+        {!isEditMode && authenticated ? (
+          <S_IdentitySection>
+            <S_IdentityRow $variant="authenticated">
+              <S_CheckboxWrapper>
+                <Checkbox
+                  label="익명"
+                  checked={isAnonymous}
+                  onChange={handleAnonymousChange}
+                />
+              </S_CheckboxWrapper>
+
+              {isAnonymous ? (
+                <>
+                  <S_IdentityField>
+                    <S_FieldInput
+                      id="comment-nickname"
+                      value={nickname}
+                      maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
+                      placeholder="닉네임을 입력하세요."
+                      onChange={(e) => setNickname(e.target.value)}
+                    />
+                    {nicknameErrorMessage ? (
+                      <S_InlineError>{nicknameErrorMessage}</S_InlineError>
+                    ) : null}
+                  </S_IdentityField>
+
+                  <S_IdentityField>
+                    <S_FieldInput
+                      id="comment-password"
+                      type="password"
+                      value={guestPassword}
+                      maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
+                      placeholder="비밀번호를 입력하세요."
+                      onChange={(e) => setGuestPassword(e.target.value)}
+                    />
+                    {passwordErrorMessage ? (
+                      <S_InlineError>{passwordErrorMessage}</S_InlineError>
+                    ) : null}
+                  </S_IdentityField>
+                </>
+              ) : null}
+            </S_IdentityRow>
+          </S_IdentitySection>
         ) : null}
 
-        {!isEditMode && shouldRequireIdentity ? (
-          <>
-            <S_IdentityHeader type="button" onClick={handleIdentityToggle}>
-              <S_IdentityHeaderText>작성자 정보</S_IdentityHeaderText>
-              <S_IdentityHeaderAction
-                $expanded={isIdentityOpen}
-                aria-hidden="true"
-              >
-                <S_IdentityToggleIcon src={upIcon} alt="" />
-              </S_IdentityHeaderAction>
-            </S_IdentityHeader>
-
-            <S_IdentitySection $expanded={isIdentityOpen}>
-              <S_IdentitySectionInner>
-                <S_FieldGroup>
-                  {shouldRequireNickname ? (
-                    <S_InlineField $hasError={nicknameErrorMessage !== ''}>
-                      <S_InlineLabel htmlFor="comment-nickname">
-                        닉네임
-                      </S_InlineLabel>
-                      <S_FieldInput
-                        id="comment-nickname"
-                        value={nickname}
-                        maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
-                        placeholder="닉네임을 입력하세요."
-                        onChange={(e) => setNickname(e.target.value)}
-                      />
-                      {nicknameErrorMessage ? (
-                        <S_InlineError>{nicknameErrorMessage}</S_InlineError>
-                      ) : null}
-                    </S_InlineField>
-                  ) : null}
-                  {shouldRequireGuestPassword ? (
-                    <S_InlineField $hasError={passwordErrorMessage !== ''}>
-                      <S_InlineLabel htmlFor="comment-password">
-                        비밀번호
-                      </S_InlineLabel>
-                      <S_FieldInput
-                        id="comment-password"
-                        type="password"
-                        value={guestPassword}
-                        maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
-                        placeholder="비밀번호를 입력하세요."
-                        onChange={(e) => setGuestPassword(e.target.value)}
-                      />
-                      {passwordErrorMessage ? (
-                        <S_InlineError>{passwordErrorMessage}</S_InlineError>
-                      ) : null}
-                    </S_InlineField>
-                  ) : null}
-                </S_FieldGroup>
-                {!authenticated ? (
-                  <S_GuestNotice>
-                    비회원은 닉네임과 비밀번호가 필요합니다.
-                  </S_GuestNotice>
+        {!isEditMode && !authenticated ? (
+          <S_IdentitySection>
+            <S_IdentityRow $variant="guest">
+              <S_IdentityField>
+                <S_FieldInput
+                  id="comment-nickname"
+                  value={nickname}
+                  maxLength={COMMUNITY_POST.NICKNAME.MAX_LENGTH}
+                  placeholder="닉네임을 입력하세요."
+                  onChange={(e) => setNickname(e.target.value)}
+                />
+                {nicknameErrorMessage ? (
+                  <S_InlineError>{nicknameErrorMessage}</S_InlineError>
                 ) : null}
-              </S_IdentitySectionInner>
-            </S_IdentitySection>
-          </>
+              </S_IdentityField>
+
+              <S_IdentityField>
+                <S_FieldInput
+                  id="comment-password"
+                  type="password"
+                  value={guestPassword}
+                  maxLength={COMMUNITY_POST.GUEST_PASSWORD.LENGTH}
+                  placeholder="비밀번호를 입력하세요."
+                  onChange={(e) => setGuestPassword(e.target.value)}
+                />
+                {passwordErrorMessage ? (
+                  <S_InlineError>{passwordErrorMessage}</S_InlineError>
+                ) : null}
+              </S_IdentityField>
+            </S_IdentityRow>
+          </S_IdentitySection>
         ) : null}
 
         <S_CommentRow>
@@ -366,7 +354,9 @@ function InputSection({
           <S_SubmitButton
             type="submit"
             disabled={
-              !isFormValid || isSubmitPending || (isEditMode && isEditSubmitPending)
+              !isFormValid ||
+              isSubmitPending ||
+              (isEditMode && isEditSubmitPending)
             }
             aria-label={isEditMode ? '댓글 수정' : '댓글 등록'}
           >
@@ -382,7 +372,7 @@ export default InputSection;
 
 const S_Container = styled.div`
   position: fixed;
-  bottom: 72px;
+  bottom: ${BOTTOM_NAV_HEIGHT}rem;
   left: 50%;
   z-index: 1;
 
@@ -431,111 +421,40 @@ const S_ReplyCancelButton = styled.button`
   ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;
 
-const S_IdentitySection = styled.section<{ $expanded: boolean }>`
+const S_IdentitySection = styled.section`
+  display: flex;
+  flex-direction: column;
+`;
+
+const S_IdentityRow = styled.div<{ $variant: 'authenticated' | 'guest' }>`
   display: grid;
-  grid-template-rows: ${({ $expanded }) => ($expanded ? '1fr' : '0fr')};
-  transition:
-    grid-template-rows 180ms ease,
-    opacity 180ms ease,
-    margin 180ms ease;
-
-  opacity: ${({ $expanded }) => ($expanded ? 1 : 0)};
-
-  visibility: ${({ $expanded }) => ($expanded ? 'visible' : 'hidden')};
-  pointer-events: ${({ $expanded }) => ($expanded ? 'auto' : 'none')};
-
-  margin-top: ${({ $expanded }) => ($expanded ? '0' : '-0.4rem')};
-`;
-
-const S_IdentitySectionInner = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  overflow: hidden;
-
-  min-height: 0;
-`;
-
-const S_FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
+  align-items: start;
   gap: 0.8rem;
+  grid-template-columns: ${({ $variant }) =>
+    $variant === 'authenticated'
+      ? 'auto minmax(0, 1fr) minmax(0, 1fr)'
+      : 'repeat(2, minmax(0, 1fr))'};
 `;
 
-const S_InlineField = styled.div<{ $hasError: boolean }>`
-  display: grid;
-  grid-template-columns: 5.6rem minmax(0, 1fr);
-
+const S_CheckboxWrapper = styled.div`
+  display: flex;
   align-items: center;
-  gap: 0.4rem 1rem;
 
-  width: 100%;
-  padding-bottom: ${({ $hasError }) => ($hasError ? '0.2rem' : '0')};
+  min-height: 4.4rem;
 `;
 
-const S_InlineLabel = styled.label`
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_SB};
+const S_IdentityField = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  min-width: 0;
 `;
 
 const S_InlineError = styled.p`
-  grid-column: 2 / 3;
-
   color: ${({ theme }) => theme.FONT.ERROR};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
-`;
-
-const S_ActionRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const S_IdentityHeader = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  width: 100%;
-  padding: 0;
-  border: none;
-
-  background: transparent;
-  cursor: pointer;
-`;
-
-const S_IdentityHeaderText = styled.span`
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_SB}
-`;
-
-const S_IdentityHeaderAction = styled.span<{ $expanded: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  transition: transform 180ms ease;
-  transform: rotate(${({ $expanded }) => ($expanded ? '0deg' : '180deg')});
-`;
-
-const S_IdentityToggleIcon = styled.img`
-  width: 1.6rem;
-  height: 1.6rem;
-`;
-
-const S_GuestNotice = styled.span`
-  color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
-`;
-
-const S_CommentRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  padding: 0.8rem 1rem;
-  border-radius: 999px;
-
-  background-color: ${({ theme }) => theme.SYSTEM.GRAY50};
 `;
 
 const S_FieldInput = styled.input`
@@ -558,6 +477,17 @@ const S_FieldInput = styled.input`
   &::placeholder {
     color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
+`;
+
+const S_CommentRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY50};
 `;
 
 const S_CommentInput = styled.input`

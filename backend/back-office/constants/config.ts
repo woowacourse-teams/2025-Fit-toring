@@ -47,6 +47,7 @@ export const API_ENDPOINTS = {
 
   // 더미 데이터
   ADMIN_DUMMY_SQL_INSERT: `${BASE_URL}/admin/dummy/sql-insert`,
+  ADMIN_DUMMY_SQL_UPLOAD: `${BASE_URL}/admin/dummy/sql-insert/upload`,
 } as const;
 
 /**

@@ -352,6 +352,63 @@ class AuthIntegrationTest extends AbstractApiDocumentationTest {
         });
     }
 
+    @DisplayName("accessToken이 없어도 refreshToken이 존재하면 로그아웃을 하면 refreshToken이 삭제되고 쿠키가 만료된다.")
+    @Test
+    void logoutWithoutAccessToken() {
+        //given
+        Member savedMember = memberRepository.save(FixtureUtil.testMentee());
+        String refreshToken = jwtProvider.createRefreshToken();
+        refreshTokenRepository.save(refreshToken, savedMember.getId(), 604800000);
+
+        //when
+        Response response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .cookie("refreshToken", refreshToken)
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .post("/logout");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(204);
+            softly.assertThat(refreshTokenRepository.findMemberIdByTokenValue(refreshToken)).isEmpty();
+            softly.assertThat(cookies).anyMatch(cookie ->
+                    cookie.startsWith("accessToken=;")
+                            && cookie.contains("Max-Age=0"));
+            softly.assertThat(cookies).anyMatch(cookie ->
+                    cookie.startsWith("refreshToken=;")
+                            && cookie.contains("Max-Age=0"));
+        });
+    }
+
+    @DisplayName("토큰 쿠키가 없어도 로그아웃은 204를 반환하고 쿠키 만료 헤더를 내려준다.")
+    @Test
+    void logoutWithoutTokenCookies() {
+        //when
+        Response response = RestAssured
+                .given(spec)
+                .accept("application/json")
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .post("/logout");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(204);
+            softly.assertThat(cookies).anyMatch(cookie ->
+                    cookie.startsWith("accessToken=;")
+                            && cookie.contains("Max-Age=0"));
+            softly.assertThat(cookies).anyMatch(cookie ->
+                    cookie.startsWith("refreshToken=;")
+                            && cookie.contains("Max-Age=0"));
+        });
+    }
+
     @DisplayName("로그인 상태 요청 - accessToken이 존재하면 true와 사용자 id를 반환한다.")
     @Test
     void isLoggedIn() {

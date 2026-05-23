@@ -10,6 +10,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 0,
     viewCount: 140,
     likeCount: 0,
+    liked: false,
     content:
       '동네에서 시간되고 여유될 때 운동도 같이하고 수다도 떨고 맛있는 것도 먹으면서 편하게 지낼 친구 구해요',
   },
@@ -22,6 +23,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 3,
     viewCount: 20,
     likeCount: 4,
+    liked: false,
     content: '9시에 구매한다고 했는데 글이 사라졌어요..',
   },
   {
@@ -33,6 +35,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 2696,
     likeCount: 4,
+    liked: false,
     content: '행사 일정 올라온 것 같은데 관심 있는 분들 같이 가요.',
   },
   {
@@ -44,6 +47,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 0,
     viewCount: 98,
     likeCount: 0,
+    liked: false,
     content:
       '22살 이고 INFJ입니다! 고민도 들어주고 취미도 공유하면서 가볍게 연락할 분 구해요',
   },
@@ -56,6 +60,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 87,
     likeCount: 5,
+    liked: false,
     content:
       '토요일 아침에 가볍게 5km 정도 뛰고 브런치 먹을 분 구합니다. 초보도 괜찮아요.',
   },
@@ -68,6 +73,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 4,
     viewCount: 156,
     likeCount: 8,
+    liked: false,
     content:
       '막 헬스 시작했는데 상체 하체 분할을 어떻게 해야 할지 모르겠어요. 추천 부탁드려요.',
   },
@@ -80,6 +86,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 1,
     viewCount: 63,
     likeCount: 2,
+    liked: false,
     content:
       '평일 저녁 8시쯤 체육관에서 배드민턴 같이 치실 분 찾아요. 장비는 제가 여분 있어요.',
   },
@@ -92,6 +99,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 6,
     viewCount: 211,
     likeCount: 10,
+    liked: false,
     content:
       '혼자 식단하면 자꾸 무너져서요. 하루 한 번씩 인증하면서 같이 관리하실 분 있으면 좋겠습니다.',
   },
@@ -104,6 +112,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 8,
     viewCount: 304,
     likeCount: 14,
+    liked: false,
     content:
       '기구 쓰는 법도 모르고 혼자 가려니 좀 무섭네요. 처음 시작할 때 팁 있으면 알려주세요.',
   },
@@ -116,6 +125,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 5,
     viewCount: 189,
     likeCount: 7,
+    liked: false,
     content:
       '4주 동안 매일 20분씩 홈트 인증하는 소규모 챌린지 해보려고 합니다. 같이 하실 분 댓글 주세요.',
   },
@@ -128,6 +138,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 72,
     likeCount: 3,
+    liked: false,
     content:
       '아침마다 몸이 너무 뻐근해서 간단한 스트레칭 루틴 같이 인증하실 분 구합니다.',
   },
@@ -140,6 +151,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 7,
     viewCount: 165,
     likeCount: 9,
+    liked: false,
     content:
       '벤치프레스 말고도 초보가 무리 없이 할 수 있는 가슴 운동 루틴 있으면 알려주세요.',
   },
@@ -152,6 +164,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 1,
     viewCount: 58,
     likeCount: 2,
+    liked: false,
     content:
       '허리 통증 때문에 요가 알아보는 중인데 시설 괜찮은 곳 있으면 추천 부탁드립니다.',
   },
@@ -164,6 +177,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 4,
     viewCount: 143,
     likeCount: 6,
+    liked: false,
     content:
       '편의점 식단도 좋고 배달 도시락도 좋아요. 가성비 괜찮은 곳 아시면 같이 공유해요.',
   },
@@ -176,6 +190,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 3,
     viewCount: 121,
     likeCount: 4,
+    liked: false,
     content:
       '무릎 부담 적은 입문용 러닝화 찾고 있어요. 실제 신어보신 분들 후기 궁금합니다.',
   },
@@ -188,6 +203,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 0,
     viewCount: 66,
     likeCount: 1,
+    liked: false,
     content:
       '혼자 등록하려니 망설여져서요. 저녁반 수영 같이 시작하실 분 있으면 연락 주세요.',
   },
@@ -200,6 +216,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 5,
     viewCount: 201,
     likeCount: 11,
+    liked: false,
     content:
       '숫자에 너무 집착하지 말아야지 하면서도 신경 쓰이네요. 다들 어떻게 관리하시나요?',
   },
@@ -212,6 +229,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 1,
     viewCount: 54,
     likeCount: 2,
+    liked: false,
     content:
       '헬스장 근처 샐러드집 자주 가는데 혼자 먹기 심심해서 가볍게 같이 드실 분 찾아요.',
   },
@@ -224,6 +242,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 6,
     viewCount: 178,
     likeCount: 8,
+    liked: false,
     content:
       '플랭크, 레그레이즈, 크런치 정도로 가볍게 10분씩 하는 챌린지 같이 하실 분 모집합니다.',
   },
@@ -236,6 +255,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 97,
     likeCount: 5,
+    liked: false,
     content:
       '높은 산 말고 가볍게 갈 수 있는 코스로 시작해보려 해요. 초보 분들 환영합니다.',
   },
@@ -248,6 +268,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 9,
     viewCount: 244,
     likeCount: 12,
+    liked: false,
     content:
       '스쿼트하고 나면 다음날 걷는 것도 힘든데 강도 조절을 어떻게 해야 할지 고민입니다.',
   },
@@ -260,6 +281,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 88,
     likeCount: 4,
+    liked: false,
     content:
       '거창한 거 말고 하루 한 끼만이라도 건강하게 먹은 사진 올리면서 같이 동기부여 받아요.',
   },
@@ -272,6 +294,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 4,
     viewCount: 133,
     likeCount: 6,
+    liked: false,
     content:
       '종아리랑 허벅지 자주 뭉치는데 폼롤러 꾸준히 하면 좀 나아지는지 궁금합니다.',
   },
@@ -284,6 +307,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 0,
     viewCount: 47,
     likeCount: 1,
+    liked: false,
     content:
       '밤에 혼자 걷기 심심해서요. 너무 늦지 않은 시간에 동네 한 바퀴 도실 분 있으면 좋겠어요.',
   },
@@ -296,6 +320,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 3,
     viewCount: 91,
     likeCount: 5,
+    liked: false,
     content:
       '웨이트할 때 집중 잘 되는 음악이나 러닝할 때 텐션 올라가는 곡들 추천 부탁드려요.',
   },
@@ -308,6 +333,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 10,
     viewCount: 287,
     likeCount: 13,
+    liked: false,
     content:
       '저녁만 되면 군것질 생각이 너무 많이 나네요. 실전에서 도움된 방법 있으면 알려주세요.',
   },
@@ -320,6 +346,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 74,
     likeCount: 3,
+    liked: false,
     content:
       '혼자 하면 자꾸 미루게 돼서요. 각자 뛰고 인증만 해도 좋으니 같이 해보실 분 구해요.',
   },
@@ -332,6 +359,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 1,
     viewCount: 69,
     likeCount: 2,
+    liked: false,
     content:
       '거창한 운동보다 꾸준히 걷는 습관 만들고 싶어요. 만보 챌린지 같이 하실 분 계실까요?',
   },
@@ -344,6 +372,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 7,
     viewCount: 158,
     likeCount: 9,
+    liked: false,
     content:
       '조금만 걸어도 숨차는데 운동을 아예 안 하다가 시작하려니 막막하네요. 조언 부탁드립니다.',
   },
@@ -356,6 +385,7 @@ export const COMMUNITY_POSTS: ReadonlyArray<CommunityPost> = [
     commentCount: 2,
     viewCount: 82,
     likeCount: 4,
+    liked: false,
     content:
       '실력 상관 없이 땀만 좀 흘리는 느낌으로 주말 저녁에 농구하실 분 찾고 있습니다.',
   },
