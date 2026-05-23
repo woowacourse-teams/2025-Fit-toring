@@ -3,6 +3,7 @@ package fittoring.domain.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.application.exception.SmsOutboxNotRetryableException;
 import java.time.LocalDateTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -213,7 +214,7 @@ class SmsOutboxTest {
         });
     }
 
-    @DisplayName("retryManually는 FAILED가 아닌 status에서는 IllegalStateException을 던진다.")
+    @DisplayName("retryManually는 FAILED가 아닌 status에서는 SmsOutboxNotRetryableException을 던진다.")
     @Test
     void retryManuallyRejectsNonFailedRow() {
         // given: PENDING row (아직 FAILED 아님)
@@ -221,7 +222,7 @@ class SmsOutboxTest {
 
         // when //then
         assertThatThrownBy(row::retryManually)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(SmsOutboxNotRetryableException.class)
                 .hasMessageContaining("FAILED");
     }
 

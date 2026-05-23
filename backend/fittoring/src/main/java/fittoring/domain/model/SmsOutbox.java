@@ -1,5 +1,6 @@
 package fittoring.domain.model;
 
+import fittoring.application.exception.SmsOutboxNotRetryableException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -126,7 +127,9 @@ public class SmsOutbox {
 
     public void retryManually() {
         if (this.status != SmsOutboxStatus.FAILED) {
-            throw new IllegalStateException("FAILED 상태만 수동 재시도할 수 있다.");
+            throw new SmsOutboxNotRetryableException(
+                    "FAILED 상태의 row만 수동 재시도할 수 있습니다. 현재 상태: " + this.status
+            );
         }
         this.status = SmsOutboxStatus.PENDING;
         this.attempts = 0;
