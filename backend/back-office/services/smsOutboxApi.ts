@@ -2,7 +2,7 @@ import { API_ENDPOINTS } from "@/constants/config";
 import { getApiHeaders, getDefaultFetchOptions, fetchWithTokenRefresh } from "@/services/apiUtils";
 
 export type SmsOutboxStatus = "PENDING" | "PROCESSING" | "SENT" | "FAILED";
-export type SmsOutboxEventType = "RESERVATION_CREATED" | "APPROVED" | "REJECTED";
+export type SmsOutboxEventType = "RESERVATION_CREATED" | "RESERVATION_APPROVED" | "RESERVATION_REJECTED";
 
 export interface SmsOutboxItem {
   id: number;
