@@ -19,6 +19,7 @@ import fittoring.application.mentoring.service.dto.MentorMentoringReservationRes
 import fittoring.application.mentoring.service.dto.ReservationInfo;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
@@ -63,7 +64,7 @@ public class ReservationService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public Reservation createReservation(ReservationCreateDto dto) {
+    public ReservationCreateResponse createReservation(ReservationCreateDto dto) {
         Reservation reservation = createReservationEntity(dto);
         try {
             reservationRepository.save(reservation);
@@ -75,7 +76,7 @@ public class ReservationService {
         }
         mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
         eventPublisher.publishEvent(ReservationCreatedEvent.of(reservation));
-        return reservation;
+        return ReservationCreateResponse.from(reservation);
     }
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {

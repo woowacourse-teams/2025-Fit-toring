@@ -10,7 +10,6 @@ import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
-import fittoring.domain.model.Reservation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +40,9 @@ public class ReservationController {
                 mentoringId,
                 requestBody
         );
-        Reservation reservation = reservationService.createReservation(reservationCreateDto);
+        ReservationCreateResponse response = reservationService.createReservation(reservationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ReservationCreateResponse.from(reservation));
+                .body(response);
     }
 
     @AuthRequired
