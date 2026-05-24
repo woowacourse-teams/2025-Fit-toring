@@ -85,7 +85,7 @@ public class SmsOutboxPublisher {
         for (SmsOutbox row : batch) {
             if (result.isFailed(row.getId())) {
                 log.warn("배치 내 단건 SMS 발송 실패: outboxId={}, eventType={}", row.getId(), row.getEventType());
-                resultApplier.applyFailure(row.getId(), "Recipient delivery failed in batch");
+                resultApplier.applyFailure(row.getId(), "배치 내 수신자 발송 실패");
                 continue;
             }
             resultApplier.applySuccess(row.getId());

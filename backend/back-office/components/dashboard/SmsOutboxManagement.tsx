@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -70,7 +70,7 @@ export function SmsOutboxManagement() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
 
-  const loadList = async () => {
+  const loadList = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await fetchSmsOutboxList(status, currentPage, pageSize);
@@ -82,12 +82,11 @@ export function SmsOutboxManagement() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [status, currentPage]);
 
   useEffect(() => {
     loadList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, currentPage]);
+  }, [loadList]);
 
   const handleStatusChange = (next: string) => {
     const nextStatus = next as SmsOutboxStatus;
