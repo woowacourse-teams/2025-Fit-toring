@@ -1,5 +1,6 @@
 package fittoring.infrastructure.sms;
 
+import fittoring.domain.model.Phone;
 import fittoring.infrastructure.discord.DiscordWebhookClient;
 import fittoring.infrastructure.event.SmsOutboxFailedEvent;
 import java.time.LocalDateTime;
@@ -39,16 +40,9 @@ public class SmsOutboxFailedNotificationListener {
                 event.outboxId(),
                 event.reservationId(),
                 event.eventType(),
-                maskPhone(event.toPhone()),
+                new Phone(event.toPhone()).getMaskedNumber(),
                 event.attempts(),
                 event.lastError()
         );
-    }
-
-    private String maskPhone(String phone) {
-        if (phone == null || phone.length() < 4) {
-            return phone;
-        }
-        return phone.substring(0, phone.length() - 4) + "****";
     }
 }
