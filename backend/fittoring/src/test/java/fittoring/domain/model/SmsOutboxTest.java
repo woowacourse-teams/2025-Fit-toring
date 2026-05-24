@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.application.exception.SmsOutboxNotRetryableException;
 import java.time.LocalDateTime;
+
+import fittoring.application.reservation.sms.SmsOutbox;
+import fittoring.application.reservation.sms.SmsOutboxEventType;
+import fittoring.application.reservation.sms.SmsOutboxStatus;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

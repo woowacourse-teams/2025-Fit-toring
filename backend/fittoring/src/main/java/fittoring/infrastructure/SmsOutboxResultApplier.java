@@ -1,7 +1,7 @@
 package fittoring.infrastructure;
 
 import fittoring.application.reservation.repository.SmsOutboxRepository;
-import fittoring.domain.model.SmsOutbox;
+import fittoring.application.reservation.sms.SmsOutbox;
 import fittoring.infrastructure.event.SmsOutboxFailedEvent;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;

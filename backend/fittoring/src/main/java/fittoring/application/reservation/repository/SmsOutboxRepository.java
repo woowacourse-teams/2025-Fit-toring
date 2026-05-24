@@ -1,7 +1,7 @@
 package fittoring.application.reservation.repository;
 
-import fittoring.domain.model.SmsOutbox;
-import fittoring.domain.model.SmsOutboxStatus;
+import fittoring.application.reservation.sms.SmsOutbox;
+import fittoring.application.reservation.sms.SmsOutboxStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;

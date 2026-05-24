@@ -1,7 +1,7 @@
 package fittoring.infrastructure.event;
 
-import fittoring.domain.model.SmsOutbox;
-import fittoring.domain.model.SmsOutboxEventType;
+import fittoring.application.reservation.sms.SmsOutbox;
+import fittoring.application.reservation.sms.SmsOutboxEventType;
 
 public record SmsOutboxFailedEvent(
         Long outboxId,

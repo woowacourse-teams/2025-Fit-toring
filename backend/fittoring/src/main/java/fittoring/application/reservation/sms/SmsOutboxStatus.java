@@ -1,4 +1,4 @@
-package fittoring.domain.model;
+package fittoring.application.reservation.sms;
 
 public enum SmsOutboxStatus {
     PENDING,

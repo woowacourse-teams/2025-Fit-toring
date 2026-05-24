@@ -5,7 +5,7 @@ import fittoring.admin.presentation.dto.AdminSmsOutboxResponse;
 import fittoring.admin.presentation.dto.PageResult;
 import fittoring.admin.service.AdminSmsOutboxService;
 import fittoring.config.auth.Admin;
-import fittoring.domain.model.SmsOutboxStatus;
+import fittoring.application.reservation.sms.SmsOutboxStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

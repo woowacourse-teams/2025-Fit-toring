@@ -1,6 +1,7 @@
-package fittoring.domain.model;
+package fittoring.application.reservation.sms;
 
 import fittoring.application.exception.SmsOutboxNotRetryableException;
+import fittoring.domain.model.Phone;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;

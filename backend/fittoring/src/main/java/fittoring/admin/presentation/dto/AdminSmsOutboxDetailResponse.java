@@ -1,8 +1,8 @@
 package fittoring.admin.presentation.dto;
 
-import fittoring.domain.model.SmsOutbox;
-import fittoring.domain.model.SmsOutboxEventType;
-import fittoring.domain.model.SmsOutboxStatus;
+import fittoring.application.reservation.sms.SmsOutbox;
+import fittoring.application.reservation.sms.SmsOutboxEventType;
+import fittoring.application.reservation.sms.SmsOutboxStatus;
 import java.time.LocalDateTime;
 
 public record AdminSmsOutboxDetailResponse(

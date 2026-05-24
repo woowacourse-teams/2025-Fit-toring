@@ -1,13 +1,13 @@
 package fittoring.infrastructure;
 
 import fittoring.domain.model.Phone;
-import fittoring.domain.model.SmsOutbox;
+import fittoring.application.reservation.sms.SmsOutbox;
 import fittoring.infrastructure.dto.BatchSendResult;
 import fittoring.infrastructure.dto.SmsOutboxMessage;
 import fittoring.infrastructure.exception.SmsException;
 import jakarta.annotation.PreDestroy;
 import java.util.List;
-import lombok.NonNull;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

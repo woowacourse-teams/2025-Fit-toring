@@ -1,7 +1,7 @@
 package fittoring.infrastructure;
 
 import fittoring.application.reservation.repository.SmsOutboxRepository;
-import fittoring.domain.model.SmsOutbox;
+import fittoring.application.reservation.sms.SmsOutbox;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
