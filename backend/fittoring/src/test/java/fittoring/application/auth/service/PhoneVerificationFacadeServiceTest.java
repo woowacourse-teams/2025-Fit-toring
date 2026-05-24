@@ -3,8 +3,8 @@ package fittoring.application.auth.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import fittoring.domain.model.Phone;
-import fittoring.infrastructure.SmsMessageFormatter;
-import fittoring.infrastructure.SmsRestClientService;
+import fittoring.infrastructure.sms.SmsMessageFormatter;
+import fittoring.infrastructure.sms.SmsRestClientService;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

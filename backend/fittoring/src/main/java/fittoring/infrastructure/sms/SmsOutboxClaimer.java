@@ -1,4 +1,4 @@
-package fittoring.infrastructure;
+package fittoring.infrastructure.sms;
 
 import fittoring.application.reservation.repository.SmsOutboxRepository;
 import fittoring.application.reservation.sms.SmsOutbox;

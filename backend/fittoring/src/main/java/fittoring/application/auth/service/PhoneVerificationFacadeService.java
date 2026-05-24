@@ -1,8 +1,8 @@
 package fittoring.application.auth.service;
 
 import fittoring.domain.model.Phone;
-import fittoring.infrastructure.SmsMessageFormatter;
-import fittoring.infrastructure.SmsRestClientService;
+import fittoring.infrastructure.sms.SmsMessageFormatter;
+import fittoring.infrastructure.sms.SmsRestClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

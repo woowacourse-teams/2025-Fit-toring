@@ -4,6 +4,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import fittoring.infrastructure.sms.SmsOutboxClaimer;
+import fittoring.infrastructure.sms.SmsOutboxPublisher;
+import fittoring.infrastructure.sms.SmsOutboxResultApplier;
+import fittoring.infrastructure.sms.SmsRestClientService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;

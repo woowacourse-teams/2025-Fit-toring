@@ -1,5 +1,6 @@
 package fittoring.infrastructure;
 
+import fittoring.infrastructure.auth.CodeGenerator;
 import org.springframework.stereotype.Component;
 
 @Component

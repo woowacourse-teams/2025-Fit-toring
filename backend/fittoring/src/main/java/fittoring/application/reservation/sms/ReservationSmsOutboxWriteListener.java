@@ -4,7 +4,7 @@ import fittoring.application.reservation.repository.SmsOutboxRepository;
 import fittoring.application.reservation.service.event.ReservationApprovedEvent;
 import fittoring.application.reservation.service.event.ReservationCreatedEvent;
 import fittoring.application.reservation.service.event.ReservationRejectedEvent;
-import fittoring.infrastructure.SmsMessageFormatter;
+import fittoring.infrastructure.sms.SmsMessageFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

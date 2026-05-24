@@ -10,6 +10,9 @@ import fittoring.infrastructure.exception.InfraErrorMessage;
 import fittoring.infrastructure.exception.SmsException;
 import java.io.IOException;
 import java.util.List;
+
+import fittoring.infrastructure.sms.SmsAuthHeaderGenerator;
+import fittoring.infrastructure.sms.SmsRestClientService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Assertions;

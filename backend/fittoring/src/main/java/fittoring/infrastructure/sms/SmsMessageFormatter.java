@@ -1,4 +1,4 @@
-package fittoring.infrastructure;
+package fittoring.infrastructure.sms;
 
 import org.springframework.stereotype.Component;
 

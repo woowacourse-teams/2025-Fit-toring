@@ -1,4 +1,4 @@
-package fittoring.infrastructure;
+package fittoring.infrastructure.sms;
 
 import fittoring.infrastructure.discord.DiscordWebhookClient;
 import fittoring.infrastructure.event.SmsOutboxFailedEvent;

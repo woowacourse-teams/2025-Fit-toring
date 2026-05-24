@@ -8,7 +8,7 @@ import fittoring.domain.model.Phone;
 import fittoring.application.reservation.sms.SmsOutbox;
 import fittoring.application.reservation.sms.SmsOutboxEventType;
 import fittoring.application.reservation.sms.SmsOutboxStatus;
-import fittoring.infrastructure.SmsOutboxClaimer;
+import fittoring.infrastructure.sms.SmsOutboxClaimer;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;

@@ -9,8 +9,8 @@ import static org.springframework.restdocs.restassured.RestAssuredRestDocumentat
 import com.epages.restdocs.apispec.ResourceSnippet;
 import com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper;
 import fittoring.application.image.service.PresignedUrlService;
-import fittoring.infrastructure.OauthClientService;
-import fittoring.infrastructure.SmsRestClientService;
+import fittoring.infrastructure.auth.OauthClientService;
+import fittoring.infrastructure.sms.SmsRestClientService;
 import fittoring.infrastructure.discord.DiscordWebhookClient;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
