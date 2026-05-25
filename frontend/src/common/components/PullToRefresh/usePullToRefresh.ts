@@ -43,7 +43,6 @@ const usePullToRefresh = ({
   const startYRef = useRef(0);
   const isDraggingRef = useRef(false);
   const isRefreshingRef = useRef(false);
-  const isPullGestureRef = useRef(false);
   const pullDistanceRef = useRef(0);
   const frameIdRef = useRef<number | null>(null);
   const nextPullDistanceRef = useRef(0);
@@ -116,7 +115,6 @@ const usePullToRefresh = ({
       startXRef.current = touch.clientX;
       startYRef.current = touch.clientY;
       isDraggingRef.current = true;
-      isPullGestureRef.current = false;
       pullDistanceRef.current = 0;
     };
 
@@ -132,12 +130,10 @@ const usePullToRefresh = ({
 
       if (!isVerticalPull || !isAtTop()) {
         isDraggingRef.current = false;
-        isPullGestureRef.current = false;
         pullDistanceRef.current = 0;
         return;
       }
 
-      isPullGestureRef.current = true;
       event.preventDefault();
 
       const pullDistance = getPullDistance(diffY);
@@ -150,13 +146,12 @@ const usePullToRefresh = ({
     };
 
     const handleTouchEnd = async () => {
-      if (!isDraggingRef.current || !isPullGestureRef.current) {
+      if (!isDraggingRef.current || pullDistanceRef.current === 0) {
         isDraggingRef.current = false;
         return;
       }
 
       isDraggingRef.current = false;
-      isPullGestureRef.current = false;
 
       if (pullDistanceRef.current < REFRESH_THRESHOLD) {
         pullDistanceRef.current = 0;
@@ -177,7 +172,6 @@ const usePullToRefresh = ({
 
     const handleTouchCancel = () => {
       isDraggingRef.current = false;
-      isPullGestureRef.current = false;
       pullDistanceRef.current = 0;
 
       resetIndicator();
