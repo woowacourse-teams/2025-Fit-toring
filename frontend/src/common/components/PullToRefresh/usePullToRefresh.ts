@@ -45,6 +45,9 @@ const usePullToRefresh = ({
   const isRefreshingRef = useRef(false);
   const isPullGestureRef = useRef(false);
   const pullDistanceRef = useRef(0);
+  const frameIdRef = useRef<number | null>(null);
+  const nextPullDistanceRef = useRef(0);
+  const nextOpacityRef = useRef(0);
 
   useEffect(() => {
     onRefreshRef.current = onRefresh;
@@ -56,6 +59,53 @@ const usePullToRefresh = ({
     if (!root || !enabled) {
       return;
     }
+
+    const cancelPendingFrame = () => {
+      if (frameIdRef.current === null) {
+        return;
+      }
+
+      window.cancelAnimationFrame(frameIdRef.current);
+      frameIdRef.current = null;
+    };
+
+    const scheduleIndicatorStyle = (
+      pullDistance: number,
+      opacity: number,
+    ) => {
+      nextPullDistanceRef.current = pullDistance;
+      nextOpacityRef.current = opacity;
+
+      if (frameIdRef.current !== null) {
+        return;
+      }
+
+      frameIdRef.current = window.requestAnimationFrame(() => {
+        frameIdRef.current = null;
+
+        const indicator = indicatorRef.current;
+
+        if (!indicator) {
+          return;
+        }
+
+        setIndicatorStyle(
+          indicator,
+          nextPullDistanceRef.current,
+          nextOpacityRef.current,
+        );
+      });
+    };
+
+    const resetIndicator = () => {
+      cancelPendingFrame();
+
+      const indicator = indicatorRef.current;
+
+      if (indicator) {
+        resetIndicatorStyle(indicator);
+      }
+    };
 
     const handleTouchStart = (event: TouchEvent) => {
       if (isRefreshingRef.current || event.touches.length !== 1 || !isAtTop()) {
@@ -91,16 +141,12 @@ const usePullToRefresh = ({
       event.preventDefault();
 
       const pullDistance = getPullDistance(diffY);
-      const indicator = indicatorRef.current;
       pullDistanceRef.current = pullDistance;
 
-      if (indicator) {
-        setIndicatorStyle(
-          indicator,
-          pullDistance,
-          Math.min(pullDistance / REFRESH_THRESHOLD, 1),
-        );
-      }
+      scheduleIndicatorStyle(
+        pullDistance,
+        Math.min(pullDistance / REFRESH_THRESHOLD, 1),
+      );
     };
 
     const handleTouchEnd = async () => {
@@ -112,15 +158,9 @@ const usePullToRefresh = ({
       isDraggingRef.current = false;
       isPullGestureRef.current = false;
 
-      const indicator = indicatorRef.current;
-
       if (pullDistanceRef.current < REFRESH_THRESHOLD) {
         pullDistanceRef.current = 0;
-
-        if (indicator) {
-          resetIndicatorStyle(indicator);
-        }
-
+        resetIndicator();
         return;
       }
 
@@ -131,10 +171,7 @@ const usePullToRefresh = ({
         await onRefreshRef.current();
       } finally {
         isRefreshingRef.current = false;
-
-        if (indicator) {
-          resetIndicatorStyle(indicator);
-        }
+        resetIndicator();
       }
     };
 
@@ -143,11 +180,7 @@ const usePullToRefresh = ({
       isPullGestureRef.current = false;
       pullDistanceRef.current = 0;
 
-      const indicator = indicatorRef.current;
-
-      if (indicator) {
-        resetIndicatorStyle(indicator);
-      }
+      resetIndicator();
     };
 
     root.addEventListener('touchstart', handleTouchStart);
@@ -160,6 +193,7 @@ const usePullToRefresh = ({
       root.removeEventListener('touchmove', handleTouchMove);
       root.removeEventListener('touchend', handleTouchEnd);
       root.removeEventListener('touchcancel', handleTouchCancel);
+      cancelPendingFrame();
     };
   }, [enabled, indicatorRef, rootRef]);
 };
