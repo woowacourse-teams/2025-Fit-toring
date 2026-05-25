@@ -89,7 +89,7 @@ const S_Container = styled.section`
   width: 100%;
   min-height: calc(100vh - 5.7rem);
 
-  background-color: #fafaf7;
+  background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
 const S_ContentsWrapper = styled.div`
