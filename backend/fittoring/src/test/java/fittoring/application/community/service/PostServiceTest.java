@@ -103,8 +103,8 @@ class PostServiceTest extends IntegrationTestSupport {
             insertPost("title-" + i, "content-" + i, "nick-" + i, LocalDateTime.of(2026, 4, 1, 12, 0).minusMinutes(i));
         }
 
-        PostListResponse firstPage = postService.findPosts(null);
-        PostListResponse secondPage = postService.findPosts(firstPage.nextCursorCode());
+        PostListResponse firstPage = postService.findPosts(null, null);
+        PostListResponse secondPage = postService.findPosts(null, firstPage.nextCursorCode());
 
         assertSoftly(softly -> {
             softly.assertThat(firstPage.posts()).hasSize(10);
@@ -206,7 +206,7 @@ class PostServiceTest extends IntegrationTestSupport {
         commentRepository.save(FixtureUtil.testGuestComment(post));
 
         // when
-        PostListResponse actual = postService.findPosts(null);
+        PostListResponse actual = postService.findPosts(null, null);
 
         // then
         PostListResponse.PostSummary summary = actual.posts().stream()

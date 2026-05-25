@@ -44,11 +44,6 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostListResponse findPosts(String cursorCode) {
-        return findPosts(null, cursorCode);
-    }
-
-    @Transactional(readOnly = true)
     public PostListResponse findPosts(String keyword, String cursorCode) {
         PostSearchKeyword searchKeyword = PostSearchKeyword.from(keyword);
         PostPaginationResult result = postRepository.findPostsWithPagination(
