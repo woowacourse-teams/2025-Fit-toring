@@ -3,6 +3,7 @@ package fittoring.application.community.service.dto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import fittoring.application.community.service.PostSearchKeyword;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidPostSearchKeywordException;
 import org.junit.jupiter.api.DisplayName;
