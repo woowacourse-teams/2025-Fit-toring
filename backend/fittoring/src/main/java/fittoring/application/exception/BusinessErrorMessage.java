@@ -58,6 +58,7 @@ public enum BusinessErrorMessage {
     CHAT_ROOM_RESERVATION_INTEGRITY_EXCEPTION("채팅방에 연결된 예약 정보가 존재하지 않습니다."),
     CHAT_ROOM_OPPONENT_NAME_INTEGRITY_EXCEPTION("채팅방에 연결된 상대 이름 정보가 존재하지 않습니다."),
     POST_NOT_FOUND("존재하지 않는 게시글입니다."),
+    POST_SEARCH_KEYWORD_TOO_LONG("검색어는 50자 이하로 입력해야 합니다."),
     COMMENT_NOT_FOUND("존재하지 않는 댓글입니다."),
     GUEST_PASSWORD_MISMATCH("비밀번호가 일치하지 않습니다."),
     COMMENT_NOT_BELONG_TO_POST("해당 게시글에 속하지 않는 댓글입니다."),
