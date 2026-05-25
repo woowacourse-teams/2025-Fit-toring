@@ -1,4 +1,4 @@
-package fittoring.infrastructure;
+package fittoring.infrastructure.image;
 
 import fittoring.application.image.service.ImageSessionService;
 import fittoring.infrastructure.dto.ImageReadyMessageDto;

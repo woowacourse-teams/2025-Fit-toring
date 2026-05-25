@@ -31,4 +31,17 @@ class PhoneTest {
         Assertions.assertThatCode(() -> new Phone(phoneNumber))
                 .doesNotThrowAnyException();
     }
+
+    @DisplayName("getMaskedNumber는 마지막 4자리를 ****로 가린다.")
+    @Test
+    void getMaskedNumber() {
+        // given
+        Phone phone = new Phone("010-1234-5678");
+
+        // when
+        String masked = phone.getMaskedNumber();
+
+        // then
+        Assertions.assertThat(masked).isEqualTo("010-1234-****");
+    }
 }

@@ -1,4 +1,4 @@
-package fittoring.infrastructure;
+package fittoring.infrastructure.auth;
 
 import fittoring.application.auth.presentation.dto.response.KakaoTokenResponse;
 import fittoring.application.auth.presentation.dto.response.KakaoUserInfoResponse;

@@ -3,11 +3,10 @@ package fittoring.integration;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import fittoring.IntegrationTestSupport;
 import fittoring.domain.model.Phone;
-import fittoring.infrastructure.SmsAuthHeaderGenerator;
-import fittoring.infrastructure.SmsRestClientService;
+import fittoring.infrastructure.sms.SmsAuthHeaderGenerator;
+import fittoring.infrastructure.sms.SmsRestClientService;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;

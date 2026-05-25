@@ -1,5 +1,6 @@
-package fittoring.infrastructure;
+package fittoring.infrastructure.sms;
 
+import fittoring.infrastructure.HexEncoder;
 import fittoring.infrastructure.exception.InfraErrorMessage;
 import fittoring.infrastructure.exception.SmsException;
 import java.nio.charset.StandardCharsets;

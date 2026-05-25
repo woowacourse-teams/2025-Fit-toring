@@ -6,7 +6,7 @@ import fittoring.application.auth.repository.PhoneVerificationRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidPhoneVerificationException;
 import fittoring.domain.model.Phone;
-import fittoring.infrastructure.CodeGenerator;
+import fittoring.infrastructure.auth.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
