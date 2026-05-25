@@ -35,6 +35,16 @@ class PostSearchKeywordTest {
         assertThat(actual.value()).isEqualTo("운동 루틴");
     }
 
+    @DisplayName("검색어가 정확히 50자이면 성공한다.")
+    @Test
+    void succeedWhenKeywordLengthIs50() {
+        String keyword = "a".repeat(50);
+
+        PostSearchKeyword actual = PostSearchKeyword.from(keyword);
+
+        assertThat(actual.value()).isEqualTo(keyword);
+    }
+
     @DisplayName("검색어가 50자를 초과하면 예외가 발생한다.")
     @Test
     void failWhenKeywordIsTooLong() {

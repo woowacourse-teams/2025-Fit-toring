@@ -157,6 +157,24 @@ class PostServiceTest extends IntegrationTestSupport {
         assertThat(actual.posts()).hasSize(2);
     }
 
+    @DisplayName("LIKE 특수문자는 와일드카드가 아닌 문자 그대로 검색한다.")
+    @Test
+    void findPostsByKeywordWithLikeWildcardCharacters() {
+        insertPost("100% 달성 후기", "내용", "nick", LocalDateTime.of(2026, 4, 1, 12, 0));
+        insertPost("운동_루틴 질문", "내용", "nick", LocalDateTime.of(2026, 4, 1, 11, 0));
+        insertPost("일반 운동 질문", "내용", "nick", LocalDateTime.of(2026, 4, 1, 10, 0));
+
+        PostListResponse percentResult = postService.findPosts("%", null);
+        PostListResponse underscoreResult = postService.findPosts("_", null);
+
+        assertSoftly(softly -> {
+            softly.assertThat(percentResult.posts()).hasSize(1);
+            softly.assertThat(percentResult.posts().getFirst().title()).isEqualTo("100% 달성 후기");
+            softly.assertThat(underscoreResult.posts()).hasSize(1);
+            softly.assertThat(underscoreResult.posts().getFirst().title()).isEqualTo("운동_루틴 질문");
+        });
+    }
+
     @DisplayName("검색 결과를 커서 기반으로 조회한다.")
     @Test
     void findPostsByKeywordWithCursor() {
