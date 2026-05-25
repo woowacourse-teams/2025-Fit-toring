@@ -1,6 +1,10 @@
 import styled from '@emotion/styled';
 
 import MentoringApplicationStatus from '../../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
+import {
+  StatusTypeEnum,
+  type StatusType,
+} from '../../../../common/types/statusType';
 import useContentOverflowedRef from '../../hooks/useContentOverflowedRef';
 import useShowMore from '../../hooks/useShowMore';
 import ActionButtons from '../ActionButtons/ActionButtons';
@@ -11,6 +15,13 @@ interface MentoringApplicationItemProps {
   mentoringApplication: MentoringApplication;
   onActionButtonsClick: () => Promise<void>;
 }
+
+const STATUS_BAR_COLOR: Record<StatusType, string> = {
+  [StatusTypeEnum.PENDING]: '#F59E0B',
+  [StatusTypeEnum.APPROVED]: '#2BA79F',
+  [StatusTypeEnum.COMPLETE]: '#94A3B8',
+  [StatusTypeEnum.REJECTED]: '#EF4444',
+};
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -40,13 +51,15 @@ function MentoringApplicationItem({
 
   return (
     <S_Container key={reservationId}>
+      <S_StatusBar color={STATUS_BAR_COLOR[status]} />
       <S_SummaryWrapper>
-        <S_Name>{menteeName} 님</S_Name>
+        <S_NameLine>
+          <S_Name>{menteeName}</S_Name>
+          <S_NameSuffix>님</S_NameSuffix>
+        </S_NameLine>
         <MentoringApplicationStatus status={status} />
       </S_SummaryWrapper>
-      <S_ApplicationInfoWrapper>
-        <S_CreatedAt>신청일: {formatDate(createdAt)}</S_CreatedAt>
-      </S_ApplicationInfoWrapper>
+      <S_CreatedAt>신청일 · {formatDate(createdAt)}</S_CreatedAt>
       <S_ApplicationContent showMore={showMore} ref={contentRef}>
         {content}
       </S_ApplicationContent>
@@ -55,14 +68,12 @@ function MentoringApplicationItem({
           ({showMore ? '접기' : '더보기'})
         </S_ApplicationContentShowMoreButton>
       )}
-      <S_ButtonWrapper>
-        <ActionButtons
-          reservationId={reservationId}
-          status={status}
-          chatRoomId={chatRoomId}
-          onClick={handleActionButtonsComplete}
-        />
-      </S_ButtonWrapper>
+      <ActionButtons
+        reservationId={reservationId}
+        status={status}
+        chatRoomId={chatRoomId}
+        onClick={handleActionButtonsComplete}
+      />
     </S_Container>
   );
 }
@@ -70,18 +81,27 @@ function MentoringApplicationItem({
 export default MentoringApplicationItem;
 
 const S_Container = styled.li`
+  position: relative;
+
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 
-  height: auto;
-  padding: 1.8rem 2rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 5px;
+  padding: 1.6rem 1.6rem 1.6rem 1.8rem;
+  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+  border-radius: 8px;
+  overflow: hidden;
 
-  transition: all 0.2s ease;
+  background-color: ${({ theme }) => theme.BG.WHITE};
+`;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+const S_StatusBar = styled.div<{ color: string }>`
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+
+  background-color: ${({ color }) => color};
 `;
 
 const S_SummaryWrapper = styled.div`
@@ -90,21 +110,30 @@ const S_SummaryWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const S_Name = styled.h4`
-  color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
+const S_NameLine = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 `;
 
-const S_ApplicationInfoWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
+const S_Name = styled.h4`
+  color: ${({ theme }) => theme.FONT.B01};
+  ${({ theme }) => theme.TYPOGRAPHY.B1_B}
+`;
+
+const S_NameSuffix = styled.span`
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: normal;
+
+  color: ${({ theme }) => theme.FONT.B04};
 `;
 
 const S_CreatedAt = styled.p`
-  color: ${({ theme }) => theme.SYSTEM.GRAY500};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
+  margin-top: 0.4rem;
+
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.C3_R}
 `;
 
 const S_ApplicationContent = styled.p<{ showMore: boolean }>`
@@ -118,11 +147,13 @@ const S_ApplicationContent = styled.p<{ showMore: boolean }>`
   text-overflow: ellipsis;
   `}
   width: 100%;
+  margin-top: 0.8rem;
   word-break: break-all;
 
-  color: ${({ theme }) => theme.FONT.B01};
+  color: ${({ theme }) => theme.FONT.B02};
+  line-height: 1.45;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;
 
 const S_ApplicationContentShowMoreButton = styled.button`
@@ -135,12 +166,7 @@ const S_ApplicationContentShowMoreButton = styled.button`
 
   background: none;
 
-  color: ${({ theme }) => theme.SYSTEM.GRAY500};
+  color: ${({ theme }) => theme.FONT.B04};
   cursor: pointer;
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
-`;
-
-const S_ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;
