@@ -1,5 +1,6 @@
 package fittoring.integration;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -132,7 +133,15 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                         resource(ResourceSnippetParameters.builder()
                                 .tag("게시글")
                                 .summary("게시글 목록 조회")
-                                .description("게시글 목록을 커서 기반으로 조회합니다.")
+                                .description("게시글 목록을 커서 기반으로 조회합니다. keyword가 있으면 제목과 내용에서 검색합니다.")
+                                .queryParameters(
+                                        parameterWithName("keyword")
+                                                .description("제목과 내용에서 검색할 검색어")
+                                                .optional(),
+                                        parameterWithName("cursorCode")
+                                                .description("다음 페이지 조회를 위한 커서 코드")
+                                                .optional()
+                                )
                                 .responseSchema(Schema.schema("PostListResponse"))
                                 .build())))
                 .when()
@@ -149,6 +158,40 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(summary.viewCount()).isZero();
             softly.assertThat(summary.likeCount()).isZero();
         });
+    }
+
+    @DisplayName("게시글 검색은 200을 반환한다.")
+    @Test
+    void findPostsByKeyword() {
+        postRepository.save(Post.forGuest("운동 루틴 질문", "내용", "nick", "1234"));
+        postRepository.save(Post.forGuest("식단 질문", "내용", "nick", "1234"));
+
+        PostListResponse response = RestAssured.given(spec)
+                .queryParam("keyword", "운동")
+                .when()
+                .get("/posts")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(PostListResponse.class);
+
+        assertSoftly(softly -> {
+            softly.assertThat(response.posts()).hasSize(1);
+            softly.assertThat(response.posts().getFirst().title()).isEqualTo("운동 루틴 질문");
+            softly.assertThat(response.hasNext()).isFalse();
+            softly.assertThat(response.nextCursorCode()).isNull();
+        });
+    }
+
+    @DisplayName("게시글 검색어가 50자를 초과하면 400을 반환한다.")
+    @Test
+    void findPostsFailWhenKeywordIsTooLong() {
+        RestAssured.given(spec)
+                .queryParam("keyword", "a".repeat(51))
+                .when()
+                .get("/posts")
+                .then()
+                .statusCode(400);
     }
 
     @DisplayName("게시글 상세 조회는 200을 반환한다.")
