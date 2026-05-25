@@ -10,6 +10,10 @@ interface UsePullToRefreshParams {
 const REFRESH_THRESHOLD = 70;
 const MAX_PULL_DISTANCE = 100;
 const START_OFFSET = -48;
+const MAX_PULL_ROTATION_DEGREE = 180;
+
+export const PULL_TO_REFRESH_REFRESHING_CLASS =
+  'pull-to-refresh-indicator--refreshing';
 
 const getPullDistance = (distance: number) => {
   return Math.min(distance * 0.5, MAX_PULL_DISTANCE);
@@ -20,10 +24,13 @@ const setIndicatorStyle = (
   pullDistance: number,
   opacity: number,
 ) => {
+  const rotationDegree =
+    Math.min(pullDistance / REFRESH_THRESHOLD, 1) * MAX_PULL_ROTATION_DEGREE;
+
   indicator.style.opacity = `${opacity}`;
   indicator.style.transform = `translate3d(-50%, ${
     START_OFFSET + pullDistance
-  }px, 0) rotate(0deg)`;
+  }px, 0) rotate(${rotationDegree}deg)`;
 };
 
 const resetIndicatorStyle = (indicator: HTMLElement) => {
@@ -102,8 +109,22 @@ const usePullToRefresh = ({
       const indicator = indicatorRef.current;
 
       if (indicator) {
+        indicator.classList.remove(PULL_TO_REFRESH_REFRESHING_CLASS);
         resetIndicatorStyle(indicator);
       }
+    };
+
+    const holdIndicatorForRefresh = () => {
+      cancelPendingFrame();
+
+      const indicator = indicatorRef.current;
+
+      if (!indicator) {
+        return;
+      }
+
+      setIndicatorStyle(indicator, REFRESH_THRESHOLD, 1);
+      indicator.classList.add(PULL_TO_REFRESH_REFRESHING_CLASS);
     };
 
     const handleTouchStart = (event: TouchEvent) => {
@@ -161,6 +182,7 @@ const usePullToRefresh = ({
 
       isRefreshingRef.current = true;
       pullDistanceRef.current = 0;
+      holdIndicatorForRefresh();
 
       try {
         await onRefreshRef.current();

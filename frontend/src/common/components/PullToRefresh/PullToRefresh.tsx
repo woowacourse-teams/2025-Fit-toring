@@ -1,8 +1,11 @@
 import { useRef, type ReactNode } from 'react';
 
+import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import usePullToRefresh from './usePullToRefresh';
+import usePullToRefresh, {
+  PULL_TO_REFRESH_REFRESHING_CLASS,
+} from './usePullToRefresh';
 
 interface PullToRefreshProps {
   enabled: boolean;
@@ -60,6 +63,12 @@ const S_IndicatorWrapper = styled.div`
   will-change: transform, opacity;
 `;
 
+const spinIndicator = keyframes`
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
 const S_Indicator = styled.div`
   width: 1.8rem;
   height: 1.8rem;
@@ -67,4 +76,14 @@ const S_Indicator = styled.div`
   border-left-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 
   border-radius: 50%;
+
+  .${PULL_TO_REFRESH_REFRESHING_CLASS} & {
+    animation: ${spinIndicator} 0.8s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .${PULL_TO_REFRESH_REFRESHING_CLASS} & {
+      animation-duration: 1.6s;
+    }
+  }
 `;
