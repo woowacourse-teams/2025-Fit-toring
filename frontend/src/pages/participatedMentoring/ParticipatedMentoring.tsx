@@ -1,53 +1,22 @@
-import { useEffect, useState } from 'react';
-
 import styled from '@emotion/styled';
 
 import downIcon from '../../common/assets/images/downIcon.svg';
-import { StatusTypeEnum } from '../../common/types/statusType';
-import { captureSentryError } from '../../common/utils/captureSentryError';
 
-import { getParticipatedMentoringList } from './apis/getParticipatedMentoring';
+import useParticipatedMentoringList from './hooks/useParticipatedMentoringList';
 import MentoringItem from './MentoringItem/MentoringItem';
 import MentoringList from './MentoringList/MentoringList';
 
-import type { ParticipatedMentoringType } from './types/participatedMentoring';
-
 function ParticipatedMentoring() {
-  const [participatedMentoringList, setParticipatedMentoringList] = useState<
-    ParticipatedMentoringType[]
-  >([]);
+  const { participatedMentoringList, refetchParticipatedMentoringList } =
+    useParticipatedMentoringList();
 
-  const handleReviewSubmitButtonClick = (reservationId: number) => {
-    setParticipatedMentoringList((prevList) =>
-      prevList.map((item) =>
-        item.reservationId === reservationId
-          ? { ...item, isReviewed: true, status: StatusTypeEnum.COMPLETE }
-          : item,
-      ),
-    );
+  const handleReviewSubmitButtonClick = async () => {
+    await refetchParticipatedMentoringList();
   };
 
   const handleFilterClick = () => {
     alert('기능 추가 예정입니다.');
   };
-
-  useEffect(() => {
-    const fetchParticipatedMentoringList = async () => {
-      try {
-        const data = await getParticipatedMentoringList();
-        setParticipatedMentoringList(data);
-      } catch (error) {
-        console.error('참여한 멘토링 목록 불러오기 실패:', error);
-        captureSentryError({
-          error,
-          level: 'warning',
-          feature: 'participatedMentoring',
-          step: 'fetch-participated-mentoring-list',
-        });
-      }
-    };
-    fetchParticipatedMentoringList();
-  }, []);
 
   return (
     <S_Container>
