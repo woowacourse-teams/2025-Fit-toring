@@ -8,6 +8,7 @@ import fittoring.application.community.repository.PostRepository;
 import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
 import fittoring.application.community.service.dto.PostPaginationResult;
+import fittoring.application.community.service.dto.PostSearchKeyword;
 import fittoring.application.community.service.dto.PostUpdateDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.EmptyRequestException;
@@ -44,7 +45,16 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostListResponse findPosts(String cursorCode) {
-        PostPaginationResult result = postRepository.findPostsWithPagination(CursorCodec.decode(cursorCode));
+        return findPosts(null, cursorCode);
+    }
+
+    @Transactional(readOnly = true)
+    public PostListResponse findPosts(String keyword, String cursorCode) {
+        PostSearchKeyword searchKeyword = PostSearchKeyword.from(keyword);
+        PostPaginationResult result = postRepository.findPostsWithPagination(
+                CursorCodec.decode(cursorCode),
+                searchKeyword.value()
+        );
         Map<Long, Long> commentCountByPostId = countCommentsByPostId(result.posts());
         List<PostListResponse.PostSummary> summaries = createPostSummaries(result.posts(), commentCountByPostId);
         return new PostListResponse(summaries, result.nextCursorCode(), result.hasNext());

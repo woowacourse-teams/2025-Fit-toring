@@ -25,11 +25,15 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public PostPaginationResult findPostsWithPagination(Cursor cursor) {
+    public PostPaginationResult findPostsWithPagination(Cursor cursor, String keyword) {
         BooleanBuilder where = new BooleanBuilder();
         BooleanExpression cursorCondition = buildCursorCondition(cursor);
         if (cursorCondition != null) {
             where.and(cursorCondition);
+        }
+        BooleanExpression keywordCondition = buildKeywordCondition(keyword);
+        if (keywordCondition != null) {
+            where.and(keywordCondition);
         }
 
         List<Post> rows = jpaQueryFactory.selectFrom(post)
@@ -47,6 +51,14 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
             nextCursorCode = CursorCodec.encode(new Cursor(nextSortValue, nextPost.getId()));
         }
         return new PostPaginationResult(rows, nextCursorCode, hasNext);
+    }
+
+    private BooleanExpression buildKeywordCondition(String keyword) {
+        if (keyword == null) {
+            return null;
+        }
+        return post.title.containsIgnoreCase(keyword)
+                .or(post.content.containsIgnoreCase(keyword));
     }
 
     private BooleanExpression buildCursorCondition(Cursor cursor) {

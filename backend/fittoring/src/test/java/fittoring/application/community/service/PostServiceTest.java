@@ -114,6 +114,85 @@ class PostServiceTest extends IntegrationTestSupport {
         });
     }
 
+    @DisplayName("게시글 제목에 검색어가 포함된 게시글을 조회한다.")
+    @Test
+    void findPostsByTitleKeyword() {
+        insertPost("운동 루틴 질문", "내용", "nick", LocalDateTime.of(2026, 4, 1, 12, 0));
+        insertPost("식단 질문", "내용", "nick", LocalDateTime.of(2026, 4, 1, 11, 0));
+
+        PostListResponse actual = postService.findPosts("운동", null);
+
+        assertSoftly(softly -> {
+            softly.assertThat(actual.posts()).hasSize(1);
+            softly.assertThat(actual.posts().getFirst().title()).isEqualTo("운동 루틴 질문");
+            softly.assertThat(actual.hasNext()).isFalse();
+            softly.assertThat(actual.nextCursorCode()).isNull();
+        });
+    }
+
+    @DisplayName("게시글 내용에 검색어가 포함된 게시글을 조회한다.")
+    @Test
+    void findPostsByContentKeyword() {
+        insertPost("내용 검색 대상", "하체 운동 루틴이 궁금합니다.", "nick", LocalDateTime.of(2026, 4, 1, 12, 0));
+        insertPost("내용 검색 제외", "식단이 궁금합니다.", "nick", LocalDateTime.of(2026, 4, 1, 11, 0));
+
+        PostListResponse actual = postService.findPosts("하체", null);
+
+        assertSoftly(softly -> {
+            softly.assertThat(actual.posts()).hasSize(1);
+            softly.assertThat(actual.posts().getFirst().title()).isEqualTo("내용 검색 대상");
+            softly.assertThat(actual.hasNext()).isFalse();
+            softly.assertThat(actual.nextCursorCode()).isNull();
+        });
+    }
+
+    @DisplayName("검색어가 공백이면 전체 게시글 목록을 조회한다.")
+    @Test
+    void findPostsByBlankKeyword() {
+        insertPost("운동 루틴 질문", "내용", "nick", LocalDateTime.of(2026, 4, 1, 12, 0));
+        insertPost("식단 질문", "내용", "nick", LocalDateTime.of(2026, 4, 1, 11, 0));
+
+        PostListResponse actual = postService.findPosts("   ", null);
+
+        assertThat(actual.posts()).hasSize(2);
+    }
+
+    @DisplayName("검색 결과를 커서 기반으로 조회한다.")
+    @Test
+    void findPostsByKeywordWithCursor() {
+        for (int i = 0; i < 11; i++) {
+            insertPost("운동 질문-" + i, "content-" + i, "nick-" + i,
+                    LocalDateTime.of(2026, 4, 1, 12, 0).minusMinutes(i));
+        }
+        insertPost("식단 질문", "content", "nick", LocalDateTime.of(2026, 4, 1, 11, 30));
+
+        PostListResponse firstPage = postService.findPosts("운동", null);
+        PostListResponse secondPage = postService.findPosts("운동", firstPage.nextCursorCode());
+
+        assertSoftly(softly -> {
+            softly.assertThat(firstPage.posts()).hasSize(10);
+            softly.assertThat(firstPage.hasNext()).isTrue();
+            softly.assertThat(firstPage.nextCursorCode()).isNotBlank();
+            softly.assertThat(secondPage.posts()).hasSize(1);
+            softly.assertThat(secondPage.hasNext()).isFalse();
+        });
+    }
+
+    @DisplayName("삭제된 게시글은 검색 결과에서 제외한다.")
+    @Test
+    void findPostsByKeywordExcludeDeletedPost() {
+        Post deletedPost = postRepository.save(Post.forGuest("운동 질문", "삭제된 내용", "nick", "1234"));
+        postRepository.delete(deletedPost);
+        insertPost("노출되는 운동 질문", "내용", "nick", LocalDateTime.of(2026, 4, 1, 12, 0));
+
+        PostListResponse actual = postService.findPosts("운동", null);
+
+        assertSoftly(softly -> {
+            softly.assertThat(actual.posts()).hasSize(1);
+            softly.assertThat(actual.posts().getFirst().title()).isEqualTo("노출되는 운동 질문");
+        });
+    }
+
     @DisplayName("게시글 목록 조회 시 각 게시글의 댓글 수, 조회수, 좋아요 수가 포함된다.")
     @Test
     void findPostsWithCounts() {
