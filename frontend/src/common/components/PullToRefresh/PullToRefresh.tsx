@@ -2,15 +2,24 @@ import { useRef, type ReactNode } from 'react';
 
 import styled from '@emotion/styled';
 
+import usePullToRefresh from './usePullToRefresh';
+
 interface PullToRefreshProps {
   enabled: boolean;
   onRefresh: () => Promise<void> | void;
   children: ReactNode;
 }
 
-function PullToRefresh({ children }: PullToRefreshProps) {
+function PullToRefresh({ enabled, onRefresh, children }: PullToRefreshProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const indicatorRef = useRef<HTMLDivElement | null>(null);
+
+  usePullToRefresh({
+    enabled,
+    onRefresh,
+    rootRef,
+    indicatorRef,
+  });
 
   return (
     <S_Container ref={rootRef}>
