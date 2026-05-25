@@ -29,4 +29,8 @@ public class Phone {
             throw new InvalidPhoneException(BusinessErrorMessage.PHONE_INVALID + number);
         }
     }
+
+    public String getMaskedNumber() {
+        return number.substring(0, number.length() - 4) + "****";
+    }
 }

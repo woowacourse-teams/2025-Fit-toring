@@ -73,6 +73,13 @@ image-session:
     fixed-delay-ms: 300000 # 5분
     batch-size: 200
 
+sms-outbox:
+  publisher:
+    enabled: false  # 테스트에서는 스케줄러 자동 발동을 막고 publishPending()을 직접 호출
+    fixed-delay-ms: 5000
+    batch-size: 10
+    lease-timeout-seconds: 300
+
 domain:
   sub-domain: test-sub-domain
 

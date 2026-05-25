@@ -1,6 +1,7 @@
-package fittoring.infrastructure;
+package fittoring.infrastructure.auth;
 
 import java.security.SecureRandom;
+
 import org.springframework.stereotype.Component;
 
 @Component

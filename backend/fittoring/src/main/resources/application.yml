@@ -3,6 +3,8 @@ spring:
     name: fittoring
   profiles:
     active: ${SPRING_PROFILES_ACTIVE}
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
   config:
     import: optional:file:.env[.properties]
   mvc:
@@ -41,6 +43,7 @@ spring:
         secret-key: ${AWS_IAM_SECRET_KEY}
 
 server:
+  shutdown: graceful
   forward-headers-strategy: framework
   tomcat:
     remoteip:
@@ -127,6 +130,17 @@ image-session:
     enabled: true
     fixed-delay-ms: 300000
     batch-size: 200
+
+sms-outbox:
+  publisher:
+    enabled: true
+    fixed-delay-ms: 5000
+    batch-size: 10
+    lease-timeout-seconds: 300
+
+discord:
+  sms-outbox:
+    webhook-url: ${DISCORD_SMS_OUTBOX_WEBHOOK_URL:}
 
 domain:
   sub-domain: ${SUB_DOMAIN}

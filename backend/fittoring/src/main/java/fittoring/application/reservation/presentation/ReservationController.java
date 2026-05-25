@@ -5,7 +5,6 @@ import fittoring.application.reservation.presentation.dto.request.ReservationCre
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
 import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
-import fittoring.application.reservation.service.MentoringReservationFacadeService;
 import fittoring.application.reservation.service.ReservationService;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.config.auth.AuthRequired;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ReservationController {
 
-    private final MentoringReservationFacadeService mentoringReservationFacadeService;
     private final ReservationService reservationService;
 
     @AuthRequired
@@ -42,10 +40,9 @@ public class ReservationController {
                 mentoringId,
                 requestBody
         );
-        ReservationCreateResponse responseBody = mentoringReservationFacadeService.reserveMentoring(
-                reservationCreateDto);
+        ReservationCreateResponse response = reservationService.createReservation(reservationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseBody);
+                .body(response);
     }
 
     @AuthRequired
@@ -77,7 +74,7 @@ public class ReservationController {
             @Login LoginInfo loginInfo,
             @PathVariable Long reservationId
     ) {
-        mentoringReservationFacadeService.approveAndSendSms(loginInfo.memberId(), reservationId);
+        reservationService.approve(loginInfo.memberId(), reservationId);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
@@ -88,7 +85,7 @@ public class ReservationController {
             @Login LoginInfo loginInfo,
             @PathVariable Long reservationId
     ) {
-        mentoringReservationFacadeService.rejectAndSendSms(loginInfo.memberId(), reservationId);
+        reservationService.reject(loginInfo.memberId(), reservationId);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }

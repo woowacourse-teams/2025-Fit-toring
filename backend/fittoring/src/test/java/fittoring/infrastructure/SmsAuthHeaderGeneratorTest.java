@@ -1,5 +1,6 @@
 package fittoring.infrastructure;
 
+import fittoring.infrastructure.sms.SmsAuthHeaderGenerator;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

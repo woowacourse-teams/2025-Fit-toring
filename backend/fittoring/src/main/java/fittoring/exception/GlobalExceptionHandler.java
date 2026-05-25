@@ -40,6 +40,8 @@ import fittoring.application.exception.ReservationNotCompletedException;
 import fittoring.application.exception.ReservationNotFoundException;
 import fittoring.application.exception.ReviewAlreadyExistsException;
 import fittoring.application.exception.ReviewNotFoundException;
+import fittoring.application.exception.SmsOutboxNotFoundException;
+import fittoring.application.exception.SmsOutboxNotRetryableException;
 import fittoring.application.exception.UnauthorizedChatMessageAccessException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.exception.UnauthorizedException;
@@ -346,6 +348,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDummyScenarioException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidDummyScenarioException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(SmsOutboxNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(SmsOutboxNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(SmsOutboxNotRetryableException.class)
+    public ResponseEntity<ErrorResponse> handle(SmsOutboxNotRetryableException e) {
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getMessage());
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Throwable e, HttpStatus status, String message) {
