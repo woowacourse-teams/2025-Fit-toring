@@ -150,6 +150,7 @@ const S_TapWrapper = styled.div<{ selectedTab: TapType }>`
 
   &::after {
     content: '';
+
     position: absolute;
     bottom: 0;
     left: 0;
@@ -182,8 +183,7 @@ const S_Tap = styled.div<{ selected: boolean }>`
   color: ${({ selected, theme }) =>
     selected ? theme.FONT.B01 : theme.SYSTEM.GRAY500};
 
-  transition:
-    color 0.25s ease;
+  transition: color 0.25s ease;
 
   ${({ selected, theme }) =>
     selected ? theme.TYPOGRAPHY.B2_B : theme.TYPOGRAPHY.B2_R};
@@ -218,7 +218,7 @@ const S_SpinnerWrapper = styled.div<{ height: number }>`
   align-items: center;
   justify-content: center;
 
-  height: ${({ height }) => `${height}px`};
+  height: ${({ height }) => `max(12rem, ${height}px)`};
 `;
 
 const S_SkipLink = styled.a`

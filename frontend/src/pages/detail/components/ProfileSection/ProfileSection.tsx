@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import styled from '@emotion/styled';
 
@@ -29,8 +29,16 @@ function ProfileSection({
   onCertificateShowButton,
 }: ProfileProps) {
   const [opened, setOpened] = useState(false);
+  const [pullOffset, setPullOffset] = useState(0);
+  const touchStartYRef = useRef<number | null>(null);
+  const hasPulledRef = useRef(false);
 
   const handleImgClick = () => {
+    if (hasPulledRef.current) {
+      hasPulledRef.current = false;
+      return;
+    }
+
     setOpened(true);
     document.body.style.overflow = 'hidden';
   };
@@ -42,17 +50,57 @@ function ProfileSection({
 
   useEscapeKeyDown(handleCloseClick, opened);
 
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (window.scrollY > 0) {
+      return;
+    }
+
+    touchStartYRef.current = event.touches[0].clientY;
+    hasPulledRef.current = false;
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartYRef.current === null || window.scrollY > 0) {
+      return;
+    }
+
+    const touchY = event.touches[0].clientY;
+    const pullDistance = touchY - touchStartYRef.current;
+
+    if (pullDistance <= 0) {
+      setPullOffset(0);
+      return;
+    }
+
+    const nextOffset = Math.min(pullDistance * 0.55, 120);
+    hasPulledRef.current = nextOffset > 8;
+    setPullOffset(nextOffset);
+  };
+
+  const handleTouchEnd = () => {
+    touchStartYRef.current = null;
+    setPullOffset(0);
+  };
+
   return (
-    <S_Container>
-      <S_ProfileImg
-        src={profileImg || defaultProfileImg}
-        alt="멘토 프로필 이미지"
-        onError={(e) => {
-          e.currentTarget.src = defaultProfileImg;
-        }}
-        onClick={handleImgClick}
-      />
-      <S_InfoWrapper>
+    <S_Container
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+    >
+      <S_ImageStage>
+        <S_ProfileImg
+          src={profileImg || defaultProfileImg}
+          alt="멘토 프로필 이미지"
+          onError={(e) => {
+            e.currentTarget.src = defaultProfileImg;
+          }}
+          onClick={handleImgClick}
+        />
+      </S_ImageStage>
+      <S_InfoWrapper pullOffset={pullOffset}>
+        <S_DragHandle aria-hidden="true" />
         <S_InfoHeader>
           <S_Title>{mentorName}</S_Title>
 
@@ -91,20 +139,49 @@ const S_Container = styled.div`
   width: 100%;
 `;
 
+const S_ImageStage = styled.div`
+  overflow: hidden;
+
+  width: 100%;
+  height: min(52dvh, 42rem);
+
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY50};
+`;
+
 const S_ProfileImg = styled.img`
   width: 100%;
-  height: 43rem;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   object-fit: cover;
+  object-position: center top;
   cursor: pointer;
 `;
 
-const S_InfoWrapper = styled.div`
+const S_InfoWrapper = styled.div<{ pullOffset: number }>`
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+  position: relative;
+  z-index: 1;
 
-  padding: 2.2rem 2.7rem;
+  margin-top: ${({ pullOffset }) => `${-9.6 + pullOffset / 10}rem`};
+  padding: 1.2rem 2.7rem 2.2rem;
+  border-radius: 2rem 2rem 0 0;
+  box-shadow: 0 -0.8rem 2rem rgb(17 17 17 / 8%);
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+
+  transition: margin-top 0.18s ease-out;
+`;
+
+const S_DragHandle = styled.div`
+  align-self: center;
+
+  width: 4rem;
+  height: 0.4rem;
+  margin-bottom: 0.8rem;
+  border-radius: 999px;
+
+  background-color: ${({ theme }) => theme.SYSTEM.GRAY300};
 `;
 
 const S_InfoHeader = styled.div`
