@@ -11,17 +11,27 @@ interface UsePullToRefreshParams {
 type PullPhase = 'idle' | 'pulling' | 'settling' | 'refreshing';
 
 const REFRESH_THRESHOLD = 70;
-const MAX_PULL_DISTANCE = 100;
+const MAX_PULL_DISTANCE = 110;
 const MAX_PULL_ROTATION_DEGREE = 180;
-const RESET_TRANSITION = 'transform 180ms ease-out, opacity 180ms ease-out';
 const ROTATION_CUSTOM_PROPERTY = '--pull-to-refresh-rotation';
 const SCROLL_TOP_THRESHOLD = 1;
+const PULL_RESISTANCE = 0.55;
+const OVER_THRESHOLD_RESISTANCE = 0.45;
+const DRAG_FOLLOW_FACTOR = 0.38;
+const SETTLE_FOLLOW_FACTOR = 0.24;
+const IDLE_EPSILON = 0.5;
 
 export const PULL_TO_REFRESH_REFRESHING_CLASS =
   'pull-to-refresh-indicator--refreshing';
 
 const getPullDistance = (distance: number) => {
-  return Math.min(distance * 0.5, MAX_PULL_DISTANCE);
+  const rawDistance = distance * PULL_RESISTANCE;
+  const overThresholdDistance = Math.max(rawDistance - REFRESH_THRESHOLD, 0);
+
+  return Math.min(
+    rawDistance - overThresholdDistance * OVER_THRESHOLD_RESISTANCE,
+    MAX_PULL_DISTANCE,
+  );
 };
 
 const setIndicatorStyle = (
@@ -49,6 +59,20 @@ const setContentStyle = (content: HTMLElement, pullDistance: number) => {
 
 const resetContentStyle = (content: HTMLElement) => {
   setContentStyle(content, 0);
+};
+
+const getNextPullDistance = (
+  currentPullDistance: number,
+  targetPullDistance: number,
+  factor: number,
+) => {
+  const distanceGap = targetPullDistance - currentPullDistance;
+
+  if (Math.abs(distanceGap) <= IDLE_EPSILON) {
+    return targetPullDistance;
+  }
+
+  return currentPullDistance + distanceGap * factor;
 };
 
 const getElementFromTarget = (target: EventTarget | null) => {
@@ -190,12 +214,37 @@ const usePullToRefresh = ({
 
     const runAnimationFrameLoop = () => {
       frameIdRef.current = null;
-      currentPullDistanceRef.current = targetPullDistanceRef.current;
-      renderPullStyle(currentPullDistanceRef.current);
+      const phase = phaseRef.current;
+      const factor =
+        phase === 'pulling' ? DRAG_FOLLOW_FACTOR : SETTLE_FOLLOW_FACTOR;
+      const nextPullDistance = getNextPullDistance(
+        currentPullDistanceRef.current,
+        targetPullDistanceRef.current,
+        factor,
+      );
 
-      if (phaseRef.current === 'idle') {
+      currentPullDistanceRef.current = nextPullDistance;
+      renderPullStyle(nextPullDistance);
+
+      const isSettled =
+        Math.abs(targetPullDistanceRef.current - nextPullDistance) <=
+        IDLE_EPSILON;
+
+      if (phase === 'settling' && isSettled) {
+        phaseRef.current = 'idle';
+        targetPullDistanceRef.current = 0;
+        currentPullDistanceRef.current = 0;
+        renderPullStyle(0);
         stopAnimationFrameLoop();
+        return;
       }
+
+      if (phase === 'idle') {
+        stopAnimationFrameLoop();
+        return;
+      }
+
+      startAnimationFrameLoop();
     };
 
     const startAnimationFrameLoop = () => {
@@ -208,40 +257,28 @@ const usePullToRefresh = ({
 
     const resetPullStyle = () => {
       targetPullDistanceRef.current = 0;
-      currentPullDistanceRef.current = 0;
-      phaseRef.current = 'idle';
-      stopAnimationFrameLoop();
+      phaseRef.current = 'settling';
 
       const indicator = indicatorRef.current;
-      const content = contentRef.current;
 
       if (indicator) {
         indicator.classList.remove(PULL_TO_REFRESH_REFRESHING_CLASS);
-        resetIndicatorStyle(indicator);
       }
 
-      if (content) {
-        resetContentStyle(content);
-      }
+      startAnimationFrameLoop();
     };
 
     const holdPullStyleForRefresh = () => {
       targetPullDistanceRef.current = REFRESH_THRESHOLD;
-      currentPullDistanceRef.current = REFRESH_THRESHOLD;
       phaseRef.current = 'refreshing';
-      stopAnimationFrameLoop();
 
       const indicator = indicatorRef.current;
-      const content = contentRef.current;
 
       if (indicator) {
-        setIndicatorStyle(indicator, REFRESH_THRESHOLD, 1);
         indicator.classList.add(PULL_TO_REFRESH_REFRESHING_CLASS);
       }
 
-      if (content) {
-        setContentStyle(content, REFRESH_THRESHOLD);
-      }
+      startAnimationFrameLoop();
     };
 
     const handleTouchStart = (event: TouchEvent) => {
@@ -273,8 +310,9 @@ const usePullToRefresh = ({
       const diffY = touch.clientY - startYRef.current;
       const isVerticalPull = diffY > 0 && Math.abs(diffY) > Math.abs(diffX);
 
-      if (!isVerticalPull || !canStartPull(event.target, root)) {
+      if (!isVerticalPull) {
         isDraggingRef.current = false;
+        phaseRef.current = 'settling';
         resetPullStyle();
         return;
       }
