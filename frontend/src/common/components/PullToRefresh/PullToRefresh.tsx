@@ -30,7 +30,11 @@ function PullToRefresh({ enabled, onRefresh, children }: PullToRefreshProps) {
     <S_Container ref={rootRef}>
       <S_IndicatorSlot aria-hidden="true">
         <S_IndicatorWrapper ref={indicatorRef}>
-          <S_Indicator />
+          <S_Indicator>
+            {Array.from({ length: 8 }, (_, index) => (
+              <span key={index} />
+            ))}
+          </S_Indicator>
         </S_IndicatorWrapper>
       </S_IndicatorSlot>
       <S_ContentMover ref={contentRef}>{children}</S_ContentMover>
@@ -88,11 +92,7 @@ const S_IndicatorWrapper = styled.div`
   width: 4rem;
   height: 4rem;
   margin-top: 1.5rem;
-  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-  border-radius: 50%;
-  box-shadow: 0 0.4rem 1.2rem rgb(15 23 42 / 12%);
 
-  background-color: ${({ theme }) => theme.BG.WHITE};
   pointer-events: none;
   opacity: 0;
 
@@ -106,12 +106,10 @@ const spinIndicator = keyframes`
 `;
 
 const S_Indicator = styled.div`
-  width: 1.8rem;
-  height: 1.8rem;
-  border: 3px solid ${({ theme }) => theme.SYSTEM.GRAY200};
-  border-left-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  position: relative;
 
-  border-radius: 50%;
+  width: 2.4rem;
+  height: 2.4rem;
 
   .${PULL_TO_REFRESH_REFRESHING_CLASS} & {
     animation: ${spinIndicator} 0.8s linear infinite;
@@ -121,5 +119,58 @@ const S_Indicator = styled.div`
     .${PULL_TO_REFRESH_REFRESHING_CLASS} & {
       animation-duration: 1.6s;
     }
+  }
+
+  span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+
+    width: 0.35rem;
+    height: 0.9rem;
+    border-radius: 999px;
+
+    background-color: ${({ theme }) => theme.SYSTEM.GRAY500};
+    transform-origin: center 1.2rem;
+  }
+
+  span:nth-of-type(1) {
+    opacity: 1;
+    transform: translateX(-50%) rotate(0deg);
+  }
+
+  span:nth-of-type(2) {
+    opacity: 0.85;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  span:nth-of-type(3) {
+    opacity: 0.75;
+    transform: translateX(-50%) rotate(90deg);
+  }
+
+  span:nth-of-type(4) {
+    opacity: 0.65;
+    transform: translateX(-50%) rotate(135deg);
+  }
+
+  span:nth-of-type(5) {
+    opacity: 0.55;
+    transform: translateX(-50%) rotate(180deg);
+  }
+
+  span:nth-of-type(6) {
+    opacity: 0.45;
+    transform: translateX(-50%) rotate(225deg);
+  }
+
+  span:nth-of-type(7) {
+    opacity: 0.35;
+    transform: translateX(-50%) rotate(270deg);
+  }
+
+  span:nth-of-type(8) {
+    opacity: 0.25;
+    transform: translateX(-50%) rotate(315deg);
   }
 `;
