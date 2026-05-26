@@ -5,6 +5,7 @@ interface UsePullToRefreshParams {
   onRefresh: () => Promise<void> | void;
   rootRef: RefObject<HTMLElement | null>;
   indicatorRef: RefObject<HTMLElement | null>;
+  contentRef: RefObject<HTMLElement | null>;
 }
 
 const REFRESH_THRESHOLD = 70;
@@ -44,6 +45,7 @@ const usePullToRefresh = ({
   onRefresh,
   rootRef,
   indicatorRef,
+  contentRef,
 }: UsePullToRefreshParams) => {
   const onRefreshRef = useRef(onRefresh);
   const startXRef = useRef(0);
@@ -211,7 +213,7 @@ const usePullToRefresh = ({
       root.removeEventListener('touchcancel', handleTouchCancel);
       cancelPendingFrame();
     };
-  }, [enabled, indicatorRef, rootRef]);
+  }, [contentRef, enabled, indicatorRef, rootRef]);
 };
 
 export default usePullToRefresh;

@@ -16,12 +16,14 @@ interface PullToRefreshProps {
 function PullToRefresh({ enabled, onRefresh, children }: PullToRefreshProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const indicatorRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   usePullToRefresh({
     enabled,
     onRefresh,
     rootRef,
     indicatorRef,
+    contentRef,
   });
 
   return (
@@ -29,7 +31,7 @@ function PullToRefresh({ enabled, onRefresh, children }: PullToRefreshProps) {
       <S_IndicatorWrapper aria-hidden="true" ref={indicatorRef}>
         <S_Indicator />
       </S_IndicatorWrapper>
-      {children}
+      <S_ContentMover ref={contentRef}>{children}</S_ContentMover>
     </S_Container>
   );
 }
@@ -37,7 +39,19 @@ function PullToRefresh({ enabled, onRefresh, children }: PullToRefreshProps) {
 export default PullToRefresh;
 
 const S_Container = styled.div`
+  display: flex;
+  flex-direction: column;
   position: relative;
+
+  min-height: inherit;
+`;
+
+const S_ContentMover = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  min-height: inherit;
 `;
 
 const S_IndicatorWrapper = styled.div`
