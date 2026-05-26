@@ -92,6 +92,7 @@ const S_Container = styled.nav`
   position: fixed;
   bottom: 0;
   left: 50%;
+  z-index: 100;
 
   width: 48rem;
   height: ${BOTTOM_NAV_HEIGHT}rem;
