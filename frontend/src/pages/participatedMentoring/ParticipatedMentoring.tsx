@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
 
 import downIcon from '../../common/assets/images/downIcon.svg';
+import PullToRefresh from '../../common/components/PullToRefresh/PullToRefresh';
+import { isPullToRefreshEnabled } from '../../common/components/PullToRefresh/utils';
 
 import useParticipatedMentoringList from './hooks/useParticipatedMentoringList';
 import MentoringItem from './MentoringItem/MentoringItem';
@@ -11,6 +13,10 @@ function ParticipatedMentoring() {
     useParticipatedMentoringList();
 
   const handleReviewSubmitButtonClick = async () => {
+    await refetchParticipatedMentoringList();
+  };
+
+  const handleRefresh = async () => {
     await refetchParticipatedMentoringList();
   };
 
@@ -27,19 +33,24 @@ function ParticipatedMentoring() {
           <S_Text>전체보기</S_Text>
         </S_Button>
       </S_TitleWrapper>
-      {participatedMentoringList.length > 0 ? (
-        <MentoringList>
-          {participatedMentoringList.map((item) => (
-            <MentoringItem
-              key={item.reservationId}
-              mentoring={item}
-              handleReviewSubmitButtonClick={handleReviewSubmitButtonClick}
-            />
-          ))}
-        </MentoringList>
-      ) : (
-        <S_Description>참여한 멘토링이 없습니다.</S_Description>
-      )}
+      <PullToRefresh
+        enabled={isPullToRefreshEnabled()}
+        onRefresh={handleRefresh}
+      >
+        {participatedMentoringList.length > 0 ? (
+          <MentoringList>
+            {participatedMentoringList.map((item) => (
+              <MentoringItem
+                key={item.reservationId}
+                mentoring={item}
+                handleReviewSubmitButtonClick={handleReviewSubmitButtonClick}
+              />
+            ))}
+          </MentoringList>
+        ) : (
+          <S_Description>참여한 멘토링이 없습니다.</S_Description>
+        )}
+      </PullToRefresh>
     </S_Container>
   );
 }

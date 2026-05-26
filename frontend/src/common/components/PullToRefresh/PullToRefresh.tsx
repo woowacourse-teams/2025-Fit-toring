@@ -43,8 +43,10 @@ export default PullToRefresh;
 const S_Container = styled.div`
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   position: relative;
 
+  width: 100%;
   min-height: inherit;
 
   overscroll-behavior-y: contain;

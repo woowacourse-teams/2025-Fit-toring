@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { getMentoringApplicationList } from '../apis/getMentoringApplicationList';
@@ -6,9 +6,11 @@ import { getMentoringApplicationList } from '../apis/getMentoringApplicationList
 const QUERY_KEY = ['mentoringApplicationList'] as const;
 
 const useMentoringApplicationList = () => {
-  const queryClient = useQueryClient();
-
-  const { data: mentoringApplicationList = [], error } = useQuery({
+  const {
+    data: mentoringApplicationList = [],
+    error,
+    refetch: refetchMentoringApplicationList,
+  } = useQuery({
     queryKey: QUERY_KEY,
     queryFn: getMentoringApplicationList,
   });
@@ -21,10 +23,6 @@ const useMentoringApplicationList = () => {
       step: 'mentoring-application-fetch',
     });
   }
-
-  const refetchMentoringApplicationList = async () => {
-    await queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-  };
 
   return { mentoringApplicationList, refetchMentoringApplicationList };
 };

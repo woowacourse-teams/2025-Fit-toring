@@ -10,7 +10,11 @@ const useMyMentoringId = (authenticated: boolean) => {
   const memberId = localStorage.getItem('memberId');
   const enabled = authenticated && !!memberId;
 
-  const { data: myMentoringId = null, error } = useQuery({
+  const {
+    data: myMentoringId = null,
+    error,
+    refetch: refetchMyMentoringId,
+  } = useQuery({
     queryKey: QUERY_KEY.myMentoringId(memberId),
     queryFn: getMineMentoring,
     select: (data) => data.id,
@@ -24,6 +28,7 @@ const useMyMentoringId = (authenticated: boolean) => {
 
   return {
     myMentoringId: enabled ? (myMentoringId ?? null) : null,
+    refetchMyMentoringId,
   };
 };
 

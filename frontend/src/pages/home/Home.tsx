@@ -10,6 +10,8 @@ import Button from '../../common/components/Button/Button';
 import InstallPromptModal from '../../common/components/InstallPromptModal/InstallPromptModal';
 import IOSInstallGuideModal from '../../common/components/IOSInstallGuideModal/IOSInstallGuideModal';
 import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
+import PullToRefresh from '../../common/components/PullToRefresh/PullToRefresh';
+import { isPullToRefreshEnabled } from '../../common/components/PullToRefresh/utils';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
 import useInfiniteScroll from '../../common/hooks/useInfiniteScroll';
@@ -144,6 +146,10 @@ function Home() {
     await fetchMoreMentors(selectedSpecialties, sortKey, cursorCode);
   }, [cursorCode, fetchMoreMentors, selectedSpecialties, sortKey]);
 
+  const handleRefresh = useCallback(async () => {
+    await fetchInitialMentors(selectedSpecialties, sortKey);
+  }, [fetchInitialMentors, selectedSpecialties, sortKey]);
+
   const { targetRef } = useInfiniteScroll<HTMLLIElement>({
     isReady: hasNext && !isLoading,
     onIntersect: fetchNextPage,
@@ -229,27 +235,32 @@ function Home() {
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
         </Button>
       </S_ActionWrapper>
-      <S_Contents>
-        <S_CheckboxWrapper>
-          {selectedSpecialties.map((specialty) => (
-            <SpecialtyCheckbox
-              key={specialty.id}
-              specialty={specialty.title}
-              checked={selectedSpecialties.includes(specialty)}
-              disabled={false}
-              onChange={() => handleSelectedSpecialtyChange(specialty)}
+      <PullToRefresh
+        enabled={isPullToRefreshEnabled()}
+        onRefresh={handleRefresh}
+      >
+        <S_Contents>
+          <S_CheckboxWrapper>
+            {selectedSpecialties.map((specialty) => (
+              <SpecialtyCheckbox
+                key={specialty.id}
+                specialty={specialty.title}
+                checked={selectedSpecialties.includes(specialty)}
+                disabled={false}
+                onChange={() => handleSelectedSpecialtyChange(specialty)}
+              />
+            ))}
+          </S_CheckboxWrapper>
+          <MentorCardList>
+            <MentorCardListContent
+              isLoading={isLoading}
+              mentorList={mentorList}
+              hasFilter={selectedSpecialties.length > 0}
             />
-          ))}
-        </S_CheckboxWrapper>
-        <MentorCardList>
-          <MentorCardListContent
-            isLoading={isLoading}
-            mentorList={mentorList}
-            hasFilter={selectedSpecialties.length > 0}
-          />
-          <S_Trigger ref={targetRef} />
-        </MentorCardList>
-      </S_Contents>
+            <S_Trigger ref={targetRef} />
+          </MentorCardList>
+        </S_Contents>
+      </PullToRefresh>
       {/* <Footer>
         <Feedback />
       </Footer> */}

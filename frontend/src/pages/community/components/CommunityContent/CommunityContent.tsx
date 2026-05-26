@@ -2,13 +2,21 @@ import { useCallback } from 'react';
 
 import styled from '@emotion/styled';
 
+import PullToRefresh from '../../../../common/components/PullToRefresh/PullToRefresh';
+import { isPullToRefreshEnabled } from '../../../../common/components/PullToRefresh/utils';
 import useInfiniteScroll from '../../../../common/hooks/useInfiniteScroll';
 import useInfiniteCommunityPosts from '../../hooks/useInfiniteCommunityPosts';
 import CommunityFeed from '../CommunityFeed/CommunityFeed';
 
 function CommunityContent() {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
-    useInfiniteCommunityPosts();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    refetch,
+  } = useInfiniteCommunityPosts();
 
   const communityPosts =
     data?.pages.flatMap((page) => page.posts) ?? [];
@@ -22,15 +30,24 @@ function CommunityContent() {
     onIntersect: handleIntersect,
   });
 
+  const handleRefresh = async () => {
+    await refetch();
+  };
+
   return (
-    <S_Container>
-      {!isPending && <CommunityFeed posts={communityPosts} />}
-      <S_ObserverTarget ref={targetRef} />
-      {isPending && <S_StatusText>게시글을 불러오는 중입니다.</S_StatusText>}
-      {isFetchingNextPage && (
-        <S_StatusText>게시글을 더 불러오는 중입니다.</S_StatusText>
-      )}
-    </S_Container>
+    <PullToRefresh
+      enabled={isPullToRefreshEnabled()}
+      onRefresh={handleRefresh}
+    >
+      <S_Container>
+        {!isPending && <CommunityFeed posts={communityPosts} />}
+        <S_ObserverTarget ref={targetRef} />
+        {isPending && <S_StatusText>게시글을 불러오는 중입니다.</S_StatusText>}
+        {isFetchingNextPage && (
+          <S_StatusText>게시글을 더 불러오는 중입니다.</S_StatusText>
+        )}
+      </S_Container>
+    </PullToRefresh>
   );
 }
 

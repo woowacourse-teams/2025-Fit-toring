@@ -17,5 +17,9 @@ function Community() {
 export default Community;
 
 const S_Container = styled.div`
+  display: flex;
+  flex-direction: column;
   position: relative;
+
+  min-height: 100%;
 `;

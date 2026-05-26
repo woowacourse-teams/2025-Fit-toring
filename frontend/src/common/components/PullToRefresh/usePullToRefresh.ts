@@ -13,6 +13,7 @@ const MAX_PULL_DISTANCE = 100;
 const MAX_PULL_ROTATION_DEGREE = 180;
 const RESET_TRANSITION = 'transform 180ms ease-out, opacity 180ms ease-out';
 const ROTATION_CUSTOM_PROPERTY = '--pull-to-refresh-rotation';
+const SCROLL_TOP_THRESHOLD = 1;
 
 export const PULL_TO_REFRESH_REFRESHING_CLASS =
   'pull-to-refresh-indicator--refreshing';
@@ -48,7 +49,58 @@ const resetContentStyle = (content: HTMLElement) => {
   setContentStyle(content, 0);
 };
 
-const isAtTop = () => window.scrollY <= 0;
+const getElementFromTarget = (target: EventTarget | null) => {
+  if (target instanceof HTMLElement) {
+    return target;
+  }
+
+  if (target instanceof Node) {
+    return target.parentElement;
+  }
+
+  return null;
+};
+
+const isScrollableElement = (element: HTMLElement) => {
+  const { overflowY } = window.getComputedStyle(element);
+  const canScrollY =
+    overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay';
+
+  return canScrollY && element.scrollHeight > element.clientHeight;
+};
+
+const isElementScrollAtTop = (element: HTMLElement) => {
+  return element.scrollTop <= SCROLL_TOP_THRESHOLD;
+};
+
+const isDocumentScrollAtTop = () => {
+  return (
+    window.scrollY <= SCROLL_TOP_THRESHOLD &&
+    document.documentElement.scrollTop <= SCROLL_TOP_THRESHOLD &&
+    document.body.scrollTop <= SCROLL_TOP_THRESHOLD
+  );
+};
+
+const areScrollableAncestorsAtTop = (
+  target: EventTarget | null,
+  fallbackRoot: HTMLElement,
+) => {
+  let element = getElementFromTarget(target) ?? fallbackRoot;
+
+  while (element) {
+    if (isScrollableElement(element) && !isElementScrollAtTop(element)) {
+      return false;
+    }
+
+    element = element.parentElement;
+  }
+
+  return true;
+};
+
+const canStartPull = (target: EventTarget | null, root: HTMLElement) => {
+  return isDocumentScrollAtTop() && areScrollableAncestorsAtTop(target, root);
+};
 
 const usePullToRefresh = ({
   enabled,
@@ -193,7 +245,11 @@ const usePullToRefresh = ({
     };
 
     const handleTouchStart = (event: TouchEvent) => {
-      if (isRefreshingRef.current || event.touches.length !== 1 || !isAtTop()) {
+      if (
+        isRefreshingRef.current ||
+        event.touches.length !== 1 ||
+        !canStartPull(event.target, root)
+      ) {
         return;
       }
 
@@ -215,7 +271,7 @@ const usePullToRefresh = ({
       const diffY = touch.clientY - startYRef.current;
       const isVerticalPull = diffY > 0 && Math.abs(diffY) > Math.abs(diffX);
 
-      if (!isVerticalPull || !isAtTop()) {
+      if (!isVerticalPull || !canStartPull(event.target, root)) {
         isDraggingRef.current = false;
         pullDistanceRef.current = 0;
         resetPullStyle();
