@@ -28,9 +28,11 @@ function PullToRefresh({ enabled, onRefresh, children }: PullToRefreshProps) {
 
   return (
     <S_Container ref={rootRef}>
-      <S_IndicatorWrapper aria-hidden="true" ref={indicatorRef}>
-        <S_Indicator />
-      </S_IndicatorWrapper>
+      <S_IndicatorSlot aria-hidden="true">
+        <S_IndicatorWrapper ref={indicatorRef}>
+          <S_Indicator />
+        </S_IndicatorWrapper>
+      </S_IndicatorSlot>
       <S_ContentMover ref={contentRef}>{children}</S_ContentMover>
     </S_Container>
   );
@@ -44,27 +46,46 @@ const S_Container = styled.div`
   position: relative;
 
   min-height: inherit;
+
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+`;
+
+const S_IndicatorSlot = styled.div`
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+
+  width: 100%;
+  height: 7rem;
+
+  pointer-events: none;
 `;
 
 const S_ContentMover = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  position: relative;
+  z-index: 1;
 
   min-height: inherit;
+
+  background-color: inherit;
+  transform: translate3d(0, 0, 0);
 `;
 
 const S_IndicatorWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 50%;
-  z-index: 200;
 
   width: 4rem;
   height: 4rem;
+  margin-top: 1.5rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 50%;
   box-shadow: 0 0.4rem 1.2rem rgb(15 23 42 / 12%);
@@ -73,9 +94,7 @@ const S_IndicatorWrapper = styled.div`
   pointer-events: none;
   opacity: 0;
 
-  transform: translate3d(-50%, -4.8rem, 0)
-    rotate(var(--pull-to-refresh-rotation, 0deg));
-  will-change: transform, opacity;
+  transform: rotate(var(--pull-to-refresh-rotation, 0deg));
 `;
 
 const spinIndicator = keyframes`
