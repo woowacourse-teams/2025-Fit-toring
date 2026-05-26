@@ -73,7 +73,8 @@ const S_IndicatorWrapper = styled.div`
   pointer-events: none;
   opacity: 0;
 
-  transform: translate3d(-50%, -4.8rem, 0) rotate(0deg);
+  transform: translate3d(-50%, -4.8rem, 0)
+    rotate(var(--pull-to-refresh-rotation, 0deg));
   will-change: transform, opacity;
 `;
 

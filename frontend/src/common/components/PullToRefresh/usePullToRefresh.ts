@@ -10,8 +10,9 @@ interface UsePullToRefreshParams {
 
 const REFRESH_THRESHOLD = 70;
 const MAX_PULL_DISTANCE = 100;
-const START_OFFSET = -48;
 const MAX_PULL_ROTATION_DEGREE = 180;
+const RESET_TRANSITION = 'transform 180ms ease-out, opacity 180ms ease-out';
+const ROTATION_CUSTOM_PROPERTY = '--pull-to-refresh-rotation';
 
 export const PULL_TO_REFRESH_REFRESHING_CLASS =
   'pull-to-refresh-indicator--refreshing';
@@ -29,13 +30,22 @@ const setIndicatorStyle = (
     Math.min(pullDistance / REFRESH_THRESHOLD, 1) * MAX_PULL_ROTATION_DEGREE;
 
   indicator.style.opacity = `${opacity}`;
-  indicator.style.transform = `translate3d(-50%, ${
-    START_OFFSET + pullDistance
-  }px, 0) rotate(${rotationDegree}deg)`;
+  indicator.style.setProperty(
+    ROTATION_CUSTOM_PROPERTY,
+    `${rotationDegree}deg`,
+  );
 };
 
 const resetIndicatorStyle = (indicator: HTMLElement) => {
   setIndicatorStyle(indicator, 0, 0);
+};
+
+const setContentStyle = (content: HTMLElement, pullDistance: number) => {
+  content.style.transform = `translate3d(0, ${pullDistance}px, 0)`;
+};
+
+const resetContentStyle = (content: HTMLElement) => {
+  setContentStyle(content, 0);
 };
 
 const isAtTop = () => window.scrollY <= 0;
@@ -77,10 +87,48 @@ const usePullToRefresh = ({
       frameIdRef.current = null;
     };
 
-    const scheduleIndicatorStyle = (
-      pullDistance: number,
-      opacity: number,
-    ) => {
+    const clearPullTransition = () => {
+      const indicator = indicatorRef.current;
+      const content = contentRef.current;
+
+      if (indicator) {
+        indicator.style.transition = '';
+        indicator.style.willChange = 'opacity, transform';
+      }
+
+      if (content) {
+        content.style.transition = '';
+        content.style.willChange = 'transform';
+      }
+    };
+
+    const setPullTransition = () => {
+      const indicator = indicatorRef.current;
+      const content = contentRef.current;
+
+      if (indicator) {
+        indicator.style.transition = RESET_TRANSITION;
+      }
+
+      if (content) {
+        content.style.transition = RESET_TRANSITION;
+      }
+    };
+
+    const clearWillChange = () => {
+      const indicator = indicatorRef.current;
+      const content = contentRef.current;
+
+      if (indicator) {
+        indicator.style.willChange = '';
+      }
+
+      if (content) {
+        content.style.willChange = '';
+      }
+    };
+
+    const schedulePullStyle = (pullDistance: number, opacity: number) => {
       nextPullDistanceRef.current = pullDistance;
       nextOpacityRef.current = opacity;
 
@@ -92,41 +140,56 @@ const usePullToRefresh = ({
         frameIdRef.current = null;
 
         const indicator = indicatorRef.current;
+        const content = contentRef.current;
 
-        if (!indicator) {
-          return;
+        if (indicator) {
+          setIndicatorStyle(
+            indicator,
+            nextPullDistanceRef.current,
+            nextOpacityRef.current,
+          );
         }
 
-        setIndicatorStyle(
-          indicator,
-          nextPullDistanceRef.current,
-          nextOpacityRef.current,
-        );
+        if (content) {
+          setContentStyle(content, nextPullDistanceRef.current);
+        }
       });
     };
 
-    const resetIndicator = () => {
+    const resetPullStyle = () => {
       cancelPendingFrame();
+      setPullTransition();
 
       const indicator = indicatorRef.current;
+      const content = contentRef.current;
 
       if (indicator) {
         indicator.classList.remove(PULL_TO_REFRESH_REFRESHING_CLASS);
         resetIndicatorStyle(indicator);
       }
-    };
 
-    const holdIndicatorForRefresh = () => {
-      cancelPendingFrame();
-
-      const indicator = indicatorRef.current;
-
-      if (!indicator) {
-        return;
+      if (content) {
+        resetContentStyle(content);
       }
 
-      setIndicatorStyle(indicator, REFRESH_THRESHOLD, 1);
-      indicator.classList.add(PULL_TO_REFRESH_REFRESHING_CLASS);
+      clearWillChange();
+    };
+
+    const holdPullStyleForRefresh = () => {
+      cancelPendingFrame();
+      setPullTransition();
+
+      const indicator = indicatorRef.current;
+      const content = contentRef.current;
+
+      if (indicator) {
+        setIndicatorStyle(indicator, REFRESH_THRESHOLD, 1);
+        indicator.classList.add(PULL_TO_REFRESH_REFRESHING_CLASS);
+      }
+
+      if (content) {
+        setContentStyle(content, REFRESH_THRESHOLD);
+      }
     };
 
     const handleTouchStart = (event: TouchEvent) => {
@@ -139,6 +202,7 @@ const usePullToRefresh = ({
       startYRef.current = touch.clientY;
       isDraggingRef.current = true;
       pullDistanceRef.current = 0;
+      clearPullTransition();
     };
 
     const handleTouchMove = (event: TouchEvent) => {
@@ -154,6 +218,7 @@ const usePullToRefresh = ({
       if (!isVerticalPull || !isAtTop()) {
         isDraggingRef.current = false;
         pullDistanceRef.current = 0;
+        resetPullStyle();
         return;
       }
 
@@ -162,7 +227,7 @@ const usePullToRefresh = ({
       const pullDistance = getPullDistance(diffY);
       pullDistanceRef.current = pullDistance;
 
-      scheduleIndicatorStyle(
+      schedulePullStyle(
         pullDistance,
         Math.min(pullDistance / REFRESH_THRESHOLD, 1),
       );
@@ -178,19 +243,19 @@ const usePullToRefresh = ({
 
       if (pullDistanceRef.current < REFRESH_THRESHOLD) {
         pullDistanceRef.current = 0;
-        resetIndicator();
+        resetPullStyle();
         return;
       }
 
       isRefreshingRef.current = true;
       pullDistanceRef.current = 0;
-      holdIndicatorForRefresh();
+      holdPullStyleForRefresh();
 
       try {
         await onRefreshRef.current();
       } finally {
         isRefreshingRef.current = false;
-        resetIndicator();
+        resetPullStyle();
       }
     };
 
@@ -198,7 +263,7 @@ const usePullToRefresh = ({
       isDraggingRef.current = false;
       pullDistanceRef.current = 0;
 
-      resetIndicator();
+      resetPullStyle();
     };
 
     root.addEventListener('touchstart', handleTouchStart);
