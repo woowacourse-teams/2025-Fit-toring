@@ -42,23 +42,24 @@ function CreatedMentoring() {
         <>
           <S_ContentsWrapper>
             <S_MentoringSectionHeader>
-              <S_Title>예약 목록 ({mentoringApplicationList.length})</S_Title>
+              <S_Title>
+                예약 목록{' '}
+                <S_TitleCount>({mentoringApplicationList.length})</S_TitleCount>
+              </S_Title>
               <S_SmallButton onClick={handleFilterClick} type="button">
-                <S_DownIcon src={downIcon} alt="카테고리 열기 아이콘" />
                 <S_Text>전체보기</S_Text>
+                <S_DownIcon src={downIcon} alt="카테고리 열기 아이콘" />
               </S_SmallButton>
             </S_MentoringSectionHeader>
-            <S_Wrapper>
-              <MentoringApplicationList>
-                {mentoringApplicationList.map((item) => (
-                  <MentoringApplicationItem
-                    key={item.reservationId}
-                    mentoringApplication={item}
-                    onActionButtonsClick={handleActionButtonsClick}
-                  />
-                ))}
-              </MentoringApplicationList>
-            </S_Wrapper>
+            <MentoringApplicationList>
+              {mentoringApplicationList.map((item) => (
+                <MentoringApplicationItem
+                  key={item.reservationId}
+                  mentoringApplication={item}
+                  onActionButtonsClick={handleActionButtonsClick}
+                />
+              ))}
+            </MentoringApplicationList>
           </S_ContentsWrapper>
           <S_ButtonWrapper>
             <S_Button
@@ -84,21 +85,21 @@ export default CreatedMentoring;
 const S_Container = styled.section`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 
   width: 100%;
   min-height: calc(100vh - 5.7rem);
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
 const S_ContentsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 1rem;
+  gap: 1.4rem;
 
   width: 100%;
-  height: 100%;
-  padding: 1.3rem 2rem 0;
+  padding: 1.6rem 1.4rem 2rem;
 `;
 
 const S_MentoringSectionHeader = styled.div`
@@ -109,43 +110,35 @@ const S_MentoringSectionHeader = styled.div`
 
 const S_Title = styled.h2`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
+  ${({ theme }) => theme.TYPOGRAPHY.H4_B}
+`;
+
+const S_TitleCount = styled.span`
+  color: #94a3b8;
+  font-weight: 600;
 `;
 
 const S_SmallButton = styled.button`
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
+  gap: 0.4rem;
 
-  width: 8.4rem;
-  height: 3.4rem;
-  padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
-  border-radius: 5px;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 7px;
 
   background-color: ${({ theme }) => theme.BG.WHITE};
   cursor: pointer;
 `;
 
 const S_Text = styled.span`
-  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
-  color: ${({ theme }) => theme.SYSTEM.GRAY600};
+  ${({ theme }) => theme.TYPOGRAPHY.C3_R};
+  color: ${({ theme }) => theme.FONT.B03};
 `;
 
 const S_DownIcon = styled.img`
-  width: 1.4rem;
+  width: 1rem;
   aspect-ratio: 1 / 1;
-`;
-
-const S_Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  width: 100%;
-  height: 100%;
-
-  background-color: ${({ theme }) => theme.BG.WHITE};
 `;
 
 const S_ButtonWrapper = styled.section`
