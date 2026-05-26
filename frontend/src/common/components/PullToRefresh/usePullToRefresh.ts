@@ -8,6 +8,8 @@ interface UsePullToRefreshParams {
   contentRef: RefObject<HTMLElement | null>;
 }
 
+type PullPhase = 'idle' | 'pulling' | 'settling' | 'refreshing';
+
 const REFRESH_THRESHOLD = 70;
 const MAX_PULL_DISTANCE = 100;
 const MAX_PULL_ROTATION_DEGREE = 180;
@@ -114,10 +116,10 @@ const usePullToRefresh = ({
   const startYRef = useRef(0);
   const isDraggingRef = useRef(false);
   const isRefreshingRef = useRef(false);
-  const pullDistanceRef = useRef(0);
+  const phaseRef = useRef<PullPhase>('idle');
   const frameIdRef = useRef<number | null>(null);
-  const nextPullDistanceRef = useRef(0);
-  const nextOpacityRef = useRef(0);
+  const targetPullDistanceRef = useRef(0);
+  const currentPullDistanceRef = useRef(0);
 
   useEffect(() => {
     onRefreshRef.current = onRefresh;
@@ -130,7 +132,7 @@ const usePullToRefresh = ({
       return;
     }
 
-    const cancelPendingFrame = () => {
+    const cancelAnimationFrameLoop = () => {
       if (frameIdRef.current === null) {
         return;
       }
@@ -154,19 +156,6 @@ const usePullToRefresh = ({
       }
     };
 
-    const setPullTransition = () => {
-      const indicator = indicatorRef.current;
-      const content = contentRef.current;
-
-      if (indicator) {
-        indicator.style.transition = RESET_TRANSITION;
-      }
-
-      if (content) {
-        content.style.transition = RESET_TRANSITION;
-      }
-    };
-
     const clearWillChange = () => {
       const indicator = indicatorRef.current;
       const content = contentRef.current;
@@ -180,37 +169,48 @@ const usePullToRefresh = ({
       }
     };
 
-    const schedulePullStyle = (pullDistance: number, opacity: number) => {
-      nextPullDistanceRef.current = pullDistance;
-      nextOpacityRef.current = opacity;
+    const renderPullStyle = (pullDistance: number) => {
+      const indicator = indicatorRef.current;
+      const content = contentRef.current;
+      const opacity = Math.min(pullDistance / REFRESH_THRESHOLD, 1);
 
+      if (indicator) {
+        setIndicatorStyle(indicator, pullDistance, opacity);
+      }
+
+      if (content) {
+        setContentStyle(content, pullDistance);
+      }
+    };
+
+    const stopAnimationFrameLoop = () => {
+      cancelAnimationFrameLoop();
+      clearWillChange();
+    };
+
+    const runAnimationFrameLoop = () => {
+      frameIdRef.current = null;
+      currentPullDistanceRef.current = targetPullDistanceRef.current;
+      renderPullStyle(currentPullDistanceRef.current);
+
+      if (phaseRef.current === 'idle') {
+        stopAnimationFrameLoop();
+      }
+    };
+
+    const startAnimationFrameLoop = () => {
       if (frameIdRef.current !== null) {
         return;
       }
 
-      frameIdRef.current = window.requestAnimationFrame(() => {
-        frameIdRef.current = null;
-
-        const indicator = indicatorRef.current;
-        const content = contentRef.current;
-
-        if (indicator) {
-          setIndicatorStyle(
-            indicator,
-            nextPullDistanceRef.current,
-            nextOpacityRef.current,
-          );
-        }
-
-        if (content) {
-          setContentStyle(content, nextPullDistanceRef.current);
-        }
-      });
+      frameIdRef.current = window.requestAnimationFrame(runAnimationFrameLoop);
     };
 
     const resetPullStyle = () => {
-      cancelPendingFrame();
-      setPullTransition();
+      targetPullDistanceRef.current = 0;
+      currentPullDistanceRef.current = 0;
+      phaseRef.current = 'idle';
+      stopAnimationFrameLoop();
 
       const indicator = indicatorRef.current;
       const content = contentRef.current;
@@ -223,13 +223,13 @@ const usePullToRefresh = ({
       if (content) {
         resetContentStyle(content);
       }
-
-      clearWillChange();
     };
 
     const holdPullStyleForRefresh = () => {
-      cancelPendingFrame();
-      setPullTransition();
+      targetPullDistanceRef.current = REFRESH_THRESHOLD;
+      currentPullDistanceRef.current = REFRESH_THRESHOLD;
+      phaseRef.current = 'refreshing';
+      stopAnimationFrameLoop();
 
       const indicator = indicatorRef.current;
       const content = contentRef.current;
@@ -257,7 +257,9 @@ const usePullToRefresh = ({
       startXRef.current = touch.clientX;
       startYRef.current = touch.clientY;
       isDraggingRef.current = true;
-      pullDistanceRef.current = 0;
+      phaseRef.current = 'pulling';
+      targetPullDistanceRef.current = 0;
+      currentPullDistanceRef.current = 0;
       clearPullTransition();
     };
 
@@ -273,7 +275,6 @@ const usePullToRefresh = ({
 
       if (!isVerticalPull || !canStartPull(event.target, root)) {
         isDraggingRef.current = false;
-        pullDistanceRef.current = 0;
         resetPullStyle();
         return;
       }
@@ -281,30 +282,25 @@ const usePullToRefresh = ({
       event.preventDefault();
 
       const pullDistance = getPullDistance(diffY);
-      pullDistanceRef.current = pullDistance;
-
-      schedulePullStyle(
-        pullDistance,
-        Math.min(pullDistance / REFRESH_THRESHOLD, 1),
-      );
+      targetPullDistanceRef.current = pullDistance;
+      startAnimationFrameLoop();
     };
 
     const handleTouchEnd = async () => {
-      if (!isDraggingRef.current || pullDistanceRef.current === 0) {
+      if (!isDraggingRef.current || targetPullDistanceRef.current === 0) {
         isDraggingRef.current = false;
         return;
       }
 
       isDraggingRef.current = false;
 
-      if (pullDistanceRef.current < REFRESH_THRESHOLD) {
-        pullDistanceRef.current = 0;
+      if (targetPullDistanceRef.current < REFRESH_THRESHOLD) {
+        phaseRef.current = 'settling';
         resetPullStyle();
         return;
       }
 
       isRefreshingRef.current = true;
-      pullDistanceRef.current = 0;
       holdPullStyleForRefresh();
 
       try {
@@ -317,7 +313,7 @@ const usePullToRefresh = ({
 
     const handleTouchCancel = () => {
       isDraggingRef.current = false;
-      pullDistanceRef.current = 0;
+      phaseRef.current = 'settling';
 
       resetPullStyle();
     };
@@ -332,7 +328,7 @@ const usePullToRefresh = ({
       root.removeEventListener('touchmove', handleTouchMove);
       root.removeEventListener('touchend', handleTouchEnd);
       root.removeEventListener('touchcancel', handleTouchCancel);
-      cancelPendingFrame();
+      cancelAnimationFrameLoop();
     };
   }, [contentRef, enabled, indicatorRef, rootRef]);
 };
