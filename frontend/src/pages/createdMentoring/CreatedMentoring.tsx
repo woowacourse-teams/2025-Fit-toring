@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import downIcon from '../../common/assets/images/downIcon.svg';
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
+import PullToRefresh from '../../common/components/PullToRefresh/PullToRefresh';
+import { isPullToRefreshEnabled } from '../../common/components/PullToRefresh/utils';
 import { PAGE_URL } from '../../common/constants/url';
 import useMyMentoringId from '../home/hooks/useMyMentoringId';
 
@@ -20,7 +22,8 @@ function CreatedMentoring() {
   };
 
   const { authenticated } = useAuth();
-  const { myMentoringId } = useMyMentoringId(authenticated);
+  const { myMentoringId, refetchMyMentoringId } =
+    useMyMentoringId(authenticated);
 
   const navigate = useNavigate();
 
@@ -36,10 +39,20 @@ function CreatedMentoring() {
     alert('기능 추가 예정입니다.');
   };
 
+  const handleRefresh = async () => {
+    await Promise.all([
+      refetchMentoringApplicationList(),
+      refetchMyMentoringId(),
+    ]);
+  };
+
   return (
     <S_Container>
-      {myMentoringId ? (
-        <>
+      <PullToRefresh
+        enabled={isPullToRefreshEnabled()}
+        onRefresh={handleRefresh}
+      >
+        {myMentoringId ? (
           <S_ContentsWrapper>
             <S_MentoringSectionHeader>
               <S_Title>
@@ -61,20 +74,22 @@ function CreatedMentoring() {
               ))}
             </MentoringApplicationList>
           </S_ContentsWrapper>
-          <S_ButtonWrapper>
-            <S_Button
-              variant="newPrimary"
-              size="full"
-              onClick={handleMentoringShowButtonClick}
-            >
-              내 멘토링 보러가기
-            </S_Button>
-          </S_ButtonWrapper>
-        </>
-      ) : (
-        <S_ContentsWrapper>
-          <S_EmptyText>내가 운영하는 멘토링이 없습니다.</S_EmptyText>
-        </S_ContentsWrapper>
+        ) : (
+          <S_ContentsWrapper>
+            <S_EmptyText>내가 운영하는 멘토링이 없습니다.</S_EmptyText>
+          </S_ContentsWrapper>
+        )}
+      </PullToRefresh>
+      {myMentoringId && (
+        <S_ButtonWrapper>
+          <S_Button
+            variant="newPrimary"
+            size="full"
+            onClick={handleMentoringShowButtonClick}
+          >
+            내 멘토링 보러가기
+          </S_Button>
+        </S_ButtonWrapper>
       )}
     </S_Container>
   );
