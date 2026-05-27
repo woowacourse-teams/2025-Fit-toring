@@ -60,7 +60,7 @@ function MyPage() {
     {
       iconSrc: settingsIcon,
       label: '설정',
-      onClick: handleEditProfileClick,
+      onClick: handlePreparingClick,
     },
   ];
 
