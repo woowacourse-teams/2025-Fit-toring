@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
 import Header from '../../../../common/components/Header/Header';
@@ -7,19 +7,27 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import MenuDropDown from '../MenuDropDown/MenuDropDown';
 
 const PATH_TITLE: Record<string, string> = {
-  [PAGE_URL.CREATED_MENTORING]: '예약 관리',
+  [PAGE_URL.CREATED_MENTORING]: '운영하는 멘토링',
+  [PAGE_URL.PARTICIPATED_MENTORING]: '수강하는 멘토링',
+  [PAGE_URL.EDIT_PROFILE]: '프로필 수정',
 };
 
 function MyPageHeader() {
   const { pathname } = useLocation();
-  const title = PATH_TITLE[pathname] ?? '마이 페이지';
+  const title = PATH_TITLE[pathname] ?? '마이페이지';
+
+  const navigate = useNavigate();
+
+  const handleBackButtonClick = () => {
+    navigate(-1);
+  };
 
   return (
     <Header>
       <S_Wrapper>
-        <S_LogoLink to={PAGE_URL.MY_PAGE}>
-          <S_Img src={backIcon} alt="마이페이지 홈으로 돌아가기" />
-        </S_LogoLink>
+        <S_BackButton onClick={handleBackButtonClick}>
+          <S_BackIcon src={backIcon} alt="뒤로가기 아이콘" />
+        </S_BackButton>
         <S_Title>{title}</S_Title>
 
         <MenuDropDown />
@@ -38,20 +46,19 @@ const S_Wrapper = styled.div`
   padding: 1.4rem 1.1rem;
 `;
 
-const S_LogoLink = styled(Link)`
-  display: flex;
+const S_BackButton = styled.button`
+  position: absolute;
 
-  width: 3.5rem;
-  height: auto;
-  aspect-ratio: 1 / 1;
+  margin-left: 1rem;
+  padding: 0;
+  border: none;
 
-  background: none;
+  background-color: transparent;
   cursor: pointer;
 `;
 
-const S_Img = styled.img`
-  width: 100%;
-  height: 100%;
+const S_BackIcon = styled.img`
+  width: 3.4rem;
 `;
 
 const S_Title = styled.h1`

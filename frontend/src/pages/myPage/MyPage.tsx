@@ -8,7 +8,6 @@ import usersIcon from '../../common/assets/images/mypage-users.svg';
 import { PAGE_URL } from '../../common/constants/url';
 import useMyProfile from '../editProfile/hooks/useMyProfile';
 
-import ActivityStatistics from './components/ActivityStatistics/ActivityStatistics';
 import MyPageProfileSummary from './components/MyPageProfileSummary/MyPageProfileSummary';
 import MyPageSection from './components/MyPageSection/MyPageSection';
 
@@ -61,7 +60,7 @@ function MyPage() {
     {
       iconSrc: settingsIcon,
       label: '설정',
-      onClick: handleEditProfileClick,
+      onClick: handlePreparingClick,
     },
   ];
 
@@ -73,7 +72,6 @@ function MyPage() {
         roleLabel={ROLE_LABEL[myRole]}
         onClick={handleEditProfileClick}
       />
-      <ActivityStatistics />
       <MyPageSection items={mentoringItems} title="멘토링" />
       <MyPageSection items={activityItems} title="커뮤니티" />
       <MyPageSection divided={false} items={accountItems} title="설정" />
