@@ -7,12 +7,14 @@ import { PAGE_URL } from '../../../../common/constants/url';
 import MenuDropDown from '../MenuDropDown/MenuDropDown';
 
 const PATH_TITLE: Record<string, string> = {
-  [PAGE_URL.CREATED_MENTORING]: '예약 관리',
+  [PAGE_URL.CREATED_MENTORING]: '운영하는 멘토링',
+  [PAGE_URL.PARTICIPATED_MENTORING]: '수강하는 멘토링',
+  [PAGE_URL.EDIT_PROFILE]: '프로필 수정',
 };
 
 function MyPageHeader() {
   const { pathname } = useLocation();
-  const title = PATH_TITLE[pathname] ?? '마이 페이지';
+  const title = PATH_TITLE[pathname] ?? '마이페이지';
 
   return (
     <Header>
