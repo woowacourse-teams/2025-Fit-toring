@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 
 import ChatBubble from '../ChatBubble/ChatBubble';
 import ChatImageBubble from '../ChatImageBubble/ChatImageBubble';
+import { isSameLocalMinute } from '../../../../common/utils/formatToKoreanTime';
 
 import type { Message } from '../../types/message';
 
@@ -38,7 +39,13 @@ function ChatContent({
       <S_BubbleList>
         {messages.map((message, index) => {
           const prevSenderId = index > 0 ? messages[index - 1].senderId : null;
+          const nextMessage =
+            index < messages.length - 1 ? messages[index + 1] : null;
           const senderChanged = prevSenderId !== message.senderId;
+          const showTime =
+            !nextMessage ||
+            nextMessage.senderId !== message.senderId ||
+            !isSameLocalMinute(message.createdAt, nextMessage.createdAt);
 
           if (message.messageType === 'IMAGE') {
             return (
@@ -50,6 +57,7 @@ function ChatContent({
                   content={message.thumbnailUrl ?? message.originalImageUrl}
                   createdAt={message.createdAt}
                   authored={message.senderId === Number(memberId)}
+                  showTime={showTime}
                   status={message.status}
                 />
               </S_ChatBubbleWrapper>
@@ -65,6 +73,7 @@ function ChatContent({
                 content={message.content}
                 createdAt={message.createdAt}
                 authored={message.senderId === Number(memberId)}
+                showTime={showTime}
                 status={message.status}
               />
             </S_ChatBubbleWrapper>
