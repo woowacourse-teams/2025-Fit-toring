@@ -61,7 +61,6 @@ export const resetCss = css`
   }
 
   html {
-    scrollbar-gutter: stable;
     scroll-behavior: smooth;
   }
 
@@ -82,6 +81,10 @@ export const resetCss = css`
     height: 100%;
     overflow-x: hidden;
     overscroll-behavior: none;
+  }
+
+  #root {
+    scrollbar-gutter: stable;
   }
 
   p {
