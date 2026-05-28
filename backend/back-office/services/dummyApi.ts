@@ -2,16 +2,21 @@ import { API_ENDPOINTS } from "@/constants/config";
 import { getApiHeaders, getDefaultFetchOptions, fetchWithTokenRefresh, joinUrl } from "@/services/apiUtils";
 
 export interface DummyStatus {
-    fileSeq: number;
-    scenarioFile: string;
-    inserted: boolean;
+    scenarioId: number;
+    originalFilename: string;
+    status: 'UPLOADED' | 'INSERTED' | 'FAILED';
+    uploadedAt: string;
+    insertedAt: string | null;
     appliedStartAt: string | null;
     originalDuration: string;
+    appliedDuration: string | null;
+    postCount: number;
+    commentCount: number;
 }
 
 export interface DummyInsertResponse {
-    fileSeq: number;
-    scenarioFile: string;
+    scenarioId: number;
+    originalFilename: string;
     insertedScenarioCount: number;
     insertedPostPendingCount: number;
     insertedCommentPendingCount: number;
@@ -36,8 +41,8 @@ export interface DummyPostPreview {
 }
 
 export interface DummyScenarioPreview {
-    fileSeq: number;
-    scenarioFile: string;
+    scenarioId: number;
+    originalFilename: string;
     originalDuration: string;
     posts: DummyPostPreview[];
 }
@@ -52,8 +57,8 @@ export const fetchDummyScenarios = async (): Promise<DummyStatus[]> => {
     return await res.json();
 };
 
-export const fetchDummyStatus = async (fileSeq: number): Promise<DummyStatus> => {
-    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, fileSeq);
+export const fetchDummyStatus = async (scenarioId: number): Promise<DummyStatus> => {
+    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, scenarioId);
     const res = await fetchWithTokenRefresh(url, { 
         method: "GET",
         ...getDefaultFetchOptions() 
@@ -63,8 +68,8 @@ export const fetchDummyStatus = async (fileSeq: number): Promise<DummyStatus> =>
     return await res.json();
 };
 
-export const fetchDummyPreview = async (fileSeq: number): Promise<DummyScenarioPreview> => {
-    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, fileSeq, "preview");
+export const fetchDummyPreview = async (scenarioId: number): Promise<DummyScenarioPreview> => {
+    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, scenarioId, "preview");
     const res = await fetchWithTokenRefresh(url, {
         method: "GET",
         ...getDefaultFetchOptions()
@@ -75,11 +80,11 @@ export const fetchDummyPreview = async (fileSeq: number): Promise<DummyScenarioP
 };
 
 export const insertDummyScenario = async (
-    fileSeq: number,
+    scenarioId: number,
     startAt: string,
     duration?: string
 ): Promise<DummyInsertResponse> => {
-    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, fileSeq);
+    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, scenarioId);
     const res = await fetchWithTokenRefresh(url, {
         method: "POST",
         ...getDefaultFetchOptions(),
