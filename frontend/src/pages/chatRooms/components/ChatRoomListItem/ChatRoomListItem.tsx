@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 import ProfileImg from '../../../../common/assets/images/profileImg.svg';
-import { formatToKoreanTime } from '../../../../common/utils/formatToKoreanTime';
+import { formatChatRoomListDate } from '../../../../common/utils/formatToKoreanTime';
 
 import type { ChatRoom } from '../../types/chatRoom';
 
@@ -29,7 +29,7 @@ function ChatRoomListItem({ chat, onClick }: ChatRoomListItemProps) {
         <S_Message>{chat.lastChatContent}</S_Message>
       </S_Middle>
 
-      <S_Time>{formatToKoreanTime(chat.lastChatCreatedAt)}</S_Time>
+      <S_Time>{formatChatRoomListDate(chat.lastChatCreatedAt)}</S_Time>
     </S_Container>
   );
 }
