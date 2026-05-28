@@ -4,8 +4,8 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 
 public record DummySqlInsertResponse(
-        int fileSeq,
-        String scenarioFile,
+        long scenarioId,
+        String originalFilename,
         int insertedScenarioCount,
         int insertedPostPendingCount,
         int insertedCommentPendingCount,

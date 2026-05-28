@@ -58,14 +58,14 @@ class DummyAdminControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @DisplayName("GET /admin/dummy/sql-insert/{fileSeq}/preview: 시나리오 미리보기를 반환한다.")
+    @DisplayName("GET /admin/dummy/sql-insert/{scenarioId}/preview: 시나리오 미리보기를 반환한다.")
     @Test
     void previewsScenario() throws Exception {
         // given
         givenAdminAuthentication();
-        given(service.preview(1)).willReturn(new DummyScenarioPreviewResponse(
-                1,
-                "scenarios1.yml",
+        given(service.preview(1L)).willReturn(new DummyScenarioPreviewResponse(
+                1L,
+                "my-scenario.yml",
                 Duration.ofMinutes(40),
                 List.of(new PostPreview(
                         "글쓴이",
@@ -90,23 +90,23 @@ class DummyAdminControllerTest {
         mockMvc.perform(get("/admin/dummy/sql-insert/1/preview")
                         .cookie(new Cookie("accessToken", ACCESS_TOKEN)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.fileSeq").value(1))
-                .andExpect(jsonPath("$.scenarioFile").value("scenarios1.yml"))
+                .andExpect(jsonPath("$.scenarioId").value(1))
+                .andExpect(jsonPath("$.originalFilename").value("my-scenario.yml"))
                 .andExpect(jsonPath("$.originalDuration").value("PT40M"))
                 .andExpect(jsonPath("$.posts[0].title").value("미리보기 제목"))
                 .andExpect(jsonPath("$.posts[0].comments[0].replies[0].content").value("답글"));
     }
 
-    @DisplayName("POST /admin/dummy/sql-insert/{fileSeq}: startAt과 duration을 받아 적재한다.")
+    @DisplayName("POST /admin/dummy/sql-insert/{scenarioId}: startAt과 duration을 받아 적재한다.")
     @Test
     void insertsWithStartAtAndDuration() throws Exception {
         // given
         givenAdminAuthentication();
         OffsetDateTime startAt = OffsetDateTime.parse("2026-05-04T17:30:00+09:00");
         Duration duration = Duration.ofMinutes(90);
-        given(service.insert(eq(1), any(OffsetDateTime.class), any(Duration.class))).willReturn(new DummySqlInsertResponse(
-                1,
-                "scenarios1.yml",
+        given(service.insert(eq(1L), any(OffsetDateTime.class), any(Duration.class))).willReturn(new DummySqlInsertResponse(
+                1L,
+                "my-scenario.yml",
                 1,
                 1,
                 1,
@@ -128,7 +128,7 @@ class DummyAdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.appliedStartAt").value("2026-05-04T17:30:00+09:00"))
                 .andExpect(jsonPath("$.appliedDuration").value("PT1H30M"));
-        verify(service).insert(1, startAt, duration);
+        verify(service).insert(1L, startAt, duration);
     }
 
     @DisplayName("POST /admin/dummy/sql-insert/upload: multipart YAML 업로드를 service.upload에 위임하고 상태를 반환한다.")
@@ -137,11 +137,16 @@ class DummyAdminControllerTest {
         // given
         givenAdminAuthentication();
         given(service.upload(any(MultipartFile.class))).willReturn(new DummySqlInsertStatusResponse(
-                5,
-                "scenarios5.yml",
-                false,
+                5L,
+                "my-scenario.yml",
+                "UPLOADED",
+                OffsetDateTime.parse("2026-05-04T14:00:00+09:00"),
                 null,
-                Duration.ofMinutes(40)
+                null,
+                Duration.ofMinutes(40),
+                null,
+                1,
+                0
         ));
         MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -155,9 +160,9 @@ class DummyAdminControllerTest {
                         .file(file)
                         .cookie(new Cookie("accessToken", ACCESS_TOKEN)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.fileSeq").value(5))
-                .andExpect(jsonPath("$.scenarioFile").value("scenarios5.yml"))
-                .andExpect(jsonPath("$.inserted").value(false))
+                .andExpect(jsonPath("$.scenarioId").value(5))
+                .andExpect(jsonPath("$.originalFilename").value("my-scenario.yml"))
+                .andExpect(jsonPath("$.status").value("UPLOADED"))
                 .andExpect(jsonPath("$.originalDuration").value("PT40M"));
         verify(service).upload(any(MultipartFile.class));
     }

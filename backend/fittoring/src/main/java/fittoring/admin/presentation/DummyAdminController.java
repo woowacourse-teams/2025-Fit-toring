@@ -35,22 +35,22 @@ public class DummyAdminController {
     }
 
     @Admin
-    @PostMapping("/{fileSeq}")
+    @PostMapping("/{scenarioId}")
     public ResponseEntity<DummySqlInsertResponse> insert(
-            @PathVariable int fileSeq,
+            @PathVariable long scenarioId,
             @RequestBody(required = false) DummySqlInsertRequest request
     ) {
         return ResponseEntity.ok(service.insert(
-                fileSeq,
+                scenarioId,
                 request == null ? null : request.startAt(),
                 request == null ? null : request.duration()
         ));
     }
 
     @Admin
-    @GetMapping("/{fileSeq}/preview")
-    public ResponseEntity<DummyScenarioPreviewResponse> preview(@PathVariable int fileSeq) {
-        return ResponseEntity.ok(service.preview(fileSeq));
+    @GetMapping("/{scenarioId}/preview")
+    public ResponseEntity<DummyScenarioPreviewResponse> preview(@PathVariable long scenarioId) {
+        return ResponseEntity.ok(service.preview(scenarioId));
     }
 
     @Admin
@@ -60,8 +60,8 @@ public class DummyAdminController {
     }
 
     @Admin
-    @GetMapping("/{fileSeq}")
-    public ResponseEntity<DummySqlInsertStatusResponse> status(@PathVariable int fileSeq) {
-        return ResponseEntity.ok(service.status(fileSeq));
+    @GetMapping("/{scenarioId}")
+    public ResponseEntity<DummySqlInsertStatusResponse> status(@PathVariable long scenarioId) {
+        return ResponseEntity.ok(service.status(scenarioId));
     }
 }

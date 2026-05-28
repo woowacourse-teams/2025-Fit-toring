@@ -48,6 +48,7 @@ import fittoring.application.exception.UnauthorizedException;
 import fittoring.admin.exception.DummyAlreadyInsertedException;
 import fittoring.admin.exception.DummyScenarioFileAlreadyExistsException;
 import fittoring.admin.exception.DummyScenarioFileNotFoundException;
+import fittoring.admin.exception.DummyScenarioNotFoundException;
 import fittoring.admin.exception.InvalidDummyScenarioException;
 import fittoring.application.exception.UnsupportedImageExtensionException;
 import fittoring.infrastructure.exception.S3UploadException;
@@ -332,6 +333,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DummyScenarioFileNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(DummyScenarioFileNotFoundException e) {
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(DummyScenarioNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(DummyScenarioNotFoundException e) {
         return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
