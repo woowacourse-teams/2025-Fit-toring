@@ -69,6 +69,10 @@ export const formatChatRoomListDate = (
     return formatToKoreanTime(isoString);
   }
 
+  if (date.getFullYear() !== baseDate.getFullYear()) {
+    return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}`;
+  }
+
   return `${date.getMonth() + 1}월 ${date.getDate()}일`;
 };
 

@@ -34,6 +34,13 @@ describe('채팅 날짜 시간 포맷 유틸', () => {
     expect(formatChatRoomListDate('2026-05-26T14:40:00')).toBe('5월 26일');
   });
 
+  it('채팅방 목록에서 올해가 아닌 메시지는 연 월 일로 표시한다.', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-28T18:03:34'));
+
+    expect(formatChatRoomListDate('2025-12-12T14:40:00')).toBe('2025. 12. 12');
+  });
+
   it('날짜 구분선 형식으로 변환한다.', () => {
     expect(formatChatDateDivider('2026-05-28T14:40:00')).toBe(
       '2026년 5월 28일 목요일',
