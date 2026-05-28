@@ -1,12 +1,12 @@
 import { createRef } from 'react';
 
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import ChatContent from '../src/pages/chatRoom/components/ChatContent/ChatContent';
 
 import { render, screen } from './utils';
 
-import type { Message } from '../src/pages/chatRoom/types/message';
+import type { Message, TextMessage } from '../src/pages/chatRoom/types/message';
 
 let chatMessageId = 0;
 
@@ -20,13 +20,18 @@ const renderChatContent = (messages: Message[]) => {
   );
 };
 
-const createTextMessage = (
-  overrides: Partial<Message> & Pick<Message, 'content' | 'createdAt'>,
-): Message => ({
+type TextMessageOverrides = Partial<Omit<TextMessage, 'content' | 'createdAt'>> &
+  Pick<TextMessage, 'content' | 'createdAt'>;
+
+const createTextMessage = ({
+  content,
+  createdAt,
+  ...overrides
+}: TextMessageOverrides): TextMessage => ({
   chatMessageId: ++chatMessageId,
   chatRoomId: 1,
-  content: overrides.content,
-  createdAt: overrides.createdAt,
+  content,
+  createdAt,
   messageType: 'TEXT',
   originalImageUrl: null,
   senderId: 1,
@@ -40,6 +45,10 @@ describe('ChatContent 같은 분 시간 표시', () => {
   beforeEach(() => {
     chatMessageId = 0;
     localStorage.setItem('memberId', '1');
+  });
+
+  afterEach(() => {
+    localStorage.clear();
   });
 
   it('같은 발신자가 같은 분에 연속으로 보낸 메시지는 마지막 메시지에만 시간을 표시한다.', () => {
@@ -113,5 +122,58 @@ describe('ChatContent 같은 분 시간 표시', () => {
 
     expect(screen.getByText('전송실패')).toBeInTheDocument();
     expect(screen.getAllByText('오후 2:40')).toHaveLength(1);
+  });
+});
+
+describe('ChatContent 날짜 구분선', () => {
+  beforeEach(() => {
+    chatMessageId = 0;
+    localStorage.setItem('memberId', '1');
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it('첫 메시지 앞에 날짜 구분선을 표시한다.', () => {
+    renderChatContent([
+      createTextMessage({
+        content: '첫 메시지',
+        createdAt: '2026-05-28T14:40:00',
+      }),
+    ]);
+
+    expect(screen.getByText('2026년 5월 28일 목요일')).toBeInTheDocument();
+  });
+
+  it('같은 날짜 메시지에는 날짜 구분선을 반복하지 않는다.', () => {
+    renderChatContent([
+      createTextMessage({
+        content: '첫 메시지',
+        createdAt: '2026-05-28T14:40:00',
+      }),
+      createTextMessage({
+        content: '두 번째 메시지',
+        createdAt: '2026-05-28T15:40:00',
+      }),
+    ]);
+
+    expect(screen.getAllByText('2026년 5월 28일 목요일')).toHaveLength(1);
+  });
+
+  it('날짜가 바뀌면 새 날짜 구분선을 표시한다.', () => {
+    renderChatContent([
+      createTextMessage({
+        content: '이전 날짜 메시지',
+        createdAt: '2026-05-27T23:59:00',
+      }),
+      createTextMessage({
+        content: '다음 날짜 메시지',
+        createdAt: '2026-05-28T00:00:00',
+      }),
+    ]);
+
+    expect(screen.getByText('2026년 5월 27일 수요일')).toBeInTheDocument();
+    expect(screen.getByText('2026년 5월 28일 목요일')).toBeInTheDocument();
   });
 });
