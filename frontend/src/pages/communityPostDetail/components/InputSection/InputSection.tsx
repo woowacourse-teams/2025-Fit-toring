@@ -7,7 +7,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import sendIcon from '../../../../common/assets/images/sendIcon.svg';
 import Checkbox from '../../../../common/components/Checkbox/Checkbox';
 import { COMMUNITY_POST } from '../../../../common/constants/communityPost';
-import { BOTTOM_NAV_HEIGHT } from '../../../../common/constants/layout';
 import { captureSentryError } from '../../../../common/utils/captureSentryError';
 import { patchCommunityPostComment } from '../../apis/patchCommunityPostComment';
 import { postCommunityPostComment } from '../../apis/postCommunityPostComment';
@@ -371,23 +370,12 @@ function InputSection({
 export default InputSection;
 
 const S_Container = styled.div`
-  position: fixed;
-  bottom: ${BOTTOM_NAV_HEIGHT}rem;
-  left: 50%;
-  z-index: 1;
+  flex-shrink: 0;
 
-  width: 48rem;
-  border-right: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
-  border-left: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
+  border-top: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
   box-shadow: 0 -0.4rem 1.6rem rgb(0 0 0 / 5%);
 
   background-color: ${({ theme }) => theme.BG.WHITE};
-  transform: translateX(-50%);
-
-  @media screen and (width <= 480px) {
-    width: 100%;
-    border: none;
-  }
 `;
 
 const S_Form = styled.form`
