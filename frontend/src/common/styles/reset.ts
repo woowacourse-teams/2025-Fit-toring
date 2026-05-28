@@ -61,7 +61,7 @@ export const resetCss = css`
   }
 
   html {
-    scrollbar-gutter: stable;
+    scrollbar-gutter: stable both-edges;
     scroll-behavior: smooth;
   }
 
