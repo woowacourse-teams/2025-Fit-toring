@@ -12,12 +12,13 @@ CREATE TABLE dummy_scenario (
     applied_duration_seconds BIGINT NULL,
     post_count INT NOT NULL,
     comment_count INT NOT NULL,
-    CONSTRAINT chk_dummy_scenario_status CHECK (status IN ('UPLOADED', 'INSERTED', 'FAILED'))
+    CONSTRAINT chk_dummy_scenario_status CHECK (status IN ('UPLOADED', 'INSERTED'))
 );
 
 CREATE INDEX idx_dummy_scenario_uploaded_at
     ON dummy_scenario(uploaded_at);
 
+-- 동일 YAML 업로드 여부를 운영자가 추적하거나 이후 중복 감지 정책을 붙이기 위한 조회용 인덱스다.
 CREATE INDEX idx_dummy_scenario_content_hash
     ON dummy_scenario(content_hash);
 

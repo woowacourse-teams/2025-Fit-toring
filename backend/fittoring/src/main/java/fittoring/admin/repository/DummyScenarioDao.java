@@ -82,12 +82,11 @@ public class DummyScenarioDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public List<DummyScenarioRow> findAll() {
-        return jdbc.query(FIND_ALL, (rs, rowNum) -> new DummyScenarioRow(
+    public List<DummyScenarioSummaryRow> findAll() {
+        return jdbc.query(FIND_ALL, (rs, rowNum) -> new DummyScenarioSummaryRow(
                 rs.getLong("id"),
                 rs.getString("original_filename"),
                 rs.getString("content_hash"),
-                null,
                 DummyScenarioStatus.valueOf(rs.getString("status")),
                 toOffsetDateTime(rs.getTimestamp("uploaded_at")),
                 toNullableOffsetDateTime(rs.getTimestamp("inserted_at")),

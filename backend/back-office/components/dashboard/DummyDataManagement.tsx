@@ -97,14 +97,11 @@ export function DummyDataManagement() {
     if (status === "INSERTED") {
       return "적재됨";
     }
-    if (status === "FAILED") {
-      return "실패";
-    }
     return "미적재";
   };
 
   const isInsertDisabled = (scenario: DummyStatus) => {
-    if (isBusy || isInserted(scenario)) {
+    if (isBusy || scenario.status !== "UPLOADED") {
       return true;
     }
     if (!(startAtMap[scenario.scenarioId] ?? "").trim()) {

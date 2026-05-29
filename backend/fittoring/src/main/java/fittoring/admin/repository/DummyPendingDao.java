@@ -150,6 +150,7 @@ public class DummyPendingDao {
         return Timestamp.valueOf(at.toLocalDateTime());
     }
 
+    // TODO: dummy_post_pending.scenario_file의 NOT NULL/unique 제약 제거 후 이 호환 값을 삭제한다.
     private String legacyScenarioFile(long scenarioId) {
         return "scenario-" + scenarioId;
     }

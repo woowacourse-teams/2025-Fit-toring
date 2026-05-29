@@ -4,7 +4,7 @@ import { getApiHeaders, getDefaultFetchOptions, fetchWithTokenRefresh, joinUrl }
 export interface DummyStatus {
     scenarioId: number;
     originalFilename: string;
-    status: 'UPLOADED' | 'INSERTED' | 'FAILED';
+    status: 'UPLOADED' | 'INSERTED';
     uploadedAt: string;
     insertedAt: string | null;
     appliedStartAt: string | null;

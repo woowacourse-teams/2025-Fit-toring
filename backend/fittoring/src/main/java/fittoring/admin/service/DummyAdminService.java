@@ -13,6 +13,7 @@ import fittoring.admin.repository.DummyPendingDao.WriteResult;
 import fittoring.admin.repository.DummyScenarioDao;
 import fittoring.admin.repository.DummyScenarioRow;
 import fittoring.admin.repository.DummyScenarioStatus;
+import fittoring.admin.repository.DummyScenarioSummaryRow;
 import fittoring.application.community.dummy.scenario.Scenario;
 import fittoring.application.community.dummy.scenario.ScenarioComment;
 import fittoring.application.community.dummy.scenario.ScenarioFile;
@@ -63,6 +64,7 @@ public class DummyAdminService {
         return toPreviewResponse(scenario, parsed);
     }
 
+    @Transactional
     public DummySqlInsertStatusResponse upload(MultipartFile file) {
         validateUploadExtension(file);
         String yamlContent = readUploadedContent(file);
@@ -142,6 +144,21 @@ public class DummyAdminService {
     }
 
     private DummySqlInsertStatusResponse toStatusResponse(DummyScenarioRow scenario) {
+        return new DummySqlInsertStatusResponse(
+                scenario.id(),
+                scenario.originalFilename(),
+                scenario.status().name(),
+                scenario.uploadedAt(),
+                scenario.insertedAt(),
+                scenario.appliedStartAt(),
+                scenario.originalDuration(),
+                scenario.appliedDuration(),
+                scenario.postCount(),
+                scenario.commentCount()
+        );
+    }
+
+    private DummySqlInsertStatusResponse toStatusResponse(DummyScenarioSummaryRow scenario) {
         return new DummySqlInsertStatusResponse(
                 scenario.id(),
                 scenario.originalFilename(),
