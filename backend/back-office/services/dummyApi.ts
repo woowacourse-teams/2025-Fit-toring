@@ -95,6 +95,27 @@ export const insertDummyScenario = async (
     return await res.json();
 };
 
+export const deleteDummyScenario = async (scenarioId: number): Promise<void> => {
+    const url = joinUrl(API_ENDPOINTS.ADMIN_DUMMY_SQL_INSERT, scenarioId);
+    const res = await fetchWithTokenRefresh(url, {
+        method: "DELETE",
+        ...getDefaultFetchOptions(),
+    });
+
+    if (!res.ok) {
+        let errorMessage = "시나리오 삭제 실패";
+        try {
+            const body = await res.json();
+            if (body && typeof body.message === "string" && body.message.trim()) {
+                errorMessage = body.message;
+            }
+        } catch {
+            // 본문이 JSON이 아니면 기본 메시지 사용
+        }
+        throw new Error(errorMessage);
+    }
+};
+
 export const uploadDummyScenario = async (file: File): Promise<DummyStatus> => {
     const formData = new FormData();
     formData.append("file", file);

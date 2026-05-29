@@ -54,6 +54,12 @@ public class DummyScenarioDao {
             WHERE id = ?
             """;
 
+    private static final String DELETE_UPLOADED_BY_ID = """
+            DELETE FROM dummy_scenario
+            WHERE id = ?
+              AND status = 'UPLOADED'
+            """;
+
     private final JdbcTemplate jdbc;
 
     public long save(
@@ -125,6 +131,10 @@ public class DummyScenarioDao {
     public void markInserted(long id, OffsetDateTime insertedAt, OffsetDateTime appliedStartAt, Duration appliedDuration) {
         jdbc.update(MARK_INSERTED, toTimestamp(insertedAt), toTimestamp(appliedStartAt),
                 appliedDuration.toSeconds(), id);
+    }
+
+    public int deleteUploadedById(long id) {
+        return jdbc.update(DELETE_UPLOADED_BY_ID, id);
     }
 
     private Timestamp toTimestamp(OffsetDateTime at) {

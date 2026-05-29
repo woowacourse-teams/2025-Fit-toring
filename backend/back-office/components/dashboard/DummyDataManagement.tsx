@@ -1,9 +1,20 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +34,7 @@ import {
   DummyCommentPreview,
   DummyPostPreview,
   DummyScenarioPreview,
+  deleteDummyScenario,
   fetchDummyScenarios,
   fetchDummyPreview,
   fetchDummyStatus,
@@ -37,6 +49,8 @@ import {
   minutesToHHMM,
 } from "@/services/dummyDuration";
 import {
+  ArrowDown,
+  ArrowUp,
   Clock,
   Database,
   Eye,
@@ -45,16 +59,21 @@ import {
   MessageSquare,
   RefreshCw,
   Search,
+  Trash2,
   Upload,
 } from "lucide-react";
 
+type IdSortDirection = "asc" | "desc";
+
 export function DummyDataManagement() {
   const [scenarios, setScenarios] = useState<DummyStatus[]>([]);
+  const [idSortDirection, setIdSortDirection] = useState<IdSortDirection>("desc");
   const [startAtMap, setStartAtMap] = useState<Record<number, string>>({});
   const [durationMap, setDurationMap] = useState<Record<number, string>>({});
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [checkingScenarioId, setCheckingScenarioId] = useState<number | null>(null);
   const [insertingScenarioId, setInsertingScenarioId] = useState<number | null>(null);
+  const [deletingScenarioId, setDeletingScenarioId] = useState<number | null>(null);
   const [previewingScenarioId, setPreviewingScenarioId] = useState<number | null>(null);
   const [previewScenario, setPreviewScenario] = useState<DummyStatus | null>(null);
   const [preview, setPreview] = useState<DummyScenarioPreview | null>(null);
@@ -62,7 +81,21 @@ export function DummyDataManagement() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const isBusy =
-    isLoadingList || checkingScenarioId !== null || insertingScenarioId !== null || isUploading;
+    isLoadingList ||
+    checkingScenarioId !== null ||
+    insertingScenarioId !== null ||
+    deletingScenarioId !== null ||
+    isUploading;
+
+  const sortedScenarios = useMemo(
+    () =>
+      [...scenarios].sort((a, b) =>
+        idSortDirection === "asc"
+          ? a.scenarioId - b.scenarioId
+          : b.scenarioId - a.scenarioId
+      ),
+    [idSortDirection, scenarios]
+  );
 
   const toKstOffsetDateTime = (dateTimeLocal: string) => {
     const normalized = dateTimeLocal.length === 16 ? `${dateTimeLocal}:00` : dateTimeLocal;
@@ -274,6 +307,31 @@ export function DummyDataManagement() {
     }
   };
 
+  const handleDelete = async (scenario: DummyStatus) => {
+    try {
+      setDeletingScenarioId(scenario.scenarioId);
+      await deleteDummyScenario(scenario.scenarioId);
+      setScenarios((prev) => prev.filter((s) => s.scenarioId !== scenario.scenarioId));
+      setStartAtMap((prev) => {
+        const next = { ...prev };
+        delete next[scenario.scenarioId];
+        return next;
+      });
+      setDurationMap((prev) => {
+        const next = { ...prev };
+        delete next[scenario.scenarioId];
+        return next;
+      });
+      toast.success(`${scenario.originalFilename} 삭제 완료 (ID=${scenario.scenarioId})`);
+    } catch (err) {
+      console.error(err);
+      const message = err instanceof Error && err.message ? err.message : "시나리오 삭제에 실패했습니다.";
+      toast.error(message);
+    } finally {
+      setDeletingScenarioId(null);
+    }
+  };
+
   const getPreviewStartAt = () => {
     if (!previewScenario) {
       return null;
@@ -437,19 +495,56 @@ export function DummyDataManagement() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-20">ID</TableHead>
+                    <TableHead className="w-44">
+                      <div className="flex items-center gap-1">
+                        <span>ID</span>
+                        <Button
+                          type="button"
+                          variant={idSortDirection === "asc" ? "secondary" : "ghost"}
+                          size="sm"
+                          className="h-7 px-2"
+                          onClick={() => setIdSortDirection("asc")}
+                          aria-label="ID 오름차순 정렬"
+                          title="ID 오름차순 정렬"
+                        >
+                          <ArrowUp className="h-3.5 w-3.5" />
+                          오름
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={idSortDirection === "desc" ? "secondary" : "ghost"}
+                          size="sm"
+                          className="h-7 px-2"
+                          onClick={() => setIdSortDirection("desc")}
+                          aria-label="ID 내림차순 정렬"
+                          title="ID 내림차순 정렬"
+                        >
+                          <ArrowDown className="h-3.5 w-3.5" />
+                          내림
+                        </Button>
+                      </div>
+                    </TableHead>
                     <TableHead>파일명</TableHead>
                     <TableHead className="w-24">상태</TableHead>
                     <TableHead className="w-52">시작 시각(KST)</TableHead>
                     <TableHead className="w-36">기간(HH:MM)</TableHead>
-                    <TableHead className="w-64 text-right">관리</TableHead>
+                    <TableHead className="w-80 text-right">관리</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {scenarios.map((scenario) => (
+                  {sortedScenarios.map((scenario) => (
                     <TableRow key={scenario.scenarioId}>
                       <TableCell className="font-medium">{scenario.scenarioId}</TableCell>
-                      <TableCell>{scenario.originalFilename}</TableCell>
+                      <TableCell>
+                        <div className="flex min-w-0 items-center gap-2">
+                          <Badge variant="outline" className="font-mono">
+                            ID {scenario.scenarioId}
+                          </Badge>
+                          <span className="truncate" title={scenario.originalFilename}>
+                            {scenario.originalFilename}
+                          </span>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <Badge variant={isInserted(scenario) ? "default" : "secondary"}>
                           {statusLabel(scenario.status)}
@@ -550,6 +645,46 @@ export function DummyDataManagement() {
                             )}
                             적재
                           </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={isBusy || isInserted(scenario)}
+                                title={
+                                  isInserted(scenario)
+                                    ? "적재된 시나리오는 삭제할 수 없습니다."
+                                    : "시나리오 삭제"
+                                }
+                              >
+                                {deletingScenarioId === scenario.scenarioId ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4" />
+                                )}
+                                삭제
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>시나리오 삭제</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  ID {scenario.scenarioId} · {scenario.originalFilename} 업로드 row를 삭제합니다.
+                                  삭제한 시나리오는 미리보기와 적재 목록에서 사라집니다.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>취소</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={() => handleDelete(scenario)}
+                                >
+                                  삭제
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </TableCell>
                     </TableRow>

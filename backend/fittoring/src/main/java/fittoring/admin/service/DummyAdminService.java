@@ -2,6 +2,7 @@ package fittoring.admin.service;
 
 import fittoring.admin.config.DummyAdminApiProperties;
 import fittoring.admin.exception.DummyAlreadyInsertedException;
+import fittoring.admin.exception.DummyScenarioDeletionNotAllowedException;
 import fittoring.admin.exception.InvalidDummyScenarioException;
 import fittoring.admin.presentation.dto.CommentPreview;
 import fittoring.admin.presentation.dto.DummyScenarioPreviewResponse;
@@ -82,6 +83,18 @@ public class DummyAdminService {
                 countComments(parsed)
         );
         return toStatusResponse(scenarioDao.getById(scenarioId));
+    }
+
+    @Transactional
+    public void delete(long scenarioId) {
+        DummyScenarioRow scenario = scenarioDao.getById(scenarioId);
+        if (scenario.status() == DummyScenarioStatus.INSERTED || pendingDao.existsByScenarioId(scenarioId)) {
+            throw new DummyScenarioDeletionNotAllowedException(scenarioId);
+        }
+        int deletedCount = scenarioDao.deleteUploadedById(scenarioId);
+        if (deletedCount == 0) {
+            throw new DummyScenarioDeletionNotAllowedException(scenarioId);
+        }
     }
 
     private void validateUploadExtension(MultipartFile file) {

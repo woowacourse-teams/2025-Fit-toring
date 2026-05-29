@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -165,6 +166,19 @@ class DummyAdminControllerTest {
                 .andExpect(jsonPath("$.status").value("UPLOADED"))
                 .andExpect(jsonPath("$.originalDuration").value("PT40M"));
         verify(service).upload(any(MultipartFile.class));
+    }
+
+    @DisplayName("DELETE /admin/dummy/sql-insert/{scenarioId}: 업로드된 시나리오 삭제를 service.delete에 위임한다.")
+    @Test
+    void deletesScenario() throws Exception {
+        // given
+        givenAdminAuthentication();
+
+        // when // then
+        mockMvc.perform(delete("/admin/dummy/sql-insert/1")
+                        .cookie(new Cookie("accessToken", ACCESS_TOKEN)))
+                .andExpect(status().isNoContent());
+        verify(service).delete(1L);
     }
 
     private void givenAdminAuthentication() {

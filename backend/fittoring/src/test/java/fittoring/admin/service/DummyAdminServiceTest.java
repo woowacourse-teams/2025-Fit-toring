@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import fittoring.admin.config.DummyAdminApiProperties;
 import fittoring.admin.exception.DummyAlreadyInsertedException;
+import fittoring.admin.exception.DummyScenarioDeletionNotAllowedException;
 import fittoring.admin.exception.InvalidDummyScenarioException;
 import fittoring.admin.presentation.dto.DummyScenarioPreviewResponse;
 import fittoring.admin.presentation.dto.DummySqlInsertResponse;
@@ -205,6 +206,27 @@ class DummyAdminServiceTest {
 
         assertThatThrownBy(() -> service.upload(file))
                 .isInstanceOf(InvalidDummyScenarioException.class);
+    }
+
+    @DisplayName("delete: 적재 전 시나리오 row를 삭제한다.")
+    @Test
+    void deletesUploadedScenario() {
+        when(scenarioDao.getById(SCENARIO_ID)).thenReturn(uploadedScenario(VALID_YAML, Duration.ofMinutes(5), 1, 1));
+        when(pendingDao.existsByScenarioId(SCENARIO_ID)).thenReturn(false);
+        when(scenarioDao.deleteUploadedById(SCENARIO_ID)).thenReturn(1);
+
+        service.delete(SCENARIO_ID);
+
+        verify(scenarioDao).deleteUploadedById(SCENARIO_ID);
+    }
+
+    @DisplayName("delete: 이미 적재된 시나리오이면 예외를 던진다.")
+    @Test
+    void deleteThrowsWhenAlreadyInserted() {
+        when(scenarioDao.getById(SCENARIO_ID)).thenReturn(insertedScenario());
+
+        assertThatThrownBy(() -> service.delete(SCENARIO_ID))
+                .isInstanceOf(DummyScenarioDeletionNotAllowedException.class);
     }
 
     private DummyScenarioRow uploadedScenario(String yaml, Duration originalDuration, int postCount, int commentCount) {
