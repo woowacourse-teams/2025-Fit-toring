@@ -12,9 +12,18 @@ interface CommunityPostCardProps {
 }
 
 function CommunityPostCard({ post }: CommunityPostCardProps) {
-  const { id, title, createdAt, viewCount, likeCount, commentCount, content } =
-    post;
+  const {
+    id,
+    title,
+    nickname,
+    createdAt,
+    viewCount,
+    likeCount,
+    commentCount,
+    content,
+  } = post;
   const createdAtLabel = formatTimeAgo(createdAt);
+  const authorLabel = nickname;
 
   return (
     <S_ListItem>
@@ -22,12 +31,18 @@ function CommunityPostCard({ post }: CommunityPostCardProps) {
         <S_Card>
           <S_TextBlock>
             <S_Title>{title}</S_Title>
-            <S_Content>{content}</S_Content>
           </S_TextBlock>
+          <S_Content>{content}</S_Content>
 
           <S_FooterRow>
-            <S_MetaText>
-              {createdAtLabel} · 조회 {viewCount.toLocaleString()}
+            <S_MetaText
+              aria-label={`${authorLabel} 작성, ${createdAtLabel}, 조회 ${viewCount.toLocaleString()}`}
+            >
+              <S_Author>{authorLabel}</S_Author>
+              <S_MetaSeparator aria-hidden="true">|</S_MetaSeparator>
+              <S_MetaDetail>
+                {createdAtLabel} · 조회 {viewCount.toLocaleString()}
+              </S_MetaDetail>
             </S_MetaText>
             <ReactionCount likeCount={likeCount} commentCount={commentCount} />
           </S_FooterRow>
@@ -53,33 +68,53 @@ const S_Link = styled(Link)`
 const S_Card = styled.article`
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.6rem;
+  position: relative;
 
-  padding: 1.8rem 1.6rem 1.7rem;
-  border-bottom: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  padding: 1.8rem 1.6rem 1.6rem;
+
+  &::after {
+    content: '';
+
+    position: absolute;
+    right: 1.6rem;
+    bottom: 0;
+    left: 1.6rem;
+
+    height: 1px;
+
+    background-color: ${({ theme }) => theme.OUTLINE.LIGHT};
+  }
 `;
 
 const S_TextBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.8rem;
+
+  min-width: 0;
 `;
 
 const S_Title = styled.h2`
+  overflow: hidden;
+
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB4_SB};
-  line-height: 1.45;
+  ${({ theme }) => theme.TYPOGRAPHY.H4_SB};
+  line-height: 1.35;
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 `;
 
 const S_Content = styled.p`
-  display: -webkit-box;
   overflow: hidden;
 
-  color: ${({ theme }) => theme.FONT.B03};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+  color: ${({ theme }) => theme.FONT.B04};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
   line-height: 1.45;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 `;
 
 const S_FooterRow = styled.div`
@@ -87,10 +122,45 @@ const S_FooterRow = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 1.2rem;
+
+  min-width: 0;
 `;
 
-const S_MetaText = styled.p`
+const S_MetaText = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+
+  min-width: 0;
+
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
   ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   line-height: 1.2;
+  white-space: nowrap;
+`;
+
+const S_Author = styled.span`
+  display: inline-flex;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  max-width: 10rem;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY600};
+
+  text-overflow: ellipsis;
+  ${({ theme }) => theme.TYPOGRAPHY.C2_SB};
+`;
+
+const S_MetaSeparator = styled.span`
+  flex-shrink: 0;
+
+  color: ${({ theme }) => theme.SYSTEM.GRAY300};
+`;
+
+const S_MetaDetail = styled.span`
+  overflow: hidden;
+
+  text-overflow: ellipsis;
 `;

@@ -1,5 +1,3 @@
-import styled from '@emotion/styled';
-
 import CommunityPostCard from '../CommunityPostCard/CommunityPostCard';
 
 import type { CommunityPost } from '../../../../common/types/communityPost';
@@ -10,16 +8,12 @@ interface CommunityFeedProps {
 
 function CommunityFeed({ posts }: CommunityFeedProps) {
   return (
-    <S_List>
+    <ul>
       {posts.map((post) => (
         <CommunityPostCard key={post.id} post={post} />
       ))}
-    </S_List>
+    </ul>
   );
 }
 
 export default CommunityFeed;
-
-const S_List = styled.ul`
-  border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
-`;

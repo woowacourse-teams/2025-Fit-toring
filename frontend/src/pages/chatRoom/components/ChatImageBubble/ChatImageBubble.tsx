@@ -7,6 +7,7 @@ interface ChatImageBubbleProps {
   content: string;
   createdAt: string;
   authored: boolean;
+  showTime?: boolean;
   status?: 'success' | 'fail' | 'pending';
 }
 
@@ -14,23 +15,30 @@ function ChatImageBubble({
   content,
   createdAt,
   authored,
+  showTime = true,
   status,
 }: ChatImageBubbleProps) {
+  const showMeta = status === 'fail' || showTime;
+
   return (
     <S_Container authored={authored}>
       <S_BubbleWrapper authored={authored}>
         <S_Bubble authored={authored}>
           <S_Image src={content} alt="채팅 이미지" />
         </S_Bubble>
-        <S_Temp authored={authored}>
-          {status === 'fail' ? (
-            <S_RetryInfoWrapper>
-              <S_RetryIcon src={warningIcon} alt="" />
+        {showMeta ? (
+          <S_Temp authored={authored}>
+            {status === 'fail' ? (
+              <S_RetryInfoWrapper>
+                <S_RetryIcon src={warningIcon} alt="" />
               <S_RetryText>전송실패</S_RetryText>
             </S_RetryInfoWrapper>
           ) : null}
-          <S_Time>{formatToKoreanTime(createdAt)}</S_Time>
-        </S_Temp>
+            {showTime ? (
+              <S_Time>{formatToKoreanTime(createdAt)}</S_Time>
+            ) : null}
+          </S_Temp>
+        ) : null}
       </S_BubbleWrapper>
     </S_Container>
   );

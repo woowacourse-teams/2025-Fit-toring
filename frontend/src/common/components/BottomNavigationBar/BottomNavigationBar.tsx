@@ -45,6 +45,7 @@ const NAV_ITEMS: NavItem[] = [
     path: PAGE_URL.MY_PAGE,
     icon: ProfileIcon,
     activeIcon: ProfileActiveIcon,
+    matchNestedRoutes: true,
   },
 ];
 
