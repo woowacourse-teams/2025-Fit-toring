@@ -5,7 +5,7 @@ import fittoring.application.auth.presentation.dto.response.KakaoUserInfoRespons
 import fittoring.application.auth.service.dto.LoginInfoDto;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.OauthLoginException;
-import fittoring.infrastructure.OauthClientService;
+import fittoring.infrastructure.auth.OauthClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

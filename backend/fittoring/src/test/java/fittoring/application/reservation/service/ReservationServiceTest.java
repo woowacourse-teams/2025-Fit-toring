@@ -23,6 +23,7 @@ import fittoring.application.mentoring.service.dto.MentorMentoringReservationRes
 import fittoring.application.mentoring.service.dto.ReservationInfo;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
 import fittoring.application.review.repository.ReviewRepository;
@@ -110,15 +111,16 @@ class ReservationServiceTest extends IntegrationTestSupport {
         );
 
         // when
-        Reservation actual = reservationService.createReservation(dto);
+        ReservationCreateResponse actual = reservationService.createReservation(dto);
 
         // then
+        Reservation savedReservation = reservationRepository.findAll().get(0);
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(actual.getMentorName()).isEqualTo(mentor.getName());
-            softly.assertThat(actual.getMenteeName()).isEqualTo(mentee.getName());
-            softly.assertThat(actual.getMenteePhone()).isEqualTo(mentee.getPhoneNumber());
-            softly.assertThat(actual.getContent()).isEqualTo(dto.content());
-            softly.assertThat(actual.getStatus()).isEqualTo(Status.PENDING.name());
+            softly.assertThat(actual.mentorName()).isEqualTo(mentor.getName());
+            softly.assertThat(actual.menteeName()).isEqualTo(mentee.getName());
+            softly.assertThat(actual.menteePhoneNumber()).isEqualTo(mentee.getPhoneNumber());
+            softly.assertThat(savedReservation.getContent()).isEqualTo(dto.content());
+            softly.assertThat(savedReservation.getStatus()).isEqualTo(Status.PENDING.name());
             softly.assertThat(
                     mentoringStatisticsRepository.findById(mentoring.getId()).get().getReservationCount()
             ).isEqualTo(originalReservationCount + 1);

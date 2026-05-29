@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
 import kakaoLoginIcon from '../../../../common/assets/images/kakao_login_large_wide.png';
@@ -27,9 +27,15 @@ function LoginForm() {
 
   const [errorMessage, setErrorMessage] = useState('');
 
+  const location = useLocation();
   const navigate = useNavigate();
 
   const { login } = useAuth();
+  const from = (
+    location.state as
+      | { from?: { pathname: string; search: string; hash: string } }
+      | null
+  )?.from;
 
   const { mutate: loginMutate } = useMutation({
     mutationFn: postLogin,
@@ -42,7 +48,10 @@ function LoginForm() {
 
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
-        navigate(PAGE_URL.HOME);
+        navigate(
+          from ? `${from.pathname}${from.search}${from.hash}` : PAGE_URL.HOME,
+          { replace: true },
+        );
         login();
       }
     },
@@ -158,7 +167,7 @@ const S_Input = styled.input<{ errored?: boolean }>`
 
   :focus {
     outline: none;
-    border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN600};
+    border: 2px solid ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 
   ::placeholder {

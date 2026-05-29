@@ -11,8 +11,9 @@ export const postCommunityPostCommentGuestCheck = async ({
   guestPassword,
 }: PostCommunityPostCommentGuestCheckParams) => {
   await apiClient.post({
-    endpoint: `${API_ENDPOINTS.COMMENTS}/${commentId}/guest-check`,
+    endpoint: `${API_ENDPOINTS.COMMENTS}/${commentId}/pw-check`,
     body: { guestPassword },
+    withCredentials: true,
   });
 
   return true;

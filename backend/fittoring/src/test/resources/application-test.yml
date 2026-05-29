@@ -53,6 +53,10 @@ jwt:
   secret-key: my/test/secret/key/my/test/secret/key
   access-token-expiration-millis: 10000
   refresh-token-expiration-millis: 20000000
+
+post-like:
+  actor-secret: my/test/post/like/actor/secret
+
 kakao:
   redirect-url: ${KAKAO_REDIRECT_URL}
   client-id: ${KAKAO_CLIENT_ID}
@@ -69,6 +73,13 @@ image-session:
     fixed-delay-ms: 300000 # 5분
     batch-size: 200
 
+sms-outbox:
+  publisher:
+    enabled: false  # 테스트에서는 스케줄러 자동 발동을 막고 publishPending()을 직접 호출
+    fixed-delay-ms: 5000
+    batch-size: 10
+    lease-timeout-seconds: 300
+
 domain:
   sub-domain: test-sub-domain
 
@@ -77,3 +88,18 @@ client:
 
 cookie:
   same-site: None
+
+dummy:
+  admin-api:
+    enabled: false
+    scenarios-base-path: classpath:dummy/
+    upload-path: ./dummy-uploads/
+    guest-password-hash: 342a59f63384c1fbd5b0f244484959edf694930c8bd84ccc9ee8f68c945e04dc
+    schedule-offset-days: 0
+  scheduler:
+    enabled: false
+    poll-interval-ms: 30000
+    batch-size:
+      post: 100
+      comment: 200
+    max-attempt: 5

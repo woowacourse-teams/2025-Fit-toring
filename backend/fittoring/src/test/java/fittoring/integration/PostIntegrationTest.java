@@ -14,6 +14,7 @@ import fittoring.application.community.presentation.dto.request.PostCreateReques
 import fittoring.application.community.presentation.dto.request.PostUpdateRequest;
 import fittoring.application.community.presentation.dto.response.PostDetailResponse;
 import fittoring.application.community.presentation.dto.response.PostListResponse;
+import fittoring.application.community.presentation.dto.response.PostOwnershipResponse;
 import fittoring.application.community.repository.CommentRepository;
 import fittoring.application.community.repository.PostRepository;
 import fittoring.application.member.repository.MemberRepository;
@@ -21,6 +22,7 @@ import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
     void createMemberPost() {
         Member member = memberRepository.save(FixtureUtil.testMentee());
         String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
-        PostCreateRequest request = new PostCreateRequest("title", "content", false, "member", "1234");
+        PostCreateRequest request = new PostCreateRequest("title", "content", false, null, null);
 
         PostDetailResponse response = RestAssured.given(spec)
                 .filter(documentWithTag("post/post-success",
@@ -70,7 +72,6 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.commentCount()).isZero();
             softly.assertThat(response.viewCount()).isZero();
             softly.assertThat(response.likeCount()).isZero();
-            softly.assertThat(response.isMine()).isTrue();
         });
     }
 
@@ -83,13 +84,41 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/posts")
+                .post("/guest/posts")
                 .then()
                 .statusCode(201)
                 .extract()
                 .as(PostDetailResponse.class);
 
         assertThat(response.isGuestPost()).isTrue();
+    }
+
+    @DisplayName("게시글 제목이 255자를 초과하면 400을 반환한다.")
+    @Test
+    void createPostFailWhenTitleIsTooLong() {
+        PostCreateRequest request = new PostCreateRequest("a".repeat(256), "content", false, "guest", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/guest/posts")
+                .then()
+                .statusCode(400);
+    }
+
+    @DisplayName("비회원 게시글 닉네임이 50자를 초과하면 400을 반환한다.")
+    @Test
+    void createGuestPostFailWhenNicknameIsTooLong() {
+        PostCreateRequest request = new PostCreateRequest("title", "content", false, "a".repeat(51), "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/guest/posts")
+                .then()
+                .statusCode(400);
     }
 
     @DisplayName("게시글 목록 조회는 200을 반환한다.")
@@ -148,7 +177,6 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
             softly.assertThat(response.commentCount()).isEqualTo(1);
             softly.assertThat(response.viewCount()).isEqualTo(1);
             softly.assertThat(response.likeCount()).isZero();
-            softly.assertThat(response.isMine()).isFalse();
         });
     }
 
@@ -169,7 +197,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -188,7 +216,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -207,7 +235,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/posts/{postId}", post.getId())
+                .patch("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(200);
 
@@ -233,7 +261,7 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .delete("/posts/{postId}", post.getId())
+                .delete("/guest/posts/{postId}", post.getId())
                 .then()
                 .statusCode(204);
     }
@@ -258,5 +286,262 @@ class PostIntegrationTest extends AbstractApiDocumentationTest {
                 .post("/posts/{postId}/guest-check", post.getId())
                 .then()
                 .statusCode(200);
+    }
+
+    @DisplayName("게시글 좋아요는 likeActorId 쿠키 기준으로 한 번만 증가한다.")
+    @Test
+    void likePost() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+
+        // when
+        Response first = RestAssured.given(spec)
+                .filter(documentWithTag("post/put-like",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("게시글")
+                                .summary("게시글 좋아요")
+                                .description("likeActorId 쿠키 기준으로 게시글 좋아요를 추가합니다.")
+                                .responseSchema(Schema.schema("PostLikeResponse"))
+                                .build())))
+                .when()
+                .post("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+
+        String likeActorId = first.cookie("likeActorId");
+        Response second = RestAssured.given(spec)
+                .cookie("likeActorId", likeActorId)
+                .when()
+                .post("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(likeActorId).isNotBlank();
+            softly.assertThat(first.jsonPath().getLong("postId")).isEqualTo(post.getId());
+            softly.assertThat(first.jsonPath().getBoolean("liked")).isTrue();
+            softly.assertThat(first.jsonPath().getInt("likeCount")).isEqualTo(1);
+            softly.assertThat(second.jsonPath().getBoolean("liked")).isTrue();
+            softly.assertThat(second.jsonPath().getInt("likeCount")).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("게시글 좋아요 취소는 likeActorId 쿠키 기준으로 한 번만 감소한다.")
+    @Test
+    void unlikePost() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Response likeResponse = RestAssured.given(spec)
+                .when()
+                .post("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+        String likeActorId = likeResponse.cookie("likeActorId");
+
+        // when
+        Response first = RestAssured.given(spec)
+                .filter(documentWithTag("post/delete-like",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("게시글")
+                                .summary("게시글 좋아요 취소")
+                                .description("likeActorId 쿠키 기준으로 게시글 좋아요를 취소합니다.")
+                                .responseSchema(Schema.schema("PostLikeResponse"))
+                                .build())))
+                .cookie("likeActorId", likeActorId)
+                .when()
+                .delete("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        Response second = RestAssured.given(spec)
+                .cookie("likeActorId", likeActorId)
+                .when()
+                .delete("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(likeActorId).isNotBlank();
+            softly.assertThat(first.jsonPath().getLong("postId")).isEqualTo(post.getId());
+            softly.assertThat(first.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(first.jsonPath().getInt("likeCount")).isZero();
+            softly.assertThat(second.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(second.jsonPath().getInt("likeCount")).isZero();
+        });
+    }
+
+    @DisplayName("쿠키 없는 게시글 좋아요 취소는 쿠키를 발급하지 않고 좋아요 수를 변경하지 않는다.")
+    @Test
+    void unlikePostWithoutCookie() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        RestAssured.given(spec)
+                .when()
+                .post("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(201);
+
+        // when
+        Response response = RestAssured.given(spec)
+                .when()
+                .delete("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(response.cookie("likeActorId")).isNull();
+            softly.assertThat(response.jsonPath().getLong("postId")).isEqualTo(post.getId());
+            softly.assertThat(response.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(response.jsonPath().getInt("likeCount")).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("게시글 상세 조회는 likeActorId 쿠키 기준 liked를 반환한다.")
+    @Test
+    void findPostWithLiked() {
+        // given
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        Response likeResponse = RestAssured.given(spec)
+                .when()
+                .post("/posts/{postId}/like", post.getId())
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+        String likeActorId = likeResponse.cookie("likeActorId");
+
+        // when
+        Response likedDetail = RestAssured.given(spec)
+                .cookie("likeActorId", likeActorId)
+                .when()
+                .get("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        Response notLikedDetail = RestAssured.given(spec)
+                .when()
+                .get("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(likedDetail.jsonPath().getLong("id")).isEqualTo(post.getId());
+            softly.assertThat(likedDetail.jsonPath().getBoolean("liked")).isTrue();
+            softly.assertThat(likedDetail.jsonPath().getInt("likeCount")).isEqualTo(1);
+            softly.assertThat(notLikedDetail.jsonPath().getBoolean("liked")).isFalse();
+            softly.assertThat(notLikedDetail.jsonPath().getInt("likeCount")).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("회원 본인 게시글 소유 확인은 isMine=true를 반환한다.")
+    @Test
+    void checkPostOwnershipMine() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testMemberPost(member));
+
+        PostOwnershipResponse response = RestAssured.given(spec)
+                .filter(documentWithTag("post/get-mine",
+                        resource(ResourceSnippetParameters.builder()
+                                .tag("게시글")
+                                .summary("게시글 소유 확인")
+                                .description("로그인한 회원이 해당 게시글의 작성자인지 확인합니다.")
+                                .responseSchema(Schema.schema("PostOwnershipResponse"))
+                                .build())))
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/posts/{postId}/mine", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(PostOwnershipResponse.class);
+
+        assertThat(response.isMine()).isTrue();
+    }
+
+    @DisplayName("타 회원 게시글 소유 확인은 isMine=false를 반환한다.")
+    @Test
+    void checkPostOwnershipNotMine() {
+        Member owner = memberRepository.save(FixtureUtil.testMentee());
+        Member other = memberRepository.save(FixtureUtil.testMentor());
+        String accessToken = jwtProvider.createAccessToken(other.getId(), other.getRole());
+        Post post = postRepository.save(FixtureUtil.testMemberPost(owner));
+
+        PostOwnershipResponse response = RestAssured.given(spec)
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/posts/{postId}/mine", post.getId())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(PostOwnershipResponse.class);
+
+        assertThat(response.isMine()).isFalse();
+    }
+
+    @DisplayName("회원이 게스트 글을 회원 엔드포인트로 수정 시도하면 403을 반환한다.")
+    @Test
+    void modifyGuestPostViaMemberEndpointForbidden() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        String accessToken = jwtProvider.createAccessToken(member.getId(), member.getRole());
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+        PostUpdateRequest request = new PostUpdateRequest("new", "new", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(request)
+                .when()
+                .patch("/posts/{postId}", post.getId())
+                .then()
+                .statusCode(403);
+    }
+
+    @DisplayName("비회원이 회원 글을 게스트 엔드포인트로 수정 시도하면 403을 반환한다.")
+    @Test
+    void modifyMemberPostViaGuestEndpointForbidden() {
+        Member member = memberRepository.save(FixtureUtil.testMentee());
+        Post post = postRepository.save(FixtureUtil.testMemberPost(member));
+        PostUpdateRequest request = new PostUpdateRequest("new", "new", "1234");
+
+        RestAssured.given(spec)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .patch("/guest/posts/{postId}", post.getId())
+                .then()
+                .statusCode(403);
+    }
+
+    @DisplayName("게시글 소유 확인은 비로그인 시 401을 반환한다.")
+    @Test
+    void checkPostOwnershipUnauthorized() {
+        Post post = postRepository.save(FixtureUtil.testGuestPost());
+
+        RestAssured.given(spec)
+                .when()
+                .get("/posts/{postId}/mine", post.getId())
+                .then()
+                .statusCode(401);
     }
 }

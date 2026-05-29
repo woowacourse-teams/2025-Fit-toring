@@ -31,7 +31,17 @@ export function isIOSPushSupported(): boolean {
 }
 
 export function isPWAStandalone(): boolean {
-  return window.matchMedia('(display-mode: standalone)').matches;
+  const isDisplayModeStandalone =
+    window.matchMedia?.('(display-mode: standalone)').matches ?? false;
+  const isIOSStandalone =
+    (window.navigator as Navigator & { standalone?: boolean }).standalone ===
+    true;
+
+  return isDisplayModeStandalone || isIOSStandalone;
+}
+
+export function isMobileViewport(): boolean {
+  return window.matchMedia('(max-width: 480px)').matches;
 }
 
 export function isNotificationSupported(): boolean {

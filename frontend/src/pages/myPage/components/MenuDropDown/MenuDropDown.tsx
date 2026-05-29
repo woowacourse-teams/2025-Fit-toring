@@ -14,8 +14,8 @@ import { captureSentryError } from '../../../../common/utils/captureSentryError'
 import { shutdownChannelTalk } from '../../../../common/utils/channelTalk';
 
 type MenuItemName =
-  | '개설한 멘토링'
-  | '참여한 멘토링'
+  | '운영하는 멘토링'
+  | '수강하는 멘토링'
   | '회원 정보 수정'
   | '로그아웃';
 
@@ -39,11 +39,11 @@ function MenuDropDown() {
 
   const MENU_ITEMS: MenuItem[] = [
     {
-      name: '개설한 멘토링',
+      name: '운영하는 멘토링',
       action: () => navigate(PAGE_URL.CREATED_MENTORING),
     },
     {
-      name: '참여한 멘토링',
+      name: '수강하는 멘토링',
       action: () => navigate(PAGE_URL.PARTICIPATED_MENTORING),
     },
     { name: '회원 정보 수정', action: () => navigate(PAGE_URL.EDIT_PROFILE) },
@@ -51,7 +51,7 @@ function MenuDropDown() {
   ];
 
   const [selectedMenu, setSelectedMenu] =
-    useState<MenuItemName>('개설한 멘토링');
+    useState<MenuItemName>('운영하는 멘토링');
 
   const navigate = useNavigate();
 
@@ -164,7 +164,7 @@ const S_MenuItem = styled.li<{ selected: boolean }>`
     selected ? theme.SYSTEM.MAIN50 : 'transparent'};
 
   color: ${({ selected, theme }) =>
-    selected ? theme.SYSTEM.MAIN700 : theme.FONT.B03};
+    selected ? theme.SYSTEM.MAIN500 : theme.FONT.B03};
 
   transition: all 0.2s ease;
   cursor: pointer;
@@ -180,7 +180,7 @@ const S_MenuItem = styled.li<{ selected: boolean }>`
   &:hover {
     background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
 
-    color: ${({ theme }) => theme.SYSTEM.MAIN700};
+    color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_R}

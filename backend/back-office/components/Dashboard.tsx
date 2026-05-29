@@ -35,6 +35,8 @@ import {
   UserCheck,
   BookOpen,
   Smartphone,
+  Database,
+  MessageSquare,
 } from "lucide-react";
 import { CertificationManagement } from "./dashboard/CertificationManagement";
 import { MentoringManagement } from "./dashboard/MentoringManagement";
@@ -46,6 +48,8 @@ import { logout as apiLogout } from "../services/authApi";
 import { ROUTES } from "../constants/routes";
 import { MenteeManagement } from "./dashboard/MenteeManagement";
 import { DeviceManagement } from "./dashboard/DeviceManagement";
+import { DummyDataManagement } from "./dashboard/DummyDataManagement";
+import { SmsOutboxManagement } from "./dashboard/SmsOutboxManagement";
 
 export function Dashboard() {
   const [activeMenu, setActiveMenu] = useState("certifications");
@@ -115,6 +119,10 @@ export function Dashboard() {
         return <MentoringDetail />;
       case "category":
         return <ComingSoon />;
+      case "dummy-data":
+        return <DummyDataManagement />;
+      case "sms-outbox":
+        return <SmsOutboxManagement />;
       default:
         return <CertificationManagement />;
     }
@@ -134,6 +142,10 @@ export function Dashboard() {
         return "멘토링 상세";
       case "category":
         return "카테고리 관리";
+      case "dummy-data":
+        return "더미 데이터 관리";
+      case "sms-outbox":
+        return "SMS Outbox";
       default:
         return "자격증명 관리";
     }
@@ -265,6 +277,30 @@ export function Dashboard() {
                         </CollapsibleContent>
                       </SidebarMenuItem>
                     </Collapsible>
+                    
+                    {/* 더미 데이터 관리 */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                          tooltip="더미 데이터 관리"
+                          isActive={activeMenu === "dummy-data"}
+                          onClick={() => handleMenuClick("dummy-data")}
+                      >
+                        <Database className="h-4 w-4" />
+                        <span>더미 데이터 관리</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    {/* SMS Outbox */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                          tooltip="SMS Outbox"
+                          isActive={activeMenu === "sms-outbox"}
+                          onClick={() => handleMenuClick("sms-outbox")}
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        <span>SMS Outbox</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>

@@ -1,6 +1,7 @@
-import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
 import EmptyData from '../EmptyData/EmptyData';
 import MentorCardItem from '../MentorCardItem/MentorCardItem';
+
+import MentorCardListSkeleton from './MentorCardListSkeleton';
 
 import type { MentorInformation } from '../../types/MentorInformation';
 
@@ -16,7 +17,7 @@ function MentorCardListContent({
   hasFilter,
 }: MentorCardListContentProps) {
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <MentorCardListSkeleton />;
   }
 
   if (mentorList.length === 0) {

@@ -3,12 +3,13 @@ import { API_ENDPOINTS } from '../constants/apiEndpoints';
 import { apiClient } from './apiClient';
 
 export interface PostPresignedURLRequest {
-  imageType: 'MENTORING_PROFILE' | 'CERTIFICATE';
+  imageType: 'MEMBER_PROFILE' | 'MENTORING_PROFILE' | 'CERTIFICATE' | 'CHAT';
   extension: 'png' | 'jpg' | 'jpeg' | 'webp' | 'avif';
 }
 
 interface PostPresignedURLResponse {
   presignedUrl: string;
+  key: string;
   expiresAt: string;
 }
 
@@ -19,6 +20,7 @@ const isPostPresignedURLResponse = (
     typeof data === 'object' &&
     data !== null &&
     'presignedUrl' in data &&
+    'key' in data &&
     'expiresAt' in data
   );
 };

@@ -19,14 +19,19 @@ import fittoring.application.mentoring.service.dto.MentorMentoringReservationRes
 import fittoring.application.mentoring.service.dto.ReservationInfo;
 import fittoring.application.reservation.presentation.dto.response.ParticipatedReservationResponse;
 import fittoring.application.reservation.presentation.dto.response.PhoneNumberResponse;
+import fittoring.application.reservation.presentation.dto.response.ReservationCreateResponse;
 import fittoring.application.reservation.repository.ReservationRepository;
 import fittoring.application.reservation.service.dto.ParticipatedReservationWithoutProfileImageDto;
 import fittoring.application.reservation.service.dto.ReservationCreateDto;
+import fittoring.application.reservation.service.event.ReservationApprovedEvent;
+import fittoring.application.reservation.service.event.ReservationCreatedEvent;
+import fittoring.application.reservation.service.event.ReservationRejectedEvent;
 import fittoring.application.review.repository.ReviewRepository;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.ImageType;
 import fittoring.domain.model.Member;
 import fittoring.domain.model.Mentoring;
+import fittoring.domain.model.Phone;
 import fittoring.domain.model.Reservation;
 import fittoring.domain.model.Status;
 import java.util.ArrayList;
@@ -38,6 +43,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,9 +61,10 @@ public class ReservationService {
     private final ReviewRepository reviewRepository;
     private final MentoringStatisticsRepository mentoringStatisticsRepository;
     private final ImageService imageService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public Reservation createReservation(ReservationCreateDto dto) {
+    public ReservationCreateResponse createReservation(ReservationCreateDto dto) {
         Reservation reservation = createReservationEntity(dto);
         try {
             reservationRepository.save(reservation);
@@ -68,7 +75,8 @@ public class ReservationService {
             throw exception;
         }
         mentoringStatisticsRepository.updateReservationCountPlus(dto.mentoringId());
-        return reservation;
+        eventPublisher.publishEvent(ReservationCreatedEvent.of(reservation));
+        return ReservationCreateResponse.from(reservation);
     }
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {
@@ -207,7 +215,9 @@ public class ReservationService {
         ChatRoomCreatedInfoDto chatRoomCreatedInfoDto = chatRoomService.registerChatRoom(reservation);
         String url = chatRoomCreatedInfoDto.url();
 
-        return ReservationInfo.from(reservation, url);
+        ReservationInfo info = ReservationInfo.from(reservation, url);
+        eventPublisher.publishEvent(ReservationApprovedEvent.of(info));
+        return info;
     }
 
     @Transactional
@@ -216,7 +226,9 @@ public class ReservationService {
         validateMentorAuthority(reservation.getMentor().getId(), mentorId);
 
         reservation.reject();
-        return ReservationInfo.from(reservation, null);
+        ReservationInfo info = ReservationInfo.from(reservation, null);
+        eventPublisher.publishEvent(ReservationRejectedEvent.of(info));
+        return info;
     }
 
     @Transactional

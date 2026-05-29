@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import styled from '@emotion/styled';
 
 import menuDotsIcon from '../../../../common/assets/images/menuDots.svg';
+import LikeToggleButton from '../../../../common/components/LikeToggleButton/LikeToggleButton';
 import useOutsideClickRef from '../../../../common/hooks/useOutsideClickRef';
 import { formatTimeAgo } from '../../../../common/utils/formatTimeAgo';
 
@@ -15,6 +16,8 @@ interface CommentItemProps {
   onReplyClick: (comment: PostComment) => void;
   onEditClick: (comment: PostComment) => void;
   onDeleteClick: (comment: PostComment) => void;
+  onLikeClick: (comment: PostComment) => void;
+  isLikePending?: boolean;
   children?: ReactNode;
 }
 
@@ -24,11 +27,12 @@ function CommentItem({
   onReplyClick,
   onEditClick,
   onDeleteClick,
+  onLikeClick,
+  isLikePending = false,
   children,
 }: CommentItemProps) {
   const [menuOpened, setMenuOpened] = useState(false);
-  const canManageComment =
-    comment.isGuestComment || comment.isAnonymous || comment.isMine;
+  const canManageComment = comment.isGuestComment || comment.isMine;
   const { ref: menuRef } = useOutsideClickRef<HTMLDivElement>(() =>
     setMenuOpened(false),
   );
@@ -50,7 +54,7 @@ function CommentItem({
   return (
     <S_Container depth={depth}>
       <S_Header>
-        <S_Nickname>{comment.isAnonymous ? '익명' : comment.nickname}</S_Nickname>
+        <S_Nickname>{comment.nickname}</S_Nickname>
         <S_HeaderRight>
           <S_CreatedAt>{formatTimeAgo(comment.createdAt)}</S_CreatedAt>
           {canManageComment && !comment.isDeleted ? (
@@ -96,6 +100,14 @@ function CommentItem({
           <S_ReplyButton type="button" onClick={() => onReplyClick(comment)}>
             답글쓰기
           </S_ReplyButton>
+          <LikeToggleButton
+            count={comment.likeCount}
+            pressed={comment.liked}
+            size="small"
+            ariaLabel={`좋아요 ${comment.likeCount}개`}
+            disabled={isLikePending}
+            onClick={() => onLikeClick(comment)}
+          />
         </S_Actions>
       ) : null}
       {children}
@@ -208,7 +220,8 @@ const S_Content = styled.p`
 
 const S_Actions = styled.div`
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  gap: 1.2rem;
 `;
 
 const S_ReplyButton = styled.button`

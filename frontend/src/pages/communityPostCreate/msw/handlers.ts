@@ -9,22 +9,33 @@ import type { CommunityPostFormValues } from '../../../common/types/communityPos
 
 const BASE_URL = process.env.API_BASE_URL;
 const POSTS_URL = `${BASE_URL}${API_ENDPOINTS.POSTS}`;
+const GUEST_POSTS_URL = `${BASE_URL}${API_ENDPOINTS.GUEST}${API_ENDPOINTS.POSTS}`;
 
-const postCommunityPostCreate = http.post(POSTS_URL, async ({ request }) => {
+const createPostResponse = async (request: Request, isGuestPost: boolean) => {
   const requestBody = (await request.json()) as CommunityPostFormValues;
-  const isGuestPost = Boolean(requestBody.guestPassword);
 
   const responseBody: CommunityPostDetail = {
     ...CREATED_COMMUNITY_POST,
     title: requestBody.title,
     content: requestBody.content,
     nickname: requestBody.nickname ?? CREATED_COMMUNITY_POST.nickname,
-    isAnonymous: requestBody.isAnonymous ?? false,
+    isAnonymous: isGuestPost ? false : (requestBody.isAnonymous ?? false),
     isGuestPost,
-    isMine: !isGuestPost,
   };
 
   return HttpResponse.json(responseBody, { status: 201 });
-});
+};
 
-export const communityPostCreateHandler = [postCommunityPostCreate];
+const postCommunityPostCreate = http.post(POSTS_URL, async ({ request }) =>
+  createPostResponse(request, false),
+);
+
+const postGuestCommunityPostCreate = http.post(
+  GUEST_POSTS_URL,
+  async ({ request }) => createPostResponse(request, true),
+);
+
+export const communityPostCreateHandler = [
+  postCommunityPostCreate,
+  postGuestCommunityPostCreate,
+];

@@ -9,6 +9,7 @@ import {
 import BottomTabLayout from './common/components/BottomTabLayout/BottomTabLayout';
 import ChannelTalkProvider from './common/components/ChannelTalkProvider/ChannelTalkProvider';
 import MobileLayout from './common/components/MobileLayout/MobileLayout';
+import ProtectedRoute from './common/components/ProtectedRoute/ProtectedRoute';
 import { PAGE_URL } from './common/constants/url';
 import ChatRooms from './pages/chatRooms/ChatRooms';
 import Home from './pages/home/Home';
@@ -22,6 +23,9 @@ const MentoringUpdate = lazy(
   () => import('./pages/mentoringUpdate/MentoringUpdate'),
 );
 const MyPage = lazy(() => import('./pages/myPage/MyPage'));
+const MyPageLayout = lazy(
+  () => import('./pages/myPage/components/layout/MyPageLayout'),
+);
 const ParticipatedMentoring = lazy(
   () => import('./pages/participatedMentoring/ParticipatedMentoring'),
 );
@@ -49,38 +53,42 @@ const CommunityPostUpdate = lazy(
 
 const router = createBrowserRouter([
   {
-    element: <ChannelTalkProvider />,
+    element: (
+      <>
+        <MobileLayout />
+      </>
+    ),
     children: [
       {
-        element: (
-          <>
-            <MobileLayout />
-          </>
-        ),
+        element: <BottomTabLayout />,
         children: [
           {
-            element: <BottomTabLayout />,
-            children: [
-              {
-                path: PAGE_URL.HOME,
-                element: <Home />,
-                loader: () => {
-                  const firstVisited = !sessionStorage.getItem('hasVisited');
+            path: PAGE_URL.HOME,
+            element: (
+              <ChannelTalkProvider>
+                <Home />
+              </ChannelTalkProvider>
+            ),
+            loader: () => {
+              const firstVisited = !sessionStorage.getItem('hasVisited');
 
-                  if (firstVisited) {
-                    return redirect(PAGE_URL.LANDING);
-                  }
-                  return null;
-                },
-              },
+              if (firstVisited) {
+                return redirect(PAGE_URL.LANDING);
+              }
+              return null;
+            },
+          },
+          {
+            element: <ProtectedRoute />,
+            children: [
               { path: `${PAGE_URL.CHAT_ROOMS}`, element: <ChatRooms /> },
               {
                 path: `${PAGE_URL.MY_PAGE}`,
-                element: <MyPage />,
+                element: <MyPageLayout />,
                 children: [
                   {
                     index: true,
-                    element: <CreatedMentoring />,
+                    element: <MyPage />,
                   },
                   {
                     path: PAGE_URL.CREATED_MENTORING,
@@ -96,43 +104,48 @@ const router = createBrowserRouter([
                   },
                 ],
               },
-              {
-                path: PAGE_URL.COMMUNITY,
-                element: <Community />,
-              },
-              {
-                path: `${PAGE_URL.COMMUNITY}/:postId`,
-                element: <CommunityPostDetail />,
-              },
             ],
           },
-          { path: PAGE_URL.LANDING, element: <Landing /> },
-          { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
-          { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
-          { path: PAGE_URL.SIGNUP, element: <Signup /> },
-          { path: PAGE_URL.MENTORING_CREATE, element: <MentoringCreate /> },
           {
-            path: `${PAGE_URL.MENTORING_UPDATE}/:mentoringId`,
-            element: <MentoringUpdate />,
+            path: PAGE_URL.COMMUNITY,
+            element: <Community />,
+          },
+          {
+            path: `${PAGE_URL.COMMUNITY}/:postId`,
+            element: <CommunityPostDetail />,
           },
           { path: PAGE_URL.LOGIN, element: <Login /> },
+        ],
+      },
+      { path: PAGE_URL.LANDING, element: <Landing /> },
+      { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
+      { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
+      { path: PAGE_URL.SIGNUP, element: <Signup /> },
+      { path: PAGE_URL.MENTORING_CREATE, element: <MentoringCreate /> },
+      {
+        path: `${PAGE_URL.MENTORING_UPDATE}/:mentoringId`,
+        element: <MentoringUpdate />,
+      },
+      {
+        element: <ProtectedRoute />,
+        children: [
           {
             path: `${PAGE_URL.CHAT_ROOM}/:chatRoomId`,
             element: <ChatRoom />,
           },
-          {
-            path: PAGE_URL.IDENTITY_VERIFICATION,
-            element: <IdentityVerification />,
-          },
-          {
-            path: PAGE_URL.COMMUNITY_CREATE,
-            element: <CommunityPostCreate />,
-          },
-          {
-            path: `${PAGE_URL.COMMUNITY}/:postId${PAGE_URL.EDIT}`,
-            element: <CommunityPostUpdate />,
-          },
         ],
+      },
+      {
+        path: PAGE_URL.IDENTITY_VERIFICATION,
+        element: <IdentityVerification />,
+      },
+      {
+        path: PAGE_URL.COMMUNITY_CREATE,
+        element: <CommunityPostCreate />,
+      },
+      {
+        path: `${PAGE_URL.COMMUNITY}/:postId${PAGE_URL.EDIT}`,
+        element: <CommunityPostUpdate />,
       },
     ],
   },

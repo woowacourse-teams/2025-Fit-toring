@@ -22,7 +22,8 @@ const S_Container = styled.main`
 `;
 
 const S_Contents = styled.section`
-  width: 48rem;
+  width: 100%;
+  max-width: 48rem;
   height: 100%;
   min-height: 100dvh;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
@@ -30,7 +31,6 @@ const S_Contents = styled.section`
   background-color: ${({ theme }) => theme.BG.WHITE};
 
   @media screen and (width <= 480px) {
-    width: 100%;
     border: none;
   }
 `;

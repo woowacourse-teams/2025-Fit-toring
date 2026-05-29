@@ -9,6 +9,7 @@ import HomeActiveIcon from '../../../common/assets/images/homeActiveIcon.svg';
 import HomeIcon from '../../../common/assets/images/homeIcon.svg';
 import ProfileActiveIcon from '../../../common/assets/images/profileActiveIcon.svg';
 import ProfileIcon from '../../../common/assets/images/profileIcon.svg';
+import { BOTTOM_NAV_HEIGHT } from '../../constants/layout';
 import { PAGE_URL } from '../../constants/url';
 
 interface NavItem {
@@ -44,6 +45,7 @@ const NAV_ITEMS: NavItem[] = [
     path: PAGE_URL.MY_PAGE,
     icon: ProfileIcon,
     activeIcon: ProfileActiveIcon,
+    matchNestedRoutes: true,
   },
 ];
 
@@ -91,9 +93,10 @@ const S_Container = styled.nav`
   position: fixed;
   bottom: 0;
   left: 50%;
+  z-index: 100;
 
   width: 48rem;
-  height: 72px;
+  height: ${BOTTOM_NAV_HEIGHT}rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
   border-top: 1px solid #e5e5e5;
 

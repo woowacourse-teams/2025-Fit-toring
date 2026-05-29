@@ -114,9 +114,9 @@ const S_Radio = styled.input`
 
   &:checked {
     border: 3px solid #fff;
-    box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN600};
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
 
-    background-color: ${({ theme }) => theme.SYSTEM.MAIN600};
+    background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 `;
 

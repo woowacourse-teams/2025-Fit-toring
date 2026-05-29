@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { Outlet } from 'react-router-dom';
 
+import { BOTTOM_NAV_HEIGHT } from '../../constants/layout';
 import BottomNavigationBar from '../BottomNavigationBar/BottomNavigationBar';
 
 function BottomTabLayout() {
@@ -17,5 +18,5 @@ function BottomTabLayout() {
 export default BottomTabLayout;
 
 const S_BottomTabContents = styled.div`
-  padding-bottom: 72px;
+  padding-bottom: ${BOTTOM_NAV_HEIGHT}rem;
 `;

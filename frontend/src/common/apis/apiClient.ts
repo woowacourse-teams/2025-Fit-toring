@@ -101,6 +101,10 @@ class ApiClient {
         throw new ApiError(data.message, response.status);
       }
 
+      if (response.status === 204) {
+        return {} as T;
+      }
+
       return response.json();
     };
 
@@ -183,6 +187,8 @@ class ApiClient {
         const data = await response.json();
         throw new ApiError(data.message, response.status);
       }
+
+      return response;
     };
 
     return this.requestWithRefresh(sendRequest);

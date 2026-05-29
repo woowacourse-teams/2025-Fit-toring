@@ -64,6 +64,8 @@ public enum BusinessErrorMessage {
     INVALID_COMMENT_REPLY("대댓글은 rootId와 parentId가 모두 필요합니다."),
     GUEST_NICKNAME_REQUIRED("비회원은 닉네임을 입력해주세요"),
     GUEST_PASSWORD_REQUIRED("비회원은 비밀번호를 입력해주세요"),
+    LIKE_ACTOR_ID_INVALID("올바르지 않은 좋아요 식별자입니다."),
+    LIKE_ACTOR_KEY_HASH_INVALID("올바르지 않은 좋아요 식별자 해시입니다."),
     ;
 
     private final String message;

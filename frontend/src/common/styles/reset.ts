@@ -61,7 +61,6 @@ export const resetCss = css`
   }
 
   html {
-    scrollbar-gutter: stable;
     scroll-behavior: smooth;
   }
 
@@ -69,6 +68,7 @@ export const resetCss = css`
   * {
     font-family: Pretendard, sans-serif;
     font-size: 62.5%;
+    touch-action: pan-y;
   }
 
   body {
@@ -79,6 +79,12 @@ export const resetCss = css`
   body,
   #root {
     height: 100%;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+  }
+
+  #root {
+    scrollbar-gutter: stable;
   }
 
   p {

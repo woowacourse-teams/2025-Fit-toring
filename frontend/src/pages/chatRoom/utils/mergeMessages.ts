@@ -13,17 +13,29 @@ export const mergeMessages = (
   persistedMessages: Message[],
 ) => {
   const serverTempIds = new Set(
-    serverMessages.map((msg) => msg.tempId).filter(Boolean),
+    serverMessages
+      .map((msg) => msg.tempId)
+      .filter((tempId): tempId is number => tempId !== null),
   );
   const serverChatMessageIds = new Set(
-    serverMessages.map((msg) => msg.chatMessageId).filter(Boolean),
+    serverMessages
+      .map((msg) => msg.chatMessageId)
+      .filter((chatMessageId): chatMessageId is number => !!chatMessageId),
+  );
+  const serverMessageIds = new Set(
+    serverMessages
+      .map((msg) => msg.messageId)
+      .filter((messageId): messageId is string => !!messageId),
   );
 
   const filteredPersisted = persistedMessages.filter((msg) => {
     if (msg.chatMessageId && serverChatMessageIds.has(msg.chatMessageId)) {
       return false;
     }
-    if (msg.tempId && serverTempIds.has(msg.tempId)) {
+    if (msg.messageId && serverMessageIds.has(msg.messageId)) {
+      return false;
+    }
+    if (msg.tempId !== null && serverTempIds.has(msg.tempId)) {
       return false;
     }
     return true;

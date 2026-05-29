@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -7,12 +7,26 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
+import InstallPromptModal from '../../common/components/InstallPromptModal/InstallPromptModal';
+import IOSInstallGuideModal from '../../common/components/IOSInstallGuideModal/IOSInstallGuideModal';
 import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
+import PullToRefresh from '../../common/components/PullToRefresh/PullToRefresh';
+import { isPullToRefreshEnabled } from '../../common/components/PullToRefresh/utils';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
 import useInfiniteScroll from '../../common/hooks/useInfiniteScroll';
 import useNotification from '../../common/hooks/useNotification';
+import usePWAInstall from '../../common/hooks/usePWAInstall';
 import { THEME } from '../../common/styles/theme';
+import {
+  isIOS,
+  isMobileViewport,
+  isPWAStandalone,
+} from '../../common/utils/deviceDetection';
+import {
+  markInstallPromptShown,
+  shouldAutoShowInstallPromptOnHome,
+} from '../../common/utils/installExposurePolicy';
 
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardList from './components/MentorCardList/MentorCardList';
@@ -30,8 +44,12 @@ import useSpecialtyFilter from './hooks/useSpecialtyFilter';
 import type { SortKey } from './hooks/useSortKey';
 import type { Specialty } from '../../common/types/Specialty';
 
+type InstallModalType = 'ios' | 'android' | null;
+
 function Home() {
   const { modalOpened, openModal, closeModal } = useModal();
+  const [installModalType, setInstallModalType] =
+    useState<InstallModalType>(null);
 
   const { authenticated } = useAuth();
 
@@ -44,6 +62,7 @@ function Home() {
     showModal: showNotificationModal,
     closeModal: closeNotificationModal,
   } = useNotification(authenticated);
+  const { canInstall, promptInstall } = usePWAInstall();
 
   const handleAllowNotification = async () => {
     await requestNotificationPermission();
@@ -72,6 +91,16 @@ function Home() {
     cursorCode,
     isLoading,
   } = useMentorList();
+
+  const initialSortKeyRef = useRef(sortKey);
+
+  useEffect(() => {
+    const fetchInitialMentorList = async () => {
+      await fetchInitialMentors([], initialSortKeyRef.current);
+    };
+
+    fetchInitialMentorList();
+  }, [fetchInitialMentors]);
 
   const handleSortButtonClick = async (option: SortKey) => {
     changeSortKey(option);
@@ -117,15 +146,70 @@ function Home() {
     await fetchMoreMentors(selectedSpecialties, sortKey, cursorCode);
   }, [cursorCode, fetchMoreMentors, selectedSpecialties, sortKey]);
 
+  const handleRefresh = useCallback(async () => {
+    await fetchInitialMentors(selectedSpecialties, sortKey);
+  }, [fetchInitialMentors, selectedSpecialties, sortKey]);
+
   const { targetRef } = useInfiniteScroll<HTMLLIElement>({
-    isReady: hasNext,
+    isReady: hasNext && !isLoading,
     onIntersect: fetchNextPage,
   });
 
   useAuthCheck();
 
+  const handleCloseAndroidInstallPrompt = useCallback(() => {
+    markInstallPromptShown('android');
+    setInstallModalType(null);
+  }, []);
+
+  const handleCloseIOSInstallGuide = useCallback(() => {
+    markInstallPromptShown('ios');
+    setInstallModalType(null);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileViewport()) {
+      return;
+    }
+
+    const platform = isIOS() ? 'ios' : 'android';
+
+    if (
+      !shouldAutoShowInstallPromptOnHome({
+        isStandalone: isPWAStandalone(),
+        platform,
+      })
+    ) {
+      return;
+    }
+
+    if (platform === 'ios') {
+      setInstallModalType('ios');
+      return;
+    }
+
+    if (!canInstall) {
+      return;
+    }
+
+    setInstallModalType('android');
+  }, [canInstall]);
+
   return (
     <S_Container>
+      <InstallPromptModal
+        opened={installModalType === 'android'}
+        onCloseClick={handleCloseAndroidInstallPrompt}
+        onLaterClick={handleCloseAndroidInstallPrompt}
+        onInstallClick={promptInstall}
+      />
+
+      <IOSInstallGuideModal
+        opened={installModalType === 'ios'}
+        onCloseClick={handleCloseIOSInstallGuide}
+        onLaterClick={handleCloseIOSInstallGuide}
+      />
+
       <NotificationPermissionModal
         isOpen={showNotificationModal}
         onAllow={handleAllowNotification}
@@ -151,27 +235,32 @@ function Home() {
           {myMentoringId === null ? '멘토링 개설하기' : '멘토링 관리하기'}
         </Button>
       </S_ActionWrapper>
-      <S_Contents>
-        <S_CheckboxWrapper>
-          {selectedSpecialties.map((specialty) => (
-            <SpecialtyCheckbox
-              key={specialty.id}
-              specialty={specialty.title}
-              checked={selectedSpecialties.includes(specialty)}
-              disabled={false}
-              onChange={() => handleSelectedSpecialtyChange(specialty)}
+      <PullToRefresh
+        enabled={isPullToRefreshEnabled()}
+        onRefresh={handleRefresh}
+      >
+        <S_Contents>
+          <S_CheckboxWrapper>
+            {selectedSpecialties.map((specialty) => (
+              <SpecialtyCheckbox
+                key={specialty.id}
+                specialty={specialty.title}
+                checked={selectedSpecialties.includes(specialty)}
+                disabled={false}
+                onChange={() => handleSelectedSpecialtyChange(specialty)}
+              />
+            ))}
+          </S_CheckboxWrapper>
+          <MentorCardList>
+            <MentorCardListContent
+              isLoading={isLoading}
+              mentorList={mentorList}
+              hasFilter={selectedSpecialties.length > 0}
             />
-          ))}
-        </S_CheckboxWrapper>
-        <MentorCardList>
-          <MentorCardListContent
-            isLoading={isLoading}
-            mentorList={mentorList}
-            hasFilter={selectedSpecialties.length > 0}
-          />
-          <S_Trigger ref={targetRef} />
-        </MentorCardList>
-      </S_Contents>
+            <S_Trigger ref={targetRef} />
+          </MentorCardList>
+        </S_Contents>
+      </PullToRefresh>
       {/* <Footer>
         <Feedback />
       </Footer> */}
@@ -189,7 +278,7 @@ const customStyle = css`
 
   background-color: ${THEME.BG.WHITE};
 
-  color: ${THEME.SYSTEM.MAIN600};
+  color: ${THEME.SYSTEM.MAIN500};
   ${THEME.TYPOGRAPHY.B4_B};
 `;
 
