@@ -92,17 +92,19 @@ const S_Container = styled.nav`
   justify-content: space-around;
   position: fixed;
   bottom: 0;
+  left: 50%;
+  z-index: 100;
 
-  width: inherit;
-  max-width: inherit;
+  width: 48rem;
   height: ${BOTTOM_NAV_HEIGHT}rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
   border-top: 1px solid #e5e5e5;
 
   background: #fff;
+  transform: translateX(-50%);
 
-  @media screen and (width > 480px) {
-    margin-left: -1px;
+  @media screen and (width <= 480px) {
+    width: 100%;
   }
 `;
 const S_Item = styled.button<{ isActive: boolean }>`

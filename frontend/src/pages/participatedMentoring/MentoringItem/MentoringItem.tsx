@@ -13,7 +13,7 @@ import ReviewModal from '../ReviewModal/ReviewModal';
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
-  handleReviewSubmitButtonClick: (reservationId: number) => void;
+  handleReviewSubmitButtonClick: () => Promise<void> | void;
 }
 
 function MentoringItem({
@@ -42,7 +42,7 @@ function MentoringItem({
     setOpened((prev) => !prev);
   };
 
-  const handleMentoringCardClick = (e: React.MouseEvent<HTMLLIElement>) => {
+  const handleMentoringCardClick = () => {
     navigate(`${PAGE_URL.DETAIL}/${mentoringId}`);
   };
 
