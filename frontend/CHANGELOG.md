@@ -1,3 +1,10 @@
+## [1.20.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.0...v1.20.1) (2026-05-29)
+
+
+### Bug Fixes
+
+* otel 자바 에이전트를 이미지에 포함해 호스트 마운트 의존 제거 ([1429967](https://github.com/woowacourse-teams/2025-Fit-toring/commit/142996730a8ba6a233d848f561c187018dbee502))
+
 # [1.20.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.19.0...v1.20.0) (2026-05-29)
 
 
