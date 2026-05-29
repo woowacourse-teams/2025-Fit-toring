@@ -17,7 +17,7 @@ interface ReviewModalProps {
   mentorName: string;
   opened: boolean;
   onCloseClick: () => void;
-  onReviewSubmitButtonClick: (reservationId: number) => void;
+  onReviewSubmitButtonClick: () => Promise<void> | void;
 }
 
 function ReviewModal({
@@ -49,7 +49,7 @@ function ReviewModal({
         content,
       });
       const data = await response.json();
-      onReviewSubmitButtonClick(reservationId);
+      onReviewSubmitButtonClick();
       onCloseClick();
       alert('리뷰가 등록되었습니다.');
       navigate(`${PAGE_URL.DETAIL}/${data.mentoringId}`, {

@@ -12,11 +12,7 @@ function ParticipatedMentoring() {
   const { participatedMentoringList, refetchParticipatedMentoringList } =
     useParticipatedMentoringList();
 
-  const handleReviewSubmitButtonClick = async () => {
-    await refetchParticipatedMentoringList();
-  };
-
-  const handleRefresh = async () => {
+  const handleParticipatedMentoringListRefresh = async () => {
     await refetchParticipatedMentoringList();
   };
 
@@ -35,7 +31,7 @@ function ParticipatedMentoring() {
       </S_TitleWrapper>
       <PullToRefresh
         enabled={isPullToRefreshEnabled()}
-        onRefresh={handleRefresh}
+        onRefresh={handleParticipatedMentoringListRefresh}
       >
         {participatedMentoringList.length > 0 ? (
           <MentoringList>
@@ -43,7 +39,9 @@ function ParticipatedMentoring() {
               <MentoringItem
                 key={item.reservationId}
                 mentoring={item}
-                handleReviewSubmitButtonClick={handleReviewSubmitButtonClick}
+                handleReviewSubmitButtonClick={
+                  handleParticipatedMentoringListRefresh
+                }
               />
             ))}
           </MentoringList>
