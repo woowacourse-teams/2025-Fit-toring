@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
 
 import { captureSentryError } from '../../../common/utils/captureSentryError';
@@ -17,7 +19,11 @@ const useParticipatedMentoringList = () => {
     queryFn: getParticipatedMentoringList,
   });
 
-  if (error) {
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
     console.error('참여한 멘토링 목록 불러오기 실패:', error);
     captureSentryError({
       error,
@@ -25,7 +31,7 @@ const useParticipatedMentoringList = () => {
       feature: 'participatedMentoring',
       step: 'fetch-participated-mentoring-list',
     });
-  }
+  }, [error]);
 
   return {
     participatedMentoringList,
