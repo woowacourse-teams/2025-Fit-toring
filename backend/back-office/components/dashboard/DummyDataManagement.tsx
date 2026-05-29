@@ -1,9 +1,20 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +34,7 @@ import {
   DummyCommentPreview,
   DummyPostPreview,
   DummyScenarioPreview,
+  deleteDummyScenario,
   fetchDummyScenarios,
   fetchDummyPreview,
   fetchDummyStatus,
@@ -37,6 +49,8 @@ import {
   minutesToHHMM,
 } from "@/services/dummyDuration";
 import {
+  ArrowDown,
+  ArrowUp,
   Clock,
   Database,
   Eye,
@@ -45,24 +59,43 @@ import {
   MessageSquare,
   RefreshCw,
   Search,
+  Trash2,
   Upload,
 } from "lucide-react";
 
+type IdSortDirection = "asc" | "desc";
+
 export function DummyDataManagement() {
   const [scenarios, setScenarios] = useState<DummyStatus[]>([]);
+  const [idSortDirection, setIdSortDirection] = useState<IdSortDirection>("desc");
   const [startAtMap, setStartAtMap] = useState<Record<number, string>>({});
   const [durationMap, setDurationMap] = useState<Record<number, string>>({});
   const [isLoadingList, setIsLoadingList] = useState(false);
-  const [checkingFileSeq, setCheckingFileSeq] = useState<number | null>(null);
-  const [insertingFileSeq, setInsertingFileSeq] = useState<number | null>(null);
-  const [previewingFileSeq, setPreviewingFileSeq] = useState<number | null>(null);
+  const [checkingScenarioId, setCheckingScenarioId] = useState<number | null>(null);
+  const [insertingScenarioId, setInsertingScenarioId] = useState<number | null>(null);
+  const [deletingScenarioId, setDeletingScenarioId] = useState<number | null>(null);
+  const [previewingScenarioId, setPreviewingScenarioId] = useState<number | null>(null);
   const [previewScenario, setPreviewScenario] = useState<DummyStatus | null>(null);
   const [preview, setPreview] = useState<DummyScenarioPreview | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const isBusy =
-    isLoadingList || checkingFileSeq !== null || insertingFileSeq !== null || isUploading;
+    isLoadingList ||
+    checkingScenarioId !== null ||
+    insertingScenarioId !== null ||
+    deletingScenarioId !== null ||
+    isUploading;
+
+  const sortedScenarios = useMemo(
+    () =>
+      [...scenarios].sort((a, b) =>
+        idSortDirection === "asc"
+          ? a.scenarioId - b.scenarioId
+          : b.scenarioId - a.scenarioId
+      ),
+    [idSortDirection, scenarios]
+  );
 
   const toKstOffsetDateTime = (dateTimeLocal: string) => {
     const normalized = dateTimeLocal.length === 16 ? `${dateTimeLocal}:00` : dateTimeLocal;
@@ -91,15 +124,24 @@ export function DummyDataManagement() {
 
   const isOriginalDurationZero = (iso: string) => safeIsoToMs(iso) === 0;
 
+  const isInserted = (scenario: DummyStatus) => scenario.status === "INSERTED";
+
+  const statusLabel = (status: DummyStatus["status"]) => {
+    if (status === "INSERTED") {
+      return "적재됨";
+    }
+    return "미적재";
+  };
+
   const isInsertDisabled = (scenario: DummyStatus) => {
-    if (isBusy || scenario.inserted) {
+    if (isBusy || scenario.status !== "UPLOADED") {
       return true;
     }
-    if (!(startAtMap[scenario.fileSeq] ?? "").trim()) {
+    if (!(startAtMap[scenario.scenarioId] ?? "").trim()) {
       return true;
     }
     if (!isOriginalDurationZero(scenario.originalDuration)) {
-      if (!(durationMap[scenario.fileSeq] ?? "").trim()) {
+      if (!(durationMap[scenario.scenarioId] ?? "").trim()) {
         return true;
       }
     }
@@ -108,7 +150,7 @@ export function DummyDataManagement() {
 
   const updateScenario = (updated: DummyStatus) => {
     setScenarios((prev) =>
-      prev.map((s) => (s.fileSeq === updated.fileSeq ? updated : s))
+      prev.map((s) => (s.scenarioId === updated.scenarioId ? updated : s))
     );
   };
 
@@ -121,8 +163,8 @@ export function DummyDataManagement() {
       setDurationMap((prev) => {
         const next: Record<number, string> = { ...prev };
         for (const scenario of response) {
-          if (next[scenario.fileSeq] === undefined) {
-            next[scenario.fileSeq] = safeIsoToHHMM(scenario.originalDuration);
+          if (next[scenario.scenarioId] === undefined) {
+            next[scenario.scenarioId] = safeIsoToHHMM(scenario.originalDuration);
           }
         }
         return next;
@@ -142,17 +184,17 @@ export function DummyDataManagement() {
     void loadScenarios();
   }, []);
 
-  const handleStatusCheck = async (fileSeq: number) => {
+  const handleStatusCheck = async (scenarioId: number) => {
     try {
-      setCheckingFileSeq(fileSeq);
-      const response = await fetchDummyStatus(fileSeq);
+      setCheckingScenarioId(scenarioId);
+      const response = await fetchDummyStatus(scenarioId);
       updateScenario(response);
-      toast.success(`${response.scenarioFile} 상태를 조회했습니다.`);
+      toast.success(`${response.originalFilename} 상태를 조회했습니다.`);
     } catch (err) {
       console.error(err);
-      toast.error(`${fileSeq}번 시나리오 상태 조회에 실패했습니다.`);
+      toast.error(`${scenarioId}번 시나리오 상태 조회에 실패했습니다.`);
     } finally {
-      setCheckingFileSeq(null);
+      setCheckingScenarioId(null);
     }
   };
 
@@ -171,7 +213,7 @@ export function DummyDataManagement() {
     try {
       setIsUploading(true);
       const response = await uploadDummyScenario(file);
-      toast.success(`${response.scenarioFile} 업로드 완료 (fileSeq=${response.fileSeq})`);
+      toast.success(`${response.originalFilename} 업로드 완료 (ID=${response.scenarioId})`);
       await loadScenarios(false);
     } catch (err) {
       console.error(err);
@@ -184,18 +226,18 @@ export function DummyDataManagement() {
 
   const handlePreview = async (scenario: DummyStatus) => {
     try {
-      setPreviewingFileSeq(scenario.fileSeq);
+      setPreviewingScenarioId(scenario.scenarioId);
       setPreviewScenario(scenario);
       setPreview(null);
-      const response = await fetchDummyPreview(scenario.fileSeq);
+      const response = await fetchDummyPreview(scenario.scenarioId);
       setPreview(response);
     } catch (err) {
       console.error(err);
-      toast.error(`${scenario.fileSeq}번 시나리오 미리보기 조회에 실패했습니다.`);
+      toast.error(`${scenario.scenarioId}번 시나리오 미리보기 조회에 실패했습니다.`);
       setPreviewScenario(null);
       setPreview(null);
     } finally {
-      setPreviewingFileSeq(null);
+      setPreviewingScenarioId(null);
     }
   };
 
@@ -208,7 +250,7 @@ export function DummyDataManagement() {
   };
 
   const handleInsert = async (scenario: DummyStatus) => {
-    const startAt = startAtMap[scenario.fileSeq] ?? "";
+    const startAt = startAtMap[scenario.scenarioId] ?? "";
     if (!startAt.trim()) {
       toast.error("시작 시각을 입력해주세요.");
       return;
@@ -216,7 +258,7 @@ export function DummyDataManagement() {
 
     let durationIso: string | undefined;
     if (!isOriginalDurationZero(scenario.originalDuration)) {
-      const durationInput = (durationMap[scenario.fileSeq] ?? "").trim();
+      const durationInput = (durationMap[scenario.scenarioId] ?? "").trim();
       if (!durationInput) {
         toast.error("기간을 입력해주세요.");
         return;
@@ -234,32 +276,59 @@ export function DummyDataManagement() {
     }
 
     try {
-      setInsertingFileSeq(scenario.fileSeq);
+      setInsertingScenarioId(scenario.scenarioId);
       const response = await insertDummyScenario(
-        scenario.fileSeq,
+        scenario.scenarioId,
         toKstOffsetDateTime(startAt),
         durationIso,
       );
       updateScenario({
-        fileSeq: response.fileSeq,
-        scenarioFile: response.scenarioFile,
-        inserted: true,
+        ...scenario,
+        scenarioId: response.scenarioId,
+        originalFilename: response.originalFilename,
+        status: response.status,
+        insertedAt: new Date().toISOString(),
         appliedStartAt: response.appliedStartAt,
-        originalDuration: scenario.originalDuration,
+        appliedDuration: response.appliedDuration,
       });
       const appliedDurationLabel = response.appliedDuration
         ? ` · 적용 기간 ${safeIsoToHHMM(response.appliedDuration)}`
         : "";
       toast.success(
-        `${response.scenarioFile} 적재 완료 — 시나리오 ${response.insertedScenarioCount}건, ` +
+        `${response.originalFilename} 적재 완료 — 시나리오 ${response.insertedScenarioCount}건, ` +
           `게시글 pending ${response.insertedPostPendingCount}건, ` +
           `댓글 pending ${response.insertedCommentPendingCount}건${appliedDurationLabel}`,
       );
     } catch (err) {
       console.error(err);
-      toast.error(`${scenario.fileSeq}번 시나리오 적재에 실패했습니다.`);
+      toast.error(`${scenario.scenarioId}번 시나리오 적재에 실패했습니다.`);
     } finally {
-      setInsertingFileSeq(null);
+      setInsertingScenarioId(null);
+    }
+  };
+
+  const handleDelete = async (scenario: DummyStatus) => {
+    try {
+      setDeletingScenarioId(scenario.scenarioId);
+      await deleteDummyScenario(scenario.scenarioId);
+      setScenarios((prev) => prev.filter((s) => s.scenarioId !== scenario.scenarioId));
+      setStartAtMap((prev) => {
+        const next = { ...prev };
+        delete next[scenario.scenarioId];
+        return next;
+      });
+      setDurationMap((prev) => {
+        const next = { ...prev };
+        delete next[scenario.scenarioId];
+        return next;
+      });
+      toast.success(`${scenario.originalFilename} 삭제 완료 (ID=${scenario.scenarioId})`);
+    } catch (err) {
+      console.error(err);
+      const message = err instanceof Error && err.message ? err.message : "시나리오 삭제에 실패했습니다.";
+      toast.error(message);
+    } finally {
+      setDeletingScenarioId(null);
     }
   };
 
@@ -267,7 +336,7 @@ export function DummyDataManagement() {
     if (!previewScenario) {
       return null;
     }
-    const input = startAtMap[previewScenario.fileSeq]?.trim();
+    const input = startAtMap[previewScenario.scenarioId]?.trim();
     return input ? toKstOffsetDateTime(input) : null;
   };
 
@@ -295,7 +364,7 @@ export function DummyDataManagement() {
     if (originalDurationMs === 0) {
       return 0;
     }
-    const input = (durationMap[previewScenario.fileSeq] ?? "").trim();
+    const input = (durationMap[previewScenario.scenarioId] ?? "").trim();
     if (!input) {
       return originalDurationMs;
     }
@@ -359,7 +428,7 @@ export function DummyDataManagement() {
       <div>
         <h2 className="text-2xl font-bold">더미 데이터 적재 관리</h2>
         <p className="text-muted-foreground">
-          준비된 시나리오 파일의 적재 상태를 확인하고 pending 테이블 적재를 실행합니다.
+          업로드된 시나리오의 적재 상태를 확인하고 pending 테이블 적재를 실행합니다.
         </p>
       </div>
 
@@ -372,7 +441,7 @@ export function DummyDataManagement() {
                 시나리오 파일 목록
               </CardTitle>
               <CardDescription>
-                파일별로 시작 시각을 지정해 적재할 수 있습니다. 적재된 파일은 실제 적재 시작 시각을 확인할 수 있습니다.
+                시나리오별로 시작 시각을 지정해 적재할 수 있습니다. 적재된 시나리오는 실제 적재 시작 시각을 확인할 수 있습니다.
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -420,32 +489,69 @@ export function DummyDataManagement() {
               </div>
             ) : scenarios.length === 0 ? (
               <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-                준비된 시나리오 파일이 없습니다.
+                업로드된 시나리오가 없습니다.
               </div>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-20">번호</TableHead>
+                    <TableHead className="w-44">
+                      <div className="flex items-center gap-1">
+                        <span>ID</span>
+                        <Button
+                          type="button"
+                          variant={idSortDirection === "asc" ? "secondary" : "ghost"}
+                          size="sm"
+                          className="h-7 px-2"
+                          onClick={() => setIdSortDirection("asc")}
+                          aria-label="ID 오름차순 정렬"
+                          title="ID 오름차순 정렬"
+                        >
+                          <ArrowUp className="h-3.5 w-3.5" />
+                          오름
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={idSortDirection === "desc" ? "secondary" : "ghost"}
+                          size="sm"
+                          className="h-7 px-2"
+                          onClick={() => setIdSortDirection("desc")}
+                          aria-label="ID 내림차순 정렬"
+                          title="ID 내림차순 정렬"
+                        >
+                          <ArrowDown className="h-3.5 w-3.5" />
+                          내림
+                        </Button>
+                      </div>
+                    </TableHead>
                     <TableHead>파일명</TableHead>
                     <TableHead className="w-24">상태</TableHead>
                     <TableHead className="w-52">시작 시각(KST)</TableHead>
                     <TableHead className="w-36">기간(HH:MM)</TableHead>
-                    <TableHead className="w-64 text-right">관리</TableHead>
+                    <TableHead className="w-80 text-right">관리</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {scenarios.map((scenario) => (
-                    <TableRow key={scenario.fileSeq}>
-                      <TableCell className="font-medium">{scenario.fileSeq}</TableCell>
-                      <TableCell>{scenario.scenarioFile}</TableCell>
+                  {sortedScenarios.map((scenario) => (
+                    <TableRow key={scenario.scenarioId}>
+                      <TableCell className="font-medium">{scenario.scenarioId}</TableCell>
                       <TableCell>
-                        <Badge variant={scenario.inserted ? "default" : "secondary"}>
-                          {scenario.inserted ? "적재됨" : "미적재"}
+                        <div className="flex min-w-0 items-center gap-2">
+                          <Badge variant="outline" className="font-mono">
+                            ID {scenario.scenarioId}
+                          </Badge>
+                          <span className="truncate" title={scenario.originalFilename}>
+                            {scenario.originalFilename}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={isInserted(scenario) ? "default" : "secondary"}>
+                          {statusLabel(scenario.status)}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {scenario.inserted ? (
+                        {isInserted(scenario) ? (
                           <span className="text-sm">
                             {scenario.appliedStartAt
                               ? formatAppliedStartAt(scenario.appliedStartAt)
@@ -455,11 +561,11 @@ export function DummyDataManagement() {
                           <Input
                             type="datetime-local"
                             step={60}
-                            value={startAtMap[scenario.fileSeq] ?? ""}
+                            value={startAtMap[scenario.scenarioId] ?? ""}
                             onChange={(e) =>
                               setStartAtMap((prev) => ({
                                 ...prev,
-                                [scenario.fileSeq]: e.target.value,
+                                [scenario.scenarioId]: e.target.value,
                               }))
                             }
                             disabled={isBusy}
@@ -468,9 +574,9 @@ export function DummyDataManagement() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {scenario.inserted ? (
+                        {isInserted(scenario) ? (
                           <span className="text-sm">
-                            {safeIsoToHHMM(scenario.originalDuration)}
+                            {safeIsoToHHMM(scenario.appliedDuration ?? scenario.originalDuration)}
                           </span>
                         ) : isOriginalDurationZero(scenario.originalDuration) ? (
                           <Input
@@ -483,11 +589,11 @@ export function DummyDataManagement() {
                         ) : (
                           <Input
                             type="text"
-                            value={durationMap[scenario.fileSeq] ?? ""}
+                            value={durationMap[scenario.scenarioId] ?? ""}
                             onChange={(e) =>
                               setDurationMap((prev) => ({
                                 ...prev,
-                                [scenario.fileSeq]: e.target.value,
+                                [scenario.scenarioId]: e.target.value,
                               }))
                             }
                             placeholder="HH:MM"
@@ -505,7 +611,7 @@ export function DummyDataManagement() {
                             onClick={() => handlePreview(scenario)}
                             disabled={isBusy}
                           >
-                            {previewingFileSeq === scenario.fileSeq ? (
+                            {previewingScenarioId === scenario.scenarioId ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <Eye className="h-4 w-4" />
@@ -516,10 +622,10 @@ export function DummyDataManagement() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => handleStatusCheck(scenario.fileSeq)}
+                            onClick={() => handleStatusCheck(scenario.scenarioId)}
                             disabled={isBusy}
                           >
-                            {checkingFileSeq === scenario.fileSeq ? (
+                            {checkingScenarioId === scenario.scenarioId ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <Search className="h-4 w-4" />
@@ -532,13 +638,53 @@ export function DummyDataManagement() {
                             onClick={() => handleInsert(scenario)}
                             disabled={isInsertDisabled(scenario)}
                           >
-                            {insertingFileSeq === scenario.fileSeq ? (
+                            {insertingScenarioId === scenario.scenarioId ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <Upload className="h-4 w-4" />
                             )}
                             적재
                           </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={isBusy || isInserted(scenario)}
+                                title={
+                                  isInserted(scenario)
+                                    ? "적재된 시나리오는 삭제할 수 없습니다."
+                                    : "시나리오 삭제"
+                                }
+                              >
+                                {deletingScenarioId === scenario.scenarioId ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4" />
+                                )}
+                                삭제
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>시나리오 삭제</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  ID {scenario.scenarioId} · {scenario.originalFilename} 업로드 row를 삭제합니다.
+                                  삭제한 시나리오는 미리보기와 적재 목록에서 사라집니다.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>취소</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={() => handleDelete(scenario)}
+                                >
+                                  삭제
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -553,11 +699,11 @@ export function DummyDataManagement() {
       <Dialog open={previewScenario !== null} onOpenChange={closePreview}>
         <DialogContent className="max-h-[90vh] sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{previewScenario?.scenarioFile ?? "시나리오"} 미리보기</DialogTitle>
+            <DialogTitle>{previewScenario?.originalFilename ?? "시나리오"} 미리보기</DialogTitle>
             <DialogDescription>{getPreviewDialogDescription()}</DialogDescription>
           </DialogHeader>
           <div className="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
-            {previewingFileSeq !== null && preview === null ? (
+            {previewingScenarioId !== null && preview === null ? (
               <div className="flex h-40 items-center justify-center text-sm text-muted-foreground">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 시나리오 내용을 불러오는 중입니다.

@@ -1,16 +1,18 @@
-package fittoring.admin.presentation.dto;
+package fittoring.admin.repository;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
 
-public record DummySqlInsertStatusResponse(
-        long scenarioId,
+public record DummyScenarioSummaryRow(
+        long id,
         String originalFilename,
-        String status,
+        String contentHash,
+        DummyScenarioStatus status,
         OffsetDateTime uploadedAt,
         OffsetDateTime insertedAt,
-        OffsetDateTime appliedStartAt,
+        OffsetDateTime originalStartAt,
         Duration originalDuration,
+        OffsetDateTime appliedStartAt,
         Duration appliedDuration,
         int postCount,
         int commentCount
