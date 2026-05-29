@@ -500,7 +500,7 @@ const S_Container = styled.main`
   display: flex;
   flex-direction: column;
 
-  min-height: 100dvh;
+  height: calc(100dvh - ${BOTTOM_NAV_HEIGHT}rem);
 
   background-color: ${({ theme }) => theme.BG.WHITE};
 `;
@@ -510,5 +510,6 @@ const S_Content = styled.div`
   flex: 1;
   flex-direction: column;
 
-  padding-bottom: ${BOTTOM_NAV_HEIGHT}rem;
+  min-height: 0;
+  overflow-y: auto;
 `;
