@@ -92,7 +92,6 @@ services:
         max-size: "100m"
         max-file: "3"
     volumes:
-      - /home/ssm-user/fittoring/opentelemetry-javaagent.jar:/app/otel-agent.jar:ro
       - /home/ubuntu/fittoring/logs:/logs
     restart: always
     healthcheck:
