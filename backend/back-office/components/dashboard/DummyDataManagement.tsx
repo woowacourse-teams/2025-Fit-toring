@@ -337,7 +337,10 @@ export function DummyDataManagement() {
       return null;
     }
     const input = startAtMap[previewScenario.scenarioId]?.trim();
-    return input ? toKstOffsetDateTime(input) : null;
+    if (input) {
+      return toKstOffsetDateTime(input);
+    }
+    return previewScenario.appliedStartAt;
   };
 
   const getPreviewOriginalStartAt = () => {
