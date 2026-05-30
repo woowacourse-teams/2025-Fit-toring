@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -Eeuo pipefail
-trap 'echo "[ERROR] ${BASH_SOURCE[0]}:${LINENO} 명령 실패 (exit $?)"; exit 1' ERR
+trap 'rc=$?; echo "[ERROR] ${BASH_SOURCE[0]}:${LINENO} 명령 실패 (exit $rc)"; echo "===== fittoring-app 로그(마지막 200줄) ====="; sudo docker logs --tail 200 fittoring-app 2>&1 || true; exit 1' ERR
 
 APP_DIR="/home/ssm-user/fittoring"
 
