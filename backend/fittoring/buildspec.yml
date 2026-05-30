@@ -36,14 +36,10 @@ phases:
       - echo "배포용 이미지 태그 저장"
       - echo $IMAGE_TAG > image_tag.txt
       - echo "SSM Parameter Store(/fittoring/prod/)에서 환경변수를 가져와 .env 생성"
-      - |
-        set -euo pipefail
-        aws ssm get-parameters-by-path \
-          --path "/fittoring/prod/" --recursive --with-decryption \
-          --output json > /tmp/ssm-params.json
-        jq -r '.Parameters[] | "\(.Name | sub("^.*/"; ""))=\(.Value)"' /tmp/ssm-params.json > .env
-        test -s .env  # 파라미터를 못 받았으면(빈 .env) 여기서 빌드를 실패시켜 잘못된 배포를 막는다
-        echo ".env 생성 완료: $(wc -l < .env)개 변수"
+      - aws ssm get-parameters-by-path --path "/fittoring/prod/" --recursive --with-decryption --output json > /tmp/ssm-params.json
+      - jq -r '.Parameters[] | "\(.Name | sub("^.*/"; ""))=\(.Value)"' /tmp/ssm-params.json > .env
+      - test -s .env
+      - wc -l .env
 
 artifacts:
   base-directory: backend/fittoring
