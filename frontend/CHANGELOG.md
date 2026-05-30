@@ -1,3 +1,10 @@
+## [1.20.2](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.1...v1.20.2) (2026-05-30)
+
+
+### Bug Fixes
+
+* buildspec의 .env 생성을 개별 명령으로 분리 ([125c6db](https://github.com/woowacourse-teams/2025-Fit-toring/commit/125c6db0f4d86388fb6ced0db5167659bbb165d2))
+
 ## [1.20.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.0...v1.20.1) (2026-05-29)
 
 
