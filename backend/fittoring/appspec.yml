@@ -5,6 +5,9 @@ files:
   - source: /
     destination: /home/ssm-user/fittoring/
 
+# .env 등 기존 파일을 배포 산출물로 덮어쓴다 (기본 DISALLOW면 외부 .env와 충돌해 실패)
+file_exists_behavior: OVERWRITE
+
 hooks:
   ApplicationStop:
     - location: deployscripts/stop.sh
