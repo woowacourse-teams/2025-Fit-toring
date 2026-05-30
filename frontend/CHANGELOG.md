@@ -1,3 +1,10 @@
+## [1.20.3](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.2...v1.20.3) (2026-05-30)
+
+
+### Bug Fixes
+
+* 배포 .env 충돌 해결 및 실패 시 앱 로그 출력 ([2fb2a51](https://github.com/woowacourse-teams/2025-Fit-toring/commit/2fb2a51922cafd029d509b995b6a12beb507f0a8))
+
 ## [1.20.2](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.1...v1.20.2) (2026-05-30)
 
 
