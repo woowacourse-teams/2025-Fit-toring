@@ -1,3 +1,10 @@
+## [1.20.4](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.3...v1.20.4) (2026-05-31)
+
+
+### Bug Fixes
+
+* restore bottom navigation alignment ([ddcacf9](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ddcacf9fcf911d3f6849fd56ad1201ad42c1488f))
+
 ## [1.20.3](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.2...v1.20.3) (2026-05-30)
 
 
