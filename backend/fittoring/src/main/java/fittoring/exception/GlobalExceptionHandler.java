@@ -23,6 +23,7 @@ import fittoring.application.exception.InvalidImageKeyException;
 import fittoring.application.exception.InvalidLikeActorKeyHashException;
 import fittoring.application.exception.InvalidLikeActorIdException;
 import fittoring.application.exception.InvalidMemberRoleException;
+import fittoring.application.exception.InvalidPostSearchKeywordException;
 import fittoring.application.exception.InvalidPhoneVerificationException;
 import fittoring.application.exception.InvalidStatusException;
 import fittoring.application.exception.InvalidTokenException;
@@ -239,6 +240,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCursorException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidCursorException e) {
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPostSearchKeywordException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidPostSearchKeywordException e) {
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
