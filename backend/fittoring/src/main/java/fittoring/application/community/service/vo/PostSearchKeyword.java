@@ -3,15 +3,9 @@ package fittoring.application.community.service.vo;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidPostSearchKeywordException;
 
-public class PostSearchKeyword {
+public record PostSearchKeyword(String value) {
 
     private static final int MAX_LENGTH = 50;
-
-    private final String value;
-
-    private PostSearchKeyword(String value) {
-        this.value = value;
-    }
 
     public static PostSearchKeyword from(String rawKeyword) {
         if (rawKeyword == null || rawKeyword.isBlank()) {
@@ -24,9 +18,5 @@ public class PostSearchKeyword {
                     BusinessErrorMessage.POST_SEARCH_KEYWORD_TOO_LONG.getMessage());
         }
         return new PostSearchKeyword(trimmedKeyword);
-    }
-
-    public String value() {
-        return value;
     }
 }
