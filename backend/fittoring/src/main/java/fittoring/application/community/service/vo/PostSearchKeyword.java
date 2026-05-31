@@ -1,4 +1,4 @@
-package fittoring.application.community.service;
+package fittoring.application.community.service.vo;
 
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.InvalidPostSearchKeywordException;

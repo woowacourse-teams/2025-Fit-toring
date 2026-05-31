@@ -9,6 +9,7 @@ import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
 import fittoring.application.community.service.dto.PostPaginationResult;
 import fittoring.application.community.service.dto.PostUpdateDto;
+import fittoring.application.community.service.vo.PostSearchKeyword;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
