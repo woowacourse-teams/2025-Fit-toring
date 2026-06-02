@@ -5,5 +5,5 @@ import fittoring.util.Cursor;
 
 public interface CustomPostRepository {
 
-    PostPaginationResult findPostsWithPagination(Cursor cursor);
+    PostPaginationResult findPostsWithPagination(Cursor cursor, String keyword);
 }
