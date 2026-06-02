@@ -32,6 +32,6 @@ fcm:
 dummy:
   admin-api:
     enabled: true
-    schedule-offset-days: 2
+    schedule-offset-days: 0
   scheduler:
     enabled: true
