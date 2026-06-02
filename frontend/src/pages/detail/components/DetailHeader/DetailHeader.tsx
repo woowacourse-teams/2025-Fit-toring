@@ -17,12 +17,11 @@ function DetailHeader() {
     }
   };
   return (
-    <Header>
+    <Header overlay>
       <S_HeaderWrapper>
         <S_BackButton onClick={handleMoveBack}>
           <S_Img src={backIcon} alt="뒤로가기 버튼" />
         </S_BackButton>
-        <S_Title>상세 정보</S_Title>
       </S_HeaderWrapper>
     </Header>
   );
@@ -40,6 +39,8 @@ const S_HeaderWrapper = styled.div`
 const S_BackButton = styled.button`
   position: absolute;
 
+  width: 4.4rem;
+  height: 4.4rem;
   margin-left: 1rem;
   padding: 0;
   border: none;
@@ -49,13 +50,7 @@ const S_BackButton = styled.button`
 `;
 
 const S_Img = styled.img`
-  width: 3.4rem;
-`;
+  width: 3.8rem;
 
-const S_Title = styled.h3`
-  flex-grow: 1;
-
-  color: ${({ theme }) => theme.FONT.B01};
-  text-align: center;
-  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
+  filter: brightness(0) invert(1) drop-shadow(0 0.2rem 0.45rem rgb(0 0 0 / 70%));
 `;
