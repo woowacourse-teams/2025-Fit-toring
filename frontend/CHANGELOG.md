@@ -1,3 +1,10 @@
+## [1.20.5](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.4...v1.20.5) (2026-06-02)
+
+
+### Bug Fixes
+
+* prod 환경 스케줄 오프셋 설정 변경 ([12be668](https://github.com/woowacourse-teams/2025-Fit-toring/commit/12be668e96cd699f434204612a27dda7c25dd498))
+
 ## [1.20.4](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.3...v1.20.4) (2026-05-31)
 
 
