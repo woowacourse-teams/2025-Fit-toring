@@ -9,14 +9,15 @@ import fittoring.application.community.service.dto.PostCreateDto;
 import fittoring.application.community.service.dto.PostDeleteDto;
 import fittoring.application.community.service.dto.PostPaginationResult;
 import fittoring.application.community.service.dto.PostUpdateDto;
+import fittoring.application.community.service.vo.PostSearchKeyword;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.EmptyRequestException;
 import fittoring.application.exception.ForbiddenException;
 import fittoring.application.exception.MemberNotFoundException;
 import fittoring.application.exception.PostNotFoundException;
 import fittoring.application.member.repository.MemberRepository;
-import fittoring.domain.model.Member;
 import fittoring.domain.model.LikeActorKeyHash;
+import fittoring.domain.model.Member;
 import fittoring.domain.model.Post;
 import fittoring.util.CursorCodec;
 import java.util.List;
@@ -43,8 +44,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostListResponse findPosts(String cursorCode) {
-        PostPaginationResult result = postRepository.findPostsWithPagination(CursorCodec.decode(cursorCode));
+    public PostListResponse findPosts(String keyword, String cursorCode) {
+        PostSearchKeyword searchKeyword = PostSearchKeyword.from(keyword);
+        PostPaginationResult result = postRepository.findPostsWithPagination(
+                CursorCodec.decode(cursorCode),
+                searchKeyword.value()
+        );
         Map<Long, Long> commentCountByPostId = countCommentsByPostId(result.posts());
         List<PostListResponse.PostSummary> summaries = createPostSummaries(result.posts(), commentCountByPostId);
         return new PostListResponse(summaries, result.nextCursorCode(), result.hasNext());

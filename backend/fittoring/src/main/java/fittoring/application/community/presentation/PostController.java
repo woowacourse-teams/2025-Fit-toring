@@ -49,8 +49,11 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<PostListResponse> findPosts(@RequestParam(required = false) String cursorCode) {
-        return ResponseEntity.ok(postService.findPosts(cursorCode));
+    public ResponseEntity<PostListResponse> findPosts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String cursorCode
+    ) {
+        return ResponseEntity.ok(postService.findPosts(keyword, cursorCode));
     }
 
     @GetMapping("/{postId}")
