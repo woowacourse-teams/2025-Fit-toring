@@ -3,12 +3,14 @@ package fittoring.application.member.presentation.dto.response;
 import fittoring.domain.model.Gender;
 import fittoring.domain.model.Image;
 import fittoring.domain.model.Member;
+import fittoring.domain.model.MemberRole;
 
 public record MyInfoResponse(
         String image,
         String loginId,
         String name,
         Gender gender,
+        MemberRole myRole,
         String phoneNumber
 ) {
 
@@ -18,6 +20,7 @@ public record MyInfoResponse(
                 member.getLoginId(),
                 member.getName(),
                 member.getGender(),
+                member.getRole(),
                 member.getPhoneNumber()
         );
     }
@@ -31,6 +34,7 @@ public record MyInfoResponse(
                 member.getLoginId(),
                 member.getName(),
                 member.getGender(),
+                member.getRole(),
                 member.getPhoneNumber()
         );
     }
@@ -41,6 +45,7 @@ public record MyInfoResponse(
                 member.getLoginId(),
                 member.getName(),
                 member.getGender(),
+                member.getRole(),
                 member.getPhoneNumber()
         );
     }
