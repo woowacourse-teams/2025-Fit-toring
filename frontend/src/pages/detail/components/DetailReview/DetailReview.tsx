@@ -90,12 +90,12 @@ const S_TotalWrapper = styled.div`
   }
 
   > strong {
-    ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
+    ${({ theme }) => theme.TYPOGRAPHY.H3_R}
     color: ${({ theme }) => theme.FONT.B01};
   }
 
   > p {
-    ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+    ${({ theme }) => theme.TYPOGRAPHY.B3_R}
     color: ${({ theme }) => theme.FONT.B04};
   }
 `;

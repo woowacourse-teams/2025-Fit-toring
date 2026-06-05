@@ -183,5 +183,5 @@ const S_MenuItem = styled.li<{ selected: boolean }>`
     color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;

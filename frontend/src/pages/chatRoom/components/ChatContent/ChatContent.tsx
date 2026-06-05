@@ -158,7 +158,7 @@ const S_DateIcon = styled.img`
 
 const S_DateText = styled.span`
   color: ${({ theme }) => theme.SYSTEM.GRAY700};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
 `;
 
 const S_ChatBubbleWrapper = styled.div<{ senderChanged: boolean }>`

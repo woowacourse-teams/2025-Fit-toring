@@ -75,10 +75,6 @@ function ApplySection({ id, price, mentoringId }: ApplySectionProps) {
           padding: 1.6rem 0;
 
           background-color: ${THEME.SYSTEM.MAIN500};
-
-          font-size: 1.2rem;
-
-          ${THEME.TYPOGRAPHY.LB4_R}
         `}
         onClick={handleMoveToBookingPage}
       >
@@ -133,7 +129,6 @@ const S_Wrapper = styled.div`
 
   & strong {
     color: ${({ theme }) => theme.FONT.B01};
-    font-weight: bold;
-    font-size: 2.6rem;
+    ${({ theme }) => theme.TYPOGRAPHY.H3_B}
   }
 `;

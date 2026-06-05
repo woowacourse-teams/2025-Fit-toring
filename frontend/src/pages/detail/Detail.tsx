@@ -150,6 +150,7 @@ const S_TapWrapper = styled.div<{ selectedTab: TapType }>`
 
   &::after {
     content: '';
+
     position: absolute;
     bottom: 0;
     left: 0;
@@ -182,11 +183,10 @@ const S_Tap = styled.div<{ selected: boolean }>`
   color: ${({ selected, theme }) =>
     selected ? theme.FONT.B01 : theme.SYSTEM.GRAY500};
 
-  transition:
-    color 0.25s ease;
+  transition: color 0.25s ease;
 
   ${({ selected, theme }) =>
-    selected ? theme.TYPOGRAPHY.B2_B : theme.TYPOGRAPHY.B2_R};
+    selected ? theme.TYPOGRAPHY.B2_B : theme.TYPOGRAPHY.B3_R};
 `;
 
 const S_ContentWrapper = styled.div`
@@ -236,7 +236,7 @@ const S_SkipLink = styled.a`
 
   color: ${({ theme }) => theme.BG.WHITE};
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 
   transition: transform 0.2s ease;
 

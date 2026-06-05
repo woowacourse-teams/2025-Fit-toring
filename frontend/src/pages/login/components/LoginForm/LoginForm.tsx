@@ -120,8 +120,6 @@ function LoginForm() {
           size="full"
           customStyle={css`
             height: 4.3rem;
-
-            font-size: 1.8rem;
           `}
           variant={loginFormValidated ? 'primary' : 'disabled'}
         >
@@ -175,7 +173,7 @@ const S_Input = styled.input<{ errored?: boolean }>`
   }
 
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
 const S_Img = styled.img`

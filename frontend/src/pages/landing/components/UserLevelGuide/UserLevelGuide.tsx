@@ -86,11 +86,10 @@ const S_Img = styled.img`
 `;
 
 const S_Name = styled.p`
-  font-weight: bold;
-  font-size: 1.7rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B2_B}
 `;
 
 const S_Description = styled.p`
-  font-size: 1.5rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   text-align: center;
 `;

@@ -63,11 +63,11 @@ const S_InfoTextWrapper = styled.div`
 const StlyedWelcome = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
 
-  ${({ theme }) => theme.TYPOGRAPHY.LB2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R};
 `;
 
 const S_SubText = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;

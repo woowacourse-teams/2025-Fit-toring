@@ -79,7 +79,7 @@ const S_Middle = styled.div`
 
 const S_Name = styled.span`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB4_B};
+  ${({ theme }) => theme.TYPOGRAPHY.H4_B};
 `;
 
 const S_Time = styled.span`
@@ -98,7 +98,7 @@ const S_Message = styled.p`
   margin: 0;
 
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 
   overflow-wrap: break-word;
 `;

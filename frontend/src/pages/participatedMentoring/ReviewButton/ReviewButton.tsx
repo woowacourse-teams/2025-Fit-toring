@@ -77,7 +77,7 @@ const S_Container = styled.button`
 
   cursor: pointer;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_ReviewWriteButton = styled(S_Container)<{ disabled: boolean }>`

@@ -130,7 +130,7 @@ const S_Tooltip = styled.div<{ opened: boolean }>`
   border-radius: 0.4rem;
 
   background-color: ${({ theme }) => theme.SYSTEM.GRAY800};
-  ${({ theme }) => theme.TYPOGRAPHY.C2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 
   color: ${({ theme }) => theme.BG.WHITE};
   white-space: nowrap;

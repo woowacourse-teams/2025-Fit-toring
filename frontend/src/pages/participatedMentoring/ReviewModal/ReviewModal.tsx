@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../../common/components/Button/Button';
 import Modal from '../../../common/components/Modal/Modal';
 import { PAGE_URL } from '../../../common/constants/url';
+import { THEME } from '../../../common/styles/theme';
 import { captureSentryError } from '../../../common/utils/captureSentryError';
 import { postReview } from '../apis/postReview';
 import { MAX_RATING_COUNT } from '../constants/starRating';
@@ -96,7 +97,7 @@ function ReviewModal({
           <Button
             variant="secondary"
             customStyle={css`
-              font-size: 1.2rem;
+              ${THEME.TYPOGRAPHY.BTN4_R}
             `}
             type="button"
             onClick={onCloseClick}
@@ -106,7 +107,7 @@ function ReviewModal({
           <Button
             type="submit"
             customStyle={css`
-              font-size: 1.2rem;
+              ${THEME.TYPOGRAPHY.BTN4_R}
             `}
           >
             리뷰 등록
@@ -130,7 +131,7 @@ const S_Container = styled.form`
 
 const S_Title = styled.p`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 `;
 
 const S_Description = styled.p`
@@ -160,7 +161,7 @@ const S_Textarea = styled.textarea`
   border: ${({ theme }) => theme.OUTLINE.DARK} 1px solid;
   border-radius: 0.7rem;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   resize: none;
 
   :focus {

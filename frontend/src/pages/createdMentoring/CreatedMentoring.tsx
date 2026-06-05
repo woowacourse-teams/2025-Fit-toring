@@ -147,7 +147,7 @@ const S_SmallButton = styled.button`
 `;
 
 const S_Text = styled.span`
-  ${({ theme }) => theme.TYPOGRAPHY.C3_R};
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R};
   color: ${({ theme }) => theme.FONT.B03};
 `;
 
@@ -179,5 +179,5 @@ const S_Button = styled(Button)`
 `;
 
 const S_EmptyText = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;

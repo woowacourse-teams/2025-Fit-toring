@@ -133,7 +133,7 @@ const S_SelfIntroduction = styled.p`
   height: 100%;
 
   color: ${({ theme }) => theme.FONT.B03};
-  ${({ theme }) => theme.TYPOGRAPHY.C2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 
   word-break: break-all;
 `;
@@ -148,9 +148,9 @@ const S_PriceWrapper = styled.div`
 `;
 
 const S_Time = styled.span`
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_Price = styled.span`
-  ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R}
 `;

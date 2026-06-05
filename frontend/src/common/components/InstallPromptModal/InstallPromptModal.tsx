@@ -163,7 +163,7 @@ const S_Button = styled.button`
   background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
 
   color: ${({ theme }) => theme.FONT.W01};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_B}
+  ${({ theme }) => theme.TYPOGRAPHY.B2_B}
   cursor: pointer;
 
   &:disabled {
