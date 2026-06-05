@@ -67,6 +67,7 @@ class MemberIntegrationTest extends AbstractApiDocumentationTest {
                                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("로그인 ID"),
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
                                         fieldWithPath("gender").type(JsonFieldType.STRING).description("성별"),
+                                        fieldWithPath("myRole").type(JsonFieldType.STRING).description("회원 역할"),
                                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("전화번호")
                                 )
                                 .build())))
