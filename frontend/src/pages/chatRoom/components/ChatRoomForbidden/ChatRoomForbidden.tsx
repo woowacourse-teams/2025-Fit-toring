@@ -66,15 +66,14 @@ const S_Title = styled.h2`
   margin: 0 0 1rem;
 
   color: #111;
-  font-weight: 700;
-  font-size: 18px;
+  ${({ theme }) => theme.TYPOGRAPHY.H4_B}
 `;
 
 const S_Description = styled.p`
   margin: 0;
 
   color: #666;
-  font-size: 14px;
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
   line-height: 1.5;
 `;
 
@@ -94,8 +93,7 @@ const S_PrimaryButton = styled.button`
   background: #111;
 
   color: #fff;
-  font-weight: 600;
-  font-size: 14px;
+  ${({ theme }) => theme.TYPOGRAPHY.BTN4_SB}
   cursor: pointer;
 
   &:hover {

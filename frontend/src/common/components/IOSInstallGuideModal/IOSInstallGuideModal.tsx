@@ -150,7 +150,7 @@ const S_Title = styled.h2`
 
 const S_Description = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   line-height: 1.55;
   text-align: center;
 `;
@@ -187,7 +187,7 @@ const S_StepBadge = styled.div`
   background-color: ${({ theme }) => theme.FONT.B01};
 
   color: ${({ theme }) => theme.FONT.W01};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_B}
+  ${({ theme }) => theme.TYPOGRAPHY.B2_B}
 `;
 
 const S_StepBody = styled.div`
@@ -201,7 +201,7 @@ const S_StepBody = styled.div`
 
 const S_StepTitle = styled.h3`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_B}
+  ${({ theme }) => theme.TYPOGRAPHY.B2_B}
   line-height: 1.45;
 `;
 

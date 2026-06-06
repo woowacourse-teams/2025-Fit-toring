@@ -68,10 +68,10 @@ const S_Link = styled(Link)`
 const S_Card = styled.article`
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 0.5rem;
   position: relative;
 
-  padding: 1.8rem 1.6rem 1.6rem;
+  padding: 1.6rem;
 
   &::after {
     content: '';
@@ -110,7 +110,7 @@ const S_Content = styled.p`
   overflow: hidden;
 
   color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   line-height: 1.45;
   text-overflow: ellipsis;
 
@@ -150,7 +150,7 @@ const S_Author = styled.span`
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
 
   text-overflow: ellipsis;
-  ${({ theme }) => theme.TYPOGRAPHY.C2_SB};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_SB};
 `;
 
 const S_MetaSeparator = styled.span`

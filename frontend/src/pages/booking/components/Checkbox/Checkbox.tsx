@@ -51,7 +51,7 @@ const CustomCheckbox = styled.div<{ errored?: boolean }>`
     children ? theme.SYSTEM.MAIN500 : 'transparent'};
 
   color: white;
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
 export default Checkbox;

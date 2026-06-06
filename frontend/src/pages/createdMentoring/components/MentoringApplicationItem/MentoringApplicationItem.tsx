@@ -118,13 +118,11 @@ const S_NameLine = styled.div`
 
 const S_Name = styled.h4`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_B}
+  ${({ theme }) => theme.TYPOGRAPHY.B2_B}
 `;
 
 const S_NameSuffix = styled.span`
-  font-size: 1.4rem;
-  font-weight: 500;
-  line-height: normal;
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 
   color: ${({ theme }) => theme.FONT.B04};
 `;
@@ -133,7 +131,7 @@ const S_CreatedAt = styled.p`
   margin-top: 0.4rem;
 
   color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.C3_R}
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R}
 `;
 
 const S_ApplicationContent = styled.p<{ showMore: boolean }>`

@@ -156,18 +156,18 @@ const S_PreviewImage = styled.img`
 
 const S_GuideText = styled.p`
   color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.LB4_R}
+  ${({ theme }) => theme.TYPOGRAPHY.H4_R}
   text-align: center;
 
   & > strong {
     color: ${({ theme }) => theme.SYSTEM.MAIN700};
-    ${({ theme }) => theme.TYPOGRAPHY.LB4_B}
+    ${({ theme }) => theme.TYPOGRAPHY.H4_B}
   }
 `;
 
 const S_FileTypeText = styled.p`
   color: ${({ theme }) => theme.FONT.G01};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   text-align: center;
 `;
 const S_HiddenInput = styled.input`

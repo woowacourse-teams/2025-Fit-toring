@@ -79,7 +79,7 @@ const S_MentorProfileWrapper = styled.div`
 
 const S_MentorNameText = styled.span`
   color: ${({ theme }) => theme.FONT.B01};
-  font-size: 1.6rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_InfoWithTags = styled.div`
@@ -96,6 +96,5 @@ const S_InfoWrapper = styled.div`
 
 const S_PriceText = styled.span`
   color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  font-weight: bold;
-  font-size: 1.6rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B2_B}
 `;

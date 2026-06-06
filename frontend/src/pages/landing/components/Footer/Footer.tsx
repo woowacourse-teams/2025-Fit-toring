@@ -43,7 +43,7 @@ const S_TextWrapper = styled.div`
 `;
 
 const S_Text = styled.p`
-  font-size: 1.4rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;
 
 const S_Link = styled(Link)`

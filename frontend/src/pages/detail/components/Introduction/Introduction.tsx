@@ -29,6 +29,6 @@ const S_H4 = styled.h4`
 
   margin-bottom: 1.7rem;
 
-  ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
+  ${({ theme }) => theme.TYPOGRAPHY.H3_B}
   color: ${({ theme }) => theme.FONT.B01};
 `;

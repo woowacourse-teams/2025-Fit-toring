@@ -76,7 +76,7 @@ const S_Label = styled.span`
   text-overflow: ellipsis;
 
   white-space: nowrap;
-  ${({ theme }) => theme.TYPOGRAPHY.H4_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_ChevronIcon = styled.img`

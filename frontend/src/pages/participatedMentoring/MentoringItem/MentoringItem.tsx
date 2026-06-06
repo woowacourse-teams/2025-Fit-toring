@@ -117,7 +117,7 @@ const S_Container = styled.li`
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
   border-radius: 5px;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 
   cursor: pointer;
 `;
@@ -132,7 +132,7 @@ const S_SummaryWrapper = styled.div`
 `;
 
 const S_Name = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.LB3_SB}
+  ${({ theme }) => theme.TYPOGRAPHY.H3_SB}
 `;
 
 const S_ReservedAt = styled.p`
@@ -173,7 +173,7 @@ const S_MessagWrapper = styled.div`
   color: ${({ theme }) => theme.SYSTEM.GRAY800};
   overflow-y: scroll;
 
-  ${({ theme }) => theme.TYPOGRAPHY.C2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
   line-height: 1.8rem;
 `;
 
@@ -195,7 +195,7 @@ const S_ChatButton = styled.button`
 
   cursor: pointer;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   background-color: ${({ theme }) => theme.BG.BLACK};
 
   color: ${({ theme }) => theme.BG.WHITE};

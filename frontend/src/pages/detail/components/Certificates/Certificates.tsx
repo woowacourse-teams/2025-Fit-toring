@@ -111,7 +111,7 @@ const S_Title = styled.h3`
   flex-grow: 1;
 
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB3_B}
+  ${({ theme }) => theme.TYPOGRAPHY.H3_B}
 `;
 
 const S_List = styled.ul`
@@ -143,7 +143,7 @@ const S_Item = styled.li`
 `;
 
 const S_ItemText = styled.span`
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_PhotoIcon = styled.img`

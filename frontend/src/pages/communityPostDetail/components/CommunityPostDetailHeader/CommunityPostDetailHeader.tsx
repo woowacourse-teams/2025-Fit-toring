@@ -187,7 +187,7 @@ const S_MenuActionButton = styled.button`
 
   color: ${({ theme }) => theme.FONT.B01};
   text-align: left;
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   cursor: pointer;
 
   &:hover {

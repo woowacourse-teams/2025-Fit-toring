@@ -57,7 +57,7 @@ const S_Certifications = styled.div`
     width: 100%;
   }
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   color: ${({ theme }) => theme.FONT.B02}
 `;
 

@@ -23,7 +23,10 @@ function ParticipatedMentoring() {
   return (
     <S_Container>
       <S_TitleWrapper>
-        <S_Title>신청 목록 ({participatedMentoringList.length})</S_Title>
+        <S_Title>
+          신청 목록{' '}
+          <S_TitleCount>({participatedMentoringList.length})</S_TitleCount>
+        </S_Title>
         <S_Button onClick={handleFilterClick} type="button">
           <S_DownIcon src={downIcon} alt="카테고리 열기 아이콘" />
           <S_Text>전체보기</S_Text>
@@ -73,7 +76,12 @@ const S_TitleWrapper = styled.div`
 `;
 const S_Title = styled.h2`
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB3_R}
+  ${({ theme }) => theme.TYPOGRAPHY.H4_B}
+`;
+
+const S_TitleCount = styled.span`
+  color: #94a3b8;
+  font-weight: 600;
 `;
 
 const S_Button = styled.button`
@@ -105,5 +113,5 @@ const S_Description = styled.p`
   word-break: keep-all;
 
   color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
