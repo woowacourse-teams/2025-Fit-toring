@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import blind from '../../../../common/assets/images/blind.svg';
-import kakaoLoginIcon from '../../../../common/assets/images/kakao_login_large_wide.png';
+import kakaoIcon from '../../../../common/assets/images/kakaoIcon.svg';
 import notBlind from '../../../../common/assets/images/notBlind.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
@@ -32,9 +32,9 @@ function LoginForm() {
 
   const { login } = useAuth();
   const from = (
-    location.state as
-      | { from?: { pathname: string; search: string; hash: string } }
-      | null
+    location.state as {
+      from?: { pathname: string; search: string; hash: string };
+    } | null
   )?.from;
 
   const { mutate: loginMutate } = useMutation({
@@ -125,7 +125,10 @@ function LoginForm() {
         >
           로그인
         </Button>
-        <S_KakaoButton type="button" onClick={handleSocialLoginButtonClick} />
+        <S_KakaoButton type="button" onClick={handleSocialLoginButtonClick}>
+          <S_KakaoIcon src={kakaoIcon} alt="" aria-hidden="true" />
+          <span>카카오 로그인</span>
+        </S_KakaoButton>
       </S_ButtonWrapper>
     </S_Container>
   );
@@ -188,17 +191,28 @@ const S_Img = styled.img`
   margin-right: 1rem;
 `;
 
-const S_KakaoButton = styled.a`
+const S_KakaoButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+
   width: 100%;
   height: 4.3rem;
   padding: 0.6rem 1.1rem;
   border: none;
   border-radius: 0.7rem;
+
+  background-color: #fee500;
+
+  color: rgb(0 0 0 / 85%);
   cursor: pointer;
-  background-image: url(${kakaoLoginIcon});
-  background-size: cover;
-  background-position: center;
-  text-decoration: none;
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_R};
+`;
+
+const S_KakaoIcon = styled.img`
+  width: 2.2rem;
+  height: 1.8rem;
 `;
 
 const S_ButtonWrapper = styled.div`
