@@ -204,8 +204,11 @@ const S_Title = styled.h3`
 
 const S_StatusWrapper = styled.div`
   display: flex;
+  flex: 1;
+  align-items: center;
   justify-content: center;
 
+  min-height: 16rem;
   padding: 3.2rem 0;
 `;
 

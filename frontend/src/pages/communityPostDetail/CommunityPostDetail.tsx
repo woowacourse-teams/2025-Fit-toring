@@ -219,7 +219,13 @@ function CommunityPostDetail() {
     });
 
   if (isPending) {
-    return <LoadingSpinner />;
+    return (
+      <S_Container>
+        <S_LoadingContent>
+          <LoadingSpinner size="large" />
+        </S_LoadingContent>
+      </S_Container>
+    );
   }
 
   if (isError || !postData) {
@@ -512,4 +518,11 @@ const S_Content = styled.div`
 
   min-height: 0;
   overflow-y: auto;
+`;
+
+const S_LoadingContent = styled.div`
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
 `;

@@ -13,7 +13,6 @@ import DetailReview from './components/DetailReview/DetailReview';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
 import useMentoringDetail from './hooks/useMentoringDetail';
-import useScrollY from './hooks/useScrollY';
 import useTabs from './hooks/useTabs';
 
 type TapType = 'detail' | 'review';
@@ -28,14 +27,11 @@ function Detail() {
 
   const { selectedTab, selectTab } = useTabs<TapType>(state?.tab ?? 'detail');
 
-  const { scrollY, changeScrollY } = useScrollY();
-
   const contentWrapperRef = useRef<HTMLDivElement | null>(null);
   const certificateSectionRef = useRef<HTMLHeadingElement | null>(null);
 
   const handleTapClick = (tab: TapType) => {
     selectTab(tab);
-    changeScrollY(window.scrollY);
     requestAnimationFrame(() => {
       contentWrapperRef.current?.scrollIntoView({
         behavior: 'smooth',
@@ -112,9 +108,9 @@ function Detail() {
               ratingAverage={data.ratingAverage}
               ratingCount={data.ratingCount}
               loadingComponent={
-                <S_SpinnerWrapper height={scrollY}>
+                <S_ReviewLoadingWrapper>
                   <LoadingSpinner />
-                </S_SpinnerWrapper>
+                </S_ReviewLoadingWrapper>
               }
             />
           )}
@@ -212,13 +208,14 @@ const S_Line = styled.hr`
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
-const S_SpinnerWrapper = styled.div<{ height: number }>`
+const S_ReviewLoadingWrapper = styled.div`
   display: flex;
   flex-grow: 1;
   align-items: center;
   justify-content: center;
 
-  height: ${({ height }) => `${height}px`};
+  width: 100%;
+  min-height: 24rem;
 `;
 
 const S_SkipLink = styled.a`
