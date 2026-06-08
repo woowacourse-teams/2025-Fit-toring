@@ -4,6 +4,7 @@ import fittoring.application.reservation.sms.SmsOutbox;
 import fittoring.application.reservation.sms.SmsOutboxStatus;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,15 @@ public interface SmsOutboxRepository extends JpaRepository<SmsOutbox, Long> {
     );
 
     Page<SmsOutbox> findByStatus(SmsOutboxStatus status, Pageable pageable);
+
+    long countByStatus(SmsOutboxStatus status);
+
+    long countByAttempts(int attempts);
+
+    @Query("""
+            SELECT MIN(s.createdAt)
+            FROM SmsOutbox s
+            WHERE s.status = :status
+            """)
+    Optional<LocalDateTime> findOldestCreatedAtByStatus(@Param("status") SmsOutboxStatus status);
 }
