@@ -2,12 +2,12 @@ name: Dashboard Deploy
 
 on:
   pull_request:
-    branches: [ release-dev, release-prod ]
+    branches: [ release-dev, release-prod, stg ]
     paths:
       - 'backend/fittoring/monitoring/grafana/dashboards/**'
       - 'backend/fittoring/monitoring/grafana/provisioning/dashboards/**'
   push:
-    branches: [ release-dev, release-prod ]
+    branches: [ release-dev, release-prod, stg ]
     paths:
       - 'backend/fittoring/monitoring/grafana/dashboards/**'
       - 'backend/fittoring/monitoring/grafana/provisioning/dashboards/**'

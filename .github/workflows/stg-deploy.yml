@@ -243,9 +243,23 @@ jobs:
       IMAGE_TAG: ${{ needs.validate-build-and-push.outputs.image_tag }}
 
     steps:
+      - name: Resolve deploy image tag
+        shell: bash
+        run: |
+          if [ -z "${IMAGE_TAG}" ]; then
+            SHORT_SHA="$(echo "$GITHUB_SHA" | cut -c1-7)"
+            IMAGE_TAG="stg-sha-$SHORT_SHA"
+            echo "[WARN] Build job output image_tag is empty. Fallback to ${IMAGE_TAG}."
+          fi
+
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> "$GITHUB_ENV"
+          echo "[INFO] Resolved deploy image tag: ${IMAGE_TAG}"
+
       - name: Verify deploy environment
         shell: bash
         run: |
+          test -n "${IMAGE}"
+          test -n "${IMAGE_TAG}"
           test -x "${DEPLOY_SCRIPT}"
           test -f "${APP_DIR}/docker-compose.yml"
           test -f "${APP_DIR}/.env.deploy"

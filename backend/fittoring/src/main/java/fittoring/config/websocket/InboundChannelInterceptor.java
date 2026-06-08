@@ -197,6 +197,7 @@ public class InboundChannelInterceptor implements ChannelInterceptor, ExecutorCh
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Set<Long> getAuthorizedChatRoomIds(Map<String, Object> sessionAttributes) {
         return (Set<Long>) sessionAttributes.computeIfAbsent(
                 AUTHORIZED_CHAT_ROOM_IDS_KEY,

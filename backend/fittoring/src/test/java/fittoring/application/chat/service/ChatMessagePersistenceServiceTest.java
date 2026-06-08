@@ -12,7 +12,14 @@ import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatMessageType;
 import fittoring.domain.model.ChatRoom;
 import fittoring.domain.model.Member;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import java.time.LocalDateTime;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doThrow;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +43,9 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
     @MockitoBean
     private NotificationSender notificationSender;
 
@@ -43,6 +53,11 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
     @Test
     void persistTextMessageUpdatesChatRoomSnapshot() {
         // given
+        double initialTotalCount = timerCount("chat_persist_total_seconds");
+        double initialDbCount = timerCount("chat_persist_db_seconds");
+        double initialNotificationCount = timerCount("chat_persist_notification_seconds");
+        double initialImageCount = timerCount("chat_persist_image_seconds");
+
         Member mentor = memberRepository.save(FixtureUtil.testMentor());
         Member mentee = memberRepository.save(FixtureUtil.testMentee());
         ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentee.getId(), mentor.getId()));
@@ -71,6 +86,11 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
             softly.assertThat(persistedChatRoom.getLastMessageType()).isEqualTo(ChatMessageType.TEXT);
             softly.assertThat(persistedChatRoom.getLastMessageSenderId()).isEqualTo(mentee.getId());
             softly.assertThat(persistedChatRoom.getLastMessageCreatedAt()).isNotNull();
+            softly.assertThat(timerCount("chat_persist_total_seconds")).isEqualTo(initialTotalCount + 1);
+            softly.assertThat(timerCount("chat_persist_db_seconds")).isEqualTo(initialDbCount + 1);
+            softly.assertThat(timerCount("chat_persist_notification_seconds"))
+                    .isEqualTo(initialNotificationCount + 1);
+            softly.assertThat(timerCount("chat_persist_image_seconds")).isEqualTo(initialImageCount);
         });
     }
 
@@ -78,6 +98,11 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
     @Test
     void persistImageMessageUpdatesChatRoomSnapshot() {
         // given
+        double initialTotalCount = timerCount("chat_persist_total_seconds");
+        double initialDbCount = timerCount("chat_persist_db_seconds");
+        double initialNotificationCount = timerCount("chat_persist_notification_seconds");
+        double initialImageCount = timerCount("chat_persist_image_seconds");
+
         Member mentor = memberRepository.save(FixtureUtil.testMentor());
         Member mentee = memberRepository.save(FixtureUtil.testMentee());
         ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentee.getId(), mentor.getId()));
@@ -107,6 +132,46 @@ class ChatMessagePersistenceServiceTest extends IntegrationTestSupport {
             softly.assertThat(persistedChatRoom.getLastMessageSenderId()).isEqualTo(mentee.getId());
             softly.assertThat(persistedChatRoom.getLastMessageCreatedAt()).isNotNull();
             softly.assertThat(imageRepository.findAll()).hasSize(1);
+            softly.assertThat(timerCount("chat_persist_total_seconds")).isEqualTo(initialTotalCount + 1);
+            softly.assertThat(timerCount("chat_persist_db_seconds")).isEqualTo(initialDbCount + 1);
+            softly.assertThat(timerCount("chat_persist_notification_seconds"))
+                    .isEqualTo(initialNotificationCount + 1);
+            softly.assertThat(timerCount("chat_persist_image_seconds")).isEqualTo(initialImageCount + 1);
         });
+    }
+
+    @DisplayName("알림 전송이 실패하면 채팅 메시지 저장도 롤백된다.")
+    @Test
+    void persistRollsBackWhenNotificationFails() {
+        // given
+        Member mentor = memberRepository.save(FixtureUtil.testMentor());
+        Member mentee = memberRepository.save(FixtureUtil.testMentee());
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, mentee.getId(), mentor.getId()));
+        ChatMessagePersistEventDto event = new ChatMessagePersistEventDto(
+                "message-id-3",
+                chatRoom.getId(),
+                mentee.getId(),
+                1L,
+                "알림 실패 테스트",
+                ChatMessageType.TEXT,
+                LocalDateTime.now()
+        );
+        doThrow(new RuntimeException("notification failed"))
+                .when(notificationSender)
+                .send(anyList(), any());
+
+        // when & then
+        assertThatThrownBy(() -> chatMessagePersistenceService.persist(event))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("notification failed");
+        assertThat(chatMessageRepository.existsByMessageId(event.messageId())).isFalse();
+    }
+
+    private double timerCount(String metricName) {
+        Timer timer = meterRegistry.find(metricName).timer();
+        if (timer == null) {
+            return 0;
+        }
+        return timer.count();
     }
 }

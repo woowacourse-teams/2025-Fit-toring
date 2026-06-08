@@ -162,3 +162,9 @@ dummy:
       post: 100
       comment: 200
     max-attempt: 5
+
+chat:
+  persist:
+    sqs:
+      max-concurrent-messages: ${CHAT_PERSIST_SQS_MAX_CONCURRENT_MESSAGES:2}
+      max-messages-per-poll: ${CHAT_PERSIST_SQS_MAX_MESSAGES_PER_POLL:2}
