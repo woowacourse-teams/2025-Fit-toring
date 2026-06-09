@@ -15,6 +15,8 @@ export const PAGE_URL = {
   CHAT_ROOM: '/chat/room',
   CHAT_ROOMS: '/chat/rooms',
   COMMUNITY: '/community',
+  COMMUNITY_SEARCH: '/community/search',
+  COMMUNITY_SEARCH_RESULT: '/community/search/result',
   EDIT: '/edit',
   COMMUNITY_CREATE: '/community/create',
 } as const;

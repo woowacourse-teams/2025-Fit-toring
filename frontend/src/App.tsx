@@ -50,6 +50,12 @@ const CommunityPostCreate = lazy(
 const CommunityPostUpdate = lazy(
   () => import('./pages/communityPostUpdate/CommunityPostUpdate'),
 );
+const CommunitySearch = lazy(
+  () => import('./pages/communitySearch/CommunitySearch'),
+);
+const CommunitySearchResult = lazy(
+  () => import('./pages/communitySearch/CommunitySearchResult'),
+);
 
 const router = createBrowserRouter([
   {
@@ -142,6 +148,14 @@ const router = createBrowserRouter([
       {
         path: PAGE_URL.COMMUNITY_CREATE,
         element: <CommunityPostCreate />,
+      },
+      {
+        path: PAGE_URL.COMMUNITY_SEARCH,
+        element: <CommunitySearch />,
+      },
+      {
+        path: PAGE_URL.COMMUNITY_SEARCH_RESULT,
+        element: <CommunitySearchResult />,
       },
       {
         path: `${PAGE_URL.COMMUNITY}/:postId${PAGE_URL.EDIT}`,
