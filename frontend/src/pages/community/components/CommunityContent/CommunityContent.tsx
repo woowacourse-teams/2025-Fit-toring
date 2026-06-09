@@ -8,7 +8,12 @@ import useInfiniteScroll from '../../../../common/hooks/useInfiniteScroll';
 import useInfiniteCommunityPosts from '../../hooks/useInfiniteCommunityPosts';
 import CommunityFeed from '../CommunityFeed/CommunityFeed';
 
-function CommunityContent() {
+interface CommunityContentProps {
+  keyword?: string;
+  emptyMessage?: string;
+}
+
+function CommunityContent({ keyword = '', emptyMessage }: CommunityContentProps) {
   const {
     data,
     fetchNextPage,
@@ -16,10 +21,9 @@ function CommunityContent() {
     isFetchingNextPage,
     isPending,
     refetch,
-  } = useInfiniteCommunityPosts();
+  } = useInfiniteCommunityPosts(keyword);
 
-  const communityPosts =
-    data?.pages.flatMap((page) => page.posts) ?? [];
+  const communityPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
   const handleIntersect = useCallback(async () => {
     await fetchNextPage();
@@ -41,6 +45,9 @@ function CommunityContent() {
     >
       <S_Container>
         {!isPending && <CommunityFeed posts={communityPosts} />}
+        {!isPending && communityPosts.length === 0 && emptyMessage && (
+          <S_StatusText>{emptyMessage}</S_StatusText>
+        )}
         <S_ObserverTarget ref={targetRef} />
         {isPending && <S_StatusText>게시글을 불러오는 중입니다.</S_StatusText>}
         {isFetchingNextPage && (
