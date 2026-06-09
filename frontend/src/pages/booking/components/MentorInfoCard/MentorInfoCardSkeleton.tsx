@@ -4,7 +4,7 @@ import Skeleton from '../../../../common/components/Skeleton/Skeleton';
 
 function MentorInfoCardSkeleton() {
   return (
-    <S_Container aria-hidden="true">
+    <S_Container>
       <S_ProfileWrapper>
         <S_ProfileImageSkeleton />
         <S_NameSkeleton />

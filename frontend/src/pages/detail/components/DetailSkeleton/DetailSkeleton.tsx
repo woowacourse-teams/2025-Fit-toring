@@ -5,7 +5,7 @@ import Skeleton from '../../../../common/components/Skeleton/Skeleton';
 function DetailSkeleton() {
   return (
     <>
-      <S_Container aria-hidden="true">
+      <S_Container>
         <S_ProfileImageSkeleton />
         <S_InfoWrapper>
           <S_InfoHeader>
@@ -30,7 +30,7 @@ function DetailSkeleton() {
           <S_ShortContentLineSkeleton />
         </S_ContentWrapper>
       </S_Container>
-      <S_ApplySectionSkeleton aria-hidden="true">
+      <S_ApplySectionSkeleton>
         <S_PriceWrapper>
           <S_PriceLabelSkeleton />
           <S_PriceSkeleton />

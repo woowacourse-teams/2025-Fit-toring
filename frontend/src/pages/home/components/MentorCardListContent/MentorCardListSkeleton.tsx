@@ -8,7 +8,7 @@ function MentorCardListSkeleton() {
   return (
     <>
       {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-        <S_Container key={index} aria-hidden="true">
+        <S_Container key={index}>
           <S_ImageBox>
             <S_ProfileImgSkeleton />
           </S_ImageBox>
