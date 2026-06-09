@@ -26,6 +26,8 @@ import {
   isInitialMentoringData,
 } from '../../utils/isInitialMentoringData';
 
+import MentoringUpdateFormSkeleton from './MentoringUpdateFormSkeleton';
+
 import type { CertificateItem } from '../../../../common/types/certificateItem';
 import type { MentoringUpdateFormData } from '../../types/mentoringUpdateForm';
 
@@ -345,7 +347,7 @@ function MentoringUpdateForm() {
           />
         </>
       ) : (
-        <div>로딩중</div>
+        <MentoringUpdateFormSkeleton />
       )}
     </S_Container>
   );
