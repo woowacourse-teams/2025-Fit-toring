@@ -1,6 +1,6 @@
 import type { GenderClient, GenderServer } from './gender';
 
-export type MemberRole = 'MENTEE' | 'MENTOR';
+export type MemberRole = 'MENTEE' | 'MENTOR' | 'ADMIN';
 
 interface UserInfo<TGender> {
   loginId: string;
