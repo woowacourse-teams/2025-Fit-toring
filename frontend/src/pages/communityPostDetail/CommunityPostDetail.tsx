@@ -11,7 +11,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import DeleteConfirmModal from '../../common/components/DeleteConfirmModal/DeleteConfirmModal';
-import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { BOTTOM_NAV_HEIGHT } from '../../common/constants/layout';
 import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
@@ -28,6 +27,7 @@ import {
 } from './apis/postCommunityPostLike';
 import { postGuestPostPasswordCheck } from './apis/postGuestPostPasswordCheck';
 import CommunityPostDetailHeader from './components/CommunityPostDetailHeader/CommunityPostDetailHeader';
+import CommunityPostDetailSkeleton from './components/CommunityPostDetailSkeleton/CommunityPostDetailSkeleton';
 import InputSection from './components/InputSection/InputSection';
 import PostCommentSection from './components/PostCommentSection/PostCommentSection';
 import PostContent from './components/PostContent/PostContent';
@@ -219,13 +219,7 @@ function CommunityPostDetail() {
     });
 
   if (isPending) {
-    return (
-      <S_Container>
-        <S_LoadingContent>
-          <LoadingSpinner size="large" />
-        </S_LoadingContent>
-      </S_Container>
-    );
+    return <CommunityPostDetailSkeleton />;
   }
 
   if (isError || !postData) {
@@ -518,11 +512,4 @@ const S_Content = styled.div`
 
   min-height: 0;
   overflow-y: auto;
-`;
-
-const S_LoadingContent = styled.div`
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
 `;

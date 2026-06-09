@@ -116,14 +116,20 @@ function PostCommentSection({
     mutateCommentLike(comment);
   };
 
-  return (
-    <S_Container>
-      <S_Title>댓글 {comments.length}</S_Title>
-      {isPending ? (
+  if (isPending) {
+    return (
+      <S_Container>
+        <S_Title>댓글</S_Title>
         <S_StatusWrapper>
           <LoadingSpinner />
         </S_StatusWrapper>
-      ) : null}
+      </S_Container>
+    );
+  }
+
+  return (
+    <S_Container>
+      <S_Title>댓글 {comments.length}개</S_Title>
       {isError ? (
         <S_StatusText>댓글을 불러오지 못했습니다.</S_StatusText>
       ) : null}
