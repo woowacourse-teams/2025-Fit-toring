@@ -19,6 +19,10 @@ interface CommunitySearchHeaderProps {
   autoFocus?: boolean;
 }
 
+const SEARCH_KEYWORD_MAX_LENGTH = 50;
+const SEARCH_KEYWORD_LENGTH_ERROR_MESSAGE =
+  '검색어는 50자를 초과할 수 없습니다';
+
 function CommunitySearchHeader({
   defaultKeyword = '',
   autoFocus = false,
@@ -26,6 +30,7 @@ function CommunitySearchHeader({
   const [keyword, setKeyword] = useState(defaultKeyword);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const isKeywordLengthExceeded = keyword.length > SEARCH_KEYWORD_MAX_LENGTH;
 
   useEffect(() => {
     setKeyword(defaultKeyword);
@@ -50,7 +55,7 @@ function CommunitySearchHeader({
 
     const trimmedKeyword = keyword.trim();
 
-    if (!trimmedKeyword) {
+    if (!trimmedKeyword || isKeywordLengthExceeded) {
       return;
     }
 
@@ -62,28 +67,39 @@ function CommunitySearchHeader({
   };
 
   return (
-    <Header>
-      <S_Wrapper>
-        <S_BackButton type="button" onClick={handleBackButtonClick}>
-          <S_BackIcon src={backIcon} alt="뒤로가기 아이콘" />
-        </S_BackButton>
-        <S_Form role="search" onSubmit={handleSearchSubmit}>
-          <S_InputWrapper>
-            <S_SearchIcon src={searchIcon} alt="" aria-hidden="true" />
-            <S_Input
-              ref={inputRef}
-              type="search"
-              inputMode="search"
-              enterKeyHint="search"
-              aria-label="커뮤니티 게시글 검색어"
-              placeholder="글 제목, 내용, 해시태그"
-              value={keyword}
-              onChange={handleKeywordChange}
-            />
-          </S_InputWrapper>
-        </S_Form>
-      </S_Wrapper>
-    </Header>
+    <>
+      <Header>
+        <S_Wrapper>
+          <S_BackButton type="button" onClick={handleBackButtonClick}>
+            <S_BackIcon src={backIcon} alt="뒤로가기 아이콘" />
+          </S_BackButton>
+          <S_Form role="search" onSubmit={handleSearchSubmit}>
+            <S_InputWrapper>
+              <S_SearchIcon src={searchIcon} alt="" aria-hidden="true" />
+              <S_Input
+                ref={inputRef}
+                type="search"
+                inputMode="search"
+                enterKeyHint="search"
+                aria-label="커뮤니티 게시글 검색어"
+                aria-invalid={isKeywordLengthExceeded}
+                aria-describedby={
+                  isKeywordLengthExceeded ? 'community-search-error' : undefined
+                }
+                placeholder="글 제목, 내용"
+                value={keyword}
+                onChange={handleKeywordChange}
+              />
+            </S_InputWrapper>
+          </S_Form>
+        </S_Wrapper>
+      </Header>
+      {isKeywordLengthExceeded && (
+        <S_ErrorMessage id="community-search-error" role="alert">
+          {SEARCH_KEYWORD_LENGTH_ERROR_MESSAGE}
+        </S_ErrorMessage>
+      )}
+    </>
   );
 }
 
@@ -169,4 +185,11 @@ const S_Input = styled.input`
   ::-webkit-search-cancel-button {
     appearance: none;
   }
+`;
+
+const S_ErrorMessage = styled.p`
+  padding: 0.8rem 2rem 0;
+
+  color: ${({ theme }) => theme.FONT.ERROR};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
