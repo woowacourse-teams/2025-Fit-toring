@@ -10,6 +10,7 @@ import ApplySection from './components/ApplySection/ApplySection';
 import Certificates from './components/Certificates/Certificates';
 import DetailHeader from './components/DetailHeader/DetailHeader';
 import DetailReview from './components/DetailReview/DetailReview';
+import DetailSkeleton from './components/DetailSkeleton/DetailSkeleton';
 import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
 import useMentoringDetail from './hooks/useMentoringDetail';
@@ -58,7 +59,12 @@ function Detail() {
   }
 
   if (isPending || !data) {
-    return <div>로딩 중...</div>;
+    return (
+      <>
+        <DetailHeader />
+        <DetailSkeleton />
+      </>
+    );
   }
 
   return (
