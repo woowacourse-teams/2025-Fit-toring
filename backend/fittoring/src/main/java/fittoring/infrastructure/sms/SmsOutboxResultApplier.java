@@ -3,6 +3,7 @@ package fittoring.infrastructure.sms;
 import fittoring.application.reservation.repository.SmsOutboxRepository;
 import fittoring.application.reservation.sms.SmsOutbox;
 import fittoring.infrastructure.event.SmsOutboxFailedEvent;
+import fittoring.monitoring.sms.SmsOutboxDeliveryMetrics;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,6 +19,7 @@ public class SmsOutboxResultApplier {
 
     private final SmsOutboxRepository smsOutboxRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final SmsOutboxDeliveryMetrics deliveryMetrics;
 
     @Transactional
     public void applySuccess(Long id) {
@@ -25,7 +27,9 @@ public class SmsOutboxResultApplier {
                 .orElseThrow(() -> new IllegalStateException(
                         "SMS outbox row를 찾지 못했습니다. outboxId=" + id
                 ));
+        LocalDateTime sentAt = LocalDateTime.now();
         row.markSent();
+        deliveryMetrics.record(row.getCreatedAt(), sentAt);
     }
 
     @Transactional
