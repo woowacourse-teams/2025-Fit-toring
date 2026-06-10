@@ -84,7 +84,8 @@ management:
       export:
         step: ${METRICS_EXPORT_TIME_TO_PROMETHEUS}
 sms:
-  base-url: https://api.solapi.com
+  # 부하 테스트 등에서 Mock SMS 서버로 전환할 수 있도록 env로 오버라이드 가능 (기본값은 실제 Solapi)
+  base-url: ${SMS_BASE_URL:https://api.solapi.com}
   timeout:
     connect: 1200
     read: 5000
