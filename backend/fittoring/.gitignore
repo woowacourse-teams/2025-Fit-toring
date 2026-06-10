@@ -38,6 +38,7 @@ out/
 
 ### environment variable ###
 .env*
+performance/k6/reservation-scenarios.json
 
 ### Frontend Build Artifacts ###
 backend/fittoring/src/main/resources/static/web-admin/

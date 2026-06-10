@@ -1,0 +1,17 @@
+[
+  {
+    "loginId": "mentee_1",
+    "password": "test1234",
+    "mentoringId": 1
+  },
+  {
+    "loginId": "mentee_2",
+    "password": "test1234",
+    "mentoringId": 1
+  },
+  {
+    "loginId": "mentee_3",
+    "password": "test1234",
+    "mentoringId": 2
+  }
+]
