@@ -8,6 +8,7 @@ import fittoring.infrastructure.sms.SmsOutboxClaimer;
 import fittoring.infrastructure.sms.SmsOutboxPublisher;
 import fittoring.infrastructure.sms.SmsOutboxResultApplier;
 import fittoring.infrastructure.sms.SmsRestClientService;
+import fittoring.monitoring.sms.SmsOutboxPublisherMetrics;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -21,7 +22,13 @@ class SmsOutboxPublisherShutdownTest {
         SmsOutboxClaimer claimService = mock(SmsOutboxClaimer.class);
         SmsRestClientService smsRestClientService = mock(SmsRestClientService.class);
         SmsOutboxResultApplier resultApplier = mock(SmsOutboxResultApplier.class);
-        SmsOutboxPublisher publisher = new SmsOutboxPublisher(claimService, smsRestClientService, resultApplier);
+        SmsOutboxPublisherMetrics metrics = mock(SmsOutboxPublisherMetrics.class);
+        SmsOutboxPublisher publisher = new SmsOutboxPublisher(
+                claimService,
+                smsRestClientService,
+                resultApplier,
+                metrics
+        );
 
         // when
         publisher.onShutdown();
@@ -38,7 +45,13 @@ class SmsOutboxPublisherShutdownTest {
         SmsOutboxClaimer claimService = mock(SmsOutboxClaimer.class);
         SmsRestClientService smsRestClientService = mock(SmsRestClientService.class);
         SmsOutboxResultApplier resultApplier = mock(SmsOutboxResultApplier.class);
-        SmsOutboxPublisher publisher = new SmsOutboxPublisher(claimService, smsRestClientService, resultApplier);
+        SmsOutboxPublisherMetrics metrics = mock(SmsOutboxPublisherMetrics.class);
+        SmsOutboxPublisher publisher = new SmsOutboxPublisher(
+                claimService,
+                smsRestClientService,
+                resultApplier,
+                metrics
+        );
         ReflectionTestUtils.setField(publisher, "enabled", true);
 
         // when
