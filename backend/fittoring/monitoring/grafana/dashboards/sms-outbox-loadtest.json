@@ -673,7 +673,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 10,
+        "w": 8,
         "x": 0,
         "y": 28
       },
@@ -708,13 +708,90 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 28
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(sms_outbox_delivery_latency_seconds_bucket{environment=\"$env\"}[$__rate_interval])))",
+          "legendFormat": "p95",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(sms_outbox_delivery_latency_seconds_bucket{environment=\"$env\"}[$__rate_interval])))",
+          "legendFormat": "p99",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(sms_outbox_delivery_latency_seconds_max{environment=\"$env\"})",
+          "legendFormat": "최대",
+          "refId": "C"
+        }
+      ],
+      "description": "Outbox 생성부터 SMS 발송 성공까지 걸린 시간입니다. 트래픽 급증 시 멘토가 알림을 받기까지의 p95, p99, 최대 지연을 확인합니다.",
+      "title": "SMS 알림 처리 지연",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
         "type": "loki",
         "uid": "loki"
       },
       "gridPos": {
         "h": 8,
-        "w": 14,
-        "x": 10,
+        "w": 8,
+        "x": 16,
         "y": 28
       },
       "id": 15,
