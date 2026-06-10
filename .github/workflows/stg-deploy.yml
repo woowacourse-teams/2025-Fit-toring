@@ -156,9 +156,9 @@ jobs:
           npm ci
           npm run build
 
-      - name: Run backend tests and generate API docs
+      - name: Run backend tests
         shell: bash
-        run: ./gradlew test generateApiDocs
+        run: ./gradlew test
 
       - name: Prepare failure report
         if: failure()
