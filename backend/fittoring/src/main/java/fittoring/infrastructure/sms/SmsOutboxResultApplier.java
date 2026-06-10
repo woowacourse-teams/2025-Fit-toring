@@ -4,13 +4,16 @@ import fittoring.application.reservation.repository.SmsOutboxRepository;
 import fittoring.application.reservation.sms.SmsOutbox;
 import fittoring.infrastructure.event.SmsOutboxFailedEvent;
 import fittoring.monitoring.sms.SmsOutboxDeliveryMetrics;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SmsOutboxResultApplier {
@@ -30,6 +33,15 @@ public class SmsOutboxResultApplier {
         LocalDateTime sentAt = LocalDateTime.now();
         row.markSent();
         deliveryMetrics.record(row.getCreatedAt(), sentAt);
+        log.info(
+                "SMS outbox delivered: outboxId={}, reservationId={}, eventType={}, createdAt={}, sentAt={}, deliveryLatencyMs={}",
+                row.getId(),
+                row.getReservationId(),
+                row.getEventType(),
+                row.getCreatedAt(),
+                sentAt,
+                Duration.between(row.getCreatedAt(), sentAt).toMillis()
+        );
     }
 
     @Transactional
