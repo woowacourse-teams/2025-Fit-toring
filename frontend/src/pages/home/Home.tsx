@@ -41,7 +41,7 @@ import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
-import useMentorList from './hooks/useMentorList';
+import useInfiniteMentorList from './hooks/useInfiniteMentorList';
 import useModal from './hooks/useModal';
 import useMyMentoringId from './hooks/useMyMentoringId';
 import useSort from './hooks/useSortKey';
@@ -96,50 +96,35 @@ function Home() {
 
   const { sortKey, changeSortKey } = useSort();
 
-  const {
-    fetchInitialMentors,
-    fetchMoreMentors,
-    mentorList,
-    hasNext,
-    cursorCode,
-    isLoading,
-  } = useMentorList();
-
-  const initialSortKeyRef = useRef(sortKey);
-
-  useEffect(() => {
-    const fetchInitialMentorList = async () => {
-      await fetchInitialMentors([], initialSortKeyRef.current);
-    };
-
-    fetchInitialMentorList();
-  }, [fetchInitialMentors]);
-
-  const handleSortButtonClick = async (option: SortKey) => {
-    changeSortKey(option);
-
-    await fetchInitialMentors(selectedSpecialties, option);
-  };
-
   const { selectedSpecialties, applySpecialties, toggleSpecialty } =
     useSpecialtyFilter();
 
-  const handleApply = async (specialties: Specialty[]) => {
-    applySpecialties(specialties);
-    handleCloseModal();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    refetch,
+  } = useInfiniteMentorList({
+    selectedSpecialties,
+    sortKey,
+  });
 
-    await fetchInitialMentors(specialties, sortKey);
+  const mentorList =
+    data?.pages.flatMap((page) => page.mentoringSummaryResponses) ?? [];
+
+  const handleSortButtonClick = (option: SortKey) => {
+    changeSortKey(option);
   };
 
-  const handleSelectedSpecialtyChange = async (specialty: Specialty) => {
-    toggleSpecialty(specialty);
+  const handleApply = (specialties: Specialty[]) => {
+    applySpecialties(specialties);
+    handleCloseModal();
+  };
 
-    await fetchInitialMentors(
-      selectedSpecialties.filter(
-        (prevSpecialty) => prevSpecialty.id !== specialty.id,
-      ),
-      sortKey,
-    );
+  const handleSelectedSpecialtyChange = (specialty: Specialty) => {
+    toggleSpecialty(specialty);
   };
 
   const handleMentoringCreation = () => {
@@ -155,21 +140,21 @@ function Home() {
     navigate(PAGE_URL.MENTORING_CREATE);
   };
 
-  const fetchNextPage = useCallback(async () => {
-    await fetchMoreMentors(selectedSpecialties, sortKey, cursorCode);
-  }, [cursorCode, fetchMoreMentors, selectedSpecialties, sortKey]);
+  const handleIntersect = useCallback(async () => {
+    await fetchNextPage();
+  }, [fetchNextPage]);
 
   const handleRefresh = useCallback(async () => {
-    await fetchInitialMentors(selectedSpecialties, sortKey);
-  }, [fetchInitialMentors, selectedSpecialties, sortKey]);
+    await refetch();
+  }, [refetch]);
 
   const { targetRef } = useInfiniteScroll<HTMLLIElement>({
-    isReady: hasNext && !isLoading,
-    onIntersect: fetchNextPage,
+    isReady: !!hasNextPage && !isFetchingNextPage,
+    onIntersect: handleIntersect,
   });
 
   useLayoutEffect(() => {
-    if (isLoading) {
+    if (isPending) {
       return;
     }
 
@@ -182,7 +167,7 @@ function Home() {
     const frameId = window.requestAnimationFrame(() => {
       const maxScrollY = getMaxHomeScrollY(contentsRef.current);
 
-      if (savedScrollY > maxScrollY && hasNext) {
+      if (savedScrollY > maxScrollY && hasNextPage) {
         void fetchNextPage();
         return;
       }
@@ -195,7 +180,7 @@ function Home() {
     });
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [fetchNextPage, hasNext, isLoading, mentorList.length]);
+  }, [fetchNextPage, hasNextPage, isPending, mentorList.length]);
 
   useAuthCheck();
 
@@ -295,7 +280,7 @@ function Home() {
           </S_CheckboxWrapper>
           <MentorCardList>
             <MentorCardListContent
-              isLoading={isLoading}
+              isLoading={isPending}
               mentorList={mentorList}
               hasFilter={selectedSpecialties.length > 0}
             />
