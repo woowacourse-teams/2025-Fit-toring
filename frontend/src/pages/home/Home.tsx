@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -40,6 +46,12 @@ import useModal from './hooks/useModal';
 import useMyMentoringId from './hooks/useMyMentoringId';
 import useSort from './hooks/useSortKey';
 import useSpecialtyFilter from './hooks/useSpecialtyFilter';
+import {
+  clearHomeScrollY,
+  getHomeScrollY,
+  getMaxHomeScrollY,
+  restoreHomeScrollY,
+} from './utils/homeScrollStorage';
 
 import type { SortKey } from './hooks/useSortKey';
 import type { Specialty } from '../../common/types/Specialty';
@@ -47,6 +59,7 @@ import type { Specialty } from '../../common/types/Specialty';
 type InstallModalType = 'ios' | 'android' | null;
 
 function Home() {
+  const contentsRef = useRef<HTMLElement | null>(null);
   const { modalOpened, openModal, closeModal } = useModal();
   const [installModalType, setInstallModalType] =
     useState<InstallModalType>(null);
@@ -155,6 +168,35 @@ function Home() {
     onIntersect: fetchNextPage,
   });
 
+  useLayoutEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
+    const savedScrollY = getHomeScrollY();
+
+    if (savedScrollY === null) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const maxScrollY = getMaxHomeScrollY(contentsRef.current);
+
+      if (savedScrollY > maxScrollY && hasNext) {
+        void fetchNextPage();
+        return;
+      }
+
+      restoreHomeScrollY(
+        Math.min(savedScrollY, maxScrollY),
+        contentsRef.current,
+      );
+      clearHomeScrollY();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [fetchNextPage, hasNext, isLoading, mentorList.length]);
+
   useAuthCheck();
 
   const handleCloseAndroidInstallPrompt = useCallback(() => {
@@ -239,7 +281,7 @@ function Home() {
         enabled={isPullToRefreshEnabled()}
         onRefresh={handleRefresh}
       >
-        <S_Contents>
+        <S_Contents ref={contentsRef}>
           <S_CheckboxWrapper>
             {selectedSpecialties.map((specialty) => (
               <SpecialtyCheckbox
