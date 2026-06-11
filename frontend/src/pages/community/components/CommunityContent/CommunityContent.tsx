@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 
 import styled from '@emotion/styled';
 
@@ -6,9 +6,16 @@ import PullToRefresh from '../../../../common/components/PullToRefresh/PullToRef
 import { isPullToRefreshEnabled } from '../../../../common/components/PullToRefresh/utils';
 import useInfiniteScroll from '../../../../common/hooks/useInfiniteScroll';
 import useInfiniteCommunityPosts from '../../hooks/useInfiniteCommunityPosts';
+import {
+  clearCommunityScrollY,
+  getMaxCommunityScrollY,
+  getCommunityScrollY,
+  restoreCommunityScrollY,
+} from '../../utils/communityScrollStorage';
 import CommunityFeed from '../CommunityFeed/CommunityFeed';
 
 function CommunityContent() {
+  const containerRef = useRef<HTMLElement | null>(null);
   const {
     data,
     fetchNextPage,
@@ -20,6 +27,30 @@ function CommunityContent() {
 
   const communityPosts =
     data?.pages.flatMap((page) => page.posts) ?? [];
+
+  useLayoutEffect(() => {
+    if (isPending) {
+      return;
+    }
+
+    const savedScrollY = getCommunityScrollY();
+
+    if (savedScrollY === null) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const maxScrollY = getMaxCommunityScrollY(containerRef.current);
+
+      restoreCommunityScrollY(
+        Math.min(savedScrollY, maxScrollY),
+        containerRef.current,
+      );
+      clearCommunityScrollY();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [communityPosts.length, isPending]);
 
   const handleIntersect = useCallback(async () => {
     await fetchNextPage();
@@ -39,7 +70,7 @@ function CommunityContent() {
       enabled={isPullToRefreshEnabled()}
       onRefresh={handleRefresh}
     >
-      <S_Container>
+      <S_Container ref={containerRef}>
         {!isPending && <CommunityFeed posts={communityPosts} />}
         <S_ObserverTarget ref={targetRef} />
         {isPending && <S_StatusText>게시글을 불러오는 중입니다.</S_StatusText>}
