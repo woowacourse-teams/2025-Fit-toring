@@ -1,22 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "ds_prometheus",
-      "label": "Prometheus 데이터소스",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    },
-    {
-      "name": "ds_loki",
-      "label": "Loki 데이터소스",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "loki",
-      "pluginName": "Loki"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -36,9 +18,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
+  "id": 22,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
@@ -55,22 +36,62 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
+        "type": "datasource",
+        "uid": "grafana"
       },
+      "description": "예약 신청/승인 API가 초당 몇 건 처리되는지 봅니다. 부하가 올라가도 처리량이 목표 TPS 근처에서 유지되는지 확인합니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "reqps"
         },
@@ -89,46 +110,88 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "sum by (uri, status) (rate(http_server_requests_seconds_count{environment=\"$env\",uri=~\"/mentorings/.*/reservation|/reservations/.*/approve\"}[$__rate_interval]))",
           "legendFormat": "{{uri}} status={{status}}",
           "refId": "A"
         }
       ],
-      "description": "예약 신청/승인 API가 초당 몇 건 처리되는지 봅니다. 부하가 올라가도 처리량이 목표 TPS 근처에서 유지되는지 확인합니다.",
       "title": "예약 API 요청량",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "예약 API의 p95/p99 응답 시간입니다. Outbox 전환 후 SMS 지연이 사용자 응답 시간에 섞이지 않는지 확인합니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "ms"
         },
@@ -147,18 +210,21 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "histogram_quantile(0.95, sum by (uri, le) (rate(http_server_requests_seconds_bucket{environment=\"$env\",uri=~\"/mentorings/.*/reservation|/reservations/.*/approve\"}[$__rate_interval]))) * 1000",
           "legendFormat": "p95 응답 {{uri}}",
@@ -167,33 +233,36 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "histogram_quantile(0.99, sum by (uri, le) (rate(http_server_requests_seconds_bucket{environment=\"$env\",uri=~\"/mentorings/.*/reservation|/reservations/.*/approve\"}[$__rate_interval]))) * 1000",
           "legendFormat": "p99 응답 {{uri}}",
           "refId": "B"
         }
       ],
-      "description": "예약 API의 p95/p99 응답 시간입니다. Outbox 전환 후 SMS 지연이 사용자 응답 시간에 섞이지 않는지 확인합니다.",
       "title": "예약 API 응답 시간",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "예약 API 전체 요청 중 5xx 비율입니다. 부하 증가나 DB 병목이 사용자 실패로 이어지는지 봅니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -218,9 +287,11 @@
       "id": 4,
       "options": {
         "colorMode": "value",
+        "graphMode": "area",
         "graphOrientation": "auto",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -228,20 +299,22 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "100 * sum(rate(http_server_requests_seconds_count{environment=\"$env\",uri=~\"/mentorings/.*/reservation|/reservations/.*/approve\",status=~\"5..\"}[$__rate_interval])) / clamp_min(sum(rate(http_server_requests_seconds_count{environment=\"$env\",uri=~\"/mentorings/.*/reservation|/reservations/.*/approve\"}[$__rate_interval])), 0.001)",
           "legendFormat": "5xx 오류율",
           "refId": "A"
         }
       ],
-      "description": "예약 API 전체 요청 중 5xx 비율입니다. 부하 증가나 DB 병목이 사용자 실패로 이어지는지 봅니다.",
       "title": "예약 API 서버 오류율",
       "type": "stat"
     },
@@ -261,21 +334,61 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "PENDING/PROCESSING/SENT/FAILED row 수입니다. PENDING이 계속 증가하면 발송 워커 처리량이 부족하다는 신호입니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "short"
         },
@@ -295,44 +408,48 @@
             "max"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "sms_outbox_rows{environment=\"$env\"}",
           "legendFormat": "상태={{status}}",
           "refId": "A"
         }
       ],
-      "description": "PENDING/PROCESSING/SENT/FAILED row 수입니다. PENDING이 계속 증가하면 발송 워커 처리량이 부족하다는 신호입니다.",
       "title": "상태별 알림 작업 수",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "가장 오래 PENDING 상태로 남은 알림의 대기 시간입니다. 값이 계속 커지면 backlog가 해소되지 않고 있다는 뜻입니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -357,9 +474,11 @@
       "id": 7,
       "options": {
         "colorMode": "value",
+        "graphMode": "area",
         "graphOrientation": "auto",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -367,32 +486,70 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "sms_outbox_pending_oldest_age_seconds{environment=\"$env\"}",
           "legendFormat": "최장 대기",
           "refId": "A"
         }
       ],
-      "description": "가장 오래 PENDING 상태로 남은 알림의 대기 시간입니다. 값이 계속 커지면 backlog가 해소되지 않고 있다는 뜻입니다.",
       "title": "가장 오래 대기한 알림 시간",
       "type": "stat"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "attempts 값별 row 수입니다. 특정 재시도 단계에 쌓이면 SMS 실패나 재처리 정책을 확인해야 합니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "short"
         },
@@ -406,27 +563,39 @@
       },
       "id": 8,
       "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
+          "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
-        }
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "sms_outbox_attempts_rows{environment=\"$env\"}",
           "legendFormat": "재시도={{attempts}}회",
           "refId": "A"
         }
       ],
-      "description": "attempts 값별 row 수입니다. 특정 재시도 단계에 쌓이면 SMS 실패나 재처리 정책을 확인해야 합니다.",
       "title": "재시도 횟수별 알림 작업 수",
       "type": "barchart"
     },
@@ -446,21 +615,61 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "Outbox publisher가 스케줄 주기마다 실행된 결과입니다. empty가 많으면 대기열이 비어 있고, failure가 늘면 발송/DB 갱신 흐름을 봅니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "ops"
         },
@@ -479,46 +688,88 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "sum by (result) (rate(sms_outbox_publish_runs_total{environment=\"$env\"}[$__rate_interval]))",
           "legendFormat": "결과={{result}}",
           "refId": "A"
         }
       ],
-      "description": "Outbox publisher가 스케줄 주기마다 실행된 결과입니다. empty가 많으면 대기열이 비어 있고, failure가 늘면 발송/DB 갱신 흐름을 봅니다.",
       "title": "워커 실행 결과",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "publisher 한 번 실행에 걸린 p95/p99 시간입니다. 외부 API 지연이나 batch 크기 때문에 워커가 오래 잡히는지 봅니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "s"
         },
@@ -537,18 +788,21 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "histogram_quantile(0.95, sum by (le) (rate(sms_outbox_publish_duration_seconds_bucket{environment=\"$env\"}[$__rate_interval])))",
           "legendFormat": "p95 처리 시간",
@@ -557,35 +811,74 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "histogram_quantile(0.99, sum by (le) (rate(sms_outbox_publish_duration_seconds_bucket{environment=\"$env\"}[$__rate_interval])))",
           "legendFormat": "p99 처리 시간",
           "refId": "B"
         }
       ],
-      "description": "publisher 한 번 실행에 걸린 p95/p99 시간입니다. 외부 API 지연이나 batch 크기 때문에 워커가 오래 잡히는지 봅니다.",
       "title": "워커 처리 시간",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "한 번의 실행에서 처리한 알림 작업 수입니다. 부하 상황에서 batchSize가 처리량 병목인지 판단합니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "short"
         },
@@ -604,18 +897,21 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "sum(rate(sms_outbox_publish_batch_size_sum{environment=\"$env\"}[$__rate_interval])) / clamp_min(sum(rate(sms_outbox_publish_batch_size_count{environment=\"$env\"}[$__rate_interval])), 0.001)",
           "legendFormat": "평균 배치",
@@ -624,14 +920,13 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "max(sms_outbox_publish_batch_size_max{environment=\"$env\"})",
           "legendFormat": "최대 배치",
           "refId": "B"
         }
       ],
-      "description": "한 번의 실행에서 처리한 알림 작업 수입니다. 부하 상황에서 batchSize가 처리량 병목인지 판단합니다.",
       "title": "워커 배치 크기",
       "type": "timeseries"
     },
@@ -651,21 +946,61 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "SMS 발송 결과별 처리율입니다. failure가 늘면 외부 API mock 장애 조건이나 재시도 흐름을 같이 확인합니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "ops"
         },
@@ -684,46 +1019,88 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "sum by (result) (rate(sms_outbox_send_total{environment=\"$env\"}[$__rate_interval]))",
           "legendFormat": "결과={{result}}",
           "refId": "A"
         }
       ],
-      "description": "SMS 발송 결과별 처리율입니다. failure가 늘면 외부 API mock 장애 조건이나 재시도 흐름을 같이 확인합니다.",
       "title": "SMS 발송 성공/실패",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "${ds_prometheus}"
       },
+      "description": "Outbox 생성부터 SMS 발송 성공까지 걸린 시간입니다. 트래픽 급증 시 멘토가 알림을 받기까지의 p95, p99, 최대 지연을 확인합니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           },
           "unit": "s"
         },
@@ -743,18 +1120,21 @@
             "max"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "histogram_quantile(0.95, sum by (le) (rate(sms_outbox_delivery_latency_seconds_bucket{environment=\"$env\"}[$__rate_interval])))",
           "legendFormat": "p95",
@@ -763,7 +1143,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "histogram_quantile(0.99, sum by (le) (rate(sms_outbox_delivery_latency_seconds_bucket{environment=\"$env\"}[$__rate_interval])))",
           "legendFormat": "p99",
@@ -772,21 +1152,25 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "${ds_prometheus}"
           },
           "expr": "max(sms_outbox_delivery_latency_seconds_max{environment=\"$env\"})",
           "legendFormat": "최대",
           "refId": "C"
         }
       ],
-      "description": "Outbox 생성부터 SMS 발송 성공까지 걸린 시간입니다. 트래픽 급증 시 멘토가 알림을 받기까지의 p95, p99, 최대 지연을 확인합니다.",
       "title": "SMS 알림 처리 지연",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "loki",
-        "uid": "loki"
+        "uid": "${ds_loki}"
+      },
+      "description": "SMS/Outbox 관련 로그를 Loki에서 봅니다. 실패 row, 재시도, graceful shutdown, reclaim 흐름 확인용입니다.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -797,6 +1181,7 @@
       "id": 15,
       "options": {
         "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
         "enableLogDetails": true,
         "prettifyLogMessage": false,
         "showCommonLabels": false,
@@ -805,24 +1190,24 @@
         "sortOrder": "Descending",
         "wrapLogMessage": true
       },
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
             "type": "loki",
-            "uid": "loki"
+            "uid": "${ds_loki}"
           },
           "expr": "{job=\"$log_job\"} |~ \"SMS|outbox|Outbox\"",
           "refId": "A"
         }
       ],
-      "description": "SMS/Outbox 관련 로그를 Loki에서 봅니다. 실패 row, 재시도, graceful shutdown, reclaim 흐름 확인용입니다.",
       "title": "SMS Outbox 로그",
       "type": "logs"
     }
   ],
+  "preload": false,
   "refresh": "5s",
-  "schemaVersion": 39,
-  "style": "dark",
+  "schemaVersion": 42,
   "tags": [
     "fittoring",
     "sms-outbox",
@@ -831,41 +1216,49 @@
   "templating": {
     "list": [
       {
+        "name": "ds_prometheus",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "type": "datasource"
+      },
+      {
+        "name": "ds_loki",
+        "options": [],
+        "query": "loki",
+        "refresh": 1,
+        "type": "datasource"
+      },
+      {
         "current": {
           "selected": true,
-          "text": "stg",
-          "value": "stg"
+          "text": "loadtest",
+          "value": "loadtest"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "prometheus"
+          "uid": "${ds_prometheus}"
         },
         "definition": "label_values(http_server_requests_seconds_count, environment)",
-        "hide": 0,
         "includeAll": false,
         "label": "환경",
-        "multi": false,
         "name": "env",
         "options": [],
         "query": "label_values(http_server_requests_seconds_count, environment)",
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
         "type": "query"
       },
       {
         "current": {
-          "selected": true,
           "text": "fittoring-app",
           "value": "fittoring-app"
         },
-        "hide": 0,
         "label": "로그 job",
         "name": "log_job",
         "options": [],
         "query": "fittoring-app",
-        "skipUrlSync": false,
         "type": "textbox"
       }
     ]
@@ -878,6 +1271,5 @@
   "timezone": "browser",
   "title": "멘토링 예약 SMS Outbox 부하 테스트",
   "uid": "sms-outbox-loadtest",
-  "version": 1,
-  "weekStart": ""
+  "version": 1
 }
