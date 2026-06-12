@@ -19,7 +19,7 @@ interface CommunitySearchHeaderProps {
   defaultKeyword?: string;
   autoFocus?: boolean;
   onSearch?: (keyword: string) => void;
-  redirectToSearchOnEmpty?: boolean;
+  onSearchReset?: () => void;
 }
 
 const SEARCH_KEYWORD_MAX_LENGTH = 50;
@@ -30,7 +30,7 @@ function CommunitySearchHeader({
   defaultKeyword = '',
   autoFocus = false,
   onSearch,
-  redirectToSearchOnEmpty = false,
+  onSearchReset,
 }: CommunitySearchHeaderProps) {
   const [keyword, setKeyword] = useState(defaultKeyword);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -57,16 +57,16 @@ function CommunitySearchHeader({
 
     setKeyword(nextKeyword);
 
-    if (redirectToSearchOnEmpty && nextKeyword.length === 0) {
-      navigate(PAGE_URL.COMMUNITY_SEARCH, { replace: true });
+    if (nextKeyword.length === 0) {
+      onSearchReset?.();
     }
   };
 
   const handleClearButtonClick = () => {
     setKeyword('');
 
-    if (redirectToSearchOnEmpty) {
-      navigate(PAGE_URL.COMMUNITY_SEARCH, { replace: true });
+    if (onSearchReset) {
+      onSearchReset();
       return;
     }
 

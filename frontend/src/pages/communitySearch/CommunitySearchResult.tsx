@@ -15,6 +15,10 @@ function CommunitySearchResult() {
   const { addRecentSearchKeyword } = useRecentSearchKeywords();
   const keyword = searchParams.get('keyword')?.trim() ?? '';
 
+  const navigateToSearchPage = () => {
+    navigate(PAGE_URL.COMMUNITY_SEARCH, { replace: true });
+  };
+
   useEffect(() => {
     if (!keyword) {
       navigate(PAGE_URL.COMMUNITY_SEARCH, { replace: true });
@@ -30,7 +34,7 @@ function CommunitySearchResult() {
       <CommunitySearchHeader
         defaultKeyword={keyword}
         onSearch={addRecentSearchKeyword}
-        redirectToSearchOnEmpty
+        onSearchReset={navigateToSearchPage}
       />
       <CommunitySearchResultContent keyword={keyword} />
     </S_Container>
