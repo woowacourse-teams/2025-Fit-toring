@@ -121,6 +121,14 @@ const router = createBrowserRouter([
             element: <CommunityPostDetail />,
           },
           { path: PAGE_URL.LOGIN, element: <Login /> },
+          {
+            path: PAGE_URL.COMMUNITY_SEARCH,
+            element: <CommunitySearch />,
+          },
+          {
+            path: PAGE_URL.COMMUNITY_SEARCH_RESULT,
+            element: <CommunitySearchResult />,
+          },
         ],
       },
       { path: PAGE_URL.LANDING, element: <Landing /> },
@@ -149,14 +157,7 @@ const router = createBrowserRouter([
         path: PAGE_URL.COMMUNITY_CREATE,
         element: <CommunityPostCreate />,
       },
-      {
-        path: PAGE_URL.COMMUNITY_SEARCH,
-        element: <CommunitySearch />,
-      },
-      {
-        path: PAGE_URL.COMMUNITY_SEARCH_RESULT,
-        element: <CommunitySearchResult />,
-      },
+
       {
         path: `${PAGE_URL.COMMUNITY}/:postId${PAGE_URL.EDIT}`,
         element: <CommunityPostUpdate />,
