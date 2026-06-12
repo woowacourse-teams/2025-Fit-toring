@@ -196,8 +196,8 @@ function CommunityPostDetail() {
               : currentPost,
         );
 
-        queryClient.setQueryData<InfiniteData<CommunityPostResponse>>(
-          ['communityPosts'],
+        queryClient.setQueriesData<InfiniteData<CommunityPostResponse>>(
+          { queryKey: ['communityPosts'] },
           (currentData) =>
             updateCommunityPostsLikeCache(
               currentData,

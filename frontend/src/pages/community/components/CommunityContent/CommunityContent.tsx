@@ -12,7 +12,15 @@ import CommunityPostCardSkeleton from '../CommunityPostCard/CommunityPostCardSke
 
 const COMMUNITY_POST_SKELETON_COUNT = 8;
 
-function CommunityContent() {
+interface CommunityContentProps {
+  keyword?: string;
+  emptyMessage?: string;
+}
+
+function CommunityContent({
+  keyword = '',
+  emptyMessage,
+}: CommunityContentProps) {
   const {
     data,
     fetchNextPage,
@@ -20,10 +28,9 @@ function CommunityContent() {
     isFetchingNextPage,
     isPending,
     refetch,
-  } = useInfiniteCommunityPosts();
+  } = useInfiniteCommunityPosts(keyword);
 
-  const communityPosts =
-    data?.pages.flatMap((page) => page.posts) ?? [];
+  const communityPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
   const handleIntersect = useCallback(async () => {
     await fetchNextPage();
@@ -39,10 +46,7 @@ function CommunityContent() {
   };
 
   return (
-    <PullToRefresh
-      enabled={isPullToRefreshEnabled()}
-      onRefresh={handleRefresh}
-    >
+    <PullToRefresh enabled={isPullToRefreshEnabled()} onRefresh={handleRefresh}>
       <S_Container>
         {isPending ? (
           <>
@@ -58,7 +62,12 @@ function CommunityContent() {
             </S_SkeletonList>
           </>
         ) : (
-          <CommunityFeed posts={communityPosts} />
+          <>
+            <CommunityFeed posts={communityPosts} />
+            {communityPosts.length === 0 && emptyMessage && (
+              <S_StatusText>{emptyMessage}</S_StatusText>
+            )}
+          </>
         )}
         <S_ObserverTarget ref={targetRef} />
         {isFetchingNextPage && (

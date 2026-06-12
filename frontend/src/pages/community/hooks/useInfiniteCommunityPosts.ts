@@ -12,7 +12,9 @@ interface CommunityPostsPageParam {
   cursorCode?: string | null;
 }
 
-const useInfiniteCommunityPosts = () => {
+const useInfiniteCommunityPosts = (keyword = '') => {
+  const normalizedKeyword = keyword.trim();
+
   return useInfiniteQuery<
     CommunityPostResponse,
     Error,
@@ -20,8 +22,12 @@ const useInfiniteCommunityPosts = () => {
     QueryKey,
     CommunityPostsPageParam
   >({
-    queryKey: ['communityPosts'],
-    queryFn: ({ pageParam }) => getCommunityPosts(pageParam),
+    queryKey: ['communityPosts', normalizedKeyword],
+    queryFn: ({ pageParam }) =>
+      getCommunityPosts({
+        ...pageParam,
+        ...(normalizedKeyword ? { keyword: normalizedKeyword } : {}),
+      }),
     initialPageParam: {},
     getNextPageParam: (lastPage) => {
       if (!lastPage.hasNext) {
