@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import PullToRefresh from '../../../../common/components/PullToRefresh/PullToRefresh';
 import { isPullToRefreshEnabled } from '../../../../common/components/PullToRefresh/utils';
 import useInfiniteScroll from '../../../../common/hooks/useInfiniteScroll';
+import { screenReaderOnlyStyle } from '../../../../common/styles/screenReaderOnly';
 import useInfiniteCommunityPosts from '../../hooks/useInfiniteCommunityPosts';
 import CommunityFeed from '../CommunityFeed/CommunityFeed';
 import CommunityPostCardSkeleton from '../CommunityPostCard/CommunityPostCardSkeleton';
@@ -88,17 +89,7 @@ const S_SkeletonList = styled.ul`
 `;
 
 const S_ScreenReaderOnly = styled.p`
-  overflow: hidden;
-  position: absolute;
-
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-
-  white-space: nowrap;
-  clip: rect(0, 0, 0, 0);
+  ${screenReaderOnlyStyle}
 `;
 
 const S_StatusText = styled.p`

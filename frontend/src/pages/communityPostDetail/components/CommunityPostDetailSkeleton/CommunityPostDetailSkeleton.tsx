@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import LoadingSpinner from '../../../../common/components/LoadingSpinner/LoadingSpinner';
 import Skeleton from '../../../../common/components/Skeleton/Skeleton';
 import { BOTTOM_NAV_HEIGHT } from '../../../../common/constants/layout';
+import { screenReaderOnlyStyle } from '../../../../common/styles/screenReaderOnly';
 import CommunityPostDetailHeader from '../CommunityPostDetailHeader/CommunityPostDetailHeader';
 
 const noop = () => {};
@@ -184,15 +185,5 @@ const S_SubmitSkeleton = styled(Skeleton)`
 `;
 
 const S_ScreenReaderOnly = styled.p`
-  overflow: hidden;
-  position: absolute;
-
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-
-  white-space: nowrap;
-  clip: rect(0, 0, 0, 0);
+  ${screenReaderOnlyStyle}
 `;
