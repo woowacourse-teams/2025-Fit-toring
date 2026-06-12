@@ -42,6 +42,15 @@ function CommunityContent() {
     const frameId = window.requestAnimationFrame(() => {
       const maxScrollY = getMaxCommunityScrollY(containerRef.current);
 
+      if (savedScrollY > maxScrollY && hasNextPage) {
+        if (isFetchingNextPage) {
+          return;
+        }
+
+        void fetchNextPage();
+        return;
+      }
+
       restoreCommunityScrollY(
         Math.min(savedScrollY, maxScrollY),
         containerRef.current,
@@ -50,7 +59,13 @@ function CommunityContent() {
     });
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [communityPosts.length, isPending]);
+  }, [
+    communityPosts.length,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+  ]);
 
   const handleIntersect = useCallback(async () => {
     await fetchNextPage();

@@ -168,7 +168,11 @@ function Home() {
       const maxScrollY = getMaxHomeScrollY(contentsRef.current);
 
       if (savedScrollY > maxScrollY && hasNextPage) {
-        void fetchNextPage();
+        if (isFetchingNextPage) {
+          return;
+        }
+
+        fetchNextPage();
         return;
       }
 
@@ -180,7 +184,13 @@ function Home() {
     });
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [fetchNextPage, hasNextPage, isPending, mentorList.length]);
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    mentorList.length,
+  ]);
 
   useAuthCheck();
 
