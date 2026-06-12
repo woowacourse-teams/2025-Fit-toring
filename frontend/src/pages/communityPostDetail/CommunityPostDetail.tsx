@@ -11,7 +11,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import DeleteConfirmModal from '../../common/components/DeleteConfirmModal/DeleteConfirmModal';
-import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { BOTTOM_NAV_HEIGHT } from '../../common/constants/layout';
 import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
@@ -28,6 +27,7 @@ import {
 } from './apis/postCommunityPostLike';
 import { postGuestPostPasswordCheck } from './apis/postGuestPostPasswordCheck';
 import CommunityPostDetailHeader from './components/CommunityPostDetailHeader/CommunityPostDetailHeader';
+import CommunityPostDetailSkeleton from './components/CommunityPostDetailSkeleton/CommunityPostDetailSkeleton';
 import InputSection from './components/InputSection/InputSection';
 import PostCommentSection from './components/PostCommentSection/PostCommentSection';
 import PostContent from './components/PostContent/PostContent';
@@ -219,7 +219,7 @@ function CommunityPostDetail() {
     });
 
   if (isPending) {
-    return <LoadingSpinner />;
+    return <CommunityPostDetailSkeleton />;
   }
 
   if (isError || !postData) {
