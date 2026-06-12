@@ -12,12 +12,6 @@ import MyPageProfileSummary from './components/MyPageProfileSummary/MyPageProfil
 import MyPageSection from './components/MyPageSection/MyPageSection';
 
 import type { MyPageSectionItem } from './components/MyPageSection/MyPageSection';
-import type { MemberRole } from '../../common/types/userInfo';
-
-const ROLE_LABEL: Record<MemberRole, string> = {
-  MENTEE: '멘티',
-  MENTOR: '멘토',
-};
 
 function MyPage() {
   const navigate = useNavigate();
@@ -69,7 +63,7 @@ function MyPage() {
       <MyPageProfileSummary
         profileImg={myProfile?.image}
         name={displayName}
-        roleLabel={ROLE_LABEL[myRole]}
+        role={myRole}
         onClick={handleEditProfileClick}
       />
       <MyPageSection items={mentoringItems} title="멘토링" />
