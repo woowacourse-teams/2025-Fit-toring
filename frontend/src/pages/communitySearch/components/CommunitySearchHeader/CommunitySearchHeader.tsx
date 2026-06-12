@@ -10,6 +10,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
+import closeBlackIcon from '../../../../common/assets/images/closeBlack.svg';
 import searchIcon from '../../../../common/assets/images/searchIcon.svg';
 import Header from '../../../../common/components/Header/Header';
 import { PAGE_URL } from '../../../../common/constants/url';
@@ -17,6 +18,8 @@ import { PAGE_URL } from '../../../../common/constants/url';
 interface CommunitySearchHeaderProps {
   defaultKeyword?: string;
   autoFocus?: boolean;
+  onSearch?: (keyword: string) => void;
+  redirectToSearchOnEmpty?: boolean;
 }
 
 const SEARCH_KEYWORD_MAX_LENGTH = 50;
@@ -26,11 +29,14 @@ const SEARCH_KEYWORD_LENGTH_ERROR_MESSAGE =
 function CommunitySearchHeader({
   defaultKeyword = '',
   autoFocus = false,
+  onSearch,
+  redirectToSearchOnEmpty = false,
 }: CommunitySearchHeaderProps) {
   const [keyword, setKeyword] = useState(defaultKeyword);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const isKeywordLengthExceeded = keyword.length > SEARCH_KEYWORD_MAX_LENGTH;
+  const hasKeyword = keyword.length > 0;
 
   useEffect(() => {
     setKeyword(defaultKeyword);
@@ -43,11 +49,28 @@ function CommunitySearchHeader({
   }, [autoFocus]);
 
   const handleBackButtonClick = () => {
-    navigate(-1);
+    navigate(PAGE_URL.COMMUNITY);
   };
 
   const handleKeywordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setKeyword(event.target.value);
+    const nextKeyword = event.target.value;
+
+    setKeyword(nextKeyword);
+
+    if (redirectToSearchOnEmpty && nextKeyword.length === 0) {
+      navigate(PAGE_URL.COMMUNITY_SEARCH, { replace: true });
+    }
+  };
+
+  const handleClearButtonClick = () => {
+    setKeyword('');
+
+    if (redirectToSearchOnEmpty) {
+      navigate(PAGE_URL.COMMUNITY_SEARCH, { replace: true });
+      return;
+    }
+
+    inputRef.current?.focus();
   };
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -58,6 +81,8 @@ function CommunitySearchHeader({
     if (!trimmedKeyword || isKeywordLengthExceeded) {
       return;
     }
+
+    onSearch?.(trimmedKeyword);
 
     navigate(
       `${PAGE_URL.COMMUNITY_SEARCH_RESULT}?keyword=${encodeURIComponent(
@@ -90,6 +115,15 @@ function CommunitySearchHeader({
                 value={keyword}
                 onChange={handleKeywordChange}
               />
+              {hasKeyword && (
+                <S_ClearButton
+                  type="button"
+                  aria-label="검색어 지우기"
+                  onClick={handleClearButtonClick}
+                >
+                  <S_ClearIcon src={closeBlackIcon} alt="" aria-hidden="true" />
+                </S_ClearButton>
+              )}
             </S_InputWrapper>
           </S_Form>
         </S_Wrapper>
@@ -163,6 +197,8 @@ const S_SearchIcon = styled.img`
 `;
 
 const S_Input = styled.input`
+  flex: 1;
+
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -185,6 +221,28 @@ const S_Input = styled.input`
   ::-webkit-search-cancel-button {
     appearance: none;
   }
+`;
+
+const S_ClearButton = styled.button`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: none;
+
+  background-color: transparent;
+  cursor: pointer;
+`;
+
+const S_ClearIcon = styled.img`
+  width: 1.4rem;
+  height: 1.4rem;
+
+  opacity: 0.6;
 `;
 
 const S_ErrorMessage = styled.p`

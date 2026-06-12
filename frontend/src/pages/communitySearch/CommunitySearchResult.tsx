@@ -7,10 +7,12 @@ import { PAGE_URL } from '../../common/constants/url';
 
 import CommunitySearchHeader from './components/CommunitySearchHeader/CommunitySearchHeader';
 import CommunitySearchResultContent from './components/CommunitySearchResultContent/CommunitySearchResultContent';
+import useRecentSearchKeywords from './hooks/useRecentSearchKeywords';
 
 function CommunitySearchResult() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { addRecentSearchKeyword } = useRecentSearchKeywords();
   const keyword = searchParams.get('keyword')?.trim() ?? '';
 
   useEffect(() => {
@@ -25,7 +27,11 @@ function CommunitySearchResult() {
 
   return (
     <S_Container>
-      <CommunitySearchHeader defaultKeyword={keyword} />
+      <CommunitySearchHeader
+        defaultKeyword={keyword}
+        onSearch={addRecentSearchKeyword}
+        redirectToSearchOnEmpty
+      />
       <CommunitySearchResultContent keyword={keyword} />
     </S_Container>
   );
