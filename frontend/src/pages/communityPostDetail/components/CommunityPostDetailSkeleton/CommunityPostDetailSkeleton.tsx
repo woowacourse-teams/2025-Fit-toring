@@ -5,9 +5,9 @@ import Skeleton from '../../../../common/components/Skeleton/Skeleton';
 import { BOTTOM_NAV_HEIGHT } from '../../../../common/constants/layout';
 import CommunityPostDetailHeader from '../CommunityPostDetailHeader/CommunityPostDetailHeader';
 
-function CommunityPostDetailSkeleton() {
-  const noop = () => {};
+const noop = () => {};
 
+function CommunityPostDetailSkeleton() {
   return (
     <S_Container>
       <CommunityPostDetailHeader
@@ -34,7 +34,6 @@ function CommunityPostDetailSkeleton() {
           <S_LikeSkeleton />
         </S_PostContentSkeleton>
         <S_CommentSectionSkeleton>
-          {/* <S_CommentTitleSkeleton /> */}
           <S_Title>댓글</S_Title>
           <S_CommentSpinnerWrapper>
             <LoadingSpinner />
@@ -116,7 +115,6 @@ const S_CommentSpinnerWrapper = styled.div`
   justify-content: center;
 
   min-height: 16rem;
-  border-top: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;
 
 const S_InputSkeleton = styled.div`
