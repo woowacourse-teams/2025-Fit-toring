@@ -42,13 +42,15 @@ test:  POST /mentorings/{mentoringId}/reservation
 
 access token은 setup 결과로만 전달하며 파일에 저장하지 않는다.
 
-## 30분 부하 모델
+## 17분 부하 모델
 
 | 구간 | 실행 방식 | 예약 RPS | 예약 수 |
 | --- | --- | ---: | ---: |
 | 0~5분 | `constant-arrival-rate` | 1 | 300 |
 | 5분~7분 20초 | `constant-arrival-rate` | 5 | 700 |
-| 7분 20초~30분 | 요청 없이 Outbox 복구 관찰 | 0 | 0 |
+| 7분 20초~17분 | 요청 없이 Outbox 복구 관찰 | 0 | 0 |
+
+복구 관찰 9분 40초는 적체된 Outbox가 전부 `SENT`로 처리되는 데 충분한 시간이다(실측상 약 13분 내 완료).
 
 총 1,000건을 생성하며 `dropped_iterations`가 한 건이라도 발생하면 테스트를 실패 처리한다.
 

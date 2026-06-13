@@ -53,7 +53,7 @@ export const options = {
       exec: 'observeOutboxRecovery',
       startTime: '7m20s',
       vus: 1,
-      duration: '22m40s',
+      duration: '9m40s',
       gracefulStop: '0s',
     },
   },
