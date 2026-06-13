@@ -913,7 +913,7 @@
             "type": "prometheus",
             "uid": "${ds_prometheus}"
           },
-          "expr": "sum(rate(sms_outbox_publish_batch_size_sum{environment=\"$env\"}[$__rate_interval])) / clamp_min(sum(rate(sms_outbox_publish_batch_size_count{environment=\"$env\"}[$__rate_interval])), 0.001)",
+          "expr": "sum(rate(sms_outbox_publish_batch_size_rows_sum{environment=\"$env\"}[$__rate_interval])) / clamp_min(sum(rate(sms_outbox_publish_batch_size_rows_count{environment=\"$env\"}[$__rate_interval])), 0.001)",
           "legendFormat": "평균 배치",
           "refId": "A"
         },
@@ -922,7 +922,7 @@
             "type": "prometheus",
             "uid": "${ds_prometheus}"
           },
-          "expr": "max(sms_outbox_publish_batch_size_max{environment=\"$env\"})",
+          "expr": "max(sms_outbox_publish_batch_size_rows_max{environment=\"$env\"})",
           "legendFormat": "최대 배치",
           "refId": "B"
         }
@@ -1197,7 +1197,7 @@
             "type": "loki",
             "uid": "${ds_loki}"
           },
-          "expr": "{job=\"$log_job\"} |~ \"SMS|outbox|Outbox\"",
+          "expr": "{job=\"$log_job\", environment=\"$env\"} |~ \"SMS|sms|outbox|Outbox\"",
           "refId": "A"
         }
       ],
@@ -1252,13 +1252,13 @@
       },
       {
         "current": {
-          "text": "fittoring-app",
-          "value": "fittoring-app"
+          "text": "fittoring_loadtest_logs",
+          "value": "fittoring_loadtest_logs"
         },
         "label": "로그 job",
         "name": "log_job",
         "options": [],
-        "query": "fittoring-app",
+        "query": "fittoring_loadtest_logs",
         "type": "textbox"
       }
     ]
