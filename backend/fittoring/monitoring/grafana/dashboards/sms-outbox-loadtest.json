@@ -36,8 +36,8 @@
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "grafana"
+        "type": "prometheus",
+        "uid": "${ds_prometheus}"
       },
       "description": "예약 신청/승인 API가 초당 몇 건 처리되는지 봅니다. 부하가 올라가도 처리량이 목표 TPS 근처에서 유지되는지 확인합니다.",
       "fieldConfig": {
