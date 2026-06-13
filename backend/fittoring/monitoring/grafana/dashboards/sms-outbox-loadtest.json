@@ -1197,7 +1197,7 @@
             "type": "loki",
             "uid": "${ds_loki}"
           },
-          "expr": "{job=\"$log_job\", environment=\"$env\"} |~ \"SMS|sms|outbox|Outbox\"",
+          "expr": "{environment=\"$env\", service_name=\"fittoring-backend\"} |~ \"SMS|sms|outbox|Outbox\"",
           "refId": "A"
         }
       ],
@@ -1249,17 +1249,6 @@
         "regex": "",
         "sort": 1,
         "type": "query"
-      },
-      {
-        "current": {
-          "text": "fittoring_loadtest_logs",
-          "value": "fittoring_loadtest_logs"
-        },
-        "label": "로그 job",
-        "name": "log_job",
-        "options": [],
-        "query": "fittoring_loadtest_logs",
-        "type": "textbox"
       }
     ]
   },

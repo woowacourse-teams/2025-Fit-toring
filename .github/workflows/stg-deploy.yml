@@ -6,7 +6,7 @@ on:
       - stg
     paths:
       - "backend/**"
-      - ".github/workflows/stg-deploy.yml"
+      - "!backend/fittoring/monitoring/**"
   workflow_dispatch:
 
 permissions:
