@@ -136,7 +136,7 @@ sms-outbox:
   publisher:
     enabled: true
     fixed-delay-ms: 5000
-    batch-size: 10
+    batch-size: ${SMS_OUTBOX_BUBLISHER_BATCH_SIZE}
     lease-timeout-seconds: 300
 
 discord:
