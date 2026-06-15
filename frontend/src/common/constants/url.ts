@@ -7,6 +7,7 @@ export const PAGE_URL = {
   MY_PAGE: '/my-page',
   CREATED_MENTORING: '/my-page/created-mentoring',
   PARTICIPATED_MENTORING: '/my-page/participated-mentoring',
+  SETTINGS: '/my-page/settings',
   SIGNUP: '/signup',
   LOGIN: '/login',
   LANDING: '/landing',

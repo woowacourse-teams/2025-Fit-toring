@@ -54,7 +54,7 @@ function MyPage() {
     {
       iconSrc: settingsIcon,
       label: '설정',
-      onClick: handlePreparingClick,
+      onClick: () => navigate(PAGE_URL.SETTINGS),
     },
   ];
 

@@ -36,6 +36,7 @@ const CreatedMentoring = lazy(
   () => import('./pages/createdMentoring/CreatedMentoring'),
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
+const Settings = lazy(() => import('./pages/settings/Settings'));
 const ChatRoom = lazy(() => import('./pages/chatRoom/ChatRoom'));
 const CommunityPostDetail = lazy(
   () => import('./pages/communityPostDetail/CommunityPostDetail'),
@@ -107,6 +108,10 @@ const router = createBrowserRouter([
                   {
                     path: PAGE_URL.EDIT_PROFILE,
                     element: <EditProfile />,
+                  },
+                  {
+                    path: PAGE_URL.SETTINGS,
+                    element: <Settings />,
                   },
                 ],
               },
