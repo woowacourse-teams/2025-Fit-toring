@@ -13,16 +13,23 @@ interface InstallPromptModalProps {
   onLaterClick?: () => void;
 }
 
-function InstallPromptModal({
-  opened,
-  onCloseClick,
+interface InstallPromptContentProps {
+  onInstallClick: () => Promise<void>;
+  onLaterClick?: () => void;
+  showLaterButton?: boolean;
+  installDisabled?: boolean;
+}
+
+export function InstallPromptContent({
   onInstallClick,
   onLaterClick,
-}: InstallPromptModalProps) {
+  showLaterButton = false,
+  installDisabled = false,
+}: InstallPromptContentProps) {
   const [isInstalling, setIsInstalling] = useState(false);
 
   const handleInstallClick = async () => {
-    if (isInstalling) {
+    if (isInstalling || installDisabled) {
       return;
     }
 
@@ -30,12 +37,49 @@ function InstallPromptModal({
 
     try {
       await onInstallClick();
-      onCloseClick();
     } finally {
       setIsInstalling(false);
     }
   };
 
+  return (
+    <>
+      <S_Header>
+        <S_IconBox aria-hidden="true">
+          <S_AppIcon src={fittoringIconWithBg} alt="" aria-hidden="true" />
+        </S_IconBox>
+
+        <S_Title>
+          홈 화면에 <S_TitleStrong>핏토링 앱</S_TitleStrong>을 추가하고
+          <br />더 편하게 이용해보세요.
+        </S_Title>
+      </S_Header>
+
+      <S_ButtonsWrapper>
+        <S_Button
+          type="button"
+          onClick={handleInstallClick}
+          disabled={isInstalling || installDisabled}
+        >
+          {isInstalling ? '설치 중...' : '설치하기'}
+        </S_Button>
+
+        {showLaterButton && onLaterClick && (
+          <S_LaterButton type="button" onClick={onLaterClick}>
+            다음에 할래요
+          </S_LaterButton>
+        )}
+      </S_ButtonsWrapper>
+    </>
+  );
+}
+
+function InstallPromptModal({
+  opened,
+  onCloseClick,
+  onInstallClick,
+  onLaterClick,
+}: InstallPromptModalProps) {
   const handleLaterClick = onLaterClick ?? onCloseClick;
 
   return (
@@ -45,30 +89,14 @@ function InstallPromptModal({
           <S_CloseIcon src={closeIcon} alt="" aria-hidden="true" />
         </S_CloseButton>
 
-        <S_Header>
-          <S_IconBox aria-hidden="true">
-            <S_AppIcon src={fittoringIconWithBg} alt="" aria-hidden="true" />
-          </S_IconBox>
-
-          <S_Title>
-            홈 화면에 <S_TitleStrong>핏토링 앱</S_TitleStrong>을 추가하고
-            <br />더 편하게 이용해보세요.
-          </S_Title>
-        </S_Header>
-
-        <S_ButtonsWrapper>
-          <S_Button
-            type="button"
-            onClick={handleInstallClick}
-            disabled={isInstalling}
-          >
-            {isInstalling ? '설치 중...' : '설치하기'}
-          </S_Button>
-
-          <S_LaterButton type="button" onClick={handleLaterClick}>
-            다음에 할래요
-          </S_LaterButton>
-        </S_ButtonsWrapper>
+        <InstallPromptContent
+          onInstallClick={async () => {
+            await onInstallClick();
+            onCloseClick();
+          }}
+          onLaterClick={handleLaterClick}
+          showLaterButton
+        />
       </S_Container>
     </Modal>
   );
