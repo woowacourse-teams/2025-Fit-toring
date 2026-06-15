@@ -598,7 +598,7 @@ function ChatRoom() {
     <S_Container>
       {chatRoomInfoIsPending || !chatRoomInfoData ? (
         <S_LoadingHeaderArea>
-          <S_LoadingHeaderWrapper visible={visible} aria-hidden>
+          <S_LoadingHeaderWrapper visible={visible}>
             <ChatRoomInfoSkeleton />
           </S_LoadingHeaderWrapper>
         </S_LoadingHeaderArea>

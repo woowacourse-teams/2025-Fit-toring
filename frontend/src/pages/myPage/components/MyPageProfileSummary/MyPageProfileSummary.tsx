@@ -2,21 +2,39 @@ import styled from '@emotion/styled';
 
 import chevronRightIcon from '../../../../common/assets/images/mypage-chevron-right.svg';
 import defaultProfileImg from '../../../../common/assets/images/profileImg.svg';
+import { THEME } from '../../../../common/styles/theme';
 import MyPageBadge from '../MyPageBadge/MyPageBadge';
+
+import type { MemberRole } from '../../../../common/types/userInfo';
+
+const ROLE_LABEL: Record<MemberRole, string> = {
+  MENTEE: '멘티',
+  MENTOR: '멘토',
+  ADMIN: '관리자',
+};
+
+const ROLE_BADGE_COLOR: Record<MemberRole, string> = {
+  MENTEE: THEME.SYSTEM.MAIN500,
+  MENTOR: '#764adc',
+  ADMIN: 'black',
+};
 
 interface MyPageProfileSummaryProps {
   profileImg?: string | null;
   name: string;
-  roleLabel?: string;
+  role?: MemberRole;
   onClick: () => void;
 }
 
 function MyPageProfileSummary({
   profileImg,
   name,
-  roleLabel,
+  role,
   onClick,
 }: MyPageProfileSummaryProps) {
+  const roleLabel = role ? ROLE_LABEL[role] : '';
+  const badgeColor = role ? ROLE_BADGE_COLOR[role] : '';
+
   return (
     <S_Button
       aria-label={`${name}님의 회원정보 수정`}
@@ -33,11 +51,11 @@ function MyPageProfileSummary({
       <S_TextGroup>
         <S_TitleRow>
           <S_Title>{name}</S_Title>
-          {roleLabel && (
+          {role && (
             <MyPageBadge
               label={roleLabel}
-              color="#3a43d9"
-              borderColor="#3a43d9"
+              color={badgeColor}
+              borderColor={badgeColor}
             />
           )}
         </S_TitleRow>
