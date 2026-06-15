@@ -12,7 +12,10 @@ import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../common/constants/url';
 import { authCheckQueryOptions } from '../../common/queries/auth';
 import { captureSentryError } from '../../common/utils/captureSentryError';
-import { shutdownChannelTalk } from '../../common/utils/channelTalk';
+import {
+  bootChannelTalk,
+  shutdownChannelTalk,
+} from '../../common/utils/channelTalk';
 import MyPageSection from '../myPage/components/MyPageSection/MyPageSection';
 
 import type { MyPageSectionItem } from '../myPage/components/MyPageSection/MyPageSection';
@@ -60,6 +63,17 @@ function Settings() {
     handleLogout();
   };
 
+  const handleInquiryClick = () => {
+    bootChannelTalk();
+
+    if (!window.ChannelIO) {
+      window.alert('문의하기를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
+    window.ChannelIO('showMessenger');
+  };
+
   const appItems: MyPageSectionItem[] = [
     {
       iconSrc: settingsIcon,
@@ -90,7 +104,7 @@ function Settings() {
     {
       iconSrc: chatIcon,
       label: '문의하기',
-      onClick: handlePreparingClick,
+      onClick: handleInquiryClick,
     },
   ];
 
