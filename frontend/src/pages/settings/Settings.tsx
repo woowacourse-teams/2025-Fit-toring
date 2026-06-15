@@ -83,7 +83,7 @@ function Settings() {
     {
       iconSrc: fittoringIconWithBg,
       label: '앱 설치 안내',
-      onClick: handlePreparingClick,
+      onClick: () => navigate(PAGE_URL.APP_INSTALL_GUIDE),
     },
   ];
 

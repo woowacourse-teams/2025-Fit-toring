@@ -11,6 +11,7 @@ const PATH_TITLE: Record<string, string> = {
   [PAGE_URL.PARTICIPATED_MENTORING]: '수강하는 멘토링',
   [PAGE_URL.EDIT_PROFILE]: '프로필 수정',
   [PAGE_URL.SETTINGS]: '설정',
+  [PAGE_URL.APP_INSTALL_GUIDE]: '앱 설치 안내',
 };
 
 function MyPageHeader() {

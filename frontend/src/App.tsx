@@ -37,6 +37,9 @@ const CreatedMentoring = lazy(
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
 const Settings = lazy(() => import('./pages/settings/Settings'));
+const AppInstallGuide = lazy(
+  () => import('./pages/settings/AppInstallGuide'),
+);
 const ChatRoom = lazy(() => import('./pages/chatRoom/ChatRoom'));
 const CommunityPostDetail = lazy(
   () => import('./pages/communityPostDetail/CommunityPostDetail'),
@@ -112,6 +115,10 @@ const router = createBrowserRouter([
                   {
                     path: PAGE_URL.SETTINGS,
                     element: <Settings />,
+                  },
+                  {
+                    path: PAGE_URL.APP_INSTALL_GUIDE,
+                    element: <AppInstallGuide />,
                   },
                 ],
               },
