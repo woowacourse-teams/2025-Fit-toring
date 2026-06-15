@@ -7,7 +7,7 @@ import MyPageBadge from '../MyPageBadge/MyPageBadge';
 interface MyPageProfileSummaryProps {
   profileImg?: string | null;
   name: string;
-  roleLabel: string;
+  roleLabel?: string;
   onClick: () => void;
 }
 
@@ -33,11 +33,13 @@ function MyPageProfileSummary({
       <S_TextGroup>
         <S_TitleRow>
           <S_Title>{name}</S_Title>
-          <MyPageBadge
-            label={roleLabel}
-            color="#3a43d9"
-            borderColor="#3a43d9"
-          />
+          {roleLabel && (
+            <MyPageBadge
+              label={roleLabel}
+              color="#3a43d9"
+              borderColor="#3a43d9"
+            />
+          )}
         </S_TitleRow>
       </S_TextGroup>
       <S_Icon src={chevronRightIcon} alt="" aria-hidden="true" />
