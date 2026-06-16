@@ -25,7 +25,7 @@ function MyPageMenuRow({
           <MyPageBadge
             label={badgeLabel}
             color="white"
-            backgroundColor="#3a43d9"
+            backgroundColor="#764adc"
           />
         )}
       </S_Content>

@@ -1,5 +1,6 @@
-import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
+
+import Skeleton from '../../../../common/components/Skeleton/Skeleton';
 
 const SKELETON_COUNT = 3;
 
@@ -7,7 +8,7 @@ function MentorCardListSkeleton() {
   return (
     <>
       {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-        <S_Container key={index} aria-hidden="true">
+        <S_Container key={index}>
           <S_ImageBox>
             <S_ProfileImgSkeleton />
           </S_ImageBox>
@@ -32,15 +33,6 @@ function MentorCardListSkeleton() {
 }
 
 export default MentorCardListSkeleton;
-
-const skeletonShimmer = keyframes`
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-`;
 
 const S_Container = styled.li`
   display: flex;
@@ -92,46 +84,32 @@ const S_PriceWrapper = styled.div`
   gap: 0.3rem;
 `;
 
-const S_SkeletonBlock = styled.div`
-  border-radius: 6px;
-
-  background: linear-gradient(
-    90deg,
-    ${({ theme }) => theme.SYSTEM.GRAY100} 0%,
-    ${({ theme }) => theme.SYSTEM.GRAY50} 50%,
-    ${({ theme }) => theme.SYSTEM.GRAY100} 100%
-  );
-  background-size: 400% 100%;
-
-  animation: ${skeletonShimmer} 1.2s ease-in-out infinite;
-`;
-
-const S_Bar = styled(S_SkeletonBlock)`
+const S_Bar = styled(Skeleton)`
   width: 100%;
   height: 1.2rem;
 `;
 
-const S_TitleSkeleton = styled(S_SkeletonBlock)`
+const S_TitleSkeleton = styled(Skeleton)`
   width: 60%;
   height: 2rem;
 `;
 
-const S_SubtitleSkeleton = styled(S_SkeletonBlock)`
+const S_SubtitleSkeleton = styled(Skeleton)`
   width: 42%;
   height: 1.4rem;
 `;
 
-const S_ProfileImgSkeleton = styled(S_SkeletonBlock)`
+const S_ProfileImgSkeleton = styled(Skeleton)`
   width: 100%;
   height: 100%;
 `;
 
-const S_TimeSkeleton = styled(S_SkeletonBlock)`
+const S_TimeSkeleton = styled(Skeleton)`
   width: 3.4rem;
   height: 1.6rem;
 `;
 
-const S_PriceSkeleton = styled(S_SkeletonBlock)`
+const S_PriceSkeleton = styled(Skeleton)`
   width: 5.2rem;
   height: 1.8rem;
 `;
