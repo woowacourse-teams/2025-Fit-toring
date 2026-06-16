@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 
 import closeIcon from '../../assets/images/closeBlack.svg';
 import fittoringIconWithBg from '../../assets/images/fittoringIconWithBg.png';
+import usePWAInstall from '../../hooks/usePWAInstall';
 import Modal from '../Modal/Modal';
 
 interface InstallPromptModalProps {
@@ -17,19 +18,28 @@ interface InstallPromptContentProps {
   onInstallClick: () => Promise<void>;
   onLaterClick?: () => void;
   showLaterButton?: boolean;
-  installDisabled?: boolean;
 }
 
 export function InstallPromptContent({
   onInstallClick,
   onLaterClick,
   showLaterButton = false,
-  installDisabled = false,
 }: InstallPromptContentProps) {
   const [isInstalling, setIsInstalling] = useState(false);
+  const { canInstall, hasInstalledBefore } = usePWAInstall();
 
   const handleInstallClick = async () => {
-    if (isInstalling || installDisabled) {
+    if (isInstalling) {
+      return;
+    }
+
+    if (hasInstalledBefore) {
+      alert('이미 설치되었습니다.');
+      return;
+    }
+
+    if (!canInstall) {
+      alert('현재 브라우저에서는 앱 설치를 바로 실행할 수 없습니다.');
       return;
     }
 
@@ -59,7 +69,7 @@ export function InstallPromptContent({
         <S_Button
           type="button"
           onClick={handleInstallClick}
-          disabled={isInstalling || installDisabled}
+          disabled={isInstalling}
         >
           {isInstalling ? '설치 중...' : '설치하기'}
         </S_Button>

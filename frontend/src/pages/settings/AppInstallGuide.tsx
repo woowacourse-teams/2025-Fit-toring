@@ -3,20 +3,10 @@ import styled from '@emotion/styled';
 import { InstallPromptContent } from '../../common/components/InstallPromptModal/InstallPromptModal';
 import { IOSInstallGuideContent } from '../../common/components/IOSInstallGuideModal/IOSInstallGuideModal';
 import usePWAInstall from '../../common/hooks/usePWAInstall';
-import { isIOS, isPWAStandalone } from '../../common/utils/deviceDetection';
+import { isIOS } from '../../common/utils/deviceDetection';
 
 function AppInstallGuide() {
-  const { canInstall, promptInstall } = usePWAInstall();
-
-  if (isPWAStandalone()) {
-    return (
-      <S_Container>
-        <S_InstalledSection>
-          <S_InstalledText>이미 설치됨</S_InstalledText>
-        </S_InstalledSection>
-      </S_Container>
-    );
-  }
+  const { promptInstall } = usePWAInstall();
 
   return (
     <S_Container>
@@ -24,10 +14,7 @@ function AppInstallGuide() {
         {isIOS() ? (
           <IOSInstallGuideContent />
         ) : (
-          <InstallPromptContent
-            installDisabled={!canInstall}
-            onInstallClick={promptInstall}
-          />
+          <InstallPromptContent onInstallClick={promptInstall} />
         )}
       </S_ContentSection>
     </S_Container>
@@ -48,13 +35,4 @@ const S_ContentSection = styled.section`
   gap: 2rem;
 
   padding: 2rem;
-`;
-
-const S_InstalledSection = styled.section`
-  padding: 2rem;
-`;
-
-const S_InstalledText = styled.p`
-  color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
