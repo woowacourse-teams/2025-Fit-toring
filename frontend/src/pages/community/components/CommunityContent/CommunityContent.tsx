@@ -25,8 +25,7 @@ function CommunityContent() {
     refetch,
   } = useInfiniteCommunityPosts();
 
-  const communityPosts =
-    data?.pages.flatMap((page) => page.posts) ?? [];
+  const communityPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
   useLayoutEffect(() => {
     if (isPending) {
@@ -47,7 +46,7 @@ function CommunityContent() {
           return;
         }
 
-        void fetchNextPage();
+        fetchNextPage();
         return;
       }
 
@@ -81,10 +80,7 @@ function CommunityContent() {
   };
 
   return (
-    <PullToRefresh
-      enabled={isPullToRefreshEnabled()}
-      onRefresh={handleRefresh}
-    >
+    <PullToRefresh enabled={isPullToRefreshEnabled()} onRefresh={handleRefresh}>
       <S_Container ref={containerRef}>
         {!isPending && <CommunityFeed posts={communityPosts} />}
         <S_ObserverTarget ref={targetRef} />
