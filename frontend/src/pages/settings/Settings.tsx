@@ -102,7 +102,7 @@ function Settings() {
   const accountItems: MyPageSectionItem[] = [
     {
       iconSrc: passwordIcon,
-      label: '비밀번호 변경',
+      label: '비밀번호 재설정',
       onClick: handlePreparingClick,
     },
     {
