@@ -7,7 +7,9 @@ interface ChannelTalkMemberInfo {
 const PLUGIN_KEY = process.env.CHANNEL_TALK_PLUGIN_KEY ?? '';
 
 export const bootChannelTalk = (memberInfo?: ChannelTalkMemberInfo) => {
-  if (!window.ChannelIO) return;
+  if (!window.ChannelIO) {
+    return;
+  }
 
   const bootOption: BootOption = {
     pluginKey: PLUGIN_KEY,
@@ -27,19 +29,33 @@ export const bootChannelTalk = (memberInfo?: ChannelTalkMemberInfo) => {
 };
 
 export const shutdownChannelTalk = () => {
-  if (!window.ChannelIO) return;
+  if (!window.ChannelIO) {
+    return;
+  }
 
   window.ChannelIO('shutdown');
 };
 
 export const showChannelTalk = () => {
-  if (!window.ChannelIO) return;
+  if (!window.ChannelIO) {
+    return;
+  }
 
   window.ChannelIO('showChannelButton');
 };
 
 export const hideChannelTalk = () => {
-  if (!window.ChannelIO) return;
+  if (!window.ChannelIO) {
+    return;
+  }
 
   window.ChannelIO('hideChannelButton');
+};
+
+export const onHideChannelTalkMessenger = (callback: () => void) => {
+  if (!window.ChannelIO) {
+    return;
+  }
+
+  window.ChannelIO('onHideMessenger', callback);
 };

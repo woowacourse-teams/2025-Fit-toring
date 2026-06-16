@@ -19,6 +19,7 @@ import {
   hideChannelTalk,
   shutdownChannelTalk,
   showChannelTalk,
+  onHideChannelTalkMessenger,
 } from '../../common/utils/channelTalk';
 import MyPageSection from '../myPage/components/MyPageSection/MyPageSection';
 
@@ -77,7 +78,7 @@ function Settings() {
     }
 
     if (!channelTalkHideListenerRegisteredRef.current) {
-      window.ChannelIO('onHideMessenger', hideChannelTalk);
+      onHideChannelTalkMessenger(hideChannelTalk);
       channelTalkHideListenerRegisteredRef.current = true;
     }
 
