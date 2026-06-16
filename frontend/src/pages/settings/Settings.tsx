@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 import styled from '@emotion/styled';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +16,9 @@ import { authCheckQueryOptions } from '../../common/queries/auth';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 import {
   bootChannelTalk,
+  hideChannelTalk,
   shutdownChannelTalk,
+  showChannelTalk,
 } from '../../common/utils/channelTalk';
 import MyPageSection from '../myPage/components/MyPageSection/MyPageSection';
 
@@ -24,6 +28,7 @@ function Settings() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { logout } = useAuth();
+  const channelTalkHideListenerRegisteredRef = useRef(false);
 
   const handlePreparingClick = () => {
     window.alert('준비중입니다.');
@@ -71,6 +76,12 @@ function Settings() {
       return;
     }
 
+    if (!channelTalkHideListenerRegisteredRef.current) {
+      window.ChannelIO('onHideMessenger', hideChannelTalk);
+      channelTalkHideListenerRegisteredRef.current = true;
+    }
+
+    showChannelTalk();
     window.ChannelIO('showMessenger');
   };
 
