@@ -8,6 +8,7 @@ import starIcon from '../../../../common/assets/images/starIcon.svg';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { isPlainPrimaryClick } from '../../../../common/utils/isPlainPrimaryClick';
 import { saveHomeScrollY } from '../../utils/homeScrollStorage';
 
 import type { MentorInformation } from '../../types/MentorInformation';
@@ -31,6 +32,10 @@ function MentorCardItem({
   const navigate = useNavigate();
 
   const handleDetailInfoButtonClick = (event: MouseEvent<HTMLLIElement>) => {
+    if (!isPlainPrimaryClick(event)) {
+      return;
+    }
+
     saveHomeScrollY(event.currentTarget);
     navigate(`${PAGE_URL.DETAIL}/${id}`);
   };

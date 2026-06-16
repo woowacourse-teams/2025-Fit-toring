@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { PAGE_URL } from '../../../../common/constants/url';
 import { formatTimeAgo } from '../../../../common/utils/formatTimeAgo';
+import { isPlainPrimaryClick } from '../../../../common/utils/isPlainPrimaryClick';
 import { saveCommunityScrollY } from '../../utils/communityScrollStorage';
 import ReactionCount from '../ReactionCount/ReactionCount';
 
@@ -29,15 +30,7 @@ function CommunityPostCard({ post }: CommunityPostCardProps) {
   const authorLabel = nickname;
 
   const handleLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    const isNewTabClick =
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey ||
-      event.button !== 0 ||
-      event.currentTarget.target === '_blank';
-
-    if (isNewTabClick) {
+    if (!isPlainPrimaryClick(event)) {
       return;
     }
 
