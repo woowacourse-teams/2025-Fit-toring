@@ -1,6 +1,5 @@
 import {
   createSessionScrollStorage,
-  getCurrentScrollY,
   getMaxScrollY,
   restoreScrollY,
 } from '../../../common/utils/scrollRestoration';
@@ -11,7 +10,6 @@ export const HOME_SCROLL_Y_STORAGE_KEY = 'homeScrollY';
 
 const homeScrollStorage = createSessionScrollStorage(HOME_SCROLL_Y_STORAGE_KEY);
 
-export const getCurrentHomeScrollY = getCurrentScrollY;
 export const getMaxHomeScrollY = getMaxScrollY;
 export const restoreHomeScrollY = restoreScrollY;
 

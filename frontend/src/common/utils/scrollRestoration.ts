@@ -1,5 +1,9 @@
 export type ScrollSource = number | EventTarget | null;
 
+const SCROLLABLE_OVERFLOW_PATTERN = /(auto|scroll|overlay)/;
+
+type ScrollContainer = HTMLElement | 'document';
+
 const getValidScrollY = (scrollY: unknown): number | null => {
   if (typeof scrollY !== 'number') {
     return null;
@@ -24,58 +28,58 @@ const getElementFromTarget = (target: EventTarget | null | undefined) => {
   return null;
 };
 
-const getDocumentScrollYValues = () => [
-  window.scrollY,
-  window.pageYOffset,
-  document.scrollingElement?.scrollTop,
-  document.documentElement.scrollTop,
-  document.body.scrollTop,
-];
-
-const getAncestorScrollYValues = (target?: EventTarget | null) => {
-  const scrollYValues: number[] = [];
-  let element = getElementFromTarget(target);
-
-  while (element) {
-    scrollYValues.push(element.scrollTop);
-    element = element.parentElement;
+const getDocumentScrollElement = (): HTMLElement | null => {
+  if (document.scrollingElement instanceof HTMLElement) {
+    return document.scrollingElement;
   }
 
-  return scrollYValues;
+  if (document.documentElement instanceof HTMLElement) {
+    return document.documentElement;
+  }
+
+  if (document.body instanceof HTMLElement) {
+    return document.body;
+  }
+
+  return null;
 };
 
-const getDocumentMaxScrollY = () => {
-  const scrollHeight = Math.max(
-    document.scrollingElement?.scrollHeight ?? 0,
-    document.documentElement.scrollHeight,
-    document.body.scrollHeight,
+const isScrollableElement = (element: HTMLElement) => {
+  const { overflow, overflowY } = window.getComputedStyle(element);
+
+  return (
+    SCROLLABLE_OVERFLOW_PATTERN.test(`${overflow} ${overflowY}`) &&
+    element.scrollHeight > element.clientHeight
   );
-
-  return Math.max(scrollHeight - window.innerHeight, 0);
 };
 
-const getAncestorMaxScrollYValues = (target?: EventTarget | null) => {
-  const maxScrollYValues: number[] = [];
+const getScrollableAncestor = (
+  target?: EventTarget | null,
+): HTMLElement | null => {
   let element = getElementFromTarget(target);
 
   while (element) {
-    maxScrollYValues.push(
-      Math.max(element.scrollHeight - element.clientHeight, 0),
-    );
+    if (isScrollableElement(element)) {
+      return element;
+    }
+
     element = element.parentElement;
   }
 
-  return maxScrollYValues;
+  return null;
 };
 
-export const getCurrentScrollY = (target?: EventTarget | null): number => {
-  if (typeof window === 'undefined') {
-    return 0;
-  }
+const resolveScrollContainer = (target?: EventTarget | null): ScrollContainer => {
+  return getScrollableAncestor(target) ?? 'document';
+};
 
+const getDocumentScrollY = () => {
+  const scrollElement = getDocumentScrollElement();
   const scrollYValues = [
-    ...getDocumentScrollYValues(),
-    ...getAncestorScrollYValues(target),
+    window.scrollY,
+    scrollElement?.scrollTop,
+    document.documentElement.scrollTop,
+    document.body.scrollTop,
   ];
   const validScrollYValues = scrollYValues.filter(
     (scrollY): scrollY is number => getValidScrollY(scrollY) !== null,
@@ -84,12 +88,43 @@ export const getCurrentScrollY = (target?: EventTarget | null): number => {
   return Math.max(0, ...validScrollYValues);
 };
 
+const getDocumentMaxScrollY = () => {
+  const scrollElement = getDocumentScrollElement();
+  const scrollHeight = Math.max(
+    scrollElement?.scrollHeight ?? 0,
+    document.documentElement.scrollHeight,
+    document.body.scrollHeight,
+  );
+
+  return Math.max(scrollHeight - window.innerHeight, 0);
+};
+
+export const getCurrentScrollY = (target?: EventTarget | null): number => {
+  if (typeof window === 'undefined') {
+    return 0;
+  }
+
+  const scrollContainer = resolveScrollContainer(target);
+
+  if (scrollContainer === 'document') {
+    return getDocumentScrollY();
+  }
+
+  return scrollContainer.scrollTop;
+};
+
 export const getMaxScrollY = (target?: EventTarget | null): number => {
   if (typeof window === 'undefined') {
     return 0;
   }
 
-  return Math.max(getDocumentMaxScrollY(), ...getAncestorMaxScrollYValues(target));
+  const scrollContainer = resolveScrollContainer(target);
+
+  if (scrollContainer === 'document') {
+    return getDocumentMaxScrollY();
+  }
+
+  return Math.max(scrollContainer.scrollHeight - scrollContainer.clientHeight, 0);
 };
 
 export const restoreScrollY = (
@@ -106,24 +141,24 @@ export const restoreScrollY = (
     return;
   }
 
-  window.scrollTo({
-    top: validScrollY,
-    behavior: 'auto',
-  });
+  const scrollContainer = resolveScrollContainer(target);
 
-  if (document.scrollingElement) {
-    document.scrollingElement.scrollTop = validScrollY;
+  if (scrollContainer === 'document') {
+    const scrollElement = getDocumentScrollElement();
+
+    window.scrollTo({
+      top: validScrollY,
+      behavior: 'auto',
+    });
+
+    if (scrollElement) {
+      scrollElement.scrollTop = validScrollY;
+    }
+
+    return;
   }
 
-  document.documentElement.scrollTop = validScrollY;
-  document.body.scrollTop = validScrollY;
-
-  let element = getElementFromTarget(target);
-
-  while (element) {
-    element.scrollTop = validScrollY;
-    element = element.parentElement;
-  }
+  scrollContainer.scrollTop = validScrollY;
 };
 
 export const createSessionScrollStorage = (storageKey: string) => {
