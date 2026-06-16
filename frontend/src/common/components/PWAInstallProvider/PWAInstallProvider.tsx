@@ -27,6 +27,14 @@ function markInstalledBefore() {
   }
 }
 
+function clearInstalledBefore() {
+  try {
+    localStorage.removeItem(PWA_INSTALLED_STORAGE_KEY);
+  } catch {
+    return;
+  }
+}
+
 function PWAInstallProvider({ children }: PropsWithChildren) {
   const [installPromptEvent, setInstallPromptEvent] =
     useState<BeforeInstallPromptEvent | null>(null);
@@ -64,6 +72,8 @@ function PWAInstallProvider({ children }: PropsWithChildren) {
       const beforeInstallPromptEvent = event as BeforeInstallPromptEvent;
 
       event.preventDefault();
+      clearInstalledBefore();
+      setHasInstalledBefore(false);
       setInstallPromptEvent(beforeInstallPromptEvent);
     };
 
