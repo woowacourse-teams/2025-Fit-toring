@@ -89,6 +89,10 @@ sms:
   timeout:
     connect: 1200
     read: 5000
+  dispatch:
+    # SQS 빠른 길(즉시 발송) 활성화 스위치. off면 기존 폴러 단독 동작 (안전 롤백)
+    sqs:
+      enabled: ${SMS_DISPATCH_SQS_ENABLED:false}
 
 logging:
   file:
@@ -125,6 +129,7 @@ aws:
   sqs:
     push-notification-queue: fittoring-push-notification-queue
     push-notification-unregistered-tokens-queue: fittoring-push-notification-unregistered-tokens
+    sms-dispatch-queue: ${SMS_DISPATCH_QUEUE_NAME:}
 
 image-session:
   merge:
@@ -135,8 +140,8 @@ image-session:
 sms-outbox:
   publisher:
     enabled: true
-    fixed-delay-ms: 5000
-    batch-size: ${SMS_OUTBOX_BUBLISHER_BATCH_SIZE}
+    fixed-delay-ms: ${SMS_OUTBOX_PUBLISHER_FIXED_DELAY_MS:5000}
+    batch-size: ${SMS_OUTBOX_PUBLISHER_BATCH_SIZE:1000}
     lease-timeout-seconds: 300
 
 discord:

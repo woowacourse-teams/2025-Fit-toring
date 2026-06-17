@@ -63,7 +63,7 @@ public class SmsOutboxPublisher {
                 result = "empty";
                 return;
             }
-            dispatchBatch(batch);
+            dispatch(batch);
             result = "dispatched";
         } catch (RuntimeException e) {
             result = "failed";
@@ -74,7 +74,11 @@ public class SmsOutboxPublisher {
         }
     }
 
-    private void dispatchBatch(List<SmsOutbox> batch) {
+    /**
+     * claim된 행들을 CoolSMS로 발송하고 건별 결과를 반영한다.
+     * 폴러(publishPending)와 SQS 컨슈머가 공용으로 사용하는 발송 진입점이다.
+     */
+    public void dispatch(List<SmsOutbox> batch) {
         List<SmsOutboxMessage> messages = getSmsOutboxMessages(batch);
         BatchSendResult result;
         try {
