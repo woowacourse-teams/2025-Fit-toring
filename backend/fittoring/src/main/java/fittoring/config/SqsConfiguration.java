@@ -49,6 +49,18 @@ public class SqsConfiguration {
     }
 
     /**
+     * factory를 명시하지 않은 기존 단건 @SqsListener들이 사용하는 기본 팩토리.
+     */
+    @Bean
+    public SqsMessageListenerContainerFactory<Object> defaultSqsListenerContainerFactory(
+            SqsAsyncClient sqsAsyncClient
+    ) {
+        return SqsMessageListenerContainerFactory.builder()
+                .sqsAsyncClient(sqsAsyncClient)
+                .build();
+    }
+
+    /**
      * SMS 빠른 길 전용 배치 리스너 팩토리.
      * 수신당 최대 10건을 묶어(List) 전달해 한 번의 claim·발송으로 처리한다.
      */
