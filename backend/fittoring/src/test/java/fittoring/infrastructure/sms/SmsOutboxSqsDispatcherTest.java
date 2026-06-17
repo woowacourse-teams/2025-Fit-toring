@@ -9,7 +9,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import fittoring.application.reservation.sms.SmsOutboxCreatedEvent;
+import fittoring.monitoring.sms.SmsDispatchSqsMetrics;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,11 +22,13 @@ class SmsOutboxSqsDispatcherTest {
     private static final String QUEUE = "sms-dispatch-queue";
 
     private final SqsTemplate sqsTemplate = mock(SqsTemplate.class);
+    private final SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+    private final SmsDispatchSqsMetrics metrics = new SmsDispatchSqsMetrics(meterRegistry);
     private SmsOutboxSqsDispatcher dispatcher;
 
     @BeforeEach
     void setUp() {
-        dispatcher = new SmsOutboxSqsDispatcher(sqsTemplate);
+        dispatcher = new SmsOutboxSqsDispatcher(sqsTemplate, metrics);
         ReflectionTestUtils.setField(dispatcher, "queueName", QUEUE);
     }
 

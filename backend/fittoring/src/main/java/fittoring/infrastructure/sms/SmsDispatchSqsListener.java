@@ -1,7 +1,9 @@
 package fittoring.infrastructure.sms;
 
 import fittoring.application.reservation.sms.SmsOutbox;
+import fittoring.monitoring.sms.SmsDispatchSqsMetrics;
 import io.awspring.cloud.sqs.annotation.SqsListener;
+import io.micrometer.core.instrument.Timer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -23,12 +25,31 @@ public class SmsDispatchSqsListener {
 
     private final SmsOutboxClaimer claimer;
     private final SmsOutboxPublisher publisher;
+    private final SmsDispatchSqsMetrics metrics;
 
     @SqsListener(value = "${aws.sqs.sms-dispatch-queue}", factory = "smsDispatchSqsListenerContainerFactory")
     public void handle(List<Long> outboxIds) {
-        List<SmsOutbox> claimed = claimer.claimByIds(outboxIds);
-        if (!claimed.isEmpty()) {
+        Timer.Sample sample = metrics.startListener();
+        String result = "unknown";
+        try {
+            metrics.incrementListenerMessages("received", outboxIds.size());
+            metrics.recordBatchSize("received", outboxIds.size());
+            List<SmsOutbox> claimed = claimer.claimByIds(outboxIds);
+            metrics.incrementListenerMessages("claimed", claimed.size());
+            metrics.recordBatchSize("claimed", claimed.size());
+            if (claimed.isEmpty()) {
+                result = "empty_claim";
+                return;
+            }
             publisher.dispatch(claimed);
+            metrics.incrementListenerMessages("dispatched", claimed.size());
+            result = "dispatched";
+        } catch (RuntimeException e) {
+            result = "failed";
+            throw e;
+        } finally {
+            metrics.incrementListenerBatch(result);
+            metrics.stopListener(sample);
         }
     }
 }
