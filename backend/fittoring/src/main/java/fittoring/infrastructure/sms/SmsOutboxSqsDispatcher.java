@@ -1,6 +1,7 @@
 package fittoring.infrastructure.sms;
 
 import fittoring.application.reservation.sms.SmsOutboxCreatedEvent;
+import fittoring.monitoring.sms.SmsDispatchSqsMetrics;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class SmsOutboxSqsDispatcher {
 
     private final SqsTemplate sqsTemplate;
+    private final SmsDispatchSqsMetrics metrics;
 
     @Value("${aws.sqs.sms-dispatch-queue}")
     private String queueName;
@@ -31,11 +33,14 @@ public class SmsOutboxSqsDispatcher {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onOutboxCreated(SmsOutboxCreatedEvent event) {
         if (!enabled) {
+            metrics.incrementPublish("disabled");
             return;
         }
         try {
             sqsTemplate.send(queueName, event.outboxId());
+            metrics.incrementPublish("success");
         } catch (Exception e) {
+            metrics.incrementPublish("failure");
             log.warn("SMS dispatch SQS 발행 실패, 폴러가 회수: outboxId={}", event.outboxId(), e);
         }
     }

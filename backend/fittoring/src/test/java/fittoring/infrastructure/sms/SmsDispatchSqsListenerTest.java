@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 import fittoring.application.reservation.sms.SmsOutbox;
 import fittoring.application.reservation.sms.SmsOutboxEventType;
 import fittoring.domain.model.Phone;
+import fittoring.monitoring.sms.SmsDispatchSqsMetrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,9 @@ class SmsDispatchSqsListenerTest {
 
     private final SmsOutboxClaimer claimer = mock(SmsOutboxClaimer.class);
     private final SmsOutboxPublisher publisher = mock(SmsOutboxPublisher.class);
-    private final SmsDispatchSqsListener listener = new SmsDispatchSqsListener(claimer, publisher);
+    private final SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+    private final SmsDispatchSqsMetrics metrics = new SmsDispatchSqsMetrics(meterRegistry);
+    private final SmsDispatchSqsListener listener = new SmsDispatchSqsListener(claimer, publisher, metrics);
 
     @DisplayName("수신한 id들을 claim해 발송에 위임한다.")
     @Test
