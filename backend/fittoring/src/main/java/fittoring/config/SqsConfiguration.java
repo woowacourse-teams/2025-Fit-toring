@@ -1,6 +1,8 @@
 package fittoring.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.sqs.config.SqsMessageListenerContainerFactory;
+import io.awspring.cloud.sqs.listener.ListenerMode;
 import io.awspring.cloud.sqs.listener.QueueNotFoundStrategy;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import io.awspring.cloud.sqs.operations.TemplateContentBasedDeduplication;
@@ -43,6 +45,23 @@ public class SqsConfiguration {
                 .configure(options -> options
                         .queueNotFoundStrategy(QueueNotFoundStrategy.FAIL)
                         .contentBasedDeduplication(TemplateContentBasedDeduplication.DISABLED))
+                .build();
+    }
+
+    /**
+     * SMS 빠른 길 전용 배치 리스너 팩토리.
+     * 수신당 최대 10건을 묶어(List) 전달해 한 번의 claim·발송으로 처리한다.
+     */
+    @Bean
+    public SqsMessageListenerContainerFactory<Object> smsDispatchSqsListenerContainerFactory(
+            SqsAsyncClient sqsAsyncClient
+    ) {
+        return SqsMessageListenerContainerFactory.builder()
+                .sqsAsyncClient(sqsAsyncClient)
+                .configure(options -> options
+                        .listenerMode(ListenerMode.BATCH)
+                        .maxMessagesPerPoll(10)
+                        .maxConcurrentMessages(10))
                 .build();
     }
 }
