@@ -6,6 +6,7 @@ import fittoring.application.reservation.service.event.ReservationCreatedEvent;
 import fittoring.application.reservation.service.event.ReservationRejectedEvent;
 import fittoring.infrastructure.sms.SmsMessageFormatter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +18,12 @@ public class ReservationSmsOutboxWriteListener {
 
     private final SmsOutboxRepository smsOutboxRepository;
     private final SmsMessageFormatter smsMessageFormatter;
+    private final ApplicationEventPublisher eventPublisher;
 
     @EventListener
     public void onReservationCreated(ReservationCreatedEvent event) {
         String message = smsMessageFormatter.reservationMessage(event.menteeName(), event.content());
-        smsOutboxRepository.save(SmsOutbox.pending(
+        saveAndPublish(SmsOutbox.pending(
                 event.reservationId(),
                 SmsOutboxEventType.RESERVATION_CREATED,
                 event.mentorPhone(),
@@ -37,7 +39,7 @@ public class ReservationSmsOutboxWriteListener {
                 event.content(),
                 event.chatRoomUrl()
         );
-        smsOutboxRepository.save(SmsOutbox.pending(
+        saveAndPublish(SmsOutbox.pending(
                 event.reservationId(),
                 SmsOutboxEventType.RESERVATION_APPROVED,
                 event.menteePhone(),
@@ -49,12 +51,18 @@ public class ReservationSmsOutboxWriteListener {
     @EventListener
     public void onReservationRejected(ReservationRejectedEvent event) {
         String message = smsMessageFormatter.rejectedReservationMessage(event.mentorName());
-        smsOutboxRepository.save(SmsOutbox.pending(
+        saveAndPublish(SmsOutbox.pending(
                 event.reservationId(),
                 SmsOutboxEventType.RESERVATION_REJECTED,
                 event.menteePhone(),
                 message,
                 RESERVATION_SUBJECT
         ));
+    }
+
+    private void saveAndPublish(SmsOutbox outbox) {
+        SmsOutbox saved = smsOutboxRepository.save(outbox);
+        // 커밋 후 SQS 빠른 길 발행을 트리거 (AFTER_COMMIT 리스너가 수신)
+        eventPublisher.publishEvent(new SmsOutboxCreatedEvent(saved.getId()));
     }
 }
