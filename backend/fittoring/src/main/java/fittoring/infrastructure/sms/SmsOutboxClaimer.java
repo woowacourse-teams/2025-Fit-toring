@@ -35,4 +35,23 @@ public class SmsOutboxClaimer {
         }
         return rows;
     }
+
+    /**
+     * 주어진 id들 중 claim 가능한(PENDING 또는 lease 만료된 PROCESSING) 행만 선점한다.
+     * SQS 컨슈머가 받은 메시지의 outboxId만 처리할 때 사용하며, 폴러와의 경합·SQS 중복은
+     * status + lease + SKIP LOCKED로 자동 제외된다.
+     */
+    @Transactional
+    public List<SmsOutbox> claimByIds(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime leaseCutoff = now.minusSeconds(leaseTimeoutSeconds);
+        List<SmsOutbox> rows = smsOutboxRepository.findClaimableByIds(ids, leaseCutoff);
+        for (SmsOutbox row : rows) {
+            row.markProcessing(now);
+        }
+        return rows;
+    }
 }

@@ -27,6 +27,20 @@ public interface SmsOutboxRepository extends JpaRepository<SmsOutbox, Long> {
             @Param("batchSize") int batchSize
     );
 
+    @Query(value = """
+            SELECT *
+            FROM sms_outbox
+            WHERE id IN (:ids)
+              AND (status = 'PENDING'
+                   OR (status = 'PROCESSING' AND processing_started_at < :leaseCutoff))
+            ORDER BY created_at ASC, id ASC
+            FOR UPDATE SKIP LOCKED
+            """, nativeQuery = true)
+    List<SmsOutbox> findClaimableByIds(
+            @Param("ids") List<Long> ids,
+            @Param("leaseCutoff") LocalDateTime leaseCutoff
+    );
+
     Page<SmsOutbox> findByStatus(SmsOutboxStatus status, Pageable pageable);
 
     long countByStatus(SmsOutboxStatus status);
