@@ -36,7 +36,7 @@ public class SmsOutboxPublisher {
         this.shuttingDown = true;
     }
 
-    @Scheduled(fixedDelayString = "${sms-outbox.publisher.fixed-delay-ms:5000}")
+    @Scheduled(fixedDelayString = "${sms-outbox.publisher.fixed-delay-ms:60000}")
     public void runScheduled() {
         if (!enabled) {
             metrics.incrementPublishRun("disabled");
