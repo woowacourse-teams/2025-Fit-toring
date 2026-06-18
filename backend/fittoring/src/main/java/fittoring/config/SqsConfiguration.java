@@ -73,7 +73,7 @@ public class SqsConfiguration {
                 .configure(options -> options
                         .listenerMode(ListenerMode.BATCH)
                         .maxMessagesPerPoll(10)
-                        .maxConcurrentMessages(10))
+                        .maxConcurrentMessages(20))
                 .build();
     }
 }
