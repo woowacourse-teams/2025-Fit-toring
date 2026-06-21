@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 
 import closeIcon from '../../assets/images/closeBlack.svg';
 import fittoringIconWithBg from '../../assets/images/fittoringIconWithBg.png';
-import usePWAInstall from '../../hooks/usePWAInstall';
 import Modal from '../Modal/Modal';
 
 interface InstallPromptModalProps {
@@ -18,40 +17,15 @@ interface InstallPromptContentProps {
   onInstallClick: () => Promise<void>;
   onLaterClick?: () => void;
   showLaterButton?: boolean;
+  isInstalling?: boolean;
 }
 
 export function InstallPromptContent({
   onInstallClick,
   onLaterClick,
   showLaterButton = false,
+  isInstalling = false,
 }: InstallPromptContentProps) {
-  const [isInstalling, setIsInstalling] = useState(false);
-  const { canInstall, hasInstalledBefore } = usePWAInstall();
-
-  const handleInstallClick = async () => {
-    if (isInstalling) {
-      return;
-    }
-
-    if (hasInstalledBefore) {
-      alert('이미 설치되었습니다.');
-      return;
-    }
-
-    if (!canInstall) {
-      alert('현재 브라우저에서는 앱 설치를 바로 실행할 수 없습니다.');
-      return;
-    }
-
-    setIsInstalling(true);
-
-    try {
-      await onInstallClick();
-    } finally {
-      setIsInstalling(false);
-    }
-  };
-
   return (
     <>
       <S_Header>
@@ -68,7 +42,7 @@ export function InstallPromptContent({
       <S_ButtonsWrapper>
         <S_Button
           type="button"
-          onClick={handleInstallClick}
+          onClick={onInstallClick}
           disabled={isInstalling}
         >
           {isInstalling ? '설치 중...' : '설치하기'}
@@ -90,7 +64,22 @@ function InstallPromptModal({
   onInstallClick,
   onLaterClick,
 }: InstallPromptModalProps) {
+  const [isInstalling, setIsInstalling] = useState(false);
   const handleLaterClick = onLaterClick ?? onCloseClick;
+
+  const handleInstallClick = async () => {
+    if (isInstalling) {
+      return;
+    }
+
+    setIsInstalling(true);
+
+    try {
+      await onInstallClick();
+    } finally {
+      setIsInstalling(false);
+    }
+  };
 
   return (
     <Modal opened={opened} onCloseClick={onCloseClick}>
@@ -100,12 +89,10 @@ function InstallPromptModal({
         </S_CloseButton>
 
         <InstallPromptContent
-          onInstallClick={async () => {
-            await onInstallClick();
-            onCloseClick();
-          }}
+          onInstallClick={handleInstallClick}
           onLaterClick={handleLaterClick}
           showLaterButton
+          isInstalling={isInstalling}
         />
       </S_Container>
     </Modal>
