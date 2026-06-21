@@ -22,7 +22,7 @@ const ROLE_BADGE_COLOR: Record<MemberRole, string> = {
 interface MyPageProfileSummaryProps {
   profileImg?: string | null;
   name: string;
-  role: MemberRole;
+  role?: MemberRole;
   onClick: () => void;
 }
 
@@ -32,8 +32,8 @@ function MyPageProfileSummary({
   role,
   onClick,
 }: MyPageProfileSummaryProps) {
-  const roleLabel = ROLE_LABEL[role];
-  const badgeColor = ROLE_BADGE_COLOR[role];
+  const roleLabel = role ? ROLE_LABEL[role] : '';
+  const badgeColor = role ? ROLE_BADGE_COLOR[role] : '';
 
   return (
     <S_Button
@@ -51,11 +51,13 @@ function MyPageProfileSummary({
       <S_TextGroup>
         <S_TitleRow>
           <S_Title>{name}</S_Title>
-          <MyPageBadge
-            label={roleLabel}
-            color={badgeColor}
-            borderColor={badgeColor}
-          />
+          {role && (
+            <MyPageBadge
+              label={roleLabel}
+              color={badgeColor}
+              borderColor={badgeColor}
+            />
+          )}
         </S_TitleRow>
       </S_TextGroup>
       <S_Icon src={chevronRightIcon} alt="" aria-hidden="true" />

@@ -18,7 +18,7 @@ function MyPage() {
   const { myProfile } = useMyProfile();
 
   const displayName = myProfile?.name?.trim() || '회원';
-  const myRole = myProfile?.myRole ?? 'MENTOR';
+  const myRole = myProfile?.myRole;
 
   const handleEditProfileClick = () => {
     navigate(PAGE_URL.EDIT_PROFILE);
@@ -29,12 +29,16 @@ function MyPage() {
   };
 
   const mentoringItems: MyPageSectionItem[] = [
-    {
-      iconSrc: calendarIcon,
-      label: '운영하는 멘토링',
-      badgeLabel: '멘토전용',
-      onClick: () => navigate(PAGE_URL.CREATED_MENTORING),
-    },
+    ...(myRole === 'MENTOR'
+      ? [
+          {
+            iconSrc: calendarIcon,
+            label: '운영하는 멘토링',
+            badgeLabel: '멘토전용',
+            onClick: () => navigate(PAGE_URL.CREATED_MENTORING),
+          },
+        ]
+      : []),
     {
       iconSrc: usersIcon,
       label: '수강하는 멘토링',
