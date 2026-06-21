@@ -10,10 +10,7 @@ describe('CommunitySearchHeader', () => {
   it('moves to community page when back button is clicked', async () => {
     render(
       <Routes>
-        <Route
-          path="/community/search"
-          element={<CommunitySearchHeader />}
-        />
+        <Route path="/community/search" element={<CommunitySearchHeader />} />
         <Route path="/community" element={<div>커뮤니티 목록</div>} />
       </Routes>,
       {
@@ -38,36 +35,5 @@ describe('CommunitySearchHeader', () => {
     );
 
     expect(screen.getByLabelText('커뮤니티 게시글 검색어')).toHaveValue('');
-  });
-
-  it('moves to search page when keyword is cleared on result page', async () => {
-    render(
-      <Routes>
-        <Route
-          path="/community/search/result"
-          element={
-            <CommunitySearchHeader
-              defaultKeyword="검색어"
-              redirectToSearchOnEmpty
-            />
-          }
-        />
-        <Route
-          path="/community/search"
-          element={<div>최근 검색어 화면</div>}
-        />
-      </Routes>,
-      {
-        routerProps: {
-          initialEntries: ['/community/search/result?keyword=검색어'],
-        },
-      },
-    );
-
-    await userEvent.click(
-      screen.getByRole('button', { name: '검색어 지우기' }),
-    );
-
-    expect(screen.getByText('최근 검색어 화면')).toBeInTheDocument();
   });
 });

@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
@@ -35,11 +41,17 @@ import SortDropDown from './components/SortDropDown/SortDropDown';
 import SpecialtyCheckbox from './components/SpecialtyCheckbox/SpecialtyCheckbox';
 import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFilterModal';
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
-import useMentorList from './hooks/useMentorList';
+import useInfiniteMentorList from './hooks/useInfiniteMentorList';
 import useModal from './hooks/useModal';
 import useMyMentoringId from './hooks/useMyMentoringId';
 import useSort from './hooks/useSortKey';
 import useSpecialtyFilter from './hooks/useSpecialtyFilter';
+import {
+  clearHomeScrollY,
+  getHomeScrollY,
+  getMaxHomeScrollY,
+  restoreHomeScrollY,
+} from './utils/homeScrollStorage';
 
 import type { SortKey } from './hooks/useSortKey';
 import type { Specialty } from '../../common/types/Specialty';
@@ -47,6 +59,7 @@ import type { Specialty } from '../../common/types/Specialty';
 type InstallModalType = 'ios' | 'android' | null;
 
 function Home() {
+  const contentsRef = useRef<HTMLElement | null>(null);
   const { modalOpened, openModal, closeModal } = useModal();
   const [installModalType, setInstallModalType] =
     useState<InstallModalType>(null);
@@ -83,50 +96,35 @@ function Home() {
 
   const { sortKey, changeSortKey } = useSort();
 
-  const {
-    fetchInitialMentors,
-    fetchMoreMentors,
-    mentorList,
-    hasNext,
-    cursorCode,
-    isLoading,
-  } = useMentorList();
-
-  const initialSortKeyRef = useRef(sortKey);
-
-  useEffect(() => {
-    const fetchInitialMentorList = async () => {
-      await fetchInitialMentors([], initialSortKeyRef.current);
-    };
-
-    fetchInitialMentorList();
-  }, [fetchInitialMentors]);
-
-  const handleSortButtonClick = async (option: SortKey) => {
-    changeSortKey(option);
-
-    await fetchInitialMentors(selectedSpecialties, option);
-  };
-
   const { selectedSpecialties, applySpecialties, toggleSpecialty } =
     useSpecialtyFilter();
 
-  const handleApply = async (specialties: Specialty[]) => {
-    applySpecialties(specialties);
-    handleCloseModal();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    refetch,
+  } = useInfiniteMentorList({
+    selectedSpecialties,
+    sortKey,
+  });
 
-    await fetchInitialMentors(specialties, sortKey);
+  const mentorList =
+    data?.pages.flatMap((page) => page.mentoringSummaryResponses) ?? [];
+
+  const handleSortButtonClick = (option: SortKey) => {
+    changeSortKey(option);
   };
 
-  const handleSelectedSpecialtyChange = async (specialty: Specialty) => {
-    toggleSpecialty(specialty);
+  const handleApply = (specialties: Specialty[]) => {
+    applySpecialties(specialties);
+    handleCloseModal();
+  };
 
-    await fetchInitialMentors(
-      selectedSpecialties.filter(
-        (prevSpecialty) => prevSpecialty.id !== specialty.id,
-      ),
-      sortKey,
-    );
+  const handleSelectedSpecialtyChange = (specialty: Specialty) => {
+    toggleSpecialty(specialty);
   };
 
   const handleMentoringCreation = () => {
@@ -142,18 +140,57 @@ function Home() {
     navigate(PAGE_URL.MENTORING_CREATE);
   };
 
-  const fetchNextPage = useCallback(async () => {
-    await fetchMoreMentors(selectedSpecialties, sortKey, cursorCode);
-  }, [cursorCode, fetchMoreMentors, selectedSpecialties, sortKey]);
+  const handleIntersect = useCallback(async () => {
+    await fetchNextPage();
+  }, [fetchNextPage]);
 
   const handleRefresh = useCallback(async () => {
-    await fetchInitialMentors(selectedSpecialties, sortKey);
-  }, [fetchInitialMentors, selectedSpecialties, sortKey]);
+    await refetch();
+  }, [refetch]);
 
   const { targetRef } = useInfiniteScroll<HTMLLIElement>({
-    isReady: hasNext && !isLoading,
-    onIntersect: fetchNextPage,
+    isReady: !!hasNextPage && !isFetchingNextPage,
+    onIntersect: handleIntersect,
   });
+
+  useLayoutEffect(() => {
+    if (isPending) {
+      return;
+    }
+
+    const savedScrollY = getHomeScrollY();
+
+    if (savedScrollY === null) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const maxScrollY = getMaxHomeScrollY(contentsRef.current);
+
+      if (savedScrollY > maxScrollY && hasNextPage) {
+        if (isFetchingNextPage) {
+          return;
+        }
+
+        fetchNextPage();
+        return;
+      }
+
+      restoreHomeScrollY(
+        Math.min(savedScrollY, maxScrollY),
+        contentsRef.current,
+      );
+      clearHomeScrollY();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    mentorList.length,
+  ]);
 
   useAuthCheck();
 
@@ -239,7 +276,7 @@ function Home() {
         enabled={isPullToRefreshEnabled()}
         onRefresh={handleRefresh}
       >
-        <S_Contents>
+        <S_Contents ref={contentsRef}>
           <S_CheckboxWrapper>
             {selectedSpecialties.map((specialty) => (
               <SpecialtyCheckbox
@@ -253,7 +290,7 @@ function Home() {
           </S_CheckboxWrapper>
           <MentorCardList>
             <MentorCardListContent
-              isLoading={isLoading}
+              isLoading={isPending}
               mentorList={mentorList}
               hasFilter={selectedSpecialties.length > 0}
             />

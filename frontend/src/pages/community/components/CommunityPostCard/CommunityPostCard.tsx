@@ -1,8 +1,12 @@
+import type { MouseEvent } from 'react';
+
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 
 import { PAGE_URL } from '../../../../common/constants/url';
 import { formatTimeAgo } from '../../../../common/utils/formatTimeAgo';
+import { isPlainPrimaryClick } from '../../../../common/utils/isPlainPrimaryClick';
+import { saveCommunityScrollY } from '../../utils/communityScrollStorage';
 import ReactionCount from '../ReactionCount/ReactionCount';
 
 import type { CommunityPost } from '../../../../common/types/communityPost';
@@ -25,9 +29,17 @@ function CommunityPostCard({ post }: CommunityPostCardProps) {
   const createdAtLabel = formatTimeAgo(createdAt);
   const authorLabel = nickname;
 
+  const handleLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!isPlainPrimaryClick(event)) {
+      return;
+    }
+
+    saveCommunityScrollY(event.currentTarget);
+  };
+
   return (
     <S_ListItem>
-      <S_Link to={`${PAGE_URL.COMMUNITY}/${id}`}>
+      <S_Link to={`${PAGE_URL.COMMUNITY}/${id}`} onClick={handleLinkClick}>
         <S_Card>
           <S_TextBlock>
             <S_Title>{title}</S_Title>

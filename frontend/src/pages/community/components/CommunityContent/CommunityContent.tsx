@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 
 import styled from '@emotion/styled';
 
@@ -7,6 +7,12 @@ import { isPullToRefreshEnabled } from '../../../../common/components/PullToRefr
 import useInfiniteScroll from '../../../../common/hooks/useInfiniteScroll';
 import { screenReaderOnlyStyle } from '../../../../common/styles/screenReaderOnly';
 import useInfiniteCommunityPosts from '../../hooks/useInfiniteCommunityPosts';
+import {
+  clearCommunityScrollY,
+  getMaxCommunityScrollY,
+  getCommunityScrollY,
+  restoreCommunityScrollY,
+} from '../../utils/communityScrollStorage';
 import CommunityFeed from '../CommunityFeed/CommunityFeed';
 import CommunityPostCardSkeleton from '../CommunityPostCard/CommunityPostCardSkeleton';
 
@@ -21,6 +27,7 @@ function CommunityContent({
   keyword = '',
   emptyMessage,
 }: CommunityContentProps) {
+  const containerRef = useRef<HTMLElement | null>(null);
   const {
     data,
     fetchNextPage,
@@ -31,6 +38,45 @@ function CommunityContent({
   } = useInfiniteCommunityPosts(keyword);
 
   const communityPosts = data?.pages.flatMap((page) => page.posts) ?? [];
+
+  useLayoutEffect(() => {
+    if (isPending) {
+      return;
+    }
+
+    const savedScrollY = getCommunityScrollY();
+
+    if (savedScrollY === null) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const maxScrollY = getMaxCommunityScrollY(containerRef.current);
+
+      if (savedScrollY > maxScrollY && hasNextPage) {
+        if (isFetchingNextPage) {
+          return;
+        }
+
+        fetchNextPage();
+        return;
+      }
+
+      restoreCommunityScrollY(
+        Math.min(savedScrollY, maxScrollY),
+        containerRef.current,
+      );
+      clearCommunityScrollY();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [
+    communityPosts.length,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+  ]);
 
   const handleIntersect = useCallback(async () => {
     await fetchNextPage();
@@ -47,7 +93,7 @@ function CommunityContent({
 
   return (
     <PullToRefresh enabled={isPullToRefreshEnabled()} onRefresh={handleRefresh}>
-      <S_Container>
+      <S_Container ref={containerRef}>
         {isPending ? (
           <>
             <S_ScreenReaderOnly role="status">
