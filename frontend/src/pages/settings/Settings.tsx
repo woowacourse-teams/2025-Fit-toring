@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import styled from '@emotion/styled';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -17,9 +17,10 @@ import { captureSentryError } from '../../common/utils/captureSentryError';
 import {
   bootChannelTalk,
   hideChannelTalk,
+  onHideChannelTalkMessenger,
   shutdownChannelTalk,
   showChannelTalk,
-  onHideChannelTalkMessenger,
+  clearChannelTalkCallbacks,
 } from '../../common/utils/channelTalk';
 import MyPageSection from '../myPage/components/MyPageSection/MyPageSection';
 
@@ -78,6 +79,9 @@ function Settings() {
     }
 
     if (!channelTalkHideListenerRegisteredRef.current) {
+      onHideChannelTalkMessenger(() => {
+        hideChannelTalk();
+      });
       onHideChannelTalkMessenger(hideChannelTalk);
       channelTalkHideListenerRegisteredRef.current = true;
     }
@@ -119,6 +123,14 @@ function Settings() {
       onClick: handleInquiryClick,
     },
   ];
+
+  useEffect(() => {
+    return () => {
+      clearChannelTalkCallbacks();
+      hideChannelTalk();
+      channelTalkHideListenerRegisteredRef.current = false;
+    };
+  }, []);
 
   return (
     <S_Container>
