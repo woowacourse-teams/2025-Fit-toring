@@ -59,3 +59,11 @@ export const onHideChannelTalkMessenger = (callback: () => void) => {
 
   window.ChannelIO('onHideMessenger', callback);
 };
+
+export const clearChannelTalkCallbacks = () => {
+  if (!window.ChannelIO) {
+    return;
+  }
+
+  window.ChannelIO('clearCallbacks');
+};
