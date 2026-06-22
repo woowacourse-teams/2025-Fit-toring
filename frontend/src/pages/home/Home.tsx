@@ -75,7 +75,7 @@ function Home() {
     showModal: showNotificationModal,
     closeModal: closeNotificationModal,
   } = useNotification(authenticated);
-  const { canInstall, promptInstall } = usePWAInstall();
+  const { canInstall, hasInstalledBefore, promptInstall } = usePWAInstall();
 
   const handleAllowNotification = async () => {
     await requestNotificationPermission();
@@ -199,6 +199,26 @@ function Home() {
     setInstallModalType(null);
   }, []);
 
+  const handleAndroidInstallClick = useCallback(async () => {
+    if (hasInstalledBefore) {
+      window.alert('이미 설치되었습니다.');
+      return;
+    }
+
+    if (!canInstall) {
+      window.alert('현재 브라우저에서는 앱 설치를 바로 실행할 수 없습니다.');
+      return;
+    }
+
+    await promptInstall();
+    handleCloseAndroidInstallPrompt();
+  }, [
+    canInstall,
+    handleCloseAndroidInstallPrompt,
+    hasInstalledBefore,
+    promptInstall,
+  ]);
+
   const handleCloseIOSInstallGuide = useCallback(() => {
     markInstallPromptShown('ios');
     setInstallModalType(null);
@@ -238,7 +258,7 @@ function Home() {
         opened={installModalType === 'android'}
         onCloseClick={handleCloseAndroidInstallPrompt}
         onLaterClick={handleCloseAndroidInstallPrompt}
-        onInstallClick={promptInstall}
+        onInstallClick={handleAndroidInstallClick}
       />
 
       <IOSInstallGuideModal

@@ -11,6 +11,71 @@ interface IOSInstallGuideModalProps {
   onLaterClick?: () => void;
 }
 
+interface IOSInstallGuideContentProps {
+  onLaterClick?: () => void;
+  showLaterButton?: boolean;
+}
+
+export function IOSInstallGuideContent({
+  onLaterClick,
+  showLaterButton = false,
+}: IOSInstallGuideContentProps) {
+  return (
+    <>
+      <S_Header>
+        <S_IconBox aria-hidden="true">
+          <S_AppIcon src={fittoringIconWithBg} alt="" aria-hidden="true" />
+        </S_IconBox>
+
+        <S_Title>홈 화면에 핏토링 추가</S_Title>
+        <S_Description>
+          채팅과 예약 소식을
+          <br />더 빠르게 확인해보세요.
+        </S_Description>
+      </S_Header>
+
+      <S_StepList>
+        <S_StepCard>
+          <S_StepBadge>1</S_StepBadge>
+          <S_StepBody>
+            <S_StepTitleRow>
+              <S_StepTitle>브라우저</S_StepTitle>
+              <S_StepIcon src={shareIcon} alt="" aria-hidden="true" />
+              <S_StepTitle>공유 버튼 탭</S_StepTitle>
+            </S_StepTitleRow>
+            <S_StepDescription>
+              Safari 하단 / Chrome 상단 바 공유 아이콘을 눌러주세요.
+            </S_StepDescription>
+          </S_StepBody>
+        </S_StepCard>
+
+        <S_StepCard>
+          <S_StepBadge>2</S_StepBadge>
+          <S_StepBody>
+            <S_StepTitle>&quot;홈 화면에 추가&quot; 선택</S_StepTitle>
+          </S_StepBody>
+        </S_StepCard>
+
+        <S_StepCard>
+          <S_StepBadge>3</S_StepBadge>
+          <S_StepBody>
+            <S_StepTitle>우측 상단 &quot;추가&quot; 탭</S_StepTitle>
+            <S_StepDescription>
+              홈 화면에서 앱 아이콘을 바로 실행할 수 있어요.
+            </S_StepDescription>
+          </S_StepBody>
+        </S_StepCard>
+      </S_StepList>
+
+      {showLaterButton && onLaterClick && (
+        <S_LaterButton type="button" onClick={onLaterClick}>
+          다음에 할래요
+        </S_LaterButton>
+      )}
+    </>
+  );
+}
+
 function IOSInstallGuideModal({
   opened,
   onCloseClick,
@@ -25,53 +90,10 @@ function IOSInstallGuideModal({
           <S_CloseIcon src={closeIcon} alt="" aria-hidden="true" />
         </S_CloseButton>
 
-        <S_Header>
-          <S_IconBox aria-hidden="true">
-            <S_AppIcon src={fittoringIconWithBg} alt="" aria-hidden="true" />
-          </S_IconBox>
-
-          <S_Title>홈 화면에 핏토링 추가</S_Title>
-          <S_Description>
-            채팅과 예약 소식을
-            <br />더 빠르게 확인해보세요.
-          </S_Description>
-        </S_Header>
-
-        <S_StepList>
-          <S_StepCard>
-            <S_StepBadge>1</S_StepBadge>
-            <S_StepBody>
-              <S_StepTitleRow>
-                <S_StepTitle>브라우저</S_StepTitle>
-                <S_StepIcon src={shareIcon} alt="" aria-hidden="true" />
-                <S_StepTitle>공유 버튼 탭</S_StepTitle>
-              </S_StepTitleRow>
-              <S_StepDescription>
-                Safari 하단 / Chrome 상단 바 공유 아이콘을 눌러주세요.
-              </S_StepDescription>
-            </S_StepBody>
-          </S_StepCard>
-
-          <S_StepCard>
-            <S_StepBadge>2</S_StepBadge>
-            <S_StepBody>
-              <S_StepTitle>&quot;홈 화면에 추가&quot; 선택</S_StepTitle>
-            </S_StepBody>
-          </S_StepCard>
-
-          <S_StepCard>
-            <S_StepBadge>3</S_StepBadge>
-            <S_StepBody>
-              <S_StepTitle>우측 상단 &quot;추가&quot; 탭</S_StepTitle>
-              <S_StepDescription>
-                홈 화면에서 앱 아이콘을 바로 실행할 수 있어요.
-              </S_StepDescription>
-            </S_StepBody>
-          </S_StepCard>
-        </S_StepList>
-        <S_LaterButton type="button" onClick={handleLaterClick}>
-          다음에 할래요
-        </S_LaterButton>
+        <IOSInstallGuideContent
+          onLaterClick={handleLaterClick}
+          showLaterButton
+        />
       </S_Container>
     </Modal>
   );
