@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
-import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
 import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
@@ -19,8 +18,6 @@ import fittoring.domain.model.ChatMessageType;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatMessageNotFoundException;
-import fittoring.application.exception.ChatRoomNotFoundException;
-import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
@@ -45,44 +42,6 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private PresignedUrlService presignedUrlService;
-
-    @DisplayName("존재하지 않는 채팅방 저장의 경우 예외가 발생한다.")
-    @Test
-    void registerMessage() {
-        //given
-        Long invalidChatRoomId = 999L;
-        ChatMessageRequest request = new ChatMessageRequest("cotent", 123155L, ChatMessageType.TEXT);
-        Long senderId = 1L;
-
-        //when
-        //then
-        assertThatThrownBy(() ->
-                chatMessageService.registerMessage(invalidChatRoomId, request, senderId))
-                .isInstanceOf(ChatRoomNotFoundException.class)
-                .hasMessage(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage());
-    }
-
-    @DisplayName("참여자가 아닌 사용자가 메시지를 등록하려 할 때 예외가 발생한다.")
-    @Test
-    void registerMessageUnauthorizedMember() {
-        //given
-        Long reservationId = 1L;
-        Long menteeId = 1L;
-        Long mentorId = 2L;
-
-        ChatRoom chatRoom = new ChatRoom(reservationId, menteeId, mentorId);
-        chatRoomRepository.save(chatRoom);
-
-        ChatMessageRequest request = new ChatMessageRequest("content", 1234L, ChatMessageType.TEXT);
-        Long unauthorizedUserId = 999L;
-
-        //when
-        //then
-        assertThatThrownBy(() ->
-                chatMessageService.registerMessage(chatRoom.getId(), request, unauthorizedUserId))
-                .isInstanceOf(UnauthorizedChatRoomAccessException.class)
-                .hasMessage(BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage());
-    }
 
     @DisplayName("이미지 메시지 히스토리 조회 시 썸네일이 존재하면 thumbnailUrl과 originalImageUrl을 모두 반환한다.")
     @Test

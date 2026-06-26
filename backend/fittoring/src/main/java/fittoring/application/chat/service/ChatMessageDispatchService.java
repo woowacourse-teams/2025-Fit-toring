@@ -1,14 +1,12 @@
 package fittoring.application.chat.service;
 
-import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
+import fittoring.application.chat.presentation.dto.request.ChatImageMessageRequest;
+import fittoring.application.chat.presentation.dto.request.ChatTextMessageRequest;
 import fittoring.application.chat.service.dto.ChatMessageAcceptedResultDto;
 import fittoring.application.chat.service.dto.ChatMessagePersistEventDto;
 import fittoring.application.chat.service.port.ChatMessagePersistEventPublisher;
-import fittoring.application.exception.BusinessErrorMessage;
-import fittoring.application.exception.ImageNotFoundException;
 import fittoring.application.image.service.PresignedUrlService;
 import fittoring.domain.model.ChatMessageType;
-import fittoring.infrastructure.image.KeyBuilder;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +18,20 @@ public class ChatMessageDispatchService {
 
     private final ChatMessagePersistEventPublisher eventPublisher;
     private final PresignedUrlService presignedUrlService;
-    private final KeyBuilder keyBuilder;
 
-    public ChatMessageAcceptedResultDto dispatch(Long chatRoomId, ChatMessageRequest request, Long senderId) {
+    public ChatMessageAcceptedResultDto dispatchText(
+            Long chatRoomId,
+            ChatTextMessageRequest request,
+            Long senderId
+    ) {
         String messageId = UUID.randomUUID().toString();
         LocalDateTime requestedAt = LocalDateTime.now();
-        String normalizedContent = normalizeContent(request);
 
-        ChatMessagePersistEventDto event = ChatMessagePersistEventDto.of(
+        ChatMessagePersistEventDto event = ChatMessagePersistEventDto.text(
                 messageId,
                 chatRoomId,
                 senderId,
                 request,
-                normalizedContent,
                 requestedAt
         );
         eventPublisher.publish(event);
@@ -40,21 +39,12 @@ public class ChatMessageDispatchService {
         return toAcceptedResult(event);
     }
 
-    private String normalizeContent(ChatMessageRequest request) {
-        if (isImageType(request.messageType())) {
-            String imageUrl = request.content();
-            validateImageExists(imageUrl);
-
-            return keyBuilder.extractKeyFromUrl(imageUrl);
-        }
-
-        return request.content();
-    }
-
-    private void validateImageExists(String imageUrl) {
-        if (!presignedUrlService.isObjectExistsFromUrl(imageUrl)) {
-            throw new ImageNotFoundException(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage());
-        }
+    public ChatMessageAcceptedResultDto dispatchImage(
+            Long chatRoomId,
+            ChatImageMessageRequest request,
+            Long senderId
+    ) {
+        throw new UnsupportedOperationException("IMAGE 메시지 확정은 Redis 티켓 검증 단계에서 구현합니다.");
     }
 
     private ChatMessageAcceptedResultDto toAcceptedResult(ChatMessagePersistEventDto event) {

@@ -210,6 +210,11 @@ public class InboundChannelInterceptor implements ChannelInterceptor, ExecutorCh
         }
 
         String value = destination.substring(prefix.length());
+        int pathSeparatorIndex = value.indexOf('/');
+        if (pathSeparatorIndex >= 0) {
+            value = value.substring(0, pathSeparatorIndex);
+        }
+
         try {
             return Long.valueOf(value);
         } catch (NumberFormatException ex) {
