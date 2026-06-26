@@ -7,6 +7,8 @@ import fittoring.application.chat.presentation.dto.response.ChatWebSocketErrorRe
 import fittoring.application.exception.ChatMessageNotFoundException;
 import fittoring.application.exception.ChatMessageNotImageException;
 import fittoring.application.exception.ChatRoomNotFoundException;
+import fittoring.application.exception.ImageNotFoundException;
+import fittoring.application.exception.InvalidChatImageUploadTicketException;
 import fittoring.application.exception.UnauthorizedChatMessageAccessException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.exception.SystemErrorMessage;
@@ -40,7 +42,8 @@ public class ChatWebSocketExceptionHandler {
 
     @MessageExceptionHandler({
             ChatRoomNotFoundException.class,
-            ChatMessageNotFoundException.class
+            ChatMessageNotFoundException.class,
+            ImageNotFoundException.class
     })
     @SendToUser(destinations = ERROR_PATH, broadcast = false)
     public ChatWebSocketErrorResponse handleNotFound(Exception e, Message<?> message) {
@@ -49,7 +52,8 @@ public class ChatWebSocketExceptionHandler {
 
     @MessageExceptionHandler({
             UnauthorizedChatRoomAccessException.class,
-            UnauthorizedChatMessageAccessException.class
+            UnauthorizedChatMessageAccessException.class,
+            InvalidChatImageUploadTicketException.class
     })
     @SendToUser(destinations = ERROR_PATH, broadcast = false)
     public ChatWebSocketErrorResponse handleForbidden(Exception e, Message<?> message) {

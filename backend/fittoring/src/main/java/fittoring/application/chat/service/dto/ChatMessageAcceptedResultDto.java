@@ -28,4 +28,18 @@ public record ChatMessageAcceptedResultDto(
                 event.requestedAt()
         );
     }
+
+    public static ChatMessageAcceptedResultDto image(ChatMessagePersistEventDto event, String originalImageUrl) {
+        return new ChatMessageAcceptedResultDto(
+                event.messageId(),
+                event.tempId(),
+                event.chatRoomId(),
+                event.senderId(),
+                null,
+                ChatMessageType.IMAGE,
+                null,
+                originalImageUrl,
+                event.requestedAt()
+        );
+    }
 }

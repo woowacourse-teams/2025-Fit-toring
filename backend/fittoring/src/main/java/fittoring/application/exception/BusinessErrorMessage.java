@@ -50,6 +50,7 @@ public enum BusinessErrorMessage {
     UNAUTHORIZED_CHAT_ROOM_ACCESS("채팅방 접근 권한이 없습니다."),
     UNAUTHORIZED_CHAT_MESSAGE_ACCESS("메시지 접근 권한이 없습니다."),
     INVALID_STATUS_CHAT_ROOM_ACCESS("승인 또는 완료된 예약의 채팅방만 접속할 수 있습니다."),
+    INVALID_CHAT_IMAGE_UPLOAD_TICKET("유효하지 않은 이미지 업로드 요청입니다."),
     UNSUPPORTED_IMAGE_EXTENSION("지원하지 않는 확장자입니다."),
     EMPTY_REQUEST("요청 정보가 비어있어 요청을 수행할 수 없습니다."),
     FCM_TOKEN_NOT_FOUND("해당 멤버의 FCM 토큰이 존재하지 않습니다."),
