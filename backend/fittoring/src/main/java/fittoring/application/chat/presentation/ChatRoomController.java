@@ -6,7 +6,7 @@ import fittoring.application.chat.presentation.dto.response.ChatImagePresignedRe
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatRoomPreviewResponse;
 import fittoring.application.chat.service.ChatImageUploadService;
-import fittoring.application.chat.service.ChatMessageService;
+import fittoring.application.chat.service.ChatMessageQueryService;
 import fittoring.application.chat.service.ChatRoomFacadeService;
 import fittoring.application.chat.presentation.dto.response.ChatRoomInfoResponse;
 import fittoring.config.auth.AuthRequired;
@@ -32,7 +32,7 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomFacadeService chatRoomFacadeService;
-    private final ChatMessageService chatMessageService;
+    private final ChatMessageQueryService chatMessageQueryService;
     private final ChatImageUploadService chatImageUploadService;
 
     @AuthRequired
@@ -76,7 +76,7 @@ public class ChatRoomController {
             @PathVariable("chatroomId") Long chatRoomId,
             @RequestParam(required = false) String cursorCode
     ) {
-        ChatMessagePaginationResponse response = chatMessageService.findChatMessages(
+        ChatMessagePaginationResponse response = chatMessageQueryService.findChatMessages(
                 chatRoomId,
                 loginInfo.memberId(),
                 cursorCode
@@ -91,7 +91,7 @@ public class ChatRoomController {
             @PathVariable("chatroomId") Long chatRoomId,
             @PathVariable("messageId") Long messageId
     ) {
-        ImageUrlResponse response = chatMessageService.reissueImageUrl(
+        ImageUrlResponse response = chatMessageQueryService.reissueImageUrl(
                 chatRoomId, messageId, loginInfo.memberId()
         );
         return ResponseEntity.ok(response);

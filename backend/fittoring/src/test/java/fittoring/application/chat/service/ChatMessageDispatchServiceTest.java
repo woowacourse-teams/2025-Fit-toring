@@ -7,7 +7,6 @@ import fittoring.application.chat.presentation.dto.request.ChatTextMessageReques
 import fittoring.application.chat.service.dto.ChatMessageAcceptedResultDto;
 import fittoring.application.chat.service.dto.ChatMessagePersistEventDto;
 import fittoring.application.chat.service.port.ChatMessagePersistEventPublisher;
-import fittoring.application.image.service.PresignedUrlService;
 import fittoring.domain.model.ChatMessageType;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -17,10 +16,8 @@ import org.mockito.ArgumentCaptor;
 class ChatMessageDispatchServiceTest {
 
     private final ChatMessagePersistEventPublisher eventPublisher = mock(ChatMessagePersistEventPublisher.class);
-    private final PresignedUrlService presignedUrlService = mock(PresignedUrlService.class);
     private final ChatMessageDispatchService dispatchService = new ChatMessageDispatchService(
-            eventPublisher,
-            presignedUrlService
+            eventPublisher
     );
 
     @DisplayName("TEXT 메시지는 content를 그대로 publish 하고 이미지 URL 발급 없이 accepted 된다.")
@@ -55,6 +52,5 @@ class ChatMessageDispatchServiceTest {
             softly.assertThat(event.content()).isEqualTo(request.content());
             softly.assertThat(event.messageType()).isEqualTo(ChatMessageType.TEXT);
         });
-        then(presignedUrlService).shouldHaveNoInteractions();
     }
 }

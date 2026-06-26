@@ -26,10 +26,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class ChatMessageServiceTest extends IntegrationTestSupport {
+class ChatMessageQueryServiceTest extends IntegrationTestSupport {
 
     @Autowired
-    private ChatMessageService chatMessageService;
+    private ChatMessageQueryService chatMessageQueryService;
 
     @Autowired
     private ChatRoomRepository chatRoomRepository;
@@ -61,7 +61,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
                 .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
-        ChatMessagePaginationResponse response = chatMessageService.findChatMessages(chatRoom.getId(), menteeId, null);
+        ChatMessagePaginationResponse response = chatMessageQueryService.findChatMessages(chatRoom.getId(), menteeId, null);
 
         //then
         ChatMessageResponse msg = response.chatMessages().getFirst();
@@ -90,7 +90,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
                 .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
-        ChatMessagePaginationResponse response = chatMessageService.findChatMessages(chatRoom.getId(), menteeId, null);
+        ChatMessagePaginationResponse response = chatMessageQueryService.findChatMessages(chatRoom.getId(), menteeId, null);
 
         //then
         ChatMessageResponse msg = response.chatMessages().getFirst();
@@ -119,7 +119,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
                 .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
-        ImageUrlResponse response = chatMessageService.reissueImageUrl(chatRoom.getId(), imageMessage.getId(), menteeId);
+        ImageUrlResponse response = chatMessageQueryService.reissueImageUrl(chatRoom.getId(), imageMessage.getId(), menteeId);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -139,7 +139,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
 
         //when //then
         assertThatThrownBy(() ->
-                chatMessageService.reissueImageUrl(chatRoom.getId(), invalidMessageId, menteeId))
+                chatMessageQueryService.reissueImageUrl(chatRoom.getId(), invalidMessageId, menteeId))
                 .isInstanceOf(ChatMessageNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_MESSAGE_NOT_FOUND.getMessage());
     }
@@ -157,7 +157,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
 
         //when //then
         assertThatThrownBy(() ->
-                chatMessageService.reissueImageUrl(chatRoom.getId(), textMessage.getId(), menteeId))
+                chatMessageQueryService.reissueImageUrl(chatRoom.getId(), textMessage.getId(), menteeId))
                 .isInstanceOf(ChatMessageNotImageException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
     }
