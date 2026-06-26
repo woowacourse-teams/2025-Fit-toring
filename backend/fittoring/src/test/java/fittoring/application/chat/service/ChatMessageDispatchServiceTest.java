@@ -1,9 +1,11 @@
 package fittoring.application.chat.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 import fittoring.application.chat.presentation.dto.request.ChatImageMessageRequest;
 import fittoring.application.chat.presentation.dto.request.ChatTextMessageRequest;
@@ -103,6 +105,8 @@ class ChatMessageDispatchServiceTest {
             softly.assertThat(event.messageType()).isEqualTo(ChatMessageType.IMAGE);
             softly.assertThat(event.tempId()).isEqualTo(request.tempId());
         });
+        // 회귀 방지(단계 6): 채팅 이미지 전송 경로는 URL 기반 검증을 쓰지 않고 key 기반 검증만 사용한다.
+        then(presignedUrlService).should(never()).isObjectExistsFromUrl(anyString());
     }
 
     @DisplayName("티켓 검증에 실패(부재/다른 회원/다른 채팅방)하면 거부되고 S3 조회/publish 가 일어나지 않는다.")
