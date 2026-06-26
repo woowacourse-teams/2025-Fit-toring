@@ -71,7 +71,7 @@ public class ChatMessagePersistenceService {
         );
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
         chatRoom.updateLastMessage(savedChatMessage);
-        imageService.save(ImageType.CHAT, savedChatMessage.getId(), event.content());
+        imageService.saveKey(ImageType.CHAT, savedChatMessage.getId(), event.content());
 
         Long opponentId = chatRoom.getOpponentIdOf(event.senderId());
         sendNewMessageNotification(chatRoom.getId(), event.senderId(), opponentId, savedChatMessage);
