@@ -9,6 +9,7 @@ import fittoring.domain.model.ImageExtension;
 import fittoring.domain.model.ImageType;
 import java.time.Duration;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
  * 채팅방 참여 권한을 확인한 뒤 기존 presigned 발급 로직을 재사용하고,
  * {@code uploadId -> memberId/chatRoomId/s3Key} 티켓을 Redis에 TTL과 함께 저장한다.
  */
+@Slf4j
 @Service
 public class ChatImageUploadService {
 
@@ -46,6 +48,8 @@ public class ChatImageUploadService {
 
         String uploadId = UUID.randomUUID().toString();
         ticketRepository.create(uploadId, memberId, chatRoomId, presigned.key(), ticketTtl);
+
+        log.info("채팅 이미지 업로드 티켓 발급. uploadId={}, chatRoomId={}, memberId={}", uploadId, chatRoomId, memberId);
 
         return new ChatImagePresignedResponse(uploadId, presigned.presignedUrl(), presigned.expiresAt());
     }

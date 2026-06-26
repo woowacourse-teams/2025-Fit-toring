@@ -13,8 +13,10 @@ import fittoring.application.image.service.PresignedUrlService;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ChatMessageDispatchService {
@@ -53,6 +55,7 @@ public class ChatMessageDispatchService {
                         BusinessErrorMessage.INVALID_CHAT_IMAGE_UPLOAD_TICKET.getMessage()));
 
         if (!presignedUrlService.isObjectExistsFromKey(s3Key)) {
+            log.warn("채팅 이미지 S3 객체 없음. chatRoomId={}, senderId={}", chatRoomId, senderId);
             throw new ImageNotFoundException(BusinessErrorMessage.IMAGE_NOT_FOUND.getMessage());
         }
 
