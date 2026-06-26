@@ -18,6 +18,7 @@ import fittoring.domain.model.ChatMessageType;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatMessageNotFoundException;
+import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.domain.model.ChatMessage;
 import fittoring.domain.model.ChatRoom;
@@ -160,5 +161,39 @@ class ChatMessageQueryServiceTest extends IntegrationTestSupport {
                 chatMessageQueryService.reissueImageUrl(chatRoom.getId(), textMessage.getId(), menteeId))
                 .isInstanceOf(ChatMessageNotImageException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
+    }
+
+    @DisplayName("채팅방 비참여자가 메시지를 조회하면 예외가 발생한다.")
+    @Test
+    void findChatMessagesByNonParticipant() {
+        //given
+        Long menteeId = 1L;
+        Long mentorId = 2L;
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, menteeId, mentorId));
+        Long nonParticipantId = 999L;
+
+        //when //then
+        assertThatThrownBy(() ->
+                chatMessageQueryService.findChatMessages(chatRoom.getId(), nonParticipantId, null))
+                .isInstanceOf(UnauthorizedChatRoomAccessException.class)
+                .hasMessage(BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage());
+    }
+
+    @DisplayName("채팅방 비참여자가 이미지 URL을 재발급하면 예외가 발생한다.")
+    @Test
+    void reissueImageUrlByNonParticipant() {
+        //given
+        Long menteeId = 1L;
+        Long mentorId = 2L;
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, menteeId, mentorId));
+
+        ChatMessage imageMessage = chatMessageRepository.save(FixtureUtil.testImageChatMessage(chatRoom, menteeId));
+        Long nonParticipantId = 999L;
+
+        //when //then
+        assertThatThrownBy(() ->
+                chatMessageQueryService.reissueImageUrl(chatRoom.getId(), imageMessage.getId(), nonParticipantId))
+                .isInstanceOf(UnauthorizedChatRoomAccessException.class)
+                .hasMessage(BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage());
     }
 }
