@@ -14,7 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
 import { PAGE_URL } from '../../common/constants/url';
-import useS3Upload from '../../common/hooks/useS3Upload';
+import useDelayedVisibility from '../../common/hooks/useDelayedVisibility';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
 import ChatContent from './components/ChatContent/ChatContent';
@@ -25,7 +25,7 @@ import ChatRoomInputArea from './components/ChatRoomInputArea/ChatRoomInputArea'
 import ImageSendModal from './components/ImageSendModal/ImageSendModal';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import { MESSAGE_TYPE } from './constants/message';
-import useDelayedVisibility from '../../common/hooks/useDelayedVisibility';
+import useChatImageUpload from './hooks/useChatImageUpload';
 import useImageFile from './hooks/useImageFile';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import usePersistPendingMessages, {
@@ -164,17 +164,23 @@ function ChatRoom() {
       flushOutgoingQueue();
     }, IN_FLIGHT_TIMEOUT_MS);
 
-    client.publish({
-      destination: `/app/chatroom/${chatRoomId}`,
-      body: JSON.stringify({
-        content:
-          nextMessage.messageType === MESSAGE_TYPE.IMAGE
-            ? nextMessage.originalImageUrl
-            : nextMessage.content,
-        tempId: nextMessage.tempId,
-        messageType: nextMessage.messageType,
-      }),
-    });
+    if (nextMessage.messageType === MESSAGE_TYPE.IMAGE) {
+      client.publish({
+        destination: `/app/chatroom/${chatRoomId}/messages/image`,
+        body: JSON.stringify({
+          uploadId: nextMessage.uploadId,
+          tempId: nextMessage.tempId,
+        }),
+      });
+    } else {
+      client.publish({
+        destination: `/app/chatroom/${chatRoomId}/messages/text`,
+        body: JSON.stringify({
+          content: nextMessage.content,
+          tempId: nextMessage.tempId,
+        }),
+      });
+    }
   }, [chatRoomId, clearInFlightTimeout, persistPendingMessages]);
 
   const enqueueOutgoing = useCallback(
@@ -337,7 +343,7 @@ function ChatRoom() {
   const { selectedImage, handleImageChange, cancelImageSelection } =
     useImageFile();
 
-  const { uploadFile } = useS3Upload();
+  const { upload } = useChatImageUpload(Number(chatRoomId));
 
   const handleImageSend = async () => {
     if (!selectedImage || memberId === null || imageSending) {
@@ -347,10 +353,10 @@ function ChatRoom() {
     const file = selectedImage;
 
     setImageSending(true);
-    const { uploadedUrl } = await uploadFile(file, 'CHAT');
+    const { uploadId, uploadedUrl } = await upload(file);
     setImageSending(false);
 
-    if (!uploadedUrl) {
+    if (!uploadId) {
       alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
       return;
     }
@@ -370,6 +376,7 @@ function ChatRoom() {
       messageType: MESSAGE_TYPE.IMAGE,
       thumbnailUrl: uploadedUrl,
       originalImageUrl: uploadedUrl,
+      uploadId,
       phase: 'normal',
     };
 

@@ -27,6 +27,8 @@ export interface ImageMessage extends MessageDTO {
   messageType: 'IMAGE';
   thumbnailUrl: string | null;
   originalImageUrl: string;
+  // 클라이언트 전용: 전송 확정 식별자(서버 발급). pending 메시지에만 임시 보관한다.
+  uploadId?: string;
 }
 
 export interface TextMessage extends MessageDTO {
