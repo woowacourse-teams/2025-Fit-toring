@@ -59,8 +59,7 @@ const S_Title = styled.h2`
   flex-direction: column;
   gap: 0.5rem;
 
-  font-weight: bold;
-  font-size: 2.5rem;
+  ${({ theme }) => theme.TYPOGRAPHY.H1_B}
 `;
 
 const S_TextWrapper = styled.div`
@@ -78,7 +77,7 @@ const S_Texts = styled.div`
 `;
 
 const S_Text = styled.p`
-  font-size: 1.6rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_ImgWrapper = styled.div`

@@ -60,6 +60,7 @@ class MemberServiceTest extends IntegrationTestSupport {
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
             softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.myRole()).isEqualTo(member.getRole());
             softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
@@ -83,6 +84,7 @@ class MemberServiceTest extends IntegrationTestSupport {
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
             softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.myRole()).isEqualTo(member.getRole());
             softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
@@ -114,6 +116,7 @@ class MemberServiceTest extends IntegrationTestSupport {
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
             softAssertions.assertThat(memberInfo.gender()).isEqualTo(member.getGender());
+            softAssertions.assertThat(memberInfo.myRole()).isEqualTo(member.getRole());
             softAssertions.assertThat(memberInfo.phoneNumber()).isEqualTo(member.getPhoneNumber());
         });
     }
@@ -139,6 +142,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(memberInfo.image()).isEqualTo("https://presigned-get-member-profile-url");
             softAssertions.assertThat(memberInfo.loginId()).isEqualTo(member.getLoginId());
+            softAssertions.assertThat(memberInfo.myRole()).isEqualTo(member.getRole());
             softAssertions.assertThat(memberInfo.name()).isEqualTo(member.getName());
         });
     }
@@ -351,7 +355,8 @@ class MemberServiceTest extends IntegrationTestSupport {
         memberService.updateMemberInfo(member.getId(), request);
 
         // then
-        var images = imageRepository.findByImageTypeAndRelationIdIn(ImageType.MEMBER_PROFILE, java.util.List.of(member.getId()));
+        var images = imageRepository.findByImageTypeAndRelationIdIn(ImageType.MEMBER_PROFILE,
+                java.util.List.of(member.getId()));
 
         assertThat(images).hasSize(1);
         SoftAssertions.assertSoftly(softly -> {

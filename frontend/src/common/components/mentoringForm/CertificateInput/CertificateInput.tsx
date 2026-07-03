@@ -164,7 +164,7 @@ const S_CertificateHeader = styled.div`
   width: 100%;
 
   & > p {
-    ${({ theme }) => theme.TYPOGRAPHY.LB4_R};
+    ${({ theme }) => theme.TYPOGRAPHY.H4_R};
     color: ${({ theme }) => theme.FONT.B01};
   }
 
@@ -201,7 +201,7 @@ const S_ContentWrapper = styled.div`
   width: 100%;
 
   & > p {
-    ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+    ${({ theme }) => theme.TYPOGRAPHY.B3_R};
     color: ${({ theme }) => theme.FONT.B02};
   }
 

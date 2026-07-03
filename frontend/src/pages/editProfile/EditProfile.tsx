@@ -11,7 +11,7 @@ function EditProfile() {
   if (!myProfile) {
     return (
       <S_SpinnerContainer>
-        <LoadingSpinner />;
+        <LoadingSpinner />
       </S_SpinnerContainer>
     );
   }

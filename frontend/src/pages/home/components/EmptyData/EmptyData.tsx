@@ -40,6 +40,6 @@ const S_Title = styled.h3`
 
 const S_Description = styled.p`
   color: ${({ theme }) => theme.FONT.B03};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   text-align: center;
 `;

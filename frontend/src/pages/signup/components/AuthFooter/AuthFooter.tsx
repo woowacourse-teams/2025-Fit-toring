@@ -52,12 +52,12 @@ const S_Text = styled.span`
   padding: 0 1.6rem;
 
   color: ${({ theme }) => theme.FONT.G01};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
 const S_InfoText = styled.p`
   color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
 const S_Link = styled(Link)`

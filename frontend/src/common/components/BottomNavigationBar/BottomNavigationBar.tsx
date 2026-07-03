@@ -139,6 +139,5 @@ const S_Label = styled.span<{ isActive: boolean }>`
 
   color: ${({ isActive, theme }) =>
     isActive ? theme.SYSTEM.MAIN500 : '#9ca3af'};
-  font-weight: 500;
-  font-size: 12px;
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R}
 `;

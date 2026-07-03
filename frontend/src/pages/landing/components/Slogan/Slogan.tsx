@@ -83,8 +83,7 @@ const S_ScreenReaderOnly = styled.span`
 
 const S_SloganText = styled.h1`
   color: #000;
-  font-weight: 700;
-  font-size: 2.5rem;
+  ${({ theme }) => theme.TYPOGRAPHY.H1_B}
 `;
 
 const S_TextWrapper = styled.div`
@@ -109,8 +108,7 @@ const S_Tags = styled.div`
 
 const S_Tag = styled.span`
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
-  font-weight: 500;
-  font-size: 1.5rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_Button = styled.button`
@@ -123,8 +121,7 @@ const S_Button = styled.button`
   background: ${({ theme }) => theme.SYSTEM.GRAY900};
 
   color: white;
-  font-weight: 700;
-  font-size: 1.5rem;
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_B}
   text-align: center;
   cursor: pointer;
 `;

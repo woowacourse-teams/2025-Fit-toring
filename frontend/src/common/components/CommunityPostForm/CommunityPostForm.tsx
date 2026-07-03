@@ -140,7 +140,7 @@ const S_ContentInput = styled.textarea`
   overflow-y: auto;
 
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   line-height: 1.65;
   resize: none;
 

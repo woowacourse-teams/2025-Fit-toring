@@ -75,10 +75,6 @@ function ApplySection({ id, price, mentoringId }: ApplySectionProps) {
           padding: 1.6rem 0;
 
           background-color: ${THEME.SYSTEM.MAIN500};
-
-          font-size: 1.2rem;
-
-          ${THEME.TYPOGRAPHY.LB4_R}
         `}
         onClick={handleMoveToBookingPage}
       >
@@ -96,26 +92,24 @@ const S_Container = styled.section`
   gap: 1.5rem;
   position: fixed;
   bottom: 0;
+  z-index: 100;
 
-  width: 48rem;
+  width: inherit;
   height: 9.4rem;
+  max-width: inherit;
   padding: 2.5rem 2.7rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
 
   background-color: ${({ theme }) => theme.BG.WHITE};
 
-  @media screen and (width >= 481px) {
-    left: 50%;
-    transform: translateX(-50%);
+  @media screen and (width > 480px) {
+    margin-left: -1px;
   }
 
   @media screen and (width <= 480px) {
-    left: 0;
-
     width: 100%;
     border: none;
     border-top: 1px solid ${({ theme }) => theme.SYSTEM.GRAY300};
-    transform: none;
   }
 `;
 
@@ -135,7 +129,6 @@ const S_Wrapper = styled.div`
 
   & strong {
     color: ${({ theme }) => theme.FONT.B01};
-    font-weight: bold;
-    font-size: 2.6rem;
+    ${({ theme }) => theme.TYPOGRAPHY.H3_B}
   }
 `;

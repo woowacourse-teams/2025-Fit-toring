@@ -12,19 +12,13 @@ import MyPageProfileSummary from './components/MyPageProfileSummary/MyPageProfil
 import MyPageSection from './components/MyPageSection/MyPageSection';
 
 import type { MyPageSectionItem } from './components/MyPageSection/MyPageSection';
-import type { MemberRole } from '../../common/types/userInfo';
-
-const ROLE_LABEL: Record<MemberRole, string> = {
-  MENTEE: '멘티',
-  MENTOR: '멘토',
-};
 
 function MyPage() {
   const navigate = useNavigate();
   const { myProfile } = useMyProfile();
 
   const displayName = myProfile?.name?.trim() || '회원';
-  const myRole = myProfile?.myRole ?? 'MENTOR';
+  const myRole = myProfile?.myRole;
 
   const handleEditProfileClick = () => {
     navigate(PAGE_URL.EDIT_PROFILE);
@@ -35,12 +29,16 @@ function MyPage() {
   };
 
   const mentoringItems: MyPageSectionItem[] = [
-    {
-      iconSrc: calendarIcon,
-      label: '운영하는 멘토링',
-      badgeLabel: '멘토전용',
-      onClick: () => navigate(PAGE_URL.CREATED_MENTORING),
-    },
+    ...(myRole === 'MENTOR'
+      ? [
+          {
+            iconSrc: calendarIcon,
+            label: '운영하는 멘토링',
+            badgeLabel: '멘토전용',
+            onClick: () => navigate(PAGE_URL.CREATED_MENTORING),
+          },
+        ]
+      : []),
     {
       iconSrc: usersIcon,
       label: '수강하는 멘토링',
@@ -60,7 +58,7 @@ function MyPage() {
     {
       iconSrc: settingsIcon,
       label: '설정',
-      onClick: handlePreparingClick,
+      onClick: () => navigate(PAGE_URL.SETTINGS),
     },
   ];
 
@@ -69,7 +67,7 @@ function MyPage() {
       <MyPageProfileSummary
         profileImg={myProfile?.image}
         name={displayName}
-        roleLabel={ROLE_LABEL[myRole]}
+        role={myRole}
         onClick={handleEditProfileClick}
       />
       <MyPageSection items={mentoringItems} title="멘토링" />

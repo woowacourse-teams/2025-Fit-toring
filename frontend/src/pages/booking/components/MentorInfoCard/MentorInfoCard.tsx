@@ -7,6 +7,8 @@ import CategoryTags from '../../../../common/components/CategoryTags/CategoryTag
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 import ProfileImg from '../ProfileImg/ProfileImg';
 
+import MentorInfoCardSkeleton from './MentorInfoCardSkeleton';
+
 import type { MentoringDetail } from '../../../../common/types/MentoringDetail';
 
 interface MentorInfoCardProps {
@@ -47,7 +49,7 @@ function MentorInfoCard({ mentorDetail }: MentorInfoCardProps) {
           </S_PriceText>
         </S_Container>
       ) : (
-        <div>로딩중</div>
+        <MentorInfoCardSkeleton />
       )}
     </div>
   );
@@ -62,7 +64,6 @@ const S_Container = styled.div`
   gap: 1.4rem;
 
   width: 100%;
-  height: 21.6rem;
   padding: 2.2rem;
   border: ${({ theme }) => theme.OUTLINE.REGULAR} 0.1rem solid;
   border-radius: 1.27rem;
@@ -79,7 +80,7 @@ const S_MentorProfileWrapper = styled.div`
 
 const S_MentorNameText = styled.span`
   color: ${({ theme }) => theme.FONT.B01};
-  font-size: 1.6rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_InfoWithTags = styled.div`
@@ -96,6 +97,5 @@ const S_InfoWrapper = styled.div`
 
 const S_PriceText = styled.span`
   color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  font-weight: bold;
-  font-size: 1.6rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B2_B}
 `;

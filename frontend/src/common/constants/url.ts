@@ -7,6 +7,8 @@ export const PAGE_URL = {
   MY_PAGE: '/my-page',
   CREATED_MENTORING: '/my-page/created-mentoring',
   PARTICIPATED_MENTORING: '/my-page/participated-mentoring',
+  SETTINGS: '/my-page/settings',
+  APP_INSTALL_GUIDE: '/my-page/settings/app-install',
   SIGNUP: '/signup',
   LOGIN: '/login',
   LANDING: '/landing',
@@ -15,6 +17,8 @@ export const PAGE_URL = {
   CHAT_ROOM: '/chat/room',
   CHAT_ROOMS: '/chat/rooms',
   COMMUNITY: '/community',
+  COMMUNITY_SEARCH: '/community/search',
+  COMMUNITY_SEARCH_RESULT: '/community/search/result',
   EDIT: '/edit',
   COMMUNITY_CREATE: '/community/create',
 } as const;

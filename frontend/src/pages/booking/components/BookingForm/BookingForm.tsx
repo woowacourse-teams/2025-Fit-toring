@@ -176,7 +176,7 @@ const S_UserInfoLabel = styled.p`
 `;
 
 const S_UserInfoText = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
@@ -209,7 +209,7 @@ const S_Textarea = styled.textarea`
     outline: none;
   }
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
 const S_TextAreaCounter = styled.p`

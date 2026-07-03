@@ -47,14 +47,14 @@ const S_Title = styled.h2`
   margin-bottom: 12px;
 
   color: ${({ theme }) => theme.FONT.B01};
-  font-size: ${({ theme }) => theme.TYPOGRAPHY.LB3_SB};
+  ${({ theme }) => theme.TYPOGRAPHY.H3_SB};
 `;
 
 const S_Description = styled.p`
   margin-bottom: 24px;
 
   color: ${({ theme }) => theme.FONT.G01};
-  font-size: ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   line-height: 1.5;
 `;
 
@@ -71,7 +71,7 @@ const S_SkipButton = styled.button`
   background: none;
 
   color: ${({ theme }) => theme.FONT.B02};
-  font-size: ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
   cursor: pointer;
   transition: color 0.2s;
 

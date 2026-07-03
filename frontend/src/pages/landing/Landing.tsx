@@ -52,8 +52,7 @@ const S_Button = styled.button`
   background: ${({ theme }) => theme.SYSTEM.GRAY900};
 
   color: white;
-  font-weight: 700;
-  font-size: 1.7rem;
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_B}
   text-align: center;
   cursor: pointer;
 `;

@@ -58,7 +58,7 @@ const S_EmptyText = styled.p`
   margin: 0;
 
   color: ${({ theme }) => theme.FONT.B01};
-  ${({ theme }) => theme.TYPOGRAPHY.LB4_B};
+  ${({ theme }) => theme.TYPOGRAPHY.H4_B};
 `;
 
 const S_EmptySubText = styled.p`

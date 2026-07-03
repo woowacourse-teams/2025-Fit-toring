@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
+import { THEME } from '../../styles/theme';
 import Button from '../Button/Button';
 import FormField from '../FormField/FormField';
 import Input from '../Input/Input';
@@ -106,5 +107,5 @@ const buttonCustomStyle = css`
   height: 4rem;
   padding: 1.1rem 0.8rem;
 
-  font-size: 1.4rem;
+  ${THEME.TYPOGRAPHY.BTN4_R}
 `;

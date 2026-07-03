@@ -76,5 +76,5 @@ const S_Icon = styled.span<{ size: 'small' | 'medium' }>`
 
 const S_Count = styled.span<{ size: 'small' | 'medium' }>`
   ${({ theme, size }) =>
-    size === 'small' ? theme.TYPOGRAPHY.C3_R : theme.TYPOGRAPHY.B3_R}
+    size === 'small' ? theme.TYPOGRAPHY.C4_R : theme.TYPOGRAPHY.B3_R}
 `;
