@@ -96,7 +96,7 @@ const S_Input = styled.input<{ errored?: boolean }>`
 
   color: ${({ theme }) => theme.FONT.B01};
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
 `;
 
 const S_Img = styled.img`

@@ -8,6 +8,7 @@ import ReactGA from 'react-ga4';
 
 import App from './App';
 import AuthProvider from './common/components/AuthProvider/AuthProvider';
+import PWAInstallProvider from './common/components/PWAInstallProvider/PWAInstallProvider';
 import { resetCss } from './common/styles/reset';
 import { THEME } from './common/styles/theme';
 import { registerServiceWorker } from './pwa/serviceWorker';
@@ -83,10 +84,12 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
     <React.StrictMode>
       <ThemeProvider theme={THEME}>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <Global styles={[resetCss]} />
-            <App />
-          </AuthProvider>
+          <PWAInstallProvider>
+            <AuthProvider>
+              <Global styles={[resetCss]} />
+              <App />
+            </AuthProvider>
+          </PWAInstallProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </React.StrictMode>,

@@ -36,6 +36,10 @@ const CreatedMentoring = lazy(
   () => import('./pages/createdMentoring/CreatedMentoring'),
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
+const Settings = lazy(() => import('./pages/settings/Settings'));
+const AppInstallGuide = lazy(
+  () => import('./pages/settings/AppInstallGuide'),
+);
 const ChatRoom = lazy(() => import('./pages/chatRoom/ChatRoom'));
 const CommunityPostDetail = lazy(
   () => import('./pages/communityPostDetail/CommunityPostDetail'),
@@ -49,6 +53,12 @@ const CommunityPostCreate = lazy(
 );
 const CommunityPostUpdate = lazy(
   () => import('./pages/communityPostUpdate/CommunityPostUpdate'),
+);
+const CommunitySearch = lazy(
+  () => import('./pages/communitySearch/CommunitySearch'),
+);
+const CommunitySearchResult = lazy(
+  () => import('./pages/communitySearch/CommunitySearchResult'),
 );
 
 const router = createBrowserRouter([
@@ -102,6 +112,14 @@ const router = createBrowserRouter([
                     path: PAGE_URL.EDIT_PROFILE,
                     element: <EditProfile />,
                   },
+                  {
+                    path: PAGE_URL.SETTINGS,
+                    element: <Settings />,
+                  },
+                  {
+                    path: PAGE_URL.APP_INSTALL_GUIDE,
+                    element: <AppInstallGuide />,
+                  },
                 ],
               },
             ],
@@ -115,6 +133,14 @@ const router = createBrowserRouter([
             element: <CommunityPostDetail />,
           },
           { path: PAGE_URL.LOGIN, element: <Login /> },
+          {
+            path: PAGE_URL.COMMUNITY_SEARCH,
+            element: <CommunitySearch />,
+          },
+          {
+            path: PAGE_URL.COMMUNITY_SEARCH_RESULT,
+            element: <CommunitySearchResult />,
+          },
         ],
       },
       { path: PAGE_URL.LANDING, element: <Landing /> },
@@ -143,6 +169,7 @@ const router = createBrowserRouter([
         path: PAGE_URL.COMMUNITY_CREATE,
         element: <CommunityPostCreate />,
       },
+
       {
         path: `${PAGE_URL.COMMUNITY}/:postId${PAGE_URL.EDIT}`,
         element: <CommunityPostUpdate />,

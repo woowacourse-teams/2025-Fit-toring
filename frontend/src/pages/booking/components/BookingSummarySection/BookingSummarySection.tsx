@@ -58,6 +58,6 @@ const S_Wrapper = styled.div`
 
 const S_Price = styled.span`
   color: ${({ theme }) => theme.SYSTEM.MAIN500};
-  ${({ theme }) => theme.TYPOGRAPHY.B1_B};
+  ${({ theme }) => theme.TYPOGRAPHY.B2_B};
   font-weight: 600;
 `;

@@ -62,8 +62,6 @@ function CompleteModal({
             padding: 0.8rem;
 
             background-color: ${THEME.SYSTEM.MAIN500};
-
-            font-size: 1.2rem;
           `}
         >
           예약 내역 보러가기
@@ -78,7 +76,6 @@ function CompleteModal({
             background-color: ${THEME.BG.WHITE};
 
             color: ${THEME.FONT.B02};
-            font-size: 1.2rem;
           `}
         >
           다른 멘토 찾기

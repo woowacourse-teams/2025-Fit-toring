@@ -71,5 +71,5 @@ const S_ButtonWrapper = styled.div`
 const S_ActionButton = styled(Button)`
   min-width: 7.2rem;
 
-  ${({ theme }) => theme.TYPOGRAPHY.C3_R}
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R}
 `;

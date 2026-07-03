@@ -72,7 +72,7 @@ const S_TextareaWrapper = styled.div`
   background-color: ${({ theme }) => theme.BG.WHITE};
 
   color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.LB4_R};
+  ${({ theme }) => theme.TYPOGRAPHY.H4_R};
 
   &:hover {
     border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
@@ -96,7 +96,7 @@ const S_Textarea = styled.textarea`
   resize: none;
 
   color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.LB4_R};
+  ${({ theme }) => theme.TYPOGRAPHY.H4_R};
 
   &:focus {
     outline: none;

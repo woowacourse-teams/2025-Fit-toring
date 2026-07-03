@@ -72,12 +72,12 @@ const S_Container = styled.p<MentoringApplicationStatusProps>`
   ${({ type }) =>
     type === 'CREATED'
       ? `
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   `
       : ''}
 
-  ${({ theme, type }) => (type === 'CREATED' ? '' : theme.TYPOGRAPHY.B2_R)}
+  ${({ theme, type }) => (type === 'CREATED' ? '' : theme.TYPOGRAPHY.B3_R)}
 `;

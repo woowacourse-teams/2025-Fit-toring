@@ -1,14 +1,33 @@
-import { useCallback } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 
 import styled from '@emotion/styled';
 
 import PullToRefresh from '../../../../common/components/PullToRefresh/PullToRefresh';
 import { isPullToRefreshEnabled } from '../../../../common/components/PullToRefresh/utils';
 import useInfiniteScroll from '../../../../common/hooks/useInfiniteScroll';
+import { screenReaderOnlyStyle } from '../../../../common/styles/screenReaderOnly';
 import useInfiniteCommunityPosts from '../../hooks/useInfiniteCommunityPosts';
+import {
+  clearCommunityScrollY,
+  getMaxCommunityScrollY,
+  getCommunityScrollY,
+  restoreCommunityScrollY,
+} from '../../utils/communityScrollStorage';
 import CommunityFeed from '../CommunityFeed/CommunityFeed';
+import CommunityPostCardSkeleton from '../CommunityPostCard/CommunityPostCardSkeleton';
 
-function CommunityContent() {
+const COMMUNITY_POST_SKELETON_COUNT = 8;
+
+interface CommunityContentProps {
+  keyword?: string;
+  emptyMessage?: string;
+}
+
+function CommunityContent({
+  keyword = '',
+  emptyMessage,
+}: CommunityContentProps) {
+  const containerRef = useRef<HTMLElement | null>(null);
   const {
     data,
     fetchNextPage,
@@ -16,10 +35,48 @@ function CommunityContent() {
     isFetchingNextPage,
     isPending,
     refetch,
-  } = useInfiniteCommunityPosts();
+  } = useInfiniteCommunityPosts(keyword);
 
-  const communityPosts =
-    data?.pages.flatMap((page) => page.posts) ?? [];
+  const communityPosts = data?.pages.flatMap((page) => page.posts) ?? [];
+
+  useLayoutEffect(() => {
+    if (isPending) {
+      return;
+    }
+
+    const savedScrollY = getCommunityScrollY();
+
+    if (savedScrollY === null) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const maxScrollY = getMaxCommunityScrollY(containerRef.current);
+
+      if (savedScrollY > maxScrollY && hasNextPage) {
+        if (isFetchingNextPage) {
+          return;
+        }
+
+        fetchNextPage();
+        return;
+      }
+
+      restoreCommunityScrollY(
+        Math.min(savedScrollY, maxScrollY),
+        containerRef.current,
+      );
+      clearCommunityScrollY();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [
+    communityPosts.length,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+  ]);
 
   const handleIntersect = useCallback(async () => {
     await fetchNextPage();
@@ -35,14 +92,30 @@ function CommunityContent() {
   };
 
   return (
-    <PullToRefresh
-      enabled={isPullToRefreshEnabled()}
-      onRefresh={handleRefresh}
-    >
-      <S_Container>
-        {!isPending && <CommunityFeed posts={communityPosts} />}
+    <PullToRefresh enabled={isPullToRefreshEnabled()} onRefresh={handleRefresh}>
+      <S_Container ref={containerRef}>
+        {isPending ? (
+          <>
+            <S_ScreenReaderOnly role="status">
+              게시글을 불러오는 중입니다.
+            </S_ScreenReaderOnly>
+            <S_SkeletonList role="presentation">
+              {Array.from({ length: COMMUNITY_POST_SKELETON_COUNT }).map(
+                (_, index) => (
+                  <CommunityPostCardSkeleton key={index} />
+                ),
+              )}
+            </S_SkeletonList>
+          </>
+        ) : (
+          <>
+            <CommunityFeed posts={communityPosts} />
+            {communityPosts.length === 0 && emptyMessage && (
+              <S_StatusText>{emptyMessage}</S_StatusText>
+            )}
+          </>
+        )}
         <S_ObserverTarget ref={targetRef} />
-        {isPending && <S_StatusText>게시글을 불러오는 중입니다.</S_StatusText>}
         {isFetchingNextPage && (
           <S_StatusText>게시글을 더 불러오는 중입니다.</S_StatusText>
         )}
@@ -64,6 +137,14 @@ const S_Container = styled.main`
 const S_ObserverTarget = styled.div`
   width: 100%;
   height: 1px;
+`;
+
+const S_SkeletonList = styled.ul`
+  min-height: 100%;
+`;
+
+const S_ScreenReaderOnly = styled.p`
+  ${screenReaderOnlyStyle}
 `;
 
 const S_StatusText = styled.p`

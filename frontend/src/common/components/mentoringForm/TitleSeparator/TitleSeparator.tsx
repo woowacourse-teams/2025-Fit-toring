@@ -19,7 +19,7 @@ export default TitleSeparator;
 const S_Title = styled.h2`
   margin-bottom: 1.7rem;
 
-  ${({ theme }) => theme.TYPOGRAPHY.H2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.H3_R};
   color: ${({ theme }) => theme.FONT.B01};
 `;
 

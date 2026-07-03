@@ -52,7 +52,7 @@ const S_Container = styled.button<ButtonProps>`
   border-radius: 0.7rem;
   cursor: pointer;
 
-  font-size: 1.6rem;
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_R}
 
   ${({ variant, theme }) => variant && styleVariant[variant](theme)};
   ${({ customStyle }) => customStyle};

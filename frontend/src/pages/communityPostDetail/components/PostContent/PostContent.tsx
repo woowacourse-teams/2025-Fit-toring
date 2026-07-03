@@ -55,5 +55,5 @@ const S_Title = styled.h2`
 const S_Content = styled.p`
   color: ${({ theme }) => theme.FONT.B02};
   white-space: pre-wrap;
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;

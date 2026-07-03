@@ -57,7 +57,7 @@ const S_NameAndRatingWrapper = styled.div`
 `;
 
 const S_Name = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
@@ -66,7 +66,7 @@ const S_Rating = styled.div`
   align-items: center;
   gap: 0.1rem;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   color: ${({ theme }) => theme.FONT.B01};
 
   > img {
@@ -81,6 +81,6 @@ const S_Date = styled.p`
 `;
 
 const S_Content = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   color: ${({ theme }) => theme.FONT.B03};
 `;

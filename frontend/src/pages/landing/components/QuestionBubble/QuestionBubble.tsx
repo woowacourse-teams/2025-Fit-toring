@@ -26,8 +26,7 @@ const S_Bubble = styled.div<{ direction: 'left' | 'right' }>`
   background-color: white;
 
   color: black;
-  font-weight: 500;
-  font-size: 12px;
+  ${({ theme }) => theme.TYPOGRAPHY.C4_R}
 
   &::before {
     content: '';

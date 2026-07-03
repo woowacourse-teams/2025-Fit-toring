@@ -127,6 +127,6 @@ const S_Label = styled.label`
 
   color: ${({ theme }) => theme.FONT.B02};
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   cursor: pointer;
 `;

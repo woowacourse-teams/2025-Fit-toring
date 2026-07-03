@@ -38,6 +38,6 @@ const Container = styled.input<InputProps>`
     color: ${({ theme }) => theme.SYSTEM.GRAY200};
   }
 
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   ${({ customStyle }) => customStyle};
 `;

@@ -41,5 +41,5 @@ const S_Badge = styled.span<{
   background-color: ${({ backgroundColor }) => backgroundColor};
 
   color: ${({ color, theme }) => color ?? theme.SYSTEM.MAIN500};
-  ${({ theme }) => theme.TYPOGRAPHY.C2_SB}
+  ${({ theme }) => theme.TYPOGRAPHY.B4_SB}
 `;

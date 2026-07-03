@@ -83,7 +83,7 @@ const S_QuestionBubbles = styled.div`
   flex-direction: column;
   gap: 2rem;
 
-  font-size: 1.5rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
 `;
 
 const S_Wrapper = styled.div<{
@@ -112,6 +112,6 @@ const S_Dot = styled.p`
 `;
 
 const S_Text = styled.p`
-  font-size: 1.8rem;
+  ${({ theme }) => theme.TYPOGRAPHY.H4_R}
   text-align: center;
 `;

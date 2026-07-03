@@ -74,7 +74,7 @@ const S_DescriptionWrapper = styled.div`
   background-color: ${({ theme }) => theme.BG.LIGHT};
 
   & > p {
-    ${({ theme }) => theme.TYPOGRAPHY.B2_R}
+    ${({ theme }) => theme.TYPOGRAPHY.B3_R}
     color: ${({ theme }) => theme.FONT.B04};
   }
 `;
@@ -84,7 +84,7 @@ const S_AddButton = styled.button`
   height: 6.8rem;
   margin-top: 1.5rem;
   border: 1px dashed ${({ theme }) => theme.SYSTEM.MAIN500};
-  ${({ theme }) => theme.TYPOGRAPHY.BTN1_R}
+  ${({ theme }) => theme.TYPOGRAPHY.BTN2_R}
   border-radius: 12px;
 
   background-color: ${({ theme }) => theme.BG.WHITE};

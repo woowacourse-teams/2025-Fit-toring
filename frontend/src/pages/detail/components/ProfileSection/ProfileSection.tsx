@@ -114,7 +114,7 @@ const S_InfoHeader = styled.div`
 `;
 
 const S_Title = styled.h3`
-  ${({ theme }) => theme.TYPOGRAPHY.H1_B};
+  ${({ theme }) => theme.TYPOGRAPHY.H3_B};
   color: ${({ theme }) => theme.FONT.B01};
 `;
 
@@ -130,12 +130,12 @@ const S_MoveLink = styled.a`
 
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
   color: inherit;
-  font-size: 1.6rem;
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R}
   cursor: pointer;
   text-decoration: none;
 `;
 
 const S_Introduction = styled.p`
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   color: ${({ theme }) => theme.FONT.B01};
 `;

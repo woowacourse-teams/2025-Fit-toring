@@ -1,8 +1,12 @@
+import type { MouseEvent } from 'react';
+
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 
 import { PAGE_URL } from '../../../../common/constants/url';
 import { formatTimeAgo } from '../../../../common/utils/formatTimeAgo';
+import { isPlainPrimaryClick } from '../../../../common/utils/isPlainPrimaryClick';
+import { saveCommunityScrollY } from '../../utils/communityScrollStorage';
 import ReactionCount from '../ReactionCount/ReactionCount';
 
 import type { CommunityPost } from '../../../../common/types/communityPost';
@@ -25,9 +29,17 @@ function CommunityPostCard({ post }: CommunityPostCardProps) {
   const createdAtLabel = formatTimeAgo(createdAt);
   const authorLabel = nickname;
 
+  const handleLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!isPlainPrimaryClick(event)) {
+      return;
+    }
+
+    saveCommunityScrollY(event.currentTarget);
+  };
+
   return (
     <S_ListItem>
-      <S_Link to={`${PAGE_URL.COMMUNITY}/${id}`}>
+      <S_Link to={`${PAGE_URL.COMMUNITY}/${id}`} onClick={handleLinkClick}>
         <S_Card>
           <S_TextBlock>
             <S_Title>{title}</S_Title>
@@ -68,10 +80,10 @@ const S_Link = styled(Link)`
 const S_Card = styled.article`
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 0.5rem;
   position: relative;
 
-  padding: 1.8rem 1.6rem 1.6rem;
+  padding: 1.6rem;
 
   &::after {
     content: '';
@@ -110,7 +122,7 @@ const S_Content = styled.p`
   overflow: hidden;
 
   color: ${({ theme }) => theme.FONT.B04};
-  ${({ theme }) => theme.TYPOGRAPHY.B2_R};
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
   line-height: 1.45;
   text-overflow: ellipsis;
 
@@ -150,7 +162,7 @@ const S_Author = styled.span`
   color: ${({ theme }) => theme.SYSTEM.GRAY600};
 
   text-overflow: ellipsis;
-  ${({ theme }) => theme.TYPOGRAPHY.C2_SB};
+  ${({ theme }) => theme.TYPOGRAPHY.B4_SB};
 `;
 
 const S_MetaSeparator = styled.span`
