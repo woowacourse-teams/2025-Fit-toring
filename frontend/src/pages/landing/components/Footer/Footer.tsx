@@ -5,10 +5,10 @@ function Footer() {
   return (
     <S_Container>
       <S_TextWrapper>
-        <S_Text>상호명: 핏토링</S_Text>
+        <S_Text>상호명: 핏토링 (Fittoring)</S_Text>
         <S_Text>대표자: 주용은</S_Text>
         <S_Text>이메일: fittoring7@gmail.com</S_Text>
-        <S_Text>Ⓒ 2025. fittoring Inc. All right reserved.</S_Text>
+        <S_Text>Ⓒ 2026. Fittoring Inc. All rights reserved.</S_Text>
       </S_TextWrapper>
       <S_Link
         to="https://docs.google.com/forms/d/e/1FAIpQLSfQlaSrxUmU-CKnK6jnp8qLTdGMmLYbff2CZSUmKE09OHN11w/viewform"
