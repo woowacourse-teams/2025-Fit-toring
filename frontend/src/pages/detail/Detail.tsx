@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import styled from '@emotion/styled';
 import { useLocation, useParams } from 'react-router-dom';
 
+import SEO from '../../common/components/SEO/SEO';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
@@ -15,6 +16,7 @@ import Introduction from './components/Introduction/Introduction';
 import ProfileSection from './components/ProfileSection/ProfileSection';
 import useMentoringDetail from './hooks/useMentoringDetail';
 import useTabs from './hooks/useTabs';
+import { buildMentoringDetailSEO } from './utils/buildMentoringDetailSEO';
 
 type TapType = 'detail' | 'review';
 
@@ -69,6 +71,7 @@ function Detail() {
 
   return (
     <>
+      <SEO {...buildMentoringDetailSEO(data, mentoringId!)} />
       <S_SkipLink href="#apply-section">신청 버튼 바로가기</S_SkipLink>
       <DetailHeader />
 
