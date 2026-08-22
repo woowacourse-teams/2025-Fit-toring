@@ -58,8 +58,17 @@ module.exports = {
           from: 'public',
           to: '.',
           globOptions: {
-            ignore: ['**/robots.*.txt', '**/mockServiceWorker.js'],
+            ignore: [
+              '**/robots.*.txt',
+              '**/mockServiceWorker.js',
+              '**/sitemap.xml',
+            ],
           },
+        },
+        {
+          from: '.generated/sitemap.xml',
+          to: 'sitemap.xml',
+          noErrorOnMissing: true,
         },
         { from: 'public/manifest.webmanifest', to: 'manifest.webmanifest' },
         { from: 'public/fittoring-icon-192.png', to: 'fittoring-icon-192.png' },
