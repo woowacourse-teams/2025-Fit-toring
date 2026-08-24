@@ -97,6 +97,6 @@ echo "TAG=$IMAGE_TAG" >> .env.deploy
 
 # 실행 중인 컨테이너 교체
 echo "[INFO] 새 이미지로 애플리케이션을 시작합니다..."
-sudo docker-compose --env-file .env.deploy up -d --wait app
+sudo env DOCKER_CONFIG="$DOCKER_CONFIG_DIR" docker-compose --env-file .env.deploy up -d --wait app
 
 echo "[INFO] 배포 완료!"
