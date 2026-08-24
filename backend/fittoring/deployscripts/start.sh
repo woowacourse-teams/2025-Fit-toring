@@ -40,9 +40,41 @@ fi
 
 IMAGE_TAG=$(cat "$APP_DIR/image_tag.txt")
 IMAGE_REPO="fittoring"
+
+if [ -z "${DOCKERHUB_USERNAME:-}" ]; then
+  echo "[ERROR] DOCKERHUB_USERNAME 환경변수가 없습니다. .env 구성을 확인하세요."
+  exit 1
+fi
+
 IMAGE_FULL="$DOCKERHUB_USERNAME/$IMAGE_REPO:$IMAGE_TAG"
 
 echo "[INFO] 배포할 이미지: $IMAGE_FULL"
+
+DOCKERHUB_TOKEN_PARAMETER="/fittoring/prod/DOCKERHUB_TOKEN"
+
+if ! command -v aws >/dev/null 2>&1; then
+  echo "[ERROR] awscli가 설치되어 있지 않습니다. Launch Template 또는 AMI를 확인하세요."
+  exit 1
+fi
+
+echo "[INFO] SSM에서 Docker Hub pull 토큰을 조회합니다..."
+DOCKERHUB_TOKEN=$(aws ssm get-parameter \
+  --name "$DOCKERHUB_TOKEN_PARAMETER" \
+  --with-decryption \
+  --query 'Parameter.Value' \
+  --output text \
+  --region "${AWS_REGION:-ap-northeast-2}")
+
+if [ -z "$DOCKERHUB_TOKEN" ]; then
+  echo "[ERROR] SSM Docker Hub pull 토큰이 비어 있습니다: $DOCKERHUB_TOKEN_PARAMETER"
+  exit 1
+fi
+
+echo "[INFO] Docker Hub에 로그인합니다..."
+printf '%s' "$DOCKERHUB_TOKEN" | sudo docker login \
+  --username "$DOCKERHUB_USERNAME" \
+  --password-stdin
+unset DOCKERHUB_TOKEN
 
 # DockerHub에서 새 이미지 pull
 echo "[INFO] 새 이미지를 pull 합니다..."
