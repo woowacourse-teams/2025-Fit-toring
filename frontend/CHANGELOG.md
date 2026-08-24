@@ -1,3 +1,17 @@
+# [1.21.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.5...v1.21.0) (2026-08-24)
+
+
+### Bug Fixes
+
+* 디테일 페이지 하단 신청바 정렬 방식 수정 [#1634](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1634) ([#1638](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1638)) ([c3aa752](https://github.com/woowacourse-teams/2025-Fit-toring/commit/c3aa752a62cd8f4079e11ee05883d0354f262d34))
+* 마이페이지 멘토 전용 메뉴를 권한 확인 후 노출 ([#1659](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1659)) ([4663443](https://github.com/woowacourse-teams/2025-Fit-toring/commit/4663443cdde394989e2de2c48b26af70c2c4b5d2))
+* 배포 시 Docker Hub pull 인증 구현 ([#1673](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1673)) ([ca7e21e](https://github.com/woowacourse-teams/2025-Fit-toring/commit/ca7e21eb8608709d8bc6529d7d0aecefe6a7e933))
+
+
+### Features
+
+* 내정보 조회 API 응답에 역할 필드 추가 ([#1646](https://github.com/woowacourse-teams/2025-Fit-toring/issues/1646)) ([1a6b6ce](https://github.com/woowacourse-teams/2025-Fit-toring/commit/1a6b6ced1f2ef2f304a6c561f386e27eae574cd1))
+
 ## [1.20.5](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.4...v1.20.5) (2026-06-02)
 
 
