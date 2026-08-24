@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.21.0...v1.21.1) (2026-08-24)
+
+
+### Bug Fixes
+
+* Compose Redis pull 인증 전달 ([a91cab4](https://github.com/woowacourse-teams/2025-Fit-toring/commit/a91cab41fa87099e15172d739c5b35965c5bf4d8))
+
 # [1.21.0](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.20.5...v1.21.0) (2026-08-24)
 
 
