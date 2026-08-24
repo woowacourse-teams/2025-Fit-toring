@@ -70,15 +70,25 @@ if [ -z "$DOCKERHUB_TOKEN" ]; then
   exit 1
 fi
 
+DOCKER_CONFIG_DIR=$(mktemp -d)
+
+cleanup_docker_auth() {
+  sudo env DOCKER_CONFIG="$DOCKER_CONFIG_DIR" docker logout >/dev/null 2>&1 || true
+  rm -rf -- "$DOCKER_CONFIG_DIR"
+  unset DOCKERHUB_TOKEN
+}
+
+trap cleanup_docker_auth EXIT
+
 echo "[INFO] Docker Hub에 로그인합니다..."
-printf '%s' "$DOCKERHUB_TOKEN" | sudo docker login \
+printf '%s' "$DOCKERHUB_TOKEN" | sudo env DOCKER_CONFIG="$DOCKER_CONFIG_DIR" docker login \
   --username "$DOCKERHUB_USERNAME" \
   --password-stdin
 unset DOCKERHUB_TOKEN
 
 # DockerHub에서 새 이미지 pull
 echo "[INFO] 새 이미지를 pull 합니다..."
-sudo docker pull "$IMAGE_FULL"
+sudo env DOCKER_CONFIG="$DOCKER_CONFIG_DIR" docker pull "$IMAGE_FULL"
 
 # .env 파일을 업데이트하여 docker-compose가 올바른 이미지를 사용하도록 설정
 echo "[INFO] .env 파일을 업데이트합니다..."
