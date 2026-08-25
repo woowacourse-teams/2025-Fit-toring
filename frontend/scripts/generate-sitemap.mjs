@@ -1,10 +1,11 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 
 const SITE_URL = 'https://www.fittoring.com';
 const MENTORINGS_PAGE_ENDPOINT = '/mentorings-page';
 const GENERATED_SITEMAP_PATH = path.resolve('.generated/sitemap.xml');
+const FALLBACK_SITEMAP_PATH = path.resolve('public/sitemap.xml');
 const DEFAULT_SORT_KEY = 'CREATED_AT';
 const REQUEST_TIMEOUT_MS = 10000;
 const MAX_PAGE_COUNT = 200;
@@ -157,6 +158,19 @@ const writeSitemap = async (mentoringIds) => {
   );
 };
 
+const writeFallbackSitemap = async () => {
+  await mkdir(path.dirname(GENERATED_SITEMAP_PATH), { recursive: true });
+  await copyFile(FALLBACK_SITEMAP_PATH, GENERATED_SITEMAP_PATH);
+
+  console.warn(
+    `기존 sitemap.xml을 사용합니다: ${FALLBACK_SITEMAP_PATH} -> ${GENERATED_SITEMAP_PATH}`,
+  );
+};
+
+const getErrorMessage = (error) => {
+  return error instanceof Error ? error.message : String(error);
+};
+
 const main = async () => {
   const mode = getMode();
 
@@ -175,14 +189,14 @@ const main = async () => {
 
     const mentoringIds = await fetchAllMentoringIds(apiBaseUrl);
 
-    if (mode === 'production' && mentoringIds.length === 0) {
+    if (mentoringIds.length === 0) {
       throw new Error('생성할 멘토링 상세 URL이 없습니다.');
     }
 
     await writeSitemap(mentoringIds);
   } catch (error) {
-    console.error(error);
-    process.exit(1);
+    console.warn(`sitemap 자동 생성 실패: ${getErrorMessage(error)}`);
+    await writeFallbackSitemap();
   }
 };
 
