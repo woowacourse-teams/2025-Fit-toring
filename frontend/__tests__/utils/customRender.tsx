@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
+import { HelmetProvider } from 'react-helmet-async';
 import { MemoryRouter } from 'react-router-dom';
 
 import { THEME } from '../../src/common/styles/theme';
@@ -39,9 +40,11 @@ const customRender = (
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
     return (
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={THEME}>
-          <MemoryRouter {...routerProps}>{children}</MemoryRouter>
-        </ThemeProvider>
+        <HelmetProvider>
+          <ThemeProvider theme={THEME}>
+            <MemoryRouter {...routerProps}>{children}</MemoryRouter>
+          </ThemeProvider>
+        </HelmetProvider>
       </QueryClientProvider>
     );
   };

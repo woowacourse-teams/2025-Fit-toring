@@ -4,6 +4,7 @@ import { Global, ThemeProvider } from '@emotion/react';
 import * as Sentry from '@sentry/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRoot } from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
 import ReactGA from 'react-ga4';
 
 import App from './App';
@@ -82,16 +83,18 @@ ReactGA.initialize(`${process.env.GOOGLE_ANALYTICS_ID}`);
 
   createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-      <ThemeProvider theme={THEME}>
-        <QueryClientProvider client={queryClient}>
-          <PWAInstallProvider>
-            <AuthProvider>
-              <Global styles={[resetCss]} />
-              <App />
-            </AuthProvider>
-          </PWAInstallProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
+      <HelmetProvider>
+        <ThemeProvider theme={THEME}>
+          <QueryClientProvider client={queryClient}>
+            <PWAInstallProvider>
+              <AuthProvider>
+                <Global styles={[resetCss]} />
+                <App />
+              </AuthProvider>
+            </PWAInstallProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </HelmetProvider>
     </React.StrictMode>,
   );
 
