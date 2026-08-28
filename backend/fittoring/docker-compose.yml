@@ -1,6 +1,27 @@
 version: '3.8'
 
 services:
+  db-test:
+    image: mysql:8.0
+    container_name: mysql-test-container
+    profiles: ["test"]
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      MYSQL_DATABASE: fittoring-test
+      MYSQL_ROOT_PASSWORD: 1234
+      LANG: C.UTF-8
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+      timeout: 2s
+    ports:
+      - "3307:3306"
+
   redis:
     image: redis:7-alpine
     container_name: redis-container
@@ -14,6 +35,7 @@ services:
   redis-test:
     image: redis:7-alpine
     container_name: redis-test-container
+    profiles: ["test"]
     ports:
       - "6380:6379"
     healthcheck:

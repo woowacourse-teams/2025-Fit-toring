@@ -32,38 +32,6 @@ jobs:
             sudo apt-get install -y netcat-openbsd
           fi
 
-      - name: Start test containers with Docker Compose
-        run: docker compose -f ./docker-compose.yml up -d db-test redis-test
-
-      - name: Wait for Test MySQL
-        run: |
-          echo "Waiting for Test MySQL..."
-          for i in {30..0}; do
-            nc -z localhost 3307 && echo "Test MySQL is up!" && break
-            echo "Still waiting for MySQL..."
-            sleep 2
-          done
-
-      - name: Wait for Test Redis
-        run: |
-          echo "Waiting for Test Redis..."
-          for i in {30..0}; do
-            nc -z localhost 6380 && echo "Test Redis is up!" && break
-            echo "Still waiting for Redis..."
-            sleep 2
-          done
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Create .env file
         run: |
           echo "ACTIVE_PROFILE=test" >> .env
@@ -97,6 +65,38 @@ jobs:
           echo "AWS_IAM_ACCESS_KEY=${{ secrets.AWS_IAM_ACCESS_KEY }}" >> .env
           echo "AWS_IAM_SECRET_KEY=${{ secrets.AWS_IAM_SECRET_KEY }}" >> .env
 
+      - name: Start test containers with Docker Compose
+        run: docker compose -f ./docker-compose.yml up -d db-test redis-test
+
+      - name: Wait for Test MySQL
+        run: |
+          echo "Waiting for Test MySQL..."
+          for i in {30..0}; do
+            nc -z localhost 3307 && echo "Test MySQL is up!" && break
+            echo "Still waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Wait for Test Redis
+        run: |
+          echo "Waiting for Test Redis..."
+          for i in {30..0}; do
+            nc -z localhost 6380 && echo "Test Redis is up!" && break
+            echo "Still waiting for Redis..."
+            sleep 2
+          done
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -127,7 +127,12 @@ jobs:
 
       - name: Stop Docker containers (test DB)
         if: always()
-        run: docker compose -f ./docker-compose.yml down
+        run: |
+          if [[ -f .env ]]; then
+            docker compose -f ./docker-compose.yml down
+          else
+            echo "[INFO] .env가 없어 Docker Compose cleanup을 건너뜁니다."
+          fi
 
       - name: Docker login
         uses: docker/login-action@v3
