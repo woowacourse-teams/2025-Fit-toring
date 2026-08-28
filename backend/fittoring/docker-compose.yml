@@ -1,48 +1,6 @@
 version: '3.8'
 
 services:
-  db:
-    image: mysql:8.0
-    container_name: mysql-container
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --skip-character-set-client-handshake
-    environment:
-      MYSQL_DATABASE: fittoring
-      MYSQL_ROOT_PASSWORD: 1234
-      LANG: C.UTF-8
-    ports:
-      - "3306:3306"
-    volumes:
-      - db-data:/var/lib/mysql
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 5s
-      retries: 5
-      start_period: 10s
-      timeout: 2s
-
-  db-test:
-    image: mysql:8.0
-    container_name: mysql-test-container
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --skip-character-set-client-handshake
-    environment:
-      MYSQL_DATABASE: fittoring-test
-      MYSQL_ROOT_PASSWORD: 1234
-      LANG: C.UTF-8
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 5s
-      retries: 5
-      start_period: 10s
-      timeout: 2s
-    ports:
-      - "3307:3306"
-
   redis:
     image: redis:7-alpine
     container_name: redis-container
@@ -66,9 +24,8 @@ services:
   app:
     image: ${IMAGE}:${TAG}
     container_name: fittoring-app
+    mem_limit: 1g
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_healthy
     ports:
@@ -76,16 +33,7 @@ services:
     env_file: .env
     environment:
       TZ: Asia/Seoul
-      JAVA_TOOL_OPTIONS: "-javaagent:/app/otel-agent.jar"
-      OTEL_SERVICE_NAME: fittoring
-      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${SPRING_PROFILES_ACTIVE:-prod}"
-      OTEL_TRACES_EXPORTER: otlp
-      OTEL_METRICS_EXPORTER: none
-      OTEL_LOGS_EXPORTER: otlp
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://monitoring.fittoring.store:443
-      OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: http/protobuf
-      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://monitoring.fittoring.store:8080/otlp/v1/logs
+      JAVA_TOOL_OPTIONS: "-Xmx512m"
     logging:
       driver: "json-file"
       options:
@@ -100,9 +48,6 @@ services:
       timeout: 3s
       retries: 10
       start_period: 120s
-
-volumes:
-  db-data:
 
 networks:
   default:
