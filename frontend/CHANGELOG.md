@@ -1,3 +1,11 @@
+## [1.21.2](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.21.1...v1.21.2) (2026-08-28)
+
+
+### Bug Fixes
+
+* CI 테스트용 Compose 서비스 복구 ([d06a643](https://github.com/woowacourse-teams/2025-Fit-toring/commit/d06a6438030eb470a90a4293914351400934a73e))
+* 운영 앱 메모리·모니터링 의존성 정리 ([fa1629d](https://github.com/woowacourse-teams/2025-Fit-toring/commit/fa1629dcbc898170c9a10925aa77c797967c603a))
+
 ## [1.21.1](https://github.com/woowacourse-teams/2025-Fit-toring/compare/v1.21.0...v1.21.1) (2026-08-24)
 
 
