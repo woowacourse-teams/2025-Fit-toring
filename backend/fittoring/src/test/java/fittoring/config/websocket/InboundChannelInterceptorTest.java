@@ -141,7 +141,7 @@ class InboundChannelInterceptorTest {
         sessionAttributes.put("tokenExpEpochMillis", Instant.now().plusSeconds(30).toEpochMilli());
         Message<byte[]> message = buildMessage(
                 StompCommand.SEND,
-                "/app/chatroom/123",
+                "/app/chatroom/123/messages/image",
                 sessionAttributes
         );
 
@@ -163,7 +163,30 @@ class InboundChannelInterceptorTest {
         sessionAttributes.put("authorizedChatRoomIds", new HashSet<>(Set.of(123L)));
         Message<byte[]> message = buildMessage(
                 StompCommand.SEND,
-                "/app/chatroom/123",
+                "/app/chatroom/123/messages/text",
+                sessionAttributes
+        );
+
+        // when
+        Message<?> result = interceptor.preSend(message, channel);
+
+        // then
+        assertThat(result).isNotNull();
+        verify(metricsListener).incrementInboundMessage(2);
+        verify(chatRoomService, never()).getAccessibleChatRoom(123L, 1L);
+    }
+
+    @DisplayName("이미 권한이 캐시된 채팅방 IMAGE SEND 는 DB 조회 없이 통과한다.")
+    @Test
+    void preSend_passesMessage_whenSendChatRoomImageAuthorized() {
+        // given
+        Map<String, Object> sessionAttributes = new HashMap<>();
+        sessionAttributes.put("loginInfo", new LoginInfo(1L));
+        sessionAttributes.put("tokenExpEpochMillis", Instant.now().plusSeconds(30).toEpochMilli());
+        sessionAttributes.put("authorizedChatRoomIds", new HashSet<>(Set.of(123L)));
+        Message<byte[]> message = buildMessage(
+                StompCommand.SEND,
+                "/app/chatroom/123/messages/image",
                 sessionAttributes
         );
 

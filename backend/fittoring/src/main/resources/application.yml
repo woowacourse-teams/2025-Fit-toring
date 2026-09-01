@@ -131,6 +131,11 @@ image-session:
     fixed-delay-ms: 300000
     batch-size: 200
 
+chat-image-upload:
+  ticket:
+    # 채팅 이미지 업로드 티켓 TTL(초). PUT presigned 만료(3분)보다 약간 길게 둔다.
+    ttl-seconds: ${CHAT_IMAGE_UPLOAD_TTL_SECONDS:300}
+
 sms-outbox:
   publisher:
     enabled: true

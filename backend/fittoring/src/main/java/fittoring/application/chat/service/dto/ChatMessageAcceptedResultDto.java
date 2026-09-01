@@ -14,4 +14,32 @@ public record ChatMessageAcceptedResultDto(
         String originalImageUrl,
         LocalDateTime createdAt
 ) {
+
+    public static ChatMessageAcceptedResultDto text(ChatMessagePersistEventDto event) {
+        return new ChatMessageAcceptedResultDto(
+                event.messageId(),
+                event.tempId(),
+                event.chatRoomId(),
+                event.senderId(),
+                event.content(),
+                ChatMessageType.TEXT,
+                null,
+                null,
+                event.requestedAt()
+        );
+    }
+
+    public static ChatMessageAcceptedResultDto image(ChatMessagePersistEventDto event, String originalImageUrl) {
+        return new ChatMessageAcceptedResultDto(
+                event.messageId(),
+                event.tempId(),
+                event.chatRoomId(),
+                event.senderId(),
+                null,
+                ChatMessageType.IMAGE,
+                null,
+                originalImageUrl,
+                event.requestedAt()
+        );
+    }
 }

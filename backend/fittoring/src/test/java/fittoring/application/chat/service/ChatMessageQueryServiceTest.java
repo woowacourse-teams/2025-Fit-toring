@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import fittoring.IntegrationTestSupport;
 import fittoring.application.FixtureUtil;
-import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
 import fittoring.application.image.presentation.dto.response.ImageUrlResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessagePaginationResponse;
 import fittoring.application.chat.presentation.dto.response.ChatMessageResponse;
@@ -19,7 +18,6 @@ import fittoring.domain.model.ChatMessageType;
 import fittoring.application.chat.repository.ChatRoomRepository;
 import fittoring.application.exception.BusinessErrorMessage;
 import fittoring.application.exception.ChatMessageNotFoundException;
-import fittoring.application.exception.ChatRoomNotFoundException;
 import fittoring.application.exception.UnauthorizedChatRoomAccessException;
 import fittoring.application.image.repository.ImageRepository;
 import fittoring.domain.model.ChatMessage;
@@ -29,10 +27,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class ChatMessageServiceTest extends IntegrationTestSupport {
+class ChatMessageQueryServiceTest extends IntegrationTestSupport {
 
     @Autowired
-    private ChatMessageService chatMessageService;
+    private ChatMessageQueryService chatMessageQueryService;
 
     @Autowired
     private ChatRoomRepository chatRoomRepository;
@@ -45,44 +43,6 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private PresignedUrlService presignedUrlService;
-
-    @DisplayName("존재하지 않는 채팅방 저장의 경우 예외가 발생한다.")
-    @Test
-    void registerMessage() {
-        //given
-        Long invalidChatRoomId = 999L;
-        ChatMessageRequest request = new ChatMessageRequest("cotent", 123155L, ChatMessageType.TEXT);
-        Long senderId = 1L;
-
-        //when
-        //then
-        assertThatThrownBy(() ->
-                chatMessageService.registerMessage(invalidChatRoomId, request, senderId))
-                .isInstanceOf(ChatRoomNotFoundException.class)
-                .hasMessage(BusinessErrorMessage.CHAT_ROOM_NOT_FOUND.getMessage());
-    }
-
-    @DisplayName("참여자가 아닌 사용자가 메시지를 등록하려 할 때 예외가 발생한다.")
-    @Test
-    void registerMessageUnauthorizedMember() {
-        //given
-        Long reservationId = 1L;
-        Long menteeId = 1L;
-        Long mentorId = 2L;
-
-        ChatRoom chatRoom = new ChatRoom(reservationId, menteeId, mentorId);
-        chatRoomRepository.save(chatRoom);
-
-        ChatMessageRequest request = new ChatMessageRequest("content", 1234L, ChatMessageType.TEXT);
-        Long unauthorizedUserId = 999L;
-
-        //when
-        //then
-        assertThatThrownBy(() ->
-                chatMessageService.registerMessage(chatRoom.getId(), request, unauthorizedUserId))
-                .isInstanceOf(UnauthorizedChatRoomAccessException.class)
-                .hasMessage(BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage());
-    }
 
     @DisplayName("이미지 메시지 히스토리 조회 시 썸네일이 존재하면 thumbnailUrl과 originalImageUrl을 모두 반환한다.")
     @Test
@@ -102,7 +62,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
                 .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
-        ChatMessagePaginationResponse response = chatMessageService.findChatMessages(chatRoom.getId(), menteeId, null);
+        ChatMessagePaginationResponse response = chatMessageQueryService.findChatMessages(chatRoom.getId(), menteeId, null);
 
         //then
         ChatMessageResponse msg = response.chatMessages().getFirst();
@@ -131,7 +91,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
                 .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
-        ChatMessagePaginationResponse response = chatMessageService.findChatMessages(chatRoom.getId(), menteeId, null);
+        ChatMessagePaginationResponse response = chatMessageQueryService.findChatMessages(chatRoom.getId(), menteeId, null);
 
         //then
         ChatMessageResponse msg = response.chatMessages().getFirst();
@@ -160,7 +120,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
                 .thenReturn(new ImageUrlResponse(null, "https://presigned-get-url-default"));
 
         //when
-        ImageUrlResponse response = chatMessageService.reissueImageUrl(chatRoom.getId(), imageMessage.getId(), menteeId);
+        ImageUrlResponse response = chatMessageQueryService.reissueImageUrl(chatRoom.getId(), imageMessage.getId(), menteeId);
 
         //then
         SoftAssertions.assertSoftly(softly -> {
@@ -180,7 +140,7 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
 
         //when //then
         assertThatThrownBy(() ->
-                chatMessageService.reissueImageUrl(chatRoom.getId(), invalidMessageId, menteeId))
+                chatMessageQueryService.reissueImageUrl(chatRoom.getId(), invalidMessageId, menteeId))
                 .isInstanceOf(ChatMessageNotFoundException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_MESSAGE_NOT_FOUND.getMessage());
     }
@@ -198,8 +158,42 @@ class ChatMessageServiceTest extends IntegrationTestSupport {
 
         //when //then
         assertThatThrownBy(() ->
-                chatMessageService.reissueImageUrl(chatRoom.getId(), textMessage.getId(), menteeId))
+                chatMessageQueryService.reissueImageUrl(chatRoom.getId(), textMessage.getId(), menteeId))
                 .isInstanceOf(ChatMessageNotImageException.class)
                 .hasMessage(BusinessErrorMessage.CHAT_MESSAGE_NOT_IMAGE.getMessage());
+    }
+
+    @DisplayName("채팅방 비참여자가 메시지를 조회하면 예외가 발생한다.")
+    @Test
+    void findChatMessagesByNonParticipant() {
+        //given
+        Long menteeId = 1L;
+        Long mentorId = 2L;
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, menteeId, mentorId));
+        Long nonParticipantId = 999L;
+
+        //when //then
+        assertThatThrownBy(() ->
+                chatMessageQueryService.findChatMessages(chatRoom.getId(), nonParticipantId, null))
+                .isInstanceOf(UnauthorizedChatRoomAccessException.class)
+                .hasMessage(BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage());
+    }
+
+    @DisplayName("채팅방 비참여자가 이미지 URL을 재발급하면 예외가 발생한다.")
+    @Test
+    void reissueImageUrlByNonParticipant() {
+        //given
+        Long menteeId = 1L;
+        Long mentorId = 2L;
+        ChatRoom chatRoom = chatRoomRepository.save(FixtureUtil.testChatRoom(1L, menteeId, mentorId));
+
+        ChatMessage imageMessage = chatMessageRepository.save(FixtureUtil.testImageChatMessage(chatRoom, menteeId));
+        Long nonParticipantId = 999L;
+
+        //when //then
+        assertThatThrownBy(() ->
+                chatMessageQueryService.reissueImageUrl(chatRoom.getId(), imageMessage.getId(), nonParticipantId))
+                .isInstanceOf(UnauthorizedChatRoomAccessException.class)
+                .hasMessage(BusinessErrorMessage.UNAUTHORIZED_CHAT_ROOM_ACCESS.getMessage());
     }
 }

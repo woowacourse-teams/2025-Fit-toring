@@ -1,6 +1,6 @@
 package fittoring.application.chat.service.dto;
 
-import fittoring.application.chat.presentation.dto.request.ChatMessageRequest;
+import fittoring.application.chat.presentation.dto.request.ChatTextMessageRequest;
 import fittoring.domain.model.ChatMessageType;
 import java.time.LocalDateTime;
 
@@ -14,12 +14,11 @@ public record ChatMessagePersistEventDto(
         LocalDateTime requestedAt
 ) {
 
-    public static ChatMessagePersistEventDto of(
+    public static ChatMessagePersistEventDto text(
             String messageId,
             Long chatRoomId,
             Long senderId,
-            ChatMessageRequest request,
-            String content,
+            ChatTextMessageRequest request,
             LocalDateTime requestedAt
     ) {
         return new ChatMessagePersistEventDto(
@@ -27,8 +26,27 @@ public record ChatMessagePersistEventDto(
                 chatRoomId,
                 senderId,
                 request.tempId(),
-                content,
-                request.messageType(),
+                request.content(),
+                ChatMessageType.TEXT,
+                requestedAt
+        );
+    }
+
+    public static ChatMessagePersistEventDto image(
+            String messageId,
+            Long chatRoomId,
+            Long senderId,
+            Long tempId,
+            String s3Key,
+            LocalDateTime requestedAt
+    ) {
+        return new ChatMessagePersistEventDto(
+                messageId,
+                chatRoomId,
+                senderId,
+                tempId,
+                s3Key,
+                ChatMessageType.IMAGE,
                 requestedAt
         );
     }
