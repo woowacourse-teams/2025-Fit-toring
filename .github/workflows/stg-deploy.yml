@@ -47,6 +47,42 @@ jobs:
             sudo apt-get install -y netcat-openbsd
           fi
 
+      - name: Create test environment file
+        shell: bash
+        run: |
+          cat <<'EOF' > .env
+          ACTIVE_PROFILE=test
+          TEST_DATABASE_HOST=localhost
+          TEST_DATABASE_PORT=3307
+          TEST_DATABASE_NAME=fittoring-test
+          TEST_DATABASE_USER=root
+          TEST_DATABASE_PASSWORD=1234
+          COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}
+          COOL_SMS_HMAC_HEADER=HMAC-SHA256
+          COOL_SMS_HMAC_HASH=HmacSHA256
+          COOL_SMS_API_KEY=${{ secrets.COOL_SMS_API_KEY }}
+          COOL_SMS_SECRET_KEY=${{ secrets.COOL_SMS_SECRET_KEY }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          ACCESS_TOKEN_EXPIRATION_MILLIS=${{ secrets.ACCESS_TOKEN_EXPIRATION_MILLIS }}
+          REFRESH_TOKEN_EXPIRATION_MILLIS=${{ secrets.REFRESH_TOKEN_EXPIRATION_MILLIS }}
+          KAKAO_REDIRECT_URL=https://dev.fittoring.com/kakao/callback
+          KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+          TRACING_ENABLE=${{ secrets.TRACING_ENABLE }}
+          TEMPO_GRPC_LISTENER_URL=${{ secrets.TEMPO_GRPC_LISTENER_URL }}
+          DB_TRACING_ENABLE=${{ secrets.DB_TRACING_ENABLE }}
+          METRICS_EXPORT_TIME_TO_PROMETHEUS=${{ secrets.METRICS_EXPORT_TIME_TO_PROMETHEUS }}
+          HIKARI_MAXIMUM_POOL_SIZE=${{ secrets.HIKARI_MAXIMUM_POOL_SIZE }}
+          HIKARI_MINIMUM_IDLE=${{ secrets.HIKARI_MINIMUM_IDLE }}
+          HIKARI_CONNECTION_TIMEOUT=${{ secrets.HIKARI_CONNECTION_TIMEOUT }}
+          HIKARI_MAX_LIFETIME=${{ secrets.HIKARI_MAX_LIFETIME }}
+          TOMCAT_MAX_THREADS=${{ secrets.TOMCAT_MAX_THREADS }}
+          TOMCAT_MAX_CONNECTIONS=${{ secrets.TOMCAT_MAX_CONNECTIONS }}
+          TOMCAT_CONNECTION_TIMEOUT=${{ secrets.TOMCAT_CONNECTION_TIMEOUT }}
+          TOMCAT_KEEP_ALIVE_TIMEOUT=${{ secrets.TOMCAT_KEEP_ALIVE_TIMEOUT }}
+          AWS_IAM_ACCESS_KEY=${{ secrets.AWS_IAM_ACCESS_KEY }}
+          AWS_IAM_SECRET_KEY=${{ secrets.AWS_IAM_SECRET_KEY }}
+          EOF
+
       - name: Start test containers
         shell: bash
         run: docker compose -f ./docker-compose.yml up -d db-test redis-test
@@ -94,42 +130,6 @@ jobs:
           cache: npm
           cache-dependency-path: |
             backend/back-office/package-lock.json
-
-      - name: Create test environment file
-        shell: bash
-        run: |
-          cat <<'EOF' > .env
-          ACTIVE_PROFILE=test
-          TEST_DATABASE_HOST=localhost
-          TEST_DATABASE_PORT=3307
-          TEST_DATABASE_NAME=fittoring-test
-          TEST_DATABASE_USER=root
-          TEST_DATABASE_PASSWORD=1234
-          COOL_SMS_FROM_PHONE=${{ secrets.COOL_SMS_FROM_PHONE }}
-          COOL_SMS_HMAC_HEADER=HMAC-SHA256
-          COOL_SMS_HMAC_HASH=HmacSHA256
-          COOL_SMS_API_KEY=${{ secrets.COOL_SMS_API_KEY }}
-          COOL_SMS_SECRET_KEY=${{ secrets.COOL_SMS_SECRET_KEY }}
-          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-          ACCESS_TOKEN_EXPIRATION_MILLIS=${{ secrets.ACCESS_TOKEN_EXPIRATION_MILLIS }}
-          REFRESH_TOKEN_EXPIRATION_MILLIS=${{ secrets.REFRESH_TOKEN_EXPIRATION_MILLIS }}
-          KAKAO_REDIRECT_URL=https://dev.fittoring.com/kakao/callback
-          KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
-          TRACING_ENABLE=${{ secrets.TRACING_ENABLE }}
-          TEMPO_GRPC_LISTENER_URL=${{ secrets.TEMPO_GRPC_LISTENER_URL }}
-          DB_TRACING_ENABLE=${{ secrets.DB_TRACING_ENABLE }}
-          METRICS_EXPORT_TIME_TO_PROMETHEUS=${{ secrets.METRICS_EXPORT_TIME_TO_PROMETHEUS }}
-          HIKARI_MAXIMUM_POOL_SIZE=${{ secrets.HIKARI_MAXIMUM_POOL_SIZE }}
-          HIKARI_MINIMUM_IDLE=${{ secrets.HIKARI_MINIMUM_IDLE }}
-          HIKARI_CONNECTION_TIMEOUT=${{ secrets.HIKARI_CONNECTION_TIMEOUT }}
-          HIKARI_MAX_LIFETIME=${{ secrets.HIKARI_MAX_LIFETIME }}
-          TOMCAT_MAX_THREADS=${{ secrets.TOMCAT_MAX_THREADS }}
-          TOMCAT_MAX_CONNECTIONS=${{ secrets.TOMCAT_MAX_CONNECTIONS }}
-          TOMCAT_CONNECTION_TIMEOUT=${{ secrets.TOMCAT_CONNECTION_TIMEOUT }}
-          TOMCAT_KEEP_ALIVE_TIMEOUT=${{ secrets.TOMCAT_KEEP_ALIVE_TIMEOUT }}
-          AWS_IAM_ACCESS_KEY=${{ secrets.AWS_IAM_ACCESS_KEY }}
-          AWS_IAM_SECRET_KEY=${{ secrets.AWS_IAM_SECRET_KEY }}
-          EOF
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -196,7 +196,12 @@ jobs:
       - name: Stop test containers
         if: always()
         shell: bash
-        run: docker compose -f ./docker-compose.yml down
+        run: |
+          if [[ -f .env ]]; then
+            docker compose -f ./docker-compose.yml down
+          else
+            echo "[INFO] .env가 없어 Docker Compose cleanup을 건너뜁니다."
+          fi
 
       - name: Docker login
         uses: docker/login-action@v3
