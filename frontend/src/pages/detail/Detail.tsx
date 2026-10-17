@@ -3,8 +3,9 @@ import { useRef } from 'react';
 import styled from '@emotion/styled';
 import { useLocation, useParams } from 'react-router-dom';
 
-import SEO from '../../common/components/SEO/SEO';
 import LoadingSpinner from '../../common/components/LoadingSpinner/LoadingSpinner';
+import SEO from '../../common/components/SEO/SEO';
+import { SEO as SEO_CONSTANTS } from '../../common/constants/seo';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import ApplySection from './components/ApplySection/ApplySection';
@@ -48,6 +49,16 @@ function Detail() {
     certificateSectionRef.current?.focus();
   };
 
+  const seoProps =
+    data && !isError
+      ? buildMentoringDetailSEO(data, mentoringId!)
+      : {
+          title: `멘토링 상세 - ${SEO_CONSTANTS.SITE_NAME}`,
+          canonicalPath: location.pathname,
+          type: 'profile' as const,
+        };
+  const seo = <SEO {...seoProps} />;
+
   if (isError && error) {
     console.error('fetchData 실패', error);
     captureSentryError({
@@ -57,12 +68,18 @@ function Detail() {
       step: 'mentoring-detail-fetch',
     });
 
-    return <div>데이터를 불러오는 중에 오류가 발생했습니다.</div>;
+    return (
+      <>
+        {seo}
+        <div>데이터를 불러오는 중에 오류가 발생했습니다.</div>
+      </>
+    );
   }
 
   if (isPending || !data) {
     return (
       <>
+        {seo}
         <DetailHeader />
         <DetailSkeleton />
       </>
@@ -71,7 +88,7 @@ function Detail() {
 
   return (
     <>
-      <SEO {...buildMentoringDetailSEO(data, mentoringId!)} />
+      {seo}
       <S_SkipLink href="#apply-section">신청 버튼 바로가기</S_SkipLink>
       <DetailHeader />
 

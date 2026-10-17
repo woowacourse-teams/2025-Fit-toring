@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ApiError from '../../common/apis/ApiError';
 import PullToRefresh from '../../common/components/PullToRefresh/PullToRefresh';
 import { isPullToRefreshEnabled } from '../../common/components/PullToRefresh/utils';
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
 
 import { getChatRooms } from './apis/getChatRooms';
@@ -36,6 +37,10 @@ function ChatRooms() {
 
   return (
     <S_Container>
+      <SEO
+        title="채팅 목록 - 핏토링 Fittoring"
+        canonicalPath={PAGE_URL.CHAT_ROOMS}
+      />
       <ChatRoomsHeader />
       <PullToRefresh
         enabled={isPullToRefreshEnabled()}

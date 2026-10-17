@@ -1,5 +1,8 @@
 import styled from '@emotion/styled';
 
+import SEO from '../../common/components/SEO/SEO';
+import { PAGE_URL } from '../../common/constants/url';
+
 import IdentityVerificationForm from './components/IdentityVerificationForm/IdentityVerificationForm';
 import IdentityVerificationHeader from './components/IdentityVerificationHeader/IdentityVerificationHeader';
 import IdentityVerificationIntro from './components/IdentityVerificationIntro/IdentityVerificationIntro';
@@ -7,6 +10,10 @@ import IdentityVerificationIntro from './components/IdentityVerificationIntro/Id
 function IdentityVerification() {
   return (
     <S_Container>
+      <SEO
+        title="본인인증 - 핏토링 Fittoring"
+        canonicalPath={PAGE_URL.IDENTITY_VERIFICATION}
+      />
       <IdentityVerificationHeader />
       <IdentityVerificationIntro />
       <IdentityVerificationForm />
