@@ -13,7 +13,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import ApiError from '../../common/apis/ApiError';
 import { postReissue } from '../../common/apis/postReissue';
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
+import useDelayedVisibility from '../../common/hooks/useDelayedVisibility';
 import useS3Upload from '../../common/hooks/useS3Upload';
 
 import { getChatRoomInfo } from './apis/getChatRoomInfo';
@@ -25,7 +27,6 @@ import ChatRoomInputArea from './components/ChatRoomInputArea/ChatRoomInputArea'
 import ImageSendModal from './components/ImageSendModal/ImageSendModal';
 import MentoringActionPanel from './components/MentoringActionPanel/MentoringActionPanel';
 import { MESSAGE_TYPE } from './constants/message';
-import useDelayedVisibility from '../../common/hooks/useDelayedVisibility';
 import useImageFile from './hooks/useImageFile';
 import useInfiniteChatRoomMessage from './hooks/useInfiniteChatRoomMessage';
 import usePersistPendingMessages, {
@@ -586,16 +587,34 @@ function ChatRoom() {
     };
   }, [capturePrevScroll, chatRoomId, navigate]);
 
+  const seo = (
+    <SEO
+      title="채팅 - 핏토링 Fittoring"
+      canonicalPath={`${PAGE_URL.CHAT_ROOM}/${chatRoomId}`}
+    />
+  );
+
   if (error?.status === 403) {
-    return <ChatRoomForbidden />;
+    return (
+      <>
+        {seo}
+        <ChatRoomForbidden />
+      </>
+    );
   }
 
   if (error?.status === 401) {
-    return <div>로그인 후 이용 가능합니다.</div>;
+    return (
+      <div>
+        {seo}
+        로그인 후 이용 가능합니다.
+      </div>
+    );
   }
 
   return (
     <S_Container>
+      {seo}
       {chatRoomInfoIsPending || !chatRoomInfoData ? (
         <S_LoadingHeaderArea>
           <S_LoadingHeaderWrapper visible={visible}>

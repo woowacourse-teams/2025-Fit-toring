@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
 
 import FitnessQuestionFlow from './components/FitnessQuestionFlow/FitnessQuestionFlow';
@@ -19,6 +20,10 @@ function Landing() {
 
   return (
     <main>
+      <SEO
+        title="서비스 소개 - 핏토링 Fittoring"
+        canonicalPath={PAGE_URL.LANDING}
+      />
       <Slogan />
       <FitnessQuestionFlow />
       <Introduce />
