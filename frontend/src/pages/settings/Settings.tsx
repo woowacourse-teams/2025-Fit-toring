@@ -11,6 +11,7 @@ import goIcon from '../../common/assets/images/goIcon.svg';
 import settingsIcon from '../../common/assets/images/mypage-settings.svg';
 import passwordIcon from '../../common/assets/images/notBlind.svg';
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
 import { authCheckQueryOptions } from '../../common/queries/auth';
 import { captureSentryError } from '../../common/utils/captureSentryError';
@@ -134,6 +135,7 @@ function Settings() {
 
   return (
     <S_Container>
+      <SEO title="설정 - 핏토링 Fittoring" canonicalPath={PAGE_URL.SETTINGS} />
       <MyPageSection items={appItems} title="앱 설정" />
       <MyPageSection items={accountItems} title="계정" />
       <MyPageSection divided={false} items={inquiryItems} title="문의" />

@@ -5,7 +5,7 @@ import { SEO as SEO_CONSTANTS } from '../../constants/seo';
 interface SEOProps {
   title?: string;
   description?: string;
-  canonicalPath?: string;
+  canonicalPath: string;
   imageUrl?: string | null;
   type?: 'website' | 'article' | 'profile';
 }
@@ -13,11 +13,14 @@ interface SEOProps {
 function SEO({
   title = SEO_CONSTANTS.DEFAULT_TITLE,
   description = SEO_CONSTANTS.DEFAULT_DESCRIPTION,
-  canonicalPath = '/',
+  canonicalPath,
   imageUrl = SEO_CONSTANTS.DEFAULT_IMAGE_URL,
   type = 'website',
 }: SEOProps) {
-  const canonicalUrl = new URL(canonicalPath, SEO_CONSTANTS.SITE_URL).toString();
+  const canonicalUrl = new URL(
+    canonicalPath,
+    SEO_CONSTANTS.SITE_URL,
+  ).toString();
   const ogImageUrl = imageUrl || SEO_CONSTANTS.DEFAULT_IMAGE_URL;
 
   return (

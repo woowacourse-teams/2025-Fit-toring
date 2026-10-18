@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
 
 import CommunitySearchHeader from './components/CommunitySearchHeader/CommunitySearchHeader';
@@ -27,10 +28,11 @@ function CommunitySearch() {
 
   return (
     <S_Container>
-      <CommunitySearchHeader
-        autoFocus
-        onSearch={addRecentSearchKeyword}
+      <SEO
+        title="커뮤니티 검색 - 핏토링 Fittoring"
+        canonicalPath={PAGE_URL.COMMUNITY_SEARCH}
       />
+      <CommunitySearchHeader autoFocus onSearch={addRecentSearchKeyword} />
       <RecentSearchSection
         keywords={recentSearchKeywords}
         onKeywordClick={handleRecentSearchKeywordClick}

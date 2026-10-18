@@ -6,6 +6,7 @@ import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import Button from '../../common/components/Button/Button';
 import PullToRefresh from '../../common/components/PullToRefresh/PullToRefresh';
 import { isPullToRefreshEnabled } from '../../common/components/PullToRefresh/utils';
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
 import useMyMentoringId from '../home/hooks/useMyMentoringId';
 
@@ -48,6 +49,10 @@ function CreatedMentoring() {
 
   return (
     <S_Container>
+      <SEO
+        title="개설한 멘토링 - 핏토링 Fittoring"
+        canonicalPath={PAGE_URL.CREATED_MENTORING}
+      />
       <PullToRefresh
         enabled={isPullToRefreshEnabled()}
         onRefresh={handleRefresh}
