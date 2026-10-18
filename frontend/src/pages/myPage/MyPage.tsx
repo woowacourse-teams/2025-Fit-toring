@@ -5,6 +5,7 @@ import calendarIcon from '../../common/assets/images/mypage-calendar.svg';
 import documentIcon from '../../common/assets/images/mypage-document.svg';
 import settingsIcon from '../../common/assets/images/mypage-settings.svg';
 import usersIcon from '../../common/assets/images/mypage-users.svg';
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
 import useMyProfile from '../editProfile/hooks/useMyProfile';
 
@@ -64,6 +65,10 @@ function MyPage() {
 
   return (
     <S_Container>
+      <SEO
+        title="마이페이지 - 핏토링 Fittoring"
+        canonicalPath={PAGE_URL.MY_PAGE}
+      />
       <MyPageProfileSummary
         profileImg={myProfile?.image}
         name={displayName}

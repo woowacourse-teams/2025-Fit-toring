@@ -37,9 +37,7 @@ const CreatedMentoring = lazy(
 );
 const EditProfile = lazy(() => import('./pages/editProfile/EditProfile'));
 const Settings = lazy(() => import('./pages/settings/Settings'));
-const AppInstallGuide = lazy(
-  () => import('./pages/settings/AppInstallGuide'),
-);
+const AppInstallGuide = lazy(() => import('./pages/settings/AppInstallGuide'));
 const ChatRoom = lazy(() => import('./pages/chatRoom/ChatRoom'));
 const CommunityPostDetail = lazy(
   () => import('./pages/communityPostDetail/CommunityPostDetail'),
@@ -63,11 +61,7 @@ const CommunitySearchResult = lazy(
 
 const router = createBrowserRouter([
   {
-    element: (
-      <>
-        <MobileLayout />
-      </>
-    ),
+    element: <MobileLayout />,
     children: [
       {
         element: <BottomTabLayout />,
@@ -91,7 +85,10 @@ const router = createBrowserRouter([
           {
             element: <ProtectedRoute />,
             children: [
-              { path: `${PAGE_URL.CHAT_ROOMS}`, element: <ChatRooms /> },
+              {
+                path: `${PAGE_URL.CHAT_ROOMS}`,
+                element: <ChatRooms />,
+              },
               {
                 path: `${PAGE_URL.MY_PAGE}`,
                 element: <MyPageLayout />,
@@ -132,7 +129,10 @@ const router = createBrowserRouter([
             path: `${PAGE_URL.COMMUNITY}/:postId`,
             element: <CommunityPostDetail />,
           },
-          { path: PAGE_URL.LOGIN, element: <Login /> },
+          {
+            path: PAGE_URL.LOGIN,
+            element: <Login />,
+          },
           {
             path: PAGE_URL.COMMUNITY_SEARCH,
             element: <CommunitySearch />,
@@ -143,11 +143,26 @@ const router = createBrowserRouter([
           },
         ],
       },
-      { path: PAGE_URL.LANDING, element: <Landing /> },
-      { path: `${PAGE_URL.DETAIL}/:mentoringId`, element: <Detail /> },
-      { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
-      { path: PAGE_URL.SIGNUP, element: <Signup /> },
-      { path: PAGE_URL.MENTORING_CREATE, element: <MentoringCreate /> },
+      {
+        path: PAGE_URL.LANDING,
+        element: <Landing />,
+      },
+      {
+        path: `${PAGE_URL.DETAIL}/:mentoringId`,
+        element: <Detail />,
+      },
+      {
+        path: `${PAGE_URL.BOOKING}/:mentoringId`,
+        element: <Booking />,
+      },
+      {
+        path: PAGE_URL.SIGNUP,
+        element: <Signup />,
+      },
+      {
+        path: PAGE_URL.MENTORING_CREATE,
+        element: <MentoringCreate />,
+      },
       {
         path: `${PAGE_URL.MENTORING_UPDATE}/:mentoringId`,
         element: <MentoringUpdate />,

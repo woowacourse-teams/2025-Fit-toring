@@ -4,6 +4,8 @@ import styled from '@emotion/styled';
 
 import { InstallPromptContent } from '../../common/components/InstallPromptModal/InstallPromptModal';
 import { IOSInstallGuideContent } from '../../common/components/IOSInstallGuideModal/IOSInstallGuideModal';
+import SEO from '../../common/components/SEO/SEO';
+import { PAGE_URL } from '../../common/constants/url';
 import usePWAInstall from '../../common/hooks/usePWAInstall';
 import { isIOS } from '../../common/utils/deviceDetection';
 
@@ -37,6 +39,10 @@ function AppInstallGuide() {
 
   return (
     <S_Container>
+      <SEO
+        title="앱 설치 안내 - 핏토링 Fittoring"
+        canonicalPath={PAGE_URL.APP_INSTALL_GUIDE}
+      />
       <S_ContentSection>
         {isIOS() ? (
           <IOSInstallGuideContent />

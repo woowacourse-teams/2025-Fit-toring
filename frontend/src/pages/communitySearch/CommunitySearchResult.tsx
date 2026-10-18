@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
 
 import CommunitySearchHeader from './components/CommunitySearchHeader/CommunitySearchHeader';
@@ -14,6 +15,21 @@ function CommunitySearchResult() {
   const navigate = useNavigate();
   const { addRecentSearchKeyword } = useRecentSearchKeywords();
   const keyword = searchParams.get('keyword')?.trim() ?? '';
+  const canonicalSearch = new URLSearchParams();
+  if (keyword) {
+    canonicalSearch.set('keyword', keyword);
+  }
+  const query = canonicalSearch.toString();
+  const canonicalPath = query
+    ? `${PAGE_URL.COMMUNITY_SEARCH_RESULT}?${query}`
+    : PAGE_URL.COMMUNITY_SEARCH_RESULT;
+
+  const seo = (
+    <SEO
+      title="커뮤니티 검색 결과 - 핏토링 Fittoring"
+      canonicalPath={canonicalPath}
+    />
+  );
 
   const navigateToSearchPage = () => {
     navigate(PAGE_URL.COMMUNITY_SEARCH, { replace: true });
@@ -26,11 +42,12 @@ function CommunitySearchResult() {
   }, [keyword, navigate]);
 
   if (!keyword) {
-    return null;
+    return seo;
   }
 
   return (
     <S_Container>
+      {seo}
       <CommunitySearchHeader
         defaultKeyword={keyword}
         onSearch={addRecentSearchKeyword}

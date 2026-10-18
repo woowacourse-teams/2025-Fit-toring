@@ -3,6 +3,8 @@ import styled from '@emotion/styled';
 import downIcon from '../../common/assets/images/downIcon.svg';
 import PullToRefresh from '../../common/components/PullToRefresh/PullToRefresh';
 import { isPullToRefreshEnabled } from '../../common/components/PullToRefresh/utils';
+import SEO from '../../common/components/SEO/SEO';
+import { PAGE_URL } from '../../common/constants/url';
 
 import useParticipatedMentoringList from './hooks/useParticipatedMentoringList';
 import MentoringItem from './MentoringItem/MentoringItem';
@@ -22,6 +24,10 @@ function ParticipatedMentoring() {
 
   return (
     <S_Container>
+      <SEO
+        title="신청한 멘토링 - 핏토링 Fittoring"
+        canonicalPath={PAGE_URL.PARTICIPATED_MENTORING}
+      />
       <S_TitleWrapper>
         <S_Title>
           신청 목록{' '}

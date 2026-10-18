@@ -7,11 +7,13 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { useAuth } from '../../common/components/AuthProvider/AuthProvider';
 import DeleteConfirmModal from '../../common/components/DeleteConfirmModal/DeleteConfirmModal';
+import SEO from '../../common/components/SEO/SEO';
 import { BOTTOM_NAV_HEIGHT } from '../../common/constants/layout';
+import { SEO as SEO_CONSTANTS } from '../../common/constants/seo';
 import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 import CommunityPostPasswordModal from '../community/components/CommunityPostPasswordModal/CommunityPostPasswordModal';
@@ -32,6 +34,7 @@ import InputSection from './components/InputSection/InputSection';
 import PostCommentSection from './components/PostCommentSection/PostCommentSection';
 import PostContent from './components/PostContent/PostContent';
 import PostHeader from './components/PostHeader/PostHeader';
+import { buildCommunityPostSEO } from './utils/buildCommunityPostSEO';
 
 import type { PostComment } from './types/postComment';
 import type { CommunityPostDetail } from '../../common/types/communityPost';
@@ -61,6 +64,7 @@ const updateCommunityPostsLikeCache = (
 };
 
 function CommunityPostDetail() {
+  const location = useLocation();
   const { postId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -218,12 +222,32 @@ function CommunityPostDetail() {
       },
     });
 
+  const seoProps =
+    postData && !isError
+      ? buildCommunityPostSEO(postData, postId!)
+      : {
+          title: `게시글 상세 - ${SEO_CONSTANTS.SITE_NAME}`,
+          canonicalPath: location.pathname,
+          type: 'article' as const,
+        };
+  const seo = <SEO {...seoProps} />;
+
   if (isPending) {
-    return <CommunityPostDetailSkeleton />;
+    return (
+      <>
+        {seo}
+        <CommunityPostDetailSkeleton />
+      </>
+    );
   }
 
   if (isError || !postData) {
-    return <div>게시글을 불러오지 못했습니다.</div>;
+    return (
+      <>
+        {seo}
+        <div>게시글을 불러오지 못했습니다.</div>
+      </>
+    );
   }
 
   const shouldRequirePassword = postData.isGuestPost || postData.isAnonymous;
@@ -414,6 +438,7 @@ function CommunityPostDetail() {
 
   return (
     <S_Container>
+      {seo}
       <CommunityPostDetailHeader
         showActionButton={canManagePost}
         onEditClick={handleEditClick}

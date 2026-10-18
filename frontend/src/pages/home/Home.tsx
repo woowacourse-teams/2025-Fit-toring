@@ -18,6 +18,7 @@ import IOSInstallGuideModal from '../../common/components/IOSInstallGuideModal/I
 import NotificationPermissionModal from '../../common/components/NotificationPermissionModal/NotificationPermissionModal';
 import PullToRefresh from '../../common/components/PullToRefresh/PullToRefresh';
 import { isPullToRefreshEnabled } from '../../common/components/PullToRefresh/utils';
+import SEO from '../../common/components/SEO/SEO';
 import { PAGE_URL } from '../../common/constants/url';
 import useAuthCheck from '../../common/hooks/useAuthCheck';
 import useInfiniteScroll from '../../common/hooks/useInfiniteScroll';
@@ -254,6 +255,7 @@ function Home() {
 
   return (
     <S_Container>
+      <SEO canonicalPath={PAGE_URL.HOME} />
       <InstallPromptModal
         opened={installModalType === 'android'}
         onCloseClick={handleCloseAndroidInstallPrompt}

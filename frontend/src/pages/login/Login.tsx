@@ -1,5 +1,8 @@
 import styled from '@emotion/styled';
 
+import SEO from '../../common/components/SEO/SEO';
+import { PAGE_URL } from '../../common/constants/url';
+
 import LoginFormSection from './components/LoginFormSection/LoginFormSection';
 import LoginHeader from './components/LoginHeader/LoginHeader';
 import LoginIntro from './components/LoginIntro/LoginIntro';
@@ -7,6 +10,7 @@ import LoginIntro from './components/LoginIntro/LoginIntro';
 function Login() {
   return (
     <>
+      <SEO title="로그인 - 핏토링 Fittoring" canonicalPath={PAGE_URL.LOGIN} />
       <LoginHeader />
       <S_Wrapper>
         <LoginIntro />

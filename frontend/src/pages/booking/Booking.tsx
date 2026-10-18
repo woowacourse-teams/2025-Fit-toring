@@ -4,6 +4,8 @@ import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
 
 import { getMentoringDetail } from '../../common/apis/getMentoringDetail';
+import SEO from '../../common/components/SEO/SEO';
+import { PAGE_URL } from '../../common/constants/url';
 import { captureSentryError } from '../../common/utils/captureSentryError';
 
 import BookingForm from './components/BookingForm/BookingForm';
@@ -72,6 +74,10 @@ function Booking() {
 
   return (
     <div ref={containerRef}>
+      <SEO
+        title="멘토링 예약 - 핏토링 Fittoring"
+        canonicalPath={`${PAGE_URL.BOOKING}/${mentoringId}`}
+      />
       <BookingHeader />
       <S_ContentWrapper ref={wrapperRef}>
         <MentorInfoCard mentorDetail={mentorDetail} />
